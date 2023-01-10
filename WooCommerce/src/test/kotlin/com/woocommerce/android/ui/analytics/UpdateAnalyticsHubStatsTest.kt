@@ -1,29 +1,21 @@
 package com.woocommerce.android.ui.analytics
 
-import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository
 import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.FetchStrategy.Saved
 import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.OrdersResult
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.OrdersResult.OrdersData
 import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.ProductsResult
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.ProductsResult.ProductsData
 import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.RevenueResult
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.VisitorsResult
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.VisitorsResult.VisitorsData
 import com.woocommerce.android.ui.analytics.sync.OrdersState
 import com.woocommerce.android.ui.analytics.sync.ProductsState
 import com.woocommerce.android.ui.analytics.sync.RevenueState
 import com.woocommerce.android.ui.analytics.sync.SessionState
 import com.woocommerce.android.ui.analytics.sync.UpdateAnalyticsHubStats
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import java.util.Calendar
-import java.util.Locale
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -276,43 +268,5 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             } doReturn VisitorsResult.VisitorsError
         }
     }
-
-    private val testRangeSelection = SelectionType.TODAY.generateSelectionData(
-        calendar = Calendar.getInstance(),
-        locale = Locale.getDefault()
-    )
-
-    private val testRevenueStat = RevenueStat(
-        totalValue = 1234.5,
-        totalDelta = DeltaPercentage.NotExist,
-        netValue = 1000.0,
-        netDelta = DeltaPercentage.NotExist,
-        currencyCode = "",
-        totalRevenueByInterval = emptyList(),
-        netRevenueByInterval = emptyList()
-    )
-
-    private val testOrdersStat = OrdersStat(
-        ordersCount = 23,
-        ordersCountDelta = DeltaPercentage.NotExist,
-        avgOrderValue = 500.0,
-        avgOrderDelta = DeltaPercentage.NotExist,
-        currencyCode = "",
-        ordersCountByInterval = emptyList(),
-        avgOrderValueByInterval = emptyList()
-    )
-
-    private val testProductsStat = ProductsStat(
-        itemsSold = 123,
-        itemsSoldDelta = DeltaPercentage.NotExist,
-        products = emptyList()
-    )
-
-    private val testVisitorsCount = 150
-
-    private val testRevenueResult = RevenueData(testRevenueStat) as RevenueResult
-    private val testOrdersResult = OrdersData(testOrdersStat) as OrdersResult
-    private val testProductsResult = ProductsData(testProductsStat) as ProductsResult
-    private val testVisitorsResult = VisitorsData(testVisitorsCount) as VisitorsResult
 
 }
