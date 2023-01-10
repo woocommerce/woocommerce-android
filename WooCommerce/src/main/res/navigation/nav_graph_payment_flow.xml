@@ -49,6 +49,8 @@
             app:nullable="false" />
         <action
             android:id="@+id/action_cardReaderTypeSelectionDialogFragment_to_cardReaderPaymentFlow"
+            app:popUpTo="@+id/cardReaderTypeSelectionDialogFragment"
+            app:popUpToInclusive="true"
             app:destination="@id/cardReaderStatusCheckerDialogFragment" />
     </dialog>
 
