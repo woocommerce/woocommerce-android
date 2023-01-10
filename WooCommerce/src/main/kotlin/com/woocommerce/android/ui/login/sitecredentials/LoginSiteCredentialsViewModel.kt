@@ -7,6 +7,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
+import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
@@ -22,7 +23,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -46,7 +49,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     private val wpApiSiteRepository: WPApiSiteRepository,
     private val selectedSite: SelectedSite,
     private val loginAnalyticsListener: LoginAnalyticsListener,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    applicationPasswordsNotifier: ApplicationPasswordsNotifier
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val SITE_ADDRESS_KEY = "site-address"
@@ -77,6 +81,11 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     init {
         loginAnalyticsListener.trackUsernamePasswordFormViewed()
+        applicationPasswordsNotifier.featureUnavailableEvents
+            .onEach {
+                triggerEvent(ShowApplicationPasswordsUnavailableScreen(siteAddress))
+            }
+            .launchIn(this)
     }
 
     fun onUsernameChanged(username: String) {
@@ -102,6 +111,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 checkWooStatus(it)
             },
             onFailure = { exception ->
+                isLoading.value = false
                 var errorMessage: Int? = null
                 if (exception is OnChangedException && exception.error is AuthenticationError) {
                     errorMessage = exception.error.toErrorMessage()
@@ -127,10 +137,10 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 )
             }
         )
-        isLoading.value = false
     }
 
     private suspend fun checkWooStatus(site: SiteModel) {
+        isLoading.value = true
         wpApiSiteRepository.checkWooStatus(site = site).fold(
             onSuccess = { isWooInstalled ->
                 if (isWooInstalled) {
@@ -145,6 +155,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 triggerEvent(ShowSnackbar(R.string.error_generic))
             }
         )
+        isLoading.value = false
     }
 
     fun onResetPasswordClick() {
@@ -156,9 +167,11 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     fun onWooInstallationAttempted() = launch {
-        isLoading.value = true
         checkWooStatus(wpApiSiteRepository.getSiteByUrl(siteAddress)!!)
-        isLoading.value = false
+    }
+
+    fun retryApplicationPasswordsCheck() = launch {
+        checkWooStatus(wpApiSiteRepository.getSiteByUrl(siteAddress)!!)
     }
 
     private fun String.removeSchemeAndSuffix() = UrlUtils.removeScheme(UrlUtils.removeXmlrpcSuffix(this))
@@ -193,4 +206,5 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     data class LoggedIn(val localSiteId: Int) : MultiLiveEvent.Event()
     data class ShowResetPasswordScreen(val siteAddress: String) : MultiLiveEvent.Event()
     data class ShowNonWooErrorScreen(val siteAddress: String) : MultiLiveEvent.Event()
+    data class ShowApplicationPasswordsUnavailableScreen(val siteAddress: String) : MultiLiveEvent.Event()
 }

@@ -335,6 +335,7 @@
     <string name="login_jetpack_installation_connection_dismissed_explanation">Try connecting again to access your store.</string>
     <string name="login_jetpack_installation_continue_connection">Continue connection</string>
     <string name="login_jetpack_installation_exit_without_connection">Exit Without Connecting</string>
+    <string name="login_application_passwords_unavailable">It looks like Application Passwords feature is disabled in your site %1$s.\n Please enable it to use the WooCommerce app.</string>
 
     <!--
         My Store View
@@ -2814,4 +2815,5 @@
 
     <string name="store_creation_store_categories_title">What’s your business about?</string>
     <string name="store_creation_store_categories_subtitle">Choose a category that defines your business the best.</string><string name="not_a_valid_qr_code">Scanned Qr code is not a WooCommerce code</string>
+    <string name="login_application_passwords_help">What are Application Passwords?</string>
 </resources>
