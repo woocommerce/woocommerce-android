@@ -24,12 +24,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateBackToHub
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateBackToOrderList
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderHubFlow
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderPaymentFlow
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderRefundFlow
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.SharePaymentUrl
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.*
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Success
 import com.woocommerce.android.ui.payments.banner.Banner
@@ -173,6 +168,13 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
                         )
                     findNavController().navigate(action)
                 }
+                is NavigateToIPPReaderTypeSelection -> {
+                    val action =
+                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToCardReaderTypeSelectionDialogFragment(
+                            event.cardReaderFlowParam
+                        )
+                    findNavController().navigate(action)
+                }
                 is NavigateToCardReaderHubFlow -> {
                     val action =
                         SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToCardReaderHubFlow(
@@ -198,18 +200,18 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
                         )
                     findNavController().navigateSafely(action)
                 }
-                SelectPaymentMethodViewModel.DismissCardReaderUpsellBanner -> {
+                DismissCardReaderUpsellBanner -> {
                     applyBannerDismissDialogComposeUI()
                 }
-                SelectPaymentMethodViewModel.DismissCardReaderUpsellBannerViaRemindMeLater -> {
+                DismissCardReaderUpsellBannerViaRemindMeLater -> {
                     binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
                     binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
                 }
-                SelectPaymentMethodViewModel.DismissCardReaderUpsellBannerViaDontShowAgain -> {
+                DismissCardReaderUpsellBannerViaDontShowAgain -> {
                     binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
                     binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
                 }
-                is SelectPaymentMethodViewModel.OpenPurchaseCardReaderLink -> {
+                is OpenPurchaseCardReaderLink -> {
                     findNavController().navigate(
                         NavGraphMainDirections.actionGlobalWPComWebViewFragment(
                             urlToLoad = event.url,

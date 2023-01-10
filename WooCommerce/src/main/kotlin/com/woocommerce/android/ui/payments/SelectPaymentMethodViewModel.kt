@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -215,7 +216,11 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
             )
         )
-        triggerEvent(NavigateToCardReaderPaymentFlow(cardReaderPaymentFlowParam))
+        if (FeatureFlag.IPP_TAP_TO_PAY.isEnabled()) {
+            triggerEvent(NavigateToIPPReaderTypeSelection(cardReaderPaymentFlowParam))
+        } else {
+            triggerEvent(NavigateToCardReaderPaymentFlow(cardReaderPaymentFlowParam))
+        }
     }
 
     fun onConnectToReaderResultReceived(connected: Boolean) {
@@ -382,6 +387,10 @@ class SelectPaymentMethodViewModel @Inject constructor(
     ) : MultiLiveEvent.Event()
 
     data class NavigateToCardReaderPaymentFlow(
+        val cardReaderFlowParam: Payment
+    ) : MultiLiveEvent.Event()
+
+    data class NavigateToIPPReaderTypeSelection(
         val cardReaderFlowParam: Payment
     ) : MultiLiveEvent.Event()
 
