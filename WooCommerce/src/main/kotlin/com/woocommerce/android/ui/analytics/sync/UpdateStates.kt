@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.analytics
+package com.woocommerce.android.ui.analytics.sync
 
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat

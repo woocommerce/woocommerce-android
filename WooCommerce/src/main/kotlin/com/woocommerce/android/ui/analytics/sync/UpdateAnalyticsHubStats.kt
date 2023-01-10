@@ -1,12 +1,12 @@
-package com.woocommerce.android.ui.analytics
+package com.woocommerce.android.ui.analytics.sync
 
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
-import com.woocommerce.android.ui.analytics.AnalyticsHubUpdateState.Finished
-import com.woocommerce.android.ui.analytics.AnalyticsHubUpdateState.Loading
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy
+import com.woocommerce.android.ui.analytics.sync.AnalyticsHubUpdateState.Finished
+import com.woocommerce.android.ui.analytics.sync.AnalyticsHubUpdateState.Loading
+import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.FetchStrategy
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

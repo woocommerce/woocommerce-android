@@ -14,9 +14,9 @@ import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
-import com.woocommerce.android.ui.analytics.AnalyticsHubUpdateState.Finished
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.ForceNew
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.Saved
+import com.woocommerce.android.ui.analytics.sync.AnalyticsHubUpdateState.Finished
+import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.FetchStrategy.ForceNew
+import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.FetchStrategy.Saved
 import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
@@ -26,6 +26,11 @@ import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformation
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.NoDataState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListCardItemViewState
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
+import com.woocommerce.android.ui.analytics.sync.OrdersState
+import com.woocommerce.android.ui.analytics.sync.ProductsState
+import com.woocommerce.android.ui.analytics.sync.RevenueState
+import com.woocommerce.android.ui.analytics.sync.SessionState
+import com.woocommerce.android.ui.analytics.sync.UpdateAnalyticsHubStats
 import com.woocommerce.android.ui.mystore.MyStoreStatsUsageTracksEventEmitter
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider

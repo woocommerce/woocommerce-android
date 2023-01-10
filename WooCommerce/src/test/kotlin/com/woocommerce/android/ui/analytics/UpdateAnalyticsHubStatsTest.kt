@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.analytics
 
+import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository
+import com.woocommerce.android.ui.analytics.sync.UpdateAnalyticsHubStats
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.analytics
+package com.woocommerce.android.ui.analytics.sync
 
 import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.model.DeltaPercentage
@@ -7,10 +7,10 @@ import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersError
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsError
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
+import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.OrdersResult.OrdersError
+import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.ProductsResult.ProductsError
+import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.RevenueResult.RevenueData
+import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.RevenueResult.RevenueError
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
 import com.woocommerce.android.ui.mystore.data.StatsRepository
