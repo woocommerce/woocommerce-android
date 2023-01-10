@@ -94,6 +94,7 @@ class AnalyticsHubDateRangeSelection : Serializable {
     }
 
     companion object {
+        // Needed to avoid the [SerialVersionUIDInSerializableClass] warning from detekt
         const val serialVersionUID = 1L
     }
 
