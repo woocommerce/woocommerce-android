@@ -27,7 +27,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
     private val _ordersState = MutableStateFlow(OrdersState.Available(OrdersStat.EMPTY) as OrdersState)
     val ordersState: Flow<OrdersState> = _ordersState
 
-    private val visitorsCountState = MutableStateFlow(0)
+    private val visitorsCountState = MutableStateFlow(VisitorsState.Available(0) as VisitorsState)
     val sessionState by lazy { combineSessionDataChanges() }
 
 
@@ -38,6 +38,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
         _ordersState.update { OrdersState.Loading }
         _revenueState.update { RevenueState.Loading }
         _productsState.update { ProductsState.Loading }
+        visitorsCountState.update { VisitorsState.Loading }
 
         fetchOrdersData(rangeSelection, fetchStrategy)
         fetchVisitorsCount(rangeSelection, fetchStrategy)
@@ -53,14 +54,14 @@ class UpdateAnalyticsHubStats @Inject constructor(
         }.map { if (it) Finished else Loading }
 
     private fun combineSessionDataChanges() =
-        combine(_ordersState, visitorsCountState) { orders, visitorsCount ->
-            orders.run { this as? OrdersState.Available }
-                ?.orders?.ordersCount
-                ?.let { SessionState.Available(SessionStat(it, visitorsCount)) }
-                ?: when (orders) {
-                    is OrdersState.Error -> SessionState.Error
-                    else -> SessionState.Loading
-                }
+        combine(_ordersState, visitorsCountState) { orders, visitors ->
+            if (orders is OrdersState.Available && visitors is VisitorsState.Available) {
+                SessionState.Available(SessionStat(orders.orders.ordersCount, visitors.visitors))
+            } else if (orders is OrdersState.Error || visitors is VisitorsState.Error) {
+                SessionState.Error
+            } else {
+                SessionState.Loading
+            }
         }
 
     private suspend fun fetchOrdersData(
@@ -79,7 +80,8 @@ class UpdateAnalyticsHubStats @Inject constructor(
     ) {
         analyticsRepository.fetchVisitorsData(rangeSelection, fetchStrategy)
             .run { this as? AnalyticsRepository.VisitorsResult.VisitorsData }
-            .let { visitorsCountState.value = it?.visitorsCount ?: 0 }
+            ?.let { visitorsCountState.value = VisitorsState.Available(it.visitorsCount) }
+            ?: visitorsCountState.update { VisitorsState.Error }
     }
 
     private suspend fun fetchRevenueData(
