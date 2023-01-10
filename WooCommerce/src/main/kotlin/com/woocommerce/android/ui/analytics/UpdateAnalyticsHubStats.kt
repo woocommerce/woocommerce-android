@@ -33,13 +33,12 @@ class UpdateAnalyticsHubStats @Inject constructor(
     suspend operator fun invoke(
         coroutineScope: CoroutineScope,
         rangeSelection: AnalyticsHubDateRangeSelection,
-        fetchStrategy: FetchStrategy,
-        loadWithSkeleton: Boolean
+        fetchStrategy: FetchStrategy
     ): Flow<AnalyticsHubUpdateState> {
-        ordersState.update { OrdersState.Loading(loadWithSkeleton) }
-        sessionState.update { VisitorsState.Loading(loadWithSkeleton) }
-        revenueState.update { RevenueState.Loading(loadWithSkeleton) }
-        productsState.update { ProductsState.Loading(loadWithSkeleton) }
+        ordersState.update { OrdersState.Loading }
+        sessionState.update { VisitorsState.Loading }
+        revenueState.update { RevenueState.Loading }
+        productsState.update { ProductsState.Loading }
 
         coroutineScope.launch(dispatchers.computation) {
             sessionChanges.collect { sessionState.value = it }
@@ -65,7 +64,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
                 ?.let { VisitorsState.Available(SessionStat(it, visitorsCount)) }
                 ?: when (orders) {
                     is OrdersState.Error -> VisitorsState.Error
-                    else -> VisitorsState.Loading(true)
+                    else -> VisitorsState.Loading
                 }
         }
 
@@ -115,7 +114,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
 
     sealed class OrdersState {
         data class Available(val orders: OrdersStat) : OrdersState()
-        data class Loading(val withSkeleton: Boolean) : OrdersState()
+        object Loading : OrdersState()
         object Error : OrdersState()
 
         val isIdle get() = this is Available || this is Error
@@ -124,7 +123,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
 
     sealed class VisitorsState {
         data class Available(val session: SessionStat) : VisitorsState()
-        data class Loading(val withSkeleton: Boolean) : VisitorsState()
+        object Loading : VisitorsState()
         object Error : VisitorsState()
 
         val isIdle get() = this is Available || this is Error
@@ -132,7 +131,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
 
     sealed class RevenueState {
         data class Available(val revenue: RevenueStat) : RevenueState()
-        data class Loading(val withSkeleton: Boolean) : RevenueState()
+        object Loading : RevenueState()
         object Error : RevenueState()
 
         val isIdle get() = this is Available || this is Error
@@ -140,7 +139,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
 
     sealed class ProductsState {
         data class Available(val products: ProductsStat) : ProductsState()
-        data class Loading(val withSkeleton: Boolean) : ProductsState()
+        object Loading : ProductsState()
         object Error : ProductsState()
 
         val isIdle get() = this is Available || this is Error
