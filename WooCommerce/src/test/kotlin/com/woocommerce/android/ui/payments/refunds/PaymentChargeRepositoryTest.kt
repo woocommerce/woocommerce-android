@@ -1,7 +1,8 @@
 package com.woocommerce.android.ui.payments.refunds
 
-import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.payments.GetActivePaymentsPlugin
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PreferredPluginResult
@@ -44,10 +45,11 @@ class PaymentChargeRepositoryTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock {
         on { get() }.thenReturn(siteModel)
     }
-    private val appPrefs: AppPrefs = mock()
+    private val appPrefs: AppPrefsWrapper = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
+    private val getActivePaymentsPlugin: GetActivePaymentsPlugin = GetActivePaymentsPlugin(appPrefs, selectedSite, cardReaderOnboardingChecker)
 
-    private val repo = PaymentChargeRepository(ippStore, selectedSite, appPrefs, cardReaderOnboardingChecker)
+    private val repo = PaymentChargeRepository(ippStore, selectedSite, getActivePaymentsPlugin)
 
     @Test
     fun `given active plugin saved and card response successful, when fetching data, then card details returned`() {
