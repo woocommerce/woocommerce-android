@@ -9,12 +9,12 @@ import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelectio
 import com.woocommerce.android.util.CoroutineDispatchers
 import java.text.DecimalFormat
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class UpdateAnalyticsHubStats @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
@@ -26,88 +26,84 @@ class UpdateAnalyticsHubStats @Inject constructor(
     val sessionState = MutableStateFlow(VisitorsState.Available(SessionStat.EMPTY) as VisitorsState)
 
     private val visitorsCountState = MutableStateFlow(0)
-    private val sessionChanges: Flow<VisitorsState> =
+    private val sessionChanges: Flow<VisitorsState> by lazy { combineSessionDataChanges() }
+
+    operator fun invoke(
+        coroutineScope: CoroutineScope,
+        rangeSelection: AnalyticsHubDateRangeSelection,
+        fetchStrategy: FetchStrategy,
+        loadWithSkeleton: Boolean
+    ) = coroutineScope.launch {
+        ordersState.update { OrdersState.Loading(loadWithSkeleton) }
+        sessionState.update { VisitorsState.Loading(loadWithSkeleton) }
+        revenueState.update { RevenueState.Loading(loadWithSkeleton) }
+        productsState.update { ProductsState.Loading(loadWithSkeleton) }
+
+
+        coroutineScope.launch(dispatchers.computation) {
+            sessionChanges.collect { sessionState.value = it }
+        }
+
+        fetchOrdersData(rangeSelection, fetchStrategy)
+        fetchVisitorsCount(rangeSelection, fetchStrategy)
+        fetchRevenueData(rangeSelection, fetchStrategy)
+        fetchProductsData(rangeSelection, fetchStrategy)
+    }
+
+    private suspend fun fetchOrdersData(
+        rangeSelection: AnalyticsHubDateRangeSelection,
+        fetchStrategy: FetchStrategy
+    ) {
+        analyticsRepository.fetchOrdersData(rangeSelection, fetchStrategy)
+            .run { this as? AnalyticsRepository.OrdersResult.OrdersData }
+            ?.let { ordersState.value = OrdersState.Available(it.ordersStat) }
+            ?: ordersState.update { OrdersState.Error }
+    }
+
+    private suspend fun fetchVisitorsCount(
+        rangeSelection: AnalyticsHubDateRangeSelection,
+        fetchStrategy: FetchStrategy
+    ) {
+        analyticsRepository.fetchVisitorsData(rangeSelection, fetchStrategy)
+            .run { this as? AnalyticsRepository.VisitorsResult.VisitorsData }
+            .let { visitorsCountState.value = it?.visitorsCount ?: 0 }
+    }
+
+    private suspend fun fetchRevenueData(
+        rangeSelection: AnalyticsHubDateRangeSelection,
+        fetchStrategy: FetchStrategy
+    ) {
+        analyticsRepository.fetchRevenueData(rangeSelection, fetchStrategy)
+            .run { this as? AnalyticsRepository.RevenueResult.RevenueData }
+            ?.let { revenueState.value = RevenueState.Available(it.revenueStat) }
+            ?: revenueState.update { RevenueState.Error }
+    }
+
+    private suspend fun fetchProductsData(
+        rangeSelection: AnalyticsHubDateRangeSelection,
+        fetchStrategy: FetchStrategy
+    ) {
+        analyticsRepository.fetchProductsData(rangeSelection, fetchStrategy)
+            .run { this as? AnalyticsRepository.ProductsResult.ProductsData }
+            ?.let { productsState.value = ProductsState.Available(it.productsStat) }
+            ?: productsState.update { ProductsState.Error }
+    }
+
+    private fun combineSessionDataChanges() =
         combine(ordersState, visitorsCountState) { orders, visitorsCount ->
             orders.run { this as? OrdersState.Available }
                 ?.orders?.ordersCount
-                ?.let { (it / visitorsCount.toFloat()) * 100 }
-                ?.let { DecimalFormat("##.#").format(it) + "%" }
-                ?.let { SessionStat(it, visitorsCount) }
-                ?.let { VisitorsState.Available(it) }
+                ?.let { generateVisitorState(it, visitorsCount) }
                 ?: when (orders) {
                     is OrdersState.Error -> VisitorsState.Error
                     else -> VisitorsState.Loading(true)
                 }
         }
 
-    suspend operator fun invoke(
-        rangeSelection: AnalyticsHubDateRangeSelection,
-        fetchStrategy: FetchStrategy,
-        loadWithSkeleton: Boolean
-    ) {
-        ordersState.update { OrdersState.Loading(loadWithSkeleton) }
-        sessionState.update { VisitorsState.Loading(loadWithSkeleton) }
-        revenueState.update { RevenueState.Loading(loadWithSkeleton) }
-        productsState.update { ProductsState.Loading(loadWithSkeleton) }
-
-        sessionChanges
-            .flowOn(dispatchers.computation)
-            .collect { sessionState.update { it } }
-
-        fetchOrdersData(rangeSelection, fetchStrategy)
-            .flowOn(dispatchers.io)
-            .collect { ordersState.update { it } }
-
-        fetchVisitorsCount(rangeSelection, fetchStrategy)
-            .flowOn(dispatchers.io)
-            .collect { visitorsCountState.update { it } }
-
-        fetchRevenueData(rangeSelection, fetchStrategy)
-            .flowOn(dispatchers.io)
-            .collect { revenueState.update { it } }
-
-        fetchProductsData(rangeSelection, fetchStrategy)
-            .flowOn(dispatchers.io)
-            .collect { productsState.update { it } }
-    }
-
-    private fun fetchOrdersData(
-        rangeSelection: AnalyticsHubDateRangeSelection,
-        fetchStrategy: FetchStrategy
-    ) = flow {
-        analyticsRepository.fetchOrdersData(rangeSelection, fetchStrategy)
-            .run { this as? AnalyticsRepository.OrdersResult.OrdersData }
-            ?.let { emit(OrdersState.Available(it.ordersStat)) }
-            ?: emit(OrdersState.Error)
-    }
-
-    private fun fetchVisitorsCount(
-        rangeSelection: AnalyticsHubDateRangeSelection,
-        fetchStrategy: FetchStrategy
-    ) = flow {
-        analyticsRepository.fetchVisitorsData(rangeSelection, fetchStrategy)
-            .run { this as? AnalyticsRepository.VisitorsResult.VisitorsData }
-            .let { emit(it?.visitorsCount ?: 0) }
-    }
-
-    private fun fetchRevenueData(
-        rangeSelection: AnalyticsHubDateRangeSelection,
-        fetchStrategy: FetchStrategy
-    ) = flow {
-        analyticsRepository.fetchRevenueData(rangeSelection, fetchStrategy)
-            .run { this as? AnalyticsRepository.RevenueResult.RevenueData }
-            ?.let { emit(RevenueState.Available(it.revenueStat)) }
-            ?: emit(RevenueState.Error)
-    }
-
-    private fun fetchProductsData(
-        rangeSelection: AnalyticsHubDateRangeSelection,
-        fetchStrategy: FetchStrategy
-    ) = flow {
-        analyticsRepository.fetchProductsData(rangeSelection, fetchStrategy)
-            .run { this as? AnalyticsRepository.ProductsResult.ProductsData }
-            ?.let { emit(ProductsState.Available(it.productsStat)) }
-            ?: emit(ProductsState.Error)
+    private fun generateVisitorState(ordersCount: Int, visitorsCount: Int): VisitorsState {
+        val conversionRate = (ordersCount / visitorsCount.toFloat()) * 100
+        val formattedConversionRate = DecimalFormat("##.#").format(conversionRate) + "%"
+        return VisitorsState.Available(SessionStat(formattedConversionRate, visitorsCount))
     }
 
     sealed class OrdersState {
@@ -129,7 +125,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
     }
 
     sealed class ProductsState {
-        data class Available(val product: ProductsStat) : ProductsState()
+        data class Available(val products: ProductsStat) : ProductsState()
         data class Loading(val withSkeleton: Boolean) : ProductsState()
         object Error : ProductsState()
     }
