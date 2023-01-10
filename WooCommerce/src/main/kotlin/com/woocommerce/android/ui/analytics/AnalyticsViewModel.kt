@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelectio
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.QUARTER_TO_DATE
 import com.woocommerce.android.ui.mystore.MyStoreStatsUsageTracksEventEmitter
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -42,7 +43,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState as ProductsViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.LoadingViewState as LoadingProductsViewState
@@ -55,7 +58,8 @@ class AnalyticsViewModel @Inject constructor(
     private val analyticsRepository: AnalyticsRepository,
     private val transactionLauncher: AnalyticsHubTransactionLauncher,
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
-    savedState: SavedStateHandle
+    private val localeProvider: LocaleProvider,
+    savedState: SavedStateHandle,
 ) : ScopedViewModel(savedState) {
 
     private val navArgs: AnalyticsFragmentArgs by savedState.navArgs()
@@ -64,7 +68,7 @@ class AnalyticsViewModel @Inject constructor(
 
     private val rangeSelectionState = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = navArgs.targetGranularity.generateSelectionData()
+        initialValue = navArgs.targetGranularity.generateLocalizedSelectionData()
     )
 
     private val ranges
@@ -99,11 +103,14 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     fun onNewRangeSelection(selectionType: SelectionType) {
-        rangeSelectionState.value = selectionType.generateSelectionData()
+        rangeSelectionState.value = selectionType.generateLocalizedSelectionData()
     }
 
     fun onCustomRangeSelected(startDate: Date, endDate: Date) {
-        rangeSelectionState.value = SelectionType.CUSTOM.generateSelectionData(startDate, endDate)
+        rangeSelectionState.value = SelectionType.CUSTOM.generateLocalizedSelectionData(
+            startDate = startDate,
+            endDate = endDate
+        )
     }
 
     fun onCustomDateRangeClicked() {
@@ -357,14 +364,17 @@ class AnalyticsViewModel @Inject constructor(
         onTrackableUIInteraction()
         AnalyticsTracker.track(
             AnalyticsEvent.ANALYTICS_HUB_DATE_RANGE_SELECTED,
-            mapOf(
-                AnalyticsTracker.KEY_OPTION to ranges.selectionType.description
-            )
+            mapOf(AnalyticsTracker.KEY_OPTION to ranges.selectionType.tracksIdentifier)
         )
     }
 
-    companion object {
-        const val TIME_PERIOD_SELECTED_KEY = "time_period_selected_key"
-        const val DATE_RANGE_SELECTED_KEY = "date_range_selected_key"
-    }
+    private fun SelectionType.generateLocalizedSelectionData(
+        startDate: Date = Date(),
+        endDate: Date = Date()
+    ) = generateSelectionData(
+        referenceStartDate = startDate,
+        referenceEndDate = endDate,
+        calendar = Calendar.getInstance(),
+        locale = localeProvider.provideLocale() ?: Locale.getDefault()
+    )
 }

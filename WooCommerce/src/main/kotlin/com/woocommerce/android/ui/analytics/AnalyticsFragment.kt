@@ -82,7 +82,7 @@ class AnalyticsFragment :
         AnalyticsFragmentDirections.actionAnalyticsFragmentToDateRangeSelector(
             requestKey = KEY_DATE_RANGE_SELECTOR_RESULT,
             keys = viewModel.selectableRangeOptions,
-            values = viewModel.selectableRangeOptions,
+            values = AnalyticsHubDateRangeSelection.SelectionType.names,
             selectedItem = getDateRangeSelectorViewState().selectionTitle
         )
 
