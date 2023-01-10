@@ -24,15 +24,10 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -53,6 +48,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -66,39 +62,21 @@ fun DomainPickerScreen(viewModel: DomainPickerViewModel) {
     viewModel.viewState.observeAsState(DomainPickerState()).value.let { viewState ->
         Scaffold(topBar = {
             Toolbar(
-                onArrowBackPressed = viewModel::onBackPressed,
+                onNavigationButtonClick = viewModel::onBackPressed,
+                onActionButtonClick = viewModel::onHelpPressed,
             )
-        }) {
+        }) { padding ->
             DomainSearchForm(
                 state = viewState,
                 onDomainQueryChanged = viewModel::onDomainChanged,
                 onDomainSuggestionSelected = viewModel::onDomainSuggestionSelected,
                 onContinueClicked = viewModel::onContinueClicked,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
             )
         }
     }
-}
-
-@Composable
-private fun Toolbar(
-    onArrowBackPressed: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    TopAppBar(
-        backgroundColor = MaterialTheme.colors.surface,
-        title = {},
-        navigationIcon = {
-            IconButton(onClick = onArrowBackPressed) {
-                Icon(
-                    Icons.Filled.ArrowBack,
-                    contentDescription = stringResource(id = R.string.back)
-                )
-            }
-        },
-        elevation = 0.dp,
-        modifier = modifier
-    )
 }
 
 @Composable
@@ -226,6 +204,8 @@ private fun DomainSuggestionItem(
     domainSuggestion: DomainSuggestionUi,
     modifier: Modifier = Modifier
 ) {
+    val domainTextHighlightedColor = colorResource(id = R.color.color_on_surface_high)
+    val domainTextColor = colorResource(id = R.color.color_on_surface_medium_selector)
     Row(
         modifier = modifier.padding(
             top = dimensionResource(id = R.dimen.major_75),
@@ -235,7 +215,7 @@ private fun DomainSuggestionItem(
         Text(
             text = buildAnnotatedString {
                 withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {
-                    withStyle(style = SpanStyle(color = colorResource(id = R.color.color_on_surface_medium_selector))) {
+                    withStyle(style = SpanStyle(color = domainTextColor)) {
                         append(domainSuggestion.domain.substringBefore("."))
                     }
                     if (domainSuggestion.isSelected) {
@@ -243,7 +223,7 @@ private fun DomainSuggestionItem(
                             append(".${domainSuggestion.domain.substringAfter(delimiter = ".")}")
                         }
                     } else {
-                        withStyle(style = SpanStyle(color = colorResource(id = R.color.color_on_surface_high))) {
+                        withStyle(style = SpanStyle(color = domainTextHighlightedColor)) {
                             append(".${domainSuggestion.domain.substringAfter(delimiter = ".")}")
                         }
                     }

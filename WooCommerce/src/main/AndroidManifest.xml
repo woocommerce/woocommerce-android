@@ -27,6 +27,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Woo.DayNight"
+        android:localeConfig="@xml/locales_config"
         tools:ignore="UnusedAttribute">
 
         <!-- TODO: we eventually want to drop support for Apache, but for now it's used by FluxC -->

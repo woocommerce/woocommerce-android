@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-12-06 16:54:03+0000
+Translation-Revision-Date: 2022-12-22 15:54:28+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="store_creation_store_categories_subtitle">Escolha uma categoria que\nmelhor defina o seu negócio.</string>
+    <string name="store_creation_store_categories_title">Com o que você trabalha?</string>
+    <string name="product_selection_menu_select_all">Selecionar tudo</string>
+    <string name="product_selection_menu_update_price">Atualizar preço</string>
+    <string name="product_selection_menu_update_status">Atualizar status</string>
+    <string name="product_bulk_update_status_updated">Status atualizado!</string>
+    <string name="product_bulk_update_status">Atualizar status</string>
+    <string name="product_bulk_update_price_updated">Preço atualizado!</string>
+    <string name="product_bulk_update_regular_price">Atualizar preço regular</string>
     <string name="store_creation_ecommerce_plan_period_two_years">2 anos</string>
     <string name="store_creation_ecommerce_store_loading_permanent_error">Ocorreu um erro durante a instalação da loja…</string>
     <string name="variations_bulk_creation_no_candidates_message">Todas as variações já foram geradas.</string>
@@ -149,7 +158,6 @@ Language: pt_BR
     <string name="signup_email_exist_input">Já existe uma conta com este e-mail.</string>
     <string name="signup_already_registered">Primeiro, vamos criar uma conta. Já tem cadastro? &lt;a href=\'login\'&gt;&lt;u&gt;Fazer login&lt;/u&gt;&lt;/a&gt;</string>
     <string name="login_create_an_account">Criar uma conta</string>
-    <string name="simplified_login_enter_email_address">Insira seu endereço de e-mail para começar</string>
     <string name="login_try_another_email">Tentar outro endereço</string>
     <string name="date_timeframe_custom_date_range_title">Período personalizado</string>
     <string name="date_timeframe_custom">Personalizado</string>

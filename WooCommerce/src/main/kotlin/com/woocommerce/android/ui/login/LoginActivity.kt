@@ -30,7 +30,7 @@ import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.support.ZendeskExtraTags
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.support.help.HelpActivity
-import com.woocommerce.android.support.help.HelpActivity.Origin
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.login.LoginPrologueCarouselFragment.PrologueCarouselListener
 import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
@@ -54,15 +54,16 @@ import com.woocommerce.android.ui.login.localnotifications.LoginNotificationSche
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
-import com.woocommerce.android.ui.login.overrides.WooLoginUsernamePasswordFragment
 import com.woocommerce.android.ui.login.qrcode.QrCodeLoginListener
 import com.woocommerce.android.ui.login.qrcode.ValidateScannedValue
 import com.woocommerce.android.ui.login.signup.SignUpFragment
 import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.SITE_PICKER
 import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.STORE_CREATION
+import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.UrlUtils
 import com.woocommerce.android.util.WooLog
 import dagger.android.AndroidInjector
@@ -80,6 +81,7 @@ import org.wordpress.android.fluxc.store.AccountStore.OnAuthOptionsFetched
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnConnectSiteInfoChecked
+import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import org.wordpress.android.login.AuthOptions
 import org.wordpress.android.login.GoogleFragment.GoogleListener
 import org.wordpress.android.login.Login2FaFragment
@@ -91,6 +93,7 @@ import org.wordpress.android.login.LoginListener
 import org.wordpress.android.login.LoginMagicLinkRequestFragment
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.login.LoginSiteAddressFragment
+import org.wordpress.android.login.LoginUsernamePasswordFragment
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
@@ -142,26 +145,16 @@ class LoginActivity :
         }
     }
 
-    @Inject
-    internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
-    @Inject
-    internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
-    @Inject
-    internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
-    @Inject
-    internal lateinit var zendeskHelper: ZendeskHelper
-    @Inject
-    internal lateinit var urlUtils: UrlUtils
-    @Inject
-    internal lateinit var experimentTracker: ExperimentTracker
-    @Inject
-    internal lateinit var appPrefsWrapper: AppPrefsWrapper
-    @Inject
-    internal lateinit var dispatcher: Dispatcher
-    @Inject
-    internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
-    @Inject
-    internal lateinit var uiMessageResolver: UIMessageResolver
+    @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
+    @Inject internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
+    @Inject internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
+    @Inject internal lateinit var zendeskHelper: ZendeskHelper
+    @Inject internal lateinit var urlUtils: UrlUtils
+    @Inject internal lateinit var experimentTracker: ExperimentTracker
+    @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
+    @Inject internal lateinit var dispatcher: Dispatcher
+    @Inject internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
+    @Inject internal lateinit var uiMessageResolver: UIMessageResolver
 
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
@@ -390,10 +383,10 @@ class LoginActivity :
     }
 
     private fun jumpToUsernamePassword(username: String?, password: String?) {
-        val loginUsernamePasswordFragment = WooLoginUsernamePasswordFragment.newInstance(
+        val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
             "wordpress.com", "wordpress.com", username, password, true
         )
-        changeFragment(loginUsernamePasswordFragment, true, WooLoginUsernamePasswordFragment.TAG)
+        changeFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
     }
 
     private fun startLoginViaWPCom() {
@@ -506,9 +499,9 @@ class LoginActivity :
         changeFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
     }
 
-    override fun forgotPassword(url: String?) {
+    override fun forgotPassword(url: String) {
         loginAnalyticsListener.trackLoginForgotPasswordClicked()
-        ChromeCustomTabUtils.launchUrl(this, url + FORGOT_PASSWORD_URL_SUFFIX)
+        ChromeCustomTabUtils.launchUrl(this, url.slashJoin(FORGOT_PASSWORD_URL_SUFFIX))
     }
 
     override fun needs2fa(email: String?, password: String?) {
@@ -556,7 +549,7 @@ class LoginActivity :
     override fun gotConnectedSiteInfo(siteAddress: String, redirectUrl: String?, hasJetpack: Boolean) {
         // If the redirect url is available, use that as the preferred url. Pass this url to the other fragments
         // with the protocol since it is needed for initiating forgot password flow etc in the login process.
-        val inputSiteAddress = redirectUrl ?: siteAddress
+        val inputSiteAddress = urlUtils.sanitiseUrl(redirectUrl ?: siteAddress)
 
         // Save site address to app prefs so it's available to MainActivity regardless of how the user
         // logs into the app. Strip the protocol from this url string prior to saving to AppPrefs since it's
@@ -594,10 +587,7 @@ class LoginActivity :
         // logs into the app.
         inputSiteAddress?.let { AppPrefs.setLoginSiteAddress(it) }
 
-        val loginUsernamePasswordFragment = WooLoginUsernamePasswordFragment.newInstance(
-            inputSiteAddress, endpointAddress, null, null, false
-        )
-        changeFragment(loginUsernamePasswordFragment, true, WooLoginUsernamePasswordFragment.TAG)
+        showUsernamePasswordScreen(inputSiteAddress, endpointAddress, null, null)
     }
 
     override fun handleSslCertificateError(
@@ -608,7 +598,7 @@ class LoginActivity :
         // TODO: Support self-signed SSL sites and show dialog (only needed when XML-RPC support is added)
     }
 
-    private fun viewHelpAndSupport(origin: Origin) {
+    private fun viewHelpAndSupport(origin: HelpOrigin) {
         val extraSupportTags = arrayListOf(ZendeskExtraTags.connectingJetpack)
         val flow = unifiedLoginTracker.getFlow()
         val step = unifiedLoginTracker.previousStepBeforeHelpStep
@@ -617,12 +607,12 @@ class LoginActivity :
     }
 
     override fun helpSiteAddress(url: String?) {
-        viewHelpAndSupport(Origin.LOGIN_SITE_ADDRESS)
+        viewHelpAndSupport(HelpOrigin.LOGIN_SITE_ADDRESS)
     }
 
     override fun helpFindingSiteAddress(username: String?, siteStore: SiteStore?) {
         unifiedLoginTracker.trackClick(Click.HELP_FINDING_SITE_ADDRESS)
-        zendeskHelper.createNewTicket(this, Origin.LOGIN_SITE_ADDRESS, null)
+        zendeskHelper.createNewTicket(this, HelpOrigin.LOGIN_SITE_ADDRESS, null)
     }
 
     // TODO This can be modified to also receive the URL the user entered, so we can make that the primary store
@@ -631,11 +621,11 @@ class LoginActivity :
     }
 
     override fun helpEmailScreen(email: String?) {
-        viewHelpAndSupport(Origin.LOGIN_EMAIL)
+        viewHelpAndSupport(HelpOrigin.LOGIN_EMAIL)
     }
 
     override fun helpSocialEmailScreen(email: String?) {
-        viewHelpAndSupport(Origin.LOGIN_SOCIAL)
+        viewHelpAndSupport(HelpOrigin.LOGIN_SOCIAL)
     }
 
     @Suppress("DEPRECATION")
@@ -650,19 +640,19 @@ class LoginActivity :
     }
 
     override fun helpMagicLinkRequest(email: String?) {
-        viewHelpAndSupport(Origin.LOGIN_MAGIC_LINK)
+        viewHelpAndSupport(HelpOrigin.LOGIN_MAGIC_LINK)
     }
 
     override fun helpMagicLinkSent(email: String?) {
-        viewHelpAndSupport(Origin.LOGIN_MAGIC_LINK)
+        viewHelpAndSupport(HelpOrigin.LOGIN_MAGIC_LINK)
     }
 
     override fun helpEmailPasswordScreen(email: String?) {
-        viewHelpAndSupport(Origin.LOGIN_EMAIL_PASSWORD)
+        viewHelpAndSupport(HelpOrigin.LOGIN_EMAIL_PASSWORD)
     }
 
     override fun help2FaScreen(email: String?) {
-        viewHelpAndSupport(Origin.LOGIN_2FA)
+        viewHelpAndSupport(HelpOrigin.LOGIN_2FA)
     }
 
     override fun startPostLoginServices() {
@@ -670,7 +660,7 @@ class LoginActivity :
     }
 
     override fun helpUsernamePassword(url: String?, username: String?, isWpcom: Boolean) {
-        viewHelpAndSupport(Origin.LOGIN_USERNAME_PASSWORD)
+        viewHelpAndSupport(HelpOrigin.LOGIN_USERNAME_PASSWORD)
     }
 
     override fun helpNoJetpackScreen(
@@ -740,11 +730,11 @@ class LoginActivity :
     // Signup
 
     override fun helpSignupEmailScreen(email: String?) {
-        viewHelpAndSupport(Origin.SIGNUP_EMAIL)
+        viewHelpAndSupport(HelpOrigin.SIGNUP_EMAIL)
     }
 
     override fun helpSignupMagicLinkScreen(email: String?) {
-        viewHelpAndSupport(Origin.SIGNUP_MAGIC_LINK)
+        viewHelpAndSupport(HelpOrigin.SIGNUP_MAGIC_LINK)
     }
 
     override fun showSignupMagicLink(email: String?) {
@@ -804,7 +794,7 @@ class LoginActivity :
     }
 
     override fun onEmailNeedMoreHelpClicked() {
-        startActivity(HelpActivity.createIntent(this, Origin.LOGIN_CONNECTED_EMAIL_HELP, null))
+        startActivity(HelpActivity.createIntent(this, HelpOrigin.LOGIN_CONNECTED_EMAIL_HELP, null))
     }
 
     override fun showEmailLoginScreen(siteAddress: String?) {
@@ -828,10 +818,28 @@ class LoginActivity :
         inputUsername: String?,
         inputPassword: String?
     ) {
-        val loginUsernamePasswordFragment = WooLoginUsernamePasswordFragment.newInstance(
-            siteAddress, endpointAddress, inputUsername, inputPassword, false
-        )
-        changeFragment(loginUsernamePasswordFragment, true, WooLoginUsernamePasswordFragment.TAG)
+        val (fragment, tag) = if (FeatureFlag.REST_API.isEnabled()) {
+            Pair(
+                LoginSiteCredentialsFragment.newInstance(
+                    siteAddress = requireNotNull(siteAddress),
+                    username = inputUsername,
+                    password = inputPassword
+                ),
+                LoginSiteCredentialsFragment.TAG
+            )
+        } else {
+            Pair(
+                LoginUsernamePasswordFragment.newInstance(
+                    siteAddress,
+                    endpointAddress,
+                    inputUsername,
+                    inputPassword,
+                    false
+                ),
+                LoginUsernamePasswordFragment.TAG
+            )
+        }
+        changeFragment(fragment, true, tag)
     }
 
     override fun startJetpackInstall(siteAddress: String?) {
@@ -931,6 +939,7 @@ class LoginActivity :
         val notificationType = when {
             !appPrefsWrapper.getLoginSiteAddress()
                 .isNullOrBlank() -> LOGIN_SITE_ADDRESS_PASSWORD_ERROR
+
             else -> LOGIN_WPCOM_PASSWORD_ERROR
         }
         loginNotificationScheduler.scheduleNotification(notificationType)
@@ -949,6 +958,7 @@ class LoginActivity :
             LOGIN_SITE_ADDRESS_ERROR -> startLoginViaWPCom()
             LOGIN_SITE_ADDRESS_PASSWORD_ERROR,
             LOGIN_WPCOM_PASSWORD_ERROR -> useMagicLinkInstead(appPrefsWrapper.getLoginEmail(), verifyEmail = false)
+
             LOGIN_WPCOM_EMAIL_ERROR,
             LOGIN_SITE_ADDRESS_EMAIL_ERROR,
             DEFAULT_HELP ->

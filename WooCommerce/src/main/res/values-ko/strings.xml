@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-12-06 14:54:04+0000
+Translation-Revision-Date: 2022-12-22 13:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="store_creation_store_categories_subtitle">비즈니스를 가장 잘 정의하는\n카테고리를 선택합니다.</string>
+    <string name="store_creation_store_categories_title">비즈니스 분야가 무엇인가요?</string>
+    <string name="product_selection_menu_select_all">모두 선택</string>
+    <string name="product_selection_menu_update_price">가격 업데이트</string>
+    <string name="product_selection_menu_update_status">상태 업데이트</string>
+    <string name="product_bulk_update_status_updated">상태가 업데이트되었습니다!</string>
+    <string name="product_bulk_update_status">상태 업데이트</string>
+    <string name="product_bulk_update_price_updated">가격이 업데이트되었습니다!</string>
+    <string name="product_bulk_update_regular_price">정상 가격 업데이트</string>
     <string name="store_creation_ecommerce_plan_period_two_years">2년</string>
     <string name="store_creation_ecommerce_store_loading_permanent_error">스토어 설치 중 문제가 발생했습니다…</string>
     <string name="variations_bulk_creation_no_candidates_message">모든 변형이 이미 생성되었습니다.</string>
@@ -149,7 +158,6 @@ Language: ko_KR
     <string name="signup_email_exist_input">이 이메일이 포함된 계정이 이미 있습니다.</string>
     <string name="signup_already_registered">먼저 계정을 만들겠습니다. 이미 등록하셨나요? &lt;a href=\'login\'&gt;&lt;u&gt;로그인&lt;/u&gt;&lt;/a&gt;</string>
     <string name="login_create_an_account">계정 만들기</string>
-    <string name="simplified_login_enter_email_address">이메일 주소를 입력하여 시작하기</string>
     <string name="login_try_another_email">다른 주소 시도</string>
     <string name="date_timeframe_custom_date_range_title">사용자 정의 날짜 범위</string>
     <string name="date_timeframe_custom">사용자 정의</string>

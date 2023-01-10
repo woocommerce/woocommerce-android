@@ -14,7 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.extensions.getSiteName
 import com.woocommerce.android.extensions.isSimpleWPComSite
-import com.woocommerce.android.support.help.HelpActivity
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.AccountRepository
@@ -447,7 +447,7 @@ class SitePickerViewModel @Inject constructor(
     fun onHelpButtonClick() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_HELP_BUTTON_TAPPED)
         trackLoginEvent(clickEvent = UnifiedLoginTracker.Click.SHOW_HELP)
-        triggerEvent(SitePickerEvent.NavigateToHelpFragmentEvent(HelpActivity.Origin.LOGIN_EPILOGUE))
+        triggerEvent(SitePickerEvent.NavigateToHelpFragmentEvent(HelpOrigin.LOGIN_EPILOGUE))
     }
 
     fun onContinueButtonClick(isAutoLogin: Boolean = false) {
@@ -533,7 +533,7 @@ class SitePickerViewModel @Inject constructor(
             analyticsTrackerWrapper.track(
                 stat = AnalyticsEvent.SITE_PICKER_JETPACK_TIMEOUT_CONTACT_SUPPORT_CLICKED,
             )
-            triggerEvent(SitePickerEvent.NavigateToHelpFragmentEvent(HelpActivity.Origin.SITE_PICKER_JETPACK_TIMEOUT))
+            triggerEvent(SitePickerEvent.NavigateToHelpFragmentEvent(HelpOrigin.SITE_PICKER_JETPACK_TIMEOUT))
             dialog.dismiss()
         },
         negativeBtnAction = { dialog, _ -> dialog.dismiss() }
@@ -702,7 +702,7 @@ class SitePickerViewModel @Inject constructor(
         object NavigateToNewToWooEvent : SitePickerEvent()
         object NavigateToAddStoreEvent : SitePickerEvent()
         object NavigateToStoreCreationEvent : SitePickerEvent()
-        data class NavigateToHelpFragmentEvent(val origin: HelpActivity.Origin) : SitePickerEvent()
+        data class NavigateToHelpFragmentEvent(val origin: HelpOrigin) : SitePickerEvent()
         data class NavigateToWPComWebView(
             val url: String,
             val validationUrl: String,

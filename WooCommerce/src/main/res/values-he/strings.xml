@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-12-06 18:54:23+0000
+Translation-Revision-Date: 2022-12-22 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="store_creation_store_categories_subtitle">יש לבחור קטגוריה שמגדירה\nאת העסק שלך בצורה הכי מדויקת.</string>
+    <string name="store_creation_store_categories_title">מה העסק שלך עושה?</string>
+    <string name="product_selection_menu_select_all">לבחור הכול</string>
+    <string name="product_selection_menu_update_price">לעדכן מחיר</string>
+    <string name="product_selection_menu_update_status">לעדכן סטטוס</string>
+    <string name="product_bulk_update_status_updated">הסטטוס עודכן!</string>
+    <string name="product_bulk_update_status">לעדכן סטטוס</string>
+    <string name="product_bulk_update_price_updated">המחיר עודכן!</string>
+    <string name="product_bulk_update_regular_price">לעדכן את המחיר הרגיל</string>
     <string name="store_creation_ecommerce_plan_period_two_years">שנתיים</string>
     <string name="store_creation_ecommerce_store_loading_permanent_error">משהו השתבש במהלך התקנת החנות…</string>
     <string name="variations_bulk_creation_no_candidates_message">כל הסוגים כבר נוצרו.</string>
@@ -149,7 +158,6 @@ Language: he_IL
     <string name="signup_email_exist_input">כבר קיים חשבון עם כתובת האימייל הזאת.</string>
     <string name="signup_already_registered">ראשית, ניצור את החשבון שלך. כבר נרשמת? &lt;a href=\'login\'&gt;&lt;u&gt;להתחברות&lt;/u&gt;&lt;/a&gt;</string>
     <string name="login_create_an_account">ליצור חשבון</string>
-    <string name="simplified_login_enter_email_address">יש להזין את כתובת האימייל שלך כדי להתחיל</string>
     <string name="login_try_another_email">יש לנסות כתובת אחרת</string>
     <string name="date_timeframe_custom_date_range_title">טווח תאריכים מותאם אישית</string>
     <string name="date_timeframe_custom">התאמה אישית</string>

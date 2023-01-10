@@ -11,7 +11,6 @@ import com.woocommerce.android.iap.pub.network.IAPMobilePayAPI
 object IAPSitePurchasePlanFactory {
     fun createIAPSitePurchasePlan(
         context: Application,
-        remoteSiteId: Long,
         logWrapper: IAPLogWrapper,
         realMobilePayApiProvider: (String?) -> IAPMobilePayAPI,
     ): PurchaseWPComPlanActions {
@@ -21,7 +20,7 @@ object IAPSitePurchasePlanFactory {
             apiImplementationProvider.providerMobilePayAPI(logWrapper, realMobilePayApiProvider),
             iapManager,
         )
-        return IAPPurchaseWPComPlanActionsImpl(purchaseWpComPlanHandler, iapManager, remoteSiteId)
+        return IAPPurchaseWPComPlanActionsImpl(purchaseWpComPlanHandler, iapManager)
     }
 
     fun createIAPPurchaseWpComPlanSupportChecker(

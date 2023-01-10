@@ -7,6 +7,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.support.help.HelpOrigin.STORE_CREATION
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -43,6 +44,10 @@ class StoreNamePickerViewModel @Inject constructor(
             )
         )
         triggerEvent(MultiLiveEvent.Event.Exit)
+    }
+
+    fun onHelpPressed() {
+        triggerEvent(MultiLiveEvent.Event.NavigateToHelpScreen(STORE_CREATION))
     }
 
     fun onStoreNameChanged(newName: String) {

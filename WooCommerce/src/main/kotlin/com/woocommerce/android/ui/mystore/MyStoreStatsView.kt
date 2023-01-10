@@ -422,7 +422,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         binding.statsViewRow.visitorsValueTextview.isVisible = false
     }
 
-    fun showEmptyVisitorStatsForJetpackCP() {
+    fun handleUnavailableVisitorStats() {
         binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = true
         binding.statsViewRow.visitorsValueTextview.isVisible = false
     }

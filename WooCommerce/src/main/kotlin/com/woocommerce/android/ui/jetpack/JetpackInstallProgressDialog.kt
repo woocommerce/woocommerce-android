@@ -15,7 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogJetpackInstallProgressBinding
 import com.woocommerce.android.extensions.*
-import com.woocommerce.android.support.help.HelpActivity
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.*
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus
@@ -81,7 +81,7 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
         }
 
         binding.contactButton.setOnClickListener {
-            activity?.startHelpActivity(HelpActivity.Origin.JETPACK_INSTALLATION)
+            activity?.startHelpActivity(HelpOrigin.JETPACK_INSTALLATION)
             AnalyticsTracker.track(AnalyticsEvent.JETPACK_INSTALL_CONTACT_SUPPORT_BUTTON_TAPPED)
         }
 

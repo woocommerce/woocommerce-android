@@ -31,6 +31,7 @@ object WooLog {
         COUPONS,
         JITM,
         PLUGINS,
+        IAP
     }
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog

@@ -10,7 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.initSavedStateHandle
-import com.woocommerce.android.support.help.HelpActivity
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.AccountRepository
@@ -483,7 +483,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         viewModel.onHelpButtonClick()
 
         verify(analyticsTrackerWrapper, times(1)).track(AnalyticsEvent.SITE_PICKER_HELP_BUTTON_TAPPED)
-        assertThat(view).isEqualTo(NavigateToHelpFragmentEvent(HelpActivity.Origin.LOGIN_EPILOGUE))
+        assertThat(view).isEqualTo(NavigateToHelpFragmentEvent(HelpOrigin.LOGIN_EPILOGUE))
     }
 
     @Test

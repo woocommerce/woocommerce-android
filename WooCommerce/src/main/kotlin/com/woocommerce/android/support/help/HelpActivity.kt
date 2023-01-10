@@ -49,7 +49,7 @@ class HelpActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHelpBinding
 
     private val originFromExtras by lazy {
-        intent.extras?.serializable(ORIGIN_KEY) ?: Origin.UNKNOWN
+        intent.extras?.serializable(ORIGIN_KEY) ?: HelpOrigin.UNKNOWN
     }
 
     private val extraTagsFromExtras by lazy {
@@ -99,15 +99,15 @@ class HelpActivity : AppCompatActivity() {
          * `My Tickets` and rotates the screen (or triggers the activity re-creation in any other way) it'll navigate
          * them to `My Tickets` again since the `originFromExtras` will still be [Origin.ZENDESK_NOTIFICATION].
          */
-        if (savedInstanceState == null && originFromExtras == Origin.ZENDESK_NOTIFICATION) {
+        if (savedInstanceState == null && originFromExtras == HelpOrigin.ZENDESK_NOTIFICATION) {
             showZendeskTickets()
         }
 
-        if (originFromExtras == Origin.LOGIN_HELP_NOTIFICATION) {
+        if (originFromExtras == HelpOrigin.LOGIN_HELP_NOTIFICATION) {
             loginNotificationScheduler.onNotificationTapped(extraTagsFromExtras?.first())
         }
 
-        if (originFromExtras == Origin.SITE_PICKER_JETPACK_TIMEOUT) {
+        if (originFromExtras == HelpOrigin.SITE_PICKER_JETPACK_TIMEOUT) {
             viewModel.contactSupport(TicketType.General)
         }
 
@@ -218,7 +218,7 @@ class HelpActivity : AppCompatActivity() {
         zendeskHelper.showAllTickets(this, originFromExtras, selectedSiteOrNull(), extraTagsFromExtras)
     }
 
-    private fun showLoginHelpCenter(origin: Origin, loginFlow: String, loginStep: String) {
+    private fun showLoginHelpCenter(origin: HelpOrigin, loginFlow: String, loginStep: String) {
         val helpCenterUrl = AppUrls.LOGIN_HELP_CENTER_URLS[origin] ?: AppUrls.APP_HELP_CENTER
         AnalyticsTracker.track(
             stat = AnalyticsEvent.SUPPORT_HELP_CENTER_VIEWED,
@@ -251,35 +251,6 @@ class HelpActivity : AppCompatActivity() {
         startActivity(Intent(this, SSRActivity::class.java))
     }
 
-    enum class Origin(private val stringValue: String) {
-        UNKNOWN("origin:unknown"),
-        SETTINGS("origin:settings"),
-        CARD_READER_ONBOARDING("origin:card_reader_onboarding"),
-        FEEDBACK_SURVEY("origin:feedback_survey"),
-        USER_ELIGIBILITY_ERROR("origin:user_eligibility_error"),
-        MY_STORE("origin:my_store"),
-        ZENDESK_NOTIFICATION("origin:zendesk-notification"),
-        LOGIN_EMAIL("origin:login-email"),
-        LOGIN_MAGIC_LINK("origin:login-magic-link"),
-        LOGIN_EMAIL_PASSWORD("origin:login-wpcom-password"),
-        LOGIN_2FA("origin:login-2fa"),
-        LOGIN_SITE_ADDRESS("origin:login-site-address"),
-        LOGIN_SOCIAL("origin:login-social"),
-        LOGIN_USERNAME_PASSWORD("origin:login-username-password"),
-        LOGIN_EPILOGUE("origin:login-epilogue"),
-        LOGIN_CONNECTED_EMAIL_HELP("origin:login-connected-email-help"),
-        SIGNUP_EMAIL("origin:signup-email"),
-        SIGNUP_MAGIC_LINK("origin:signup-magic-link"),
-        JETPACK_INSTALLATION("origin:jetpack-installation"),
-        LOGIN_HELP_NOTIFICATION("origin:login-local-notification"),
-        SITE_PICKER_JETPACK_TIMEOUT("origin:site-picker-jetpack-error"),
-        LOGIN_WITH_QR_CODE("origin:qr-code-scanner");
-
-        override fun toString(): String {
-            return stringValue
-        }
-    }
-
     companion object {
         private const val ORIGIN_KEY = "ORIGIN_KEY"
         private const val EXTRA_TAGS_KEY = "EXTRA_TAGS_KEY"
@@ -289,7 +260,7 @@ class HelpActivity : AppCompatActivity() {
         @JvmStatic
         fun createIntent(
             context: Context,
-            origin: Origin,
+            origin: HelpOrigin,
             extraSupportTags: List<String>?,
             loginFlow: String? = null,
             loginStep: String? = null

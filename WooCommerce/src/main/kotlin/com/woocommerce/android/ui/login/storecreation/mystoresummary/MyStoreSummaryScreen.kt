@@ -14,14 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -35,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.mystoresummary.MyStoreSummaryViewModel.MyStoreSummaryState
@@ -44,39 +40,20 @@ fun MyStoreSummaryScreen(viewModel: MyStoreSummaryViewModel) {
     viewModel.viewState.observeAsState().value?.let { viewState ->
         Scaffold(topBar = {
             Toolbar(
-                onArrowBackPressed = viewModel::onBackPressed,
+                onNavigationButtonClick = viewModel::onBackPressed,
+                onActionButtonClick = viewModel::onHelpPressed,
             )
-        }) {
+        }) { padding ->
             MyStoreSummaryScreen(
                 myStoreSummaryState = viewState,
                 onContinueClicked = viewModel::onContinueClicked,
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colors.surface)
+                    .padding(padding)
             )
         }
     }
-}
-
-@Composable
-private fun Toolbar(
-    onArrowBackPressed: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    TopAppBar(
-        backgroundColor = MaterialTheme.colors.surface,
-        title = {},
-        navigationIcon = {
-            IconButton(onClick = onArrowBackPressed) {
-                Icon(
-                    Icons.Filled.ArrowBack,
-                    contentDescription = stringResource(id = R.string.back)
-                )
-            }
-        },
-        elevation = 0.dp,
-        modifier = modifier
-    )
 }
 
 @Composable
