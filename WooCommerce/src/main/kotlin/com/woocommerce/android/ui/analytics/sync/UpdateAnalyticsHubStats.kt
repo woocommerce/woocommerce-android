@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 class UpdateAnalyticsHubStats @Inject constructor(
     private val analyticsRepository: AnalyticsRepository
@@ -63,7 +64,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
             } else {
                 SessionState.Loading
             }
-        }
+        }.distinctUntilChanged()
 
     private suspend fun fetchOrdersData(
         rangeSelection: AnalyticsHubDateRangeSelection,
