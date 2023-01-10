@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.analytics
 
+import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
@@ -45,7 +46,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
     }
 
     @Test
-    fun `initial test`() = testBlocking {
+    fun `when syncing stats data, then update the orders with the expected states`() = testBlocking {
         // Given
         configureSuccessResponseStub()
         val orderStatsUpdates = mutableListOf<OrdersState>()
@@ -59,7 +60,10 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         advanceUntilIdle()
 
         // Then
-        assertThat(orderStatsUpdates).isNotEmpty
+        assertThat(orderStatsUpdates).hasSize(3)
+        assertThat(orderStatsUpdates[0]).isEqualTo(OrdersState.Available(OrdersStat.EMPTY))
+        assertThat(orderStatsUpdates[1]).isEqualTo(OrdersState.Loading)
+        assertThat(orderStatsUpdates[2]).isEqualTo(OrdersState.Available(testOrdersStat))
 
         job.cancel()
     }
@@ -89,8 +93,19 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         locale = Locale.getDefault()
     )
 
+    private val testOrdersStat = OrdersStat(
+        ordersCount = 23,
+        ordersCountDelta = DeltaPercentage.NotExist,
+        avgOrderValue = 500.0,
+        avgOrderDelta = DeltaPercentage.NotExist,
+        currencyCode = "",
+        ordersCountByInterval = emptyList(),
+        avgOrderValueByInterval = emptyList()
+    )
+
     private val testRevenueResult = RevenueData(RevenueStat.EMPTY) as RevenueResult
-    private val testOrdersResult = OrdersData(OrdersStat.EMPTY) as OrdersResult
+    private val testOrdersResult = OrdersData(testOrdersStat) as OrdersResult
     private val testProductsResult = ProductsData(ProductsStat.EMPTY) as ProductsResult
-    private val testVisitorsResult = VisitorsData(0) as VisitorsResult
+    private val testVisitorsResult = VisitorsData(150) as VisitorsResult
+
 }
