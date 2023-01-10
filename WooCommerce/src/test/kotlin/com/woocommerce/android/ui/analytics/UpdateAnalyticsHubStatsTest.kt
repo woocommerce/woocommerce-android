@@ -4,6 +4,7 @@ import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
+import com.woocommerce.android.model.SessionStat
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository
 import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.FetchStrategy.Saved
@@ -18,6 +19,7 @@ import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.VisitorsRes
 import com.woocommerce.android.ui.analytics.sync.OrdersState
 import com.woocommerce.android.ui.analytics.sync.ProductsState
 import com.woocommerce.android.ui.analytics.sync.RevenueState
+import com.woocommerce.android.ui.analytics.sync.SessionState
 import com.woocommerce.android.ui.analytics.sync.UpdateAnalyticsHubStats
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import java.util.Calendar
@@ -185,6 +187,56 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         job.cancel()
     }
 
+    @Test
+    fun `when syncing stats data successfully, then update the session with the expected states`() = testBlocking {
+        // Given
+        configureSuccessResponseStub()
+        val expectedSessionStat = SessionStat(
+            ordersCount = testOrdersStat.ordersCount,
+            visitorsCount = testVisitorsCount
+        )
+        val sessionStatsUpdates = mutableListOf<SessionState>()
+        val job = sut.sessionState
+            .onEach { sessionStatsUpdates.add(it) }
+            .launchIn(this)
+
+        // When
+        sut(testRangeSelection, Saved)
+
+        advanceUntilIdle()
+
+        // Then
+        assertThat(sessionStatsUpdates).hasSize(3)
+        assertThat(sessionStatsUpdates[0]).isEqualTo(SessionState.Available(SessionStat.EMPTY))
+        assertThat(sessionStatsUpdates[1]).isEqualTo(SessionState.Loading)
+        assertThat(sessionStatsUpdates[2]).isEqualTo(SessionState.Available(expectedSessionStat))
+
+        job.cancel()
+    }
+
+    @Test
+    fun `when syncing stats data fails, then update the session with the expected states`() = testBlocking {
+        // Given
+        configureErrorResponseStub()
+        val sessionStatsUpdates = mutableListOf<SessionState>()
+        val job = sut.sessionState
+            .onEach { sessionStatsUpdates.add(it) }
+            .launchIn(this)
+
+        // When
+        sut(testRangeSelection, Saved)
+
+        advanceUntilIdle()
+
+        // Then
+        assertThat(sessionStatsUpdates).hasSize(3)
+        assertThat(sessionStatsUpdates[0]).isEqualTo(SessionState.Available(SessionStat.EMPTY))
+        assertThat(sessionStatsUpdates[1]).isEqualTo(SessionState.Loading)
+        assertThat(sessionStatsUpdates[2]).isEqualTo(SessionState.Error)
+
+        job.cancel()
+    }
+
     private fun configureSuccessResponseStub() {
         repository.stub {
             onBlocking {
@@ -256,9 +308,11 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         products = emptyList()
     )
 
+    private val testVisitorsCount = 150
+
     private val testRevenueResult = RevenueData(testRevenueStat) as RevenueResult
     private val testOrdersResult = OrdersData(testOrdersStat) as OrdersResult
     private val testProductsResult = ProductsData(testProductsStat) as ProductsResult
-    private val testVisitorsResult = VisitorsData(150) as VisitorsResult
+    private val testVisitorsResult = VisitorsData(testVisitorsCount) as VisitorsResult
 
 }
