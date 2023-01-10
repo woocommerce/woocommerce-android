@@ -809,7 +809,10 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `should initialize with empty order`() {
         sut.orderDraft.observeForever {}
 
-        assertThat(sut.orderDraft.value).isEqualToIgnoringGivenFields(Order.EMPTY, "dateCreated", "dateModified")
+        assertThat(sut.orderDraft.value)
+            .usingRecursiveComparison()
+            .ignoringFields("dateCreated", "dateModified")
+            .isEqualTo(Order.EMPTY)
     }
 
     @Test
