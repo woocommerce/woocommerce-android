@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.xmlrpc.XMLRPCRequest.XmlRpcErrorType.AUTH_REQUIRED
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationError
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.AUTHORIZATION_REQUIRED
@@ -98,9 +99,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             password = state.password
         ).fold(
             onSuccess = {
-                loginAnalyticsListener.trackAnalyticsSignIn(false)
-                selectedSite.set(it)
-                triggerEvent(LoggedIn(it.id))
+                checkWooStatus(it)
             },
             onFailure = { exception ->
                 var errorMessage: Int? = null
@@ -131,12 +130,35 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         isLoading.value = false
     }
 
+    private suspend fun checkWooStatus(site: SiteModel) {
+        wpApiSiteRepository.checkWooStatus(site = site).fold(
+            onSuccess = { isWooInstalled ->
+                if (isWooInstalled) {
+                    loginAnalyticsListener.trackAnalyticsSignIn(false)
+                    selectedSite.set(site)
+                    triggerEvent(LoggedIn(site.id))
+                } else {
+                    triggerEvent(ShowNonWooErrorScreen(siteAddress))
+                }
+            },
+            onFailure = {
+                triggerEvent(ShowSnackbar(R.string.error_generic))
+            }
+        )
+    }
+
     fun onResetPasswordClick() {
         triggerEvent(ShowResetPasswordScreen(siteAddress))
     }
 
     fun onBackClick() {
         triggerEvent(Exit)
+    }
+
+    fun onWooInstallationAttempted() = launch {
+        isLoading.value = true
+        checkWooStatus(wpApiSiteRepository.getSiteByUrl(siteAddress)!!)
+        isLoading.value = false
     }
 
     private fun String.removeSchemeAndSuffix() = UrlUtils.removeScheme(UrlUtils.removeXmlrpcSuffix(this))
@@ -170,4 +192,5 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     data class LoggedIn(val localSiteId: Int) : MultiLiveEvent.Event()
     data class ShowResetPasswordScreen(val siteAddress: String) : MultiLiveEvent.Event()
+    data class ShowNonWooErrorScreen(val siteAddress: String) : MultiLiveEvent.Event()
 }

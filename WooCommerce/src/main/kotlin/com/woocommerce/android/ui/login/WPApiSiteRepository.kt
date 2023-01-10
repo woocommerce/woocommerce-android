@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login
 
 import com.woocommerce.android.OnChangedException
+import com.woocommerce.android.WooException
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.awaitEvent
 import com.woocommerce.android.util.dispatchAndAwait
@@ -16,12 +17,14 @@ import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnDiscoveryResponse
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.RefreshSitesXMLRPCPayload
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.login.util.SiteUtils
 import javax.inject.Inject
 
 class WPApiSiteRepository @Inject constructor(
     private val dispatcher: Dispatcher,
-    private val siteStore: SiteStore
+    private val siteStore: SiteStore,
+    private val wooCommerceStore: WooCommerceStore
 ) {
     /**
      * Handles authentication to the given [url] using wp-admin credentials.
@@ -37,6 +40,22 @@ class WPApiSiteRepository @Inject constructor(
             .mapCatching { xmlrpcEndpoint ->
                 fetchXMLRPCSite(url, xmlrpcEndpoint, username, password).getOrThrow()
             }
+    }
+
+    suspend fun checkWooStatus(site: SiteModel): Result<Boolean> {
+        WooLog.d(WooLog.T.LOGIN, "Fetch site ${site.url} to check if Woo installed")
+
+        return wooCommerceStore.fetchWooCommerceSite(site)
+            .let {
+                when {
+                    it.isError -> Result.failure(WooException(it.error))
+                    else -> Result.success(it.model!!.hasWooCommerce)
+                }
+            }
+    }
+
+    suspend fun getSiteByUrl(siteUrl: String): SiteModel? = withContext(Dispatchers.IO) {
+        SiteUtils.getXMLRPCSiteByUrl(siteStore, siteUrl)
     }
 
     private suspend fun discoverXMLRPCAddress(siteUrl: String): Result<String> {
@@ -119,7 +138,7 @@ class WPApiSiteRepository @Inject constructor(
             event.isError -> Result.failure(OnChangedException(event.error))
             else -> {
                 WooLog.d(WooLog.T.LOGIN, "XMLRPC site $siteUrl fetch succeeded")
-                val site = withContext(Dispatchers.IO) { SiteUtils.getXMLRPCSiteByUrl(siteStore, siteUrl)!! }
+                val site = getSiteByUrl(siteUrl)!!
                 return@coroutineScope Result.success(site)
             }
         }

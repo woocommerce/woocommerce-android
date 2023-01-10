@@ -108,7 +108,16 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         override fun run(): Boolean {
             selectedSite.getIfExists()?.let {
                 appCoroutineScope.launch {
-                    wooCommerceStore.fetchWooCommerceSite(it)
+                    wooCommerceStore.fetchWooCommerceSite(it).let {
+                        if (it.model?.hasWooCommerce == false &&
+                            ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(STARTED)
+                        ) {
+                            // The previously selected site is not connected anymore, take the user to the site picker
+                            WooLog.w(T.SITE_PICKER, "Selected site no longer has WooCommerce")
+                            selectedSite.reset()
+                            openMainActivity()
+                        }
+                    }
                     wooCommerceStore.fetchSiteGeneralSettings(it)
                     wooCommerceStore.fetchSiteProductSettings(it)
                 }
@@ -197,9 +206,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 ) {
                     // The previously selected site is not connected anymore, take the user to the site picker
                     WooLog.i(DASHBOARD, "Selected site no longer exists, showing site picker")
-                    val intent = Intent(application, MainActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    application.startActivity(intent)
+                    openMainActivity()
                 }
             }
 
@@ -217,6 +224,12 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             connectionReceiverRegistered = false
             application.unregisterReceiver(connectionReceiver)
         }
+    }
+
+    private fun openMainActivity() {
+        val intent = Intent(application, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        application.startActivity(intent)
     }
 
     private fun isGooglePlayServicesAvailable(context: Context): Boolean {
