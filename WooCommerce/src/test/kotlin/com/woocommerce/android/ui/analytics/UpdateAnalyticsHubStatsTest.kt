@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.RevenueResu
 import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.VisitorsResult
 import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.VisitorsResult.VisitorsData
 import com.woocommerce.android.ui.analytics.sync.OrdersState
+import com.woocommerce.android.ui.analytics.sync.RevenueState
 import com.woocommerce.android.ui.analytics.sync.UpdateAnalyticsHubStats
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import java.util.Calendar
@@ -91,6 +92,52 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         job.cancel()
     }
 
+    @Test
+    fun `when syncing stats data successfully, then update the revenue with the expected states`() = testBlocking {
+        // Given
+        configureSuccessResponseStub()
+        val revenueStatsUpdates = mutableListOf<RevenueState>()
+        val job = sut.revenueState
+            .onEach { revenueStatsUpdates.add(it) }
+            .launchIn(this)
+
+        // When
+        sut(testRangeSelection, Saved)
+
+        advanceUntilIdle()
+
+        // Then
+        assertThat(revenueStatsUpdates).hasSize(3)
+        assertThat(revenueStatsUpdates[0]).isEqualTo(RevenueState.Available(RevenueStat.EMPTY))
+        assertThat(revenueStatsUpdates[1]).isEqualTo(RevenueState.Loading)
+        assertThat(revenueStatsUpdates[2]).isEqualTo(RevenueState.Available(testRevenueStat))
+
+        job.cancel()
+    }
+
+    @Test
+    fun `when syncing stats data fails, then update the revenue with the expected states`() = testBlocking {
+        // Given
+        configureErrorResponseStub()
+        val revenueStatsUpdates = mutableListOf<RevenueState>()
+        val job = sut.revenueState
+            .onEach { revenueStatsUpdates.add(it) }
+            .launchIn(this)
+
+        // When
+        sut(testRangeSelection, Saved)
+
+        advanceUntilIdle()
+
+        // Then
+        assertThat(revenueStatsUpdates).hasSize(3)
+        assertThat(revenueStatsUpdates[0]).isEqualTo(RevenueState.Available(RevenueStat.EMPTY))
+        assertThat(revenueStatsUpdates[1]).isEqualTo(RevenueState.Loading)
+        assertThat(revenueStatsUpdates[2]).isEqualTo(RevenueState.Error)
+
+        job.cancel()
+    }
+
     private fun configureSuccessResponseStub() {
         repository.stub {
             onBlocking {
@@ -136,6 +183,16 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         locale = Locale.getDefault()
     )
 
+    private val testRevenueStat = RevenueStat(
+        totalValue = 1234.5,
+        totalDelta = DeltaPercentage.NotExist,
+        netValue = 1000.0,
+        netDelta = DeltaPercentage.NotExist,
+        currencyCode = "",
+        totalRevenueByInterval = emptyList(),
+        netRevenueByInterval = emptyList()
+    )
+
     private val testOrdersStat = OrdersStat(
         ordersCount = 23,
         ordersCountDelta = DeltaPercentage.NotExist,
@@ -146,7 +203,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         avgOrderValueByInterval = emptyList()
     )
 
-    private val testRevenueResult = RevenueData(RevenueStat.EMPTY) as RevenueResult
+    private val testRevenueResult = RevenueData(testRevenueStat) as RevenueResult
     private val testOrdersResult = OrdersData(testOrdersStat) as OrdersResult
     private val testProductsResult = ProductsData(ProductsStat.EMPTY) as ProductsResult
     private val testVisitorsResult = VisitorsData(150) as VisitorsResult
