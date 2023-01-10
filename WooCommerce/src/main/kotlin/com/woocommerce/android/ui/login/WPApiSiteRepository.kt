@@ -1,23 +1,28 @@
-package com.woocommerce.android.ui.login.jetpack.sitecredentials
+package com.woocommerce.android.ui.login
 
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.awaitAny
 import com.woocommerce.android.util.awaitEvent
 import com.woocommerce.android.util.dispatchAndAwait
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AuthenticationActionBuilder
-import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnDiscoveryResponse
-import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
+import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.RefreshSitesXMLRPCPayload
+import org.wordpress.android.login.util.SiteUtils
 import javax.inject.Inject
 
-class WPApiSiteRepository @Inject constructor(private val dispatcher: Dispatcher) {
+class WPApiSiteRepository @Inject constructor(
+    private val dispatcher: Dispatcher,
+    private val siteStore: SiteStore
+) {
     /**
      * Handles authentication to the given [url] using wp-admin credentials.
      * After calling this, and if the authentication is successful, a [SiteModel] matching this site will be persisted
@@ -25,7 +30,7 @@ class WPApiSiteRepository @Inject constructor(private val dispatcher: Dispatcher
      *
      * Note: this function uses XMLRPC behind the scenes
      */
-    suspend fun login(url: String, username: String, password: String): Result<Unit> {
+    suspend fun login(url: String, username: String, password: String): Result<SiteModel> {
         WooLog.d(WooLog.T.LOGIN, "Authenticating in to site $url using site credentials")
 
         return discoverXMLRPCAddress(url)
@@ -58,7 +63,7 @@ class WPApiSiteRepository @Inject constructor(private val dispatcher: Dispatcher
         xmlrpcEndpoint: String,
         username: String,
         password: String
-    ): Result<Unit> = coroutineScope {
+    ): Result<SiteModel> = coroutineScope {
         val authenticationTask = async {
             dispatcher.awaitEvent<OnAuthenticationChanged>().also { event ->
                 if (event.isError) {
@@ -70,15 +75,12 @@ class WPApiSiteRepository @Inject constructor(private val dispatcher: Dispatcher
                 }
             }
         }
-        val siteTask = async {
-            val selfHostedPayload = RefreshSitesXMLRPCPayload(
-                username = username,
-                password = password,
-                url = xmlrpcEndpoint
-            )
-            dispatcher.dispatchAndAwait<RefreshSitesXMLRPCPayload, OnSiteChanged>(
-                action = SiteActionBuilder.newFetchSitesXmlRpcAction(
-                    selfHostedPayload
+        val siteTask = async(Dispatchers.IO) {
+            siteStore.fetchSitesXmlRpc(
+                RefreshSitesXMLRPCPayload(
+                    username = username,
+                    password = password,
+                    url = xmlrpcEndpoint
                 )
             ).also { event ->
                 if (event.isError) {
@@ -92,15 +94,33 @@ class WPApiSiteRepository @Inject constructor(private val dispatcher: Dispatcher
             }
         }
 
-        val tasks = listOf(authenticationTask, siteTask)
+        val fetchEvent = siteTask.await()
 
-        val event = tasks.awaitAny()
+        val event = if (!fetchEvent.isError) {
+            // In case of success, continue directly
+            fetchEvent
+        } else {
+            // If there is an error, prefer passing the authentication error instead of the fetch error
+            // This allows having a better error message in the UI
+            val authenticationError = if (fetchEvent.isError) {
+                @Suppress("MagicNumber")
+                withTimeoutOrNull(100) {
+                    authenticationTask.await()
+                }
+            } else null
+
+            authenticationError ?: fetchEvent
+        }
+
+        // Make sure to cancel the task if no event was sent
+        if (authenticationTask.isActive) authenticationTask.cancel()
 
         return@coroutineScope when {
             event.isError -> Result.failure(OnChangedException(event.error))
             else -> {
                 WooLog.d(WooLog.T.LOGIN, "XMLRPC site $siteUrl fetch succeeded")
-                Result.success(Unit)
+                val site = withContext(Dispatchers.IO) { SiteUtils.getXMLRPCSiteByUrl(siteStore, siteUrl)!! }
+                return@coroutineScope Result.success(site)
             }
         }
     }
