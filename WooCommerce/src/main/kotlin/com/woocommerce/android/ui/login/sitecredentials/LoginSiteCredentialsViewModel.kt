@@ -122,7 +122,6 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 checkWooStatus(it)
             },
             onFailure = { exception ->
-                isLoading.value = false
                 var errorMessage: Int? = null
                 if (exception is OnChangedException && exception.error is AuthenticationError) {
                     errorMessage = exception.error.toErrorMessage()
@@ -148,6 +147,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 )
             }
         )
+        isLoading.value = false
     }
 
     private suspend fun checkWooStatus(site: SiteModel) {
@@ -163,10 +163,10 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 }
             },
             onFailure = {
-                isLoading.value = false
                 triggerEvent(ShowSnackbar(R.string.error_generic))
             }
         )
+        isLoading.value = false
     }
 
     private suspend fun fetchUserInfo() {
