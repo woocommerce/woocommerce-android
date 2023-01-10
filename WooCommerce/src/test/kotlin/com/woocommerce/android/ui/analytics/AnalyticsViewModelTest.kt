@@ -653,8 +653,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         ).sortedByDescending { it.quantity }
 
         private const val DEFAULT_VISITORS_COUNT = 321
-        private const val DEFAULT_AVG_VISITORS_DELTA = 10
-        private const val DEFAULT_AVG_VIEWS_DELTA = 34
 
         const val ORDERS_COUNT = 5
         const val OTHER_ORDERS_COUNT = 50
