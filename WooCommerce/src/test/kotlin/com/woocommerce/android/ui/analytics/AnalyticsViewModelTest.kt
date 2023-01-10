@@ -7,7 +7,6 @@ import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
-import com.woocommerce.android.model.VisitorsStat
 import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.FetchStrategy.ForceNew
 import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.FetchStrategy.Saved
 import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.OrdersResult.OrdersData
@@ -23,10 +22,7 @@ import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformation
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.LoadingViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.CUSTOM
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.LAST_QUARTER
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.LAST_YEAR
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.QUARTER_TO_DATE
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.TODAY
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.WEEK_TO_DATE
 import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository
@@ -48,7 +44,6 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.util.Date
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -421,7 +416,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             onBlocking { fetchRevenueData(any(), any()) }.doReturn(getRevenueStats())
             onBlocking { fetchOrdersData(any(), any()) }.doReturn(getOrdersStats())
             onBlocking { fetchProductsData(any(), any()) }.doReturn(getProductsStats())
-            onBlocking { fetchRecentVisitorsData(any(), any()) }.doReturn(getVisitorStats())
+            onBlocking { fetchVisitorsData(any(), any()) }.doReturn(VisitorsData(0))
         }
 
         sut = givenAViewModel()
@@ -429,7 +424,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         verify(transactionLauncher).onRevenueFetched()
         verify(transactionLauncher).onOrdersFetched()
         verify(transactionLauncher).onProductsFetched()
-        verify(transactionLauncher).onVisitorsFetched()
+        verify(transactionLauncher).onSessionFetched()
     }
 
     @Test
@@ -438,7 +433,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             onBlocking { fetchRevenueData(any(), any()) }.doReturn(RevenueError)
             onBlocking { fetchOrdersData(any(), any()) }.doReturn(getOrdersStats())
             onBlocking { fetchProductsData(any(), any()) }.doReturn(getProductsStats())
-            onBlocking { fetchRecentVisitorsData(any(), any()) }.doReturn(getVisitorStats())
+            onBlocking { fetchVisitorsData(any(), any()) }.doReturn(VisitorsData(0))
         }
 
         sut = givenAViewModel()
@@ -446,7 +441,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         verify(transactionLauncher, never()).onRevenueFetched()
         verify(transactionLauncher).onOrdersFetched()
         verify(transactionLauncher).onProductsFetched()
-        verify(transactionLauncher).onVisitorsFetched()
+        verify(transactionLauncher).onSessionFetched()
     }
 
     @Test
@@ -455,7 +450,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             onBlocking { fetchRevenueData(any(), any()) }.doReturn(getRevenueStats())
             onBlocking { fetchOrdersData(any(), any()) }.doReturn(OrdersError)
             onBlocking { fetchProductsData(any(), any()) }.doReturn(getProductsStats())
-            onBlocking { fetchRecentVisitorsData(any(), any()) }.doReturn(getVisitorStats())
+            onBlocking { fetchVisitorsData(any(), any()) }.doReturn(VisitorsData(0))
         }
 
         sut = givenAViewModel()
@@ -463,7 +458,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         verify(transactionLauncher).onRevenueFetched()
         verify(transactionLauncher, never()).onOrdersFetched()
         verify(transactionLauncher).onProductsFetched()
-        verify(transactionLauncher).onVisitorsFetched()
+        verify(transactionLauncher).onSessionFetched()
     }
 
     @Test
@@ -472,7 +467,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             onBlocking { fetchRevenueData(any(), any()) }.doReturn(getRevenueStats())
             onBlocking { fetchOrdersData(any(), any()) }.doReturn(getOrdersStats())
             onBlocking { fetchProductsData(any(), any()) }.doReturn(ProductsError)
-            onBlocking { fetchRecentVisitorsData(any(), any()) }.doReturn(getVisitorStats())
+            onBlocking { fetchVisitorsData(any(), any()) }.doReturn(VisitorsData(0))
         }
 
         sut = givenAViewModel()
@@ -480,7 +475,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         verify(transactionLauncher).onRevenueFetched()
         verify(transactionLauncher).onOrdersFetched()
         verify(transactionLauncher, never()).onProductsFetched()
-        verify(transactionLauncher).onVisitorsFetched()
+        verify(transactionLauncher).onSessionFetched()
     }
 
     @Test
@@ -489,7 +484,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             onBlocking { fetchRevenueData(any(), any()) }.doReturn(getRevenueStats())
             onBlocking { fetchOrdersData(any(), any()) }.doReturn(getOrdersStats())
             onBlocking { fetchProductsData(any(), any()) }.doReturn(getProductsStats())
-            onBlocking { fetchRecentVisitorsData(any(), any()) }.doReturn(VisitorsError)
+            onBlocking { fetchVisitorsData(any(), any()) }.doReturn(VisitorsError)
         }
 
         sut = givenAViewModel()
@@ -497,65 +492,21 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         verify(transactionLauncher).onRevenueFetched()
         verify(transactionLauncher).onOrdersFetched()
         verify(transactionLauncher).onProductsFetched()
-        verify(transactionLauncher, never()).onVisitorsFetched()
+        verify(transactionLauncher, never()).onSessionFetched()
     }
 
     @Test
     fun `given a date range selected, then has expected visitors values`() = testBlocking {
-        val weekOrdersData = getVisitorStats()
+        val weekOrdersData = VisitorsData(0)
 
         analyticsRepository.stub {
-            onBlocking { fetchRecentVisitorsData(any(), eq(Saved)) }.doReturn(weekOrdersData)
+            onBlocking { fetchVisitorsData(any(), eq(Saved)) }.doReturn(weekOrdersData)
         }
 
         sut = givenAViewModel()
         sut.onNewRangeSelection(WEEK_TO_DATE)
 
-        assert(sut.viewState.value.visitorsState)
-    }
-
-    @Test
-    fun `given a quarter to date range is selected, then has expected visitors values`() = testBlocking {
-        val weekOrdersData = getVisitorStats()
-
-        analyticsRepository.stub {
-            onBlocking { fetchQuarterVisitorsData(any(), eq(Saved)) }.doReturn(weekOrdersData)
-        }
-
-        sut = givenAViewModel()
-        sut.onNewRangeSelection(QUARTER_TO_DATE)
-
-        assert(sut.viewState.value.visitorsState)
-    }
-
-    @Test
-    fun `given a last quarter range is selected, then has expected visitors values`() = testBlocking {
-        val weekOrdersData = getVisitorStats()
-
-        analyticsRepository.stub {
-            onBlocking { fetchQuarterVisitorsData(any(), eq(Saved)) }.doReturn(weekOrdersData)
-        }
-
-        sut = givenAViewModel()
-        sut.onNewRangeSelection(LAST_QUARTER)
-
-        assert(sut.viewState.value.visitorsState)
-    }
-
-    @Test
-    fun `given a custom range is selected, then have no visitors request done`() = testBlocking {
-        sut = AnalyticsViewModel(
-            givenAResourceProvider(),
-            currencyFormatter,
-            analyticsRepository,
-            transactionLauncher,
-            mock(),
-            AnalyticsFragmentArgs(targetGranularity = CUSTOM).initSavedStateHandle()
-        )
-        sut.onCustomRangeSelected(Date(), Date())
-
-        verify(analyticsRepository, never()).fetchQuarterVisitorsData(any(), eq(Saved))
-        verify(analyticsRepository, never()).fetchRecentVisitorsData(any(), eq(Saved))
+        assert(sut.viewState.value.sessionState)
     }
 
     private fun givenAResourceProvider(): ResourceProvider = mock {
@@ -567,8 +518,8 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         return AnalyticsViewModel(
             resourceProvider,
             currencyFormatter,
-            analyticsRepository,
             transactionLauncher,
+            mock(),
             mock(),
             savedState
         )
@@ -616,26 +567,19 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         productList: List<ProductItem> = PRODUCT_LIST
     ) = ProductsData(ProductsStat(itemsSold, DeltaPercentage.Value(itemsSoldDelta), productList))
 
-    private fun getVisitorStats(
-        visitorsCount: Int = DEFAULT_VISITORS_COUNT,
-        viewsCount: Int = DEFAULT_VIEWS_COUNT,
-        avgVisitorsDelta: DeltaPercentage = DeltaPercentage.Value(DEFAULT_AVG_VISITORS_DELTA),
-        avgViewsDelta: DeltaPercentage = DeltaPercentage.Value(DEFAULT_AVG_VIEWS_DELTA)
-    ) = VisitorsData(VisitorsStat(visitorsCount, viewsCount, avgVisitorsDelta, avgViewsDelta))
-
     private fun assert(visitorState: AnalyticsInformationViewState) {
         val resourceProvider = givenAResourceProvider()
         assertThat(visitorState).isEqualTo(
             AnalyticsInformationViewState.DataViewState(
-                title = resourceProvider.getString(R.string.analytics_visitors_and_views_card_title),
+                title = resourceProvider.getString(R.string.analytics_session_card_title),
                 leftSection = AnalyticsInformationSectionViewState(
-                    title = resourceProvider.getString(R.string.analytics_visitors_subtitle),
+                    title = resourceProvider.getString(R.string.analytics_views_subtitle),
                     value = DEFAULT_VISITORS_COUNT.toString(),
                     delta = DEFAULT_AVG_VISITORS_DELTA,
                     chartInfo = emptyList()
                 ),
                 rightSection = AnalyticsInformationSectionViewState(
-                    title = resourceProvider.getString(R.string.analytics_views_subtitle),
+                    title = resourceProvider.getString(R.string.analytics_conversion_subtitle),
                     value = DEFAULT_VIEWS_COUNT.toString(),
                     delta = DEFAULT_AVG_VIEWS_DELTA,
                     chartInfo = emptyList()
