@@ -96,7 +96,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     fun `given an init viewState, when view model is created, then has the expected values`() =
         testBlocking {
             val resourceProvider: ResourceProvider = mock {
-                on { getString(any()) } doReturn TODAY.description
+                on { getString(any()) } doReturn TODAY.name
             }
 
             sut = givenAViewModel(resourceProvider)
@@ -107,7 +107,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             )
 
             with(sut.viewState.value.analyticsDateRangeSelectorState) {
-                assertEquals(expectedSelection.selectionType.description, selectedPeriod)
+                assertEquals(expectedSelection.selectionType.name, selectedPeriod)
                 assertEquals(expectedSelection.currentRangeDescription, toDatePeriod)
                 assertEquals(expectedSelection.previousRangeDescription, fromDatePeriod)
             }
@@ -138,7 +138,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             }
 
             val resourceProvider: ResourceProvider = mock {
-                on { getString(any()) } doReturn TODAY.description
+                on { getString(any()) } doReturn TODAY.name
             }
 
             sut = givenAViewModel(resourceProvider)
@@ -149,7 +149,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             )
 
             with(sut.viewState.value.analyticsDateRangeSelectorState) {
-                assertEquals(expectedSelection.selectionType.description, selectedPeriod)
+                assertEquals(expectedSelection.selectionType.name, selectedPeriod)
                 assertEquals(expectedSelection.currentRangeDescription, toDatePeriod)
                 assertEquals(expectedSelection.previousRangeDescription, fromDatePeriod)
             }
@@ -165,7 +165,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
             val resourceProvider: ResourceProvider = mock {
                 on { getString(any()) } doReturnConsecutively
-                    listOf(ANY_VALUE, LAST_YEAR.description)
+                    listOf(ANY_VALUE, LAST_YEAR.name)
             }
 
             sut = givenAViewModel(resourceProvider)
@@ -177,7 +177,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             )
 
             with(sut.viewState.value.analyticsDateRangeSelectorState) {
-                assertEquals(expectedSelection.selectionType.description, selectedPeriod)
+                assertEquals(expectedSelection.selectionType.name, selectedPeriod)
                 assertEquals(expectedSelection.currentRangeDescription, toDatePeriod)
                 assertEquals(expectedSelection.previousRangeDescription, fromDatePeriod)
             }
