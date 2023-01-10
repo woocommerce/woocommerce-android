@@ -30,6 +30,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
     private val visitorsCountState = MutableStateFlow(VisitorsState.Available(0) as VisitorsState)
     val sessionState by lazy { combineSessionDataChanges() }
 
+    private val fullStatsRequestState by lazy { combineFullUpdateState() }
 
     suspend operator fun invoke(
         rangeSelection: AnalyticsHubDateRangeSelection,
@@ -45,7 +46,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
         fetchRevenueData(rangeSelection, fetchStrategy)
         fetchProductsData(rangeSelection, fetchStrategy)
 
-        return combineFullUpdateState()
+        return fullStatsRequestState
     }
 
     private fun combineFullUpdateState() =
