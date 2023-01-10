@@ -46,7 +46,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when syncing stats data, then update the orders with the expected states`() = testBlocking {
+    fun `when syncing stats data successfully, then update the orders with the expected states`() = testBlocking {
         // Given
         configureSuccessResponseStub()
         val orderStatsUpdates = mutableListOf<OrdersState>()
@@ -68,6 +68,29 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         job.cancel()
     }
 
+    @Test
+    fun `when syncing stats data fails, then update the orders with the expected states`() = testBlocking {
+        // Given
+        configureErrorResponseStub()
+        val orderStatsUpdates = mutableListOf<OrdersState>()
+        val job = sut.ordersState
+            .onEach { orderStatsUpdates.add(it) }
+            .launchIn(this)
+
+        // When
+        sut(testRangeSelection, Saved)
+
+        advanceUntilIdle()
+
+        // Then
+        assertThat(orderStatsUpdates).hasSize(3)
+        assertThat(orderStatsUpdates[0]).isEqualTo(OrdersState.Available(OrdersStat.EMPTY))
+        assertThat(orderStatsUpdates[1]).isEqualTo(OrdersState.Loading)
+        assertThat(orderStatsUpdates[2]).isEqualTo(OrdersState.Error)
+
+        job.cancel()
+    }
+
     private fun configureSuccessResponseStub() {
         repository.stub {
             onBlocking {
@@ -85,6 +108,26 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             onBlocking {
                 repository.fetchVisitorsData(testRangeSelection, Saved)
             } doReturn testVisitorsResult
+        }
+    }
+
+    private fun configureErrorResponseStub() {
+        repository.stub {
+            onBlocking {
+                repository.fetchRevenueData(testRangeSelection, Saved)
+            } doReturn RevenueResult.RevenueError
+
+            onBlocking {
+                repository.fetchOrdersData(testRangeSelection, Saved)
+            } doReturn OrdersResult.OrdersError
+
+            onBlocking {
+                repository.fetchProductsData(testRangeSelection, Saved)
+            } doReturn ProductsResult.ProductsError
+
+            onBlocking {
+                repository.fetchVisitorsData(testRangeSelection, Saved)
+            } doReturn VisitorsResult.VisitorsError
         }
     }
 
