@@ -130,7 +130,7 @@ class StatsRepository @Inject constructor(
         val siteModel = selectedSite.get()
         val datePeriod = granularity.datePeriod(siteModel)
         return wcLeaderboardsStore
-            .observeTopPerformerProducts(siteModel.siteId, datePeriod)
+            .observeTopPerformerProducts(siteModel, datePeriod)
             .flowOn(Dispatchers.IO)
     }
 
@@ -140,7 +140,7 @@ class StatsRepository @Inject constructor(
     ): List<TopPerformerProductEntity> {
         val siteModel = selectedSite.get()
         val datePeriod = DateUtils.getDatePeriod(startDate, endDate)
-        return wcLeaderboardsStore.getCachedTopPerformerProducts(siteModel.siteId, datePeriod)
+        return wcLeaderboardsStore.getCachedTopPerformerProducts(siteModel, datePeriod)
     }
 
     suspend fun fetchTopPerformerProducts(
@@ -169,7 +169,7 @@ class StatsRepository @Inject constructor(
         val siteModel = selectedSite.get()
         val datePeriod = DateUtils.getDatePeriod(startDate, endDate)
         val cachedTopPerformers = wcLeaderboardsStore.getCachedTopPerformerProducts(
-            siteId = siteModel.siteId,
+            site = siteModel,
             datePeriod = datePeriod
         )
         return if (forceRefresh || cachedTopPerformers.isEmpty() || cachedTopPerformers.expired()) {

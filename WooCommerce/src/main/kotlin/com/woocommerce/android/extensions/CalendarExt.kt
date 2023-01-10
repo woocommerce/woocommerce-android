@@ -13,7 +13,7 @@ fun Calendar.endOfCurrentDay(): Date =
     (clone() as Calendar).apply { setToDayLastSecond() }.time
 
 fun Calendar.startOfCurrentWeek(): Date =
-    apply {
+    (clone() as Calendar).apply {
         clearMinutesAndSeconds()
         set(Calendar.HOUR_OF_DAY, 0)
         set(Calendar.DAY_OF_WEEK, firstDayOfWeek)

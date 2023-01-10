@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-12-06 11:54:03+0000
+Translation-Revision-Date: 2022-12-20 14:01:25+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="store_creation_store_categories_subtitle">Välj en kategori som definierar\nditt företag bäst.</string>
+    <string name="store_creation_store_categories_title">Vad handlar ditt företag om?</string>
+    <string name="product_selection_menu_select_all">Välj alla</string>
+    <string name="product_selection_menu_update_price">Uppdatera pris</string>
+    <string name="product_selection_menu_update_status">Uppdatera status</string>
+    <string name="product_bulk_update_status_updated">Status uppdaterad!</string>
+    <string name="product_bulk_update_status">Uppdatera status</string>
+    <string name="product_bulk_update_price_updated">Pris uppdaterat!</string>
+    <string name="product_bulk_update_regular_price">Uppdatera ordinarie pris</string>
     <string name="store_creation_ecommerce_plan_period_two_years">2 år</string>
     <string name="store_creation_ecommerce_store_loading_permanent_error">Något gick fel under butiksinstallationen …</string>
     <string name="variations_bulk_creation_no_candidates_message">Alla variationer har redan genererats.</string>
@@ -149,7 +158,6 @@ Language: sv_SE
     <string name="signup_email_exist_input">Ett konto med denna e-post finns redan.</string>
     <string name="signup_already_registered">Låt oss först skapa ditt konto. Redan registrerad? &lt;a href=\'login\'&gt;&lt;u&gt;Logga in&lt;/u&gt;&lt;/a&gt;</string>
     <string name="login_create_an_account">Skapa ett konto</string>
-    <string name="simplified_login_enter_email_address">Ange din e-postadress för att komma igång</string>
     <string name="login_try_another_email">Försök med en annan adress</string>
     <string name="date_timeframe_custom_date_range_title">Anpassat datumintervall</string>
     <string name="date_timeframe_custom">Anpassat</string>

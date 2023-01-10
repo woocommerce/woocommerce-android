@@ -1,8 +1,8 @@
 package com.woocommerce.android
 
-import com.woocommerce.android.support.help.HelpActivity.Origin.LOGIN_EMAIL
-import com.woocommerce.android.support.help.HelpActivity.Origin.LOGIN_SITE_ADDRESS
-import com.woocommerce.android.support.help.HelpActivity.Origin.LOGIN_USERNAME_PASSWORD
+import com.woocommerce.android.support.help.HelpOrigin.LOGIN_EMAIL
+import com.woocommerce.android.support.help.HelpOrigin.LOGIN_SITE_ADDRESS
+import com.woocommerce.android.support.help.HelpOrigin.LOGIN_USERNAME_PASSWORD
 
 object AppUrls {
     const val APP_HELP_CENTER = "https://docs.woocommerce.com/document/android/"
@@ -31,8 +31,6 @@ object AppUrls {
     const val CROWDSIGNAL_PRODUCT_SURVEY = "https://automattic.survey.fm/woo-app-feature-feedback-products"
     const val CROWDSIGNAL_SHIPPING_LABELS_SURVEY =
         "https://automattic.survey.fm/woo-app-feature-feedback-shipping-labels"
-
-    const val SIMPLE_PAYMENTS_SURVEY = "https://automattic.survey.fm/woo-app-quick-order-production"
 
     const val ORDER_CREATION_SURVEY = "https://automattic.survey.fm/woo-app-order-creation-production"
 

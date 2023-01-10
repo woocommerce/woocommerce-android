@@ -24,12 +24,14 @@ import java.util.TimeZone
 
 internal class AnalyticsHubDateRangeSelectionTest {
     private lateinit var testTimeZone: TimeZone
+    private lateinit var testLocale: Locale
     private lateinit var testCalendar: Calendar
 
     @Before
     fun setUp() {
+        testLocale = Locale.UK
         testTimeZone = TimeZone.getDefault()
-        testCalendar = Calendar.getInstance(Locale.UK)
+        testCalendar = Calendar.getInstance(testLocale)
         testCalendar.timeZone = testTimeZone
         testCalendar.firstDayOfWeek = Calendar.MONDAY
     }
@@ -50,7 +52,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = YEAR_TO_DATE.generateSelectionData(
             referenceStartDate = today,
-            calendar = testCalendar
+            calendar = testCalendar,
+            locale = testLocale
         )
 
         // Then
@@ -74,7 +77,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = LAST_YEAR.generateSelectionData(
             referenceStartDate = today,
-            calendar = testCalendar
+            calendar = testCalendar,
+            locale = testLocale
         )
 
         // Then
@@ -98,7 +102,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = QUARTER_TO_DATE.generateSelectionData(
             referenceStartDate = today,
-            calendar = testCalendar
+            calendar = testCalendar,
+            locale = testLocale
         )
 
         // Then
@@ -122,7 +127,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = LAST_QUARTER.generateSelectionData(
             referenceStartDate = today,
-            calendar = testCalendar
+            calendar = testCalendar,
+            locale = testLocale
         )
 
         // Then
@@ -146,7 +152,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = MONTH_TO_DATE.generateSelectionData(
             referenceStartDate = today,
-            calendar = testCalendar
+            calendar = testCalendar,
+            locale = testLocale
         )
 
         // Then
@@ -170,7 +177,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = LAST_MONTH.generateSelectionData(
             referenceStartDate = today,
-            calendar = testCalendar
+            calendar = testCalendar,
+            locale = testLocale
         )
 
         // Then
@@ -194,7 +202,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = WEEK_TO_DATE.generateSelectionData(
             referenceStartDate = today,
-            calendar = testCalendar
+            calendar = testCalendar,
+            locale = testLocale
         )
 
         // Then
@@ -218,7 +227,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = LAST_WEEK.generateSelectionData(
             referenceStartDate = today,
-            calendar = testCalendar
+            calendar = testCalendar,
+            locale = testLocale
         )
 
         // Then
@@ -242,7 +252,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = TODAY.generateSelectionData(
             referenceStartDate = today,
-            calendar = testCalendar
+            calendar = testCalendar,
+            locale = testLocale
         )
 
         // Then
@@ -266,7 +277,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = YESTERDAY.generateSelectionData(
             referenceStartDate = today,
-            calendar = testCalendar
+            calendar = testCalendar,
+            locale = testLocale
         )
 
         // Then
@@ -289,7 +301,9 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = CUSTOM.generateSelectionData(
             referenceStartDate = midDayFrom("2022-12-05"),
-            referenceEndDate = midDayFrom("2022-12-07")
+            referenceEndDate = midDayFrom("2022-12-07"),
+            calendar = testCalendar,
+            locale = testLocale
         )
 
         // Then

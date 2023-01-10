@@ -121,6 +121,7 @@ class OrderCreateEditCustomerAddFragment :
                 is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> {
                     sharedViewModel.onCustomerAddressEdited(
+                        customerId = event.customerId,
                         billingAddress = event.addresses.getValue(BILLING),
                         shippingAddress = event.addresses.getValue(SHIPPING)
                     )

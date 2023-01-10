@@ -16,8 +16,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentLoginNoWpcomAccountFoundBinding
 import com.woocommerce.android.databinding.ViewLoginEpilogueButtonBarBinding
-import com.woocommerce.android.experiment.SimplifiedLoginExperiment
-import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.zendesk.util.StringUtils
@@ -53,9 +51,6 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
 
     @Inject
     internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
-
-    @Inject
-    internal lateinit var simplifiedLoginExperiment: SimplifiedLoginExperiment
 
     private lateinit var listener: Listener
 
@@ -105,12 +100,7 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
 
         with(btnBinding.buttonSecondary) {
             visibility = View.VISIBLE
-            text = getString(
-                when (simplifiedLoginExperiment.getCurrentVariant()) {
-                    LoginVariant.CONTROL -> R.string.login_try_another_account
-                    LoginVariant.SIMPLIFIED_LOGIN_WPCOM -> R.string.login_try_another_email
-                }
-            )
+            text = getString(R.string.login_try_another_account)
             setOnClickListener {
                 unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_ACCOUNT)
 

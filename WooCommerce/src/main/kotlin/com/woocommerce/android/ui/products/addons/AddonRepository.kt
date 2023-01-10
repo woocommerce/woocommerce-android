@@ -29,7 +29,7 @@ class AddonRepository @Inject constructor(
 
     fun observeProductSpecificAddons(productRemoteID: Long): Flow<List<Addon>> =
         addonsStore.observeProductSpecificAddons(
-            selectedSite.get().siteId,
+            selectedSite.get(),
             productRemoteId = productRemoteID
         )
 
@@ -58,6 +58,6 @@ class AddonRepository @Inject constructor(
 
     private suspend fun getAddonsFrom(productID: Long) =
         productStore.getProductByRemoteId(selectedSite.get(), productID)
-            ?.let { addonsStore.observeAllAddonsForProduct(selectedSite.get().siteId, it) }
+            ?.let { addonsStore.observeAllAddonsForProduct(selectedSite.get(), it) }
             ?.firstOrNull()
 }

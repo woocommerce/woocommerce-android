@@ -247,6 +247,7 @@
     <string name="login_try_another_store">Try another store</string>
     <string name="login_not_woo_store">It looks like %1$s is not a WooCommerce site.</string>
     <string name="login_install_woo">Install WooCommerce</string>
+    <string name="login_open_installation_page">Open installation page</string>
     <string name="login_not_connected_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to this account. \n\nOnce setup, refresh the app</string>
     <string name="login_no_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to a WordPress.com account</string>
     <string name="login_not_wordpress_site_v2">We were not able to detect a WordPress site at the address you entered. Please make sure WordPress is installed and that you are running the latest available version.</string>
@@ -292,7 +293,6 @@
     <string name="login_account_mismatch_connect_wpcom_dialog_title">Connecting to a WordPress.com site</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">Please contact the site owner for an invitation to the site as a shop manager or administrator to use the app.</string>
     <string name="login_jetpack_connection_consent">By tapping the Connect Jetpack button, you agree to our &lt;a href=\'terms\'&gt;Terms of Service&lt;/a&gt; and to &lt;a href=\'sync\'&gt;share details&lt;/a&gt; with WordPress.com.</string>
-    <string name="simplified_login_enter_email_address">Enter your email address to get started</string>
     <string name="login_create_an_account">Create An Account</string>
     <string name="site_picker_create_new_store">Create a new store</string>
     <string name="site_picker_connect_existing_store">Connect an existing store</string>
@@ -336,6 +336,7 @@
     <string name="login_jetpack_installation_connection_dismissed_explanation">Try connecting again to access your store.</string>
     <string name="login_jetpack_installation_continue_connection">Continue connection</string>
     <string name="login_jetpack_installation_exit_without_connection">Exit Without Connecting</string>
+    <string name="login_application_passwords_unavailable">It looks like Application Passwords feature is disabled in your site %1$s.\n Please enable it to use the WooCommerce app.</string>
 
     <!--
         My Store View
@@ -1377,11 +1378,14 @@
     <string name="wc_unapproved">Unapproved</string>
     <string name="wc_spam">Spam</string>
     <string name="wc_trash">Trash</string>
+    <string name="wc_reply">Reply</string>
     <string name="wc_load_review_error">Error loading product review detail</string>
     <string name="wc_moderate_review_error">Error updating product review status</string>
     <string name="wc_review_title">Review</string>
     <string name="review_card_transition_name">review_card_%1$s</string>
     <string name="review_card_detail_transition_name">review_card_detail</string>
+    <string name="review_reply_success">Reply sent!</string>
+    <string name="review_reply_failure">There was an error sending the reply</string>
     <!--
         Product Reviews List
     -->
@@ -2760,6 +2764,10 @@
     <!--
     Store creation
     -->
+    <string name="store_creation_iap_eligibility_loading_title">We are getting ready for your store creation</string>
+    <string name="store_creation_iap_eligibility_loading_subtitle">Please remain connected.</string>
+    <string name="store_creation_iap_eligibility_check_error_title">Store Creation Unavailable </string>
+    <string name="store_creation_iap_eligibility_check_error_description">Store creation from the mobile app is currently unavailable for your country.</string>
     <string name="store_creation_create_new_store_label">Create a new store</string>
     <string name="store_creation_cannot_load_store">Couldn\'t load your store.\nPlease try again…</string>
     <string name="store_creation_in_progress">Creating your store…</string>
@@ -2807,8 +2815,6 @@
     <string name="store_creation_store_name_hint">Store name</string>
 
     <string name="store_creation_store_categories_title">What’s your business about?</string>
-    <string name="store_creation_store_categories_subtitle">Choose a category that defines
-your business the best.</string>
-    <string name="not_a_valid_qr_code">Scanned Qr code is not a WooCommerce code</string>
-
+    <string name="store_creation_store_categories_subtitle">Choose a category that defines your business the best.</string><string name="not_a_valid_qr_code">Scanned Qr code is not a WooCommerce code</string>
+    <string name="login_application_passwords_help">What are Application Passwords?</string>
 </resources>

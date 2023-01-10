@@ -4,7 +4,8 @@
     android:id="@+id/nav_graph_site_picker"
     app:startDestination="@id/sitePickerFragment">
 
-    <include app:graph="@navigation/nav_graph_store_creation" />
+    <include app:graph="@navigation/nav_graph_store_creation_native" />
+    <include app:graph="@navigation/nav_graph_store_creation_web" />
     <include app:graph="@navigation/nav_graph_jetpack_activation" />
 
     <fragment
@@ -31,10 +32,10 @@
             app:destination="@id/addStoreBottomSheetFragment" />
         <action
             android:id="@+id/action_sitePickerFragment_to_webViewStoreCreationFragment"
-            app:destination="@id/webViewStoreCreationFragment" />
+            app:destination="@id/nav_graph_store_creation_web" />
         <action
             android:id="@+id/action_sitePickerFragment_to_storeCreationNativeFlow"
-            app:destination="@id/nav_graph_store_creation"/>
+            app:destination="@id/nav_graph_store_creation" />
     </fragment>
     <fragment
         android:id="@+id/sitePickerSiteDiscoveryFragment"
@@ -45,7 +46,7 @@
             app:destination="@id/accountMismatchErrorFragment" />
         <action
             android:id="@+id/action_sitePickerSiteDiscoveryFragment_to_jetpackActivation"
-            app:destination="@id/nav_graph_jetpack_activation" >
+            app:destination="@id/nav_graph_jetpack_activation">
             <argument
                 android:name="siteUrl"
                 app:argType="string" />
@@ -73,10 +74,6 @@
             android:defaultValue="true"
             app:argType="boolean" />
     </fragment>
-    <fragment
-        android:id="@+id/webViewStoreCreationFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationFragment"
-        android:label="WebViewStoreCreationFragment" />
     <dialog
         android:id="@+id/addStoreBottomSheetFragment"
         android:name="com.woocommerce.android.ui.sitepicker.AddStoreBottomSheetFragment"
@@ -86,7 +83,7 @@
             app:destination="@id/sitePickerSiteDiscoveryFragment" />
         <action
             android:id="@+id/action_addStoreBottomSheetFragment_to_webViewStoreCreationFragment"
-            app:destination="@id/webViewStoreCreationFragment" />
+            app:destination="@id/nav_graph_store_creation_web" />
         <action
             android:id="@+id/action_addStoreBottomSheetFragment_to_storeCreationNativeFlow"
             app:destination="@id/nav_graph_store_creation" />

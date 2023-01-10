@@ -10,7 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.logInformation
 import com.woocommerce.android.extensions.stateLogInformation
-import com.woocommerce.android.support.help.HelpActivity.Origin
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -110,7 +110,7 @@ class ZendeskHelper(
      */
     fun showZendeskHelpCenter(
         context: Context,
-        origin: Origin?,
+        origin: HelpOrigin?,
         selectedSite: SiteModel?,
         extraTags: List<String>? = null,
         ticketType: TicketType = TicketType.General,
@@ -149,7 +149,7 @@ class ZendeskHelper(
     @JvmOverloads
     fun createNewTicket(
         context: Context,
-        origin: Origin?,
+        origin: HelpOrigin?,
         selectedSite: SiteModel?,
         extraTags: List<String>? = null,
         ticketType: TicketType = TicketType.General,
@@ -179,7 +179,7 @@ class ZendeskHelper(
      */
     fun showAllTickets(
         context: Context,
-        origin: Origin?,
+        origin: HelpOrigin?,
         selectedSite: SiteModel? = null,
         extraTags: List<String>? = null,
         ticketType: TicketType = TicketType.General,
@@ -372,7 +372,7 @@ private fun buildZendeskConfig(
     context: Context,
     ticketType: TicketType,
     allSites: List<SiteModel>?,
-    origin: Origin?,
+    origin: HelpOrigin?,
     selectedSite: SiteModel? = null,
     extraTags: List<String>? = null,
     ssr: String? = null
@@ -382,7 +382,7 @@ private fun buildZendeskConfig(
     return RequestActivity.builder()
         .withTicketForm(ticketType.form, customFields)
         .withRequestSubject(ZendeskConstants.ticketSubject)
-        .withTags(buildZendeskTags(allSites, origin ?: Origin.UNKNOWN, extraTagsWithTicketTypeTags))
+        .withTags(buildZendeskTags(allSites, origin ?: HelpOrigin.UNKNOWN, extraTagsWithTicketTypeTags))
         .config()
 }
 
@@ -463,7 +463,7 @@ private fun getCombinedLogInformationOfSites(allSites: List<SiteModel>?): String
  * This is a helper function which returns a set of pre-defined tags depending on some conditions. It accepts a list of
  * custom tags to be added for special cases.
  */
-private fun buildZendeskTags(allSites: List<SiteModel>?, origin: Origin, extraTags: List<String>): List<String> {
+private fun buildZendeskTags(allSites: List<SiteModel>?, origin: HelpOrigin, extraTags: List<String>): List<String> {
     val tags = ArrayList<String>()
     allSites?.let { it ->
         // Add wpcom tag if at least one site is WordPress.com site

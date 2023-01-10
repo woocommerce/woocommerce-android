@@ -229,7 +229,7 @@ class IAPPurchaseWPComPlanActionsTest {
         val responseCode = BillingClient.BillingResponseCode.OK
 
         val currency = "USD"
-        val price = 100L
+        val price = 1_000_000L
         val title = "wc_plan"
         val description = "best plan ever"
         testPreparationHelper.setupQueryProductDetails(
@@ -245,7 +245,7 @@ class IAPPurchaseWPComPlanActionsTest {
         // THEN
         assertThat(result).isInstanceOf(WPComProductResult.Success::class.java)
         assertThat((result as WPComProductResult.Success).productInfo.currency).isEqualTo(currency)
-        assertThat(result.productInfo.price).isEqualTo(price)
+        assertThat(result.productInfo.price).isEqualTo(1.0)
         assertThat(result.productInfo.localizedTitle).isEqualTo(title)
         assertThat(result.productInfo.localizedDescription).isEqualTo(description)
     }
@@ -311,7 +311,7 @@ class IAPPurchaseWPComPlanActionsTest {
         )
 
         // WHEN
-        sut.purchaseWPComPlan(activityWrapperMock)
+        sut.purchaseWPComPlan(activityWrapperMock, REMOTE_SITE_ID)
         purchasesUpdatedListener.onPurchasesUpdated(
             buildBillingResult(responseCode),
             listOf(
@@ -324,7 +324,7 @@ class IAPPurchaseWPComPlanActionsTest {
         )
 
         // THEN
-        val result = sut.purchaseWpComPlanResult.firstOrNull()
+        val result = sut.getPurchaseWpComPlanResult(REMOTE_SITE_ID).firstOrNull()
         assertThat(result).isInstanceOf(WPComPurchaseResult.Success::class.java)
     }
 
@@ -335,10 +335,10 @@ class IAPPurchaseWPComPlanActionsTest {
         setupSut(buildBillingResult(BillingClient.BillingResponseCode.ITEM_UNAVAILABLE, debugMessage))
 
         // WHEN
-        sut.purchaseWPComPlan(activityWrapperMock)
+        sut.purchaseWPComPlan(activityWrapperMock, REMOTE_SITE_ID)
 
         // THEN
-        val result = sut.purchaseWpComPlanResult.firstOrNull()
+        val result = sut.getPurchaseWpComPlanResult(REMOTE_SITE_ID).firstOrNull()
         assertThat(result).isInstanceOf(WPComPurchaseResult.Error::class.java)
         assertThat((result as WPComPurchaseResult.Error).errorType).isInstanceOf(
             IAPError.Billing.ItemUnavailable::class.java
@@ -366,10 +366,10 @@ class IAPPurchaseWPComPlanActionsTest {
         )
 
         // WHEN
-        sut.purchaseWPComPlan(activityWrapperMock)
+        sut.purchaseWPComPlan(activityWrapperMock, REMOTE_SITE_ID)
 
         // THEN
-        val result = sut.purchaseWpComPlanResult.firstOrNull()
+        val result = sut.getPurchaseWpComPlanResult(REMOTE_SITE_ID).firstOrNull()
         assertThat(result).isInstanceOf(WPComPurchaseResult.Error::class.java)
         assertThat((result as WPComPurchaseResult.Error).errorType).isInstanceOf(
             IAPError.Billing.ServiceDisconnected::class.java
@@ -390,14 +390,14 @@ class IAPPurchaseWPComPlanActionsTest {
         val debugMessage = "debug message"
 
         // WHEN
-        sut.purchaseWPComPlan(activityWrapperMock)
+        sut.purchaseWPComPlan(activityWrapperMock, REMOTE_SITE_ID)
         purchasesUpdatedListener.onPurchasesUpdated(
             buildBillingResult(BillingClient.BillingResponseCode.SERVICE_DISCONNECTED, debugMessage),
             emptyList()
         )
 
         // THEN
-        val result = sut.purchaseWpComPlanResult.firstOrNull()
+        val result = sut.getPurchaseWpComPlanResult(REMOTE_SITE_ID).firstOrNull()
         assertThat(result).isInstanceOf(WPComPurchaseResult.Error::class.java)
         assertThat((result as WPComPurchaseResult.Error).errorType).isInstanceOf(
             IAPError.Billing.ServiceDisconnected::class.java
@@ -432,7 +432,7 @@ class IAPPurchaseWPComPlanActionsTest {
             )
 
             // WHEN
-            sut.purchaseWPComPlan(activityWrapperMock)
+            sut.purchaseWPComPlan(activityWrapperMock, REMOTE_SITE_ID)
             purchasesUpdatedListener.onPurchasesUpdated(
                 buildBillingResult(responseCode),
                 listOf(
@@ -445,7 +445,7 @@ class IAPPurchaseWPComPlanActionsTest {
             )
 
             // THEN
-            val result = sut.purchaseWpComPlanResult.firstOrNull()
+            val result = sut.getPurchaseWpComPlanResult(REMOTE_SITE_ID).firstOrNull()
             assertThat(result).isInstanceOf(WPComPurchaseResult.Error::class.java)
             assertThat((result as WPComPurchaseResult.Error).errorType).isInstanceOf(
                 IAPError.RemoteCommunication.Network::class.java
@@ -488,10 +488,10 @@ class IAPPurchaseWPComPlanActionsTest {
         setupPeriodicJob(purchasesResult)
 
         // WHEN
-        sut.purchaseWPComPlan(activityWrapperMock)
+        sut.purchaseWPComPlan(activityWrapperMock, REMOTE_SITE_ID)
 
         // THEN
-        val result = sut.purchaseWpComPlanResult.firstOrNull()
+        val result = sut.getPurchaseWpComPlanResult(REMOTE_SITE_ID).firstOrNull()
         assertThat(result).isInstanceOf(WPComPurchaseResult.Success::class.java)
     }
 
@@ -525,10 +525,10 @@ class IAPPurchaseWPComPlanActionsTest {
         setupPeriodicJob(purchasesResult)
 
         // WHEN
-        sut.purchaseWPComPlan(activityWrapperMock)
+        sut.purchaseWPComPlan(activityWrapperMock, REMOTE_SITE_ID)
 
         // THEN
-        val result = sut.purchaseWpComPlanResult.firstOrNull()
+        val result = sut.getPurchaseWpComPlanResult(REMOTE_SITE_ID).firstOrNull()
         assertThat(result).isInstanceOf(WPComPurchaseResult.Error::class.java)
         assertThat((result as WPComPurchaseResult.Error).errorType).isInstanceOf(
             IAPError.Billing.ServiceTimeout::class.java
@@ -562,7 +562,7 @@ class IAPPurchaseWPComPlanActionsTest {
             )
 
             // WHEN
-            sut.purchaseWPComPlan(activityWrapperMock)
+            sut.purchaseWPComPlan(activityWrapperMock, REMOTE_SITE_ID)
             purchasesUpdatedListener.onPurchasesUpdated(
                 buildBillingResult(responseCode),
                 listOf(
@@ -575,7 +575,7 @@ class IAPPurchaseWPComPlanActionsTest {
             )
 
             // THEN
-            val result = sut.purchaseWpComPlanResult.firstOrNull()
+            val result = sut.getPurchaseWpComPlanResult(REMOTE_SITE_ID).firstOrNull()
             assertThat(result).isInstanceOf(WPComPurchaseResult.Error::class.java)
             assertThat((result as WPComPurchaseResult.Error).errorType).isInstanceOf(
                 IAPError.RemoteCommunication.Network::class.java
@@ -609,7 +609,7 @@ class IAPPurchaseWPComPlanActionsTest {
             )
 
             // WHEN
-            sut.purchaseWPComPlan(activityWrapperMock)
+            sut.purchaseWPComPlan(activityWrapperMock, REMOTE_SITE_ID)
             purchasesUpdatedListener.onPurchasesUpdated(
                 buildBillingResult(responseCode),
                 listOf(
@@ -622,7 +622,7 @@ class IAPPurchaseWPComPlanActionsTest {
             )
 
             // THEN
-            val result = sut.purchaseWpComPlanResult.firstOrNull()
+            val result = sut.getPurchaseWpComPlanResult(REMOTE_SITE_ID).firstOrNull()
             assertThat(result).isInstanceOf(WPComPurchaseResult.Success::class.java)
         }
 
@@ -636,10 +636,10 @@ class IAPPurchaseWPComPlanActionsTest {
             )
 
             // WHEN
-            sut.purchaseWPComPlan(activityWrapperMock)
+            sut.purchaseWPComPlan(activityWrapperMock, REMOTE_SITE_ID)
 
             // THEN
-            val result = sut.purchaseWpComPlanResult.firstOrNull()
+            val result = sut.getPurchaseWpComPlanResult(REMOTE_SITE_ID).firstOrNull()
             assertThat(result).isInstanceOf(WPComPurchaseResult.Error::class.java)
             assertThat((result as WPComPurchaseResult.Error).errorType).isInstanceOf(
                 IAPError.Billing.ServiceTimeout::class.java
@@ -673,10 +673,10 @@ class IAPPurchaseWPComPlanActionsTest {
             )
 
             // WHEN
-            sut.purchaseWPComPlan(activityWrapperMock)
+            sut.purchaseWPComPlan(activityWrapperMock, REMOTE_SITE_ID)
 
             // THEN
-            val result = sut.purchaseWpComPlanResult.firstOrNull()
+            val result = sut.getPurchaseWpComPlanResult(REMOTE_SITE_ID).firstOrNull()
             assertThat(result).isInstanceOf(WPComPurchaseResult.Success::class.java)
         }
 
@@ -701,7 +701,7 @@ class IAPPurchaseWPComPlanActionsTest {
             testPreparationHelper.setupQueryProductDetails(responseCode)
 
             // WHEN
-            sut.purchaseWPComPlan(activityWrapperMock)
+            sut.purchaseWPComPlan(activityWrapperMock, REMOTE_SITE_ID)
 
             // THEN
             verifyNoInteractions(mobilePayAPIMock)
@@ -728,7 +728,7 @@ class IAPPurchaseWPComPlanActionsTest {
             testPreparationHelper.setupQueryProductDetails(responseCode)
 
             // WHEN
-            sut.purchaseWPComPlan(activityWrapperMock)
+            sut.purchaseWPComPlan(activityWrapperMock, REMOTE_SITE_ID)
 
             // THEN
             verifyNoInteractions(mobilePayAPIMock)
@@ -796,7 +796,6 @@ class IAPPurchaseWPComPlanActionsTest {
         sut = IAPPurchaseWPComPlanActionsImpl(
             purchaseWpComPlanHandler = purchaseWpComPlanHandler,
             iapManager = iapManager,
-            REMOTE_SITE_ID,
             iapProduct = iapProduct,
         )
     }
