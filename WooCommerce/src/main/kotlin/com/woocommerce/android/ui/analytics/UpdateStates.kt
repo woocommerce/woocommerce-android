@@ -41,3 +41,9 @@ sealed class ProductsState {
 
     val isIdle get() = this is Available || this is Error
 }
+
+sealed class VisitorsState {
+    data class Available(val visitors: Int) : VisitorsState()
+    object Loading : VisitorsState()
+    object Error : VisitorsState()
+}
