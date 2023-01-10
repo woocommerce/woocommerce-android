@@ -7,7 +7,6 @@ import com.woocommerce.android.model.SessionStat
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
 import com.woocommerce.android.util.CoroutineDispatchers
-import java.text.DecimalFormat
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -38,7 +37,6 @@ class UpdateAnalyticsHubStats @Inject constructor(
         sessionState.update { VisitorsState.Loading(loadWithSkeleton) }
         revenueState.update { RevenueState.Loading(loadWithSkeleton) }
         productsState.update { ProductsState.Loading(loadWithSkeleton) }
-
 
         coroutineScope.launch(dispatchers.computation) {
             sessionChanges.collect { sessionState.value = it }
@@ -93,18 +91,12 @@ class UpdateAnalyticsHubStats @Inject constructor(
         combine(ordersState, visitorsCountState) { orders, visitorsCount ->
             orders.run { this as? OrdersState.Available }
                 ?.orders?.ordersCount
-                ?.let { generateVisitorState(it, visitorsCount) }
+                ?.let { VisitorsState.Available(SessionStat(it, visitorsCount)) }
                 ?: when (orders) {
                     is OrdersState.Error -> VisitorsState.Error
                     else -> VisitorsState.Loading(true)
                 }
         }
-
-    private fun generateVisitorState(ordersCount: Int, visitorsCount: Int): VisitorsState {
-        val conversionRate = (ordersCount / visitorsCount.toFloat()) * 100
-        val formattedConversionRate = DecimalFormat("##.#").format(conversionRate) + "%"
-        return VisitorsState.Available(SessionStat(formattedConversionRate, visitorsCount))
-    }
 
     sealed class OrdersState {
         data class Available(val orders: OrdersStat) : OrdersState()
