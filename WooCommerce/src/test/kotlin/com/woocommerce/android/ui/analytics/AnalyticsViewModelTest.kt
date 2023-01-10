@@ -7,16 +7,7 @@ import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.FetchStrategy.ForceNew
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.FetchStrategy.Saved
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.OrdersResult.OrdersData
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.OrdersResult.OrdersError
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.ProductsResult.ProductsData
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.ProductsResult.ProductsError
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.RevenueResult.RevenueData
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.RevenueResult.RevenueError
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.VisitorsResult.VisitorsData
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.VisitorsResult.VisitorsError
+import com.woocommerce.android.model.SessionStat
 import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
@@ -25,12 +16,22 @@ import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.LAST_YEAR
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.TODAY
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.WEEK_TO_DATE
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository
+import com.woocommerce.android.ui.analytics.sync.OrdersState
+import com.woocommerce.android.ui.analytics.sync.ProductsState
+import com.woocommerce.android.ui.analytics.sync.RevenueState
+import com.woocommerce.android.ui.analytics.sync.SessionState
+import com.woocommerce.android.ui.analytics.sync.UpdateAnalyticsHubStats
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
+import java.util.Calendar
+import java.util.Locale
+import java.util.TimeZone
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import org.assertj.core.api.Assertions.assertThat
@@ -40,17 +41,10 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
-import java.util.Calendar
-import java.util.Locale
-import java.util.TimeZone
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class AnalyticsViewModelTest : BaseUnitTest() {
@@ -66,7 +60,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             OTHER_PRODUCT_CURRENCY_VALUE
     }
 
-    private val analyticsRepository: AnalyticsRepository = mock()
+    private val updateStats: UpdateAnalyticsHubStats = mock()
     private val savedState = AnalyticsFragmentArgs(targetGranularity = TODAY).initSavedStateHandle()
     private val transactionLauncher = mock<AnalyticsHubTransactionLauncher>()
 
@@ -128,10 +122,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     @Test
     fun `when ViewModel is with savedState is created, then has the expected values`() =
         testBlocking {
-            analyticsRepository.stub {
-                onBlocking { fetchRevenueData(any(), eq(Saved)) }.doReturn(getRevenueStats())
-                onBlocking { fetchOrdersData(any(), eq(Saved)) }.doReturn(getOrdersStats())
-            }
+            configureSuccessfulStatsResponse()
 
             val resourceProvider: ResourceProvider = mock {
                 on { getString(any()) } doReturn TODAY.name
@@ -154,10 +145,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     @Test
     fun `given a view model, when selected date range changes, then has the expected date range selector values`() =
         testBlocking {
-            analyticsRepository.stub {
-                onBlocking { fetchRevenueData(any(), eq(Saved)) }.doReturn(getRevenueStats())
-                onBlocking { fetchOrdersData(any(), eq(Saved)) }.doReturn(getOrdersStats())
-            }
+            configureSuccessfulStatsResponse()
 
             val resourceProvider: ResourceProvider = mock {
                 on { getString(any()) } doReturnConsecutively
@@ -182,9 +170,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     @Test
     fun `given a view model, when selected date range changes, then has expected revenue values`() =
         testBlocking {
-            analyticsRepository.stub {
-                onBlocking { fetchRevenueData(any(), eq(Saved)) }.doReturn(getRevenueStats())
-            }
+            configureSuccessfulStatsResponse()
 
             sut = givenAViewModel()
             sut.onNewRangeSelection(LAST_YEAR)
@@ -205,13 +191,16 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     @Test
     fun `given a view model with on existent delta then delta is not shown`() =
         testBlocking {
-            whenever(analyticsRepository.fetchRevenueData(any(), eq(Saved)))
-                .thenReturn(
-                    getRevenueStats(
-                        netDelta = DeltaPercentage.NotExist,
-                        totalDelta = DeltaPercentage.NotExist
+            updateStats.stub {
+                onBlocking { revenueState } doReturn flow {
+                    RevenueState.Available(
+                        getRevenueStats(
+                            netDelta = DeltaPercentage.NotExist,
+                            totalDelta = DeltaPercentage.NotExist
+                        )
                     )
-                )
+                }
+            }
 
             sut = givenAViewModel()
             sut.onNewRangeSelection(LAST_YEAR)
@@ -226,9 +215,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     @Test
     fun `given a view model, when selected date range changes, then has expected refresh indicator value`() =
         testBlocking {
-            analyticsRepository.stub {
-                onBlocking { fetchRevenueData(any(), eq(Saved)) }.doReturn(getRevenueStats())
-            }
+            configureSuccessfulStatsResponse()
 
             sut = givenAViewModel()
 
@@ -249,8 +236,8 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             DeltaPercentage.Value(OTHER_NET_DELTA),
         )
 
-        analyticsRepository.stub {
-            onBlocking { fetchRevenueData(any(), eq(ForceNew)) }.doReturn(weekRevenueStats)
+        updateStats.stub {
+            onBlocking { revenueState } doReturn flow { RevenueState.Available(weekRevenueStats) }
         }
 
         sut = givenAViewModel()
@@ -273,9 +260,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     @Test
     fun `given a view model, when selected date range changes, then has expected orders values`() =
         testBlocking {
-            analyticsRepository.stub {
-                onBlocking { fetchOrdersData(any(), eq(Saved)) }.doReturn(getOrdersStats())
-            }
+            configureSuccessfulStatsResponse()
 
             sut = givenAViewModel()
             sut.onNewRangeSelection(LAST_YEAR)
@@ -296,9 +281,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     @Test
     fun `given a view model, when selected date range changes, then product has values`() =
         testBlocking {
-            analyticsRepository.stub {
-                onBlocking { fetchProductsData(any(), eq(Saved)) }.doReturn(getProductsStats())
-            }
+            configureSuccessfulStatsResponse()
 
             sut = givenAViewModel()
             sut.onNewRangeSelection(LAST_YEAR)
@@ -329,8 +312,8 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             OTHER_CURRENCY_CODE
         )
 
-        analyticsRepository.stub {
-            onBlocking { fetchOrdersData(any(), eq(ForceNew)) }.doReturn(weekOrdersData)
+        updateStats.stub {
+            onBlocking { ordersState } doReturn flow { OrdersState.Available(weekOrdersData) }
         }
 
         sut = givenAViewModel()
@@ -360,8 +343,8 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             DeltaPercentage.Value(OTHER_NET_DELTA)
         )
 
-        analyticsRepository.stub {
-            onBlocking { fetchRevenueData(any(), eq(ForceNew)) }.doReturn(weekRevenueStats)
+        updateStats.stub {
+            onBlocking { revenueState } doReturn flow { RevenueState.Available(weekRevenueStats) }
         }
 
         sut = givenAViewModel()
@@ -385,8 +368,8 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             OTHER_PRODUCT_LIST
         )
 
-        analyticsRepository.stub {
-            onBlocking { fetchProductsData(any(), eq(ForceNew)) }.doReturn(weekOrdersData)
+        updateStats.stub {
+            onBlocking { productsState } doReturn flow { ProductsState.Available(weekOrdersData) }
         }
 
         sut = givenAViewModel()
@@ -411,11 +394,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given a view, when refresh is requested, then show indicator is the expected`() = testBlocking {
-        analyticsRepository.stub {
-            onBlocking { fetchRevenueData(any(), any()) }.doReturn(getRevenueStats())
-            onBlocking { fetchOrdersData(any(), any()) }.doReturn(getOrdersStats())
-            onBlocking { fetchProductsData(any(), any()) }.doReturn(getProductsStats())
-        }
+        configureSuccessfulStatsResponse()
 
         sut = givenAViewModel()
         val states = mutableListOf<AnalyticsViewState>()
@@ -440,12 +419,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when all data is fetched successfully then all transaction conditions are satisfied`() = testBlocking {
-        analyticsRepository.stub {
-            onBlocking { fetchRevenueData(any(), any()) }.doReturn(getRevenueStats())
-            onBlocking { fetchOrdersData(any(), any()) }.doReturn(getOrdersStats())
-            onBlocking { fetchProductsData(any(), any()) }.doReturn(getProductsStats())
-            onBlocking { fetchVisitorsData(any(), any()) }.doReturn(VisitorsData(0))
-        }
+        configureSuccessfulStatsResponse()
 
         sut = givenAViewModel()
 
@@ -457,11 +431,9 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when fetch revenue fails then performance transaction revenue condition is not satisfied`() = testBlocking {
-        analyticsRepository.stub {
-            onBlocking { fetchRevenueData(any(), any()) }.doReturn(RevenueError)
-            onBlocking { fetchOrdersData(any(), any()) }.doReturn(getOrdersStats())
-            onBlocking { fetchProductsData(any(), any()) }.doReturn(getProductsStats())
-            onBlocking { fetchVisitorsData(any(), any()) }.doReturn(VisitorsData(0))
+        configureSuccessfulStatsResponse()
+        updateStats.stub {
+            onBlocking { revenueState } doReturn flow { RevenueState.Error }
         }
 
         sut = givenAViewModel()
@@ -474,11 +446,9 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when fetch orders fails then performance transaction order condition is not satisfied`() = testBlocking {
-        analyticsRepository.stub {
-            onBlocking { fetchRevenueData(any(), any()) }.doReturn(getRevenueStats())
-            onBlocking { fetchOrdersData(any(), any()) }.doReturn(OrdersError)
-            onBlocking { fetchProductsData(any(), any()) }.doReturn(getProductsStats())
-            onBlocking { fetchVisitorsData(any(), any()) }.doReturn(VisitorsData(0))
+        configureSuccessfulStatsResponse()
+        updateStats.stub {
+            onBlocking { ordersState } doReturn flow { OrdersState.Error }
         }
 
         sut = givenAViewModel()
@@ -491,11 +461,9 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when fetch products fails then performance transaction products condition is not satisfied`() = testBlocking {
-        analyticsRepository.stub {
-            onBlocking { fetchRevenueData(any(), any()) }.doReturn(getRevenueStats())
-            onBlocking { fetchOrdersData(any(), any()) }.doReturn(getOrdersStats())
-            onBlocking { fetchProductsData(any(), any()) }.doReturn(ProductsError)
-            onBlocking { fetchVisitorsData(any(), any()) }.doReturn(VisitorsData(0))
+        configureSuccessfulStatsResponse()
+        updateStats.stub {
+            onBlocking { productsState } doReturn flow { ProductsState.Error }
         }
 
         sut = givenAViewModel()
@@ -508,11 +476,9 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when fetch visitors fails then performance transaction visitors condition is not satisfied`() = testBlocking {
-        analyticsRepository.stub {
-            onBlocking { fetchRevenueData(any(), any()) }.doReturn(getRevenueStats())
-            onBlocking { fetchOrdersData(any(), any()) }.doReturn(getOrdersStats())
-            onBlocking { fetchProductsData(any(), any()) }.doReturn(getProductsStats())
-            onBlocking { fetchVisitorsData(any(), any()) }.doReturn(VisitorsError)
+        configureSuccessfulStatsResponse()
+        updateStats.stub {
+            onBlocking { sessionState } doReturn flow { SessionState.Error }
         }
 
         sut = givenAViewModel()
@@ -525,10 +491,10 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given a date range selected, then has expected visitors values`() = testBlocking {
-        val weekOrdersData = VisitorsData(0)
+        val sessionData = SessionStat(123, 321)
 
-        analyticsRepository.stub {
-            onBlocking { fetchVisitorsData(any(), eq(Saved)) }.doReturn(weekOrdersData)
+        updateStats.stub {
+            onBlocking { sessionState } doReturn flow { SessionState.Available(sessionData) }
         }
 
         sut = givenAViewModel()
@@ -548,7 +514,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             currencyFormatter,
             transactionLauncher,
             mock(),
-            mock(),
+            updateStats,
             localeProvider,
             savedState
         )
@@ -560,16 +526,14 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         currencyCode: String = CURRENCY_CODE,
         totalDelta: DeltaPercentage = DeltaPercentage.Value(TOTAL_DELTA.toInt()),
         netDelta: DeltaPercentage = DeltaPercentage.Value(NET_DELTA.toInt()),
-    ) = RevenueData(
-        RevenueStat(
-            totalValue,
-            totalDelta,
-            netValue,
-            netDelta,
-            currencyCode,
-            listOf(TOTAL_VALUE),
-            listOf(NET_VALUE)
-        )
+    ) = RevenueStat(
+        totalValue,
+        totalDelta,
+        netValue,
+        netDelta,
+        currencyCode,
+        listOf(TOTAL_VALUE),
+        listOf(NET_VALUE)
     )
 
     private fun getOrdersStats(
@@ -578,23 +542,21 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         avgOrderValue: Double = AVG_ORDER_VALUE,
         avgOrderValueDelta: Int = AVG_ORDER_VALUE_DELTA,
         currencyCode: String = CURRENCY_CODE
-    ) = OrdersData(
-        OrdersStat(
-            ordersCount,
-            DeltaPercentage.Value(ordersCountDelta),
-            avgOrderValue,
-            DeltaPercentage.Value(avgOrderValueDelta),
-            currencyCode,
-            listOf(ORDERS_COUNT.toLong()),
-            listOf(AVG_ORDER_VALUE)
-        )
+    ) = OrdersStat(
+        ordersCount,
+        DeltaPercentage.Value(ordersCountDelta),
+        avgOrderValue,
+        DeltaPercentage.Value(avgOrderValueDelta),
+        currencyCode,
+        listOf(ORDERS_COUNT.toLong()),
+        listOf(AVG_ORDER_VALUE)
     )
 
     private fun getProductsStats(
         itemsSold: Int = PRODUCT_ITEMS_SOLD,
         itemsSoldDelta: Int = PRODUCT_ITEMS_SOLD_DELTA,
         productList: List<ProductItem> = PRODUCT_LIST
-    ) = ProductsData(ProductsStat(itemsSold, DeltaPercentage.Value(itemsSoldDelta), productList))
+    ) = ProductsStat(itemsSold, DeltaPercentage.Value(itemsSoldDelta), productList)
 
     private fun assert(visitorState: AnalyticsInformationViewState) {
         val resourceProvider = givenAResourceProvider()
@@ -615,6 +577,15 @@ class AnalyticsViewModelTest : BaseUnitTest() {
                 )
             )
         )
+    }
+
+    private fun configureSuccessfulStatsResponse() {
+        updateStats.stub {
+            onBlocking { revenueState } doReturn flow { emit(RevenueState.Available(getRevenueStats())) }
+            onBlocking { ordersState } doReturn flow { emit(OrdersState.Available(getOrdersStats())) }
+            onBlocking { productsState } doReturn flow { emit(ProductsState.Available(getProductsStats())) }
+            onBlocking { sessionState } doReturn flow { emit(SessionState.Available(testSessionStat)) }
+        }
     }
 
     companion object {
