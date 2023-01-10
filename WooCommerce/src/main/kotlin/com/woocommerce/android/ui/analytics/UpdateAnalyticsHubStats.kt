@@ -8,49 +8,36 @@ import com.woocommerce.android.ui.analytics.AnalyticsHubUpdateState.Finished
 import com.woocommerce.android.ui.analytics.AnalyticsHubUpdateState.Loading
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
-import com.woocommerce.android.util.CoroutineDispatchers
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class UpdateAnalyticsHubStats @Inject constructor(
-    private val dispatchers: CoroutineDispatchers,
     private val analyticsRepository: AnalyticsRepository
 ) {
     private val _revenueState = MutableStateFlow(RevenueState.Available(RevenueStat.EMPTY) as RevenueState)
-    val revenueState: StateFlow<RevenueState> = _revenueState
+    val revenueState: Flow<RevenueState> = _revenueState
 
     private val _productsState = MutableStateFlow(ProductsState.Available(ProductsStat.EMPTY) as ProductsState)
-    val productsState: StateFlow<ProductsState> = _productsState
+    val productsState: Flow<ProductsState> = _productsState
 
     private val _ordersState = MutableStateFlow(OrdersState.Available(OrdersStat.EMPTY) as OrdersState)
-    val ordersState: StateFlow<OrdersState> = _ordersState
-
-    private val _sessionState = MutableStateFlow(SessionState.Available(SessionStat.EMPTY) as SessionState)
-    val sessionState: StateFlow<SessionState> = _sessionState
+    val ordersState: Flow<OrdersState> = _ordersState
 
     private val visitorsCountState = MutableStateFlow(0)
-    private val sessionChanges by lazy { combineSessionDataChanges() }
+    val sessionState by lazy { combineSessionDataChanges() }
+
 
     suspend operator fun invoke(
-        coroutineScope: CoroutineScope,
         rangeSelection: AnalyticsHubDateRangeSelection,
         fetchStrategy: FetchStrategy
     ): Flow<AnalyticsHubUpdateState> {
         _ordersState.update { OrdersState.Loading }
-        _sessionState.update { SessionState.Loading }
         _revenueState.update { RevenueState.Loading }
         _productsState.update { ProductsState.Loading }
-
-        coroutineScope.launch(dispatchers.computation) {
-            sessionChanges.collect { _sessionState.value = it }
-        }
 
         fetchOrdersData(rangeSelection, fetchStrategy)
         fetchVisitorsCount(rangeSelection, fetchStrategy)
@@ -61,7 +48,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
     }
 
     private fun combineFullUpdateState() =
-        combine(_revenueState, _productsState, _ordersState, _sessionState) { revenue, products, orders, session ->
+        combine(_revenueState, _productsState, _ordersState, sessionState) { revenue, products, orders, session ->
             revenue.isIdle && products.isIdle && orders.isIdle && session.isIdle
         }.map { if (it) Finished else Loading }
 

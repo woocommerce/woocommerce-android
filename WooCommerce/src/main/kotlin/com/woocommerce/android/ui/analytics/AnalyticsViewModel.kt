@@ -105,7 +105,6 @@ class AnalyticsViewModel @Inject constructor(
     fun onRefreshRequested() {
         viewModelScope.launch {
             updateStats(
-                coroutineScope = viewModelScope,
                 rangeSelection = ranges,
                 fetchStrategy = getFetchStrategy(isRefreshing = true)
             ).collect {
@@ -137,7 +136,6 @@ class AnalyticsViewModel @Inject constructor(
             updateDateSelector()
             trackSelectedDateRange()
             updateStats(
-                coroutineScope = viewModelScope,
                 rangeSelection = it,
                 fetchStrategy = getFetchStrategy(isRefreshing = false)
             )
