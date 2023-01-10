@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.mystore
 
-data class BenefitsBannerUiModel(
+data class JetpackBenefitsBannerUiModel(
     val show: Boolean = false,
     val onDismiss: () -> Unit = {}
 )

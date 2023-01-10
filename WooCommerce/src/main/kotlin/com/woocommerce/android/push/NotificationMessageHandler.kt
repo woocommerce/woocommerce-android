@@ -166,7 +166,7 @@ class NotificationMessageHandler @Inject constructor(
                         )
                     )
                 )
-                topPerformersStore.invalidateTopPerformers(site.siteId)
+                topPerformersStore.invalidateTopPerformers(site)
             } ?: wooLogWrapper.e(NOTIFS, "Site not found - can't dispatchNewOrderEvents")
         }
     }

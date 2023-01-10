@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-12-06 14:54:04+0000
+Translation-Revision-Date: 2022-12-22 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="store_creation_store_categories_subtitle">Kies een categorie die je bedrijf\nhet beste weergeeft.</string>
+    <string name="store_creation_store_categories_title">Waar staat je bedrijf voor?</string>
+    <string name="product_selection_menu_select_all">Alles selecteren</string>
+    <string name="product_selection_menu_update_price">Prijs bijwerken</string>
+    <string name="product_selection_menu_update_status">Status bijwerken</string>
+    <string name="product_bulk_update_status_updated">Status bijgewerkt!</string>
+    <string name="product_bulk_update_status">Status bijwerken</string>
+    <string name="product_bulk_update_price_updated">Prijs bijgewerkt!</string>
+    <string name="product_bulk_update_regular_price">Reguliere prijs bijwerken</string>
     <string name="store_creation_ecommerce_plan_period_two_years">2 jaar</string>
     <string name="store_creation_ecommerce_store_loading_permanent_error">Er is iets fout gegaan tijdens de installatie van je winkel…</string>
     <string name="variations_bulk_creation_no_candidates_message">Alle variaties zijn al gegenereerd.</string>
@@ -149,7 +158,6 @@ Language: nl
     <string name="signup_email_exist_input">Er bestaat al een account met dit e-mailadres.</string>
     <string name="signup_already_registered">Laten we eerst je account aanmaken. Ben je al geregistreerd? &lt;a href=\'login\'&gt;&lt;u&gt;Log in&lt;/u&gt;&lt;/a&gt;</string>
     <string name="login_create_an_account">Een account maken</string>
-    <string name="simplified_login_enter_email_address">Voer je e-mailadres in om te starten</string>
     <string name="login_try_another_email">Probeer een ander adres</string>
     <string name="date_timeframe_custom_date_range_title">Aangepast datumbereik</string>
     <string name="date_timeframe_custom">Aangepast</string>

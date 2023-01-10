@@ -32,7 +32,7 @@ import com.woocommerce.android.extensions.setClickableText
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.extensions.verticalOffsetChanges
-import com.woocommerce.android.support.help.HelpActivity.Origin
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -162,7 +162,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         binding.myStoreStatsAvailabilityMessage.setClickableText(
             content = getString(R.string.my_store_stats_availability_description, contactUsText),
             clickableContent = contactUsText,
-            clickAction = WooClickableSpan { activity?.startHelpActivity(Origin.MY_STORE) }
+            clickAction = WooClickableSpan { activity?.startHelpActivity(HelpOrigin.MY_STORE) }
         )
 
         prepareJetpackBenefitsBanner()
@@ -222,7 +222,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                     binding.jetpackBenefitsBanner.root.isVisible = false
                     binding.myStoreStats.showVisitorStatsError()
                 }
-                is VisitorStatsViewState.JetpackCpConnected -> onJetpackCpConnected(stats.benefitsBanner)
+                is VisitorStatsViewState.Unavailable -> onVisitorStatsUnavailable(stats)
             }
         }
         viewModel.topPerformersState.observe(viewLifecycleOwner) { topPerformers ->
@@ -265,20 +265,22 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         }
     }
 
-    private fun onJetpackCpConnected(benefitsBanner: BenefitsBannerUiModel) {
-        showEmptyVisitorStatsForJetpackCP()
-        if (benefitsBanner.show) {
+    private fun onVisitorStatsUnavailable(state: VisitorStatsViewState.Unavailable) {
+        handleUnavailableVisitorStats()
+
+        val jetpackBenefitsBanner = state.benefitsBanner
+        if (jetpackBenefitsBanner.show) {
             binding.jetpackBenefitsBanner.dismissButton.setOnClickListener {
-                benefitsBanner.onDismiss()
+                jetpackBenefitsBanner.onDismiss()
             }
         }
-        if (benefitsBanner.show && !binding.jetpackBenefitsBanner.root.isVisible) {
+        if (jetpackBenefitsBanner.show && !binding.jetpackBenefitsBanner.root.isVisible) {
             AnalyticsTracker.track(
                 stat = AnalyticsEvent.FEATURE_JETPACK_BENEFITS_BANNER,
                 properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "shown")
             )
         }
-        binding.jetpackBenefitsBanner.root.isVisible = benefitsBanner.show
+        binding.jetpackBenefitsBanner.root.isVisible = jetpackBenefitsBanner.show
     }
 
     private fun showTopPerformersLoading() {
@@ -386,8 +388,8 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         binding.myStoreStats.showVisitorStats(visitorStats)
     }
 
-    private fun showEmptyVisitorStatsForJetpackCP() {
-        binding.myStoreStats.showEmptyVisitorStatsForJetpackCP()
+    private fun handleUnavailableVisitorStats() {
+        binding.myStoreStats.handleUnavailableVisitorStats()
     }
 
     private fun showErrorSnack() {

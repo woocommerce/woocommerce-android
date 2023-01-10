@@ -12,6 +12,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.jitm.JitmTracker
 import com.woocommerce.android.ui.jitm.QueryParamsEncoder
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.Companion.UTM_SOURCE
@@ -323,12 +324,16 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             whenViewModelIsCreated()
             givenNetworkConnectivity(connected = true)
-            givenStatsLoadingResult(GetStats.LoadStatsResult.IsJetPackCPEnabled)
+            givenStatsLoadingResult(
+                GetStats.LoadStatsResult.VisitorStatUnavailable(
+                    connectionType = SiteConnectionType.JetpackConnectionPackage
+                )
+            )
 
             sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
 
             assertThat(sut.visitorStatsState.value)
-                .isInstanceOf(MyStoreViewModel.VisitorStatsViewState.JetpackCpConnected::class.java)
+                .isInstanceOf(MyStoreViewModel.VisitorStatsViewState.Unavailable::class.java)
         }
 
     @Test
@@ -404,13 +409,23 @@ class MyStoreViewModelTest : BaseUnitTest() {
     @Test
     fun `given successful Jetpack installation, when user returns to My Store, then UI is updated with no JP banner`() =
         testBlocking {
-            val siteBeforeInstallation = SiteModel().apply { setIsJetpackCPConnected(true) }
-            val siteAfterInstallation = SiteModel().apply { setIsJetpackConnected(true) }
+            val siteBeforeInstallation = SiteModel().apply {
+                origin = SiteModel.ORIGIN_WPCOM_REST
+                setIsJetpackCPConnected(true)
+            }
+            val siteAfterInstallation = SiteModel().apply {
+                origin = SiteModel.ORIGIN_WPCOM_REST
+                setIsJetpackConnected(true)
+            }
 
             val siteFlow = MutableStateFlow(siteBeforeInstallation)
             whenever(selectedSite.observe()).thenReturn(siteFlow)
             givenNetworkConnectivity(connected = true)
-            givenStatsLoadingResult(GetStats.LoadStatsResult.IsJetPackCPEnabled)
+            givenStatsLoadingResult(
+                GetStats.LoadStatsResult.VisitorStatUnavailable(
+                    connectionType = SiteConnectionType.JetpackConnectionPackage
+                )
+            )
 
             whenViewModelIsCreated()
 
@@ -418,7 +433,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             siteFlow.value = siteAfterInstallation
 
             assertThat(sut.visitorStatsState.value).isNotInstanceOf(
-                MyStoreViewModel.VisitorStatsViewState.JetpackCpConnected::class.java
+                MyStoreViewModel.VisitorStatsViewState.Unavailable::class.java
             )
         }
 

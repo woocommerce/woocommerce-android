@@ -94,7 +94,7 @@ data class Coupon(
 }
 
 fun CouponWithEmails.toAppModel() = Coupon(
-    id = coupon.id,
+    id = coupon.id.value,
     code = coupon.code,
     amount = coupon.amount,
     dateCreatedGmt = coupon.dateCreatedGmt.parseGmtDateFromIso8601DateFormat(),

@@ -2,12 +2,13 @@ package com.woocommerce.android.ui.mystore.domain
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository.StatsException
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.transform
@@ -59,20 +60,20 @@ class GetStats @Inject constructor(
             }
 
     private suspend fun visitorStats(forceRefresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> =
-        if (selectedSite.getIfExists()?.isJetpackCPConnected != true) {
-            statsRepository.fetchVisitorStats(granularity, forceRefresh)
-                .transform { result ->
-                    result.fold(
-                        onSuccess = { stats -> emit(LoadStatsResult.VisitorsStatsSuccess(stats)) },
-                        onFailure = { emit(LoadStatsResult.VisitorsStatsError) }
-                    )
-                }
-        } else {
-            flow {
-                if (FeatureFlag.JETPACK_CP.isEnabled()) {
-                    emit(LoadStatsResult.IsJetPackCPEnabled)
-                }
+        // Visitor stats are only available for Jetpack connected sites
+        when (selectedSite.connectionType) {
+            SiteConnectionType.Jetpack -> {
+                statsRepository.fetchVisitorStats(granularity, forceRefresh)
+                    .transform { result ->
+                        result.fold(
+                            onSuccess = { stats -> emit(LoadStatsResult.VisitorsStatsSuccess(stats)) },
+                            onFailure = { emit(LoadStatsResult.VisitorsStatsError) }
+                        )
+                    }
             }
+            else -> selectedSite.connectionType?.let {
+                flowOf(LoadStatsResult.VisitorStatUnavailable(it))
+            } ?: emptyFlow()
         }
 
     private fun isPluginNotActiveError(error: Throwable): Boolean =
@@ -94,6 +95,8 @@ class GetStats @Inject constructor(
         object RevenueStatsError : LoadStatsResult()
         object VisitorsStatsError : LoadStatsResult()
         object PluginNotActive : LoadStatsResult()
-        object IsJetPackCPEnabled : LoadStatsResult()
+        data class VisitorStatUnavailable(
+            val connectionType: SiteConnectionType
+        ) : LoadStatsResult()
     }
 }

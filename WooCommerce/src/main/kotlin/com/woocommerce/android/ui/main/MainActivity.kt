@@ -47,7 +47,7 @@ import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.support.help.HelpActivity
-import com.woocommerce.android.support.help.HelpActivity.Origin
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
 import com.woocommerce.android.ui.appwidgets.WidgetUpdater
@@ -728,7 +728,7 @@ class MainActivity :
 
     private fun startZendeskActivity() {
         binding.bottomNav.currentPosition = MY_STORE
-        startActivity(HelpActivity.createIntent(this, Origin.ZENDESK_NOTIFICATION, null))
+        startActivity(HelpActivity.createIntent(this, HelpOrigin.ZENDESK_NOTIFICATION, null))
     }
 
     private fun restartActivityForAppLink(event: RestartActivityForAppLink) {

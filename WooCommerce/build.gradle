@@ -74,9 +74,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "11.7-rc-2"
+            versionName "11.8-rc-1"
         }
-        versionCode 370
+        versionCode 372
 
         minSdkVersion gradle.ext.minSdkVersion
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -115,7 +115,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion composeVersion
+        kotlinCompilerExtensionVersion composeCompilerVersion
     }
 
     flavorDimensions "buildType"
@@ -361,21 +361,23 @@ dependencies {
     }
 
     // Jetpack Compose
-    implementation 'androidx.activity:activity-compose:1.4.0'
-    implementation "com.google.accompanist:accompanist-swiperefresh:$composeAccompanistVersion"
-    implementation "androidx.compose.material:material:$composeVersion"
-    implementation "androidx.compose.animation:animation:$composeVersion"
-    implementation "androidx.compose.ui:ui-tooling:$composeVersion"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleViewmodelComposeVersion"
-    implementation "androidx.compose.runtime:runtime-livedata:$composeVersion"
+    implementation platform("androidx.compose:compose-bom:$composeBOMVersion")
+    // Dependencies managed by BOM
+    implementation 'androidx.activity:activity-compose'
+    implementation 'androidx.compose.material:material'
+    implementation 'androidx.compose.animation:animation'
+    implementation 'androidx.compose.ui:ui-tooling'
+    implementation 'androidx.compose.runtime:runtime-livedata'
+
+    implementation 'androidx.constraintlayout:constraintlayout-compose:1.0.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1'
     implementation "com.google.android.material:compose-theme-adapter:$composeThemeAdapterVersion"
-    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$composeVersion"
-    debugImplementation "androidx.compose.ui:ui-test-manifest:$composeVersion"
-    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
+    implementation "com.google.accompanist:accompanist-swiperefresh:$composeAccompanistVersion"
     implementation "com.google.accompanist:accompanist-systemuicontroller:$composeAccompanistVersion"
-
-
     implementation "io.coil-kt:coil-compose:$coilVersion"
+
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.3.2'
+    debugImplementation 'androidx.compose.ui:ui-test-manifest'
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
