@@ -9,7 +9,6 @@ import com.woocommerce.android.ui.analytics.AnalyticsHubUpdateState.Loading
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
 import com.woocommerce.android.util.CoroutineDispatchers
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +17,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class UpdateAnalyticsHubStats @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
@@ -57,10 +57,10 @@ class UpdateAnalyticsHubStats @Inject constructor(
         fetchRevenueData(rangeSelection, fetchStrategy)
         fetchProductsData(rangeSelection, fetchStrategy)
 
-        return combineStatesProgress()
+        return combineFullUpdateState()
     }
 
-    private fun combineStatesProgress() =
+    private fun combineFullUpdateState() =
         combine(_revenueState, _productsState, _ordersState, _sessionState) { revenue, products, orders, session ->
             revenue.isIdle && products.isIdle && orders.isIdle && session.isIdle
         }.map { if (it) Finished else Loading }
