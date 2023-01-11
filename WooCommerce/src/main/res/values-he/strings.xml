@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-12-06 18:54:23+0000
+Translation-Revision-Date: 2022-12-22 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="store_creation_store_categories_subtitle">יש לבחור קטגוריה שמגדירה\nאת העסק שלך בצורה הכי מדויקת.</string>
+    <string name="store_creation_store_categories_title">מה העסק שלך עושה?</string>
+    <string name="product_selection_menu_select_all">לבחור הכול</string>
+    <string name="product_selection_menu_update_price">לעדכן מחיר</string>
+    <string name="product_selection_menu_update_status">לעדכן סטטוס</string>
+    <string name="product_bulk_update_status_updated">הסטטוס עודכן!</string>
+    <string name="product_bulk_update_status">לעדכן סטטוס</string>
+    <string name="product_bulk_update_price_updated">המחיר עודכן!</string>
+    <string name="product_bulk_update_regular_price">לעדכן את המחיר הרגיל</string>
     <string name="store_creation_ecommerce_plan_period_two_years">שנתיים</string>
     <string name="store_creation_ecommerce_store_loading_permanent_error">משהו השתבש במהלך התקנת החנות…</string>
     <string name="variations_bulk_creation_no_candidates_message">כל הסוגים כבר נוצרו.</string>
