@@ -47,7 +47,8 @@ class PaymentChargeRepositoryTest : BaseUnitTest() {
     }
     private val appPrefs: AppPrefsWrapper = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
-    private val getActivePaymentsPlugin: GetActivePaymentsPlugin = GetActivePaymentsPlugin(appPrefs, selectedSite, cardReaderOnboardingChecker)
+    private val getActivePaymentsPlugin: GetActivePaymentsPlugin =
+        GetActivePaymentsPlugin(appPrefs, selectedSite, cardReaderOnboardingChecker)
 
     private val repo = PaymentChargeRepository(ippStore, selectedSite, getActivePaymentsPlugin)
 
