@@ -1,6 +1,10 @@
 package com.woocommerce.android.ui.analytics.ranges
 
 import com.woocommerce.android.extensions.endOfCurrentDay
+import com.woocommerce.android.extensions.endOfCurrentMonth
+import com.woocommerce.android.extensions.endOfCurrentQuarter
+import com.woocommerce.android.extensions.endOfCurrentWeek
+import com.woocommerce.android.extensions.endOfCurrentYear
 import com.woocommerce.android.extensions.startOfCurrentDay
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.LAST_MONTH
@@ -40,9 +44,12 @@ internal class AnalyticsHubDateRangeSelectionTest {
     fun `when selection type is year to date, then generate expected date information`() {
         // Given
         val today = midDayFrom("2020-02-29")
+        val expectedCurrentEndDate = (testCalendar.clone() as Calendar)
+            .apply { time = today }
+            .endOfCurrentYear()
         val expectedCurrentRange = AnalyticsHubTimeRange(
             start = dayStartFrom("2020-01-01"),
-            end = today
+            end = expectedCurrentEndDate
         )
         val expectedPreviousRange = AnalyticsHubTimeRange(
             start = dayStartFrom("2019-01-01"),
@@ -90,9 +97,12 @@ internal class AnalyticsHubDateRangeSelectionTest {
     fun `when selection type is quarter to date, then generate expected date information`() {
         // Given
         val today = midDayFrom("2022-02-15")
+        val expectedCurrentEndDate = (testCalendar.clone() as Calendar)
+            .apply { time = today }
+            .endOfCurrentQuarter()
         val expectedCurrentRange = AnalyticsHubTimeRange(
             start = dayStartFrom("2022-01-01"),
-            end = today
+            end = expectedCurrentEndDate
         )
         val expectedPreviousRange = AnalyticsHubTimeRange(
             start = dayStartFrom("2021-10-01"),
@@ -140,9 +150,12 @@ internal class AnalyticsHubDateRangeSelectionTest {
     fun `when selection type is month to date, then generate expected date information`() {
         // Given
         val today = midDayFrom("2010-07-31")
+        val expectedCurrentEndDate = (testCalendar.clone() as Calendar)
+            .apply { time = today }
+            .endOfCurrentMonth()
         val expectedCurrentRange = AnalyticsHubTimeRange(
             start = dayStartFrom("2010-07-01"),
-            end = today
+            end = expectedCurrentEndDate
         )
         val expectedPreviousRange = AnalyticsHubTimeRange(
             start = dayStartFrom("2010-06-01"),
@@ -190,9 +203,12 @@ internal class AnalyticsHubDateRangeSelectionTest {
     fun `when selection type is week to date, then generate expected date information`() {
         // Given
         val today = midDayFrom("2022-07-01")
+        val expectedCurrentEndDate = (testCalendar.clone() as Calendar)
+            .apply { time = today }
+            .endOfCurrentWeek()
         val expectedCurrentRange = AnalyticsHubTimeRange(
             start = dayStartFrom("2022-06-27"),
-            end = today
+            end = expectedCurrentEndDate
         )
         val expectedPreviousRange = AnalyticsHubTimeRange(
             start = dayStartFrom("2022-06-20"),
@@ -240,9 +256,12 @@ internal class AnalyticsHubDateRangeSelectionTest {
     fun `when selection type is today, then generate expected date information`() {
         // Given
         val today = midDayFrom("2022-07-01")
+        val expectedCurrentEndDate = (testCalendar.clone() as Calendar)
+            .apply { time = today }
+            .endOfCurrentDay()
         val expectedCurrentRange = AnalyticsHubTimeRange(
             start = dayStartFrom("2022-07-01"),
-            end = today
+            end = expectedCurrentEndDate
         )
         val expectedPreviousRange = AnalyticsHubTimeRange(
             start = dayStartFrom("2022-06-30"),
