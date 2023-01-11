@@ -47,6 +47,8 @@ import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState as ProductsViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.LoadingViewState as LoadingProductsViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.NoDataState as ProductsNoDataState
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 @HiltViewModel
 class AnalyticsViewModel @Inject constructor(
@@ -140,19 +142,19 @@ class AnalyticsViewModel @Inject constructor(
 
     private fun getFetchStrategy(isRefreshing: Boolean) = if (isRefreshing) ForceNew else Saved
 
-    private fun observeRangeSelectionChanges() = viewModelScope.launch {
-        rangeSelectionState.collect {
+    private fun observeRangeSelectionChanges() {
+        rangeSelectionState.onEach {
             updateDateSelector()
             trackSelectedDateRange()
             updateStats(
                 rangeSelection = it,
                 fetchStrategy = getFetchStrategy(isRefreshing = false)
             )
-        }
+        }.launchIn(viewModelScope)
     }
 
-    private fun observeOrdersStatChanges() = viewModelScope.launch {
-        updateStats.ordersState.collect { state ->
+    private fun observeOrdersStatChanges() {
+        updateStats.ordersState.onEach { state ->
             when (state) {
                 is OrdersState.Available -> mutableState.update { viewState ->
                     transactionLauncher.onOrdersFetched()
@@ -166,11 +168,11 @@ class AnalyticsViewModel @Inject constructor(
                     LoadingViewState.let { viewState.copy(ordersState = it) }
                 }
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
-    private fun observeSessionChanges() = viewModelScope.launch {
-        updateStats.sessionState.collect { state ->
+    private fun observeSessionChanges() {
+        updateStats.sessionState.onEach { state ->
             when (state) {
                 is SessionState.Available -> mutableState.update { viewState ->
                     transactionLauncher.onSessionFetched()
@@ -184,11 +186,11 @@ class AnalyticsViewModel @Inject constructor(
                     LoadingViewState.let { viewState.copy(sessionState = it) }
                 }
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
-    private fun observeProductsChanges() = viewModelScope.launch {
-        updateStats.productsState.collect { state ->
+    private fun observeProductsChanges() {
+        updateStats.productsState.onEach { state ->
             when (state) {
                 is ProductsState.Available -> mutableState.update { viewState ->
                     transactionLauncher.onProductsFetched()
@@ -202,11 +204,11 @@ class AnalyticsViewModel @Inject constructor(
                     ProductsViewState.LoadingViewState.let { viewState.copy(productsState = it) }
                 }
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
-    private fun observeRevenueChanges() = viewModelScope.launch {
-        updateStats.revenueState.collect { state ->
+    private fun observeRevenueChanges() {
+        updateStats.revenueState.onEach { state ->
             when (state) {
                 is RevenueState.Available -> mutableState.update { viewState ->
                     transactionLauncher.onRevenueFetched()
@@ -220,7 +222,7 @@ class AnalyticsViewModel @Inject constructor(
                     LoadingViewState.let { viewState.copy(revenueState = it) }
                 }
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
     private fun updateDateSelector() {
