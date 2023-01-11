@@ -24,7 +24,16 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.*
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.DismissCardReaderUpsellBanner
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.DismissCardReaderUpsellBannerViaDontShowAgain
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.DismissCardReaderUpsellBannerViaRemindMeLater
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateBackToHub
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateBackToOrderList
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderHubFlow
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderPaymentFlow
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderRefundFlow
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToIPPReaderTypeSelection
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.OpenPurchaseCardReaderLink
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Success
 import com.woocommerce.android.ui.payments.banner.Banner
@@ -158,7 +167,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
                         BaseTransientBottomBar.LENGTH_LONG
                     ).show()
                 }
-                is SharePaymentUrl -> {
+                is SelectPaymentMethodViewModel.SharePaymentUrl -> {
                     sharePaymentUrl(event.storeName, event.paymentUrl)
                 }
                 is NavigateToCardReaderPaymentFlow -> {
@@ -170,9 +179,10 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
                 }
                 is NavigateToIPPReaderTypeSelection -> {
                     val action =
-                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToCardReaderTypeSelectionDialogFragment(
-                            event.cardReaderFlowParam
-                        )
+                        SelectPaymentMethodFragmentDirections
+                            .actionSelectPaymentMethodFragmentToCardReaderTypeSelectionDialogFragment(
+                                event.cardReaderFlowParam
+                            )
                     findNavController().navigate(action)
                 }
                 is NavigateToCardReaderHubFlow -> {
