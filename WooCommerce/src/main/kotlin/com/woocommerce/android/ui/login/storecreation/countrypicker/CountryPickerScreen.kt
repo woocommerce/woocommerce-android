@@ -157,7 +157,7 @@ private fun CountryItem(
             .clickable { onCountrySelected(country) }
     ) {
         Text(
-            text = country.countryName,
+            text = country.name,
             color = colorResource(
                 id = if (isSystemInDarkTheme() && country.isSelected) R.color.color_primary
                 else R.color.color_on_surface
