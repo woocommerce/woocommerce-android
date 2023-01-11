@@ -21,6 +21,10 @@ class CountryPickerViewModel @Inject constructor(
     private val newStore: NewStore,
     val localCountriesRepository: LocalCountriesRepository,
 ) : ScopedViewModel(savedStateHandle) {
+    companion object {
+        const val DEFAULT_LOCATION_CODE = "US"
+    }
+
     private val availableCountries = MutableStateFlow(emptyList<StoreCreationCountry>())
     val countryPickerContent = availableCountries.map { countries ->
         CountryPickerContent(
@@ -31,15 +35,18 @@ class CountryPickerViewModel @Inject constructor(
 
     init {
         launch {
-            val loadedCountries = localCountriesRepository.getLocalCountries()
-            val deviceLocationCountryCode = Locale.current.region
+            val loadedCountriesMap = localCountriesRepository.getLocalCountries()
+            val defaultCountryCode = when {
+                loadedCountriesMap.containsKey(Locale.current.region) -> Locale.current.region
+                else -> DEFAULT_LOCATION_CODE
+            }
             availableCountries.update {
-                loadedCountries.map { (code, name) ->
+                loadedCountriesMap.map { (code, name) ->
                     StoreCreationCountry(
                         name = HtmlCompat.fromHtml(name, HtmlCompat.FROM_HTML_MODE_LEGACY).toString(),
                         code = code,
                         emoji = code.toFlagEmoji(),
-                        isSelected = deviceLocationCountryCode == code
+                        isSelected = defaultCountryCode == code
                     )
                 }
             }
@@ -66,15 +73,11 @@ class CountryPickerViewModel @Inject constructor(
         val countryCodeCaps = this.uppercase() // upper case is important because we are calculating offset
         val firstLetter = Character.codePointAt(countryCodeCaps, 0) - 0x41 + 0x1F1E6
         val secondLetter = Character.codePointAt(countryCodeCaps, 1) - 0x41 + 0x1F1E6
-
-        // 2. It then checks if both characters are alphabet
         if (!countryCodeCaps[0].isLetter() || !countryCodeCaps[1].isLetter()) {
             return this
         }
-
         return String(Character.toChars(firstLetter)) + String(Character.toChars(secondLetter))
     }
-
 
     object NavigateToDomainPickerStep : MultiLiveEvent.Event()
 
