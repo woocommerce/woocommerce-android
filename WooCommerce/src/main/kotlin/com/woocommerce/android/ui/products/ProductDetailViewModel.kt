@@ -14,6 +14,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_LINKED_PRODUCTS
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.addNewItem
 import com.woocommerce.android.extensions.clearList
 import com.woocommerce.android.extensions.containsItem
@@ -32,6 +33,7 @@ import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.model.ProductTag
+import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.addTags
 import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.model.toAppModel
@@ -47,7 +49,12 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
+import com.woocommerce.android.ui.products.variations.VariationListViewModel
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationsError
 import com.woocommerce.android.ui.products.variations.VariationRepository
+import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCandidates
+import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
@@ -105,7 +112,9 @@ class ProductDetailViewModel @Inject constructor(
     private val variationRepository: VariationRepository,
     private val mediaFileUploadHandler: MediaFileUploadHandler,
     private val appPrefsWrapper: AppPrefsWrapper,
-    private val addonRepository: AddonRepository
+    private val addonRepository: AddonRepository,
+    private val generateVariationCandidates: GenerateVariationCandidates,
+    private val tracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -113,6 +122,8 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private val navArgs: ProductDetailFragmentArgs by savedState.navArgs()
+
+    private val remoteProductId = navArgs.remoteProductId
 
     /**
      * Fetch product related properties (currency, product dimensions) for the site since we use this
@@ -421,17 +432,82 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
+    fun onAddAllVariationsClicked() {
+        tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_REQUESTED)
+
+        launch {
+            attributeListViewState = attributeListViewState.copy(isFetchingVariations = true)
+            variationRepository.getAllVariations(remoteProductId)
+            attributeListViewState = attributeListViewState.copy(isFetchingVariations = false)
+
+            val variationCandidates = viewState.productDraft?.let {
+                generateVariationCandidates.invoke(it)
+            }.orEmpty()
+
+            when {
+                variationCandidates.isEmpty() -> {
+                    triggerEvent(ShowGenerateVariationsError.NoCandidates)
+                }
+                variationCandidates.size <= GenerateVariationCandidates.VARIATION_CREATION_LIMIT -> {
+                    triggerEvent(VariationListViewModel.ShowGenerateVariationConfirmation(variationCandidates))
+                }
+                else -> {
+                    tracker.track(
+                        stat = AnalyticsEvent.PRODUCT_VARIATION_GENERATION_LIMIT_REACHED,
+                        properties = mapOf(AnalyticsTracker.KEY_VARIATIONS_COUNT to variationCandidates.size)
+                    )
+                    triggerEvent(ShowGenerateVariationsError.LimitExceeded(variationCandidates.size))
+                }
+            }
+        }
+    }
+
+    fun onGenerateVariationsConfirmed(variationCandidates: List<VariationCandidate>) {
+        tracker.track(
+            stat = AnalyticsEvent.PRODUCT_VARIATION_GENERATION_CONFIRMED,
+            properties = mapOf(AnalyticsTracker.KEY_VARIATIONS_COUNT to variationCandidates.size)
+        )
+        launch {
+            attributeListViewState = attributeListViewState.copy(
+                progressDialogState = ProgressDialogState.Shown(
+                    ProgressDialogState.Shown.VariationsCardinality.MULTIPLE
+                )
+            )
+
+            when (variationRepository.bulkCreateVariations(remoteProductId, variationCandidates)) {
+                RequestResult.SUCCESS -> {
+                    tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_SUCCESS)
+                    productRepository.fetchProductOrLoadFromCache(remoteProductId)
+                        ?.also { updateProductState(productToUpdateFrom = it) }
+                    attributeListViewState = attributeListViewState.copy(
+                        progressDialogState = ProgressDialogState.Hidden
+                    )
+                    triggerEvent(ProductExitEvent.ExitAttributesAdded)
+                }
+                else -> {
+                    tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_FAILURE)
+                    attributeListViewState = attributeListViewState.copy(
+                        progressDialogState = ProgressDialogState.Hidden
+                    )
+                    triggerEvent(ShowGenerateVariationsError.NetworkError)
+                }
+            }
+        }
+    }
+
     private suspend fun createEmptyVariation() =
         viewState.productDraft?.let { draft ->
             saveAttributeChanges()
-            attributeListViewState = attributeListViewState.copy(isCreatingVariationDialogShown = true)
+            attributeListViewState = attributeListViewState.copy(
+                progressDialogState = ProgressDialogState.Shown(ProgressDialogState.Shown.VariationsCardinality.SINGLE)
+            )
             variationRepository.createEmptyVariation(draft)
                 ?.let {
-                    productRepository.fetchProductOrLoadFromCache(draft.remoteId)
+                    productRepository.fetchProductOrLoadFromCache(remoteProductId)
                         ?.also { updateProductState(productToUpdateFrom = it) }
                 }
         }.also {
-            attributeListViewState = attributeListViewState.copy(isCreatingVariationDialogShown = false)
+            attributeListViewState = attributeListViewState.copy(progressDialogState = ProgressDialogState.Hidden)
         }
 
     fun hasCategoryChanges() = storedProduct.value?.hasCategoryChanges(viewState.productDraft) ?: false
@@ -2226,7 +2302,8 @@ class ProductDetailViewModel @Inject constructor(
 
     @Parcelize
     data class AttributeListViewState(
-        val isCreatingVariationDialogShown: Boolean? = null
+        val isFetchingVariations: Boolean = false,
+        val progressDialogState: ProgressDialogState? = null
     ) : Parcelable
 
     data class MenuButtonsState(
