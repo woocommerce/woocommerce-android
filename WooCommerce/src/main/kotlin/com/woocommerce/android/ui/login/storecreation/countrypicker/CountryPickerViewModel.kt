@@ -38,6 +38,7 @@ class CountryPickerViewModel @Inject constructor(
                     StoreCreationCountry(
                         name = HtmlCompat.fromHtml(name, HtmlCompat.FROM_HTML_MODE_LEGACY).toString(),
                         code = code,
+                        emoji = code.toFlagEmoji(),
                         isSelected = deviceLocationCountryCode == code
                     )
                 }
@@ -61,6 +62,20 @@ class CountryPickerViewModel @Inject constructor(
         newStore.update(country = country.name)
     }
 
+    private fun String.toFlagEmoji(): String {
+        val countryCodeCaps = this.uppercase() // upper case is important because we are calculating offset
+        val firstLetter = Character.codePointAt(countryCodeCaps, 0) - 0x41 + 0x1F1E6
+        val secondLetter = Character.codePointAt(countryCodeCaps, 1) - 0x41 + 0x1F1E6
+
+        // 2. It then checks if both characters are alphabet
+        if (!countryCodeCaps[0].isLetter() || !countryCodeCaps[1].isLetter()) {
+            return this
+        }
+
+        return String(Character.toChars(firstLetter)) + String(Character.toChars(secondLetter))
+    }
+
+
     object NavigateToDomainPickerStep : MultiLiveEvent.Event()
 
     data class CountryPickerContent(
@@ -71,6 +86,7 @@ class CountryPickerViewModel @Inject constructor(
     data class StoreCreationCountry(
         val name: String,
         val code: String,
+        val emoji: String,
         val isSelected: Boolean = false
     )
 }

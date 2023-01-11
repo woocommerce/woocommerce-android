@@ -7,6 +7,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -156,18 +157,25 @@ private fun CountryItem(
             )
             .clickable { onCountrySelected(country) }
     ) {
-        Text(
-            text = country.name,
-            color = colorResource(
-                id = if (isSystemInDarkTheme() && country.isSelected) R.color.color_primary
-                else R.color.color_on_surface
-            ),
+        Row(
             modifier = Modifier.padding(
                 start = dimensionResource(id = R.dimen.major_100),
                 top = dimensionResource(id = R.dimen.major_75),
                 bottom = dimensionResource(id = R.dimen.major_75),
                 end = dimensionResource(id = R.dimen.major_100),
             )
-        )
+        ) {
+            Text(
+                text = country.emoji,
+                modifier = Modifier.padding(end = dimensionResource(id = R.dimen.major_100))
+            )
+            Text(
+                text = country.name,
+                color = colorResource(
+                    id = if (isSystemInDarkTheme() && country.isSelected) R.color.color_primary
+                    else R.color.color_on_surface
+                )
+            )
+        }
     }
 }
