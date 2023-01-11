@@ -12,13 +12,15 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.NavigateToCommerceJourneyStep
+import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.NavigateToDomainPickerStep
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class StoreProfilerCategoryFragment : BaseFragment() {
-    private val viewModel: StoreProfilerViewModel by viewModels()
+class StoreProfilerIndustriesFragment : BaseFragment() {
+    private val viewModel: StoreProfilerIndustriesViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -28,7 +30,7 @@ class StoreProfilerCategoryFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    StoreProfilerCategoryScreen(viewModel)
+                    StoreProfilerScreen(viewModel)
                 }
             }
         }
@@ -43,15 +45,23 @@ class StoreProfilerCategoryFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
+                is NavigateToDomainPickerStep -> navigateToDomainPickerStep()
+                is NavigateToCommerceJourneyStep -> navigateToCommerceJourneyStep()
                 is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
-                is StoreProfilerViewModel.NavigateToNextStep -> navigateToDomainPickerStep()
             }
         }
     }
 
     private fun navigateToDomainPickerStep() {
         findNavController().navigateSafely(
-            StoreProfilerCategoryFragmentDirections.actionStoreProfilerCategoryFragmentToDomainPickerFragment()
+            StoreProfilerIndustriesFragmentDirections.actionStoreProfilerCategoryFragmentToDomainPickerFragment()
+        )
+    }
+
+    private fun navigateToCommerceJourneyStep() {
+        findNavController().navigateSafely(
+            StoreProfilerIndustriesFragmentDirections
+                .actionStoreProfilerCategoryFragmentToStoreProfilerCommerceJourneyFragment()
         )
     }
 }

@@ -2813,7 +2813,13 @@
     <string name="store_creation_store_name_subtitle">Don’t worry you can always change it later. </string>
     <string name="store_creation_store_name_hint">Store name</string>
 
-    <string name="store_creation_store_categories_title">What’s your business about?</string>
-    <string name="store_creation_store_categories_subtitle">Choose a category that defines your business the best.</string><string name="not_a_valid_qr_code">Scanned Qr code is not a WooCommerce code</string>
+    <string name="store_creation_store_profiler_industries_title">What will you be selling?</string>
+    <string name="store_creation_store_profiler_industries_description">Choose a category that best fits your business.</string>
+    <string name="store_creation_store_profiler_journey_title">Where are you on your commerce journey?</string>
+    <string name="store_creation_store_profiler_journey_description">To speed things up, we’ll tailor your WooCommerce experience for you based on your response.</string>
+    <string name="store_creation_store_profiler_platforms_title">In which platform are you currently selling?</string>
+    <string name="store_creation_store_profiler_platforms_description">You can choose multiple ones.</string>
+
+    <string name="not_a_valid_qr_code">Scanned Qr code is not a WooCommerce code</string>
     <string name="login_application_passwords_help">What are Application Passwords?</string>
 </resources>

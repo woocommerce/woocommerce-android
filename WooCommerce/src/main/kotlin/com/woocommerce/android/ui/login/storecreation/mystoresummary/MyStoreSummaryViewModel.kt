@@ -17,14 +17,14 @@ import javax.inject.Inject
 class MyStoreSummaryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     newStore: NewStore,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
 
     val viewState = MutableStateFlow(
         MyStoreSummaryState(
             name = newStore.data.name,
             domain = newStore.data.domain ?: "",
-            category = newStore.data.category,
+            industry = newStore.data.industry,
             country = newStore.data.country
         )
     ).asLiveData()
@@ -53,7 +53,7 @@ class MyStoreSummaryViewModel @Inject constructor(
     data class MyStoreSummaryState(
         val name: String? = null,
         val domain: String,
-        val category: String? = null,
+        val industry: String? = null,
         val country: String? = null,
     )
 

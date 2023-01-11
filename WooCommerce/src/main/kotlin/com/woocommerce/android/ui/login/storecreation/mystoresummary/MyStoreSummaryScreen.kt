@@ -147,9 +147,9 @@ private fun StoreDataSummary(
                         style = MaterialTheme.typography.subtitle1,
                     )
                 }
-                if (!myStoreSummaryState.category.isNullOrEmpty()) {
+                if (!myStoreSummaryState.industry.isNullOrEmpty()) {
                     Text(
-                        text = myStoreSummaryState.category,
+                        text = myStoreSummaryState.industry,
                         style = MaterialTheme.typography.subtitle1,
                     )
                 }
@@ -184,7 +184,7 @@ fun MyStoreSummaryScreenPreview() {
             myStoreSummaryState = MyStoreSummaryState(
                 name = "White Christmas Trees",
                 domain = "whitechristmastrees.mywc.mysite",
-                category = "Arts and Crafts",
+                industry = "Arts and Crafts",
                 country = "Canada"
             ),
             onContinueClicked = {}

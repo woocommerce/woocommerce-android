@@ -11,7 +11,9 @@ class NewStore @Inject constructor() {
     fun update(
         name: String? = null,
         domain: String? = null,
-        category: String? = null,
+        industry: String? = null,
+        commerceJourney: String? = null,
+        eCommercePlatform: String? = null,
         country: String? = null,
         siteId: Long? = null,
         planProductId: Int? = null,
@@ -20,7 +22,9 @@ class NewStore @Inject constructor() {
         data = data.copy(
             name = name ?: data.name,
             domain = domain ?: data.domain,
-            category = category ?: data.category,
+            industry = industry ?: data.industry,
+            userJourney = commerceJourney ?: data.userJourney,
+            platform = eCommercePlatform ?: data.platform,
             country = country ?: data.country,
             siteId = siteId ?: data.siteId,
             planProductId = planProductId ?: data.planProductId,
@@ -35,7 +39,9 @@ class NewStore @Inject constructor() {
     data class NewStoreData(
         val name: String? = null,
         val domain: String? = null,
-        val category: String? = null,
+        val industry: String? = null,
+        val userJourney: String? = null,
+        val platform: String? = null,
         val country: String? = null,
         val siteId: Long? = null,
         val planProductId: Int? = null,
