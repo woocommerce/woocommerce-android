@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.analytics.ranges.data
 
+import com.woocommerce.android.extensions.endOfCurrentWeek
 import com.woocommerce.android.extensions.oneWeekAgo
 import com.woocommerce.android.extensions.startOfCurrentWeek
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
@@ -25,10 +26,9 @@ class WeekToDateRangeData(
 
     init {
         calendar.time = referenceDate
-        val startOfCurrentWeek = calendar.startOfCurrentWeek()
         currentRange = AnalyticsHubTimeRange(
-            start = startOfCurrentWeek,
-            end = referenceDate
+            start = calendar.startOfCurrentWeek(),
+            end = calendar.endOfCurrentWeek()
         )
 
         val oneWeekAgo = referenceDate.oneWeekAgo()

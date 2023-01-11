@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.analytics.ranges.data
 
+import com.woocommerce.android.extensions.endOfCurrentYear
 import com.woocommerce.android.extensions.oneYearAgo
 import com.woocommerce.android.extensions.startOfCurrentYear
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
@@ -27,7 +28,7 @@ class YearToDateRangeData(
         calendar.time = referenceDate
         currentRange = AnalyticsHubTimeRange(
             start = calendar.startOfCurrentYear(),
-            end = referenceDate
+            end = calendar.endOfCurrentYear()
         )
 
         val oneYearAgo = referenceDate.oneYearAgo()

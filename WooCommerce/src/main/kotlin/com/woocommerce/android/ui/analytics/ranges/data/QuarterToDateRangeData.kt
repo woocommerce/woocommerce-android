@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.analytics.ranges.data
 
+import com.woocommerce.android.extensions.endOfCurrentQuarter
 import com.woocommerce.android.extensions.oneQuarterAgo
 import com.woocommerce.android.extensions.startOfCurrentQuarter
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
@@ -27,7 +28,7 @@ class QuarterToDateRangeData(
         calendar.time = referenceDate
         currentRange = AnalyticsHubTimeRange(
             start = calendar.startOfCurrentQuarter(),
-            end = referenceDate
+            end = calendar.endOfCurrentQuarter()
         )
 
         val oneQuarterAgo = referenceDate.oneQuarterAgo()

@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.analytics.ranges.data
 
+import com.woocommerce.android.extensions.endOfCurrentMonth
 import com.woocommerce.android.extensions.oneMonthAgo
 import com.woocommerce.android.extensions.startOfCurrentMonth
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
@@ -27,7 +28,7 @@ class MonthToDateRangeData(
         calendar.time = referenceDate
         currentRange = AnalyticsHubTimeRange(
             start = calendar.startOfCurrentMonth(),
-            end = referenceDate
+            end = calendar.endOfCurrentMonth()
         )
 
         val oneMonthAgo = referenceDate.oneMonthAgo()
