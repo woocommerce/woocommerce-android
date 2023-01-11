@@ -609,6 +609,11 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     PRODUCT_IMAGE_ADDED,
     PRODUCT_IMAGE_REMOVED,
 
+    // -- Duplicate product
+    DUPLICATE_PRODUCT_SUCCESS,
+    DUPLICATE_PRODUCT_FAILED,
+    PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED,
+
     // -- Help & Support
     SUPPORT_HELP_CENTER_VIEWED(siteless = true),
     SUPPORT_IDENTITY_SET(siteless = true),
