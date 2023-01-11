@@ -88,3 +88,9 @@ fun Date.theDayBeforeIt() =
         .apply { time = this@theDayBeforeIt }
         .apply { add(Calendar.DATE, -1) }
         .time
+
+fun Date.daysAgo(daysAgo: Int) =
+    Calendar.getInstance()
+        .apply { time = this@daysAgo }
+        .apply { add(Calendar.DATE, -daysAgo) }
+        .time
