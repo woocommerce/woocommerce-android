@@ -45,23 +45,23 @@ class StoreProfilerIndustriesFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                is NavigateToCountryPickerStep -> navigateToDomainPickerStep()
+                is NavigateToCountryPickerStep -> navigateToCountryPickerStep()
                 is NavigateToCommerceJourneyStep -> navigateToCommerceJourneyStep()
                 is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
             }
         }
     }
 
-    private fun navigateToDomainPickerStep() {
+    private fun navigateToCountryPickerStep() {
         findNavController().navigateSafely(
-            StoreProfilerIndustriesFragmentDirections.actionStoreProfilerCategoryFragmentToDomainPickerFragment()
+            StoreProfilerIndustriesFragmentDirections.actionStoreProfilerCategoryFragmentToCountryPickerFragment()
         )
     }
 
     private fun navigateToCommerceJourneyStep() {
         findNavController().navigateSafely(
             StoreProfilerIndustriesFragmentDirections
-                .actionStoreProfilerCategoryFragmentToStoreProfilerCommerceJourneyFragment()
+                .actionStoreProfilerCategoryFragmentToCountryPickerFragment()
         )
     }
 }

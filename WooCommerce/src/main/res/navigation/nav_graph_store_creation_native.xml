@@ -39,8 +39,8 @@
         android:name="com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerIndustriesFragment"
         android:label="fragment_store_profiler_industries">
         <action
-            android:id="@+id/action_storeProfilerCategoryFragment_to_domainPickerFragment"
-            app:destination="@id/domainPickerFragment" />
+            android:id="@+id/action_storeProfilerCategoryFragment_to_countryPickerFragment"
+            app:destination="@id/countryPickerFragment" />
         <action
             android:id="@+id/action_storeProfilerCategoryFragment_to_storeProfilerCommerceJourneyFragment"
             app:destination="@id/storeProfilerCommerceJourneyFragment" />
