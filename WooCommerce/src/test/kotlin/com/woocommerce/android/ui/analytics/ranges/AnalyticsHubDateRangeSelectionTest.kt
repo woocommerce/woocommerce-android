@@ -330,6 +330,274 @@ internal class AnalyticsHubDateRangeSelectionTest {
         assertThat(sut.previousRange).isEqualTo(expectedPreviousRange)
     }
 
+    @Test
+    fun `when selection type is year to date, then generate expected descriptions`() {
+        // Given
+        val today = midDayFrom("2022-07-01")
+        val sut = YEAR_TO_DATE.generateSelectionData(
+            referenceStartDate = today,
+            calendar = testCalendar,
+            locale = testLocale
+        )
+
+        // When
+        val currentRangeDescription = sut.currentRangeDescription
+        val previousRangeDescription = sut.previousRangeDescription
+
+        // Then
+        assertThat(currentRangeDescription).isEqualTo("Jan 1 - Jul 1, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Jan 1 - Jul 1, 2021")
+    }
+
+    @Test
+    fun `when selection type is last year, then generate expected descriptions`() {
+        // Given
+        val today = midDayFrom("2022-07-01")
+        val sut = LAST_YEAR.generateSelectionData(
+            referenceStartDate = today,
+            calendar = testCalendar,
+            locale = testLocale
+        )
+
+        // When
+        val currentRangeDescription = sut.currentRangeDescription
+        val previousRangeDescription = sut.previousRangeDescription
+
+        // Then
+        assertThat(currentRangeDescription).isEqualTo("Jan 1 - Dec 31, 2021")
+        assertThat(previousRangeDescription).isEqualTo("Jan 1 - Dec 31, 2020")
+    }
+
+    @Test
+    fun `when selection type is quarter to date, then generate expected descriptions`() {
+        // Given
+        val today = midDayFrom("2022-02-15")
+        val sut = QUARTER_TO_DATE.generateSelectionData(
+            referenceStartDate = today,
+            calendar = testCalendar,
+            locale = testLocale
+        )
+
+        // When
+        val currentRangeDescription = sut.currentRangeDescription
+        val previousRangeDescription = sut.previousRangeDescription
+
+        // Then
+        assertThat(currentRangeDescription).isEqualTo("Jan 1 - Feb 15, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Oct 1 - Nov 15, 2021")
+    }
+
+    @Test
+    fun `when selection type is last quarter, then generate expected descriptions`() {
+        // Given
+        val today = midDayFrom("2022-05-15")
+        val sut = LAST_QUARTER.generateSelectionData(
+            referenceStartDate = today,
+            calendar = testCalendar,
+            locale = testLocale
+        )
+
+        // When
+        val currentRangeDescription = sut.currentRangeDescription
+        val previousRangeDescription = sut.previousRangeDescription
+
+        // Then
+        assertThat(currentRangeDescription).isEqualTo("Jan 1 - Mar 31, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Oct 1 - Dec 31, 2021")
+    }
+
+    @Test
+    fun `when selection type is month to date, and today is last day of month, then generate expected descriptions`() {
+        // Given
+        val today = midDayFrom("2022-07-31")
+        val sut = MONTH_TO_DATE.generateSelectionData(
+            referenceStartDate = today,
+            calendar = testCalendar,
+            locale = testLocale
+        )
+
+        // When
+        val currentRangeDescription = sut.currentRangeDescription
+        val previousRangeDescription = sut.previousRangeDescription
+
+        // Then
+        assertThat(currentRangeDescription).isEqualTo("Jul 1 - 31, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Jun 1 - 30, 2022")
+    }
+
+    @Test
+    fun `when selection type is month to date, then generate expected descriptions`() {
+        // Given
+        val today = midDayFrom("2022-07-20")
+        val sut = MONTH_TO_DATE.generateSelectionData(
+            referenceStartDate = today,
+            calendar = testCalendar,
+            locale = testLocale
+        )
+
+        // When
+        val currentRangeDescription = sut.currentRangeDescription
+        val previousRangeDescription = sut.previousRangeDescription
+
+        // Then
+        assertThat(currentRangeDescription).isEqualTo("Jul 1 - 20, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Jun 1 - 20, 2022")
+    }
+
+    @Test
+    fun `when selection type is last month, then generate expected descriptions`() {
+        // Given
+        val today = midDayFrom("2022-07-31")
+        val sut = LAST_MONTH.generateSelectionData(
+            referenceStartDate = today,
+            calendar = testCalendar,
+            locale = testLocale
+        )
+
+        // When
+        val currentRangeDescription = sut.currentRangeDescription
+        val previousRangeDescription = sut.previousRangeDescription
+
+        // Then
+        assertThat(currentRangeDescription).isEqualTo("Jun 1 - 30, 2022")
+        assertThat(previousRangeDescription).isEqualTo("May 1 - 31, 2022")
+    }
+
+    @Test
+    fun `when selection type is week to date, then generate expected descriptions`() {
+        // Given
+        val today = midDayFrom("2022-07-29")
+        val sut = WEEK_TO_DATE.generateSelectionData(
+            referenceStartDate = today,
+            calendar = testCalendar,
+            locale = testLocale
+        )
+
+        // When
+        val currentRangeDescription = sut.currentRangeDescription
+        val previousRangeDescription = sut.previousRangeDescription
+
+        // Then
+        assertThat(currentRangeDescription).isEqualTo("Jul 25 - 29, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Jul 18 - 22, 2022")
+    }
+
+    @Test
+    fun `when selection type is week to date with different months, then generate expected descriptions`() {
+        // Given
+        val today = midDayFrom("2022-07-02")
+        val sut = WEEK_TO_DATE.generateSelectionData(
+            referenceStartDate = today,
+            calendar = testCalendar,
+            locale = testLocale
+        )
+
+        // When
+        val currentRangeDescription = sut.currentRangeDescription
+        val previousRangeDescription = sut.previousRangeDescription
+
+        // Then
+        assertThat(currentRangeDescription).isEqualTo("Jun 27 - Jul 2, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Jun 20 - 25, 2022")
+    }
+
+    @Test
+    fun `when selection type is last week, then generate expected descriptions`() {
+        // Given
+        val today = midDayFrom("2022-07-29")
+        val sut = LAST_WEEK.generateSelectionData(
+            referenceStartDate = today,
+            calendar = testCalendar,
+            locale = testLocale
+        )
+
+        // When
+        val currentRangeDescription = sut.currentRangeDescription
+        val previousRangeDescription = sut.previousRangeDescription
+
+        // Then
+        assertThat(currentRangeDescription).isEqualTo("Jul 18 - 24, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Jul 11 - 17, 2022")
+    }
+
+    @Test
+    fun `when selection type is last week with different months, then generate expected descriptions`() {
+        // Given
+        val today = midDayFrom("2022-07-05")
+        val sut = LAST_WEEK.generateSelectionData(
+            referenceStartDate = today,
+            calendar = testCalendar,
+            locale = testLocale
+        )
+
+        // When
+        val currentRangeDescription = sut.currentRangeDescription
+        val previousRangeDescription = sut.previousRangeDescription
+
+        // Then
+        assertThat(currentRangeDescription).isEqualTo("Jun 27 - Jul 3, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Jun 20 - 26, 2022")
+    }
+
+    @Test
+    fun `when selection type is today, then generate expected descriptions`() {
+        // Given
+        val today = midDayFrom("2022-07-01")
+        val sut = TODAY.generateSelectionData(
+            referenceStartDate = today,
+            calendar = testCalendar,
+            locale = testLocale
+        )
+
+        // When
+        val currentRangeDescription = sut.currentRangeDescription
+        val previousRangeDescription = sut.previousRangeDescription
+
+        // Then
+        assertThat(currentRangeDescription).isEqualTo("Jul 1, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Jun 30, 2022")
+    }
+
+    @Test
+    fun `when selection type is yesterday, then generate expected descriptions`() {
+        // Given
+        val today = midDayFrom("2022-07-02")
+        val sut = YESTERDAY.generateSelectionData(
+            referenceStartDate = today,
+            calendar = testCalendar,
+            locale = testLocale
+        )
+
+        // When
+        val currentRangeDescription = sut.currentRangeDescription
+        val previousRangeDescription = sut.previousRangeDescription
+
+        // Then
+        assertThat(currentRangeDescription).isEqualTo("Jul 1, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Jun 30, 2022")
+    }
+
+    @Test
+    fun `when selection type is custom, then generate expected descriptions`() {
+        // Given
+        val start = dayStartFrom("2022-12-05")
+        val end = dayEndFrom("2022-12-07")
+        val sut = CUSTOM.generateSelectionData(
+            referenceStartDate = start,
+            referenceEndDate = end,
+            calendar = testCalendar,
+            locale = testLocale
+        )
+
+        // When
+        val currentRangeDescription = sut.currentRangeDescription
+        val previousRangeDescription = sut.previousRangeDescription
+
+        // Then
+        assertThat(currentRangeDescription).isEqualTo("Dec 5 - 7, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Dec 2 - 4, 2022")
+    }
+
     private fun midDayFrom(date: String): Date {
         val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
         formatter.timeZone = testTimeZone
