@@ -6,6 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.login.storecreation.NewStore
+import com.woocommerce.android.util.EmojiUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,15 +20,16 @@ import javax.inject.Inject
 class CountryPickerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val newStore: NewStore,
-    val localCountriesRepository: LocalCountriesRepository,
+    private val localCountriesRepository: LocalCountriesRepository,
+    private val emojiUtils: EmojiUtils
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val DEFAULT_LOCATION_CODE = "US"
     }
 
     private val availableCountries = MutableStateFlow(emptyList<StoreCreationCountry>())
-    val countryPickerContent = availableCountries.map { countries ->
-        CountryPickerContent(
+    val countryPickerState = availableCountries.map { countries ->
+        CountryPickerState(
             storeName = newStore.data.name ?: "",
             countries = countries
         )
@@ -45,7 +47,7 @@ class CountryPickerViewModel @Inject constructor(
                     StoreCreationCountry(
                         name = HtmlCompat.fromHtml(name, HtmlCompat.FROM_HTML_MODE_LEGACY).toString(),
                         code = code,
-                        emoji = code.toFlagEmoji(),
+                        emojiFlag = emojiUtils.countryCodeToEmojiFlag(code),
                         isSelected = defaultCountryCode == code
                     )
                 }
@@ -62,26 +64,30 @@ class CountryPickerViewModel @Inject constructor(
     }
 
     fun onContinueClicked() {
+        newStore.update(country = availableCountries.value.first { it.isSelected }.toNewStoreCountry())
         triggerEvent(NavigateToDomainPickerStep)
     }
 
     fun onCountrySelected(country: StoreCreationCountry) {
-        newStore.update(country = country.name)
+        availableCountries.update { currentCountryList ->
+            currentCountryList.map {
+                when (it.code) {
+                    country.code -> it.copy(isSelected = true)
+                    else -> it.copy(isSelected = false)
+                }
+            }
+        }
     }
 
-    private fun String.toFlagEmoji(): String {
-        val countryCodeCaps = this.uppercase() // upper case is important because we are calculating offset
-        val firstLetter = Character.codePointAt(countryCodeCaps, 0) - 0x41 + 0x1F1E6
-        val secondLetter = Character.codePointAt(countryCodeCaps, 1) - 0x41 + 0x1F1E6
-        if (!countryCodeCaps[0].isLetter() || !countryCodeCaps[1].isLetter()) {
-            return this
-        }
-        return String(Character.toChars(firstLetter)) + String(Character.toChars(secondLetter))
-    }
+    private fun StoreCreationCountry.toNewStoreCountry() =
+        NewStore.Country(
+            name = name,
+            code = code,
+        )
 
     object NavigateToDomainPickerStep : MultiLiveEvent.Event()
 
-    data class CountryPickerContent(
+    data class CountryPickerState(
         val storeName: String,
         val countries: List<StoreCreationCountry>
     )
@@ -89,7 +95,7 @@ class CountryPickerViewModel @Inject constructor(
     data class StoreCreationCountry(
         val name: String,
         val code: String,
-        val emoji: String,
+        val emojiFlag: String,
         val isSelected: Boolean = false
     )
 }

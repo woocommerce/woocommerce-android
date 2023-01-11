@@ -41,7 +41,7 @@ import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPicke
 
 @Composable
 fun CountryPickerScreen(viewModel: CountryPickerViewModel) {
-    viewModel.countryPickerContent.observeAsState().value?.let { countryPickerContent ->
+    viewModel.countryPickerState.observeAsState().value?.let { countryPickerContent ->
         Scaffold(topBar = {
             Toolbar(
                 title = { Text("") },
@@ -58,7 +58,7 @@ fun CountryPickerScreen(viewModel: CountryPickerViewModel) {
             )
         }) { padding ->
             CountryPickerForm(
-                countryPickerContent = countryPickerContent,
+                countryPickerState = countryPickerContent,
                 onContinueClicked = viewModel::onContinueClicked,
                 onCountrySelected = viewModel::onCountrySelected,
                 modifier = Modifier
@@ -71,7 +71,7 @@ fun CountryPickerScreen(viewModel: CountryPickerViewModel) {
 
 @Composable
 private fun CountryPickerForm(
-    countryPickerContent: CountryPickerViewModel.CountryPickerContent,
+    countryPickerState: CountryPickerViewModel.CountryPickerState,
     onContinueClicked: () -> Unit,
     onCountrySelected: (StoreCreationCountry) -> Unit,
     modifier: Modifier = Modifier,
@@ -84,7 +84,7 @@ private fun CountryPickerForm(
                 .padding(dimensionResource(id = R.dimen.major_100))
         ) {
             Text(
-                text = countryPickerContent.storeName.uppercase(),
+                text = countryPickerState.storeName.uppercase(),
                 style = MaterialTheme.typography.caption,
                 color = colorResource(id = R.color.color_on_surface_medium),
                 modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100))
@@ -106,7 +106,7 @@ private fun CountryPickerForm(
                 modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100))
             )
             CountryItem(
-                country = countryPickerContent.countries.first { it.isSelected },
+                country = countryPickerState.countries.first { it.isSelected },
                 onCountrySelected = {},
                 modifier = Modifier
                     .fillMaxWidth()
@@ -118,7 +118,7 @@ private fun CountryPickerForm(
                 modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100))
             )
             AvailableCountriesList(
-                countryPickerContent.countries,
+                countryPickerState.countries,
                 onCountrySelected = onCountrySelected,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -191,7 +191,7 @@ private fun CountryItem(
             )
         ) {
             Text(
-                text = country.emoji,
+                text = country.emojiFlag,
                 modifier = Modifier.padding(end = dimensionResource(id = R.dimen.major_100))
             )
             Text(
@@ -215,31 +215,31 @@ private fun CountryItem(
 fun CountryPickerPreview() {
     WooThemeWithBackground {
         CountryPickerForm(
-            countryPickerContent = CountryPickerViewModel.CountryPickerContent(
+            countryPickerState = CountryPickerViewModel.CountryPickerState(
                 storeName = "White Christmas Tree",
                 countries = listOf(
                     StoreCreationCountry(
-                        name = "Spain",
-                        code = "ES",
-                        emoji = "",
+                        name = "Canada",
+                        code = "CA",
+                        emojiFlag = "\uD83C\uDDE8\uD83C\uDDE6",
                         isSelected = false
                     ),
                     StoreCreationCountry(
                         name = "Spain",
                         code = "ES",
-                        emoji = "",
+                        emojiFlag = "\uD83C\uDDEA\uD83C\uDDF8",
                         isSelected = false
                     ),
                     StoreCreationCountry(
-                        name = "Spain",
-                        code = "ES",
-                        emoji = "",
+                        name = "United States",
+                        code = "US",
+                        emojiFlag = "\uD83C\uDDFA\uD83C\uDDF8",
                         isSelected = false
                     ),
                     StoreCreationCountry(
-                        name = "Spain",
-                        code = "ES",
-                        emoji = "",
+                        name = "Italy",
+                        code = "IT",
+                        emojiFlag = "\uD83C\uDDEE\uD83C\uDDF9",
                         isSelected = false
                     )
                 )

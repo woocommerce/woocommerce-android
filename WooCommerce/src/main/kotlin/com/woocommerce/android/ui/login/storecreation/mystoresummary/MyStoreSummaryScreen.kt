@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -141,11 +142,17 @@ private fun StoreDataSummary(
                         )
                     }
                 }
-                if (!myStoreSummaryState.country.isNullOrEmpty()) {
-                    Text(
-                        text = myStoreSummaryState.country,
-                        style = MaterialTheme.typography.subtitle1,
-                    )
+                if (myStoreSummaryState.country != null) {
+                    Row {
+                        Text(
+                            text = myStoreSummaryState.country.name,
+                            style = MaterialTheme.typography.subtitle1,
+                        )
+                        Text(
+                            text = " ${myStoreSummaryState.country.emojiFlag}",
+                            style = MaterialTheme.typography.subtitle1,
+                        )
+                    }
                 }
                 if (!myStoreSummaryState.industry.isNullOrEmpty()) {
                     Text(
@@ -185,7 +192,10 @@ fun MyStoreSummaryScreenPreview() {
                 name = "White Christmas Trees",
                 domain = "whitechristmastrees.mywc.mysite",
                 industry = "Arts and Crafts",
-                country = "Canada"
+                country = MyStoreSummaryViewModel.Country(
+                    name = "Canada",
+                    emojiFlag = "\uD83C\uDDE8\uD83C\uDDE6"
+                )
             ),
             onContinueClicked = {}
         )

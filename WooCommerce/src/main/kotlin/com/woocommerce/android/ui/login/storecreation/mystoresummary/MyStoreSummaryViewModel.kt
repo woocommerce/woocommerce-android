@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin.STORE_CREATION
 import com.woocommerce.android.ui.login.storecreation.NewStore
+import com.woocommerce.android.util.EmojiUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +18,8 @@ import javax.inject.Inject
 class MyStoreSummaryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     newStore: NewStore,
-    analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    emojiUtils: EmojiUtils
 ) : ScopedViewModel(savedStateHandle) {
 
     val viewState = MutableStateFlow(
@@ -25,7 +27,10 @@ class MyStoreSummaryViewModel @Inject constructor(
             name = newStore.data.name,
             domain = newStore.data.domain ?: "",
             industry = newStore.data.industry,
-            country = newStore.data.country
+            country = Country(
+                name = newStore.data.country?.name ?: "",
+                emojiFlag = emojiUtils.countryCodeToEmojiFlag(newStore.data.country?.code ?: "")
+            )
         )
     ).asLiveData()
 
@@ -54,7 +59,12 @@ class MyStoreSummaryViewModel @Inject constructor(
         val name: String? = null,
         val domain: String,
         val industry: String? = null,
-        val country: String? = null,
+        val country: Country? = null,
+    )
+
+    data class Country(
+        val name: String,
+        val emojiFlag: String
     )
 
     object NavigateToNextStep : MultiLiveEvent.Event()
