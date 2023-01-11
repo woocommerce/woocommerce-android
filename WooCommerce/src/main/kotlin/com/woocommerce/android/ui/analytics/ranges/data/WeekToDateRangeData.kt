@@ -1,12 +1,14 @@
 package com.woocommerce.android.ui.analytics.ranges.data
 
 import com.woocommerce.android.extensions.endOfCurrentWeek
+import com.woocommerce.android.extensions.formatAsRangeWith
 import com.woocommerce.android.extensions.oneWeekAgo
 import com.woocommerce.android.extensions.startOfCurrentWeek
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRangeData
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 // Responsible for defining two ranges of data, the current one, starting from the first day of the current week
 // until the current date, and the previous one, starting from the first day of the previous week
@@ -19,17 +21,22 @@ import java.util.Date
 //
 class WeekToDateRangeData(
     referenceDate: Date,
+    locale: Locale,
     referenceCalendar: Calendar
 ) : AnalyticsHubTimeRangeData(referenceCalendar) {
     override val currentRange: AnalyticsHubTimeRange
     override val previousRange: AnalyticsHubTimeRange
+    override val formattedCurrentRange: String
+    override val formattedPreviousRange: String
 
     init {
         calendar.time = referenceDate
+        val currentStart = calendar.startOfCurrentWeek()
         currentRange = AnalyticsHubTimeRange(
-            start = calendar.startOfCurrentWeek(),
+            start = currentStart,
             end = calendar.endOfCurrentWeek()
         )
+        formattedCurrentRange = currentStart.formatAsRangeWith(referenceDate, locale, calendar)
 
         val oneWeekAgo = referenceDate.oneWeekAgo()
         calendar.time = oneWeekAgo
@@ -38,5 +45,6 @@ class WeekToDateRangeData(
             start = startOfPreviousWeek,
             end = oneWeekAgo
         )
+        formattedPreviousRange = startOfPreviousWeek.formatAsRangeWith(oneWeekAgo, locale, calendar)
     }
 }

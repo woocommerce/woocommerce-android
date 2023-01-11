@@ -7,6 +7,8 @@ abstract class AnalyticsHubTimeRangeData(
 ) {
     abstract val currentRange: AnalyticsHubTimeRange
     abstract val previousRange: AnalyticsHubTimeRange
+    abstract val formattedCurrentRange: String
+    abstract val formattedPreviousRange: String
 
     protected val calendar = referenceCalendar.clone() as Calendar
 }

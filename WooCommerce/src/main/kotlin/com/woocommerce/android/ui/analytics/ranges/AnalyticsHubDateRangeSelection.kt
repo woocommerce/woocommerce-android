@@ -49,12 +49,12 @@ class AnalyticsHubDateRangeSelection : Serializable {
         calendar: Calendar,
         locale: Locale,
     ) {
-        val rangeData = CustomRangeData(rangeStart, rangeEnd, calendar)
+        val rangeData = CustomRangeData(rangeStart, rangeEnd, locale, calendar)
         selectionType = CUSTOM
         currentRange = rangeData.currentRange
         previousRange = rangeData.previousRange
-        currentRangeDescription = currentRange.generateDescription(false, locale, calendar)
-        previousRangeDescription = previousRange.generateDescription(false, locale, calendar)
+        currentRangeDescription = rangeData.formattedCurrentRange
+        previousRangeDescription = rangeData.formattedPreviousRange
     }
 
     private constructor(
@@ -63,32 +63,31 @@ class AnalyticsHubDateRangeSelection : Serializable {
         calendar: Calendar,
         locale: Locale
     ) {
-        val rangeData = generateTimeRangeData(selectionType, referenceDate, calendar)
+        val rangeData = generateTimeRangeData(selectionType, referenceDate, locale, calendar)
         this.selectionType = selectionType
         currentRange = rangeData.currentRange
         previousRange = rangeData.previousRange
-
-        val simplifiedDescription = selectionType == TODAY || selectionType == YESTERDAY
-        currentRangeDescription = currentRange.generateDescription(simplifiedDescription, locale, calendar)
-        previousRangeDescription = previousRange.generateDescription(simplifiedDescription, locale, calendar)
+        currentRangeDescription = rangeData.formattedCurrentRange
+        previousRangeDescription = rangeData.formattedPreviousRange
     }
 
     private fun generateTimeRangeData(
         selectionType: SelectionType,
         referenceDate: Date,
+        locale: Locale,
         calendar: Calendar
     ): AnalyticsHubTimeRangeData {
         return when (selectionType) {
-            TODAY -> TodayRangeData(referenceDate, calendar)
-            YESTERDAY -> YesterdayRangeData(referenceDate, calendar)
-            WEEK_TO_DATE -> WeekToDateRangeData(referenceDate, calendar)
-            LAST_WEEK -> LastWeekRangeData(referenceDate, calendar)
-            MONTH_TO_DATE -> MonthToDateRangeData(referenceDate, calendar)
-            LAST_MONTH -> LastMonthRangeData(referenceDate, calendar)
-            QUARTER_TO_DATE -> QuarterToDateRangeData(referenceDate, calendar)
-            LAST_QUARTER -> LastQuarterRangeData(referenceDate, calendar)
-            YEAR_TO_DATE -> YearToDateRangeData(referenceDate, calendar)
-            LAST_YEAR -> LastYearRangeData(referenceDate, calendar)
+            TODAY -> TodayRangeData(referenceDate, locale, calendar)
+            YESTERDAY -> YesterdayRangeData(referenceDate, locale, calendar)
+            WEEK_TO_DATE -> WeekToDateRangeData(referenceDate, locale, calendar)
+            LAST_WEEK -> LastWeekRangeData(referenceDate, locale, calendar)
+            MONTH_TO_DATE -> MonthToDateRangeData(referenceDate, locale, calendar)
+            LAST_MONTH -> LastMonthRangeData(referenceDate, locale, calendar)
+            QUARTER_TO_DATE -> QuarterToDateRangeData(referenceDate, locale, calendar)
+            LAST_QUARTER -> LastQuarterRangeData(referenceDate, locale, calendar)
+            YEAR_TO_DATE -> YearToDateRangeData(referenceDate, locale, calendar)
+            LAST_YEAR -> LastYearRangeData(referenceDate, locale, calendar)
             else -> throw IllegalStateException("Custom selection type should use the correct constructor")
         }
     }

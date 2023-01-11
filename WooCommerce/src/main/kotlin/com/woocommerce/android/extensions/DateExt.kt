@@ -135,5 +135,22 @@ fun Date.isInSameMonthAs(other: Date, baseCalendar: Calendar): Boolean {
     return thisMonth == otherMonth && isInSameYearAs(other, calendar)
 }
 
+
+fun Date.formatAsRangeWith(other: Date, locale: Locale, calendar: Calendar): String {
+    val formattedStartDate = if (this.isInSameYearAs(other, calendar)) {
+        this.formatToMMMdd(locale)
+    } else {
+        this.formatToMMMddYYYY(locale)
+    }
+
+    val formattedEndDate = if (this.isInSameMonthAs(other, calendar)) {
+        other.formatToDDyyyy(locale)
+    } else {
+        other.formatToMMMddYYYY(locale)
+    }
+
+    return "$formattedStartDate - $formattedEndDate"
+}
+
 private const val THREE_MONTHS = 3
 private const val SEVEN_DAYS = 7
