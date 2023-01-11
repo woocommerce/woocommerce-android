@@ -348,7 +348,7 @@ class ProductDetailViewModel @Inject constructor(
      * Called when the Share menu button is clicked in Product detail screen
      */
     fun onShareButtonClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
+        tracker.track(AnalyticsEvent.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
         viewState.productDraft?.let {
             triggerEvent(ProductNavigationTarget.ShareProduct(it.permalink, it.name))
         }
@@ -362,7 +362,7 @@ class ProductDetailViewModel @Inject constructor(
             triggerEvent(
                 ShowDialog(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_PRODUCT_DELETED)
+                        tracker.track(AnalyticsEvent.PRODUCT_DETAIL_PRODUCT_DELETED)
                         viewState = viewState.copy(isConfirmingTrash = false)
                         viewState.productDraft?.let { product ->
                             triggerEvent(ExitWithResult(product.remoteId))
@@ -393,7 +393,7 @@ class ProductDetailViewModel @Inject constructor(
      * Called when the add image icon is clicked in Product detail screen
      */
     fun onAddImageButtonClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_IMAGE_TAPPED)
+        tracker.track(AnalyticsEvent.PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.productDraft?.let {
             triggerEvent(ProductNavigationTarget.ViewProductImageGallery(it.remoteId, it.images, true))
         }
@@ -416,7 +416,7 @@ class ProductDetailViewModel @Inject constructor(
      * is selected in Product detail screen
      */
     fun onEditProductCardClicked(target: ProductNavigationTarget, stat: AnalyticsEvent? = null) {
-        stat?.let { AnalyticsTracker.track(it) }
+        stat?.let { tracker.track(it) }
         triggerEvent(target)
     }
 
@@ -694,7 +694,7 @@ class ProductDetailViewModel @Inject constructor(
             is ProductExitEvent.ExitProductDownloadsSettings -> Unit // Do nothing
             is ProductExitEvent.ExitProductRenameAttribute -> Unit // Do nothing
         }
-        eventName?.let { AnalyticsTracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
+        eventName?.let { tracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
         triggerEvent(event)
     }
 
@@ -803,13 +803,13 @@ class ProductDetailViewModel @Inject constructor(
             }
             ?.takeIf { addProduct(it).first }
             ?.let {
-                AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_SUCCESS)
+                tracker.track(AnalyticsEvent.ADD_PRODUCT_SUCCESS)
             }
-            ?: AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_FAILED)
+            ?: tracker.track(AnalyticsEvent.ADD_PRODUCT_FAILED)
     }
 
     private fun startUpdateProduct(isPublish: Boolean) {
-        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
+        tracker.track(AnalyticsEvent.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
         viewState.productDraft?.let {
             val product = if (isPublish) it.copy(status = ProductStatus.PUBLISH) else it
             viewState = viewState.copy(isProgressDialogShown = true)
@@ -830,7 +830,7 @@ class ProductDetailViewModel @Inject constructor(
                 val snackbarMessage = pickAddProductRequestSnackbarText(isSuccess, productStatus)
                 triggerEvent(ShowSnackbar(snackbarMessage))
                 if (isSuccess) {
-                    AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_SUCCESS)
+                    tracker.track(AnalyticsEvent.ADD_PRODUCT_SUCCESS)
                     if (product.remoteId != newProductId) {
                         // Assign the current uploads to the new product id
                         mediaFileUploadHandler.assignUploadsToCreatedProduct(newProductId)
@@ -842,7 +842,7 @@ class ProductDetailViewModel @Inject constructor(
                         observeImageUploadEvents()
                     }
                 } else {
-                    AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_FAILED)
+                    tracker.track(AnalyticsEvent.ADD_PRODUCT_FAILED)
                 }
             }
         }
@@ -886,12 +886,12 @@ class ProductDetailViewModel @Inject constructor(
         } else {
             AnalyticsEvent.ADD_PRODUCT_PUBLISH_TAPPED
         }
-        AnalyticsTracker.track(statId, properties)
+        tracker.track(statId, properties)
     }
 
     private fun trackWithProductId(event: AnalyticsEvent) {
         storedProduct.value?.let {
-            AnalyticsTracker.track(
+            tracker.track(
                 event,
                 mapOf(AnalyticsTracker.KEY_PRODUCT_ID to it.remoteId)
             )
@@ -953,7 +953,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun onViewProductOnStoreLinkClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED)
+        tracker.track(AnalyticsEvent.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED)
         viewState.productDraft?.permalink?.let { url ->
             triggerEvent(LaunchUrlInChromeTab(url))
         }
@@ -1169,9 +1169,9 @@ class ProductDetailViewModel @Inject constructor(
         if (hasTrackedProductDetailLoaded.not()) {
             storedProduct.value?.let {
                 val properties = mapOf(KEY_HAS_LINKED_PRODUCTS to it.hasLinkedProducts())
-                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED, properties)
+                tracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED, properties)
             } ?: run {
-                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED)
+                tracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED)
             }
             hasTrackedProductDetailLoaded = true
         }
@@ -1710,7 +1710,7 @@ class ProductDetailViewModel @Inject constructor(
             viewState.productDraft?.hasLinkedProducts() == false
         ) {
             appPrefsWrapper.setPromoBannerShown(PromoBannerType.LINKED_PRODUCTS, true)
-            AnalyticsTracker.track(
+            tracker.track(
                 AnalyticsEvent.FEATURE_CARD_SHOWN,
                 mapOf(
                     AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.SOURCE_PRODUCT_DETAIL,
@@ -1722,7 +1722,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun onLinkedProductPromoClicked() {
-        AnalyticsTracker.track(
+        tracker.track(
             AnalyticsEvent.FEATURE_CARD_CTA_TAPPED,
             mapOf(
                 AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.SOURCE_PRODUCT_DETAIL,
@@ -1733,7 +1733,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun onLinkedProductPromoDismissed() {
-        AnalyticsTracker.track(
+        tracker.track(
             AnalyticsEvent.FEATURE_CARD_DISMISSED,
             mapOf(
                 AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.SOURCE_PRODUCT_DETAIL,
@@ -1848,7 +1848,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun onAddCategoryButtonClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CATEGORY_SETTINGS_ADD_BUTTON_TAPPED)
+        tracker.track(AnalyticsEvent.PRODUCT_CATEGORY_SETTINGS_ADD_BUTTON_TAPPED)
         triggerEvent(ProductNavigationTarget.AddProductCategory)
     }
 
