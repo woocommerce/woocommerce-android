@@ -9,6 +9,10 @@ import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.MONTH_TO_DATE
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.TODAY
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.WEEK_TO_DATE
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.YEAR_TO_DATE
 import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.OrdersResult.OrdersError
 import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.ProductsResult.ProductsError
 import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.RevenueResult.RevenueData
@@ -262,19 +266,34 @@ class AnalyticsRepository @Inject constructor(
         rangeSelection: AnalyticsHubDateRangeSelection,
         fetchStrategy: FetchStrategy
     ): Result<Map<String, Int>> = coroutineScope {
-        statsRepository.fetchVisitorStats(
-            getGranularity(rangeSelection.selectionType),
-            fetchStrategy is FetchStrategy.ForceNew,
-        ).single()
+        val isSelectionAvailableInMyStoreSection =
+            rangeSelection.selectionType == TODAY ||
+            rangeSelection.selectionType == WEEK_TO_DATE ||
+            rangeSelection.selectionType == MONTH_TO_DATE ||
+            rangeSelection.selectionType == YEAR_TO_DATE
+
+        if (isSelectionAvailableInMyStoreSection) {
+            statsRepository.fetchVisitorStats(
+                getGranularity(rangeSelection.selectionType),
+                fetchStrategy is FetchStrategy.ForceNew,
+            ).single()
+        } else {
+         statsRepository.fetchVisitorStats(
+                rangeSelection.currentRange.start.formatToYYYYmmDD(),
+                rangeSelection.currentRange.end.formatToYYYYmmDD(),
+                getGranularity(rangeSelection.selectionType),
+                fetchStrategy is FetchStrategy.ForceNew
+            )
+        }
     }
 
     private fun getGranularity(selectionType: SelectionType) =
         when (selectionType) {
-            SelectionType.TODAY, SelectionType.YESTERDAY -> DAYS
+            TODAY, SelectionType.YESTERDAY -> DAYS
             SelectionType.LAST_WEEK, SelectionType.WEEK_TO_DATE -> WEEKS
-            SelectionType.LAST_MONTH, SelectionType.MONTH_TO_DATE -> MONTHS
+            SelectionType.LAST_MONTH, MONTH_TO_DATE -> MONTHS
             SelectionType.LAST_QUARTER, SelectionType.QUARTER_TO_DATE -> MONTHS
-            SelectionType.LAST_YEAR, SelectionType.YEAR_TO_DATE -> YEARS
+            SelectionType.LAST_YEAR, YEAR_TO_DATE -> YEARS
             SelectionType.CUSTOM -> DAYS
         }
 
