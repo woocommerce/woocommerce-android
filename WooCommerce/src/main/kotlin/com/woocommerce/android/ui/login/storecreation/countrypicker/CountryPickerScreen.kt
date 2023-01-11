@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -57,7 +56,9 @@ fun CountryPickerScreen(viewModel: CountryPickerViewModel) {
                 countryPickerContent = countryPickerContent,
                 onContinueClicked = viewModel::onContinueClicked,
                 onCountrySelected = viewModel::onCountrySelected,
-                modifier = Modifier.padding(padding)
+                modifier = Modifier
+                    .background(MaterialTheme.colors.surface)
+                    .padding(padding)
             )
         }
     }
@@ -75,22 +76,41 @@ private fun CountryPickerForm(
             modifier = Modifier
                 .fillMaxSize()
                 .weight(1f)
-                .padding(dimensionResource(id = R.dimen.major_100)),
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+                .padding(dimensionResource(id = R.dimen.major_100))
         ) {
             Text(
                 text = countryPickerContent.storeName.uppercase(),
                 style = MaterialTheme.typography.caption,
-                color = colorResource(id = R.color.color_on_surface_medium)
+                color = colorResource(id = R.color.color_on_surface_medium),
+                modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100))
             )
             Text(
                 text = stringResource(id = R.string.store_creation_country_picker_title),
                 style = MaterialTheme.typography.h5,
+                modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100))
             )
             Text(
                 text = stringResource(id = R.string.store_creation_country_picker_description),
                 style = MaterialTheme.typography.subtitle1,
-                color = colorResource(id = R.color.color_on_surface_medium)
+                color = colorResource(id = R.color.color_on_surface_medium),
+                modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_200))
+            )
+            Text(
+                text = stringResource(id = R.string.store_creation_country_picker_current_location).uppercase(),
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100))
+            )
+            CountryItem(
+                country = countryPickerContent.countries.first { it.isSelected },
+                onCountrySelected = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = dimensionResource(id = R.dimen.major_200))
+            )
+            Text(
+                text = stringResource(id = R.string.store_creation_country_picker_countries_header).uppercase(),
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100))
             )
             AvailableCountriesList(
                 countryPickerContent.countries,
