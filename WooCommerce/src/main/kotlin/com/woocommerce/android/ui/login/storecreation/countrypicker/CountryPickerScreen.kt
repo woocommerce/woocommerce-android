@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.login.storecreation.countrypicker
 
+import android.content.res.Configuration
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -29,9 +31,12 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerViewModel.StoreCreationCountry
 
 @Composable
@@ -197,5 +202,52 @@ private fun CountryItem(
                 )
             )
         }
+    }
+}
+
+@ExperimentalFoundationApi
+@Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "small screen", device = Devices.PIXEL)
+@Preview(name = "mid screen", device = Devices.PIXEL_4)
+@Preview(name = "large screen", device = Devices.NEXUS_10)
+@Composable
+fun CountryPickerPreview() {
+    WooThemeWithBackground {
+        CountryPickerForm(
+            countryPickerContent = CountryPickerViewModel.CountryPickerContent(
+                storeName = "White Christmas Tree",
+                countries = listOf(
+                    StoreCreationCountry(
+                        name = "Spain",
+                        code = "ES",
+                        emoji = "",
+                        isSelected = false
+                    ),
+                    StoreCreationCountry(
+                        name = "Spain",
+                        code = "ES",
+                        emoji = "",
+                        isSelected = false
+                    ),
+                    StoreCreationCountry(
+                        name = "Spain",
+                        code = "ES",
+                        emoji = "",
+                        isSelected = false
+                    ),
+                    StoreCreationCountry(
+                        name = "Spain",
+                        code = "ES",
+                        emoji = "",
+                        isSelected = false
+                    )
+                )
+            ),
+            onContinueClicked = {},
+            onCountrySelected = {},
+            modifier = Modifier
+                .background(MaterialTheme.colors.surface)
+        )
     }
 }
