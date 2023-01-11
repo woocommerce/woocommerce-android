@@ -87,11 +87,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     @Test
     fun `given an init viewState, when view model is created, then has the expected values`() =
         testBlocking {
-            val resourceProvider: ResourceProvider = mock {
-                on { getString(any()) } doReturn TODAY.name
-            }
-
-            sut = givenAViewModel(resourceProvider)
+            sut = givenAViewModel()
 
             val expectedSelection = TODAY.generateSelectionData(
                 calendar = testCalendar,
@@ -99,7 +95,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             )
 
             with(sut.viewState.value.analyticsDateRangeSelectorState) {
-                assertEquals(expectedSelection.selectionType.name, selectionTitle)
+                assertEquals(expectedSelection.selectionType, selectionType)
                 assertEquals(expectedSelection.currentRangeDescription, currentRange)
                 assertEquals(expectedSelection.previousRangeDescription, previousRange)
             }
@@ -138,7 +134,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             )
 
             with(sut.viewState.value.analyticsDateRangeSelectorState) {
-                assertEquals(expectedSelection.selectionType.name, selectionTitle)
+                assertEquals(expectedSelection.selectionType, selectionType)
                 assertEquals(expectedSelection.currentRangeDescription, currentRange)
                 assertEquals(expectedSelection.previousRangeDescription, previousRange)
             }
@@ -163,7 +159,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             )
 
             with(sut.viewState.value.analyticsDateRangeSelectorState) {
-                assertEquals(expectedSelection.selectionType.name, selectionTitle)
+                assertEquals(expectedSelection.selectionType, selectionType)
                 assertEquals(expectedSelection.currentRangeDescription, currentRange)
                 assertEquals(expectedSelection.previousRangeDescription, previousRange)
             }
