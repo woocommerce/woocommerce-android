@@ -268,9 +268,9 @@ class AnalyticsRepository @Inject constructor(
     ): Result<Map<String, Int>> = coroutineScope {
         val isSelectionAvailableInMyStoreSection =
             rangeSelection.selectionType == TODAY ||
-            rangeSelection.selectionType == WEEK_TO_DATE ||
-            rangeSelection.selectionType == MONTH_TO_DATE ||
-            rangeSelection.selectionType == YEAR_TO_DATE
+                rangeSelection.selectionType == WEEK_TO_DATE ||
+                rangeSelection.selectionType == MONTH_TO_DATE ||
+                rangeSelection.selectionType == YEAR_TO_DATE
 
         if (isSelectionAvailableInMyStoreSection) {
             statsRepository.fetchVisitorStats(
@@ -278,7 +278,7 @@ class AnalyticsRepository @Inject constructor(
                 fetchStrategy is FetchStrategy.ForceNew,
             ).single()
         } else {
-         statsRepository.fetchVisitorStats(
+            statsRepository.fetchVisitorStats(
                 rangeSelection.currentRange.start.formatToYYYYmmDD(),
                 rangeSelection.currentRange.end.formatToYYYYmmDD(),
                 getGranularity(rangeSelection.selectionType),
