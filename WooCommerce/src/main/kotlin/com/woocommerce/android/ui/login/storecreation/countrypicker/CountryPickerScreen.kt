@@ -81,7 +81,10 @@ private fun CountryPickerForm(
             modifier = Modifier
                 .fillMaxSize()
                 .weight(1f)
-                .padding(dimensionResource(id = R.dimen.major_100))
+                .padding(
+                    start = dimensionResource(id = R.dimen.major_100),
+                    end = dimensionResource(id = R.dimen.major_100)
+                )
         ) {
             Text(
                 text = countryPickerState.storeName.uppercase(),
@@ -101,7 +104,7 @@ private fun CountryPickerForm(
                 modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_200))
             )
             Text(
-                text = stringResource(id = R.string.store_creation_country_picker_current_location).uppercase(),
+                text = stringResource(id = R.string.store_creation_country_picker_current_location),
                 style = MaterialTheme.typography.caption,
                 modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100))
             )
@@ -113,7 +116,7 @@ private fun CountryPickerForm(
                     .padding(bottom = dimensionResource(id = R.dimen.major_200))
             )
             Text(
-                text = stringResource(id = R.string.store_creation_country_picker_countries_header).uppercase(),
+                text = stringResource(id = R.string.store_creation_country_picker_countries_header),
                 style = MaterialTheme.typography.caption,
                 modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100))
             )
