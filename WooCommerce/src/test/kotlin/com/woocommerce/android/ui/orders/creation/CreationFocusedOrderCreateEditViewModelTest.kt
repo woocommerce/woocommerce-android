@@ -35,6 +35,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
+import java.util.function.Consumer
 
 @ExperimentalCoroutinesApi
 class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() {
@@ -476,9 +477,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         // then
         assertThat(orderDraft?.feesLines)
             .hasSize(3)
-            .first().satisfies { firstFee ->
-                assertThat(firstFee.total).isEqualTo(newFeeTotal)
-            }
+            .first().satisfies(Consumer { firstFee -> assertThat(firstFee.total).isEqualTo(newFeeTotal) })
     }
 
     @Test
@@ -606,9 +605,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         // then
         assertThat(orderDraft?.shippingLines)
             .hasSize(3)
-            .first().satisfies { firstFee ->
-                assertThat(firstFee.total).isEqualTo(newValue)
-            }
+            .first().satisfies(Consumer { firstFee -> assertThat(firstFee.total).isEqualTo(newValue) })
     }
 
     @Test
@@ -812,7 +809,10 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `should initialize with empty order`() {
         sut.orderDraft.observeForever {}
 
-        assertThat(sut.orderDraft.value).isEqualToIgnoringGivenFields(Order.EMPTY, "dateCreated", "dateModified")
+        assertThat(sut.orderDraft.value)
+            .usingRecursiveComparison()
+            .ignoringFields("dateCreated", "dateModified")
+            .isEqualTo(Order.EMPTY)
     }
 
     @Test

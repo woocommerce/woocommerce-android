@@ -246,6 +246,7 @@
     <string name="login_try_another_store">Try another store</string>
     <string name="login_not_woo_store">It looks like %1$s is not a WooCommerce site.</string>
     <string name="login_install_woo">Install WooCommerce</string>
+    <string name="login_open_installation_page">Open installation page</string>
     <string name="login_not_connected_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to this account. \n\nOnce setup, refresh the app</string>
     <string name="login_no_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to a WordPress.com account</string>
     <string name="login_not_wordpress_site_v2">We were not able to detect a WordPress site at the address you entered. Please make sure WordPress is installed and that you are running the latest available version.</string>
@@ -334,6 +335,7 @@
     <string name="login_jetpack_installation_connection_dismissed_explanation">Try connecting again to access your store.</string>
     <string name="login_jetpack_installation_continue_connection">Continue connection</string>
     <string name="login_jetpack_installation_exit_without_connection">Exit Without Connecting</string>
+    <string name="login_application_passwords_unavailable">It looks like Application Passwords feature is disabled in your site %1$s.\n Please enable it to use the WooCommerce app.</string>
 
     <!--
         My Store View
@@ -2821,4 +2823,5 @@
 
     <string name="store_creation_store_categories_title">What’s your business about?</string>
     <string name="store_creation_store_categories_subtitle">Choose a category that defines your business the best.</string><string name="not_a_valid_qr_code">Scanned Qr code is not a WooCommerce code</string>
+    <string name="login_application_passwords_help">What are Application Passwords?</string>
 </resources>
