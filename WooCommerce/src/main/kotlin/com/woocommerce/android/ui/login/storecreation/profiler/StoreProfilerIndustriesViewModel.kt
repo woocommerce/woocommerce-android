@@ -6,6 +6,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.storecreation.NewStore
+import com.woocommerce.android.ui.login.storecreation.NewStore.ProfilerData
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
@@ -20,6 +21,8 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
     private val storeProfilerRepository: StoreProfilerRepository,
     private val resourceProvider: ResourceProvider,
 ) : BaseStoreProfilerViewModel(savedStateHandle, newStore) {
+    private var industries: List<Industry> = emptyList()
+
     init {
         analyticsTracker.track(
             AnalyticsEvent.SITE_CREATION_STEP,
@@ -29,6 +32,7 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
         )
         launch {
             val fetchedOptions = storeProfilerRepository.fetchProfilerOptions()
+            industries = fetchedOptions.industries
             profilerOptions.update {
                 fetchedOptions.industries.map { it.toStoreProfilerOptionUi() }
             }
@@ -42,12 +46,22 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
         resourceProvider.getString(R.string.store_creation_store_profiler_industries_title)
 
     override fun onContinueClicked() {
-        newStore.update(industry = profilerOptions.value.firstOrNull() { it.isSelected }?.name)
+        val selectedOptionName = profilerOptions.value.firstOrNull { it.isSelected }?.name
+        val selectedIndustry = industries.first { selectedOptionName == it.label }
+        newStore.update(
+            profilerData = (newStore.data.profilerData ?: ProfilerData())
+                .copy(
+                    industryLabel = selectedIndustry.label,
+                    industryKey = selectedIndustry.key,
+                    industryGroupKey = selectedIndustry.tracks
+                )
+        )
         triggerEvent(NavigateToCommerceJourneyStep)
     }
 
     private fun Industry.toStoreProfilerOptionUi() = StoreProfilerOptionUi(
         name = label,
-        isSelected = newStore.data.industry == label
+        key = key,
+        isSelected = newStore.data.profilerData?.industryKey == key
     )
 }
