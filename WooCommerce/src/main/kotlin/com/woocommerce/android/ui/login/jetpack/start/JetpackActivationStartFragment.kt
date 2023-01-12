@@ -10,15 +10,15 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.support.help.HelpActivity
+import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainFragment
 import com.woocommerce.android.ui.login.jetpack.start.JetpackActivationStartViewModel.ContinueJetpackConnection
-import com.woocommerce.android.ui.login.jetpack.start.JetpackActivationStartViewModel.NavigateToHelpScreen
 import com.woocommerce.android.ui.login.jetpack.start.JetpackActivationStartViewModel.NavigateToSiteCredentialsScreen
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.NavigateToHelpScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -51,7 +51,7 @@ class JetpackActivationStartFragment : BaseFragment() {
             when (event) {
                 is NavigateToSiteCredentialsScreen -> navigateToSiteCredentialsScreen(event)
                 is ContinueJetpackConnection -> continueJetpackConnection(event)
-                NavigateToHelpScreen -> navigateToHelpScreen()
+                is NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
                 Exit -> findNavController().navigateUp()
             }
         }
@@ -80,16 +80,6 @@ class JetpackActivationStartFragment : BaseFragment() {
                     siteUrl = event.siteUrl,
                     isJetpackInstalled = true
                 )
-        )
-    }
-
-    private fun navigateToHelpScreen() {
-        startActivity(
-            HelpActivity.createIntent(
-                context = requireContext(),
-                origin = HelpActivity.Origin.JETPACK_INSTALLATION,
-                extraSupportTags = null
-            )
         )
     }
 }

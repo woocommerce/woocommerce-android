@@ -14,9 +14,9 @@ import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.support.ZendeskHelper
-import com.woocommerce.android.support.help.HelpActivity
-import com.woocommerce.android.support.help.HelpActivity.Origin
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel
@@ -27,13 +27,13 @@ import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorView
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.CreateZendeskTicket
-import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.NavigateToHelpScreen
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.ShowJetpackConnectionError
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.StartNativeJetpackActivation
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.StartWebBasedJetpackInstallation
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.NavigateToHelpScreen
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
@@ -76,11 +76,9 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 CreateZendeskTicket -> {
-                    zendeskHelper.createNewTicket(requireActivity(), Origin.LOGIN_SITE_ADDRESS, null)
+                    zendeskHelper.createNewTicket(requireActivity(), HelpOrigin.LOGIN_SITE_ADDRESS, null)
                 }
-                is NavigateToHelpScreen -> {
-                    startActivity(HelpActivity.createIntent(requireContext(), Origin.LOGIN_SITE_ADDRESS, null))
-                }
+                is NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
                 is StartWebBasedJetpackInstallation -> startWebBasedJetpackInstallation(event.siteAddress)
                 is StartNativeJetpackActivation -> startNativeJetpackActivation(event)
                 is ShowJetpackConnectionError -> showJetpackErrorScreen(event.siteAddress)

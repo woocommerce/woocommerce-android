@@ -5,6 +5,7 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.support.help.HelpOrigin.STORE_CREATION
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -16,14 +17,14 @@ import javax.inject.Inject
 class MyStoreSummaryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     newStore: NewStore,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
 
     val viewState = MutableStateFlow(
         MyStoreSummaryState(
             name = newStore.data.name,
             domain = newStore.data.domain ?: "",
-            category = newStore.data.category,
+            industry = newStore.data.industry,
             country = newStore.data.country
         )
     ).asLiveData()
@@ -41,6 +42,10 @@ class MyStoreSummaryViewModel @Inject constructor(
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
+    fun onHelpPressed() {
+        triggerEvent(MultiLiveEvent.Event.NavigateToHelpScreen(STORE_CREATION))
+    }
+
     fun onContinueClicked() {
         triggerEvent(NavigateToNextStep)
     }
@@ -48,7 +53,7 @@ class MyStoreSummaryViewModel @Inject constructor(
     data class MyStoreSummaryState(
         val name: String? = null,
         val domain: String,
-        val category: String? = null,
+        val industry: String? = null,
         val country: String? = null,
     )
 

@@ -46,7 +46,8 @@ data class Order(
     val chargeId: String?,
     val shippingPhone: String,
     val paymentUrl: String,
-    val isEditable: Boolean
+    val isEditable: Boolean,
+    val customerId: Long?,
 ) : Parcelable {
     @IgnoredOnParcel
     val isOrderPaid = datePaid != null
@@ -334,7 +335,8 @@ data class Order(
                 taxLines = emptyList(),
                 shippingPhone = "",
                 paymentUrl = "",
-                isEditable = true
+                isEditable = true,
+                customerId = null,
             )
         }
 

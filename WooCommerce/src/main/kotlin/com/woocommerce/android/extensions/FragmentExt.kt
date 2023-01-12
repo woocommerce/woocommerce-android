@@ -9,6 +9,8 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.woocommerce.android.R
+import com.woocommerce.android.support.help.HelpActivity
+import com.woocommerce.android.support.help.HelpOrigin
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlin.math.abs
@@ -178,4 +180,14 @@ fun Fragment.pinFabAboveBottomNavigationBar(fabButton: FloatingActionButton) {
             fabButton.translationY =
                 (abs(verticalOffset) - appBarLayout.totalScrollRange).toFloat()
         }.launchIn(viewLifecycleOwner.lifecycleScope)
+}
+
+fun Fragment.navigateToHelpScreen(origin: HelpOrigin) {
+    startActivity(
+        HelpActivity.createIntent(
+            context = requireContext(),
+            origin = origin,
+            extraSupportTags = null
+        )
+    )
 }

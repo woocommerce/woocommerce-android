@@ -12,6 +12,8 @@ import androidx.constraintlayout.widget.ConstraintLayout.VISIBLE
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideApp
@@ -113,10 +115,12 @@ class RefundProductListAdapter(
             }
 
             imageMap.get(item.orderItem.productId)?.let {
+                val imageCornerRadius = itemView.context.resources.getDimensionPixelSize(R.dimen.corner_radius_image)
                 val imageSize = itemView.context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
                 val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
                 GlideApp.with(itemView.context)
                     .load(imageUrl)
+                    .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
                     .placeholder(R.drawable.ic_product)
                     .into(productImageView)
             } ?: productImageView.setImageResource(R.drawable.ic_product)
@@ -150,10 +154,12 @@ class RefundProductListAdapter(
             }
 
             imageMap.get(item.orderItem.productId)?.let {
+                val imageCornerRadius = itemView.context.resources.getDimensionPixelSize(R.dimen.corner_radius_image)
                 val imageSize = itemView.context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
                 val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
                 GlideApp.with(itemView.context)
                     .load(imageUrl)
+                    .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
                     .placeholder(R.drawable.ic_product)
                     .into(productImageView)
             } ?: productImageView.setImageResource(R.drawable.ic_product)
