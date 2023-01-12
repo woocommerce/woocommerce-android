@@ -11,9 +11,7 @@ class NewStore @Inject constructor() {
     fun update(
         name: String? = null,
         domain: String? = null,
-        industry: String? = null,
-        commerceJourney: String? = null,
-        eCommercePlatform: String? = null,
+        profilerData: ProfilerData? = null,
         country: Country? = null,
         siteId: Long? = null,
         planProductId: Int? = null,
@@ -22,9 +20,7 @@ class NewStore @Inject constructor() {
         data = data.copy(
             name = name ?: data.name,
             domain = domain ?: data.domain,
-            industry = industry ?: data.industry,
-            userJourney = commerceJourney ?: data.userJourney,
-            platform = eCommercePlatform ?: data.platform,
+            profilerData = profilerData,
             country = country ?: data.country,
             siteId = siteId ?: data.siteId,
             planProductId = planProductId ?: data.planProductId,
@@ -39,9 +35,7 @@ class NewStore @Inject constructor() {
     data class NewStoreData(
         val name: String? = null,
         val domain: String? = null,
-        val industry: String? = null,
-        val userJourney: String? = null,
-        val platform: String? = null,
+        val profilerData: ProfilerData? = null,
         val country: Country? = null,
         val siteId: Long? = null,
         val planProductId: Int? = null,
@@ -51,5 +45,15 @@ class NewStore @Inject constructor() {
     data class Country(
         val name: String,
         val code: String,
+    )
+
+    /**
+     * This data is meant to be temporary until we have an API ready to send
+     */
+    data class ProfilerData(
+        val industryKey: String? = null,
+        val industryGroupKey: String? = null,
+        val userCommerceJourneyKey: String? = null,
+        val eCommercePlatformKey: String? = null,
     )
 }

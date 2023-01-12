@@ -75,6 +75,7 @@ abstract class BaseStoreProfilerViewModel(
     @Parcelize
     data class StoreProfilerOptionUi(
         val name: String,
+        val key: String,
         val isSelected: Boolean,
     ) : Parcelable
 
