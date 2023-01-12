@@ -50,7 +50,7 @@ class StoreProfilerCommerceJourneyViewModel @Inject constructor(
         newStore.update(
             profilerData = (newStore.data.profilerData ?: NewStore.ProfilerData())
                 .copy(
-                    userCommerceJourneyKey = profilerOptions.value.firstOrNull() { it.isSelected }?.key
+                    userCommerceJourneyKey = profilerOptions.value.firstOrNull { it.isSelected }?.key
                 )
         )
         when (alreadySellingOnlineSelected()) {
