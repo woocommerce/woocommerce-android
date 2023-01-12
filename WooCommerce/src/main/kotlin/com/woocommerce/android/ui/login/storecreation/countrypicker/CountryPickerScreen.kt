@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -37,6 +38,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerViewModel.CountryPickerState
 import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerViewModel.StoreCreationCountry
 
 @Composable
@@ -71,7 +73,7 @@ fun CountryPickerScreen(viewModel: CountryPickerViewModel) {
 
 @Composable
 private fun CountryPickerForm(
-    countryPickerState: CountryPickerViewModel.CountryPickerState,
+    countryPickerState: CountryPickerState,
     onContinueClicked: () -> Unit,
     onCountrySelected: (StoreCreationCountry) -> Unit,
     modifier: Modifier = Modifier,
@@ -86,45 +88,11 @@ private fun CountryPickerForm(
                     end = dimensionResource(id = R.dimen.major_100)
                 )
         ) {
-            Text(
-                text = countryPickerState.storeName.uppercase(),
-                style = MaterialTheme.typography.caption,
-                color = colorResource(id = R.color.color_on_surface_medium),
-                modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100))
-            )
-            Text(
-                text = stringResource(id = R.string.store_creation_country_picker_title),
-                style = MaterialTheme.typography.h5,
-                modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100))
-            )
-            Text(
-                text = stringResource(id = R.string.store_creation_country_picker_description),
-                style = MaterialTheme.typography.subtitle1,
-                color = colorResource(id = R.color.color_on_surface_medium),
-                modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_200))
-            )
-            Text(
-                text = stringResource(id = R.string.store_creation_country_picker_current_location),
-                style = MaterialTheme.typography.caption,
-                modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100))
-            )
-            CountryItem(
-                country = countryPickerState.countries.first { it.isSelected },
-                onCountrySelected = {},
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = dimensionResource(id = R.dimen.major_200))
-            )
-            Text(
-                text = stringResource(id = R.string.store_creation_country_picker_countries_header),
-                style = MaterialTheme.typography.caption,
-                modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100))
-            )
-            AvailableCountriesList(
-                countryPickerState.countries,
-                onCountrySelected = onCountrySelected,
-                modifier = Modifier.fillMaxWidth()
-            )
+            val configuration = LocalConfiguration.current
+            when (configuration.orientation) {
+                Configuration.ORIENTATION_LANDSCAPE -> FullScrollableContent(countryPickerState, onCountrySelected)
+                else -> OnlyCountryListScrollableContent(countryPickerState, onCountrySelected)
+            }
         }
         Divider(
             color = colorResource(id = R.color.divider_color),
@@ -142,13 +110,15 @@ private fun CountryPickerForm(
 }
 
 @Composable
-private fun AvailableCountriesList(
-    countries: List<StoreCreationCountry>,
+private fun FullScrollableContent(
+    countryPickerState: CountryPickerState,
     onCountrySelected: (StoreCreationCountry) -> Unit,
-    modifier: Modifier = Modifier
 ) {
-    LazyColumn(modifier = modifier) {
-        itemsIndexed(countries) { _, country ->
+    LazyColumn {
+        item {
+            CountryPickerHeaderContent(countryPickerState)
+        }
+        itemsIndexed(countryPickerState.countries) { _, country ->
             CountryItem(
                 country = country,
                 onCountrySelected = onCountrySelected,
@@ -157,6 +127,65 @@ private fun AvailableCountriesList(
                     .padding(bottom = dimensionResource(id = R.dimen.major_100))
             )
         }
+    }
+}
+
+@Composable
+private fun OnlyCountryListScrollableContent(
+    countryPickerState: CountryPickerState,
+    onCountrySelected: (StoreCreationCountry) -> Unit,
+) {
+    CountryPickerHeaderContent(countryPickerState)
+    LazyColumn {
+        itemsIndexed(countryPickerState.countries) { _, country ->
+            CountryItem(
+                country = country,
+                onCountrySelected = onCountrySelected,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = dimensionResource(id = R.dimen.major_100))
+            )
+        }
+    }
+}
+
+@Composable
+private fun CountryPickerHeaderContent(countryPickerState: CountryPickerState) {
+    Column {
+        Text(
+            text = countryPickerState.storeName.uppercase(),
+            style = MaterialTheme.typography.caption,
+            color = colorResource(id = R.color.color_on_surface_medium),
+            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100))
+        )
+        Text(
+            text = stringResource(id = R.string.store_creation_country_picker_title),
+            style = MaterialTheme.typography.h5,
+            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100))
+        )
+        Text(
+            text = stringResource(id = R.string.store_creation_country_picker_description),
+            style = MaterialTheme.typography.subtitle1,
+            color = colorResource(id = R.color.color_on_surface_medium),
+            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_200))
+        )
+        Text(
+            text = stringResource(id = R.string.store_creation_country_picker_current_location),
+            style = MaterialTheme.typography.caption,
+            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100))
+        )
+        CountryItem(
+            country = countryPickerState.countries.first { it.isSelected },
+            onCountrySelected = {},
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = dimensionResource(id = R.dimen.major_200))
+        )
+        Text(
+            text = stringResource(id = R.string.store_creation_country_picker_countries_header),
+            style = MaterialTheme.typography.caption,
+            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100))
+        )
     }
 }
 
@@ -218,7 +247,7 @@ private fun CountryItem(
 fun CountryPickerPreview() {
     WooThemeWithBackground {
         CountryPickerForm(
-            countryPickerState = CountryPickerViewModel.CountryPickerState(
+            countryPickerState = CountryPickerState(
                 storeName = "White Christmas Tree",
                 countries = listOf(
                     StoreCreationCountry(
