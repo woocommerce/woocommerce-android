@@ -61,7 +61,7 @@ class StoreProfilerIndustriesFragment : BaseFragment() {
     private fun navigateToCommerceJourneyStep() {
         findNavController().navigateSafely(
             StoreProfilerIndustriesFragmentDirections
-                .actionStoreProfilerCategoryFragmentToCountryPickerFragment()
+                .actionStoreProfilerCategoryFragmentToStoreProfilerCommerceJourneyFragment()
         )
     }
 }
