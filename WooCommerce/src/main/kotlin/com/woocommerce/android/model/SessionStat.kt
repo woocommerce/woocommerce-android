@@ -11,14 +11,13 @@ data class SessionStat(
         get() = when {
             visitorsCount > 0 -> (ordersCount / visitorsCount.toDouble()) * PERCENT_BASE
             else -> 0.0
-        }.limitTo(100.0).let { DecimalFormat("##.#").format(it) + "%" }
-
+        }.limitTo(PERCENT_BASE).let { DecimalFormat("##.#").format(it) + "%" }
 
     companion object {
         val EMPTY = SessionStat(
             ordersCount = 0,
             visitorsCount = 0
         )
-        const val PERCENT_BASE = 100
+        const val PERCENT_BASE = 100.0
     }
 }

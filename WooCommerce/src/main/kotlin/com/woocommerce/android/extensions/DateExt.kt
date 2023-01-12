@@ -135,7 +135,6 @@ fun Date.isInSameMonthAs(other: Date, baseCalendar: Calendar): Boolean {
     return thisMonth == otherMonth && isInSameYearAs(other, calendar)
 }
 
-
 fun Date.formatAsRangeWith(other: Date, locale: Locale, calendar: Calendar): String {
     val formattedStartDate = if (this.isInSameYearAs(other, calendar)) {
         this.formatToMMMdd(locale)

@@ -28,4 +28,3 @@ fun Double.limitTo(limit: Double) =
 infix fun <T> Comparable<T>?.greaterThan(other: T) =
     this?.let { it > other }
         ?: false
-
