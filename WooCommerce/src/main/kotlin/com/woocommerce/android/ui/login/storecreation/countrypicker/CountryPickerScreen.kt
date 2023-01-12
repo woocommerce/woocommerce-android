@@ -79,9 +79,24 @@ private fun CountryPickerForm(
                 )
         ) {
             val configuration = LocalConfiguration.current
-            when (configuration.orientation) {
-                Configuration.ORIENTATION_LANDSCAPE -> FullScrollableContent(countryPickerState, onCountrySelected)
-                else -> OnlyCountryListScrollableContent(countryPickerState, onCountrySelected)
+            if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                CountryPickerHeaderContent(countryPickerState)
+            }
+            LazyColumn {
+                if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    item {
+                        CountryPickerHeaderContent(countryPickerState)
+                    }
+                }
+                itemsIndexed(countryPickerState.countries) { _, country ->
+                    CountryItem(
+                        country = country,
+                        onCountrySelected = onCountrySelected,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = dimensionResource(id = R.dimen.major_100))
+                    )
+                }
             }
         }
         Divider(
@@ -95,46 +110,6 @@ private fun CountryPickerForm(
             onClick = onContinueClicked,
         ) {
             Text(text = stringResource(id = R.string.continue_button))
-        }
-    }
-}
-
-@Composable
-private fun FullScrollableContent(
-    countryPickerState: CountryPickerState,
-    onCountrySelected: (StoreCreationCountry) -> Unit,
-) {
-    LazyColumn {
-        item {
-            CountryPickerHeaderContent(countryPickerState)
-        }
-        itemsIndexed(countryPickerState.countries) { _, country ->
-            CountryItem(
-                country = country,
-                onCountrySelected = onCountrySelected,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = dimensionResource(id = R.dimen.major_100))
-            )
-        }
-    }
-}
-
-@Composable
-private fun OnlyCountryListScrollableContent(
-    countryPickerState: CountryPickerState,
-    onCountrySelected: (StoreCreationCountry) -> Unit,
-) {
-    CountryPickerHeaderContent(countryPickerState)
-    LazyColumn {
-        itemsIndexed(countryPickerState.countries) { _, country ->
-            CountryItem(
-                country = country,
-                onCountrySelected = onCountrySelected,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = dimensionResource(id = R.dimen.major_100))
-            )
         }
     }
 }
