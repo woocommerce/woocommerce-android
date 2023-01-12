@@ -20,7 +20,7 @@ class NewStore @Inject constructor() {
         data = data.copy(
             name = name ?: data.name,
             domain = domain ?: data.domain,
-            profilerData = profilerData,
+            profilerData = profilerData ?: data.profilerData,
             country = country ?: data.country,
             siteId = siteId ?: data.siteId,
             planProductId = planProductId ?: data.planProductId,
