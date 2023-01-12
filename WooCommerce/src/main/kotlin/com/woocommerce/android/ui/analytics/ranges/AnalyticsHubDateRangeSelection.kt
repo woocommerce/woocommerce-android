@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.analytics.ranges
 
+import android.os.Parcelable
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.LAST_MONTH
@@ -27,6 +28,13 @@ import java.io.Serializable
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+data class AnalyticsHubTimeRange(
+    val start: Date,
+    val end: Date
+) : Parcelable
 
 /**
  * This class represents the date range selection for the Analytics Hub

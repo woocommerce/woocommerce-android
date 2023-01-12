@@ -22,6 +22,10 @@ fun Double.formatToString(): String {
 
 fun Double?.isInteger() = this?.rem(1) == 0.0
 
+fun Double.limitTo(limit: Double) =
+    if (this > limit) limit else this
+
 infix fun <T> Comparable<T>?.greaterThan(other: T) =
     this?.let { it > other }
         ?: false
+
