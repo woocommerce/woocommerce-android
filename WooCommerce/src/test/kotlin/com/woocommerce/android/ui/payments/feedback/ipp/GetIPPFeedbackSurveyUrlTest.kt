@@ -46,9 +46,9 @@ class GetIPPFeedbackSurveyUrlTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        val fakeTransactionsSummary = WCPaymentTransactionsSummaryResult(99, "", 0, 0, 0, null, null)
+        val fakeSummary = WCPaymentTransactionsSummaryResult(99, "", 0, 0, 0, null, null)
         runBlocking {
-            whenever(ippStore.fetchTransactionsSummary(any(), any(), any())) doReturn WooPayload(fakeTransactionsSummary)
+            whenever(ippStore.fetchTransactionsSummary(any(), any(), any())) doReturn WooPayload(fakeSummary)
         }
     }
 
@@ -83,7 +83,10 @@ class GetIPPFeedbackSurveyUrlTest : BaseUnitTest() {
     fun `given banner should be displayed and user is a newbie, should return correct url`() = runBlocking {
         // given
         whenever(shouldShowFeedbackBanner.invoke()) doReturn true
-        whenever(getActivePaymentsPlugin.invoke()) doReturn WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
+
+        whenever(getActivePaymentsPlugin.invoke()) doReturn
+            WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
+
         val fakeNewbieTransactionsSummary = WCPaymentTransactionsSummaryResult(0, "", 0, 0, 0, null, null)
         whenever(ippStore.fetchTransactionsSummary(any(), any(), any())) doReturn WooPayload(
             fakeNewbieTransactionsSummary
@@ -100,7 +103,9 @@ class GetIPPFeedbackSurveyUrlTest : BaseUnitTest() {
     fun `given banner should be displayed and user is a beginner, should return correct url`() = runBlocking {
         // given
         whenever(shouldShowFeedbackBanner.invoke()) doReturn true
-        whenever(getActivePaymentsPlugin.invoke()) doReturn WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
+        whenever(getActivePaymentsPlugin.invoke()) doReturn
+            WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
+
         val fakeBeginnerTransactionsSummary = WCPaymentTransactionsSummaryResult(2, "", 0, 0, 0, null, null)
         whenever(ippStore.fetchTransactionsSummary(any(), any(), any())) doReturn WooPayload(
             fakeBeginnerTransactionsSummary
@@ -117,9 +122,12 @@ class GetIPPFeedbackSurveyUrlTest : BaseUnitTest() {
     fun `given banner should be displayed and user is a ninja, should return correct url`() = runBlocking {
         // given
         whenever(shouldShowFeedbackBanner.invoke()) doReturn true
-        whenever(getActivePaymentsPlugin.invoke()) doReturn WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
+        whenever(getActivePaymentsPlugin.invoke()) doReturn
+            WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
+
         val fakeNinjaTransactionsSummary = WCPaymentTransactionsSummaryResult(11, "", 0, 0, 0, null, null)
-        whenever(ippStore.fetchTransactionsSummary(any(), any(), any())) doReturn WooPayload(fakeNinjaTransactionsSummary)
+        whenever(ippStore.fetchTransactionsSummary(any(), any(), any())) doReturn
+            WooPayload(fakeNinjaTransactionsSummary)
 
         // when
         val result = sut.invoke()
@@ -132,9 +140,10 @@ class GetIPPFeedbackSurveyUrlTest : BaseUnitTest() {
     fun `given banner should be displayed, should analyze IPP stats from the correct time window`() = runBlocking {
         // given
         whenever(shouldShowFeedbackBanner.invoke()) doReturn true
-        whenever(getActivePaymentsPlugin.invoke()) doReturn WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
-        val expectedTimeWindowCaptor = ArgumentCaptor.forClass(String::class.java)
+        whenever(getActivePaymentsPlugin.invoke()) doReturn
+            WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
 
+        val expectedTimeWindowCaptor = ArgumentCaptor.forClass(String::class.java)
 
         // when
         sut.invoke()
@@ -153,7 +162,9 @@ class GetIPPFeedbackSurveyUrlTest : BaseUnitTest() {
     fun `given endpoint returns error, should return null survey url`() = runBlocking {
         // given
         whenever(shouldShowFeedbackBanner.invoke()) doReturn true
-        whenever(getActivePaymentsPlugin.invoke()) doReturn WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
+        whenever(getActivePaymentsPlugin.invoke()) doReturn
+            WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
+
         val error = WooError(WooErrorType.API_ERROR, BaseRequest.GenericErrorType.NO_CONNECTION, "error")
         whenever(ippStore.fetchTransactionsSummary(any(), any(), any())) doReturn WooPayload(error)
 
@@ -168,7 +179,9 @@ class GetIPPFeedbackSurveyUrlTest : BaseUnitTest() {
     fun `given endpoint returns null response, should return null survey url`() = runBlocking {
         // given
         whenever(shouldShowFeedbackBanner.invoke()) doReturn true
-        whenever(getActivePaymentsPlugin.invoke()) doReturn WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
+        whenever(getActivePaymentsPlugin.invoke()) doReturn
+            WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
+
         whenever(ippStore.fetchTransactionsSummary(any(), any(), any())) doReturn WooPayload(null)
 
         // when

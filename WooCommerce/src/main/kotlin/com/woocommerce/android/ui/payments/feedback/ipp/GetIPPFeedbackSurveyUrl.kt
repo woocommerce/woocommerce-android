@@ -15,36 +15,59 @@ class GetIPPFeedbackSurveyUrl @Inject constructor(
     private val siteModel: SiteModel,
     private val getActivePaymentsPlugin: GetActivePaymentsPlugin,
 ) {
+    @Suppress("ReturnCount")
     @Throws(IllegalStateException::class)
-    suspend fun invoke(): String? {
-        if (!shouldShowFeedbackBanner.invoke()) {
-            throw IllegalStateException("IPP feedback banner should not be shown to the current user & site.")
-        }
+    suspend operator fun invoke(): String? {
+        requireShouldShowFeedbackBanner()
 
-        val activePaymentsPlugin =
-            getActivePaymentsPlugin.invoke() ?: throw IllegalStateException("No active payments plugin found.")
+        val activePaymentsPlugin = requireWooCommercePaymentsPlugin()
 
         val timeWindowStartDate = Date().daysAgo(STATS_TIME_WINDOW_LENGTH_DAYS)
-        val response =
-            ippStore.fetchTransactionsSummary(activePaymentsPlugin, siteModel, timeWindowStartDate.formatToYYYYmmDD())
+        val response = ippStore.fetchTransactionsSummary(
+            activePaymentsPlugin,
+            siteModel,
+            timeWindowStartDate.formatToYYYYmmDD()
+        )
 
         if (response.isError || response.result == null) return null
 
         val numberOfTransactions = response.result?.transactionsCount ?: return null
 
+        requirePositiveNumberOfTransactions(numberOfTransactions)
+
         return when (numberOfTransactions) {
             0 -> SURVEY_URL_IPP_NEWBIE
-            in 1..10 -> SURVEY_URL_IPP_BEGINNER
+            in IPP_BEGINNER_TRANSACTIONS_RANGE -> SURVEY_URL_IPP_BEGINNER
             else -> SURVEY_URL_IPP_NINJA
         }
     }
 
-    companion object {
-        @VisibleForTesting const val STATS_TIME_WINDOW_LENGTH_DAYS = 30
+    private fun requirePositiveNumberOfTransactions(numberOfTransactions: Int) {
+        if (numberOfTransactions < 0) throw IllegalStateException("Number of transactions should be positive.")
+    }
 
-        // todo: update the survey urls
-        @VisibleForTesting const val SURVEY_URL_IPP_NEWBIE = "https://woocommerce.com/newbie"
-        @VisibleForTesting const val SURVEY_URL_IPP_BEGINNER = "https://woocommerce.com/beginner"
-        @VisibleForTesting const val SURVEY_URL_IPP_NINJA = "https://woocommerce.com/ninja"
+    private suspend fun requireWooCommercePaymentsPlugin(): WCInPersonPaymentsStore.InPersonPaymentsPluginType =
+        getActivePaymentsPlugin.invoke() ?: throw IllegalStateException("No active payments plugin found.")
+
+    private suspend fun requireShouldShowFeedbackBanner() {
+        if (!shouldShowFeedbackBanner()) {
+            throw IllegalStateException("IPP feedback banner should not be shown to the current user & site.")
+        }
+    }
+
+    companion object {
+        @VisibleForTesting
+        const val STATS_TIME_WINDOW_LENGTH_DAYS = 30
+
+        @VisibleForTesting
+        const val SURVEY_URL_IPP_NEWBIE = "https://woocommerce.com/newbie"
+
+        @VisibleForTesting
+        const val SURVEY_URL_IPP_BEGINNER = "https://woocommerce.com/beginner"
+
+        @VisibleForTesting
+        const val SURVEY_URL_IPP_NINJA = "https://woocommerce.com/ninja"
+
+        private val IPP_BEGINNER_TRANSACTIONS_RANGE = 1..10
     }
 }
