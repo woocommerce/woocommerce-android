@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.login.storecreation.countrypicker
 
-import androidx.compose.ui.text.intl.Locale
-import androidx.core.text.HtmlCompat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.support.help.HelpOrigin
@@ -14,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -40,13 +39,13 @@ class CountryPickerViewModel @Inject constructor(
             val loadedCountriesMap = localCountriesRepository.getLocalCountries()
             val defaultCountryCode = when {
                 !newStore.data.country?.code.isNullOrEmpty() -> newStore.data.country?.code!!
-                loadedCountriesMap.containsKey(Locale.current.region) -> Locale.current.region
+                loadedCountriesMap.containsKey(Locale.getDefault().country) -> Locale.getDefault().country
                 else -> DEFAULT_LOCATION_CODE
             }
             availableCountries.update {
                 loadedCountriesMap.map { (code, name) ->
                     StoreCreationCountry(
-                        name = HtmlCompat.fromHtml(name, HtmlCompat.FROM_HTML_MODE_LEGACY).toString(),
+                        name = name,
                         code = code,
                         emojiFlag = emojiUtils.countryCodeToEmojiFlag(code),
                         isSelected = defaultCountryCode == code

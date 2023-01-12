@@ -16,22 +16,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
@@ -46,17 +43,10 @@ fun CountryPickerScreen(viewModel: CountryPickerViewModel) {
     viewModel.countryPickerState.observeAsState().value?.let { countryPickerContent ->
         Scaffold(topBar = {
             Toolbar(
-                title = { Text("") },
-                navigationIcon = Icons.Filled.ArrowBack,
                 onNavigationButtonClick = viewModel::onArrowBackPressed,
-                actions = {
-                    IconButton(onClick = viewModel::onHelpPressed) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_help_24dp),
-                            contentDescription = stringResource(id = R.string.help)
-                        )
-                    }
-                }
+                actionButtonIcon = ImageVector.vectorResource(id = R.drawable.ic_help_24dp),
+                actionIconContentDescription = stringResource(id = R.string.help),
+                onActionButtonClick = viewModel::onHelpPressed
             )
         }) { padding ->
             CountryPickerForm(
@@ -89,9 +79,24 @@ private fun CountryPickerForm(
                 )
         ) {
             val configuration = LocalConfiguration.current
-            when (configuration.orientation) {
-                Configuration.ORIENTATION_LANDSCAPE -> FullScrollableContent(countryPickerState, onCountrySelected)
-                else -> OnlyCountryListScrollableContent(countryPickerState, onCountrySelected)
+            if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                CountryPickerHeaderContent(countryPickerState)
+            }
+            LazyColumn {
+                if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    item {
+                        CountryPickerHeaderContent(countryPickerState)
+                    }
+                }
+                itemsIndexed(countryPickerState.countries) { _, country ->
+                    CountryItem(
+                        country = country,
+                        onCountrySelected = onCountrySelected,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = dimensionResource(id = R.dimen.major_100))
+                    )
+                }
             }
         }
         Divider(
@@ -105,46 +110,6 @@ private fun CountryPickerForm(
             onClick = onContinueClicked,
         ) {
             Text(text = stringResource(id = R.string.continue_button))
-        }
-    }
-}
-
-@Composable
-private fun FullScrollableContent(
-    countryPickerState: CountryPickerState,
-    onCountrySelected: (StoreCreationCountry) -> Unit,
-) {
-    LazyColumn {
-        item {
-            CountryPickerHeaderContent(countryPickerState)
-        }
-        itemsIndexed(countryPickerState.countries) { _, country ->
-            CountryItem(
-                country = country,
-                onCountrySelected = onCountrySelected,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = dimensionResource(id = R.dimen.major_100))
-            )
-        }
-    }
-}
-
-@Composable
-private fun OnlyCountryListScrollableContent(
-    countryPickerState: CountryPickerState,
-    onCountrySelected: (StoreCreationCountry) -> Unit,
-) {
-    CountryPickerHeaderContent(countryPickerState)
-    LazyColumn {
-        itemsIndexed(countryPickerState.countries) { _, country ->
-            CountryItem(
-                country = country,
-                onCountrySelected = onCountrySelected,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = dimensionResource(id = R.dimen.major_100))
-            )
         }
     }
 }
