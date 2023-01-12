@@ -14,7 +14,7 @@ class NewStore @Inject constructor() {
         industry: String? = null,
         commerceJourney: String? = null,
         eCommercePlatform: String? = null,
-        country: String? = null,
+        country: Country? = null,
         siteId: Long? = null,
         planProductId: Int? = null,
         planPathSlug: String? = null
@@ -42,9 +42,14 @@ class NewStore @Inject constructor() {
         val industry: String? = null,
         val userJourney: String? = null,
         val platform: String? = null,
-        val country: String? = null,
+        val country: Country? = null,
         val siteId: Long? = null,
         val planProductId: Int? = null,
         val planPathSlug: String? = null
+    )
+
+    data class Country(
+        val name: String,
+        val code: String,
     )
 }
