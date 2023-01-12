@@ -26,7 +26,7 @@ class MyStoreSummaryViewModel @Inject constructor(
         MyStoreSummaryState(
             name = newStore.data.name,
             domain = newStore.data.domain ?: "",
-            industry = newStore.data.industry,
+            industry = newStore.data.profilerData?.industryLabel,
             country = Country(
                 name = newStore.data.country?.name ?: "",
                 emojiFlag = emojiUtils.countryCodeToEmojiFlag(newStore.data.country?.code ?: "")

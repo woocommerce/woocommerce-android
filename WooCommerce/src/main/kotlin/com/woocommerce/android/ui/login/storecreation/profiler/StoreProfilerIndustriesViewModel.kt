@@ -51,6 +51,7 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
         newStore.update(
             profilerData = (newStore.data.profilerData ?: ProfilerData())
                 .copy(
+                    industryLabel = selectedIndustry.label,
                     industryKey = selectedIndustry.key,
                     industryGroupKey = selectedIndustry.tracks
                 )

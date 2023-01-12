@@ -51,6 +51,7 @@ class NewStore @Inject constructor() {
      * This data is meant to be temporary until we have an API ready to send
      */
     data class ProfilerData(
+        val industryLabel: String? = null,
         val industryKey: String? = null,
         val industryGroupKey: String? = null,
         val userCommerceJourneyKey: String? = null,
