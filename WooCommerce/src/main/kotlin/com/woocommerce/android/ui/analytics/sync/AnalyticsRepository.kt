@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.analytics.sync
 
-import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.OrdersStat
@@ -246,8 +245,8 @@ class AnalyticsRepository @Inject constructor(
         quantity: Int
     ): Result<List<TopPerformerProductEntity>> {
         val totalPeriod = rangeSelection.currentRange
-        val startDate = totalPeriod.start.formatToYYYYmmDD()
-        val endDate = totalPeriod.end.formatToYYYYmmDD()
+        val startDate = totalPeriod.start.formatToYYYYmmDDhhmmss()
+        val endDate = totalPeriod.end.formatToYYYYmmDDhhmmss()
 
         val site = selectedSite.get()
         val startDateFormatted = DateUtils.getStartDateForSite(site, startDate)
@@ -280,8 +279,8 @@ class AnalyticsRepository @Inject constructor(
             ).single()
         } else {
             statsRepository.fetchVisitorStats(
-                rangeSelection.currentRange.start.formatToYYYYmmDD(),
-                rangeSelection.currentRange.end.formatToYYYYmmDD(),
+                rangeSelection.currentRange.start.formatToYYYYmmDDhhmmss(),
+                rangeSelection.currentRange.end.formatToYYYYmmDDhhmmss(),
                 getGranularity(rangeSelection.selectionType),
                 fetchStrategy is FetchStrategy.ForceNew
             )
@@ -291,7 +290,7 @@ class AnalyticsRepository @Inject constructor(
     private fun getGranularity(selectionType: SelectionType) =
         when (selectionType) {
             TODAY, SelectionType.YESTERDAY -> DAYS
-            SelectionType.LAST_WEEK, SelectionType.WEEK_TO_DATE -> WEEKS
+            SelectionType.LAST_WEEK, WEEK_TO_DATE -> WEEKS
             SelectionType.LAST_MONTH, MONTH_TO_DATE -> MONTHS
             SelectionType.LAST_QUARTER, SelectionType.QUARTER_TO_DATE -> MONTHS
             SelectionType.LAST_YEAR, YEAR_TO_DATE -> YEARS
