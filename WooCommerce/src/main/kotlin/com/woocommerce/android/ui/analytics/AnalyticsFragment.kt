@@ -83,7 +83,7 @@ class AnalyticsFragment :
             requestKey = KEY_DATE_RANGE_SELECTOR_RESULT,
             keys = viewModel.selectableRangeOptions,
             values = AnalyticsHubDateRangeSelection.SelectionType.names,
-            selectedItem = getDateRangeSelectorViewState().selectedPeriod
+            selectedItem = getDateRangeSelectorViewState().selectionTitle
         )
 
     private fun setupResultHandlers(viewModel: AnalyticsViewModel) {
@@ -104,8 +104,9 @@ class AnalyticsFragment :
     }
 
     private fun handleStateChange(viewState: AnalyticsViewState) {
-        binding.analyticsDateSelectorCard.updateFromText(viewState.analyticsDateRangeSelectorState.fromDatePeriod)
-        binding.analyticsDateSelectorCard.updateToText(viewState.analyticsDateRangeSelectorState.toDatePeriod)
+        binding.analyticsDateSelectorCard.updateSelectionTitle(viewState.analyticsDateRangeSelectorState.selectionTitle)
+        binding.analyticsDateSelectorCard.updatePreviousRange(viewState.analyticsDateRangeSelectorState.previousRange)
+        binding.analyticsDateSelectorCard.updateCurrentRange(viewState.analyticsDateRangeSelectorState.currentRange)
         binding.analyticsRevenueCard.updateInformation(viewState.revenueState)
         binding.analyticsOrdersCard.updateInformation(viewState.ordersState)
         binding.analyticsProductsCard.updateInformation(viewState.productsState)

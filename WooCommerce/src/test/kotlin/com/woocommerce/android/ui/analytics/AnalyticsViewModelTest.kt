@@ -107,9 +107,9 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             )
 
             with(sut.viewState.value.analyticsDateRangeSelectorState) {
-                assertEquals(expectedSelection.selectionType.name, selectedPeriod)
-                assertEquals(expectedSelection.currentRangeDescription, toDatePeriod)
-                assertEquals(expectedSelection.previousRangeDescription, fromDatePeriod)
+                assertEquals(expectedSelection.selectionType.name, selectionTitle)
+                assertEquals(expectedSelection.currentRangeDescription, currentRange)
+                assertEquals(expectedSelection.previousRangeDescription, previousRange)
             }
 
             with(sut.viewState.value.revenueState) {
@@ -149,9 +149,9 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             )
 
             with(sut.viewState.value.analyticsDateRangeSelectorState) {
-                assertEquals(expectedSelection.selectionType.name, selectedPeriod)
-                assertEquals(expectedSelection.currentRangeDescription, toDatePeriod)
-                assertEquals(expectedSelection.previousRangeDescription, fromDatePeriod)
+                assertEquals(expectedSelection.selectionType.name, selectionTitle)
+                assertEquals(expectedSelection.currentRangeDescription, currentRange)
+                assertEquals(expectedSelection.previousRangeDescription, previousRange)
             }
         }
 
@@ -177,9 +177,9 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             )
 
             with(sut.viewState.value.analyticsDateRangeSelectorState) {
-                assertEquals(expectedSelection.selectionType.name, selectedPeriod)
-                assertEquals(expectedSelection.currentRangeDescription, toDatePeriod)
-                assertEquals(expectedSelection.previousRangeDescription, fromDatePeriod)
+                assertEquals(expectedSelection.selectionType.name, selectionTitle)
+                assertEquals(expectedSelection.currentRangeDescription, currentRange)
+                assertEquals(expectedSelection.previousRangeDescription, previousRange)
             }
         }
 
