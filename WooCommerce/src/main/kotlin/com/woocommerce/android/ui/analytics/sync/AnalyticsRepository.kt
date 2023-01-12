@@ -34,7 +34,6 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.MONTHS
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.WEEKS
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import org.wordpress.android.fluxc.utils.DateUtils
 import javax.inject.Inject
 import kotlin.math.round
 
@@ -248,17 +247,13 @@ class AnalyticsRepository @Inject constructor(
         val startDate = totalPeriod.start.formatToYYYYmmDDhhmmss()
         val endDate = totalPeriod.end.formatToYYYYmmDDhhmmss()
 
-        val site = selectedSite.get()
-        val startDateFormatted = DateUtils.getStartDateForSite(site, startDate)
-        val endDateFormatted = DateUtils.getEndDateForSite(site, endDate)
-
         return statsRepository.fetchTopPerformerProducts(
             forceRefresh = fetchStrategy is FetchStrategy.ForceNew,
-            startDate = startDateFormatted,
-            endDate = endDateFormatted,
+            startDate = startDate,
+            endDate = endDate,
             quantity = quantity
         ).map {
-            statsRepository.getTopPerformers(startDateFormatted, endDateFormatted)
+            statsRepository.getTopPerformers(startDate, endDate)
         }
     }
 
