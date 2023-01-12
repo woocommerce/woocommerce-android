@@ -44,7 +44,7 @@ class MyStoreSummaryViewModel @Inject constructor(
 
         val newStoreProfilerData = newStore.data.profilerData
         analyticsTrackerWrapper.track(
-            stat = AnalyticsEvent.SITE_CREATION_PROFILER_SITE_DATA,
+            stat = AnalyticsEvent.SITE_CREATION_PROFILER_DATA,
             properties = mapOf(
                 AnalyticsTracker.KEY_INDUSTRY_GROUP to newStoreProfilerData?.industryGroupKey,
                 AnalyticsTracker.KEY_INDUSTRY to newStoreProfilerData?.industryKey,
