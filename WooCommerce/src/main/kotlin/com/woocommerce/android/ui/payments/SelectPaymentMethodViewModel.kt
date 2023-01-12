@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.SIMPLE
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Refund
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
+import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.UtmProvider
@@ -58,6 +59,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val cardPaymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
     @Named("select-payment") private val selectPaymentUtmProvider: UtmProvider,
+    private val isTapToPayAvailable: IsTapToPayAvailable,
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
     val shouldShowUpsellCardReaderDismissDialog: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -215,7 +217,11 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
             )
         )
-        triggerEvent(NavigateToCardReaderPaymentFlow(cardReaderPaymentFlowParam))
+        if (isTapToPayAvailable()) {
+            triggerEvent(NavigateToIPPReaderTypeSelection(cardReaderPaymentFlowParam))
+        } else {
+            triggerEvent(NavigateToCardReaderPaymentFlow(cardReaderPaymentFlowParam))
+        }
     }
 
     fun onConnectToReaderResultReceived(connected: Boolean) {
@@ -382,6 +388,10 @@ class SelectPaymentMethodViewModel @Inject constructor(
     ) : MultiLiveEvent.Event()
 
     data class NavigateToCardReaderPaymentFlow(
+        val cardReaderFlowParam: Payment
+    ) : MultiLiveEvent.Event()
+
+    data class NavigateToIPPReaderTypeSelection(
         val cardReaderFlowParam: Payment
     ) : MultiLiveEvent.Event()
 

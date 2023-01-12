@@ -51,6 +51,12 @@ internal class TerminalWrapper {
         listener: BluetoothReaderListener
     ) = Terminal.getInstance().connectBluetoothReader(reader, configuration, listener, callback)
 
+    fun connectToMobile(
+        reader: Reader,
+        configuration: ConnectionConfiguration.LocalMobileConnectionConfiguration,
+        callback: ReaderCallback
+    ) = Terminal.getInstance().connectLocalMobileReader(reader, configuration, callback)
+
     fun disconnectReader(callback: Callback) =
         Terminal.getInstance().disconnectReader(callback)
 
