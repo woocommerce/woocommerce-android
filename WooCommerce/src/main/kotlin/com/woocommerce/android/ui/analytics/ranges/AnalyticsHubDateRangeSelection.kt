@@ -24,11 +24,11 @@ import com.woocommerce.android.ui.analytics.ranges.data.TodayRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.WeekToDateRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.YearToDateRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.YesterdayRangeData
+import kotlinx.parcelize.Parcelize
 import java.io.Serializable
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class AnalyticsHubTimeRange(

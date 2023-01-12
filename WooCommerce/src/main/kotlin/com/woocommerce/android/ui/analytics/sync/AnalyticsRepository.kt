@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.analytics.sync
 
 import com.woocommerce.android.extensions.formatToYYYYmmDD
+import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
@@ -201,8 +202,8 @@ class AnalyticsRepository @Inject constructor(
     ): Result<WCRevenueStatsModel?> = coroutineScope {
         val granularity = getGranularity(rangeSelection.selectionType)
         val currentPeriod = rangeSelection.currentRange
-        val startDate = currentPeriod.start.formatToYYYYmmDD()
-        val endDate = currentPeriod.end.formatToYYYYmmDD()
+        val startDate = currentPeriod.start.formatToYYYYmmDDhhmmss()
+        val endDate = currentPeriod.end.formatToYYYYmmDDhhmmss()
 
         getCurrentRevenueMutex.withLock {
             if (shouldUpdateCurrentStats(startDate, endDate, fetchStrategy == FetchStrategy.ForceNew)) {
@@ -223,8 +224,8 @@ class AnalyticsRepository @Inject constructor(
     ): Result<WCRevenueStatsModel?> = coroutineScope {
         val granularity = getGranularity(rangeSelection.selectionType)
         val previousPeriod = rangeSelection.previousRange
-        val startDate = previousPeriod.start.formatToYYYYmmDD()
-        val endDate = previousPeriod.end.formatToYYYYmmDD()
+        val startDate = previousPeriod.start.formatToYYYYmmDDhhmmss()
+        val endDate = previousPeriod.end.formatToYYYYmmDDhhmmss()
 
         getPreviousRevenueMutex.withLock {
             if (shouldUpdatePreviousStats(startDate, endDate, fetchStrategy == FetchStrategy.ForceNew)) {
@@ -322,7 +323,8 @@ class AnalyticsRepository @Inject constructor(
             granularity,
             fetchStrategy is FetchStrategy.ForceNew,
             startDate,
-            endDate
+            endDate,
+            true
         ).flowOn(dispatchers.io).single().mapCatching { it }
 
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
