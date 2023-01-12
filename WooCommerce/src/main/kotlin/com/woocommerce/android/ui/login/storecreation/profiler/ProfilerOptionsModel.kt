@@ -10,7 +10,8 @@ data class AboutMerchant(
     val value: String,
     val heading: String,
     val description: String,
-    val platforms: List<Platform>?
+    val tracks: String,
+    val platforms: List<Platform>?,
 )
 
 data class Platform(
