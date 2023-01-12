@@ -16,22 +16,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
@@ -46,17 +43,10 @@ fun CountryPickerScreen(viewModel: CountryPickerViewModel) {
     viewModel.countryPickerState.observeAsState().value?.let { countryPickerContent ->
         Scaffold(topBar = {
             Toolbar(
-                title = { Text("") },
-                navigationIcon = Icons.Filled.ArrowBack,
                 onNavigationButtonClick = viewModel::onArrowBackPressed,
-                actions = {
-                    IconButton(onClick = viewModel::onHelpPressed) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_help_24dp),
-                            contentDescription = stringResource(id = R.string.help)
-                        )
-                    }
-                }
+                actionButtonIcon = ImageVector.vectorResource(id = R.drawable.ic_help_24dp),
+                actionIconContentDescription = stringResource(id = R.string.help),
+                onActionButtonClick = viewModel::onHelpPressed
             )
         }) { padding ->
             CountryPickerForm(
