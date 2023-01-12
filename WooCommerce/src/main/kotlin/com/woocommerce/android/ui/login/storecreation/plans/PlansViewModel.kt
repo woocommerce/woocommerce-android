@@ -91,27 +91,12 @@ class PlansViewModel @Inject constructor(
             createSite()
                 .ifSuccessfulThen { siteId ->
                     newStore.update(siteId = siteId)
-                    trackSiteProfilerData()
                     when {
                         isIAPEnabled() -> purchasePlanUsingIAP(siteId, activityWrapper)
                         else -> proceedToWebviewCheckout()
                     }
                 }
         }
-    }
-
-    private fun trackSiteProfilerData() {
-        val newStoreProfilerData = newStore.data.profilerData
-        analyticsTrackerWrapper.track(
-            stat = AnalyticsEvent.SITE_CREATION_PROFILER_SITE_DATA,
-            properties = mapOf(
-                AnalyticsTracker.KEY_INDUSTRY_GROUP to newStoreProfilerData?.industryGroupKey,
-                AnalyticsTracker.KEY_INDUSTRY to newStoreProfilerData?.industryKey,
-                AnalyticsTracker.KEY_USER_COMMERCE_JOURNEY to newStoreProfilerData?.userCommerceJourneyKey,
-                AnalyticsTracker.KEY_ECOMMERCE_PLATFORMS to newStoreProfilerData?.eCommercePlatformKey,
-                AnalyticsTracker.KEY_COUNTRY_CODE to newStore.data.country?.code,
-            )
-        )
     }
 
     private suspend fun proceedToWebviewCheckout() {

@@ -41,6 +41,18 @@ class MyStoreSummaryViewModel @Inject constructor(
                 AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_SUMMARY
             )
         )
+
+        val newStoreProfilerData = newStore.data.profilerData
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.SITE_CREATION_PROFILER_SITE_DATA,
+            properties = mapOf(
+                AnalyticsTracker.KEY_INDUSTRY_GROUP to newStoreProfilerData?.industryGroupKey,
+                AnalyticsTracker.KEY_INDUSTRY to newStoreProfilerData?.industryKey,
+                AnalyticsTracker.KEY_USER_COMMERCE_JOURNEY to newStoreProfilerData?.userCommerceJourneyKey,
+                AnalyticsTracker.KEY_ECOMMERCE_PLATFORMS to newStoreProfilerData?.eCommercePlatformKey,
+                AnalyticsTracker.KEY_COUNTRY_CODE to newStore.data.country?.code,
+            )
+        )
     }
 
     fun onBackPressed() {
