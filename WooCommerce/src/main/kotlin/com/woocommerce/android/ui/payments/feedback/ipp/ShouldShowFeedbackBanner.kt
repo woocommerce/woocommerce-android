@@ -24,23 +24,27 @@ class ShouldShowFeedbackBanner @Inject constructor(
      * if not, check if it was last dismissed >= 7 days ago, if yes return true.
      * 5. Return false.
      */
-    suspend fun invoke(): Boolean {
-        if (!cashOnDeliverySettings.isCashOnDeliveryEnabled()) return false
-        if (getActivePaymentsPlugin.invoke() != WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
-            return false
-        if (prefs.isIPPFeedbackSurveyCompleted()) return false
-        if (prefs.isIPPFeedbackBannerDismissedForever()) return false
+    suspend operator fun invoke(): Boolean {
+        return isIPPEnabled() && !isSurveyCompletedOrDismissedForever() && wasDismissedLongAgoEnoughToShowAgain()
+    }
 
+    private suspend fun isIPPEnabled(): Boolean =
+        cashOnDeliverySettings.isCashOnDeliveryEnabled() && isWooCommercePaymentsPluginEnabled()
+
+    private fun isSurveyCompletedOrDismissedForever(): Boolean =
+        prefs.isIPPFeedbackSurveyCompleted() || prefs.isIPPFeedbackBannerDismissedForever()
+
+    private suspend fun isWooCommercePaymentsPluginEnabled() =
+        getActivePaymentsPlugin.invoke() == WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
+
+    private fun wasDismissedLongAgoEnoughToShowAgain(): Boolean {
         val lastDismissed = prefs.getIPPFeedbackBannerLastDismissed()
         val now = Calendar.getInstance().time.time
-
         val differenceDays = TimeUnit.DAYS.convert(now - lastDismissed, TimeUnit.MILLISECONDS)
-        if (differenceDays >= DAYS_REMIND_LATER) return true
-
-        return false
+        return differenceDays >= REMIND_LATER_INTERVAL_DAYS
     }
 
     private companion object {
-        private const val DAYS_REMIND_LATER = 7
+        private const val REMIND_LATER_INTERVAL_DAYS = 7
     }
 }
