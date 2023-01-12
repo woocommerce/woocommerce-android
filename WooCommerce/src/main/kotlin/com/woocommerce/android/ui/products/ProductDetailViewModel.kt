@@ -424,9 +424,10 @@ class ProductDetailViewModel @Inject constructor(
      */
     fun onGenerateVariationClicked() {
         launch {
-            createEmptyVariation()
-                ?.let { triggerEvent(ShowSnackbar(R.string.variation_created_title)) }
-                .also { triggerEvent(ProductExitEvent.ExitAttributesAdded) }
+            createEmptyVariation()?.let {
+                triggerEvent(ShowSnackbar(R.string.variation_created_title))
+                triggerEvent(ProductExitEvent.ExitAttributesAdded)
+            } ?: triggerEvent(ShowGenerateVariationsError.NetworkError)
         }
     }
 
