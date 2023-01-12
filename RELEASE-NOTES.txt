@@ -2,11 +2,14 @@
 11.9
 - [**] Adds new profiler steps to store creation flow [https://github.com/woocommerce/woocommerce-android/pull/8097]
 - [**] Adds country picker step to store creation flow [https://github.com/woocommerce/woocommerce-android/pull/8167]
+-----
+
 
 11.8
 - [*] Add variations bottom sheet is fully visible right after showing up in the landscape mode [https://github.com/woocommerce/woocommerce-android/pull/8043]
 - [*] UI improvements to the products on the analytics screen [https://github.com/woocommerce/woocommerce-android/pull/8098]
 - [*] Add a feature of replying to customer reviews [https://github.com/woocommerce/woocommerce-android/pull/8045]
+- [*] Add Shortcuts for the Payments and Order Creation screen [https://github.com/woocommerce/woocommerce-android/pull/8035]
 
 11.7
 -----

@@ -22,6 +22,10 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+
+        if (project.hasProperty("stripe_repo_url")) {
+            maven { url project.property("stripe_repo_url") }
+        }
     }
 
     tasks.withType(KotlinCompile).all {
@@ -95,7 +99,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'trunk-9d9fae38503c1a9d519f593284e37617d545944e'
+    fluxCVersion = '2.10.0'
     glideVersion = '4.13.2'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
@@ -105,7 +109,7 @@ ext {
     coroutinesVersion = '1.6.4'
     lifecycleVersion = '2.5.1'
     aztecVersion = 'v1.3.45'
-    flipperVersion = '0.154.0'
+    flipperVersion = '0.176.1'
     stateMachineVersion = '0.2.0'
     coreKtxVersion = '1.8.0'
     appCompatVersion = '1.4.2'
@@ -127,13 +131,13 @@ ext {
     composeBOMVersion = "2022.12.00"
     composeCompilerVersion = "1.3.2"
     composeAccompanistVersion = "0.23.1"
-    composeThemeAdapterVersion = "1.1.8"
+    composeThemeAdapterVersion = "1.1.17"
 
     // Testing
     jUnitVersion = '4.13.2'
     jUnitExtVersion = '1.1.3'
     androidxTestCoreVersion = '1.4.0'
-    assertjVersion = '3.11.1'
+    assertjVersion = '3.24.1'
     espressoVersion = '3.4.0'
     mockitoKotlinVersion = '4.0.0'
     mockitoVersion = '4.6.1'

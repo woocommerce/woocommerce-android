@@ -2,7 +2,6 @@ package com.woocommerce.android
 
 import android.app.Application
 import android.appwidget.AppWidgetManager
-import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
@@ -10,10 +9,9 @@ import androidx.lifecycle.Lifecycle.State.STARTED
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.automattic.android.experimentation.ExPlat
 import com.automattic.android.tracks.crashlogging.CrashLogging
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.push.RegisterDevice
@@ -23,6 +21,7 @@ import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.RateLimitedTask
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tracker.SendTelemetry
 import com.woocommerce.android.ui.appwidgets.getWidgetName
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
@@ -87,6 +86,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var siteObserver: SiteObserver
     @Inject lateinit var wooLog: WooLogWrapper
     @Inject lateinit var registerDevice: RegisterDevice
+    @Inject lateinit var applicationPasswordsNotifier: ApplicationPasswordsNotifier
 
     @Inject lateinit var explat: ExPlat
 
@@ -108,7 +108,16 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         override fun run(): Boolean {
             selectedSite.getIfExists()?.let {
                 appCoroutineScope.launch {
-                    wooCommerceStore.fetchWooCommerceSite(it)
+                    wooCommerceStore.fetchWooCommerceSite(it).let {
+                        if (it.model?.hasWooCommerce == false &&
+                            ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(STARTED)
+                        ) {
+                            // The previously selected site is not connected anymore, take the user to the site picker
+                            WooLog.w(T.LOGIN, "Selected site no longer has WooCommerce")
+                            selectedSite.reset()
+                            openMainActivity()
+                        }
+                    }
                     wooCommerceStore.fetchSiteGeneralSettings(it)
                     wooCommerceStore.fetchSiteProductSettings(it)
                 }
@@ -160,6 +169,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         appCoroutineScope.launch {
             siteObserver.observeAndUpdateSelectedSiteData()
         }
+
+        monitorApplicationPasswordsStatus()
     }
 
     @Suppress("DEPRECATION")
@@ -197,9 +208,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 ) {
                     // The previously selected site is not connected anymore, take the user to the site picker
                     WooLog.i(DASHBOARD, "Selected site no longer exists, showing site picker")
-                    val intent = Intent(application, MainActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    application.startActivity(intent)
+                    openMainActivity()
                 }
             }
 
@@ -219,18 +228,21 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         }
     }
 
-    private fun isGooglePlayServicesAvailable(context: Context): Boolean {
-        val googleApiAvailability = GoogleApiAvailability.getInstance()
+    private fun openMainActivity() {
+        val intent = Intent(application, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        application.startActivity(intent)
+    }
 
-        return when (val connectionResult = googleApiAvailability.isGooglePlayServicesAvailable(context)) {
-            ConnectionResult.SUCCESS -> true
-            else -> {
-                WooLog.w(
-                    T.NOTIFS,
-                    "Google Play Services unavailable, connection result: " +
-                        googleApiAvailability.getErrorString(connectionResult)
-                )
-                return false
+    private fun monitorApplicationPasswordsStatus() {
+        appCoroutineScope.launch {
+            // Log user out if the Application Passwords feature gets disabled
+            applicationPasswordsNotifier.featureUnavailableEvents.collect {
+                if (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords) {
+                    WooLog.w(T.LOGIN, "Application Passwords support has been disabled in the current site")
+                    selectedSite.reset()
+                    openMainActivity()
+                }
             }
         }
     }
