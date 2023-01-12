@@ -39,6 +39,7 @@ class CountryPickerViewModel @Inject constructor(
         launch {
             val loadedCountriesMap = localCountriesRepository.getLocalCountries()
             val defaultCountryCode = when {
+                !newStore.data.country?.code.isNullOrEmpty() -> newStore.data.country?.code!!
                 loadedCountriesMap.containsKey(Locale.current.region) -> Locale.current.region
                 else -> DEFAULT_LOCATION_CODE
             }
@@ -64,7 +65,6 @@ class CountryPickerViewModel @Inject constructor(
     }
 
     fun onContinueClicked() {
-        newStore.update(country = availableCountries.value.first { it.isSelected }.toNewStoreCountry())
         triggerEvent(NavigateToDomainPickerStep)
     }
 
@@ -77,6 +77,7 @@ class CountryPickerViewModel @Inject constructor(
                 }
             }
         }
+        newStore.update(country = country.toNewStoreCountry())
     }
 
     private fun StoreCreationCountry.toNewStoreCountry() =
