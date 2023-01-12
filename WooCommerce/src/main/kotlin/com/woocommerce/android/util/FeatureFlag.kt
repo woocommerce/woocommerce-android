@@ -14,7 +14,6 @@ enum class FeatureFlag {
     UNIFIED_ORDER_EDITING,
     ORDER_CREATION_CUSTOMER_SEARCH,
     NATIVE_STORE_CREATION_FLOW,
-    STORE_PROFILER_FLOW,
     REST_API,
     IAP_FOR_STORE_CREATION;
 
@@ -32,7 +31,6 @@ enum class FeatureFlag {
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
-            STORE_PROFILER_FLOW,
             REST_API,
             IAP_FOR_STORE_CREATION -> PackageUtils.isDebugBuild()
         }
