@@ -174,7 +174,7 @@ class GetStatsTest : BaseUnitTest() {
     }
 
     private suspend fun givenFetchRevenueStats(result: Result<WCRevenueStatsModel?>) {
-        whenever(statsRepository.fetchRevenueStats(any(), anyBoolean(), anyString(), anyString()))
+        whenever(statsRepository.fetchRevenueStats(any(), anyBoolean(), anyString(), anyString(), anyBoolean()))
             .thenReturn(flow { emit(result) })
     }
 
