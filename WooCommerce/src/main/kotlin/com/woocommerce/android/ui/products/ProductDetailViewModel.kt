@@ -123,8 +123,6 @@ class ProductDetailViewModel @Inject constructor(
 
     private val navArgs: ProductDetailFragmentArgs by savedState.navArgs()
 
-    private val remoteProductId = navArgs.remoteProductId
-
     /**
      * Fetch product related properties (currency, product dimensions) for the site since we use this
      * variable in many different places in the product detail view such as pricing, shipping.
@@ -433,8 +431,8 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun onAddAllVariationsClicked() {
+        val remoteProductId = viewState.productDraft?.remoteId ?: return
         tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_REQUESTED)
-
         launch {
             attributeListViewState = attributeListViewState.copy(isFetchingVariations = true)
             variationRepository.getAllVariations(remoteProductId)
@@ -473,25 +471,22 @@ class ProductDetailViewModel @Inject constructor(
                     ProgressDialogState.Shown.VariationsCardinality.MULTIPLE
                 )
             )
-
-            when (variationRepository.bulkCreateVariations(remoteProductId, variationCandidates)) {
-                RequestResult.SUCCESS -> {
-                    tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_SUCCESS)
-                    productRepository.fetchProductOrLoadFromCache(remoteProductId)
-                        ?.also { updateProductState(productToUpdateFrom = it) }
-                    attributeListViewState = attributeListViewState.copy(
-                        progressDialogState = ProgressDialogState.Hidden
-                    )
-                    triggerEvent(ProductExitEvent.ExitAttributesAdded)
-                }
-                else -> {
-                    tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_FAILURE)
-                    attributeListViewState = attributeListViewState.copy(
-                        progressDialogState = ProgressDialogState.Hidden
-                    )
-                    triggerEvent(ShowGenerateVariationsError.NetworkError)
+            saveAttributeChanges()
+            viewState.productDraft?.remoteId?.let { remoteProductId ->
+                when (variationRepository.bulkCreateVariations(remoteProductId, variationCandidates)) {
+                    RequestResult.SUCCESS -> {
+                        tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_SUCCESS)
+                        productRepository.fetchProductOrLoadFromCache(remoteProductId)
+                            ?.also { updateProductState(productToUpdateFrom = it) }
+                        triggerEvent(ProductExitEvent.ExitAttributesAdded)
+                    }
+                    else -> {
+                        tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_FAILURE)
+                        triggerEvent(ShowGenerateVariationsError.NetworkError)
+                    }
                 }
             }
+            attributeListViewState = attributeListViewState.copy(progressDialogState = ProgressDialogState.Hidden)
         }
     }
 
@@ -503,7 +498,7 @@ class ProductDetailViewModel @Inject constructor(
             )
             variationRepository.createEmptyVariation(draft)
                 ?.let {
-                    productRepository.fetchProductOrLoadFromCache(remoteProductId)
+                    productRepository.fetchProductOrLoadFromCache(draft.remoteId)
                         ?.also { updateProductState(productToUpdateFrom = it) }
                 }
         }.also {
