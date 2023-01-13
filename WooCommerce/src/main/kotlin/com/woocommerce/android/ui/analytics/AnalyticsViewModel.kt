@@ -179,7 +179,7 @@ class AnalyticsViewModel @Inject constructor(
                     viewState.copy(sessionState = buildSessionViewState(state.session))
                 }
                 is SessionState.Error -> mutableState.update { viewState ->
-                    val message = "No session data"
+                    val message = resourceProvider.getString(R.string.analytics_session_no_data)
                     viewState.copy(sessionState = NoDataState(message))
                 }
                 is SessionState.Loading -> mutableState.update { viewState ->
