@@ -173,7 +173,6 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         isLoading.value = true
         val userInfo = userEligibilityFetcher.fetchUserInfo()
         if (userInfo != null) {
-            userEligibilityFetcher.updateUserInfo(userInfo)
             triggerEvent(LoggedIn(selectedSite.getSelectedSiteId()))
         } else {
             triggerEvent(ShowSnackbar(R.string.error_generic))
