@@ -33,7 +33,7 @@ class CardReaderTypeSelectionDialogFragment : DialogFragment(R.layout.card_reade
                 is NavigateToCardReaderPaymentFlow -> {
                     val action =
                         CardReaderTypeSelectionDialogFragmentDirections
-                            .actionCardReaderTypeSelectionDialogFragmentToCardReaderPaymentFlow(
+                            .actionCardReaderTypeSelectionDialogFragmentToCardReaderConnectDialogFragment(
                                 event.cardReaderFlowParam
                             )
                     findNavController().navigate(action)

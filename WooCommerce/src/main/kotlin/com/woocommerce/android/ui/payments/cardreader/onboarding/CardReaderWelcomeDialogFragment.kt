@@ -45,7 +45,7 @@ class CardReaderWelcomeDialogFragment : DialogFragment(R.layout.card_reader_welc
                     findNavController()
                         .navigate(
                             CardReaderWelcomeDialogFragmentDirections
-                                .actionCardReaderWelcomeDialogFragmentToCardReaderConnectDialogFragment(
+                                .actionCardReaderWelcomeDialogFragmentToCardReaderTypeSelectionDialogFragment(
                                     event.cardReaderFlowParam
                                 )
                         )
