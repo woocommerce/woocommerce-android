@@ -23,3 +23,7 @@ updates:
       - dependency-name: "org.wordpress:login"
       - dependency-name: "com.automattic:Automattic-Tracks-Android"
       - dependency-name: "com.automattic.tracks:experimentation"
+      # Assertj is a java first library only used for testing. It has caused troubles several times due to library
+      # updates with Kotlin breaking changes. For that it has been decided to update this library on a manual basis
+      - dependency-name: "org.assertj:assertj-core"
+
