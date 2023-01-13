@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.payments.feedback.ipp
 
+import androidx.annotation.StringRes
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.daysAgo
 import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.ui.payments.GetActivePaymentsPlugin
@@ -11,7 +13,10 @@ import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import java.util.Date
 import javax.inject.Inject
 
-class GetIPPFeedbackSurveyUrl @Inject constructor(
+/**
+ * Use case class to detect specific user group type and return the IPP feedback banner data: message and survey url.
+ */
+class GetIPPFeedbackBannerData @Inject constructor(
     private val shouldShowFeedbackBanner: ShouldShowFeedbackBanner,
     private val ippStore: WCInPersonPaymentsStore,
     private val siteModel: SiteModel,
@@ -19,7 +24,7 @@ class GetIPPFeedbackSurveyUrl @Inject constructor(
 ) {
     @Suppress("ReturnCount")
     @Throws(IllegalStateException::class)
-    suspend operator fun invoke(): String {
+    suspend operator fun invoke(): IPPFeedbackBanner {
         requireShouldShowFeedbackBanner()
 
         val activePaymentsPlugin = requireWooCommercePaymentsPlugin()
@@ -38,9 +43,9 @@ class GetIPPFeedbackSurveyUrl @Inject constructor(
         requirePositiveNumberOfTransactions(numberOfTransactions)
 
         return when (numberOfTransactions) {
-            0 -> SURVEY_URL_IPP_NEWBIE
-            in IPP_BEGINNER_TRANSACTIONS_RANGE -> SURVEY_URL_IPP_BEGINNER
-            else -> SURVEY_URL_IPP_NINJA
+            0 -> IPPFeedbackBanner(BANNER_MESSAGE_NEWBIE, SURVEY_URL_IPP_NEWBIE)
+            in IPP_BEGINNER_TRANSACTIONS_RANGE -> IPPFeedbackBanner(BANNER_MESSAGE_BEGINNER, SURVEY_URL_IPP_BEGINNER)
+            else -> IPPFeedbackBanner(BANNER_MESSAGE_NINJA, SURVEY_URL_IPP_NINJA)
         }
     }
 
@@ -67,6 +72,11 @@ class GetIPPFeedbackSurveyUrl @Inject constructor(
         }
     }
 
+    data class IPPFeedbackBanner(
+        @StringRes val message: Int,
+        val url: String
+    )
+
     companion object {
         @VisibleForTesting
         const val STATS_TIME_WINDOW_LENGTH_DAYS = 30
@@ -79,6 +89,15 @@ class GetIPPFeedbackSurveyUrl @Inject constructor(
 
         @VisibleForTesting
         const val SURVEY_URL_IPP_NINJA = "https://woocommerce.com/ninja"
+
+        @VisibleForTesting
+        const val BANNER_MESSAGE_NEWBIE = R.string.feedback_banner_ipp_message_newbie
+
+        @VisibleForTesting
+        const val BANNER_MESSAGE_BEGINNER = R.string.feedback_banner_ipp_message_beginner
+
+        @VisibleForTesting
+        const val BANNER_MESSAGE_NINJA = R.string.feedback_banner_ipp_message_ninja
 
         private val IPP_BEGINNER_TRANSACTIONS_RANGE = 1..10
     }

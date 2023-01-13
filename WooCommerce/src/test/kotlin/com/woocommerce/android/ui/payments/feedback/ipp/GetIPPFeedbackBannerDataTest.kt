@@ -3,10 +3,13 @@ package com.woocommerce.android.ui.payments.feedback.ipp
 import com.woocommerce.android.extensions.daysAgo
 import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.ui.payments.GetActivePaymentsPlugin
-import com.woocommerce.android.ui.payments.feedback.ipp.GetIPPFeedbackSurveyUrl.Companion.STATS_TIME_WINDOW_LENGTH_DAYS
-import com.woocommerce.android.ui.payments.feedback.ipp.GetIPPFeedbackSurveyUrl.Companion.SURVEY_URL_IPP_BEGINNER
-import com.woocommerce.android.ui.payments.feedback.ipp.GetIPPFeedbackSurveyUrl.Companion.SURVEY_URL_IPP_NEWBIE
-import com.woocommerce.android.ui.payments.feedback.ipp.GetIPPFeedbackSurveyUrl.Companion.SURVEY_URL_IPP_NINJA
+import com.woocommerce.android.ui.payments.feedback.ipp.GetIPPFeedbackBannerData.Companion.BANNER_MESSAGE_BEGINNER
+import com.woocommerce.android.ui.payments.feedback.ipp.GetIPPFeedbackBannerData.Companion.BANNER_MESSAGE_NEWBIE
+import com.woocommerce.android.ui.payments.feedback.ipp.GetIPPFeedbackBannerData.Companion.BANNER_MESSAGE_NINJA
+import com.woocommerce.android.ui.payments.feedback.ipp.GetIPPFeedbackBannerData.Companion.STATS_TIME_WINDOW_LENGTH_DAYS
+import com.woocommerce.android.ui.payments.feedback.ipp.GetIPPFeedbackBannerData.Companion.SURVEY_URL_IPP_BEGINNER
+import com.woocommerce.android.ui.payments.feedback.ipp.GetIPPFeedbackBannerData.Companion.SURVEY_URL_IPP_NEWBIE
+import com.woocommerce.android.ui.payments.feedback.ipp.GetIPPFeedbackBannerData.Companion.SURVEY_URL_IPP_NINJA
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -30,13 +33,13 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class GetIPPFeedbackSurveyUrlTest : BaseUnitTest() {
+class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
     private val shouldShowFeedbackBanner: ShouldShowFeedbackBanner = mock()
     private val ippStore: WCInPersonPaymentsStore = mock()
     private val siteModel: SiteModel = mock()
     private val getActivePaymentsPlugin: GetActivePaymentsPlugin = mock()
 
-    private val sut = GetIPPFeedbackSurveyUrl(
+    private val sut = GetIPPFeedbackBannerData(
         shouldShowFeedbackBanner = shouldShowFeedbackBanner,
         ippStore = ippStore,
         siteModel = siteModel,
@@ -95,7 +98,7 @@ class GetIPPFeedbackSurveyUrlTest : BaseUnitTest() {
         val result = sut()
 
         // then
-        assertEquals(SURVEY_URL_IPP_NEWBIE, result)
+        assertEquals(SURVEY_URL_IPP_NEWBIE, result.url)
     }
 
     @Test
@@ -114,7 +117,7 @@ class GetIPPFeedbackSurveyUrlTest : BaseUnitTest() {
         val result = sut()
 
         // then
-        assertEquals(SURVEY_URL_IPP_BEGINNER, result)
+        assertEquals(SURVEY_URL_IPP_BEGINNER, result.url)
     }
 
     @Test
@@ -132,7 +135,61 @@ class GetIPPFeedbackSurveyUrlTest : BaseUnitTest() {
         val result = sut()
 
         // then
-        assertEquals(SURVEY_URL_IPP_NINJA, result)
+        assertEquals(SURVEY_URL_IPP_NINJA, result.url)
+    }
+
+    @Test
+    fun `given banner should be displayed and user is a newbie, then should display correct message`() = runBlocking {
+        // given
+        whenever(shouldShowFeedbackBanner()) doReturn true
+        whenever(getActivePaymentsPlugin()) doReturn
+            WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
+
+        val fakeNinjaTransactionsSummary = WCPaymentTransactionsSummaryResult(0, "", 0, 0, 0, null, null)
+        whenever(ippStore.fetchTransactionsSummary(any(), any(), any())) doReturn
+            WooPayload(fakeNinjaTransactionsSummary)
+
+        // when
+        val result = sut()
+
+        // then
+        assertEquals(BANNER_MESSAGE_NEWBIE, result.message)
+    }
+
+    @Test
+    fun `given banner should be displayed and user is a beginner, then should display correct message`() = runBlocking {
+        // given
+        whenever(shouldShowFeedbackBanner()) doReturn true
+        whenever(getActivePaymentsPlugin()) doReturn
+            WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
+
+        val fakeNinjaTransactionsSummary = WCPaymentTransactionsSummaryResult(1, "", 0, 0, 0, null, null)
+        whenever(ippStore.fetchTransactionsSummary(any(), any(), any())) doReturn
+            WooPayload(fakeNinjaTransactionsSummary)
+
+        // when
+        val result = sut()
+
+        // then
+        assertEquals(BANNER_MESSAGE_BEGINNER, result.message)
+    }
+
+    @Test
+    fun `given banner should be displayed and user is a ninja, then should display correct message`() = runBlocking {
+        // given
+        whenever(shouldShowFeedbackBanner()) doReturn true
+        whenever(getActivePaymentsPlugin()) doReturn
+            WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
+
+        val fakeNinjaTransactionsSummary = WCPaymentTransactionsSummaryResult(11, "", 0, 0, 0, null, null)
+        whenever(ippStore.fetchTransactionsSummary(any(), any(), any())) doReturn
+            WooPayload(fakeNinjaTransactionsSummary)
+
+        // when
+        val result = sut()
+
+        // then
+        assertEquals(BANNER_MESSAGE_NINJA, result.message)
     }
 
     @Test
