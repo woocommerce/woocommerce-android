@@ -1,10 +1,7 @@
 package com.woocommerce.android.ui.payments.refunds
 
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
-import com.woocommerce.android.ui.payments.cardreader.onboarding.PreferredPluginResult
-import com.woocommerce.android.ui.payments.cardreader.onboarding.toInPersonPaymentsPluginType
+import com.woocommerce.android.ui.payments.GetActivePaymentsPlugin
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import javax.inject.Inject
@@ -12,11 +9,10 @@ import javax.inject.Inject
 class PaymentChargeRepository @Inject constructor(
     private val ippStore: WCInPersonPaymentsStore,
     private val selectedSite: SelectedSite,
-    private val appPrefs: AppPrefs,
-    private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
+    private val getActivePaymentsPlugin: GetActivePaymentsPlugin,
 ) {
     suspend fun fetchCardDataUsedForOrderPayment(chargeId: String): CardDataUsedForOrderPaymentResult {
-        val activePlugin = getActivePlugin()
+        val activePlugin = getActivePaymentsPlugin()
 
         return if (activePlugin == null) {
             CardDataUsedForOrderPaymentResult.Error
@@ -52,19 +48,6 @@ class PaymentChargeRepository @Inject constructor(
             }
         }
     }
-
-    private suspend fun getActivePlugin() =
-        appPrefs.getCardReaderPreferredPlugin(
-            selectedSite.get().id,
-            selectedSite.get().siteId,
-            selectedSite.get().selfHostedSiteId
-        )?.toInPersonPaymentsPluginType() ?: fetchPreferredPlugin()
-
-    private suspend fun fetchPreferredPlugin() =
-        when (val prefferedPluginResult = cardReaderOnboardingChecker.fetchPreferredPlugin()) {
-            is PreferredPluginResult.Success -> prefferedPluginResult.type.toInPersonPaymentsPluginType()
-            else -> null
-        }
 
     sealed class CardDataUsedForOrderPaymentResult {
         object Error : CardDataUsedForOrderPaymentResult()
