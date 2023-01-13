@@ -411,6 +411,7 @@
     <string name="analytics_revenue_no_data">No revenue this period</string>
     <string name="analytics_orders_no_data">No orders this period</string>
     <string name="analytics_products_no_data">No products this period</string>
+    <string name="analytics_session_no_data">No sessions this period</string>
     <string name="analytics_total_sales_title">Total sales</string>
     <string name="analytics_net_sales_title">Net sales</string>
     <string name="analytics_information_card_delta" translatable="false">%1$s%2$d%%</string>
