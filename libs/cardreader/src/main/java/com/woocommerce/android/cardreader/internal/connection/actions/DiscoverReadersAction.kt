@@ -30,10 +30,10 @@ internal class DiscoverReadersAction(
         data class Failure(val exception: TerminalException) : DiscoverReadersStatus()
     }
 
-    fun discoverBuildInReaders(isSimulated: Boolean) : Flow<DiscoverReadersStatus> =
+    fun discoverBuildInReaders(isSimulated: Boolean): Flow<DiscoverReadersStatus> =
         discoverReaders(isSimulated, DiscoveryMethod.LOCAL_MOBILE)
 
-    fun discoverBtReaders(isSimulated: Boolean) : Flow<DiscoverReadersStatus> =
+    fun discoverBtReaders(isSimulated: Boolean): Flow<DiscoverReadersStatus> =
         discoverReaders(isSimulated, DiscoveryMethod.BLUETOOTH_SCAN)
 
     private fun discoverReaders(isSimulated: Boolean, discoveryMethod: DiscoveryMethod): Flow<DiscoverReadersStatus> {
