@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
+import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +27,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
     private val cardReaderChecker: CardReaderOnboardingChecker = mock()
     private val cardReaderTracker: CardReaderTracker = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val isTapToPayAvailable: IsTapToPayAvailable = mock()
     private val countryCode = "US"
     private val pluginVersion = "4.0.0"
 
@@ -129,6 +131,56 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given payment flow and not connected and tpp available, when vm init, then navigate to type reader dialog`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = ORDER)
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+            whenever(appPrefsWrapper.isCardReaderWelcomeDialogShown()).thenReturn(true)
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.OnboardingCompleted(
+                    PluginType.WOOCOMMERCE_PAYMENTS,
+                    pluginVersion,
+                    countryCode
+                )
+            )
+            whenever(isTapToPayAvailable()).thenReturn(true)
+
+            // WHEN
+            val vm = initViewModel(param)
+
+            // THEN
+            assertThat(vm.event.value)
+                .isEqualTo(CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToIPPReaderTypeSelection(param))
+        }
+
+    @Test
+    fun `given payment flow and not connected and tpp not available, when vm init, then navigate to connection`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = ORDER)
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+            whenever(appPrefsWrapper.isCardReaderWelcomeDialogShown()).thenReturn(true)
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.OnboardingCompleted(
+                    PluginType.WOOCOMMERCE_PAYMENTS,
+                    pluginVersion,
+                    countryCode
+                )
+            )
+            whenever(isTapToPayAvailable()).thenReturn(false)
+
+            // WHEN
+            val vm = initViewModel(param)
+
+            // THEN
+            assertThat(vm.event.value)
+                .isEqualTo(CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToConnection(param))
+        }
+
+    @Test
     fun `given payment flow onboarding success welcome shown, when vm init, then navigates to connection`() =
         testBlocking {
             // GIVEN
@@ -160,5 +212,6 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
             cardReaderChecker,
             cardReaderTracker,
             appPrefsWrapper,
+            isTapToPayAvailable,
         )
 }
