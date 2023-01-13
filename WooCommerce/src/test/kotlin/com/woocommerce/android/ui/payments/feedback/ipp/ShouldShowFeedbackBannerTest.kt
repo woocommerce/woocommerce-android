@@ -34,7 +34,7 @@ class ShouldShowFeedbackBannerTest : BaseUnitTest() {
         whenever(cashOnDeliverySettings.isCashOnDeliveryEnabled()) doReturn (true)
         whenever(appPrefs.isIPPFeedbackSurveyCompleted()) doReturn (false)
         whenever(appPrefs.isIPPFeedbackBannerDismissedForever()) doReturn (false)
-        whenever(getActivePaymentsPlugin.invoke()) doReturn
+        whenever(getActivePaymentsPlugin()) doReturn
             (WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
         Unit
     }
@@ -45,7 +45,7 @@ class ShouldShowFeedbackBannerTest : BaseUnitTest() {
         whenever(cashOnDeliverySettings.isCashOnDeliveryEnabled()).thenReturn(false)
 
         // when
-        val result = sut.invoke()
+        val result = sut()
 
         // then
         assertFalse(result)
@@ -54,10 +54,10 @@ class ShouldShowFeedbackBannerTest : BaseUnitTest() {
     @Test
     fun `given Stripe plugin is used, then banner should not be shown`() = runBlocking {
         // given
-        whenever(getActivePaymentsPlugin.invoke()).thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.STRIPE)
+        whenever(getActivePaymentsPlugin()).thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.STRIPE)
 
         // when
-        val result = sut.invoke()
+        val result = sut()
 
         // then
         assertFalse(result)
@@ -69,7 +69,7 @@ class ShouldShowFeedbackBannerTest : BaseUnitTest() {
         whenever(appPrefs.isIPPFeedbackSurveyCompleted()).thenReturn(true)
 
         // when
-        val result = sut.invoke()
+        val result = sut()
 
         // then
         assertFalse(result)
@@ -81,7 +81,7 @@ class ShouldShowFeedbackBannerTest : BaseUnitTest() {
         whenever(appPrefs.isIPPFeedbackBannerDismissedForever()).thenReturn(true)
 
         // when
-        val result = sut.invoke()
+        val result = sut()
 
         // then
         assertFalse(result)
@@ -95,7 +95,7 @@ class ShouldShowFeedbackBannerTest : BaseUnitTest() {
         whenever(appPrefs.getIPPFeedbackBannerLastDismissed()).thenReturn(sixDaysAgo.time)
 
         // when
-        val result = sut.invoke()
+        val result = sut()
 
         // then
         assertFalse(result)
@@ -110,7 +110,7 @@ class ShouldShowFeedbackBannerTest : BaseUnitTest() {
             whenever(appPrefs.getIPPFeedbackBannerLastDismissed()).thenReturn(eightDaysAgo.time)
 
             // when
-            val result = sut.invoke()
+            val result = sut()
 
             // then
             assertTrue(result)
@@ -122,7 +122,7 @@ class ShouldShowFeedbackBannerTest : BaseUnitTest() {
         whenever(appPrefs.getIPPFeedbackBannerLastDismissed()).thenReturn(-1L)
 
         // when
-        val result = sut.invoke()
+        val result = sut()
 
         // then
         assertTrue(result)
