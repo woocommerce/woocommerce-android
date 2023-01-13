@@ -99,7 +99,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = '2633-0a9499c101ece21a108a3a88b3eb058260453376'
+    fluxCVersion = '2633-71005d44879e535bb4adcb9f655650d97699564e'
     glideVersion = '4.13.2'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
