@@ -7,10 +7,10 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
-import com.woocommerce.android.cardreader.connection.SpecificReader
-import com.woocommerce.android.cardreader.connection.SpecificReader.Chipper2X
-import com.woocommerce.android.cardreader.connection.SpecificReader.StripeM2
-import com.woocommerce.android.cardreader.connection.SpecificReader.WisePade3
+import com.woocommerce.android.cardreader.connection.ReaderType
+import com.woocommerce.android.cardreader.connection.ReaderType.Chipper2X
+import com.woocommerce.android.cardreader.connection.ReaderType.StripeM2
+import com.woocommerce.android.cardreader.connection.ReaderType.WisePade3
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.payments.cardreader.manuals.CardReaderManualsViewModel.ManualItem
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -55,7 +55,7 @@ class CardReaderManualsViewModelTest : BaseUnitTest() {
                 ManualItem(
                     icon = drawable.ic_chipper_reader,
                     label = string.card_reader_bbpos_manual_card_reader,
-                    onManualClicked = (it.arguments[1] as Map<SpecificReader, () -> Unit>)[Chipper2X] as () -> Unit
+                    onManualClicked = (it.arguments[1] as Map<ReaderType, () -> Unit>)[Chipper2X] as () -> Unit
                 ),
             )
         }
@@ -77,7 +77,7 @@ class CardReaderManualsViewModelTest : BaseUnitTest() {
                 ManualItem(
                     icon = drawable.ic_m2_reader,
                     label = string.card_reader_m2_manual_card_reader,
-                    onManualClicked = (it.arguments[1] as Map<SpecificReader, () -> Unit>)[StripeM2] as () -> Unit
+                    onManualClicked = (it.arguments[1] as Map<ReaderType, () -> Unit>)[StripeM2] as () -> Unit
                 ),
             )
         }
@@ -99,7 +99,7 @@ class CardReaderManualsViewModelTest : BaseUnitTest() {
                 ManualItem(
                     icon = drawable.ic_wisepad3_reader,
                     label = string.card_reader_wisepad_3_manual_card_reader,
-                    onManualClicked = (it.arguments[1] as Map<SpecificReader, () -> Unit>)[WisePade3] as () -> Unit
+                    onManualClicked = (it.arguments[1] as Map<ReaderType, () -> Unit>)[WisePade3] as () -> Unit
                 )
             )
         }

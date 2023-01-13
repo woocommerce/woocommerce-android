@@ -365,3 +365,9 @@ sealed class CardReaderFlowParam : Parcelable {
         data class Refund(override val orderId: Long, val refundAmount: BigDecimal) : PaymentOrRefund()
     }
 }
+
+@Parcelize
+enum class CardReaderType : Parcelable {
+    BUILT_IN,
+    EXTERNAL,
+}

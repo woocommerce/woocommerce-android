@@ -15,7 +15,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.S
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Succeeded
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
-import com.woocommerce.android.cardreader.connection.SpecificReader
+import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateInProgress
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
@@ -251,8 +251,12 @@ class CardReaderConnectViewModel @Inject constructor(
             cardReaderManager
                 .discoverReaders(
                     isSimulated = developerOptionsRepository.isSimulatedCardReaderEnabled(),
-                    cardReaderTypesToDiscover = CardReaderTypesToDiscover.SpecificReaders(
-                        listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2, SpecificReader.WisePade3)
+                    cardReaderTypesToDiscover = CardReaderTypesToDiscover.SpecificReaders.SpecificExternalReaders(
+                        listOf(
+                            ReaderType.ExternalReader.Chipper2X,
+                            ReaderType.ExternalReader.StripeM2,
+                            ReaderType.ExternalReader.WisePade3
+                        )
                     )
                 )
                 .flowOn(dispatchers.io)

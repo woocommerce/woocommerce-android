@@ -11,6 +11,10 @@ import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderImpl
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
+import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover.SpecificReaders
+import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover.SpecificReaders.SpecificBuiltInReaders
+import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover.SpecificReaders.SpecificExternalReaders
+import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover.UnspecifiedReaders
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
@@ -18,6 +22,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -34,7 +39,18 @@ internal class ConnectionManager(
     val displayBluetoothCardReaderMessages = bluetoothReaderListener.displayMessagesEvents
 
     fun discoverReaders(isSimulated: Boolean, cardReaderTypesToDiscover: CardReaderTypesToDiscover) =
-        discoverReadersAction.discoverReaders(isSimulated).map { state ->
+        when (cardReaderTypesToDiscover) {
+            is SpecificReaders -> {
+                when (cardReaderTypesToDiscover) {
+                    is SpecificBuiltInReaders -> discoverReadersAction.discoverBuildInReaders(isSimulated)
+                    is SpecificExternalReaders -> discoverReadersAction.discoverBtReaders(isSimulated)
+                }
+            }
+            UnspecifiedReaders -> merge(
+                discoverReadersAction.discoverBuildInReaders(isSimulated),
+                discoverReadersAction.discoverBtReaders(isSimulated)
+            )
+        }.map { state ->
             when (state) {
                 is DiscoverReadersStatus.Started -> {
                     CardReaderDiscoveryEvents.Started
@@ -44,16 +60,12 @@ internal class ConnectionManager(
                 }
                 is DiscoverReadersStatus.FoundReaders -> {
                     val filtering: (Reader) -> Boolean = when (cardReaderTypesToDiscover) {
-                        is CardReaderTypesToDiscover.SpecificReaders -> { reader ->
+                        is SpecificReaders -> { reader ->
                             cardReaderTypesToDiscover.readers.map { it.name }.contains(reader.deviceType.name)
                         }
-                        CardReaderTypesToDiscover.UnspecifiedReaders -> { _ -> true }
+                        UnspecifiedReaders -> { _ -> true }
                     }
-                    CardReaderDiscoveryEvents.ReadersFound(
-                        state.readers
-                            .filter(filtering)
-                            .map { CardReaderImpl(it) }
-                    )
+                    CardReaderDiscoveryEvents.ReadersFound(state.readers.filter(filtering).map { CardReaderImpl(it) })
                 }
                 DiscoverReadersStatus.Success -> {
                     CardReaderDiscoveryEvents.Succeeded

@@ -4,7 +4,7 @@ import android.app.Application
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
-import com.woocommerce.android.cardreader.connection.SpecificReader
+import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
@@ -44,7 +44,7 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
     private val terminalListener: TerminalListenerImpl = mock()
 
     private val supportedReaders =
-        CardReaderTypesToDiscover.SpecificReaders(listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2))
+        CardReaderTypesToDiscover.SpecificExternalReaders(listOf(ReaderType.Chipper2X, ReaderType.StripeM2))
 
     private val updateFrequency = CardReaderManager.SimulatorUpdateFrequency.RANDOM
 

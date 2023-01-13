@@ -179,6 +179,10 @@
             android:name="cardReaderFlowParam"
             app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam"
             app:nullable="false" />
+        <argument
+            android:name="cardReaderType"
+            app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType"
+            app:nullable="false" />
         <action
             android:id="@+id/action_cardReaderConnectDialogFragment_to_cardReaderTutorialDialogFragment"
             app:destination="@id/cardReaderTutorialDialogFragment"

@@ -10,7 +10,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.R
 import com.woocommerce.android.cardreader.connection.CardReaderImpl
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
-import com.woocommerce.android.cardreader.connection.SpecificReader
+import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.internal.CardReaderBaseUnitTest
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Failure
@@ -40,7 +40,7 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
     private val terminalListenerImpl: TerminalListenerImpl = mock()
 
     private val supportedReaders =
-        CardReaderTypesToDiscover.SpecificReaders(listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2))
+        CardReaderTypesToDiscover.SpecificExternalReaders(listOf(ReaderType.Chipper2X, ReaderType.StripeM2))
 
     private lateinit var connectionManager: ConnectionManager
 
@@ -91,8 +91,8 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
 
             val result = connectionManager.discoverReaders(true, supportedReaders).toList()
 
-            assertThat((result.first() as ReadersFound).list[0].type).isEqualTo(SpecificReader.Chipper2X.name)
-            assertThat((result.first() as ReadersFound).list[1].type).isEqualTo(SpecificReader.StripeM2.name)
+            assertThat((result.first() as ReadersFound).list[0].type).isEqualTo(ReaderType.Chipper2X.name)
+            assertThat((result.first() as ReadersFound).list[1].type).isEqualTo(ReaderType.StripeM2.name)
             assertThat((result.first() as ReadersFound).list.size).isEqualTo(2)
         }
 
@@ -118,9 +118,9 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
                 CardReaderTypesToDiscover.UnspecifiedReaders
             ).toList()
 
-            assertThat((result.first() as ReadersFound).list[0].type).isEqualTo(SpecificReader.Chipper2X.name)
-            assertThat((result.first() as ReadersFound).list[1].type).isEqualTo(SpecificReader.StripeM2.name)
-            assertThat((result.first() as ReadersFound).list[2].type).isEqualTo(SpecificReader.WisePadeE.name)
+            assertThat((result.first() as ReadersFound).list[0].type).isEqualTo(ReaderType.Chipper2X.name)
+            assertThat((result.first() as ReadersFound).list[1].type).isEqualTo(ReaderType.StripeM2.name)
+            assertThat((result.first() as ReadersFound).list[2].type).isEqualTo(ReaderType.WisePadeE.name)
             assertThat((result.first() as ReadersFound).list.size).isEqualTo(3)
         }
 

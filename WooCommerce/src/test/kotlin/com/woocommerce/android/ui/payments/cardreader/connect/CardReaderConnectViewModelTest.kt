@@ -8,7 +8,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.F
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
-import com.woocommerce.android.cardreader.connection.SpecificReader
+import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -1440,15 +1440,15 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `when discovery readers, then supported readers list used`() {
         testBlocking {
-            val captor = argumentCaptor<CardReaderTypesToDiscover.SpecificReaders>()
+            val captor = argumentCaptor<CardReaderTypesToDiscover.SpecificExternalReaders>()
 
             init()
 
             verify(cardReaderManager).discoverReaders(anyBoolean(), captor.capture())
             assertThat(captor.firstValue).isEqualTo(
-                CardReaderTypesToDiscover.SpecificReaders(
+                CardReaderTypesToDiscover.SpecificExternalReaders(
                     listOf(
-                        SpecificReader.Chipper2X, SpecificReader.StripeM2, SpecificReader.WisePade3
+                        ReaderType.Chipper2X, ReaderType.StripeM2, ReaderType.WisePade3
                     )
                 )
             )
