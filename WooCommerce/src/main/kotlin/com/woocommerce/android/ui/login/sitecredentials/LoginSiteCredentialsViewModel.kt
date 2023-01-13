@@ -11,6 +11,7 @@ import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -50,7 +51,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val loginAnalyticsListener: LoginAnalyticsListener,
     private val resourceProvider: ResourceProvider,
-    applicationPasswordsNotifier: ApplicationPasswordsNotifier
+    applicationPasswordsNotifier: ApplicationPasswordsNotifier,
+    private val userEligibilityFetcher: UserEligibilityFetcher
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val SITE_ADDRESS_KEY = "site-address"
@@ -100,8 +102,17 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     fun onContinueClick() = launch {
         loginAnalyticsListener.trackSubmitClicked()
-        isLoading.value = true
+        if (selectedSite.exists()) {
+            // The login already succeeded, proceed to fetching user info
+            fetchUserInfo()
+        } else {
+            login()
+        }
+    }
+
+    private suspend fun login() {
         val state = requireNotNull(this@LoginSiteCredentialsViewModel.state.value)
+        isLoading.value = true
         wpApiSiteRepository.login(
             url = siteAddress,
             username = state.username,
@@ -111,7 +122,6 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 checkWooStatus(it)
             },
             onFailure = { exception ->
-                isLoading.value = false
                 var errorMessage: Int? = null
                 if (exception is OnChangedException && exception.error is AuthenticationError) {
                     errorMessage = exception.error.toErrorMessage()
@@ -137,6 +147,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 )
             }
         )
+        isLoading.value = false
     }
 
     private suspend fun checkWooStatus(site: SiteModel) {
@@ -146,7 +157,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 if (isWooInstalled) {
                     loginAnalyticsListener.trackAnalyticsSignIn(false)
                     selectedSite.set(site)
-                    triggerEvent(LoggedIn(site.id))
+                    fetchUserInfo()
                 } else {
                     triggerEvent(ShowNonWooErrorScreen(siteAddress))
                 }
@@ -155,6 +166,18 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 triggerEvent(ShowSnackbar(R.string.error_generic))
             }
         )
+        isLoading.value = false
+    }
+
+    private suspend fun fetchUserInfo() {
+        isLoading.value = true
+        val userInfo = userEligibilityFetcher.fetchUserInfo()
+        if (userInfo != null) {
+            userEligibilityFetcher.updateUserInfo(userInfo)
+            triggerEvent(LoggedIn(selectedSite.getSelectedSiteId()))
+        } else {
+            triggerEvent(ShowSnackbar(R.string.error_generic))
+        }
         isLoading.value = false
     }
 
