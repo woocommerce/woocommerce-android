@@ -9,7 +9,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.CardReaderTypeSelectionDialogBinding
 import com.woocommerce.android.ui.payments.CardReaderTypeSelectionViewModel.NavigateToCardReaderPaymentFlow
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class CardReaderTypeSelectionDialogFragment : DialogFragment(R.layout.card_reader_type_selection_dialog) {
     val viewModel: CardReaderTypeSelectionViewModel by viewModels()
 
