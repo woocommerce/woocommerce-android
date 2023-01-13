@@ -11,6 +11,9 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
+import com.woocommerce.android.ui.payments.cardreader.statuschecker.CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToConnection
+import com.woocommerce.android.ui.payments.cardreader.statuschecker.CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToIPPReaderTypeSelection
+import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
@@ -27,6 +30,7 @@ class CardReaderStatusCheckerViewModel
     private val cardReaderChecker: CardReaderOnboardingChecker,
     private val cardReaderTracker: CardReaderTracker,
     private val appPrefsWrapper: AppPrefsWrapper,
+    private val isTapToPayAvailable: IsTapToPayAvailable,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderStatusCheckerDialogFragmentArgs by savedState.navArgs()
 
@@ -61,7 +65,12 @@ class CardReaderStatusCheckerViewModel
             is CardReaderOnboardingState.OnboardingCompleted -> {
                 if (appPrefsWrapper.isCardReaderWelcomeDialogShown()) {
                     cardReaderTracker.trackOnboardingState(state)
-                    triggerEvent(StatusCheckerEvent.NavigateToConnection(param))
+
+                    if (isTapToPayAvailable()) {
+                        triggerEvent(NavigateToIPPReaderTypeSelection(param))
+                    } else {
+                        triggerEvent(NavigateToConnection(param))
+                    }
                 } else {
                     triggerEvent(StatusCheckerEvent.NavigateToWelcome(param))
                 }
@@ -76,7 +85,10 @@ class CardReaderStatusCheckerViewModel
 
     sealed class StatusCheckerEvent : MultiLiveEvent.Event() {
         data class NavigateToWelcome(val cardReaderFlowParam: CardReaderFlowParam) : MultiLiveEvent.Event()
+        data class NavigateToIPPReaderTypeSelection(val cardReaderFlowParam: CardReaderFlowParam) :
+            MultiLiveEvent.Event()
         data class NavigateToConnection(val cardReaderFlowParam: CardReaderFlowParam) : MultiLiveEvent.Event()
+
         data class NavigateToPayment(val cardReaderFlowParam: CardReaderFlowParam) : MultiLiveEvent.Event()
         data class NavigateToOnboarding(val cardReaderOnboardingParams: CardReaderOnboardingParams) :
             MultiLiveEvent.Event()

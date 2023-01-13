@@ -32,7 +32,6 @@ import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.Navigate
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderHubFlow
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderPaymentFlow
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderRefundFlow
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToIPPReaderTypeSelection
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.OpenPurchaseCardReaderLink
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Success
@@ -175,14 +174,6 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
                         SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToCardReaderPaymentFlow(
                             event.cardReaderFlowParam
                         )
-                    findNavController().navigate(action)
-                }
-                is NavigateToIPPReaderTypeSelection -> {
-                    val action =
-                        SelectPaymentMethodFragmentDirections
-                            .actionSelectPaymentMethodFragmentToCardReaderTypeSelectionDialogFragment(
-                                event.cardReaderFlowParam
-                            )
                     findNavController().navigate(action)
                 }
                 is NavigateToCardReaderHubFlow -> {
