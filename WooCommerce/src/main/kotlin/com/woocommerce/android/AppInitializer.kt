@@ -109,13 +109,11 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             selectedSite.getIfExists()?.let {
                 appCoroutineScope.launch {
                     wooCommerceStore.fetchWooCommerceSite(it).let {
-                        if (it.model?.hasWooCommerce == false &&
-                            ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(STARTED)
-                        ) {
+                        if (it.model?.hasWooCommerce == false) {
                             // The previously selected site is not connected anymore, take the user to the site picker
                             WooLog.w(T.LOGIN, "Selected site no longer has WooCommerce")
                             selectedSite.reset()
-                            openMainActivity()
+                            restartMainActivity()
                         }
                     }
                     wooCommerceStore.fetchSiteGeneralSettings(it)
@@ -207,12 +205,11 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 // Added to fix this crash
                 // https://github.com/woocommerce/woocommerce-android/issues/4842
                 if (selectedSite.getSelectedSiteId() != -1 &&
-                    !selectedSite.exists() &&
-                    ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(STARTED)
+                    !selectedSite.exists()
                 ) {
                     // The previously selected site is not connected anymore, take the user to the site picker
                     WooLog.i(DASHBOARD, "Selected site no longer exists, showing site picker")
-                    openMainActivity()
+                    restartMainActivity()
                 }
             }
 
@@ -222,7 +219,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                     userEligibilityFetcher.fetchUserInfo()?.let {
                         if (!it.isUserEligible()) {
                             WooLog.w(T.LOGIN, "Current user is not eligible to access the current site")
-                            openMainActivity()
+                            restartMainActivity()
                         }
                     }
                 }
@@ -239,10 +236,12 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         }
     }
 
-    private fun openMainActivity() {
-        val intent = Intent(application, MainActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        application.startActivity(intent)
+    private fun restartMainActivity() {
+        if (ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(STARTED)) {
+            val intent = Intent(application, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            application.startActivity(intent)
+        }
     }
 
     private fun monitorApplicationPasswordsStatus() {
@@ -252,7 +251,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 if (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords) {
                     WooLog.w(T.LOGIN, "Application Passwords support has been disabled in the current site")
                     selectedSite.reset()
-                    openMainActivity()
+                    restartMainActivity()
                 }
             }
         }
