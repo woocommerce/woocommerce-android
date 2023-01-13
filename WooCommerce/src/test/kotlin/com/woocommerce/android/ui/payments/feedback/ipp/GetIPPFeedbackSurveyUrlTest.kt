@@ -28,7 +28,6 @@ import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import java.util.Date
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GetIPPFeedbackSurveyUrlTest : BaseUnitTest() {
@@ -53,38 +52,38 @@ class GetIPPFeedbackSurveyUrlTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given banner should not be displayed, should throw exception`() = runBlocking {
+    fun `given banner should not be displayed, then should throw exception`() = runBlocking {
         // given
-        whenever(shouldShowFeedbackBanner.invoke()) doReturn false
+        whenever(shouldShowFeedbackBanner()) doReturn false
 
         // then
         assertFailsWith(IllegalStateException::class) {
-            runBlocking { sut.invoke() }
+            runBlocking { sut() }
         }
 
         Unit
     }
 
     @Test
-    fun `given no active payments plugin found, should throw exception`() = runBlocking {
+    fun `given no active payments plugin found, then should throw exception`() = runBlocking {
         // given
-        whenever(shouldShowFeedbackBanner.invoke()) doReturn true
-        whenever(getActivePaymentsPlugin.invoke()) doReturn null
+        whenever(shouldShowFeedbackBanner()) doReturn true
+        whenever(getActivePaymentsPlugin()) doReturn null
 
         // then
         assertFailsWith(IllegalStateException::class) {
-            runBlocking { sut.invoke() }
+            runBlocking { sut() }
         }
 
         Unit
     }
 
     @Test
-    fun `given banner should be displayed and user is a newbie, should return correct url`() = runBlocking {
+    fun `given banner should be displayed and user is a newbie, then should return correct url`() = runBlocking {
         // given
-        whenever(shouldShowFeedbackBanner.invoke()) doReturn true
+        whenever(shouldShowFeedbackBanner()) doReturn true
 
-        whenever(getActivePaymentsPlugin.invoke()) doReturn
+        whenever(getActivePaymentsPlugin()) doReturn
             WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
 
         val fakeNewbieTransactionsSummary = WCPaymentTransactionsSummaryResult(0, "", 0, 0, 0, null, null)
@@ -93,17 +92,17 @@ class GetIPPFeedbackSurveyUrlTest : BaseUnitTest() {
         )
 
         // when
-        val result = sut.invoke()
+        val result = sut()
 
         // then
         assertEquals(SURVEY_URL_IPP_NEWBIE, result)
     }
 
     @Test
-    fun `given banner should be displayed and user is a beginner, should return correct url`() = runBlocking {
+    fun `given banner should be displayed and user is a beginner, then should return correct url`() = runBlocking {
         // given
-        whenever(shouldShowFeedbackBanner.invoke()) doReturn true
-        whenever(getActivePaymentsPlugin.invoke()) doReturn
+        whenever(shouldShowFeedbackBanner()) doReturn true
+        whenever(getActivePaymentsPlugin()) doReturn
             WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
 
         val fakeBeginnerTransactionsSummary = WCPaymentTransactionsSummaryResult(2, "", 0, 0, 0, null, null)
@@ -112,17 +111,17 @@ class GetIPPFeedbackSurveyUrlTest : BaseUnitTest() {
         )
 
         // when
-        val result = sut.invoke()
+        val result = sut()
 
         // then
         assertEquals(SURVEY_URL_IPP_BEGINNER, result)
     }
 
     @Test
-    fun `given banner should be displayed and user is a ninja, should return correct url`() = runBlocking {
+    fun `given banner should be displayed and user is a ninja, then should return correct url`() = runBlocking {
         // given
-        whenever(shouldShowFeedbackBanner.invoke()) doReturn true
-        whenever(getActivePaymentsPlugin.invoke()) doReturn
+        whenever(shouldShowFeedbackBanner()) doReturn true
+        whenever(getActivePaymentsPlugin()) doReturn
             WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
 
         val fakeNinjaTransactionsSummary = WCPaymentTransactionsSummaryResult(11, "", 0, 0, 0, null, null)
@@ -130,23 +129,23 @@ class GetIPPFeedbackSurveyUrlTest : BaseUnitTest() {
             WooPayload(fakeNinjaTransactionsSummary)
 
         // when
-        val result = sut.invoke()
+        val result = sut()
 
         // then
         assertEquals(SURVEY_URL_IPP_NINJA, result)
     }
 
     @Test
-    fun `given banner should be displayed, should analyze IPP stats from the correct time window`() = runBlocking {
+    fun `given banner should be displayed, then should analyze IPP stats from the correct time window`() = runBlocking {
         // given
-        whenever(shouldShowFeedbackBanner.invoke()) doReturn true
-        whenever(getActivePaymentsPlugin.invoke()) doReturn
+        whenever(shouldShowFeedbackBanner()) doReturn true
+        whenever(getActivePaymentsPlugin()) doReturn
             WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
 
         val expectedTimeWindowCaptor = ArgumentCaptor.forClass(String::class.java)
 
         // when
-        sut.invoke()
+        sut()
         verify(ippStore).fetchTransactionsSummary(
             any(),
             any(),
@@ -159,35 +158,62 @@ class GetIPPFeedbackSurveyUrlTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given endpoint returns error, should return null survey url`() = runBlocking {
+    fun `given endpoint returns error, then should throw error`() = runBlocking {
         // given
-        whenever(shouldShowFeedbackBanner.invoke()) doReturn true
-        whenever(getActivePaymentsPlugin.invoke()) doReturn
+        whenever(shouldShowFeedbackBanner()) doReturn true
+        whenever(getActivePaymentsPlugin()) doReturn
             WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
 
         val error = WooError(WooErrorType.API_ERROR, BaseRequest.GenericErrorType.NO_CONNECTION, "error")
         whenever(ippStore.fetchTransactionsSummary(any(), any(), any())) doReturn WooPayload(error)
 
-        // when
-        val result = sut.invoke()
-
         // then
-        assertNull(result)
+        assertFailsWith(IllegalStateException::class) {
+            runBlocking { sut() }
+        }
+
+        Unit
     }
 
     @Test
-    fun `given endpoint returns null response, should return null survey url`() = runBlocking {
+    fun `given endpoint returns null response, then should throw exception`() = runBlocking {
         // given
-        whenever(shouldShowFeedbackBanner.invoke()) doReturn true
-        whenever(getActivePaymentsPlugin.invoke()) doReturn
+        whenever(shouldShowFeedbackBanner()) doReturn true
+        whenever(getActivePaymentsPlugin()) doReturn
             WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
 
         whenever(ippStore.fetchTransactionsSummary(any(), any(), any())) doReturn WooPayload(null)
 
-        // when
-        val result = sut.invoke()
-
         // then
-        assertNull(result)
+        assertFailsWith(IllegalStateException::class) {
+            runBlocking { sut() }
+        }
+
+        Unit
     }
+
+    @Test
+    fun `given successful endpoint response, when transactions count is negative, then should throw exception `() =
+        runBlocking {
+            // given
+            whenever(shouldShowFeedbackBanner()) doReturn true
+            whenever(getActivePaymentsPlugin()) doReturn
+                WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
+
+            val fakeTransactionsSummary = WCPaymentTransactionsSummaryResult(-1, "", 0, 0, 0, null, null)
+            whenever(
+                ippStore.fetchTransactionsSummary(
+                    any(),
+                    any(),
+                    any()
+                )
+            ) doReturn WooPayload(fakeTransactionsSummary)
+
+            // then
+            assertFailsWith(IllegalStateException::class) {
+                runBlocking { sut() }
+            }
+
+            Unit
+        }
 }
