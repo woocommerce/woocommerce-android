@@ -25,6 +25,9 @@ class CardReaderTypeSelectionDialogFragment : DialogFragment(R.layout.card_reade
         binding.readerSelectionUseBlueatoothReader.setOnClickListener {
             viewModel.onUseBluetoothReaderSelected()
         }
+        binding.readerSelectionUseBuiltInReader.setOnClickListener {
+            viewModel.onUseTapToPaySelected()
+        }
     }
 
     private fun initObservers() {
@@ -36,7 +39,8 @@ class CardReaderTypeSelectionDialogFragment : DialogFragment(R.layout.card_reade
                     val action =
                         CardReaderTypeSelectionDialogFragmentDirections
                             .actionCardReaderTypeSelectionDialogFragmentToCardReaderConnectDialogFragment(
-                                event.cardReaderFlowParam
+                                event.cardReaderFlowParam,
+                                event.cardReaderType,
                             )
                     findNavController().navigate(action)
                 }

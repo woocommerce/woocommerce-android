@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.payments
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -23,11 +24,23 @@ class CardReaderTypeSelectionViewModel
         }
     }
 
+    fun onUseTapToPaySelected() {
+        navigateToConnectionFlow(CardReaderType.BUILT_IN)
+    }
+
     fun onUseBluetoothReaderSelected() {
-        _event.value = NavigateToCardReaderPaymentFlow(navArgs.cardReaderFlowParam)
+        navigateToConnectionFlow(CardReaderType.EXTERNAL)
+    }
+
+    private fun navigateToConnectionFlow(cardReaderType: CardReaderType) {
+        _event.value = NavigateToCardReaderPaymentFlow(
+            navArgs.cardReaderFlowParam,
+            cardReaderType
+        )
     }
 
     data class NavigateToCardReaderPaymentFlow(
-        val cardReaderFlowParam: CardReaderFlowParam
+        val cardReaderFlowParam: CardReaderFlowParam,
+        val cardReaderType: CardReaderType,
     ) : MultiLiveEvent.Event()
 }
