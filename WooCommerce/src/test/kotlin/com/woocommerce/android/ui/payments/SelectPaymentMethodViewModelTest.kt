@@ -15,9 +15,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateBackToHub
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateBackToOrderList
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderHubFlow
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderPaymentFlow
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderRefundFlow
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToIPPReaderTypeSelection
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.OpenPurchaseCardReaderLink
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Success
@@ -30,7 +28,6 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.SIMPLE
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Refund
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.captureValues
@@ -96,7 +93,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker = mock()
     private val selectPaymentUtmProvider: UtmProvider = mock()
-    private val isTapToPayAvailable: IsTapToPayAvailable = mock()
 
     @Test
     fun `given hub flow, when view model init, then navigate to hub flow emitted`() = testBlocking {
@@ -285,34 +281,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
                 )
             )
-        }
-
-    @Test
-    fun `given tap to pay available, when on card payment clicked, then navigating to reader type selection dialog`() =
-        testBlocking {
-            // GIVEN
-            whenever(isTapToPayAvailable()).thenReturn(true)
-            val viewModel = initViewModel(Payment(1L, SIMPLE))
-
-            // WHEN
-            viewModel.onCardPaymentClicked()
-
-            // THEN
-            assertThat(viewModel.event.value).isInstanceOf(NavigateToIPPReaderTypeSelection::class.java)
-        }
-
-    @Test
-    fun `given tap to pay not available, when on card payment clicked, then navigating to bt reader flow`() =
-        testBlocking {
-            // GIVEN
-            whenever(isTapToPayAvailable()).thenReturn(false)
-            val viewModel = initViewModel(Payment(1L, SIMPLE))
-
-            // WHEN
-            viewModel.onCardPaymentClicked()
-
-            // THEN
-            assertThat(viewModel.event.value).isInstanceOf(NavigateToCardReaderPaymentFlow::class.java)
         }
 
     @Test
@@ -959,7 +927,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             cardPaymentCollectibilityChecker,
             bannerDisplayEligibilityChecker,
             selectPaymentUtmProvider,
-            isTapToPayAvailable,
         )
     }
 }
