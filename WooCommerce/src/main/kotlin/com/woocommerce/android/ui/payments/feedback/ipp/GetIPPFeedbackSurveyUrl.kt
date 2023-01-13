@@ -47,7 +47,7 @@ class GetIPPFeedbackSurveyUrl @Inject constructor(
     }
 
     private suspend fun requireWooCommercePaymentsPlugin(): WCInPersonPaymentsStore.InPersonPaymentsPluginType =
-        getActivePaymentsPlugin.invoke() ?: throw IllegalStateException("No active payments plugin found.")
+        getActivePaymentsPlugin() ?: throw IllegalStateException("No active payments plugin found.")
 
     private suspend fun requireShouldShowFeedbackBanner() {
         if (!shouldShowFeedbackBanner()) {

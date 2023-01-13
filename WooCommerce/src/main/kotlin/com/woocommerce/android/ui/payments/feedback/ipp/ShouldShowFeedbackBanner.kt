@@ -35,7 +35,7 @@ class ShouldShowFeedbackBanner @Inject constructor(
         prefs.isIPPFeedbackSurveyCompleted() || prefs.isIPPFeedbackBannerDismissedForever()
 
     private suspend fun isWooCommercePaymentsPluginEnabled() =
-        getActivePaymentsPlugin.invoke() == WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
+        getActivePaymentsPlugin() == WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
 
     private fun wasDismissedLongAgoEnoughToShowAgain(): Boolean {
         val lastDismissed = prefs.getIPPFeedbackBannerLastDismissed()

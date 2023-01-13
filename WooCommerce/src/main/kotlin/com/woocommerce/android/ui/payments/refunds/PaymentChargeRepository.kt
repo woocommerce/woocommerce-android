@@ -12,7 +12,7 @@ class PaymentChargeRepository @Inject constructor(
     private val getActivePaymentsPlugin: GetActivePaymentsPlugin,
 ) {
     suspend fun fetchCardDataUsedForOrderPayment(chargeId: String): CardDataUsedForOrderPaymentResult {
-        val activePlugin = getActivePaymentsPlugin.invoke()
+        val activePlugin = getActivePaymentsPlugin()
 
         return if (activePlugin == null) {
             CardDataUsedForOrderPaymentResult.Error

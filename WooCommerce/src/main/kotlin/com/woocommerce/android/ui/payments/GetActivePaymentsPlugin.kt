@@ -16,7 +16,7 @@ class GetActivePaymentsPlugin @Inject constructor(
     private val selectedSite: SelectedSite,
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
 ) {
-    suspend fun invoke(): WCInPersonPaymentsStore.InPersonPaymentsPluginType? =
+    suspend operator fun invoke(): WCInPersonPaymentsStore.InPersonPaymentsPluginType? =
         prefs.getCardReaderPreferredPlugin(
             selectedSite.get().id,
             selectedSite.get().siteId,
