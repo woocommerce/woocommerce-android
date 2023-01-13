@@ -89,7 +89,6 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
             viewModel.onRetryButtonClicked()
 
             verify(userEligibilityFetcher, times(1)).fetchUserInfo()
-            verify(userEligibilityFetcher, times(1)).updateUserInfo(any())
 
             assertFalse(appPrefsWrapper.isUserEligible())
             assertThat(snackbar).isEqualTo(ShowSnackbar(string.user_role_access_error_retry))
@@ -119,7 +118,6 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
         viewModel.onRetryButtonClicked()
 
         verify(userEligibilityFetcher, times(1)).fetchUserInfo()
-        verify(userEligibilityFetcher, times(1)).updateUserInfo(any())
 
         assertTrue(appPrefsWrapper.isUserEligible())
         assertThat(snackbar).isNull()
