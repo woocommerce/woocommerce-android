@@ -218,7 +218,14 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
             // Update the user info
             if (selectedSite.exists()) {
-                userEligibilityFetcher.fetchUserEligibility()
+                appCoroutineScope.launch {
+                    userEligibilityFetcher.fetchUserInfo()?.let {
+                        if (!it.isUserEligible()) {
+                            WooLog.w(T.LOGIN, "Current user is not eligible to access the current site")
+                            openMainActivity()
+                        }
+                    }
+                }
             }
         }
     }
