@@ -9,10 +9,14 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.Calendar
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -22,11 +26,16 @@ class ShouldShowFeedbackBannerTest : BaseUnitTest() {
     private val appPrefs: AppPrefsWrapper = mock()
     private val getActivePaymentsPlugin: GetActivePaymentsPlugin = mock()
     private val cashOnDeliverySettings: CashOnDeliverySettingsRepository = mock()
+    private val siteModel: SiteModel = SiteModel()
+    private val wooCommerceStore: WooCommerceStore = mock()
+    private val siteSettings: WCSettingsModel = mock()
 
     private val sut = ShouldShowFeedbackBanner(
         prefs = appPrefs,
         getActivePaymentsPlugin = getActivePaymentsPlugin,
         cashOnDeliverySettings = cashOnDeliverySettings,
+        wooCommerceStore = wooCommerceStore,
+        siteModel = siteModel,
     )
 
     @Before
@@ -36,7 +45,45 @@ class ShouldShowFeedbackBannerTest : BaseUnitTest() {
         whenever(appPrefs.isIPPFeedbackBannerDismissedForever()) doReturn (false)
         whenever(getActivePaymentsPlugin()) doReturn
             (WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
+        whenever(wooCommerceStore.getSiteSettings(any())) doReturn (siteSettings)
+        whenever(siteSettings.countryCode) doReturn ("US")
         Unit
+    }
+
+    @Test
+    fun `given the store's country code is not US or CA, then the banner should not be shown`() = runBlocking {
+        // given
+        whenever(wooCommerceStore.getSiteSettings(siteModel)?.countryCode) doReturn ("GB")
+
+        // when
+        val result = sut()
+
+        // then
+        assertFalse(result)
+    }
+
+    @Test
+    fun `given the store's country code is US, then the banner should be shown`() = runBlocking {
+        // given
+        whenever(wooCommerceStore.getSiteSettings(siteModel)?.countryCode) doReturn ("US")
+
+        // when
+        val result = sut()
+
+        // then
+        assertTrue(result)
+    }
+
+    @Test
+    fun `given the store's country code is CA, then the banner should be shown`() = runBlocking {
+        // given
+        whenever(wooCommerceStore.getSiteSettings(siteModel)?.countryCode) doReturn ("CA")
+
+        // when
+        val result = sut()
+
+        // then
+        assertTrue(result)
     }
 
     @Test
