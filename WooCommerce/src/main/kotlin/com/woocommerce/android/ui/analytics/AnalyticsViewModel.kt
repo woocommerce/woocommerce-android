@@ -165,7 +165,7 @@ class AnalyticsViewModel @Inject constructor(
                     viewState.copy(ordersState = NoDataState(message))
                 }
                 is OrdersState.Loading -> mutableState.update { viewState ->
-                    LoadingViewState.let { viewState.copy(ordersState = it) }
+                    viewState.copy(ordersState = LoadingViewState)
                 }
             }
         }.launchIn(viewModelScope)
@@ -183,7 +183,7 @@ class AnalyticsViewModel @Inject constructor(
                     viewState.copy(sessionState = NoDataState(message))
                 }
                 is SessionState.Loading -> mutableState.update { viewState ->
-                    LoadingViewState.let { viewState.copy(sessionState = it) }
+                    viewState.copy(sessionState = LoadingViewState)
                 }
             }
         }.launchIn(viewModelScope)
@@ -201,7 +201,7 @@ class AnalyticsViewModel @Inject constructor(
                     viewState.copy(productsState = ProductsNoDataState(message))
                 }
                 is ProductsState.Loading -> mutableState.update { viewState ->
-                    ProductsViewState.LoadingViewState.let { viewState.copy(productsState = it) }
+                    viewState.copy(productsState = ProductsViewState.LoadingViewState)
                 }
             }
         }.launchIn(viewModelScope)
@@ -219,7 +219,7 @@ class AnalyticsViewModel @Inject constructor(
                     viewState.copy(revenueState = NoDataState(message))
                 }
                 is RevenueState.Loading -> mutableState.update { viewState ->
-                    LoadingViewState.let { viewState.copy(revenueState = it) }
+                    viewState.copy(revenueState = LoadingViewState)
                 }
             }
         }.launchIn(viewModelScope)
