@@ -102,8 +102,8 @@
             app:popUpTo="@+id/cardReaderHubFragment"
             app:popUpToInclusive="false" />
         <action
-            android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderConnectDialogFragment"
-            app:destination="@id/cardReaderConnectDialogFragment"
+            android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderTypeSelectionDialogFragment"
+            app:destination="@id/cardReaderTypeSelectionDialogFragment"
             app:popUpTo="@+id/cardReaderOnboardingFragment"
             app:popUpToInclusive="true" />
     </fragment>
