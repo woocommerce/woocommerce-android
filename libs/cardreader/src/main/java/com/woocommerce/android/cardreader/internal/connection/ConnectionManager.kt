@@ -2,7 +2,8 @@ package com.woocommerce.android.cardreader.internal.connection
 
 import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.ReaderCallback
-import com.stripe.stripeterminal.external.models.ConnectionConfiguration
+import com.stripe.stripeterminal.external.models.ConnectionConfiguration.BluetoothConnectionConfiguration
+import com.stripe.stripeterminal.external.models.ConnectionConfiguration.LocalMobileConnectionConfiguration
 import com.stripe.stripeterminal.external.models.DeviceType
 import com.stripe.stripeterminal.external.models.Reader
 import com.stripe.stripeterminal.external.models.TerminalException
@@ -86,19 +87,9 @@ internal class ConnectionManager(
                 }
             }
 
-            if (it.cardReader.deviceType == DeviceType.COTS_DEVICE) {
-                terminal.connectToMobile(
-                    cardReader.cardReader,
-                    ConnectionConfiguration.LocalMobileConnectionConfiguration(locationId),
-                    readerCallback
-                )
-            } else {
-                terminal.connectToReader(
-                    cardReader.cardReader,
-                    ConnectionConfiguration.BluetoothConnectionConfiguration(locationId),
-                    readerCallback,
-                    bluetoothReaderListener,
-                )
+            when (it.cardReader.deviceType) {
+                DeviceType.COTS_DEVICE -> connectToBuiltInReader(cardReader, locationId, readerCallback)
+                else -> connectToExternalReader(cardReader, locationId, readerCallback)
             }
         }
     }
@@ -138,5 +129,31 @@ internal class ConnectionManager(
     private fun updateReaderStatus(status: CardReaderStatus) {
         terminalListenerImpl.updateReaderStatus(status)
         startStateResettingJobIfNeeded(status)
+    }
+
+
+    private fun connectToExternalReader(
+        cardReader: CardReaderImpl,
+        locationId: String,
+        readerCallback: ReaderCallback
+    ) {
+        terminal.connectToReader(
+            cardReader.cardReader,
+            BluetoothConnectionConfiguration(locationId),
+            readerCallback,
+            bluetoothReaderListener,
+        )
+    }
+
+    private fun connectToBuiltInReader(
+        cardReader: CardReaderImpl,
+        locationId: String,
+        readerCallback: ReaderCallback
+    ) {
+        terminal.connectToMobile(
+            cardReader.cardReader,
+            LocalMobileConnectionConfiguration(locationId),
+            readerCallback
+        )
     }
 }
