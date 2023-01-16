@@ -209,26 +209,32 @@ fun CategoriesContentPreview() {
                 options = listOf(
                     StoreProfilerOptionUi(
                         name = "Art & Photography",
+                        key = "",
                         isSelected = false
                     ),
                     StoreProfilerOptionUi(
                         name = "Books & Magazines",
+                        key = "",
                         isSelected = false
                     ),
                     StoreProfilerOptionUi(
                         name = "Electronics and Software",
+                        key = "",
                         isSelected = false
                     ),
                     StoreProfilerOptionUi(
                         name = "Construction & Industrial",
+                        key = "",
                         isSelected = false
                     ),
                     StoreProfilerOptionUi(
                         name = "Design & Marketing",
+                        key = "",
                         isSelected = false
                     ),
                     StoreProfilerOptionUi(
                         name = "Fashion and Apparel",
+                        key = "",
                         isSelected = false
                     )
                 )

@@ -22,6 +22,10 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+
+        if (project.hasProperty("stripe_repo_url")) {
+            maven { url project.property("stripe_repo_url") }
+        }
     }
 
     tasks.withType(KotlinCompile).all {
@@ -105,7 +109,7 @@ ext {
     coroutinesVersion = '1.6.4'
     lifecycleVersion = '2.5.1'
     aztecVersion = 'v1.3.45'
-    flipperVersion = '0.154.0'
+    flipperVersion = '0.176.1'
     stateMachineVersion = '0.2.0'
     coreKtxVersion = '1.8.0'
     appCompatVersion = '1.4.2'

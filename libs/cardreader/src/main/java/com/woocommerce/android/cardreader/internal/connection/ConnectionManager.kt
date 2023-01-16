@@ -3,6 +3,7 @@ package com.woocommerce.android.cardreader.internal.connection
 import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.ReaderCallback
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration
+import com.stripe.stripeterminal.external.models.DeviceType
 import com.stripe.stripeterminal.external.models.Reader
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.connection.CardReader
@@ -63,7 +64,6 @@ internal class ConnectionManager(
     fun startConnectionToReader(cardReader: CardReader, locationId: String) {
         (cardReader as CardReaderImpl).let {
             updateReaderStatus(CardReaderStatus.Connecting)
-            val configuration = ConnectionConfiguration.BluetoothConnectionConfiguration(locationId)
             val readerCallback = object : ReaderCallback {
                 override fun onSuccess(reader: Reader) {
                     updateReaderStatus(CardReaderStatus.Connected(CardReaderImpl(reader)))
@@ -74,16 +74,24 @@ internal class ConnectionManager(
                 }
             }
 
-            terminal.connectToReader(
-                cardReader.cardReader,
-                configuration,
-                readerCallback,
-                bluetoothReaderListener,
-            )
+            if (it.cardReader.deviceType == DeviceType.COTS_DEVICE) {
+                terminal.connectToMobile(
+                    cardReader.cardReader,
+                    ConnectionConfiguration.LocalMobileConnectionConfiguration(locationId),
+                    readerCallback
+                )
+            } else {
+                terminal.connectToReader(
+                    cardReader.cardReader,
+                    ConnectionConfiguration.BluetoothConnectionConfiguration(locationId),
+                    readerCallback,
+                    bluetoothReaderListener,
+                )
+            }
         }
     }
 
-    suspend fun disconnectReader() = suspendCoroutine<Boolean> { continuation ->
+    suspend fun disconnectReader() = suspendCoroutine { continuation ->
         terminal.disconnectReader(object : Callback {
             override fun onFailure(e: TerminalException) {
                 updateReaderStatus(CardReaderStatus.NotConnected())
