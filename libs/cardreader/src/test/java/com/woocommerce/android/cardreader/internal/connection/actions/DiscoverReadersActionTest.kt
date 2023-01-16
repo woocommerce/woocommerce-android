@@ -3,6 +3,8 @@ package com.woocommerce.android.cardreader.internal.connection.actions
 import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.Cancelable
 import com.stripe.stripeterminal.external.callable.DiscoveryListener
+import com.stripe.stripeterminal.external.models.DiscoveryConfiguration
+import com.stripe.stripeterminal.external.models.DiscoveryMethod
 import com.stripe.stripeterminal.external.models.Reader
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.internal.CardReaderBaseUnitTest
@@ -22,6 +24,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -44,7 +47,7 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
             mock<Cancelable>()
         }
 
-        val result = action.discoverBuildInReaders(false).first()
+        val result = action.discoverExternalReaders(false).first()
 
         assertThat(result).isInstanceOf(Started::class.java)
     }
@@ -56,7 +59,7 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
             mock<Cancelable>()
         }
 
-        val event = action.discoverBuildInReaders(false)
+        val event = action.discoverExternalReaders(false)
             .ignoreStartedEvent().first()
 
         assertThat(event).isInstanceOf(FoundReaders::class.java)
@@ -71,7 +74,7 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
             mock<Cancelable>()
         }
 
-        val events = action.discoverBuildInReaders(false)
+        val events = action.discoverExternalReaders(false)
             .ignoreStartedEvent().toList()
 
         assertThat(events[0]).isInstanceOf(FoundReaders::class.java)
@@ -88,7 +91,7 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
             mock<Cancelable>()
         }
 
-        val events = action.discoverBuildInReaders(false)
+        val events = action.discoverExternalReaders(false)
             .ignoreStartedEvent().toList()
 
         assertThat(events[0]).isInstanceOf(FoundReaders::class.java)
@@ -102,7 +105,7 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
             mock<Cancelable>()
         }
 
-        val event = action.discoverBuildInReaders(false)
+        val event = action.discoverExternalReaders(false)
             .ignoreStartedEvent().first()
 
         assertThat(event).isInstanceOf(Success::class.java)
@@ -115,7 +118,7 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
             mock<Cancelable>()
         }
 
-        val event = action.discoverBuildInReaders(false)
+        val event = action.discoverExternalReaders(false)
             .ignoreStartedEvent().first()
 
         assertThat(event).isInstanceOf(Failure::class.java)
@@ -128,7 +131,7 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
             mock<Cancelable>()
         }
 
-        val event = action.discoverBuildInReaders(false)
+        val event = action.discoverExternalReaders(false)
             .ignoreStartedEvent().toList()
 
         assertThat(event.size).isEqualTo(1)
@@ -141,7 +144,7 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
             mock<Cancelable>()
         }
 
-        val event = action.discoverBuildInReaders(false)
+        val event = action.discoverExternalReaders(false)
             .ignoreStartedEvent().toList()
 
         assertThat(event.size).isEqualTo(1)
@@ -153,7 +156,7 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
         whenever(cancelable.isCompleted).thenReturn(false)
         whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer { cancelable }
         val job = launch {
-            action.discoverBuildInReaders(false).collect { }
+            action.discoverExternalReaders(false).collect { }
         }
 
         job.cancel()
@@ -171,7 +174,7 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
             cancelable
         }
         val job = launch {
-            action.discoverBuildInReaders(false).collect { }
+            action.discoverExternalReaders(false).collect { }
         }
 
         job.cancel()
@@ -181,7 +184,58 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
     }
 
     @Test
-    fun `given last event is terminal, when multiple events emitted, then flow terminates`() = testBlocking {
+    fun `given last event is terminal, when discovery external readers, then flow terminates`() = testBlocking {
+        whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer {
+            onUpdateDiscoveredReaders(args = it.arguments, readers = listOf(mock()))
+            onUpdateDiscoveredReaders(args = it.arguments, readers = listOf(mock()))
+            onFailure(it.arguments)
+            mock<Cancelable>()
+        }
+
+        val result = action.discoverExternalReaders(false)
+            .ignoreStartedEvent().toList()
+
+        assertThat(result.size).isEqualTo(3)
+    }
+
+    @Test
+    fun `when discovery external readers, then config keeps bluetooth scan`() = testBlocking {
+        whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer {
+            mock<Cancelable>()
+        }
+
+        action.discoverExternalReaders(false).first()
+
+        val configCaptor = argumentCaptor<DiscoveryConfiguration>()
+        verify(terminal).discoverReaders(
+            configCaptor.capture(),
+            any(),
+            any()
+        )
+
+        assertThat(configCaptor.firstValue.discoveryMethod).isEqualTo(DiscoveryMethod.BLUETOOTH_SCAN)
+    }
+
+    @Test
+    fun `when discovery built in readers, then config keeps local mobile`() = testBlocking {
+        whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer {
+            mock<Cancelable>()
+        }
+
+        action.discoverBuildInReaders(true).first()
+
+        val configCaptor = argumentCaptor<DiscoveryConfiguration>()
+        verify(terminal).discoverReaders(
+            configCaptor.capture(),
+            any(),
+            any()
+        )
+
+        assertThat(configCaptor.firstValue.discoveryMethod).isEqualTo(DiscoveryMethod.LOCAL_MOBILE)
+    }
+
+    @Test
+    fun `given last event is terminal, when discovery built in readers, then flow terminates`() = testBlocking {
         whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer {
             onUpdateDiscoveredReaders(args = it.arguments, readers = listOf(mock()))
             onUpdateDiscoveredReaders(args = it.arguments, readers = listOf(mock()))
