@@ -1,1 +1,3 @@
-You can now reply to product reviews directly from the app! This update also includes several enhancements to the product variations and the analytics feature. Please share feedback – we read every one of them.
+- [**] Adds new profiler steps to store creation flow [https://github.com/woocommerce/woocommerce-android/pull/8097]
+- [**] Adds country picker step to store creation flow [https://github.com/woocommerce/woocommerce-android/pull/8167]
+
