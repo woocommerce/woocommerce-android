@@ -1,5 +1,6 @@
 package com.woocommerce.android
 
+import android.os.Build
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.os.StrictMode.VmPolicy
@@ -30,7 +31,7 @@ class WooCommerceDebug : WooCommerce() {
             }.start()
         }
 
-        WebView.setWebContentsDebuggingEnabled(true)
+        enableWebContentDebugging()
         super.onCreate()
         enableStrictMode()
     }
@@ -63,5 +64,24 @@ class WooCommerceDebug : WooCommerce() {
                 .build()
         )
         WooLog.w(T.UTILS, "Strict mode enabled")
+    }
+
+    /**
+     * Tap 2 pay Stripe library uses webview, and apparently they also enable debugging of it (at least in the current
+     * beta version). This method changes dirrectory where logs are stored, otherwise it crashes with
+     * Caused by: java.lang.RuntimeException: Using WebView from more than one process at once with the same data
+     * directory is not supported. https://crbug.com/558377 :
+     * Current process com.stripe.cots.aidlservice (pid 7378), lock owner com.woocommerce.android (pid 6427)
+     *
+     * https://developer.android.com/reference/android/webkit/WebView.html#setDataDirectorySuffix(java.lang.String)
+     * > This means that different processes in the same application cannot directly share WebView-related data,
+     * > since the data directories must be distinct.
+     */
+    private fun enableWebContentDebugging() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            val process = getProcessName()
+            if (packageName != process) WebView.setDataDirectorySuffix(process)
+        }
+        WebView.setWebContentsDebuggingEnabled(true)
     }
 }
