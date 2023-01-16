@@ -784,7 +784,7 @@ platform :android do
   desc "Creates promo screenshots"
   lane :create_promo_screenshots do |options|
     begin
-      require "rmagick"
+      fastlane_require 'rmagick'
     rescue LoadError => e
       UI.user_error!("The rmagick gem doesn't seem to be installed. Be sure to use `bundle install --with screenshots`.")
     end
