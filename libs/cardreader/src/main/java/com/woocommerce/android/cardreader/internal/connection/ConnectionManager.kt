@@ -13,8 +13,8 @@ import com.woocommerce.android.cardreader.connection.CardReaderImpl
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover.SpecificReaders
-import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover.SpecificReaders.SpecificBuiltInReaders
-import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover.SpecificReaders.SpecificExternalReaders
+import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover.SpecificReaders.BuiltInReaders
+import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover.SpecificReaders.ExternalReaders
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover.UnspecifiedReaders
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus
@@ -43,13 +43,13 @@ internal class ConnectionManager(
         when (cardReaderTypesToDiscover) {
             is SpecificReaders -> {
                 when (cardReaderTypesToDiscover) {
-                    is SpecificBuiltInReaders -> discoverReadersAction.discoverBuildInReaders(isSimulated)
-                    is SpecificExternalReaders -> discoverReadersAction.discoverBtReaders(isSimulated)
+                    is BuiltInReaders -> discoverReadersAction.discoverBuildInReaders(isSimulated)
+                    is ExternalReaders -> discoverReadersAction.discoverExternalReaders(isSimulated)
                 }
             }
             UnspecifiedReaders -> merge(
                 discoverReadersAction.discoverBuildInReaders(isSimulated),
-                discoverReadersAction.discoverBtReaders(isSimulated)
+                discoverReadersAction.discoverExternalReaders(isSimulated)
             )
         }.map { state ->
             when (state) {

@@ -41,8 +41,8 @@ class CardReaderManualsSupportedReaderMapperTest : BaseUnitTest() {
         val actualManualItems = manualsMapper.mapSupportedReadersToManualItems(
             supportedCountry,
             mapOf(
-                ReaderType.Chipper2X to ::onManualClicked,
-                ReaderType.StripeM2 to ::onManualClicked,
+                ReaderType.ExternalReader.Chipper2X to ::onManualClicked,
+                ReaderType.ExternalReader.StripeM2 to ::onManualClicked,
             )
         )
 
@@ -62,7 +62,7 @@ class CardReaderManualsSupportedReaderMapperTest : BaseUnitTest() {
         val actualManualItems = manualsMapper.mapSupportedReadersToManualItems(
             supportedCountry,
             mapOf(
-                ReaderType.WisePade3 to ::onManualClicked
+                ReaderType.ExternalReader.WisePade3 to ::onManualClicked
             )
         )
 

@@ -28,7 +28,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
-class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
+class discoverBuildInReadersActionTest : CardReaderBaseUnitTest() {
     private lateinit var action: DiscoverReadersAction
     private val terminal: TerminalWrapper = mock()
     private val logWrapper: LogWrapper = mock()
@@ -44,7 +44,7 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
             mock<Cancelable>()
         }
 
-        val result = action.discoverReaders(false).first()
+        val result = action.discoverBuildInReaders(false).first()
 
         assertThat(result).isInstanceOf(Started::class.java)
     }
@@ -56,7 +56,7 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
             mock<Cancelable>()
         }
 
-        val event = action.discoverReaders(false)
+        val event = action.discoverBuildInReaders(false)
             .ignoreStartedEvent().first()
 
         assertThat(event).isInstanceOf(FoundReaders::class.java)
@@ -71,7 +71,7 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
             mock<Cancelable>()
         }
 
-        val events = action.discoverReaders(false)
+        val events = action.discoverBuildInReaders(false)
             .ignoreStartedEvent().toList()
 
         assertThat(events[0]).isInstanceOf(FoundReaders::class.java)
@@ -88,7 +88,7 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
             mock<Cancelable>()
         }
 
-        val events = action.discoverReaders(false)
+        val events = action.discoverBuildInReaders(false)
             .ignoreStartedEvent().toList()
 
         assertThat(events[0]).isInstanceOf(FoundReaders::class.java)
@@ -102,7 +102,7 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
             mock<Cancelable>()
         }
 
-        val event = action.discoverReaders(false)
+        val event = action.discoverBuildInReaders(false)
             .ignoreStartedEvent().first()
 
         assertThat(event).isInstanceOf(Success::class.java)
@@ -115,7 +115,7 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
             mock<Cancelable>()
         }
 
-        val event = action.discoverReaders(false)
+        val event = action.discoverBuildInReaders(false)
             .ignoreStartedEvent().first()
 
         assertThat(event).isInstanceOf(Failure::class.java)
@@ -128,7 +128,7 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
             mock<Cancelable>()
         }
 
-        val event = action.discoverReaders(false)
+        val event = action.discoverBuildInReaders(false)
             .ignoreStartedEvent().toList()
 
         assertThat(event.size).isEqualTo(1)
@@ -141,7 +141,7 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
             mock<Cancelable>()
         }
 
-        val event = action.discoverReaders(false)
+        val event = action.discoverBuildInReaders(false)
             .ignoreStartedEvent().toList()
 
         assertThat(event.size).isEqualTo(1)
@@ -153,7 +153,7 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
         whenever(cancelable.isCompleted).thenReturn(false)
         whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer { cancelable }
         val job = launch {
-            action.discoverReaders(false).collect { }
+            action.discoverBuildInReaders(false).collect { }
         }
 
         job.cancel()
@@ -171,7 +171,7 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
             cancelable
         }
         val job = launch {
-            action.discoverReaders(false).collect { }
+            action.discoverBuildInReaders(false).collect { }
         }
 
         job.cancel()
@@ -189,7 +189,7 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
             mock<Cancelable>()
         }
 
-        val result = action.discoverReaders(false)
+        val result = action.discoverBuildInReaders(false)
             .ignoreStartedEvent().toList()
 
         assertThat(result.size).isEqualTo(3)

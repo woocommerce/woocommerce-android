@@ -8,9 +8,9 @@ import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.connection.ReaderType
-import com.woocommerce.android.cardreader.connection.ReaderType.Chipper2X
-import com.woocommerce.android.cardreader.connection.ReaderType.StripeM2
-import com.woocommerce.android.cardreader.connection.ReaderType.WisePade3
+import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.Chipper2X
+import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.StripeM2
+import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.WisePade3
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.payments.cardreader.manuals.CardReaderManualsViewModel.ManualItem
 import com.woocommerce.android.viewmodel.BaseUnitTest

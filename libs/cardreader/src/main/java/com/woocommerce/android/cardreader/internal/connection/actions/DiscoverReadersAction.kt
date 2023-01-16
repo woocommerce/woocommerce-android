@@ -33,7 +33,7 @@ internal class DiscoverReadersAction(
     fun discoverBuildInReaders(isSimulated: Boolean): Flow<DiscoverReadersStatus> =
         discoverReaders(isSimulated, DiscoveryMethod.LOCAL_MOBILE)
 
-    fun discoverBtReaders(isSimulated: Boolean): Flow<DiscoverReadersStatus> =
+    fun discoverExternalReaders(isSimulated: Boolean): Flow<DiscoverReadersStatus> =
         discoverReaders(isSimulated, DiscoveryMethod.BLUETOOTH_SCAN)
 
     private fun discoverReaders(isSimulated: Boolean, discoveryMethod: DiscoveryMethod): Flow<DiscoverReadersStatus> {

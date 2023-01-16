@@ -19,8 +19,8 @@ sealed class ReaderType(val name: String) {
 
 sealed class CardReaderTypesToDiscover {
     sealed class SpecificReaders(val readers: List<ReaderType>) : CardReaderTypesToDiscover() {
-        data class SpecificExternalReaders(val externalReaders: List<ExternalReader>) : SpecificReaders(externalReaders)
-        data class SpecificBuiltInReaders(val builtInReaders: List<BuildInReader>) : SpecificReaders(builtInReaders)
+        data class ExternalReaders(val externalReaders: List<ExternalReader>) : SpecificReaders(externalReaders)
+        data class BuiltInReaders(val builtInReaders: List<BuildInReader>) : SpecificReaders(builtInReaders)
     }
 
     object UnspecifiedReaders : CardReaderTypesToDiscover()

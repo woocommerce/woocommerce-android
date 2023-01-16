@@ -53,6 +53,7 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectV
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ScanningFailedState
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ScanningState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel
 import com.woocommerce.android.ui.prefs.DeveloperOptionsRepository
@@ -1440,15 +1441,17 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `when discovery readers, then supported readers list used`() {
         testBlocking {
-            val captor = argumentCaptor<CardReaderTypesToDiscover.SpecificExternalReaders>()
+            val captor = argumentCaptor<CardReaderTypesToDiscover.SpecificReaders.ExternalReaders>()
 
             init()
 
             verify(cardReaderManager).discoverReaders(anyBoolean(), captor.capture())
             assertThat(captor.firstValue).isEqualTo(
-                CardReaderTypesToDiscover.SpecificExternalReaders(
+                CardReaderTypesToDiscover.SpecificReaders.ExternalReaders(
                     listOf(
-                        ReaderType.Chipper2X, ReaderType.StripeM2, ReaderType.WisePade3
+                        ReaderType.ExternalReader.Chipper2X,
+                        ReaderType.ExternalReader.StripeM2,
+                        ReaderType.ExternalReader.WisePade3
                     )
                 )
             )
@@ -1458,7 +1461,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private fun initVM(
         cardReaderFlowParam: CardReaderFlowParam = CardReaderFlowParam.CardReadersHub
     ): CardReaderConnectViewModel {
-        val savedState = CardReaderConnectDialogFragmentArgs(cardReaderFlowParam).initSavedStateHandle()
+        val savedState = CardReaderConnectDialogFragmentArgs(cardReaderFlowParam, EXTERNAL).initSavedStateHandle()
         return CardReaderConnectViewModel(
             savedState,
             coroutinesTestRule.testDispatchers,

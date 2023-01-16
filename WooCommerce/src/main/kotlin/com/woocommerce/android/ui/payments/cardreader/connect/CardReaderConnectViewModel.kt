@@ -14,8 +14,8 @@ import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.R
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Started
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Succeeded
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
-import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover.SpecificReaders.SpecificBuiltInReaders
-import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover.SpecificReaders.SpecificExternalReaders
+import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover.SpecificReaders.BuiltInReaders
+import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover.SpecificReaders.ExternalReaders
 import com.woocommerce.android.cardreader.connection.ReaderType.BuildInReader.CotsDevice
 import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.Chipper2X
 import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.StripeM2
@@ -494,8 +494,8 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun buildReadersToDiscover() =
         when (arguments.cardReaderType) {
-            BUILT_IN -> SpecificBuiltInReaders(listOf(CotsDevice))
-            EXTERNAL -> SpecificExternalReaders(
+            BUILT_IN -> BuiltInReaders(listOf(CotsDevice))
+            EXTERNAL -> ExternalReaders(
                 listOf(
                     Chipper2X,
                     StripeM2,

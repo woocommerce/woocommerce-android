@@ -44,7 +44,9 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
     private val terminalListener: TerminalListenerImpl = mock()
 
     private val supportedReaders =
-        CardReaderTypesToDiscover.SpecificExternalReaders(listOf(ReaderType.Chipper2X, ReaderType.StripeM2))
+        CardReaderTypesToDiscover.SpecificReaders.ExternalReaders(
+            listOf(ReaderType.ExternalReader.Chipper2X, ReaderType.ExternalReader.StripeM2)
+        )
 
     private val updateFrequency = CardReaderManager.SimulatorUpdateFrequency.RANDOM
 
