@@ -15,7 +15,8 @@ enum class FeatureFlag {
     ORDER_CREATION_CUSTOMER_SEARCH,
     NATIVE_STORE_CREATION_FLOW,
     REST_API,
-    IAP_FOR_STORE_CREATION;
+    IAP_FOR_STORE_CREATION,
+    IPP_TAP_TO_PAY;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -32,7 +33,8 @@ enum class FeatureFlag {
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             REST_API,
-            IAP_FOR_STORE_CREATION -> PackageUtils.isDebugBuild()
+            IAP_FOR_STORE_CREATION,
+            IPP_TAP_TO_PAY -> PackageUtils.isDebugBuild()
         }
     }
 }

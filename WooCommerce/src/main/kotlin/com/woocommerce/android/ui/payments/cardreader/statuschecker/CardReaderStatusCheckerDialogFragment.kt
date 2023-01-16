@@ -67,6 +67,15 @@ class CardReaderStatusCheckerDialogFragment : DialogFragment(R.layout.card_reade
                                 )
                         )
                 }
+                is CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToIPPReaderTypeSelection -> {
+                    findNavController()
+                        .navigate(
+                            CardReaderStatusCheckerDialogFragmentDirections
+                                .actionCardReaderStatusCheckerDialogFragmentToCardReaderTypeSelectionDialogFragment(
+                                    event.cardReaderFlowParam
+                                )
+                        )
+                }
                 else -> event.isHandled = false
             }.exhaustive
         }
