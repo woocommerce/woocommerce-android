@@ -36,10 +36,43 @@
 
     <fragment
         android:id="@+id/storeProfilerCategoryFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerCategoryFragment"
-        android:label="fragment_store_profiler_category">
+        android:name="com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerIndustriesFragment"
+        android:label="fragment_store_profiler_industries">
         <action
-            android:id="@+id/action_storeProfilerCategoryFragment_to_domainPickerFragment"
+            android:id="@+id/action_storeProfilerCategoryFragment_to_countryPickerFragment"
+            app:destination="@id/countryPickerFragment" />
+        <action
+            android:id="@+id/action_storeProfilerCategoryFragment_to_storeProfilerCommerceJourneyFragment"
+            app:destination="@id/storeProfilerCommerceJourneyFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/storeProfilerCommerceJourneyFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerCommerceJourneyFragment"
+        android:label="fragment_store_profiler_commerce_journeys">
+        <action
+            android:id="@+id/action_storeProfilerCommerceJourneyFragment_to_countryPickerFragment"
+            app:destination="@id/countryPickerFragment" />
+        <action
+            android:id="@+id/action_storeProfilerCommerceJourneyFragment_to_storeProfilerEcommercePlatformsFragment"
+            app:destination="@id/storeProfilerEcommercePlatformsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/storeProfilerEcommercePlatformsFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerEcommercePlatformsFragment"
+        android:label="fragment_store_profiler_ecommerce_platforms">
+        <action
+            android:id="@+id/action_storeProfilerEcommercePlatformsFragment_to_countryPickerFragment"
+            app:destination="@id/countryPickerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/countryPickerFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerFragment"
+        android:label="fragment_country_picker">
+        <action
+            android:id="@+id/action_countryPickerFragment_to_domainPickerFragment"
             app:destination="@id/domainPickerFragment" />
     </fragment>
 

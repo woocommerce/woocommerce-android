@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.name
+package com.woocommerce.android.ui.login.storecreation.countrypicker
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,13 +12,14 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerViewModel.NavigateToDomainPickerStep
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class StoreNamePickerFragment : BaseFragment() {
-    private val viewModel: StoreNamePickerViewModel by viewModels()
+class CountryPickerFragment : BaseFragment() {
+    private val viewModel: CountryPickerViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -28,7 +29,7 @@ class StoreNamePickerFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    StoreNamePickerScreen(viewModel)
+                    CountryPickerScreen(viewModel)
                 }
             }
         }
@@ -43,15 +44,15 @@ class StoreNamePickerFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                is StoreNamePickerViewModel.NavigateToNextStep -> navigateToStoreProfilerCategoryFragment()
                 is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
+                is NavigateToDomainPickerStep -> navigateToDomainPickerStep()
             }
         }
     }
 
-    private fun navigateToStoreProfilerCategoryFragment() {
+    private fun navigateToDomainPickerStep() {
         findNavController().navigateSafely(
-            StoreNamePickerFragmentDirections.actionStoreNamePickerFragmentToStoreProfilerCategoryFragment()
+            CountryPickerFragmentDirections.actionCountryPickerFragmentToDomainPickerFragment()
         )
     }
 }

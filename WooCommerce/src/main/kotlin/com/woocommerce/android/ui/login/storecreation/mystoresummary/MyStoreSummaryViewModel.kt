@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin.STORE_CREATION
 import com.woocommerce.android.ui.login.storecreation.NewStore
+import com.woocommerce.android.util.EmojiUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,15 +18,19 @@ import javax.inject.Inject
 class MyStoreSummaryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     newStore: NewStore,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    emojiUtils: EmojiUtils
 ) : ScopedViewModel(savedStateHandle) {
 
     val viewState = MutableStateFlow(
         MyStoreSummaryState(
             name = newStore.data.name,
             domain = newStore.data.domain ?: "",
-            category = newStore.data.category,
-            country = newStore.data.country
+            industry = newStore.data.profilerData?.industryLabel,
+            country = Country(
+                name = newStore.data.country?.name ?: "",
+                emojiFlag = emojiUtils.countryCodeToEmojiFlag(newStore.data.country?.code ?: "")
+            )
         )
     ).asLiveData()
 
@@ -34,6 +39,18 @@ class MyStoreSummaryViewModel @Inject constructor(
             AnalyticsEvent.SITE_CREATION_STEP,
             mapOf(
                 AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_SUMMARY
+            )
+        )
+
+        val newStoreProfilerData = newStore.data.profilerData
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.SITE_CREATION_PROFILER_DATA,
+            properties = mapOf(
+                AnalyticsTracker.KEY_INDUSTRY_GROUP to newStoreProfilerData?.industryGroupKey,
+                AnalyticsTracker.KEY_INDUSTRY to newStoreProfilerData?.industryKey,
+                AnalyticsTracker.KEY_USER_COMMERCE_JOURNEY to newStoreProfilerData?.userCommerceJourneyKey,
+                AnalyticsTracker.KEY_ECOMMERCE_PLATFORMS to newStoreProfilerData?.eCommercePlatformKey,
+                AnalyticsTracker.KEY_COUNTRY_CODE to newStore.data.country?.code,
             )
         )
     }
@@ -53,8 +70,13 @@ class MyStoreSummaryViewModel @Inject constructor(
     data class MyStoreSummaryState(
         val name: String? = null,
         val domain: String,
-        val category: String? = null,
-        val country: String? = null,
+        val industry: String? = null,
+        val country: Country? = null,
+    )
+
+    data class Country(
+        val name: String,
+        val emojiFlag: String
     )
 
     object NavigateToNextStep : MultiLiveEvent.Event()

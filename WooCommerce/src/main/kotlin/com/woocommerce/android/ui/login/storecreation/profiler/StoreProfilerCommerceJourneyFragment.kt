@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.name
+package com.woocommerce.android.ui.login.storecreation.profiler
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,19 +6,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.NavigateToCountryPickerStep
+import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.NavigateToEcommercePlatformsStep
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class StoreNamePickerFragment : BaseFragment() {
-    private val viewModel: StoreNamePickerViewModel by viewModels()
+class StoreProfilerCommerceJourneyFragment : BaseFragment() {
+    private val viewModel: StoreProfilerCommerceJourneyViewModel by activityViewModels()
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -28,7 +30,7 @@ class StoreNamePickerFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    StoreNamePickerScreen(viewModel)
+                    StoreProfilerScreen(viewModel)
                 }
             }
         }
@@ -43,15 +45,24 @@ class StoreNamePickerFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                is StoreNamePickerViewModel.NavigateToNextStep -> navigateToStoreProfilerCategoryFragment()
+                is NavigateToCountryPickerStep -> navigateToCountryPickerStep()
+                is NavigateToEcommercePlatformsStep -> navigateToProfilerEcommercePlatformsStep()
                 is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
             }
         }
     }
 
-    private fun navigateToStoreProfilerCategoryFragment() {
+    private fun navigateToCountryPickerStep() {
         findNavController().navigateSafely(
-            StoreNamePickerFragmentDirections.actionStoreNamePickerFragmentToStoreProfilerCategoryFragment()
+            StoreProfilerCommerceJourneyFragmentDirections
+                .actionStoreProfilerCommerceJourneyFragmentToCountryPickerFragment()
+        )
+    }
+
+    private fun navigateToProfilerEcommercePlatformsStep() {
+        findNavController().navigateSafely(
+            StoreProfilerCommerceJourneyFragmentDirections
+                .actionStoreProfilerCommerceJourneyFragmentToStoreProfilerEcommercePlatformsFragment()
         )
     }
 }
