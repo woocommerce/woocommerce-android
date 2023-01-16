@@ -7,10 +7,6 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" /> <!-- Normal permissions, access automatically granted to app -->
-    <!--    Mark portrait orientation as optional, currently used for the bar code scanning activity -->
-    <uses-feature
-        android:name="android.hardware.screen.portrait"
-        android:required="false" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -134,6 +130,12 @@
         <activity
             android:name="org.wordpress.android.mediapicker.ui.MediaPickerActivity"
             android:theme="@style/Theme.Woo.DayNight" />
+        <!--        Make sure portrait screen orientation is not required for the installation of the app -->
+        <activity
+            android:name="com.google.mlkit.vision.codescanner.internal.GmsBarcodeScanningDelegateActivity"
+            android:screenOrientation="unspecified"
+            tools:replace="android:screenOrientation"/>
+
 
         <!-- Stats today app widget -->
         <meta-data
