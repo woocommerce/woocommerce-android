@@ -131,7 +131,6 @@ internal class ConnectionManager(
         startStateResettingJobIfNeeded(status)
     }
 
-
     private fun connectToExternalReader(
         cardReader: CardReaderImpl,
         locationId: String,

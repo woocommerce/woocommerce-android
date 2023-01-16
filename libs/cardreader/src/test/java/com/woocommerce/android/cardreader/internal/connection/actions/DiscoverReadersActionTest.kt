@@ -28,7 +28,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
-class discoverBuildInReadersActionTest : CardReaderBaseUnitTest() {
+class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
     private lateinit var action: DiscoverReadersAction
     private val terminal: TerminalWrapper = mock()
     private val logWrapper: LogWrapper = mock()
