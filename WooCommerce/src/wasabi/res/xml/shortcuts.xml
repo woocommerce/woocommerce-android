@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="Payments"
+        android:enabled="true"
+        android:icon="@drawable/ic_more_menu_payments"
+        android:shortcutShortLabel="@string/more_menu_button_payments"
+        android:shortcutLongLabel="@string/more_menu_button_payments"
+        android:shortcutDisabledMessage="@string/more_menu_button_payments">
+        <intent
+            android:action="com.woocommerce.android.payments"
+            android:targetPackage="com.woocommerce.android.dev"
+            android:targetClass="com.woocommerce.android.ui.main.MainActivity" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="Create Order"
+        android:enabled="true"
+        android:icon="@drawable/ic_menu_orders_list"
+        android:shortcutShortLabel="@string/orderlist_create_order_button_description"
+        android:shortcutLongLabel="@string/orderlist_create_order_button_description"
+        android:shortcutDisabledMessage="@string/orderlist_create_order_button_description">
+        <intent
+            android:action="com.woocommerce.android.ordercreation"
+            android:targetPackage="com.woocommerce.android.dev"
+            android:targetClass="com.woocommerce.android.ui.main.MainActivity" />
+    </shortcut>
+</shortcuts>

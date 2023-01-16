@@ -486,9 +486,8 @@ class SitePickerViewModel @Inject constructor(
                         siteVerificationResult.model?.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3 -> {
                             experimentTracker.log(ExperimentTracker.SITE_VERIFICATION_SUCCESSFUL_EVENT)
                             selectedSite.set(it.site)
-                            userEligibilityFetcher.fetchUserInfo()?.let { userModel ->
+                            userEligibilityFetcher.fetchUserInfo()?.let {
                                 sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
-                                userEligibilityFetcher.updateUserInfo(userModel)
 
                                 trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SUCCESS)
                                 appPrefsWrapper.removeLoginSiteAddress()

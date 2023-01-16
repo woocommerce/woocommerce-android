@@ -39,7 +39,7 @@ abstract class BaseStoreProfilerViewModel(
     abstract fun onContinueClicked()
 
     fun onSkipPressed() {
-        triggerEvent(NavigateToDomainPickerStep)
+        triggerEvent(NavigateToCountryPickerStep)
     }
 
     fun onArrowBackPressed() {
@@ -75,10 +75,11 @@ abstract class BaseStoreProfilerViewModel(
     @Parcelize
     data class StoreProfilerOptionUi(
         val name: String,
+        val key: String,
         val isSelected: Boolean,
     ) : Parcelable
 
-    object NavigateToDomainPickerStep : MultiLiveEvent.Event()
+    object NavigateToCountryPickerStep : MultiLiveEvent.Event()
     object NavigateToCommerceJourneyStep : MultiLiveEvent.Event()
     object NavigateToEcommercePlatformsStep : MultiLiveEvent.Event()
 }

@@ -64,6 +64,8 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForAppLink
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
+import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenOrderCreation
+import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
@@ -74,6 +76,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
 import com.woocommerce.android.ui.moremenu.MoreMenuFragmentDirections
 import com.woocommerce.android.ui.mystore.MyStoreFragmentDirections
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
@@ -272,6 +275,7 @@ class MainActivity :
         }
 
         viewModel.handleIncomingAppLink(intent?.data)
+        viewModel.handleShortcutAction(intent?.action?.toLowerCase())
     }
 
     override fun hideProgressDialog() {
@@ -683,47 +687,61 @@ class MainActivity :
             when (event) {
                 is ViewMyStoreStats -> binding.bottomNav.currentPosition = MY_STORE
                 is ViewOrderList -> binding.bottomNav.currentPosition = ORDERS
-                is ViewZendeskTickets -> {
-                    binding.bottomNav.currentPosition = MY_STORE
-                    startActivity(HelpActivity.createIntent(this, HelpOrigin.ZENDESK_NOTIFICATION, null))
-                }
-                is ViewOrderDetail -> {
-                    intent.data = null
-                    showOrderDetail(
-                        orderId = event.uniqueId,
-                        remoteNoteId = event.remoteNoteId,
-                        launchedFromNotification = true
-                    )
-                }
-                is ViewReviewDetail -> {
-                    showReviewDetail(event.uniqueId, launchedFromNotification = true)
-                }
+                is ViewZendeskTickets -> startZendeskActivity()
+                is ViewOrderDetail -> showOrderDetail(event)
+                is ViewReviewDetail -> showReviewDetail(event.uniqueId, launchedFromNotification = true)
                 is ViewReviewList -> showReviewList()
-                is RestartActivityForNotification -> {
-                    // Add flags for handling the push notification after restart
-                    intent.putExtra(FIELD_OPENED_FROM_PUSH, true)
-                    intent.putExtra(FIELD_REMOTE_NOTIFICATION, event.notification)
-                    intent.putExtra(FIELD_PUSH_ID, event.pushId)
-                    restart()
-                }
-                is RestartActivityForAppLink -> {
-                    intent.data = event.data
-                    restart()
-                }
-                is ShowFeatureAnnouncement -> {
-                    val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)
-                    navController.navigateSafely(action)
-                }
+                is RestartActivityForNotification -> restartActivityForNotification(event)
+                is RestartActivityForAppLink -> restartActivityForAppLink(event)
+                is ShowFeatureAnnouncement -> navigateToFeratureAnnouncement(event)
                 ViewPayments -> showPayments()
+                ShortcutOpenPayments -> shortcutShowPayments()
+                ShortcutOpenOrderCreation -> shortcutOpenOrderCreation()
             }
         }
 
+        observeMoreMenuBadgeStateEvent()
+    }
+
+    private fun observeMoreMenuBadgeStateEvent() {
         viewModel.moreMenuBadgeState.observe(this) { moreMenuBadgeState ->
             when (moreMenuBadgeState) {
                 is UnseenReviews -> binding.bottomNav.showMoreMenuUnseenReviewsBadge(moreMenuBadgeState.count)
                 Hidden -> binding.bottomNav.hideMoreMenuBadge()
             }.exhaustive
         }
+    }
+
+    private fun navigateToFeratureAnnouncement(event: ShowFeatureAnnouncement) {
+        val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)
+        navController.navigateSafely(action)
+    }
+
+    private fun showOrderDetail(event: ViewOrderDetail) {
+        intent.data = null
+        showOrderDetail(
+            orderId = event.uniqueId,
+            remoteNoteId = event.remoteNoteId,
+            launchedFromNotification = true
+        )
+    }
+
+    private fun startZendeskActivity() {
+        binding.bottomNav.currentPosition = MY_STORE
+        startActivity(HelpActivity.createIntent(this, HelpOrigin.ZENDESK_NOTIFICATION, null))
+    }
+
+    private fun restartActivityForAppLink(event: RestartActivityForAppLink) {
+        intent.data = event.data
+        restart()
+    }
+
+    private fun restartActivityForNotification(event: RestartActivityForNotification) {
+        // Add flags for handling the push notification after restart
+        intent.putExtra(FIELD_OPENED_FROM_PUSH, true)
+        intent.putExtra(FIELD_REMOTE_NOTIFICATION, event.notification)
+        intent.putExtra(FIELD_PUSH_ID, event.pushId)
+        restart()
     }
 
     override fun showProductDetail(remoteProductId: Long, enableTrash: Boolean) {
@@ -783,6 +801,47 @@ class MainActivity :
             launchedFromNotification = launchedFromNotification
         )
         navController.navigateSafely(action)
+    }
+
+    private fun shortcutOpenOrderCreation() {
+        /**
+         * set the intent action to null so that when the OS recreates the activity
+         * by redelivering the same intent, it won't redirect to the shortcut screen.
+         *
+         * Example:
+         * 1. Open the payments shortcut by long pressing the app icon
+         * 2. Navigate back from the payments screen into the main screen (MyStore screen)
+         * 3. Rotate the device.
+         * 6. The OS redelivers the intent with the intent action set to order creation shortcut and as a result
+         * the app redirects to the order creation screen as soon as the app is opened.
+         *
+         * Setting the intent action to null avoids this bug.
+         */
+        intent.action = null
+        binding.bottomNav.currentPosition = ORDERS
+        binding.bottomNav.active(ORDERS.position)
+        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderCreationFragment(
+            OrderCreateEditViewModel.Mode.Creation
+        )
+        navController.navigateSafely(action)
+    }
+
+    private fun shortcutShowPayments() {
+        /**
+         * set the intent action to null so that when the OS recreates the activity
+         * by redelivering the same intent, it won't redirect to the shortcut screen.
+         *
+         * Example:
+         * 1. Open the payments shortcut by long pressing the app icon
+         * 2. Navigate back from the payments screen into the main screen (MyStore screen)
+         * 3. Rotate the device.
+         * 6. The OS redelivers the intent with the intent action set to payments shortcut and as a result
+         * the app redirects to the payments screen as soon as the app is opened.
+         *
+         * Setting the intent action to null avoids this bug.
+         */
+        intent.action = null
+        showPayments()
     }
 
     private fun showPayments() {

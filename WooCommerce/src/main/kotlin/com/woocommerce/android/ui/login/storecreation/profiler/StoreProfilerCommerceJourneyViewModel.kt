@@ -47,16 +47,22 @@ class StoreProfilerCommerceJourneyViewModel @Inject constructor(
         resourceProvider.getString(R.string.store_creation_store_profiler_journey_title)
 
     override fun onContinueClicked() {
-        newStore.update(commerceJourney = profilerOptions.value.firstOrNull() { it.isSelected }?.name)
+        newStore.update(
+            profilerData = (newStore.data.profilerData ?: NewStore.ProfilerData())
+                .copy(
+                    userCommerceJourneyKey = profilerOptions.value.firstOrNull { it.isSelected }?.key
+                )
+        )
         when (alreadySellingOnlineSelected()) {
             true -> triggerEvent(NavigateToEcommercePlatformsStep)
-            false -> triggerEvent(NavigateToDomainPickerStep)
+            false -> triggerEvent(NavigateToCountryPickerStep)
         }
     }
 
     private fun AboutMerchant.toStoreProfilerOptionUi() = StoreProfilerOptionUi(
         name = value,
-        isSelected = newStore.data.industry == value,
+        key = tracks,
+        isSelected = newStore.data.profilerData?.eCommercePlatformKey == tracks,
     )
 
     private fun alreadySellingOnlineSelected() = profilerOptions.value

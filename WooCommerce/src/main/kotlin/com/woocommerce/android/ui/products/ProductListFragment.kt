@@ -626,8 +626,22 @@ class ProductListFragment :
         }
     }
 
+    //  Some edge cases in product selection mode, like tapping the screen with 4 fingers or using TalkBack,
+    //  cause the product's onClick listener to gain focus over the selection tracker.
+    //  This quick fix will prevent the app from entering an unexpected status when the app is in selection mode.
+    private fun shouldPreventDetailNavigation(remoteProductId: Long): Boolean {
+        if (viewModel.isSelecting()) {
+            tracker?.let { selectionTracker ->
+                if (selectionTracker.isSelected(remoteProductId)) selectionTracker.deselect(remoteProductId)
+                else selectionTracker.select(remoteProductId)
+            }
+            return true
+        }
+        return false
+    }
+
     private fun onProductClick(remoteProductId: Long, sharedView: View?) {
-        if (viewModel.isSelecting()) return
+        if (shouldPreventDetailNavigation(remoteProductId)) return
         (activity as? MainNavigationRouter)?.let { router ->
             if (sharedView == null) {
                 router.showProductDetail(remoteProductId, enableTrash = true)
