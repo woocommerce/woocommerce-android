@@ -12,9 +12,6 @@ import java.util.Calendar
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-/**
- * Use case to check if the IPP feedback banner should be shown to the user.
- */
 class ShouldShowFeedbackBanner @Inject constructor(
     private val prefs: AppPrefsWrapper,
     private val getActivePaymentsPlugin: GetActivePaymentsPlugin,

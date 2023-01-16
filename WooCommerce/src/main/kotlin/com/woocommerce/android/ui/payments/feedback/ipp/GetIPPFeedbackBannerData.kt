@@ -15,9 +15,6 @@ import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import java.util.Date
 import javax.inject.Inject
 
-/**
- * Use case class to detect specific user group type and return the IPP feedback banner data: message and survey url.
- */
 class GetIPPFeedbackBannerData @Inject constructor(
     private val shouldShowFeedbackBanner: ShouldShowFeedbackBanner,
     private val ippStore: WCInPersonPaymentsStore,
