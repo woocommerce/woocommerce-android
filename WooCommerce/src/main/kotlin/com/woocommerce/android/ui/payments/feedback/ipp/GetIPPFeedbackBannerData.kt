@@ -51,7 +51,7 @@ class GetIPPFeedbackBannerData @Inject constructor(
     }
 
     private fun requireTransactionsCount(response: WooPayload<WCPaymentTransactionsSummaryResult>): Int {
-        return response.result?.transactionsCount ?: throw IllegalStateException("Transactions count must not be null")
+        return checkNotNull(response.result?.transactionsCount) { "Transactions count must not be null" }
     }
 
     private fun requireSuccessfulTransactionsSummaryResponse(response: WooPayload<WCPaymentTransactionsSummaryResult>) {
