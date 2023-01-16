@@ -276,16 +276,7 @@ platform :android do
     android_finalize_prechecks(options)
     configure_apply(force: is_ci)
 
-    UI.message('Checking app strings translation status...')
-    check_translation_progress(
-      glotpress_url: GLOTPRESS_APP_STRINGS_PROJECT_URL,
-      abort_on_violations: false
-    )
-    UI.message("Checking release notes strings translation status...")
-    check_translation_progress(
-      glotpress_url: GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL,
-      abort_on_violations: false
-    )
+    check_translation_progress_all
 
     download_translations(options)
     android_bump_version_final_release()
@@ -300,6 +291,27 @@ platform :android do
     close_milestone(repository:GHHELPER_REPO, milestone: version["name"])
 
     trigger_release_build(branch_to_build: "release/#{version["name"]}")
+  end
+
+  lane :check_translation_progress_all do
+    check_translation_progress_strings
+    check_translation_progress_release_notes
+  end
+
+  lane :check_translation_progress_strings do
+    UI.message('Checking app strings translation status...')
+    check_translation_progress(
+      glotpress_url: GLOTPRESS_APP_STRINGS_PROJECT_URL,
+      abort_on_violations: false
+    )
+  end
+
+  lane :check_translation_progress_release_notes do
+    UI.message('Checking release notes strings translation status...')
+    check_translation_progress(
+      glotpress_url: GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL,
+      abort_on_violations: false
+    )
   end
 
   #####################################################################################
