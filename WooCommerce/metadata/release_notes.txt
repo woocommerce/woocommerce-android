@@ -1,3 +1,1 @@
-- [**] Adds new profiler steps to store creation flow [https://github.com/woocommerce/woocommerce-android/pull/8097]
-- [**] Adds country picker step to store creation flow [https://github.com/woocommerce/woocommerce-android/pull/8167]
-
+This release includes a few bug fixes and improvements to make your experience smoother. Stay tuned for exciting updates in the coming weeks!
