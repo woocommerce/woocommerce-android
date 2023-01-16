@@ -758,11 +758,6 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     LOGIN_LOCAL_NOTIFICATION_TAPPED(siteless = true),
     LOGIN_LOCAL_NOTIFICATION_DISMISSED(siteless = true),
 
-    // Experiments (A/B test variants)
-    PROLOGUE_EXPERIMENT,
-    JETPACK_TIMEOUT_EXPERIMENT,
-    JETPACK_INSTALLATION_EXPERIMENT,
-
     // Widgets
     WIDGET_TAPPED,
 
