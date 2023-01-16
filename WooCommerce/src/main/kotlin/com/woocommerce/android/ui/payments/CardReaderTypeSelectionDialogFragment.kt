@@ -22,7 +22,7 @@ class CardReaderTypeSelectionDialogFragment : DialogFragment(R.layout.card_reade
     }
 
     private fun initClicks(binding: CardReaderTypeSelectionDialogBinding) {
-        binding.readerSelectionUseBlueatoothReader.setOnClickListener {
+        binding.readerSelectionUseBluetoothReader.setOnClickListener {
             viewModel.onUseBluetoothReaderSelected()
         }
     }
