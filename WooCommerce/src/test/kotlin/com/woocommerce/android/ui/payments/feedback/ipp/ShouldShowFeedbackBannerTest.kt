@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.payments.feedback.ipp
 
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
 import com.woocommerce.android.extensions.daysAgo
 import com.woocommerce.android.ui.payments.GetActivePaymentsPlugin
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
@@ -10,7 +11,6 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -36,24 +36,25 @@ class ShouldShowFeedbackBannerTest : BaseUnitTest() {
         cashOnDeliverySettings = cashOnDeliverySettings,
         wooCommerceStore = wooCommerceStore,
         siteModel = siteModel,
+        cardReaderConfig = CardReaderConfigFactory()
     )
 
     @Before
     fun setup() = runBlocking {
-        whenever(cashOnDeliverySettings.isCashOnDeliveryEnabled()) doReturn (true)
-        whenever(appPrefs.isIPPFeedbackSurveyCompleted()) doReturn (false)
-        whenever(appPrefs.isIPPFeedbackBannerDismissedForever()) doReturn (false)
-        whenever(getActivePaymentsPlugin()) doReturn
-            (WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
-        whenever(wooCommerceStore.getSiteSettings(any())) doReturn (siteSettings)
-        whenever(siteSettings.countryCode) doReturn ("US")
+        whenever(cashOnDeliverySettings.isCashOnDeliveryEnabled()).thenReturn(true)
+        whenever(appPrefs.isIPPFeedbackSurveyCompleted()).thenReturn(false)
+        whenever(appPrefs.isIPPFeedbackBannerDismissedForever()).thenReturn(false)
+        whenever(getActivePaymentsPlugin())
+            .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
+        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(siteSettings)
+        whenever(siteSettings.countryCode).thenReturn("US")
         Unit
     }
 
     @Test
     fun `given the store's country code is not US or CA, then the banner should not be shown`() = runBlocking {
         // given
-        whenever(wooCommerceStore.getSiteSettings(siteModel)?.countryCode) doReturn ("GB")
+        whenever(wooCommerceStore.getSiteSettings(siteModel)?.countryCode).thenReturn("GB")
 
         // when
         val result = sut()
@@ -65,7 +66,7 @@ class ShouldShowFeedbackBannerTest : BaseUnitTest() {
     @Test
     fun `given the store's country code is US, then the banner should be shown`() = runBlocking {
         // given
-        whenever(wooCommerceStore.getSiteSettings(siteModel)?.countryCode) doReturn ("US")
+        whenever(wooCommerceStore.getSiteSettings(siteModel)?.countryCode).thenReturn("US")
 
         // when
         val result = sut()
@@ -77,7 +78,7 @@ class ShouldShowFeedbackBannerTest : BaseUnitTest() {
     @Test
     fun `given the store's country code is CA, then the banner should be shown`() = runBlocking {
         // given
-        whenever(wooCommerceStore.getSiteSettings(siteModel)?.countryCode) doReturn ("CA")
+        whenever(wooCommerceStore.getSiteSettings(siteModel)?.countryCode).thenReturn("CA")
 
         // when
         val result = sut()

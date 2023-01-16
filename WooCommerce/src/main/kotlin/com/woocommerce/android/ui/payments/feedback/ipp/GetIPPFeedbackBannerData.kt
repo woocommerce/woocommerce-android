@@ -1,11 +1,13 @@
 package com.woocommerce.android.ui.payments.feedback.ipp
 
+import android.os.Parcelable
 import androidx.annotation.StringRes
+import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.daysAgo
 import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.ui.payments.GetActivePaymentsPlugin
-import org.jetbrains.annotations.VisibleForTesting
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentTransactionsSummaryResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
@@ -23,7 +25,6 @@ class GetIPPFeedbackBannerData @Inject constructor(
     private val getActivePaymentsPlugin: GetActivePaymentsPlugin,
 ) {
     @Suppress("ReturnCount")
-    @Throws(IllegalStateException::class)
     suspend operator fun invoke(): IPPFeedbackBanner {
         requireShouldShowFeedbackBanner()
 
@@ -72,23 +73,20 @@ class GetIPPFeedbackBannerData @Inject constructor(
         }
     }
 
+    @Parcelize
     data class IPPFeedbackBanner(
         @StringRes val message: Int,
         val url: String
-    )
+    ) : Parcelable
 
     companion object {
-        @VisibleForTesting
-        const val STATS_TIME_WINDOW_LENGTH_DAYS = 30
+        private const val STATS_TIME_WINDOW_LENGTH_DAYS = 30
 
-        @VisibleForTesting
-        const val SURVEY_URL_IPP_NEWBIE = "https://woocommerce.com/newbie"
+        private const val SURVEY_URL_IPP_NEWBIE = "https://woocommerce.com/newbie"
 
-        @VisibleForTesting
-        const val SURVEY_URL_IPP_BEGINNER = "https://woocommerce.com/beginner"
+        private const val SURVEY_URL_IPP_BEGINNER = "https://woocommerce.com/beginner"
 
-        @VisibleForTesting
-        const val SURVEY_URL_IPP_NINJA = "https://woocommerce.com/ninja"
+        private const val SURVEY_URL_IPP_NINJA = "https://woocommerce.com/ninja"
 
         @VisibleForTesting
         const val BANNER_MESSAGE_NEWBIE = R.string.feedback_banner_ipp_message_newbie
