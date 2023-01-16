@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-12-23 08:54:03+0000
+Translation-Revision-Date: 2023-01-14 23:36:09+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="not_a_valid_qr_code">Kode QR yang dipindai bukan kode WooCommerce</string>
+    <string name="store_creation_iap_eligibility_check_error_description">Pembuatan toko dari aplikasi seluler saat ini tidak tersedia untuk negara Anda.</string>
+    <string name="store_creation_iap_eligibility_check_error_title">Pembuatan Toko Tidak Tersedia</string>
+    <string name="store_creation_iap_eligibility_loading_subtitle">Harap tetap tersambung.</string>
+    <string name="store_creation_iap_eligibility_loading_title">Kami sedang mempersiapkan pembuatan toko Anda</string>
+    <string name="review_reply_failure">Terjadi kendala saat mengirimkan balasan</string>
+    <string name="review_reply_success">Balasan dikirim!</string>
+    <string name="wc_reply">Balas</string>
     <string name="store_creation_store_categories_subtitle">Plih kategori paling sesuai\ndengan bisnis Anda.</string>
     <string name="store_creation_store_categories_title">Apa bisnis Anda?</string>
     <string name="product_selection_menu_select_all">Pilih semua</string>
