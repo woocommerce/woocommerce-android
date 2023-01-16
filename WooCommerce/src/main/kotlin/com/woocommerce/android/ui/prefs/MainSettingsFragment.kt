@@ -28,6 +28,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_WE_ARE_HIRING_B
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTING_CHANGE
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentSettingsMainBinding
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.FeatureAnnouncement
@@ -205,6 +206,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
         presenter.setupAnnouncementOption()
         presenter.setupJetpackInstallOption()
+        presenter.setupApplicationPasswordsSettings()
     }
 
     override fun onResume() {
@@ -266,6 +268,10 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
                     )
                 )
         }
+    }
+
+    override fun handleApplicationPasswordsSettings() {
+        binding.optionNotifications.hide()
     }
 
     private fun updateStoreSettings() {
