@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.payments.feedback.ipp
 
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
+import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.ui.payments.GetActivePaymentsPlugin
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import org.wordpress.android.fluxc.model.SiteModel
@@ -19,16 +21,8 @@ class ShouldShowFeedbackBanner @Inject constructor(
     private val cashOnDeliverySettings: CashOnDeliverySettingsRepository,
     private val wooCommerceStore: WooCommerceStore,
     private val siteModel: SiteModel,
+    private val cardReaderConfig: CardReaderConfigFactory,
 ) {
-    /**
-     * 1. Check if store's country code is US or CA, if not, return false
-     * 2. Check if COD is enabled, if not return false.
-     * 3. Check if WCPay plugin is used if no, return false.
-     * 4. Check if survey has been already completed, if yes return false.
-     * 5. Check if survey has been dismissed forever, if yes return false,
-     * if not, check if it was last dismissed >= 7 days ago, if yes return true.
-     * 6. Return false.
-     */
     suspend operator fun invoke(): Boolean {
         return isStoreInSupportedCountry() &&
             isIPPEnabled() &&
@@ -36,8 +30,10 @@ class ShouldShowFeedbackBanner @Inject constructor(
             wasDismissedLongAgoEnoughToShowAgain()
     }
 
-    private fun isStoreInSupportedCountry(): Boolean =
-        wooCommerceStore.getSiteSettings(siteModel)?.countryCode in SUPPORTED_COUNTRIES
+    private fun isStoreInSupportedCountry(): Boolean {
+        val config = cardReaderConfig.getCardReaderConfigFor(wooCommerceStore.getSiteSettings(siteModel)?.countryCode)
+        return config is CardReaderConfigForSupportedCountry
+    }
 
     private suspend fun isIPPEnabled(): Boolean =
         cashOnDeliverySettings.isCashOnDeliveryEnabled() && isWooCommercePaymentsPluginEnabled()
@@ -57,6 +53,5 @@ class ShouldShowFeedbackBanner @Inject constructor(
 
     private companion object {
         private const val REMIND_LATER_INTERVAL_DAYS = 7
-        val SUPPORTED_COUNTRIES = listOf("US", "CA")
     }
 }
