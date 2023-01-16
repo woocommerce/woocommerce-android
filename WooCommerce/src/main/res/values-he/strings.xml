@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-12-22 13:54:04+0000
+Translation-Revision-Date: 2023-01-15 15:04:07+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="not_a_valid_qr_code">קוד Qr סרוק אינו קוד WooCommerce</string>
+    <string name="store_creation_iap_eligibility_check_error_description">יצירת חנות מהאפליקציה לא זמינה כרגע עבור המדינה שלך.</string>
+    <string name="store_creation_iap_eligibility_check_error_title">יצירת חנות לא זמינה</string>
+    <string name="store_creation_iap_eligibility_loading_subtitle">אין להתנתק מהמערכת.</string>
+    <string name="store_creation_iap_eligibility_loading_title">אנחנו מתכוננים לקראת יצירת החנות שלך</string>
+    <string name="review_reply_failure">אירעה שגיאה בשליחת התגובה</string>
+    <string name="review_reply_success">התגובה נשלחה!</string>
+    <string name="wc_reply">להגיב</string>
     <string name="store_creation_store_categories_subtitle">יש לבחור קטגוריה שמגדירה\nאת העסק שלך בצורה הכי מדויקת.</string>
     <string name="store_creation_store_categories_title">מה העסק שלך עושה?</string>
     <string name="product_selection_menu_select_all">לבחור הכול</string>

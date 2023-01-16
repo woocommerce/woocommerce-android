@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-12-22 09:54:04+0000
+Translation-Revision-Date: 2023-01-16 03:24:44+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="not_a_valid_qr_code">掃進來的 QR code 不是 WooCommerce 代碼</string>
+    <string name="store_creation_iap_eligibility_check_error_description">你所在的國家暫不提供自手機 App 開設商店功能。</string>
+    <string name="store_creation_iap_eligibility_check_error_title">不提供商店開設功能</string>
+    <string name="store_creation_iap_eligibility_loading_subtitle">請保持連線狀態。</string>
+    <string name="store_creation_iap_eligibility_loading_title">已準備好開設你的商店</string>
+    <string name="review_reply_failure">傳送回覆時發生錯誤</string>
+    <string name="review_reply_success">回覆已傳送！</string>
+    <string name="wc_reply">回覆</string>
     <string name="store_creation_store_categories_subtitle">選擇最符合\n你業務定義的類別。</string>
     <string name="store_creation_store_categories_title">你的業務內容是什麼？</string>
     <string name="product_selection_menu_select_all">全部選取</string>
