@@ -5,6 +5,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.config.RemoteConfigRepository
+import com.woocommerce.android.util.PackageUtils
 import javax.inject.Inject
 
 class RestAPILoginExperiment @Inject constructor(
@@ -25,7 +26,11 @@ class RestAPILoginExperiment @Inject constructor(
         )
     }
 
-    fun getCurrentVariant(): RestAPILoginVariant = remoteConfigRepository.getRestAPILoginVariant()
+    fun getCurrentVariant(): RestAPILoginVariant = if (PackageUtils.isTesting()) {
+        RestAPILoginVariant.CONTROL
+    } else {
+        remoteConfigRepository.getRestAPILoginVariant()
+    }
 
     enum class RestAPILoginVariant {
         CONTROL,
