@@ -1200,7 +1200,7 @@
             Card Reader Connection
         -->
     <string name="card_reader_connect_scanning_header">Scanning for readers</string>
-    <string name="card_reader_connect_scanning_built_in_header">Scanning for built-in phone reader</string>
+    <string name="card_reader_connect_scanning_built_in_header">Preparing built-in phone reader…</string>
     <string name="card_reader_connect_scanning_progress" translatable="false">@string/card_reader_connect_scanning_header</string>
     <string name="card_reader_connect_scanning_hint">Press the power button of your reader</string>
     <string name="card_reader_connect_scanning_built_in_hint">It won\'t take long</string>

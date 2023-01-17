@@ -50,10 +50,6 @@ sealed class CardReaderConnectViewState(
             illustration = R.drawable.img_ipp_reader_type_selection,
             hintLabel = R.string.card_reader_connect_scanning_built_in_hint,
             secondaryActionLabel = R.string.cancel,
-            learnMoreLabel = UiString.UiStringRes(
-                R.string.card_reader_connect_learn_more,
-                containsHtml = true,
-            )
         )
 
     data class ExternalReaderFoundState(
