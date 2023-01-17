@@ -62,7 +62,7 @@ class StoreProfilerCommerceJourneyViewModel @Inject constructor(
     private fun AboutMerchant.toStoreProfilerOptionUi() = StoreProfilerOptionUi(
         name = value,
         key = tracks,
-        isSelected = newStore.data.profilerData?.eCommercePlatformKey == tracks,
+        isSelected = newStore.data.profilerData?.userCommerceJourneyKey == tracks,
     )
 
     private fun alreadySellingOnlineSelected() = profilerOptions.value
