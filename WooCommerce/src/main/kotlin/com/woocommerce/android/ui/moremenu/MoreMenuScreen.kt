@@ -152,7 +152,7 @@ private fun MoreMenuHeader(
             userAvatarUrl = state.userAvatarUrl,
             siteName = state.siteName,
             siteUrl = state.siteUrl,
-            showStoreSwitcher = true
+            showStoreSwitcher = state.showStoreSwitcher
         )
         SettingsButton(
             modifier = Modifier
