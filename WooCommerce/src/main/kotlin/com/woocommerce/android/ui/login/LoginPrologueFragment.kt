@@ -95,6 +95,7 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
             // button primary
             buttonLoginStore.hide()
             buttonLoginWpcom.text = buttonLoginStore.text
+            buttonLoginWpcom.layoutParams = buttonLoginStore.layoutParams
             buttonLoginWpcom.setOnClickListener {
                 // Forward click to site address button
                 buttonLoginStore.performClick()
