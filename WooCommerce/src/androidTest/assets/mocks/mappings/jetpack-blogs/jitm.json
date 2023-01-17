@@ -4,7 +4,7 @@
     "urlPathPattern": "/rest/v1.1/jetpack-blogs/161477129/rest-api/",
     "queryParameters": {
       "path": {
-        "equalTo": "/jetpack/v4/jitm&_method=get"
+        "equalTo": "/jetpack/v4/jitm/&_method=get"
       },
       "json": {
         "equalTo": "true"

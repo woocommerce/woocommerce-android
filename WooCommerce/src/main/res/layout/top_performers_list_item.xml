@@ -13,7 +13,7 @@
         android:layout_centerVertical="true"
         android:background="@drawable/picture_frame"
         android:layout_margin="@dimen/major_100"
-        android:padding="1dp">
+        android:padding="@dimen/image_frame_stroke_width">
 
         <ImageView
             android:id="@+id/image_product"

@@ -5,6 +5,8 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailProductItemBinding
@@ -60,10 +62,12 @@ class OrderDetailProductItemView @JvmOverloads constructor(
 
         productImage?.let {
             val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
+            val imageCornerRadius = context.resources.getDimensionPixelSize(R.dimen.corner_radius_image)
             val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
             GlideApp.with(context)
                 .load(imageUrl)
                 .placeholder(R.drawable.ic_product)
+                .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
                 .into(binding.productInfoIcon)
         } ?: binding.productInfoIcon.setImageResource(R.drawable.ic_product)
     }

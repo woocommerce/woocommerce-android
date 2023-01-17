@@ -11,12 +11,15 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.experiment.JetpackInstallationExperiment
 import com.woocommerce.android.experiment.JetpackInstallationExperiment.JetpackInstallationVariant
+import com.woocommerce.android.support.help.HelpOrigin.LOGIN_SITE_ADDRESS
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.sitepicker.SitePickerRepository
+import com.woocommerce.android.util.UrlUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.NavigateToHelpScreen
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -35,8 +38,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.network.discovery.DiscoveryUtils
-import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
 
@@ -47,7 +48,8 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
     private val resourceProvider: ResourceProvider,
     private val analyticsTracker: AnalyticsTrackerWrapper,
-    private val jetpackInstallationExperiment: JetpackInstallationExperiment
+    private val jetpackInstallationExperiment: JetpackInstallationExperiment,
+    private val urlUtils: UrlUtils
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val FETCHED_URL_KEY = "fetched_url"
@@ -174,7 +176,7 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
 
         sitePickRepository.fetchSiteInfo(siteAddressFlow.value).fold(
             onSuccess = {
-                val siteAddress = (it.urlAfterRedirects ?: it.url).sanitiseUrl()
+                val siteAddress = urlUtils.sanitiseUrl(it.urlAfterRedirects ?: it.url)
                 // Remove protocol prefix
                 val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
                 fetchedSiteUrl = siteAddress.replaceFirst(protocolRegex, "")
@@ -236,7 +238,7 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
     }
 
     fun onHelpButtonClick() {
-        triggerEvent(NavigateToHelpScreen)
+        triggerEvent(NavigateToHelpScreen(LOGIN_SITE_ADDRESS))
     }
 
     fun onJetpackInstalled() {
@@ -271,22 +273,6 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Basic sanitization of the URL based on the same logic we use in the XMLRPC discovery
-     * see: https://github.com/wordpress-mobile/WordPress-FluxC-Android/blob/94601a5d4c1c98068adde0352ecc25e6d0046f35/fluxc/src/main/java/org/wordpress/android/fluxc/network/discovery/SelfHostedEndpointFinder.java#L292
-     */
-    private fun String.sanitiseUrl(): String {
-        return trim()
-            .trimEnd('/')
-            .let {
-                // Convert IDN names to punycode if necessary
-                UrlUtils.convertUrlToPunycodeIfNeeded(it)
-            }.let {
-                // Strip url from known usual trailing paths
-                DiscoveryUtils.stripKnownPaths(it)
-            }
-    }
-
     private enum class Step {
         AddressInput, JetpackUnavailable, NotWordpress
     }
@@ -319,7 +305,6 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
     }
 
     object CreateZendeskTicket : MultiLiveEvent.Event()
-    object NavigateToHelpScreen : MultiLiveEvent.Event()
     data class StartWebBasedJetpackInstallation(val siteAddress: String) : MultiLiveEvent.Event()
     data class StartNativeJetpackActivation(
         val siteAddress: String,

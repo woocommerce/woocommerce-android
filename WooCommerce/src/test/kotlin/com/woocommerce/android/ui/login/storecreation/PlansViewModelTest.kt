@@ -3,8 +3,13 @@ package com.woocommerce.android.ui.login.storecreation
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.iap.pub.IAPActivityWrapper
+import com.woocommerce.android.iap.pub.PurchaseWPComPlanActions
+import com.woocommerce.android.iap.pub.model.WPComPlanProduct
+import com.woocommerce.android.iap.pub.model.WPComProductResult
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_ADDRESS_ALREADY_EXISTS
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository.SiteCreationData
+import com.woocommerce.android.ui.login.storecreation.iap.IsIAPEnabled
 import com.woocommerce.android.ui.login.storecreation.plans.BillingPeriod.ECOMMERCE_MONTHLY
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanInfo
@@ -12,6 +17,7 @@ import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewS
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.CheckoutState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.PlanState
+import com.woocommerce.android.util.SiteIndependentCurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
@@ -24,12 +30,17 @@ import org.wordpress.android.fluxc.model.plans.full.Plan
 import java.util.TimeZone
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class PlansViewModelTest : BaseUnitTest() {
     private val savedState = SavedStateHandle()
     private val repository: StoreCreationRepository = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val iapManager: PurchaseWPComPlanActions = mock()
+    private val isIAPEnabled: IsIAPEnabled = mock()
+    private val iapActivityWrapper: IAPActivityWrapper = mock()
+    private val siteIndependentCurrencyFormatter: SiteIndependentCurrencyFormatter = mock()
 
     private lateinit var viewModel: PlansViewModel
 
@@ -38,6 +49,7 @@ class PlansViewModelTest : BaseUnitTest() {
 
     companion object {
         private const val SITE_ID = 123L
+        private const val EXPECTED_FORMATTED_PRICE = "$69.99"
     }
 
     private val siteData = SiteCreationData(
@@ -64,12 +76,22 @@ class PlansViewModelTest : BaseUnitTest() {
         features = emptyList()
     )
 
+    private val iapProduct = WPComPlanProduct(
+        localizedTitle = "eCommerce",
+        localizedDescription = "Description",
+        price = 69.99,
+        currency = "USD",
+    )
+
     private fun whenViewModelIsCreated() {
         viewModel = PlansViewModel(
             savedState,
             analyticsTrackerWrapper,
             newStore,
-            repository
+            repository,
+            iapManager,
+            isIAPEnabled,
+            siteIndependentCurrencyFormatter
         )
     }
 
@@ -92,7 +114,6 @@ class PlansViewModelTest : BaseUnitTest() {
     @Test
     fun `when view model is created, eCommerce plan is fetched and information displayed`() = testBlocking {
         whenever(repository.fetchPlan(ECOMMERCE_MONTHLY)).thenReturn(plan)
-
         whenViewModelIsCreated()
 
         viewModel.viewState.observeForever(observer)
@@ -107,6 +128,30 @@ class PlansViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given IAP enabled, when view model is created, eCommerce plan is updated with IAP product info`() =
+        testBlocking {
+            givenIsIAPEnabled()
+            whenever(
+                siteIndependentCurrencyFormatter.formatAmountWithCurrency(
+                    iapProduct.price,
+                    iapProduct.currency
+                )
+            ).thenReturn(EXPECTED_FORMATTED_PRICE)
+            whenever(repository.fetchPlan(ECOMMERCE_MONTHLY)).thenReturn(plan)
+            whenever(iapManager.fetchWPComPlanProduct()).thenReturn(WPComProductResult.Success(iapProduct))
+
+            whenViewModelIsCreated()
+
+            viewModel.viewState.observeForever(observer)
+            verify(observer).onChanged(captor.capture())
+
+            val observedPlan = captor.firstValue as? PlanState
+            assertNotNull(observedPlan)
+            assertEquals(iapProduct.localizedTitle, observedPlan.plan.name)
+            assertEquals(EXPECTED_FORMATTED_PRICE, observedPlan.plan.formattedPrice)
+        }
+
+    @Test
     fun `when a site is created, a plan is added to site's checkout cart and a WebView is launched`() =
         testBlocking {
             whenever(repository.createNewSite(siteData, PlansViewModel.NEW_SITE_LANGUAGE_ID, TimeZone.getDefault().id))
@@ -117,7 +162,7 @@ class PlansViewModelTest : BaseUnitTest() {
 
             whenViewModelIsCreated()
 
-            viewModel.onConfirmClicked()
+            viewModel.onConfirmClicked(iapActivityWrapper)
 
             viewModel.viewState.observeForever(observer)
             verify(observer).onChanged(captor.capture())
@@ -126,6 +171,26 @@ class PlansViewModelTest : BaseUnitTest() {
             assertNotNull(observedState)
 
             assertEquals(observedState, checkoutState)
+        }
+
+    @Test
+    fun `given IAP enabled, when a site is created, IAP flow is triggered and button set to loading`() =
+        testBlocking {
+            givenIsIAPEnabled()
+            whenever(repository.fetchPlan(ECOMMERCE_MONTHLY)).thenReturn(plan)
+            whenever(repository.createNewSite(siteData, PlansViewModel.NEW_SITE_LANGUAGE_ID, TimeZone.getDefault().id))
+                .thenReturn(StoreCreationResult.Success(SITE_ID))
+
+            whenViewModelIsCreated()
+            viewModel.onConfirmClicked(iapActivityWrapper)
+            viewModel.viewState.observeForever(observer)
+            verify(observer).onChanged(captor.capture())
+
+            val observedState = captor.firstValue as? PlanState
+            assertNotNull(observedState)
+            assertTrue(observedState.showMainButtonLoading)
+            verify(iapManager).getPurchaseWpComPlanResult(SITE_ID)
+            verify(iapManager).purchaseWPComPlan(iapActivityWrapper, SITE_ID)
         }
 
     @Test
@@ -142,7 +207,7 @@ class PlansViewModelTest : BaseUnitTest() {
 
             whenViewModelIsCreated()
 
-            viewModel.onConfirmClicked()
+            viewModel.onConfirmClicked(iapActivityWrapper)
 
             viewModel.viewState.observeForever(observer)
             verify(observer).onChanged(captor.capture())
@@ -164,7 +229,7 @@ class PlansViewModelTest : BaseUnitTest() {
 
             whenViewModelIsCreated()
 
-            viewModel.onConfirmClicked()
+            viewModel.onConfirmClicked(iapActivityWrapper)
 
             viewModel.viewState.observeForever(observer)
             verify(observer).onChanged(captor.capture())
@@ -174,4 +239,8 @@ class PlansViewModelTest : BaseUnitTest() {
 
             assertEquals(observedState.errorType, SITE_ADDRESS_ALREADY_EXISTS)
         }
+
+    private fun givenIsIAPEnabled() {
+        whenever(isIAPEnabled.invoke()).thenReturn(true)
+    }
 }

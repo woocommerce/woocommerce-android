@@ -30,12 +30,14 @@ import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelectio
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.TODAY
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.WEEK_TO_DATE
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
@@ -47,7 +49,10 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.util.Calendar
 import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -66,28 +71,45 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     }
 
     private val analyticsRepository: AnalyticsRepository = mock()
-
     private val savedState = AnalyticsFragmentArgs(targetGranularity = TODAY).initSavedStateHandle()
-
     private val transactionLauncher = mock<AnalyticsHubTransactionLauncher>()
 
+    private lateinit var localeProvider: LocaleProvider
+    private lateinit var testLocale: Locale
+    private lateinit var testCalendar: Calendar
+
     private lateinit var sut: AnalyticsViewModel
+
+    @Before
+    fun setUp() {
+        testLocale = Locale.UK
+        val testTimeZone = TimeZone.getDefault()
+        testCalendar = Calendar.getInstance(testLocale)
+        testCalendar.timeZone = testTimeZone
+        testCalendar.firstDayOfWeek = Calendar.MONDAY
+        localeProvider = mock {
+            on { provideLocale() } doReturn testLocale
+        }
+    }
 
     @Test
     fun `given an init viewState, when view model is created, then has the expected values`() =
         testBlocking {
             val resourceProvider: ResourceProvider = mock {
-                on { getString(any()) } doReturn TODAY.description
+                on { getString(any()) } doReturn TODAY.name
             }
 
             sut = givenAViewModel(resourceProvider)
 
-            val expectedSelection = TODAY.generateSelectionData()
+            val expectedSelection = TODAY.generateSelectionData(
+                calendar = testCalendar,
+                locale = testLocale
+            )
 
             with(sut.viewState.value.analyticsDateRangeSelectorState) {
-                assertEquals(expectedSelection.selectionType.description, selectedPeriod)
-                assertEquals(expectedSelection.currentRangeDescription, toDatePeriod)
-                assertEquals(expectedSelection.previousRangeDescription, fromDatePeriod)
+                assertEquals(expectedSelection.selectionType.name, selectionTitle)
+                assertEquals(expectedSelection.currentRangeDescription, currentRange)
+                assertEquals(expectedSelection.previousRangeDescription, previousRange)
             }
 
             with(sut.viewState.value.revenueState) {
@@ -116,17 +138,20 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             }
 
             val resourceProvider: ResourceProvider = mock {
-                on { getString(any()) } doReturn TODAY.description
+                on { getString(any()) } doReturn TODAY.name
             }
 
             sut = givenAViewModel(resourceProvider)
 
-            val expectedSelection = TODAY.generateSelectionData()
+            val expectedSelection = TODAY.generateSelectionData(
+                calendar = testCalendar,
+                locale = testLocale
+            )
 
             with(sut.viewState.value.analyticsDateRangeSelectorState) {
-                assertEquals(expectedSelection.selectionType.description, selectedPeriod)
-                assertEquals(expectedSelection.currentRangeDescription, toDatePeriod)
-                assertEquals(expectedSelection.previousRangeDescription, fromDatePeriod)
+                assertEquals(expectedSelection.selectionType.name, selectionTitle)
+                assertEquals(expectedSelection.currentRangeDescription, currentRange)
+                assertEquals(expectedSelection.previousRangeDescription, previousRange)
             }
         }
 
@@ -140,18 +165,21 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
             val resourceProvider: ResourceProvider = mock {
                 on { getString(any()) } doReturnConsecutively
-                    listOf(ANY_VALUE, LAST_YEAR.description)
+                    listOf(ANY_VALUE, LAST_YEAR.name)
             }
 
             sut = givenAViewModel(resourceProvider)
             sut.onNewRangeSelection(LAST_YEAR)
 
-            val expectedSelection = LAST_YEAR.generateSelectionData()
+            val expectedSelection = LAST_YEAR.generateSelectionData(
+                calendar = testCalendar,
+                locale = testLocale
+            )
 
             with(sut.viewState.value.analyticsDateRangeSelectorState) {
-                assertEquals(expectedSelection.selectionType.description, selectedPeriod)
-                assertEquals(expectedSelection.currentRangeDescription, toDatePeriod)
-                assertEquals(expectedSelection.previousRangeDescription, fromDatePeriod)
+                assertEquals(expectedSelection.selectionType.name, selectionTitle)
+                assertEquals(expectedSelection.currentRangeDescription, currentRange)
+                assertEquals(expectedSelection.previousRangeDescription, previousRange)
             }
         }
 
@@ -549,6 +577,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             analyticsRepository,
             transactionLauncher,
             mock(),
+            localeProvider,
             AnalyticsFragmentArgs(targetGranularity = CUSTOM).initSavedStateHandle()
         )
         sut.onCustomRangeSelected(Date(), Date())
@@ -560,7 +589,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     private fun givenAResourceProvider(): ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { invMock -> invMock.arguments[0].toString() }
-        on { getStringArray(any()) } doAnswer { DATE_RANGE_SELECTORS.toTypedArray() }
     }
 
     private fun givenAViewModel(resourceProvider: ResourceProvider = givenAResourceProvider()): AnalyticsViewModel {
@@ -570,6 +598,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             analyticsRepository,
             transactionLauncher,
             mock(),
+            localeProvider,
             savedState
         )
     }
@@ -646,9 +675,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
     companion object {
         private const val ANY_VALUE = "Today"
-        private const val ANY_OTHER_VALUE = "Last year"
-
-        private val DATE_RANGE_SELECTORS = listOf(ANY_VALUE, ANY_OTHER_VALUE)
 
         const val TOTAL_VALUE = 10.0
         const val TOTAL_DELTA = 5.0

@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-12-06 18:54:22+0000
+Translation-Revision-Date: 2022-12-21 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="store_creation_store_categories_subtitle">Elige la categoría que defina\nmejor tu negocio.</string>
+    <string name="store_creation_store_categories_title">¿De qué trata tu negocio?</string>
+    <string name="product_selection_menu_select_all">Seleccionar todo</string>
+    <string name="product_selection_menu_update_price">Actualizar precio</string>
+    <string name="product_selection_menu_update_status">Actualizar estado</string>
+    <string name="product_bulk_update_status_updated">Se ha actualizado el estado.</string>
+    <string name="product_bulk_update_status">Actualizar estado</string>
+    <string name="product_bulk_update_price_updated">Se ha actualizado el precio.</string>
+    <string name="product_bulk_update_regular_price">Actualizar precio normal</string>
     <string name="store_creation_ecommerce_plan_period_two_years">2 años</string>
     <string name="store_creation_ecommerce_store_loading_permanent_error">Se ha producido un error durante la instalación de la tienda…</string>
     <string name="variations_bulk_creation_no_candidates_message">Ya se han generado todas las variaciones.</string>
@@ -149,7 +158,6 @@ Language: es
     <string name="signup_email_exist_input">Ya existe una cuenta con esta dirección de correo electrónico.</string>
     <string name="signup_already_registered">Primero, vamos a crear tu cuenta. ¿Ya te has registrado? &lt;a href=\'login\'&gt;&lt;u&gt;Acceder&lt;/u&gt;&lt;/a&gt;</string>
     <string name="login_create_an_account">Crear una cuenta</string>
-    <string name="simplified_login_enter_email_address">Introduce tu dirección de correo electrónico para empezar</string>
     <string name="login_try_another_email">Prueba con otra dirección</string>
     <string name="date_timeframe_custom_date_range_title">Intervalo de fechas personalizado</string>
     <string name="date_timeframe_custom">Personalizado</string>

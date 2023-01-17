@@ -20,9 +20,9 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.Date
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import java.util.Date
 
 @AndroidEntryPoint
 class AnalyticsFragment :
@@ -82,8 +82,8 @@ class AnalyticsFragment :
         AnalyticsFragmentDirections.actionAnalyticsFragmentToDateRangeSelector(
             requestKey = KEY_DATE_RANGE_SELECTOR_RESULT,
             keys = viewModel.selectableRangeOptions,
-            values = viewModel.selectableRangeOptions,
-            selectedItem = getDateRangeSelectorViewState().selectedPeriod
+            values = AnalyticsHubDateRangeSelection.SelectionType.names,
+            selectedItem = getDateRangeSelectorViewState().selectionTitle
         )
 
     private fun setupResultHandlers(viewModel: AnalyticsViewModel) {
@@ -104,8 +104,9 @@ class AnalyticsFragment :
     }
 
     private fun handleStateChange(viewState: AnalyticsViewState) {
-        binding.analyticsDateSelectorCard.updateFromText(viewState.analyticsDateRangeSelectorState.fromDatePeriod)
-        binding.analyticsDateSelectorCard.updateToText(viewState.analyticsDateRangeSelectorState.toDatePeriod)
+        binding.analyticsDateSelectorCard.updateSelectionTitle(viewState.analyticsDateRangeSelectorState.selectionTitle)
+        binding.analyticsDateSelectorCard.updatePreviousRange(viewState.analyticsDateRangeSelectorState.previousRange)
+        binding.analyticsDateSelectorCard.updateCurrentRange(viewState.analyticsDateRangeSelectorState.currentRange)
         binding.analyticsRevenueCard.updateInformation(viewState.revenueState)
         binding.analyticsOrdersCard.updateInformation(viewState.ordersState)
         binding.analyticsProductsCard.updateInformation(viewState.productsState)

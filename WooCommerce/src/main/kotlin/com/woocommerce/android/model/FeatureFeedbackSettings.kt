@@ -22,7 +22,6 @@ data class FeatureFeedbackSettings(
         SHIPPING_LABEL_M4,
         PRODUCT_VARIATIONS,
         PRODUCT_ADDONS,
-        SIMPLE_PAYMENTS,
         SIMPLE_PAYMENTS_AND_ORDER_CREATION,
         COUPONS
     }

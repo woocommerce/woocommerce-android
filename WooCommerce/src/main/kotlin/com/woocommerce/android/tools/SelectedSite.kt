@@ -28,6 +28,9 @@ class SelectedSite(
 
     private val state: MutableStateFlow<SiteModel?> = MutableStateFlow(getSelectedSiteFromPersistance())
 
+    val connectionType: SiteConnectionType?
+        get() = getIfExists()?.connectionType
+
     fun observe(): Flow<SiteModel?> = state
 
     fun get(): SiteModel {

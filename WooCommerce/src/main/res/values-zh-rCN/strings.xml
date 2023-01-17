@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-12-06 11:54:03+0000
+Translation-Revision-Date: 2022-12-23 08:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="store_creation_store_categories_subtitle">选择最能符合\n您的业务的分类。</string>
+    <string name="store_creation_store_categories_title">您的业务内容是什么？</string>
+    <string name="product_selection_menu_select_all">全选</string>
+    <string name="product_selection_menu_update_price">更新价格</string>
+    <string name="product_selection_menu_update_status">更新状态</string>
+    <string name="product_bulk_update_status_updated">状态已更新！</string>
+    <string name="product_bulk_update_status">更新状态</string>
+    <string name="product_bulk_update_price_updated">价格已更新！</string>
+    <string name="product_bulk_update_regular_price">更新正常价格</string>
     <string name="store_creation_ecommerce_plan_period_two_years">2 年</string>
     <string name="store_creation_ecommerce_store_loading_permanent_error">商店安装时出错了…</string>
     <string name="variations_bulk_creation_no_candidates_message">所有变体都已生成。</string>
@@ -149,7 +158,6 @@ Language: zh_CN
     <string name="signup_email_exist_input">已存在使用此电子邮件的账户。</string>
     <string name="signup_already_registered">首先，我们来创建您的账户。 已注册？ &lt;a href=\'login\'&gt;&lt;u&gt;登录&lt;/u&gt;&lt;/a&gt;</string>
     <string name="login_create_an_account">创建账户</string>
-    <string name="simplified_login_enter_email_address">请输入您的电子邮箱地址以开始</string>
     <string name="login_try_another_email">尝试其他地址</string>
     <string name="date_timeframe_custom_date_range_title">自定义日期范围</string>
     <string name="date_timeframe_custom">自定义</string>

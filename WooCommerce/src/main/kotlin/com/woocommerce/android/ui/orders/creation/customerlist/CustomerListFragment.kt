@@ -60,6 +60,7 @@ class CustomerListFragment :
                 is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is CustomerListViewModel.CustomerSelected -> {
                     addressViewModel.onAddressesChanged(
+                        customerId = event.customerId,
                         billingAddress = event.billingAddress,
                         shippingAddress = event.shippingAddress
                     )

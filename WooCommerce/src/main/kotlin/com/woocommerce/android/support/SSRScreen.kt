@@ -81,7 +81,7 @@ fun SSRScreen(
                 }
             )
         }
-    ) {
+    ) { padding ->
         val scrollState = rememberScrollState()
 
         // Column is used here despite just having one child component, so that SSRContent can use `weight` Modifier.
@@ -93,6 +93,7 @@ fun SSRScreen(
                 modifier = Modifier
                     .background(color = MaterialTheme.colors.surface)
                     .verticalScroll(scrollState)
+                    .padding(padding)
                     .padding(vertical = dimensionResource(id = R.dimen.major_100))
                     .fillMaxSize()
                     .weight(1.0f)

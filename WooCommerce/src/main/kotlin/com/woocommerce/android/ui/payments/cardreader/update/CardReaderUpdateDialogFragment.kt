@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import androidx.activity.ComponentDialog
+import androidx.activity.addCallback
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
@@ -33,11 +35,11 @@ class CardReaderUpdateDialogFragment : DialogFragment(R.layout.card_reader_updat
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return object : Dialog(requireContext(), theme) {
-            override fun onBackPressed() {
-                viewModel.onBackPressed()
-            }
+        val dialog = ComponentDialog(requireContext(), theme)
+        dialog.onBackPressedDispatcher.addCallback(dialog) {
+            viewModel.onBackPressed()
         }
+        return dialog
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

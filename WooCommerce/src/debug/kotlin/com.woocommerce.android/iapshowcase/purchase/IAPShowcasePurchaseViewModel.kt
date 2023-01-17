@@ -18,6 +18,10 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class IAPShowcasePurchaseViewModel(private val iapManager: PurchaseWPComPlanActions) : ViewModel(iapManager) {
+    private companion object {
+        const val REMOTE_SITE_ID = 1L
+    }
+
     private val _productInfo = MutableLiveData<WPComPlanProduct>()
     val productInfo: LiveData<WPComPlanProduct> = _productInfo
 
@@ -29,7 +33,7 @@ class IAPShowcasePurchaseViewModel(private val iapManager: PurchaseWPComPlanActi
 
     init {
         viewModelScope.launch {
-            iapManager.purchaseWpComPlanResult.collectLatest { result ->
+            iapManager.getPurchaseWpComPlanResult(REMOTE_SITE_ID).collectLatest { result ->
                 _iapLoading.value = false
                 when (result) {
                     is WPComPurchaseResult.Success -> _iapEvent.value = "Plan has been successfully purchased"
@@ -42,7 +46,7 @@ class IAPShowcasePurchaseViewModel(private val iapManager: PurchaseWPComPlanActi
     fun purchasePlan(activityWrapper: IAPActivityWrapper) {
         viewModelScope.launch {
             _iapLoading.value = true
-            iapManager.purchaseWPComPlan(activityWrapper)
+            iapManager.purchaseWPComPlan(activityWrapper, REMOTE_SITE_ID)
         }
     }
 
@@ -60,6 +64,7 @@ class IAPShowcasePurchaseViewModel(private val iapManager: PurchaseWPComPlanActi
                         PurchaseStatus.NOT_PURCHASED -> "Plan hasn't been purchased yet"
                     }
                 }
+
                 is WPComIsPurchasedResult.Error -> handleError(response.errorType)
             }
         }
