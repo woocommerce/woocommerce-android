@@ -118,7 +118,7 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
 
     private fun observeState(binding: CardReaderConnectDialogBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { viewState ->
-            if (viewState is CardReaderConnectViewState.ReaderFoundState) {
+            if (viewState is CardReaderConnectViewState.ExternalReaderFoundState) {
                 moveToReaderFoundState(binding, viewState)
             } else {
                 moveToState(binding, viewState)
@@ -143,7 +143,7 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
         fadeOut.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
                 // make sure we haven't moved to another state before starting the fade in animation
-                if (viewModel.viewStateData.value is CardReaderConnectViewState.ReaderFoundState) {
+                if (viewModel.viewStateData.value is CardReaderConnectViewState.ExternalReaderFoundState) {
                     moveToState(binding, viewState)
                     if (lifecycle.currentState == Lifecycle.State.RESUMED) fadeIn.start()
                 }

@@ -6,6 +6,9 @@ import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 
+sealed interface ScanningState
+sealed interface ConnectingState
+
 @Suppress("LongParameterList")
 sealed class CardReaderConnectViewState(
     val headerLabel: UiString? = null,
@@ -23,21 +26,37 @@ sealed class CardReaderConnectViewState(
     open val onTertiaryActionClicked: (() -> Unit)? = null
     open val onLearnMoreClicked: (() -> Unit)? = null
 
-    data class ScanningState(
+    data class ExternalReaderScanningState(
         override val onSecondaryActionClicked: (() -> Unit),
         override val onLearnMoreClicked: (() -> Unit),
-    ) : CardReaderConnectViewState(
-        headerLabel = UiString.UiStringRes(R.string.card_reader_connect_scanning_header),
-        illustration = R.drawable.img_card_reader_scanning,
-        hintLabel = R.string.card_reader_connect_scanning_hint,
-        secondaryActionLabel = R.string.cancel,
-        learnMoreLabel = UiString.UiStringRes(
-            R.string.card_reader_connect_learn_more,
-            containsHtml = true,
+    ) : ScanningState,
+        CardReaderConnectViewState(
+            headerLabel = UiString.UiStringRes(R.string.card_reader_connect_scanning_header),
+            illustration = R.drawable.img_card_reader_scanning,
+            hintLabel = R.string.card_reader_connect_scanning_hint,
+            secondaryActionLabel = R.string.cancel,
+            learnMoreLabel = UiString.UiStringRes(
+                R.string.card_reader_connect_learn_more,
+                containsHtml = true,
+            )
         )
-    )
 
-    data class ReaderFoundState(
+    data class BuiltInReaderScanningState(
+        override val onSecondaryActionClicked: (() -> Unit),
+        override val onLearnMoreClicked: (() -> Unit),
+    ) : ScanningState,
+        CardReaderConnectViewState(
+            headerLabel = UiString.UiStringRes(R.string.card_reader_connect_scanning_built_in_header),
+            illustration = R.drawable.img_ipp_reader_type_selection,
+            hintLabel = R.string.card_reader_connect_scanning_built_in_hint,
+            secondaryActionLabel = R.string.cancel,
+            learnMoreLabel = UiString.UiStringRes(
+                R.string.card_reader_connect_learn_more,
+                containsHtml = true,
+            )
+        )
+
+    data class ExternalReaderFoundState(
         override val onPrimaryActionClicked: (() -> Unit),
         override val onSecondaryActionClicked: (() -> Unit),
         override val onTertiaryActionClicked: (() -> Unit),
@@ -55,7 +74,7 @@ sealed class CardReaderConnectViewState(
         illustrationTopMargin = R.dimen.major_150
     )
 
-    data class MultipleReadersFoundState(
+    data class MultipleExternalReadersFoundState(
         override val listItems: List<CardReaderConnectViewModel.ListItemViewState>,
         override val onSecondaryActionClicked: () -> Unit
     ) : CardReaderConnectViewState(
@@ -63,13 +82,25 @@ sealed class CardReaderConnectViewState(
         secondaryActionLabel = R.string.cancel
     )
 
-    data class ConnectingState(override val onSecondaryActionClicked: (() -> Unit)) : CardReaderConnectViewState(
-        headerLabel = UiString.UiStringRes(R.string.card_reader_connect_connecting_header),
-        illustration = R.drawable.img_card_reader_connecting,
-        hintLabel = R.string.card_reader_connect_connecting_hint,
-        secondaryActionLabel = R.string.cancel,
-        illustrationTopMargin = R.dimen.major_275
-    )
+    data class ExternalReaderConnectingState(override val onSecondaryActionClicked: (() -> Unit)) :
+        ConnectingState,
+        CardReaderConnectViewState(
+            headerLabel = UiString.UiStringRes(R.string.card_reader_connect_connecting_header),
+            illustration = R.drawable.img_card_reader_connecting,
+            hintLabel = R.string.card_reader_connect_connecting_hint,
+            secondaryActionLabel = R.string.cancel,
+            illustrationTopMargin = R.dimen.major_275
+        )
+
+    data class BuiltInReaderConnectingState(override val onSecondaryActionClicked: (() -> Unit)) :
+        ConnectingState,
+        CardReaderConnectViewState(
+            headerLabel = UiString.UiStringRes(R.string.card_reader_connect_connecting_built_in_header),
+            illustration = R.drawable.img_ipp_reader_type_selection,
+            hintLabel = R.string.card_reader_connect_connecting_hint,
+            secondaryActionLabel = R.string.cancel,
+            illustrationTopMargin = R.dimen.major_275
+        )
 
     data class ScanningFailedState(
         override val onPrimaryActionClicked: () -> Unit,

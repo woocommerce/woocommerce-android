@@ -41,17 +41,17 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectV
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.SCANNING
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.BluetoothDisabledError
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ConnectingFailedState
-import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ConnectingState
+import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ExternalReaderConnectingState
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.InvalidMerchantAddressPostCodeError
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.LocationDisabledError
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.LocationPermissionRationale
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.MissingBluetoothPermissionsError
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.MissingLocationPermissionsError
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.MissingMerchantAddressError
-import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.MultipleReadersFoundState
-import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ReaderFoundState
+import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.MultipleExternalReadersFoundState
+import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ExternalReaderFoundState
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ScanningFailedState
-import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ScanningState
+import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ExternalReaderScanningState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
@@ -433,7 +433,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             init()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ExternalReaderConnectingState::class.java)
         }
 
     @Test
@@ -466,7 +466,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as ScanningFailedState).onPrimaryActionClicked.invoke()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(ScanningState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ExternalReaderScanningState::class.java)
         }
 
     @Test
@@ -474,7 +474,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         testBlocking {
             init(scanState = READER_FOUND)
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(ReaderFoundState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ExternalReaderFoundState::class.java)
         }
 
     @Test
@@ -484,7 +484,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             init(scanState = READER_FOUND)
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(ReaderFoundState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ExternalReaderFoundState::class.java)
         }
 
     @Test
@@ -496,7 +496,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             init(scanState = READER_FOUND)
             readerStatusStateFlow.emit(CardReaderStatus.Connected(mock()))
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ExternalReaderConnectingState::class.java)
         }
 
     @Test
@@ -528,7 +528,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             init(scanState = READER_FOUND)
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(ReaderFoundState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ExternalReaderFoundState::class.java)
         }
 
     @Test
@@ -538,7 +538,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             init(scanState = READER_FOUND)
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(ScanningState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ExternalReaderScanningState::class.java)
         }
 
     @Test
@@ -546,7 +546,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         testBlocking {
             init(scanState = MULTIPLE_READERS_FOUND)
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(MultipleReadersFoundState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(MultipleExternalReadersFoundState::class.java)
         }
 
     @Test
@@ -583,7 +583,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress("")
             )
 
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
 
             verify(tracker).trackFetchingLocationFailed("Missing Address")
         }
@@ -596,7 +596,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.InvalidPostalCode
             )
 
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
 
             verify(tracker).trackFetchingLocationFailed("Invalid Postal Code")
         }
@@ -609,7 +609,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.Other("selected site missing")
             )
 
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
 
             verify(tracker).trackFetchingLocationFailed("selected site missing")
         }
@@ -622,7 +622,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress("")
             )
 
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
             (viewModel.viewStateData.value as MissingMerchantAddressError)
                 .onPrimaryActionClicked.invoke()
 
@@ -637,7 +637,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 CardReaderLocationRepository.LocationIdFetchingResult.Success("")
             )
 
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
 
             verify(tracker).trackFetchingLocationSucceeded()
         }
@@ -650,7 +650,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.Other("Error")
             )
 
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
 
             verify(cardReaderManager, never()).startConnectionToReader(reader, locationId)
             assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingFailedState::class.java)
@@ -664,7 +664,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress("")
             )
 
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
 
             verify(cardReaderManager, never()).startConnectionToReader(reader, locationId)
             assertThat(viewModel.viewStateData.value).isInstanceOf(
@@ -680,7 +680,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.InvalidPostalCode
             )
 
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
 
             verify(cardReaderManager, never()).startConnectionToReader(reader, locationId)
             assertThat(viewModel.viewStateData.value).isInstanceOf(
@@ -697,7 +697,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress(url)
             )
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
 
             (viewModel.viewStateData.value as MissingMerchantAddressError)
                 .onPrimaryActionClicked.invoke()
@@ -719,7 +719,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress(url)
             )
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
 
             (viewModel.viewStateData.value as MissingMerchantAddressError)
                 .onPrimaryActionClicked.invoke()
@@ -747,7 +747,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress(url)
             )
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
 
             (viewModel.viewStateData.value as MissingMerchantAddressError)
                 .onPrimaryActionClicked.invoke()
@@ -770,7 +770,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress(url)
             )
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
             (viewModel.viewStateData.value as MissingMerchantAddressError)
                 .onPrimaryActionClicked.invoke()
 
@@ -782,7 +782,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         testBlocking {
             init()
 
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
 
             verify(cardReaderManager).startConnectionToReader(reader, locationId)
         }
@@ -795,7 +795,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             init()
 
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
 
             verify(cardReaderTrackingInfoKeeper, times(2)).setCardReaderModel(readerType)
         }
@@ -805,7 +805,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         testBlocking {
             init(scanState = MULTIPLE_READERS_FOUND)
 
-            val reader = (viewModel.viewStateData.value as MultipleReadersFoundState).listItems[1] as CardReaderListItem
+            val reader = (viewModel.viewStateData.value as MultipleExternalReadersFoundState).listItems[1] as CardReaderListItem
             reader.onConnectClicked()
 
             verify(cardReaderManager).startConnectionToReader(argThat { this.id == reader.readerId }, eq(locationId))
@@ -818,7 +818,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             val locationId = "old_location_id"
             whenever(reader2.locationId).thenReturn(locationId)
 
-            val reader = (viewModel.viewStateData.value as MultipleReadersFoundState).listItems[1] as CardReaderListItem
+            val reader = (viewModel.viewStateData.value as MultipleExternalReadersFoundState).listItems[1] as CardReaderListItem
             reader.onConnectClicked()
 
             verify(cardReaderManager).startConnectionToReader(argThat { this.id == reader.readerId }, eq(locationId))
@@ -829,7 +829,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         testBlocking {
             init(scanState = MULTIPLE_READERS_FOUND)
 
-            assertThat((viewModel.viewStateData.value as MultipleReadersFoundState).listItems.last())
+            assertThat((viewModel.viewStateData.value as MultipleExternalReadersFoundState).listItems.last())
                 .isInstanceOf(ScanningInProgressListItem::class.java)
         }
 
@@ -838,7 +838,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         testBlocking {
             init(scanState = READER_FOUND)
 
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
 
             verify(tracker).trackOnConnectTapped()
         }
@@ -848,7 +848,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         testBlocking {
             init(scanState = MULTIPLE_READERS_FOUND)
 
-            val reader = (viewModel.viewStateData.value as MultipleReadersFoundState).listItems[1] as CardReaderListItem
+            val reader = (viewModel.viewStateData.value as MultipleExternalReadersFoundState).listItems[1] as CardReaderListItem
             reader.onConnectClicked()
 
             verify(tracker).trackOnConnectTapped()
@@ -859,10 +859,10 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         testBlocking {
             init()
 
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
             readerStatusFlow.emit(CardReaderStatus.Connecting)
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ExternalReaderConnectingState::class.java)
         }
 
     @Test
@@ -870,7 +870,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         testBlocking {
             init()
 
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
             readerStatusFlow.emit(CardReaderStatus.Connected(reader))
 
             assertThat(viewModel.event.value).isInstanceOf(ShowCardReaderTutorial::class.java)
@@ -881,7 +881,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         testBlocking {
             init()
 
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
             readerStatusFlow.emit(CardReaderStatus.Connected(reader))
 
             verify(appPrefs).setLastConnectedCardReaderId("Dummy1")
@@ -891,7 +891,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     fun `when connecting to reader succeeds, then event tracked`() =
         testBlocking {
             init()
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
             readerStatusFlow.emit(CardReaderStatus.Connected(reader))
 
             verify(tracker).trackConnectionSucceeded()
@@ -901,7 +901,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     fun `when connecting to reader for the first time, then navigate to tutorial`() =
         testBlocking {
             init()
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
             readerStatusFlow.emit(CardReaderStatus.Connected(reader))
             assertThat(viewModel.event.value).isInstanceOf(ShowCardReaderTutorial::class.java)
         }
@@ -910,7 +910,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     fun `when connecting to reader not for the first time, then navigate to tutorial`() =
         testBlocking {
             init()
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
             readerStatusFlow.emit(CardReaderStatus.Connected(reader))
             assertThat(viewModel.event.value).isInstanceOf(ShowCardReaderTutorial::class.java)
         }
@@ -920,7 +920,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         testBlocking {
             init()
 
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
             readerStatusFlow.emit(CardReaderStatus.Connecting)
             readerStatusFlow.emit(CardReaderStatus.NotConnected())
 
@@ -934,7 +934,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             init()
 
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
             readerStatusFlow.emit(CardReaderStatus.Connecting)
             readerStatusFlow.emit(CardReaderStatus.NotConnected(errorMessage))
 
@@ -946,7 +946,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         testBlocking {
             init()
 
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
             readerStatusFlow.emit(CardReaderStatus.Connecting)
             readerStatusFlow.emit(CardReaderStatus.NotConnected())
 
@@ -957,7 +957,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     fun `when connecting to reader fails, then event tracked`() =
         testBlocking {
             init()
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
             readerStatusFlow.emit(CardReaderStatus.Connecting)
             readerStatusFlow.emit(CardReaderStatus.NotConnected())
 
@@ -968,13 +968,13 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     fun `given connecting failed screen shown, when user clicks on retry, then flow restarted`() =
         testBlocking {
             init()
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
             readerStatusFlow.emit(CardReaderStatus.Connecting)
             readerStatusFlow.emit(CardReaderStatus.NotConnected())
 
             (viewModel.viewStateData.value as ConnectingFailedState).onPrimaryActionClicked()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(ScanningState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ExternalReaderScanningState::class.java)
         }
 
     @Test
@@ -986,11 +986,11 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.InvalidPostalCode
             )
 
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
 
             (viewModel.viewStateData.value as InvalidMerchantAddressPostCodeError).onPrimaryActionClicked()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(ScanningState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ExternalReaderScanningState::class.java)
         }
 
     @Test
@@ -998,7 +998,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         testBlocking {
             init(scanState = SCANNING)
 
-            (viewModel.viewStateData.value as ScanningState).onSecondaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderScanningState).onSecondaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(false))
         }
@@ -1008,7 +1008,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         testBlocking {
             init(scanState = SCANNING)
 
-            assertThat((viewModel.viewStateData.value as ScanningState).learnMoreLabel).isEqualTo(
+            assertThat((viewModel.viewStateData.value as ExternalReaderScanningState).learnMoreLabel).isEqualTo(
                 UiStringRes(
                     R.string.card_reader_connect_learn_more,
                     containsHtml = true,
@@ -1023,7 +1023,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             val url = "https://www.example.com"
             whenever(learnMoreUrlProvider.provideLearnMoreUrlFor(IN_PERSON_PAYMENTS)).thenReturn(url)
 
-            (viewModel.viewStateData.value as ScanningState).onLearnMoreClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderScanningState).onLearnMoreClicked.invoke()
 
             assertThat(viewModel.event.value).isEqualTo(OpenGenericWebView(url))
         }
@@ -1035,7 +1035,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             val url = "https://www.example.com"
             whenever(learnMoreUrlProvider.provideLearnMoreUrlFor(IN_PERSON_PAYMENTS)).thenReturn(url)
 
-            (viewModel.viewStateData.value as ScanningState).onLearnMoreClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderScanningState).onLearnMoreClicked.invoke()
 
             verify(tracker).trackLearnMoreConnectionClicked()
         }
@@ -1045,9 +1045,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         testBlocking {
             init(scanState = READER_FOUND)
 
-            (viewModel.viewStateData.value as ReaderFoundState).onSecondaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onSecondaryActionClicked.invoke()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(ScanningState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ExternalReaderScanningState::class.java)
         }
 
     @Test
@@ -1055,7 +1055,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         testBlocking {
             init(scanState = READER_FOUND)
 
-            (viewModel.viewStateData.value as ReaderFoundState).onTertiaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onTertiaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(false))
         }
@@ -1065,7 +1065,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         testBlocking {
             init(scanState = READER_FOUND)
 
-            (viewModel.viewStateData.value as ReaderFoundState).onTertiaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onTertiaryActionClicked.invoke()
 
             verify(cardReaderManager).disconnectReader()
         }
@@ -1075,9 +1075,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         testBlocking {
             init(scanState = READER_FOUND)
 
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
             readerStatusFlow.emit(CardReaderStatus.Connecting)
-            (viewModel.viewStateData.value as ConnectingState).onSecondaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderConnectingState).onSecondaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(false))
         }
@@ -1094,7 +1094,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     fun `given app in connecting failed state, when user clicks on cancel, then flow finishes`() =
         testBlocking {
             init()
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
             readerStatusFlow.emit(CardReaderStatus.Connecting)
             readerStatusFlow.emit(CardReaderStatus.NotConnected())
 
@@ -1108,7 +1108,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         testBlocking {
             init(scanState = SCANNING)
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(ScanningState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ExternalReaderScanningState::class.java)
             assertThat(viewModel.viewStateData.value!!.headerLabel)
                 .describedAs("Check header")
                 .isEqualTo(UiStringRes(R.string.card_reader_connect_scanning_header))
@@ -1134,7 +1134,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         testBlocking {
             init(scanState = READER_FOUND)
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(ReaderFoundState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ExternalReaderFoundState::class.java)
             assertThat(viewModel.viewStateData.value!!.headerLabel)
                 .describedAs("Check header")
                 .isEqualTo(
@@ -1172,7 +1172,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             viewModel.viewStateData.value!!.onPrimaryActionClicked!!.invoke()
             readerStatusFlow.emit(CardReaderStatus.Connecting)
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ExternalReaderConnectingState::class.java)
             assertThat(viewModel.viewStateData.value!!.headerLabel)
                 .describedAs("Check header")
                 .isEqualTo(UiStringRes(R.string.card_reader_connect_connecting_header))
@@ -1221,7 +1221,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         testBlocking {
             init(scanState = READER_FOUND)
 
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
             readerStatusFlow.emit(CardReaderStatus.Connecting)
             readerStatusFlow.emit(CardReaderStatus.NotConnected())
 
@@ -1253,7 +1253,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress(url)
             )
 
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
                 MissingMerchantAddressError::class.java
@@ -1279,7 +1279,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 CardReaderLocationRepository.LocationIdFetchingResult.Error.InvalidPostalCode
             )
 
-            (viewModel.viewStateData.value as ReaderFoundState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
                 InvalidMerchantAddressPostCodeError::class.java

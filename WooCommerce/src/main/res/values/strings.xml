@@ -1200,14 +1200,17 @@
             Card Reader Connection
         -->
     <string name="card_reader_connect_scanning_header">Scanning for readers</string>
+    <string name="card_reader_connect_scanning_built_in_header">Scanning for built-in phone reader</string>
     <string name="card_reader_connect_scanning_progress" translatable="false">@string/card_reader_connect_scanning_header</string>
     <string name="card_reader_connect_scanning_hint">Press the power button of your reader</string>
+    <string name="card_reader_connect_scanning_built_in_hint">It won\'t take long</string>
     <string name="card_reader_connect_reader_found_header">Do you want to connect reader %s?</string>
     <string name="card_reader_connect_multiple_readers_found_header">Several readers found</string>
     <string name="card_reader_connect_to_reader">Connect to reader</string>
     <string name="card_reader_connect_connect_button">Connect</string>
     <string name="card_reader_connect_keep_searching_button">Keep Searching</string>
     <string name="card_reader_connect_connecting_header">Connecting to reader</string>
+    <string name="card_reader_connect_connecting_built_in_header">Preparing for payment</string>
     <string name="card_reader_connect_connecting_hint" translatable="false">@string/please_wait</string>
     <string name="card_reader_connect_failed_header">We couldn\’t connect your reader</string>
     <string name="card_reader_connect_missing_address">Please provide your store address in order to proceed</string>
