@@ -113,6 +113,11 @@ class OrderListViewModelTest : BaseUnitTest() {
             getWCOrderListDescriptorWithFiltersAndSearchQuery = getWCOrderListDescriptorWithFiltersAndSearchQuery,
             getSelectedOrderFiltersCount = getSelectedOrderFiltersCount,
             orderListTransactionLauncher = mock(),
+            getIPPFeedbackBannerData = mock(),
+            shouldShowFeedbackBanner = mock(),
+            markFeedbackBannerAsDismissed = mock(),
+            markFeedbackBannerAsDismissedForever = mock(),
+            markFeedbackBannerAsCompleted = mock(),
         )
     }
 

@@ -42,6 +42,7 @@ import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.dialog.WooDialog.showDialog
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
@@ -313,6 +314,14 @@ class OrderListFragment :
                         )
                     )
                 }
+                is OrderListViewModel.OrderListEvent.OpenIPPFeedbackSurveyLink -> {
+                    findNavController().navigate(
+                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                            urlToLoad = event.url,
+                            title = getString(event.title)
+                        )
+                    )
+                }
                 is OrderListViewModel.OrderListEvent.NotifyOrderChanged -> {
                     binding.orderListView.ordersList.adapter?.notifyItemChanged(event.position)
                 }
@@ -333,6 +342,9 @@ class OrderListFragment :
                         it.show()
                     }
                     binding.orderRefreshLayout.isRefreshing = false
+                }
+                is OrderListViewModel.OrderListEvent.ShowIPPDismissConfirmationDialog -> {
+                    showIPPFeedbackDismissConfirmationDialog()
                 }
                 else -> event.isHandled = false
             }
@@ -367,6 +379,37 @@ class OrderListFragment :
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.filterCount.takeIfNotEqualTo(old?.filterCount) { filterCount ->
                 binding.orderFiltersCard.updateFilterSelection(filterCount)
+            }
+            new.ippBannerState.takeIfNotEqualTo(old?.ippBannerState) { bannerState ->
+                renderIPPBanner(bannerState)
+            }
+        }
+    }
+
+    private fun showIPPFeedbackDismissConfirmationDialog() {
+        showDialog(
+            activity = requireActivity(),
+            titleId = R.string.feedback_banner_ipp_dismiss_confirmation_title,
+            messageId = R.string.feedback_banner_ipp_dismiss_confirmation_message,
+            positiveButtonId = R.string.feedback_banner_ipp_dismiss_confirmation_remind_later_button,
+            negativeButtonId = R.string.feedback_banner_ipp_dismiss_confirmation_remind_later_dont_show_again_button,
+            negBtnAction = { _, _ -> viewModel.onIPPBannerDismissedForever() },
+            posBtnAction = { _, _ -> viewModel.onIPPBannerDismissedShowLater() }
+        )
+    }
+
+    private fun renderIPPBanner(bannerState: OrderListViewModel.IPPBannerState) {
+        val isVisible = bannerState is OrderListViewModel.IPPBannerState.Visible
+        binding.ippFeedbackBanner.isVisible = isVisible
+
+        if (isVisible) {
+            val data = (bannerState as OrderListViewModel.IPPBannerState.Visible).bannerData
+            binding.ippFeedbackBanner.setMessage(data.message)
+            binding.ippFeedbackBanner.onDismissClickListener = {
+                viewModel.onDismissIPPBannerClicked()
+            }
+            binding.ippFeedbackBanner.onCTAClickListener = {
+                viewModel.onIPPBannerCTAClicked()
             }
         }
     }

@@ -15,6 +15,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
@@ -33,6 +34,11 @@ import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptor
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFiltersAndSearchQuery
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
+import com.woocommerce.android.ui.payments.feedback.ipp.GetIPPFeedbackBannerData
+import com.woocommerce.android.ui.payments.feedback.ipp.MarkFeedbackBannerAsDismissed
+import com.woocommerce.android.ui.payments.feedback.ipp.MarkFeedbackBannerAsDismissedForever
+import com.woocommerce.android.ui.payments.feedback.ipp.MarkIPPFeedbackSurveyAsCompleted
+import com.woocommerce.android.ui.payments.feedback.ipp.ShouldShowFeedbackBanner
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.util.WooLog
@@ -42,7 +48,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -66,7 +71,6 @@ private const val EMPTY_VIEW_THROTTLE = 250L
 
 typealias PagedOrdersList = PagedList<OrderListItemUIType>
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("LeakingThis")
 @HiltViewModel
 class OrderListViewModel @Inject constructor(
@@ -85,6 +89,11 @@ class OrderListViewModel @Inject constructor(
     private val getWCOrderListDescriptorWithFiltersAndSearchQuery: GetWCOrderListDescriptorWithFiltersAndSearchQuery,
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount,
     private val orderListTransactionLauncher: OrderListTransactionLauncher,
+    private val getIPPFeedbackBannerData: GetIPPFeedbackBannerData,
+    private val shouldShowFeedbackBanner: ShouldShowFeedbackBanner,
+    private val markFeedbackBannerAsDismissed: MarkFeedbackBannerAsDismissed,
+    private val markFeedbackBannerAsDismissedForever: MarkFeedbackBannerAsDismissedForever,
+    private val markFeedbackBannerAsCompleted: MarkIPPFeedbackSurveyAsCompleted,
 ) : ScopedViewModel(savedState), LifecycleOwner {
     private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -159,6 +168,13 @@ class OrderListViewModel @Inject constructor(
                     "Order list can't fetch site plugins, no selected site " +
                         "- siteId ${selectedSite.getSelectedSiteId()}$"
                 )
+            }
+        }
+
+        viewModelScope.launch {
+            if (shouldShowFeedbackBanner()) {
+                val bannerData = getIPPFeedbackBannerData()
+                viewState = viewState.copy(ippBannerState = IPPBannerState.Visible(bannerData))
             }
         }
     }
@@ -565,6 +581,29 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
+    fun onDismissIPPBannerClicked() {
+        _event.postValue(OrderListEvent.ShowIPPDismissConfirmationDialog)
+    }
+
+    fun onIPPBannerCTAClicked() {
+        val bannerState = viewState.ippBannerState as IPPBannerState.Visible
+        _event.postValue(
+            OrderListEvent.OpenIPPFeedbackSurveyLink(bannerState.bannerData.url, R.string.feedback_banner_ipp_title)
+        )
+        markFeedbackBannerAsCompleted()
+        viewState = viewState.copy(ippBannerState = IPPBannerState.Hidden)
+    }
+
+    fun onIPPBannerDismissedForever() {
+        markFeedbackBannerAsDismissedForever()
+        viewState = viewState.copy(ippBannerState = IPPBannerState.Hidden)
+    }
+
+    fun onIPPBannerDismissedShowLater() {
+        markFeedbackBannerAsDismissed()
+        viewState = viewState.copy(ippBannerState = IPPBannerState.Hidden)
+    }
+
     sealed class OrderListEvent : Event() {
         data class ShowErrorSnack(@StringRes val messageRes: Int) : OrderListEvent()
         object ShowOrderFilters : OrderListEvent()
@@ -578,16 +617,31 @@ class OrderListViewModel @Inject constructor(
         ) : OrderListEvent()
 
         data class NotifyOrderChanged(val position: Int) : OrderListEvent()
+
+        object ShowIPPDismissConfirmationDialog : OrderListEvent()
+
+        data class OpenIPPFeedbackSurveyLink(val url: String, @StringRes val title: Int) : OrderListEvent()
     }
 
     @Parcelize
     data class ViewState(
         val isRefreshPending: Boolean = false,
         val arePaymentGatewaysFetched: Boolean = false,
-        val filterCount: Int = 0
+        val filterCount: Int = 0,
+        val ippBannerState: IPPBannerState = IPPBannerState.Hidden,
     ) : Parcelable {
         @IgnoredOnParcel
         val isFilteringActive = filterCount > 0
+    }
+
+    sealed class IPPBannerState : Parcelable {
+        @Parcelize
+        object Hidden : IPPBannerState()
+
+        @Parcelize
+        data class Visible(
+            val bannerData: GetIPPFeedbackBannerData.IPPFeedbackBanner,
+        ) : IPPBannerState()
     }
 
     companion object {
