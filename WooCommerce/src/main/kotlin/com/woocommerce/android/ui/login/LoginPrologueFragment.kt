@@ -13,8 +13,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentLoginPrologueBinding
-import com.woocommerce.android.experiment.RestAPILoginExperiment
-import com.woocommerce.android.experiment.RestAPILoginExperiment.RestAPILoginVariant
+import com.woocommerce.android.experiment.RESTAPILoginExperiment
+import com.woocommerce.android.experiment.RESTAPILoginExperiment.RESTAPILoginVariant
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
@@ -42,7 +42,7 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
     lateinit var unifiedLoginTracker: UnifiedLoginTracker
 
     @Inject
-    lateinit var restAPILoginExperiment: RestAPILoginExperiment
+    lateinit var restAPILoginExperiment: RESTAPILoginExperiment
 
     private var prologueFinishedListener: PrologueFinishedListener? = null
 
@@ -90,7 +90,7 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
 
     private fun FragmentLoginPrologueBinding.handleRestLoginExperiment() {
         // Override behavior for REST API treatment experiment
-        if (restAPILoginExperiment.getCurrentVariant() == RestAPILoginVariant.TREATMENT) {
+        if (restAPILoginExperiment.getCurrentVariant() == RESTAPILoginVariant.TREATMENT) {
             // Since Android doesn't allow changing view's styles, we will just swap buttons in order to have the store
             // button primary
             buttonLoginStore.hide()

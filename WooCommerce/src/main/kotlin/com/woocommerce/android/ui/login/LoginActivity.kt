@@ -26,10 +26,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPAC
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_LOGIN_WITH_WORDPRESS_COM
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
-import com.woocommerce.android.experiment.RestAPILoginExperiment
-import com.woocommerce.android.experiment.RestAPILoginExperiment.RestAPILoginVariant
-import com.woocommerce.android.experiment.RestAPILoginExperiment.RestAPILoginVariant.CONTROL
-import com.woocommerce.android.experiment.RestAPILoginExperiment.RestAPILoginVariant.TREATMENT
+import com.woocommerce.android.experiment.RESTAPILoginExperiment
+import com.woocommerce.android.experiment.RESTAPILoginExperiment.RESTAPILoginVariant
+import com.woocommerce.android.experiment.RESTAPILoginExperiment.RESTAPILoginVariant.CONTROL
+import com.woocommerce.android.experiment.RESTAPILoginExperiment.RESTAPILoginVariant.TREATMENT
 import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.support.ZendeskExtraTags
 import com.woocommerce.android.support.ZendeskHelper
@@ -158,7 +158,7 @@ class LoginActivity :
     @Inject internal lateinit var dispatcher: Dispatcher
     @Inject internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver
-    @Inject internal lateinit var restApiLoginExperiment: RestAPILoginExperiment
+    @Inject internal lateinit var restApiLoginExperiment: RESTAPILoginExperiment
 
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
@@ -827,7 +827,7 @@ class LoginActivity :
         inputUsername: String?,
         inputPassword: String?
     ) {
-        val (fragment, tag) = if (restApiLoginExperiment.getCurrentVariant() == RestAPILoginVariant.TREATMENT) {
+        val (fragment, tag) = if (restApiLoginExperiment.getCurrentVariant() == RESTAPILoginVariant.TREATMENT) {
             Pair(
                 LoginSiteCredentialsFragment.newInstance(
                     siteAddress = requireNotNull(siteAddress),

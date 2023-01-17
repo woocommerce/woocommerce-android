@@ -4,7 +4,7 @@ import androidx.annotation.VisibleForTesting
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
-import com.woocommerce.android.experiment.RestAPILoginExperiment.RestAPILoginVariant
+import com.woocommerce.android.experiment.RESTAPILoginExperiment.RESTAPILoginVariant
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -43,7 +43,7 @@ class FirebaseRemoteConfigRepository @Inject constructor(
     private val defaultValues by lazy {
         @Suppress("RemoveExplicitTypeArguments")
         mapOf<String, String>(
-            REST_API_LOGIN_VARIANT_KEY to RestAPILoginVariant.CONTROL.name
+            REST_API_LOGIN_VARIANT_KEY to RESTAPILoginVariant.CONTROL.name
         )
     }
 
@@ -77,12 +77,12 @@ class FirebaseRemoteConfigRepository @Inject constructor(
     override fun getPerformanceMonitoringSampleRate(): Double =
         remoteConfig.getDouble(PERFORMANCE_MONITORING_SAMPLE_RATE_KEY)
 
-    override fun getRestAPILoginVariant(): RestAPILoginVariant {
+    override fun getRestAPILoginVariant(): RESTAPILoginVariant {
         return try {
-            RestAPILoginVariant.valueOf(remoteConfig.getString(REST_API_LOGIN_VARIANT_KEY).uppercase())
+            RESTAPILoginVariant.valueOf(remoteConfig.getString(REST_API_LOGIN_VARIANT_KEY).uppercase())
         } catch (e: IllegalArgumentException) {
             crashLogging.get().recordException(e)
-            RestAPILoginVariant.valueOf(defaultValues[REST_API_LOGIN_VARIANT_KEY]!!)
+            RESTAPILoginVariant.valueOf(defaultValues[REST_API_LOGIN_VARIANT_KEY]!!)
         }
     }
 

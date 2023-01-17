@@ -1,12 +1,12 @@
 package com.woocommerce.android.config
 
-import com.woocommerce.android.experiment.RestAPILoginExperiment.RestAPILoginVariant
+import com.woocommerce.android.experiment.RESTAPILoginExperiment.RESTAPILoginVariant
 import kotlinx.coroutines.flow.Flow
 
 interface RemoteConfigRepository {
     val fetchStatus: Flow<RemoteConfigFetchStatus>
     fun fetchRemoteConfig()
-    fun getRestAPILoginVariant(): RestAPILoginVariant
+    fun getRestAPILoginVariant(): RESTAPILoginVariant
     fun getPerformanceMonitoringSampleRate(): Double
 }
 

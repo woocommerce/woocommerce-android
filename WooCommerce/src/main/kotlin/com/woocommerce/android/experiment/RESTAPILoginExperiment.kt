@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeoutOrNull
 import javax.inject.Inject
 
-class RestAPILoginExperiment @Inject constructor(
+class RESTAPILoginExperiment @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val experimentTracker: ExperimentTracker,
     private val remoteConfigRepository: RemoteConfigRepository,
@@ -40,13 +40,13 @@ class RestAPILoginExperiment @Inject constructor(
         )
     }
 
-    fun getCurrentVariant(): RestAPILoginVariant = if (PackageUtils.isTesting()) {
-        RestAPILoginVariant.CONTROL
+    fun getCurrentVariant(): RESTAPILoginVariant = if (PackageUtils.isTesting()) {
+        RESTAPILoginVariant.CONTROL
     } else {
         remoteConfigRepository.getRestAPILoginVariant()
     }
 
-    enum class RestAPILoginVariant {
+    enum class RESTAPILoginVariant {
         CONTROL,
         TREATMENT
     }
