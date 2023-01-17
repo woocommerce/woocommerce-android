@@ -614,6 +614,9 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             whenever(statsRepository.getTopPerformers(any(), any()))
                 .thenReturn(productLeaderBoards)
 
+            val siteModel: SiteModel = mock()
+            whenever(selectedSite.get()).thenReturn(siteModel)
+
             // When
             val result = sut.fetchProductsData(
                 testSelectionData,
@@ -642,6 +645,9 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             whenever(statsRepository.getTopPerformers(any(), any()))
                 .thenReturn(productLeaderBoards)
 
+            val siteModel: SiteModel = mock()
+            whenever(selectedSite.get()).thenReturn(siteModel)
+
             // When
             val result = sut.fetchProductsData(
                 testSelectionData,
@@ -669,6 +675,9 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             val productLeaderBoards = givenAProductsStats()
             whenever(statsRepository.getTopPerformers(any(), any()))
                 .thenReturn(productLeaderBoards)
+
+            val siteModel: SiteModel = mock()
+            whenever(selectedSite.get()).thenReturn(siteModel)
 
             // When
             val result = sut.fetchProductsData(
@@ -699,6 +708,9 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             whenever(statsRepository.getTopPerformers(any(), any()))
                 .thenReturn(productLeaderBoards)
 
+            val siteModel: SiteModel = mock()
+            whenever(selectedSite.get()).thenReturn(siteModel)
+
             // When
             val result = sut.fetchProductsData(
                 testSelectionData,
@@ -719,6 +731,9 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             whenever(statsRepository.fetchTopPerformerProducts(any(), any(), any(), any()))
                 .thenReturn(Result.failure(NullPointerException()))
+
+            val siteModel: SiteModel = mock()
+            whenever(selectedSite.get()).thenReturn(siteModel)
 
             // When
             val result = sut.fetchProductsData(
@@ -744,6 +759,9 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             val productLeaderBoards = givenAProductsStats()
             whenever(statsRepository.getTopPerformers(any(), any()))
                 .thenReturn(productLeaderBoards)
+
+            val siteModel: SiteModel = mock()
+            whenever(selectedSite.get()).thenReturn(siteModel)
 
             // When
             val result = sut.fetchProductsData(
