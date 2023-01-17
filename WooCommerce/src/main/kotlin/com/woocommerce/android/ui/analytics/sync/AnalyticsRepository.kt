@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.analytics.sync
 
-import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
+import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
@@ -36,6 +36,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import kotlin.math.round
+import org.wordpress.android.fluxc.utils.DateUtils
 
 @Suppress("TooManyFunctions")
 class AnalyticsRepository @Inject constructor(
@@ -200,8 +201,8 @@ class AnalyticsRepository @Inject constructor(
     ): Result<WCRevenueStatsModel?> = coroutineScope {
         val granularity = getGranularity(rangeSelection.selectionType)
         val currentPeriod = rangeSelection.currentRange
-        val startDate = currentPeriod.start.formatToYYYYmmDDhhmmss()
-        val endDate = currentPeriod.end.formatToYYYYmmDDhhmmss()
+        val startDate = currentPeriod.start.formatToYYYYmmDD()
+        val endDate = currentPeriod.end.formatToYYYYmmDD()
 
         getCurrentRevenueMutex.withLock {
             if (shouldUpdateCurrentStats(startDate, endDate, fetchStrategy == FetchStrategy.ForceNew)) {
@@ -222,8 +223,8 @@ class AnalyticsRepository @Inject constructor(
     ): Result<WCRevenueStatsModel?> = coroutineScope {
         val granularity = getGranularity(rangeSelection.selectionType)
         val previousPeriod = rangeSelection.previousRange
-        val startDate = previousPeriod.start.formatToYYYYmmDDhhmmss()
-        val endDate = previousPeriod.end.formatToYYYYmmDDhhmmss()
+        val startDate = previousPeriod.start.formatToYYYYmmDD()
+        val endDate = previousPeriod.end.formatToYYYYmmDD()
 
         getPreviousRevenueMutex.withLock {
             if (shouldUpdatePreviousStats(startDate, endDate, fetchStrategy == FetchStrategy.ForceNew)) {
@@ -244,16 +245,20 @@ class AnalyticsRepository @Inject constructor(
         quantity: Int
     ): Result<List<TopPerformerProductEntity>> {
         val totalPeriod = rangeSelection.currentRange
-        val startDate = totalPeriod.start.formatToYYYYmmDDhhmmss()
-        val endDate = totalPeriod.end.formatToYYYYmmDDhhmmss()
+        val startDate = totalPeriod.start.formatToYYYYmmDD()
+        val endDate = totalPeriod.end.formatToYYYYmmDD()
+
+        val site = selectedSite.get()
+        val startDateFormatted = DateUtils.getStartDateForSite(site, startDate)
+        val endDateFormatted = DateUtils.getEndDateForSite(site, endDate)
 
         return statsRepository.fetchTopPerformerProducts(
             forceRefresh = fetchStrategy is FetchStrategy.ForceNew,
-            startDate = startDate,
-            endDate = endDate,
+            startDate = startDateFormatted,
+            endDate = endDateFormatted,
             quantity = quantity
         ).map {
-            statsRepository.getTopPerformers(startDate, endDate)
+            statsRepository.getTopPerformers(startDateFormatted, endDateFormatted)
         }
     }
 
@@ -274,8 +279,8 @@ class AnalyticsRepository @Inject constructor(
             ).single()
         } else {
             statsRepository.fetchVisitorStats(
-                rangeSelection.currentRange.start.formatToYYYYmmDDhhmmss(),
-                rangeSelection.currentRange.end.formatToYYYYmmDDhhmmss(),
+                rangeSelection.currentRange.start.formatToYYYYmmDD(),
+                rangeSelection.currentRange.end.formatToYYYYmmDD(),
                 getGranularity(rangeSelection.selectionType),
                 fetchStrategy is FetchStrategy.ForceNew
             )
@@ -317,8 +322,7 @@ class AnalyticsRepository @Inject constructor(
             granularity,
             fetchStrategy is FetchStrategy.ForceNew,
             startDate,
-            endDate,
-            true
+            endDate
         ).flowOn(dispatchers.io).single().mapCatching { it }
 
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode

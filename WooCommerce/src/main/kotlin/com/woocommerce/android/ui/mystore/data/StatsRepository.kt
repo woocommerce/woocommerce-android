@@ -59,17 +59,11 @@ class StatsRepository @Inject constructor(
         granularity: StatsGranularity,
         forced: Boolean,
         startDate: String = "",
-        endDate: String = "",
-        forceSelectedDates: Boolean = false
+        endDate: String = ""
     ): Flow<Result<WCRevenueStatsModel?>> =
         flow {
-            val result = if (forceSelectedDates && startDate.isNotEmpty() && endDate.isNotEmpty()) {
-                wcStatsStore.fetchRevenueStats(selectedSite.get(), granularity, startDate, endDate, forced)
-            } else {
-                wcStatsStore.fetchRevenueStats(
-                    FetchRevenueStatsPayload(selectedSite.get(), granularity, startDate, endDate, forced)
-                )
-            }
+            val statsPayload = FetchRevenueStatsPayload(selectedSite.get(), granularity, startDate, endDate, forced)
+            val result = wcStatsStore.fetchRevenueStats(statsPayload)
 
             if (!result.isError) {
                 val revenueStatsModel = wcStatsStore.getRawRevenueStats(
