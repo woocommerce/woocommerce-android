@@ -40,6 +40,8 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectV
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.READER_FOUND
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewModelTest.ScanResult.SCANNING
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.BluetoothDisabledError
+import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.BuiltInReaderConnectingState
+import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.BuiltInReaderScanningState
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ConnectingFailedState
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ExternalReaderConnectingState
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ExternalReaderFoundState
@@ -437,6 +439,17 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given connection in progress with built in, when cardReaderManager initialized, then connecting emitted`() =
+        testBlocking {
+            viewModel = initVM(cardReaderType = BUILT_IN)
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connecting))
+
+            init()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(BuiltInReaderConnectingState::class.java)
+        }
+
+    @Test
     fun `given connection in progress and connected, when cardReaderManager gets initialized, then goes to tutorial`() =
         testBlocking {
             whenever(cardReaderManager.softwareUpdateStatus).thenReturn(
@@ -470,6 +483,17 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given scanning failed screen shown and built in, when user clicks on retry, then flow restarted`() =
+        testBlocking {
+            viewModel = initVM(cardReaderType = BUILT_IN)
+            init(scanState = FAILED)
+
+            (viewModel.viewStateData.value as ScanningFailedState).onPrimaryActionClicked.invoke()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(BuiltInReaderScanningState::class.java)
+        }
+
+    @Test
     fun `when reader found, then reader found state shown`() =
         testBlocking {
             init(scanState = READER_FOUND)
@@ -497,6 +521,16 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             readerStatusStateFlow.emit(CardReaderStatus.Connected(mock()))
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ExternalReaderConnectingState::class.java)
+        }
+
+    @Test
+    fun `given built in reader, when reader found, then reader is connecting right away`() =
+        testBlocking {
+            init()
+            viewModel = initVM(cardReaderType = BUILT_IN)
+            init(scanState = READER_FOUND)
+
+            verify(cardReaderManager).startConnectionToReader(reader, locationId)
         }
 
     @Test
