@@ -34,9 +34,9 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.MONTHS
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.WEEKS
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.utils.DateUtils
 import javax.inject.Inject
 import kotlin.math.round
-import org.wordpress.android.fluxc.utils.DateUtils
 
 @Suppress("TooManyFunctions")
 class AnalyticsRepository @Inject constructor(

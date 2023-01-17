@@ -17,6 +17,6 @@ data class SessionStat(
             ordersCount = 0,
             visitorsCount = 0
         )
-        const val PERCENT_BASE = 100.0
+        const val PERCENT_BASE = 100
     }
 }
