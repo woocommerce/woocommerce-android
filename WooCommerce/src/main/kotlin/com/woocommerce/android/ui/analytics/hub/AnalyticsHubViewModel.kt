@@ -19,7 +19,7 @@ import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInfo
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.LoadingViewState
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.NoDataState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListCardItemViewState
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsHubUpdateState.Finished
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.ForceNew
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.Saved
@@ -49,7 +49,6 @@ import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState as ProductsViewState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.LoadingViewState as LoadingProductsViewState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.NoDataState as ProductsNoDataState
-import com.woocommerce.android.ui.analytics.AnalyticsHubFragmentArgs
 
 @HiltViewModel
 class AnalyticsHubViewModel @Inject constructor(

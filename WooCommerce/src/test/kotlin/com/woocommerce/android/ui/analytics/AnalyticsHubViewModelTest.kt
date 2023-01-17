@@ -9,6 +9,7 @@ import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubFragmentArgs
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubTransactionLauncher
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubViewModel
 import com.woocommerce.android.ui.analytics.hub.AnalyticsViewEvent
@@ -19,9 +20,9 @@ import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInfo
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.LoadingViewState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.LAST_YEAR
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.TODAY
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.WEEK_TO_DATE
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_YEAR
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.TODAY
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsHubUpdateState
 import com.woocommerce.android.ui.analytics.hub.sync.OrdersState
 import com.woocommerce.android.ui.analytics.hub.sync.ProductsState

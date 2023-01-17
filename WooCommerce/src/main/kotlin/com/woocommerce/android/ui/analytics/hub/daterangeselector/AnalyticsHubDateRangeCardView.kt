@@ -9,7 +9,7 @@ import androidx.core.text.bold
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsDateRangeCardViewBinding
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 
 class AnalyticsHubDateRangeCardView @JvmOverloads constructor(
     ctx: Context,

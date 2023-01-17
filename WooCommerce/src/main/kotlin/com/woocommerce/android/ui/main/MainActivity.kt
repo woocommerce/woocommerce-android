@@ -49,7 +49,7 @@ import com.woocommerce.android.model.Notification
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -556,7 +556,7 @@ class MainActivity :
         startActivityForResult(intent, RequestCodes.SETTINGS)
     }
 
-    override fun showAnalytics(targetPeriod: AnalyticsHubDateRangeSelection.SelectionType) {
+    override fun showAnalytics(targetPeriod: StatsTimeRangeSelection.SelectionType) {
         val action = MyStoreFragmentDirections.actionMyStoreToAnalytics(targetPeriod)
         navController.navigateSafely(action)
     }

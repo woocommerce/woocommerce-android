@@ -4,7 +4,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository.StatsException
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -94,7 +94,7 @@ class GetStats @Inject constructor(
         (error as? StatsException)?.error?.type == OrderStatsErrorType.PLUGIN_NOT_ACTIVE
 
     private val StatsGranularity.statsDateRange
-        get() = AnalyticsHubDateRangeSelection.SelectionType.from(this)
+        get() = StatsTimeRangeSelection.SelectionType.from(this)
             .generateSelectionData(
                 calendar = Calendar.getInstance(),
                 locale = localeProvider.provideLocale() ?: Locale.getDefault()

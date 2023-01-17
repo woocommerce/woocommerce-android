@@ -13,10 +13,9 @@ import com.woocommerce.android.databinding.FragmentAnalyticsBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
-import com.woocommerce.android.ui.analytics.AnalyticsHubFragmentDirections
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.ShowIndicator
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.CUSTOM
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -83,7 +82,7 @@ class AnalyticsHubFragment :
         AnalyticsHubFragmentDirections.actionAnalyticsFragmentToDateRangeSelector(
             requestKey = KEY_DATE_RANGE_SELECTOR_RESULT,
             keys = viewModel.selectableRangeOptions,
-            values = AnalyticsHubDateRangeSelection.SelectionType.names,
+            values = StatsTimeRangeSelection.SelectionType.names,
             selectedItem = getDateRangeSelectorViewState().selectionType.name
         )
 
@@ -92,7 +91,7 @@ class AnalyticsHubFragment :
             key = KEY_DATE_RANGE_SELECTOR_RESULT,
             entryId = R.id.analytics
         ) { dateSelection ->
-            AnalyticsHubDateRangeSelection.SelectionType.from(dateSelection)
+            StatsTimeRangeSelection.SelectionType.from(dateSelection)
                 .takeIf { it != CUSTOM }
                 ?.let { viewModel.onNewRangeSelection(it) }
                 ?: viewModel.onCustomDateRangeClicked()

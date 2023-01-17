@@ -4,7 +4,7 @@ import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsHubUpdateState.Finished
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsHubUpdateState.Loading
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy
@@ -34,7 +34,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
     private val fullStatsRequestState by lazy { combineFullUpdateState() }
 
     suspend operator fun invoke(
-        rangeSelection: AnalyticsHubDateRangeSelection,
+        rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy
     ): Flow<AnalyticsHubUpdateState> {
         _ordersState.update { OrdersState.Loading }
@@ -67,7 +67,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
         }.distinctUntilChanged()
 
     private suspend fun fetchOrdersData(
-        rangeSelection: AnalyticsHubDateRangeSelection,
+        rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy
     ) {
         analyticsRepository.fetchOrdersData(rangeSelection, fetchStrategy)
@@ -77,7 +77,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
     }
 
     private suspend fun fetchVisitorsCount(
-        rangeSelection: AnalyticsHubDateRangeSelection,
+        rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy
     ) {
         analyticsRepository.fetchVisitorsData(rangeSelection, fetchStrategy)
@@ -87,7 +87,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
     }
 
     private suspend fun fetchRevenueData(
-        rangeSelection: AnalyticsHubDateRangeSelection,
+        rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy
     ) {
         analyticsRepository.fetchRevenueData(rangeSelection, fetchStrategy)
@@ -97,7 +97,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
     }
 
     private suspend fun fetchProductsData(
-        rangeSelection: AnalyticsHubDateRangeSelection,
+        rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy
     ) {
         analyticsRepository.fetchProductsData(rangeSelection, fetchStrategy)

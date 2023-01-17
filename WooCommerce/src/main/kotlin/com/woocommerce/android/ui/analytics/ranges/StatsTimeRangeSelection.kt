@@ -2,17 +2,17 @@ package com.woocommerce.android.ui.analytics.ranges
 
 import android.os.Parcelable
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.CUSTOM
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.LAST_MONTH
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.LAST_QUARTER
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.LAST_WEEK
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.LAST_YEAR
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.MONTH_TO_DATE
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.QUARTER_TO_DATE
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.TODAY
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.WEEK_TO_DATE
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.YEAR_TO_DATE
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.YESTERDAY
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_MONTH
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_QUARTER
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_WEEK
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_YEAR
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.MONTH_TO_DATE
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.QUARTER_TO_DATE
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.TODAY
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.YEAR_TO_DATE
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.YESTERDAY
 import com.woocommerce.android.ui.analytics.ranges.data.CustomRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.LastMonthRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.LastQuarterRangeData
@@ -40,12 +40,12 @@ data class AnalyticsHubTimeRange(
 /**
  * This class represents the date range selection for the Analytics Hub
  *
- * You can create it through the [AnalyticsHubDateRangeSelection.SelectionType.generateSelectionData]
+ * You can create it through the [StatsTimeRangeSelection.SelectionType.generateSelectionData]
  * function since it will return the correct data for the given selection type
  *
  * When creating the object through the available constructor, the Selection will be set as [CUSTOM]
  */
-class AnalyticsHubDateRangeSelection : Serializable {
+class StatsTimeRangeSelection : Serializable {
     val selectionType: SelectionType
     val currentRange: AnalyticsHubTimeRange
     val previousRange: AnalyticsHubTimeRange
@@ -85,7 +85,7 @@ class AnalyticsHubDateRangeSelection : Serializable {
         referenceDate: Date,
         locale: Locale,
         calendar: Calendar
-    ): AnalyticsHubTimeRangeData {
+    ): StatsTimeRangeData {
         return when (selectionType) {
             TODAY -> TodayRangeData(referenceDate, locale, calendar)
             YESTERDAY -> YesterdayRangeData(referenceDate, locale, calendar)
@@ -124,16 +124,16 @@ class AnalyticsHubDateRangeSelection : Serializable {
             referenceEndDate: Date = Date(),
             calendar: Calendar,
             locale: Locale
-        ): AnalyticsHubDateRangeSelection {
+        ): StatsTimeRangeSelection {
             return if (this == CUSTOM) {
-                AnalyticsHubDateRangeSelection(
+                StatsTimeRangeSelection(
                     rangeStart = referenceStartDate,
                     rangeEnd = referenceEndDate,
                     calendar = calendar,
                     locale = locale
                 )
             } else {
-                AnalyticsHubDateRangeSelection(
+                StatsTimeRangeSelection(
                     selectionType = this,
                     referenceDate = referenceStartDate,
                     calendar = calendar,

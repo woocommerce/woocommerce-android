@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.analytics.hub.daterangeselector
 
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 
 data class AnalyticsHubDateRangeSelectorViewState(
     val currentRange: String,

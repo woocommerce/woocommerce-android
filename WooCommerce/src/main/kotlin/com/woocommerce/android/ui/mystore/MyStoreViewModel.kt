@@ -20,7 +20,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.jitm.JitmTracker
 import com.woocommerce.android.ui.jitm.QueryParamsEncoder
 import com.woocommerce.android.ui.mystore.domain.GetStats
