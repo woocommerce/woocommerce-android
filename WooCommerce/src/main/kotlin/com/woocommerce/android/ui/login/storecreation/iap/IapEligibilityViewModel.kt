@@ -119,7 +119,8 @@ class IapEligibilityViewModel @Inject constructor(
             is IAPError.Billing.ItemNotOwned,
             is IAPError.Billing.UserCancelled,
             is IAPError.RemoteCommunication.Network -> R.string.store_creation_iap_eligibility_check_generic_error
-            is IAPError.Billing.ItemAlreadyOwned -> R.string.store_creation_iap_eligibility_check_error_existing_subscription
+            is IAPError.Billing.ItemAlreadyOwned ->
+                R.string.store_creation_iap_eligibility_check_error_existing_subscription
         }
         onUserNotEligibleForIAP(message = message)
     }

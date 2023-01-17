@@ -146,7 +146,6 @@ class IapEligibilityViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.string.store_creation_iap_eligibility_check_generic_error)
         }
 
-
     private suspend fun givenUserIsEligibleForIAP(isEligible: Boolean) {
         whenever(planSupportChecker.isIAPSupported()).thenReturn(
             IAPSupportedResult.Success(isSupported = isEligible)
