@@ -25,14 +25,14 @@ import kotlinx.coroutines.flow.onEach
 import java.util.Date
 
 @AndroidEntryPoint
-class AnalyticsFragment :
+class AnalyticsHubFragment :
     BaseFragment(R.layout.fragment_analytics) {
     companion object {
         const val KEY_DATE_RANGE_SELECTOR_RESULT = "key_order_status_result"
         const val DATE_PICKER_FRAGMENT_TAG = "DateRangePicker"
     }
 
-    private val viewModel: AnalyticsViewModel by viewModels()
+    private val viewModel: AnalyticsHubViewModel by viewModels()
     private var _binding: FragmentAnalyticsBinding? = null
     private val binding
         get() = _binding!!
@@ -79,14 +79,14 @@ class AnalyticsFragment :
     private fun openDateRangeSelector() = findNavController().navigateSafely(buildDialogDateRangeSelectorArguments())
 
     private fun buildDialogDateRangeSelectorArguments() =
-        AnalyticsFragmentDirections.actionAnalyticsFragmentToDateRangeSelector(
+        AnalyticsHubFragmentDirections.actionAnalyticsFragmentToDateRangeSelector(
             requestKey = KEY_DATE_RANGE_SELECTOR_RESULT,
             keys = viewModel.selectableRangeOptions,
             values = AnalyticsHubDateRangeSelection.SelectionType.names,
             selectedItem = getDateRangeSelectorViewState().selectionType.name
         )
 
-    private fun setupResultHandlers(viewModel: AnalyticsViewModel) {
+    private fun setupResultHandlers(viewModel: AnalyticsHubViewModel) {
         handleDialogResult<String>(
             key = KEY_DATE_RANGE_SELECTOR_RESULT,
             entryId = R.id.analytics

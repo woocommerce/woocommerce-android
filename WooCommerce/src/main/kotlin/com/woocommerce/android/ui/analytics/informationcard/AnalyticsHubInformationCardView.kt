@@ -7,13 +7,13 @@ import android.view.View
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsInformationCardViewBinding
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.DataViewState
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.HiddenState
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.LoadingViewState
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.NoDataState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsHubInformationViewState.DataViewState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsHubInformationViewState.HiddenState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsHubInformationViewState.LoadingViewState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsHubInformationViewState.NoDataState
 import com.woocommerce.android.widgets.SkeletonView
 
-class AnalyticsInformationCardView @JvmOverloads constructor(
+class AnalyticsHubInformationCardView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -21,7 +21,7 @@ class AnalyticsInformationCardView @JvmOverloads constructor(
     val binding = AnalyticsInformationCardViewBinding.inflate(LayoutInflater.from(ctx), this)
     private var skeletonView = SkeletonView()
 
-    internal fun updateInformation(viewState: AnalyticsInformationViewState) {
+    internal fun updateInformation(viewState: AnalyticsHubInformationViewState) {
         visibility = if (viewState is HiddenState) View.GONE else View.VISIBLE
         when (viewState) {
             is LoadingViewState -> setSkeleton()

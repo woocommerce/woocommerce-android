@@ -1,17 +1,17 @@
 package com.woocommerce.android.ui.analytics
 
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
-import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsHubDateRangeSelectorViewState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsHubInformationViewState
+import com.woocommerce.android.ui.analytics.listcard.AnalyticsHubListViewState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 
 data class AnalyticsViewState(
     val refreshIndicator: RefreshIndicator,
-    val analyticsDateRangeSelectorState: AnalyticsDateRangeSelectorViewState,
-    val revenueState: AnalyticsInformationViewState,
-    val ordersState: AnalyticsInformationViewState,
-    val productsState: AnalyticsListViewState,
-    val sessionState: AnalyticsInformationViewState,
+    val analyticsDateRangeSelectorState: AnalyticsHubDateRangeSelectorViewState,
+    val revenueState: AnalyticsHubInformationViewState,
+    val ordersState: AnalyticsHubInformationViewState,
+    val productsState: AnalyticsHubListViewState,
+    val sessionState: AnalyticsHubInformationViewState,
 )
 
 sealed class AnalyticsViewEvent : MultiLiveEvent.Event() {

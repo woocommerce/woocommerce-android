@@ -10,10 +10,10 @@ import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
 import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.LoadingViewState
-import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsHubInformationSectionViewState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsHubInformationViewState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsHubInformationViewState.LoadingViewState
+import com.woocommerce.android.ui.analytics.listcard.AnalyticsHubListViewState
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.LAST_YEAR
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.TODAY
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.WEEK_TO_DATE
@@ -49,7 +49,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
-class AnalyticsViewModelTest : BaseUnitTest() {
+class AnalyticsHubViewModelTest : BaseUnitTest() {
     private val currencyFormatter: CurrencyFormatter = mock {
         on { formatCurrency(TOTAL_VALUE.toString(), CURRENCY_CODE) } doReturn TOTAL_CURRENCY_VALUE
         on { formatCurrency(NET_VALUE.toString(), CURRENCY_CODE) } doReturn NET_CURRENCY_VALUE
@@ -63,14 +63,14 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     }
 
     private val updateStats: UpdateAnalyticsHubStats = mock()
-    private val savedState = AnalyticsFragmentArgs(targetGranularity = TODAY).initSavedStateHandle()
+    private val savedState = AnalyticsHubFragmentArgs(targetGranularity = TODAY).initSavedStateHandle()
     private val transactionLauncher = mock<AnalyticsHubTransactionLauncher>()
 
     private lateinit var localeProvider: LocaleProvider
     private lateinit var testLocale: Locale
     private lateinit var testCalendar: Calendar
 
-    private lateinit var sut: AnalyticsViewModel
+    private lateinit var sut: AnalyticsHubViewModel
 
     @Before
     fun setUp() {
@@ -109,7 +109,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             }
 
             with(sut.viewState.value.productsState) {
-                assertTrue(this is AnalyticsListViewState.LoadingViewState)
+                assertTrue(this is AnalyticsHubListViewState.LoadingViewState)
             }
 
             with(sut.viewState.value.refreshIndicator) {
@@ -175,7 +175,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
             val resourceProvider = givenAResourceProvider()
             with(sut.viewState.value.revenueState) {
-                assertTrue(this is AnalyticsInformationViewState.DataViewState)
+                assertTrue(this is AnalyticsHubInformationViewState.DataViewState)
                 assertEquals(resourceProvider.getString(R.string.analytics_revenue_card_title), title)
                 assertEquals(resourceProvider.getString(R.string.analytics_total_sales_title), leftSection.title)
                 assertEquals(TOTAL_CURRENCY_VALUE, leftSection.value)
@@ -199,7 +199,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             sut.onNewRangeSelection(LAST_YEAR)
 
             with(sut.viewState.value.revenueState) {
-                assertTrue(this is AnalyticsInformationViewState.DataViewState)
+                assertTrue(this is AnalyticsHubInformationViewState.DataViewState)
                 assertTrue(leftSection.delta == null)
                 assertTrue(rightSection.delta == null)
             }
@@ -239,7 +239,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
         val resourceProvider = givenAResourceProvider()
         with(sut.viewState.value.revenueState) {
-            assertTrue(this is AnalyticsInformationViewState.DataViewState)
+            assertTrue(this is AnalyticsHubInformationViewState.DataViewState)
             assertEquals(resourceProvider.getString(R.string.analytics_revenue_card_title), title)
             assertEquals(resourceProvider.getString(R.string.analytics_total_sales_title), leftSection.title)
             assertEquals(OTHER_TOTAL_CURRENCY_VALUE, leftSection.value)
@@ -260,7 +260,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
             val resourceProvider = givenAResourceProvider()
             with(sut.viewState.value.ordersState) {
-                assertTrue(this is AnalyticsInformationViewState.DataViewState)
+                assertTrue(this is AnalyticsHubInformationViewState.DataViewState)
                 assertEquals(resourceProvider.getString(R.string.analytics_orders_card_title), title)
                 assertEquals(resourceProvider.getString(R.string.analytics_total_orders_title), leftSection.title)
                 assertEquals(ORDERS_COUNT.toString(), leftSection.value)
@@ -281,7 +281,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
             val resourceProvider = givenAResourceProvider()
             with(sut.viewState.value.productsState) {
-                assertTrue(this is AnalyticsListViewState.DataViewState)
+                assertTrue(this is AnalyticsHubListViewState.DataViewState)
                 assertEquals(resourceProvider.getString(R.string.analytics_products_card_title), title)
                 assertEquals(PRODUCT_ITEMS_SOLD_DELTA, delta)
                 assertEquals(resourceProvider.getString(R.string.analytics_products_list_items_sold), subTitle)
@@ -315,7 +315,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
         val resourceProvider = givenAResourceProvider()
         with(sut.viewState.value.ordersState) {
-            assertTrue(this is AnalyticsInformationViewState.DataViewState)
+            assertTrue(this is AnalyticsHubInformationViewState.DataViewState)
             assertEquals(resourceProvider.getString(R.string.analytics_orders_card_title), title)
             assertEquals(resourceProvider.getString(R.string.analytics_total_orders_title), leftSection.title)
             assertEquals(OTHER_ORDERS_COUNT.toString(), leftSection.value)
@@ -345,7 +345,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         sut.onRefreshRequested()
 
         with(sut.viewState.value.revenueState) {
-            assertTrue(this is AnalyticsInformationViewState.DataViewState)
+            assertTrue(this is AnalyticsHubInformationViewState.DataViewState)
             assertEquals(OTHER_TOTAL_CURRENCY_VALUE, leftSection.value)
             assertEquals(OTHER_TOTAL_DELTA, leftSection.delta)
             assertEquals(OTHER_NET_CURRENCY_VALUE, rightSection.value)
@@ -371,7 +371,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
         val resourceProvider = givenAResourceProvider()
         with(sut.viewState.value.productsState) {
-            assertTrue(this is AnalyticsListViewState.DataViewState)
+            assertTrue(this is AnalyticsHubListViewState.DataViewState)
             assertEquals(resourceProvider.getString(R.string.analytics_products_card_title), title)
             assertEquals(OTHER_PRODUCT_ITEMS_SOLD_DELTA, delta)
             assertEquals(resourceProvider.getString(R.string.analytics_products_list_items_sold), subTitle)
@@ -506,8 +506,8 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         on { getString(any(), any()) } doAnswer { invMock -> invMock.arguments[0].toString() }
     }
 
-    private fun givenAViewModel(resourceProvider: ResourceProvider = givenAResourceProvider()): AnalyticsViewModel {
-        return AnalyticsViewModel(
+    private fun givenAViewModel(resourceProvider: ResourceProvider = givenAResourceProvider()): AnalyticsHubViewModel {
+        return AnalyticsHubViewModel(
             resourceProvider,
             currencyFormatter,
             transactionLauncher,
@@ -556,18 +556,18 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         productList: List<ProductItem> = PRODUCT_LIST
     ) = ProductsStat(itemsSold, DeltaPercentage.Value(itemsSoldDelta), productList)
 
-    private fun assert(visitorState: AnalyticsInformationViewState) {
+    private fun assert(visitorState: AnalyticsHubInformationViewState) {
         val resourceProvider = givenAResourceProvider()
         assertThat(visitorState).isEqualTo(
-            AnalyticsInformationViewState.DataViewState(
+            AnalyticsHubInformationViewState.DataViewState(
                 title = resourceProvider.getString(R.string.analytics_session_card_title),
-                leftSection = AnalyticsInformationSectionViewState(
+                leftSection = AnalyticsHubInformationSectionViewState(
                     title = resourceProvider.getString(R.string.analytics_views_subtitle),
                     value = DEFAULT_VISITORS_COUNT.toString(),
                     delta = null,
                     chartInfo = emptyList()
                 ),
-                rightSection = AnalyticsInformationSectionViewState(
+                rightSection = AnalyticsHubInformationSectionViewState(
                     title = resourceProvider.getString(R.string.analytics_conversion_subtitle),
                     value = defaultSessionStat.conversionRate,
                     delta = null,

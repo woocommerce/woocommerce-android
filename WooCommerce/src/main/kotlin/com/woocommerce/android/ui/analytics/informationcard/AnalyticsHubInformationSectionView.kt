@@ -22,14 +22,14 @@ import com.woocommerce.android.widgets.tags.TagConfig
 import org.wordpress.android.util.DisplayUtils
 import kotlin.math.absoluteValue
 
-internal class AnalyticsInformationSectionView @JvmOverloads constructor(
+internal class AnalyticsHubInformationSectionView @JvmOverloads constructor(
     val ctx: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
     val binding = AnalyticsInformationSectionViewBinding.inflate(LayoutInflater.from(ctx), this)
 
-    internal fun setViewState(sectionViewState: AnalyticsInformationSectionViewState) {
+    internal fun setViewState(sectionViewState: AnalyticsHubInformationSectionViewState) {
         // on devices with a larger font size the revenue value may wrap to multiple lines, so we set the
         // auto sizing programmatically on API levels that support it
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {

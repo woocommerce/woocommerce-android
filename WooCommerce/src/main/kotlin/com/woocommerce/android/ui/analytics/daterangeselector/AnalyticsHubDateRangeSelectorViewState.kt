@@ -2,13 +2,13 @@ package com.woocommerce.android.ui.analytics.daterangeselector
 
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
 
-data class AnalyticsDateRangeSelectorViewState(
+data class AnalyticsHubDateRangeSelectorViewState(
     val currentRange: String,
     val previousRange: String,
     val selectionType: SelectionType
 ) {
     companion object {
-        val EMPTY = AnalyticsDateRangeSelectorViewState(
+        val EMPTY = AnalyticsHubDateRangeSelectorViewState(
             currentRange = "",
             previousRange = "",
             selectionType = SelectionType.CUSTOM

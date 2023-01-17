@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".ui.analytics.informationcard.AnalyticsInformationCardView">
+    tools:context=".ui.analytics.informationcard.AnalyticsHubInformationCardView">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/analyticsCardDataContainer"
@@ -38,7 +38,7 @@
             tools:text="Sales"
             tools:visibility="visible" />
 
-        <com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionView
+        <com.woocommerce.android.ui.analytics.informationcard.AnalyticsHubInformationSectionView
             android:id="@+id/leftAnalyticsSection"
             style="@style/Woo.Card.WithoutPadding"
             android:layout_width="0dp"
@@ -51,7 +51,7 @@
             app:layout_constraintWidth_percent="0.5"
             tools:visibility="visible" />
 
-        <com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionView
+        <com.woocommerce.android.ui.analytics.informationcard.AnalyticsHubInformationSectionView
             android:id="@+id/rightAnalyticsSection"
             style="@style/Woo.Card.WithoutPadding"
             android:layout_width="0dp"

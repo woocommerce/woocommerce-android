@@ -11,7 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsDateRangeCardViewBinding
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
 
-class AnalyticsDateRangeCardView @JvmOverloads constructor(
+class AnalyticsHubDateRangeCardView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0

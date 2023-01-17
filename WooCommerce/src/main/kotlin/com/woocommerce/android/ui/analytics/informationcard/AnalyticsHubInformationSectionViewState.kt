@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.analytics.informationcard
 
-data class AnalyticsInformationSectionViewState(
+data class AnalyticsHubInformationSectionViewState(
     val title: String,
     val value: String,
     val delta: Int?,
