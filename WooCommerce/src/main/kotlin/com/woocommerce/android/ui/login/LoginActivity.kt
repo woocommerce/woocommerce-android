@@ -26,6 +26,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPAC
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_LOGIN_WITH_WORDPRESS_COM
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
+import com.woocommerce.android.experiment.RestAPILoginExperiment
+import com.woocommerce.android.experiment.RestAPILoginExperiment.RestAPILoginVariant
+import com.woocommerce.android.experiment.RestAPILoginExperiment.RestAPILoginVariant.CONTROL
+import com.woocommerce.android.experiment.RestAPILoginExperiment.RestAPILoginVariant.TREATMENT
 import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.support.ZendeskExtraTags
 import com.woocommerce.android.support.ZendeskHelper
@@ -63,7 +67,6 @@ import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFrag
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.UrlUtils
 import com.woocommerce.android.util.WooLog
 import dagger.android.AndroidInjector
@@ -155,6 +158,7 @@ class LoginActivity :
     @Inject internal lateinit var dispatcher: Dispatcher
     @Inject internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver
+    @Inject internal lateinit var restApiLoginExperiment: RestAPILoginExperiment
 
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
@@ -559,7 +563,12 @@ class LoginActivity :
         val siteAddressClean = inputSiteAddress.replaceFirst(protocolRegex, "")
         AppPrefs.setLoginSiteAddress(siteAddressClean)
 
-        if (hasJetpack) {
+        val shouldUseEmailLogin = when (restApiLoginExperiment.getCurrentVariant()) {
+            CONTROL -> hasJetpack
+            TREATMENT -> connectSiteInfo?.isWPCom == true
+        }
+
+        if (shouldUseEmailLogin) {
             showEmailLoginScreen(inputSiteAddress.takeIf { connectSiteInfo?.isWPCom != true })
         } else {
             // Let user log in via site credentials first before showing Jetpack missing screen.
@@ -818,7 +827,7 @@ class LoginActivity :
         inputUsername: String?,
         inputPassword: String?
     ) {
-        val (fragment, tag) = if (FeatureFlag.REST_API.isEnabled()) {
+        val (fragment, tag) = if (restApiLoginExperiment.getCurrentVariant() == RestAPILoginVariant.TREATMENT) {
             Pair(
                 LoginSiteCredentialsFragment.newInstance(
                     siteAddress = requireNotNull(siteAddress),
