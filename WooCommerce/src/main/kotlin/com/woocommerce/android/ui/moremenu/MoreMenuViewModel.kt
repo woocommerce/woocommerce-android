@@ -52,7 +52,7 @@ class MoreMenuViewModel @Inject constructor(
                 siteName = selectedSite.getSelectedSiteName(),
                 siteUrl = selectedSite.getSelectedSiteAbsoluteUrl(),
                 userAvatarUrl = accountStore.account.avatarUrl,
-                showStoreSwitcher = selectedSite.connectionType == SiteConnectionType.ApplicationPasswords
+                showStoreSwitcher = selectedSite.connectionType != SiteConnectionType.ApplicationPasswords
             )
         }.asLiveData()
 
