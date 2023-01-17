@@ -15,8 +15,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
-import org.wordpress.android.fluxc.model.stats.LimitMode
-import org.wordpress.android.fluxc.model.stats.time.VisitsAndViewsModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
@@ -31,9 +29,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsError
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_CORE
-import org.wordpress.android.fluxc.store.stats.time.VisitsAndViewsStore
 import org.wordpress.android.fluxc.utils.DateUtils
-import java.util.Date
 import javax.inject.Inject
 
 @Suppress("TooManyFunctions")
@@ -43,7 +39,6 @@ class StatsRepository @Inject constructor(
     @Suppress("UnusedPrivateMember", "Required to ensure the WCOrderStore is initialized!")
     private val wcOrderStore: WCOrderStore,
     private val wcLeaderboardsStore: WCLeaderboardsStore,
-    private val visitsAndViewsStore: VisitsAndViewsStore,
     private val wooCommerceStore: WooCommerceStore,
 ) {
     companion object {
@@ -100,6 +95,29 @@ class StatsRepository @Inject constructor(
                 emit(Result.failure(Exception(errorMessage)))
             }
         }
+
+    suspend fun fetchVisitorStats(
+        startDate: String,
+        endDate: String,
+        granularity: StatsGranularity,
+        forced: Boolean
+    ): Result<Map<String, Int>> {
+        val result = FetchNewVisitorStatsPayload(
+            site = selectedSite.get(),
+            granularity = granularity,
+            forced = forced,
+            startDate = startDate,
+            endDate = endDate
+        ).let { wcStatsStore.fetchNewVisitorStats(it) }
+
+        if (result.isError) return Result.failure(Throwable(result.error?.message ?: "Timeout"))
+
+        val visitorStats = wcStatsStore.getNewVisitorStats(
+            selectedSite.get(), result.granularity, result.quantity, result.date, result.isCustomField
+        )
+
+        return Result.success(visitorStats)
+    }
 
     fun observeTopPerformers(
         granularity: StatsGranularity,
@@ -261,38 +279,6 @@ class StatsRepository @Inject constructor(
                 selectedSite.get(), result.granularity, result.quantity, result.date, result.isCustomField
             )
             WooResult(visitorStats)
-        }
-    }
-
-    suspend fun fetchViewAndVisitorsStatsWithinRange(
-        endDate: Date,
-        granularity: org.wordpress.android.fluxc.network.utils.StatsGranularity,
-        forced: Boolean,
-        site: SiteModel = selectedSite.get(),
-        fetchingAmountLimit: Int
-    ): WooResult<VisitsAndViewsModel> {
-        val result = visitsAndViewsStore.fetchVisits(
-            site,
-            granularity,
-            LimitMode.Top(fetchingAmountLimit),
-            endDate,
-            forced
-        )
-
-        return if (result.isError) {
-            WooLog.e(
-                DASHBOARD,
-                "$TAG - Error fetching visitor stats: ${result.error.message}"
-            )
-            WooResult(
-                WooError(
-                    type = WooErrorType.GENERIC_ERROR,
-                    message = result.error.message,
-                    original = BaseRequest.GenericErrorType.NOT_FOUND
-                )
-            )
-        } else {
-            WooResult(result.model)
         }
     }
 

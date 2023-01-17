@@ -8,7 +8,19 @@ data class RevenueStat(
     val currencyCode: String?,
     val totalRevenueByInterval: List<Double>,
     val netRevenueByInterval: List<Double>
-)
+) {
+    companion object {
+        val EMPTY = RevenueStat(
+            totalValue = 0.0,
+            totalDelta = DeltaPercentage.NotExist,
+            netValue = 0.0,
+            netDelta = DeltaPercentage.NotExist,
+            currencyCode = null,
+            totalRevenueByInterval = emptyList(),
+            netRevenueByInterval = emptyList()
+        )
+    }
+}
 
 sealed class DeltaPercentage {
     data class Value(val value: Int) : DeltaPercentage()
