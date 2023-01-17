@@ -15,7 +15,7 @@ sealed class OrdersState {
     object Loading : OrdersState()
     object Error : OrdersState()
 
-    val isIdle get() = this is Available || this is Error
+    val isIdle get() = this !is Loading
 }
 
 sealed class SessionState {
@@ -23,7 +23,7 @@ sealed class SessionState {
     object Loading : SessionState()
     object Error : SessionState()
 
-    val isIdle get() = this is Available || this is Error
+    val isIdle get() = this !is Loading
 }
 
 sealed class RevenueState {
@@ -31,7 +31,7 @@ sealed class RevenueState {
     object Loading : RevenueState()
     object Error : RevenueState()
 
-    val isIdle get() = this is Available || this is Error
+    val isIdle get() = this !is Loading
 }
 
 sealed class ProductsState {
@@ -39,7 +39,7 @@ sealed class ProductsState {
     object Loading : ProductsState()
     object Error : ProductsState()
 
-    val isIdle get() = this is Available || this is Error
+    val isIdle get() = this !is Loading
 }
 
 sealed class VisitorsState {
