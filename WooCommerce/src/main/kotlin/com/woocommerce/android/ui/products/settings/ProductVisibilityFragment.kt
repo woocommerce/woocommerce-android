@@ -46,6 +46,8 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(R.layout.fragment_
         binding.btnPasswordProtected.setOnClickListener(this)
         binding.btnPrivate.setOnClickListener(this)
 
+        handlePasswordProtectedSetting(navArgs.isApplicationPasswordsLogin)
+
         if (selectedVisibility == PASSWORD_PROTECTED.toString()) {
             (savedInstanceState?.getString(ARG_PASSWORD) ?: navArgs.password)?.let { password ->
                 binding.editPassword.text = password
@@ -57,6 +59,22 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(R.layout.fragment_
             if (it.toString().isNotBlank()) {
                 binding.editPassword.clearError()
             }
+        }
+
+        // Hide "Password protected" visibility setting on login with application passwords,
+        // because this feature specifically uses WP.com API.
+        if (navArgs.isApplicationPasswordsLogin) {
+            binding.btnPasswordProtected.visibility = View.GONE
+        } else {
+            binding.btnPasswordProtected.visibility = View.VISIBLE
+        }
+    }
+
+    private fun handlePasswordProtectedSetting(isApplicationPasswordsLogin: Boolean) {
+        if (isApplicationPasswordsLogin) {
+            binding.btnPasswordProtected.visibility = View.GONE
+        } else {
+            binding.btnPasswordProtected.visibility = View.VISIBLE
         }
     }
 
