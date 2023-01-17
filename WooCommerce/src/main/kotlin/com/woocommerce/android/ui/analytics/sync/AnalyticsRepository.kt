@@ -19,6 +19,8 @@ import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.RevenueResu
 import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.RevenueResult.RevenueError
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
+import javax.inject.Inject
+import kotlin.math.round
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -35,8 +37,6 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.WEEKS
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.DateUtils
-import javax.inject.Inject
-import kotlin.math.round
 
 @Suppress("TooManyFunctions")
 class AnalyticsRepository @Inject constructor(
@@ -266,13 +266,7 @@ class AnalyticsRepository @Inject constructor(
         rangeSelection: AnalyticsHubDateRangeSelection,
         fetchStrategy: FetchStrategy
     ): Result<Map<String, Int>> = coroutineScope {
-        val isSelectionAvailableInMyStoreSection =
-            rangeSelection.selectionType == TODAY ||
-                rangeSelection.selectionType == WEEK_TO_DATE ||
-                rangeSelection.selectionType == MONTH_TO_DATE ||
-                rangeSelection.selectionType == YEAR_TO_DATE
-
-        if (isSelectionAvailableInMyStoreSection) {
+        if (rangeSelection.isRangeAvailableInMyStoreSection) {
             statsRepository.fetchVisitorStats(
                 getGranularity(rangeSelection.selectionType),
                 fetchStrategy is FetchStrategy.ForceNew,
@@ -290,7 +284,7 @@ class AnalyticsRepository @Inject constructor(
     private fun getGranularity(selectionType: SelectionType) =
         when (selectionType) {
             TODAY, SelectionType.YESTERDAY -> DAYS
-            SelectionType.LAST_WEEK, SelectionType.WEEK_TO_DATE -> WEEKS
+            SelectionType.LAST_WEEK, WEEK_TO_DATE -> WEEKS
             SelectionType.LAST_MONTH, MONTH_TO_DATE -> MONTHS
             SelectionType.LAST_QUARTER, SelectionType.QUARTER_TO_DATE -> MONTHS
             SelectionType.LAST_YEAR, YEAR_TO_DATE -> YEARS
@@ -327,6 +321,18 @@ class AnalyticsRepository @Inject constructor(
 
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
     private fun getAdminPanelUrl() = selectedSite.getIfExists()?.adminUrl
+
+    /***
+     * If true, it means that the selected range is available in the My Store section.
+     *
+     * For example, if the selected range is Week to Date, this means that My Store also displays it as This Week.
+     * Month to date as This Month, Year to date as This Year, and Today as Today.
+     */
+    private val AnalyticsHubDateRangeSelection.isRangeAvailableInMyStoreSection
+        get() = selectionType == TODAY ||
+            selectionType == WEEK_TO_DATE ||
+            selectionType == MONTH_TO_DATE ||
+            selectionType == YEAR_TO_DATE
 
     companion object {
         const val ANALYTICS_REVENUE_PATH = "admin.php?page=wc-admin&path=%2Fanalytics%2Frevenue"
