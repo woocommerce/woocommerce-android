@@ -64,12 +64,12 @@
             android:text="@string/card_reader_type_selection_tap_to_pay"
             android:layout_marginHorizontal="@dimen/major_200"
             android:layout_marginTop="0dp"
-            app:layout_constraintBottom_toTopOf="@id/reader_selection_use_blueatooth_reader"
+            app:layout_constraintBottom_toTopOf="@id/reader_selection_use_bluetooth_reader"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/reader_selection_use_blueatooth_reader"
+            android:id="@+id/reader_selection_use_bluetooth_reader"
             style="@style/Woo.Button.Outlined"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-12-20 14:01:25+0000
+Translation-Revision-Date: 2023-01-13 12:56:50+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="not_a_valid_qr_code">Skannad QR-kod är inte en WooCommerce-kod</string>
+    <string name="store_creation_iap_eligibility_check_error_description">Skapa butik från mobilappen är för närvarande inte tillgängligt för ditt land.</string>
+    <string name="store_creation_iap_eligibility_check_error_title">Skapande av butik är inte tillgängligt</string>
+    <string name="store_creation_iap_eligibility_loading_subtitle">Förbli ansluten.</string>
+    <string name="store_creation_iap_eligibility_loading_title">Vi gör oss redo för att skapa din butik</string>
+    <string name="review_reply_failure">Det uppstod ett fel när svaret skulle skickas</string>
+    <string name="review_reply_success">Svar skickat!</string>
+    <string name="wc_reply">Svara</string>
     <string name="store_creation_store_categories_subtitle">Välj en kategori som definierar\nditt företag bäst.</string>
     <string name="store_creation_store_categories_title">Vad handlar ditt företag om?</string>
     <string name="product_selection_menu_select_all">Välj alla</string>

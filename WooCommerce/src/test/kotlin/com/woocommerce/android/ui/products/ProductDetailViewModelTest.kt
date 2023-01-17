@@ -239,7 +239,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 variationRepository,
                 mediaFileUploadHandler,
                 prefsWrapper,
-                addonRepository
+                addonRepository,
+                mock(),
+                mock()
             )
         )
 

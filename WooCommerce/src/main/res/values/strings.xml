@@ -1552,6 +1552,11 @@
     <string name="product_pricing_update_sale_price_error">Sale price must be less than regular price</string>
     <string name="product_pricing_scheduled_sale_price_error">You must set the sale price if a sale is scheduled</string>
     <string name="product_settings">Product settings</string>
+    <string name="product_duplicate">Duplicate</string>
+    <string name="product_duplicate_error">Cannot duplicate product</string>
+    <string name="product_duplicate_progress_title">Duplicating your product…</string>
+    <string name="product_duplicate_progress_body">Please wait while we save a copy of this product to your store</string>
+    <string name="product_duplicate_copied_product_name">%1$s Copy</string>
     <string name="product_trash">Trash product</string>
     <string name="product_confirm_trash">Do you want to move this product to the Trash?</string>
     <string name="product_trash_yes">Move to trash</string>
