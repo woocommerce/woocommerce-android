@@ -49,8 +49,10 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment(R.layout.fragment_
         configureWebView()
         savedInstanceState?.let {
             binding.webView.restoreState(it)
-        } ?: binding.webView.loadUrl(arguments.surveyType.url)
+        } ?: binding.webView.loadUrl(getSurveyUrlFromArguments())
     }
+
+    private fun getSurveyUrlFromArguments(): String = arguments.customUrl ?: arguments.surveyType.url
 
     override fun onDestroyView() {
         super.onDestroyView()

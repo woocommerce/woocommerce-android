@@ -48,6 +48,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -172,10 +173,12 @@ class OrderListViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
+            val shouldShowFeedbackBanner = shouldShowFeedbackBanner()
             if (shouldShowFeedbackBanner()) {
                 val bannerData = getIPPFeedbackBannerData()
                 viewState = viewState.copy(ippBannerState = IPPBannerState.Visible(bannerData))
             }
+            viewState = viewState.copy(isSimplePaymentsWIPNoticeCardVisible = !shouldShowFeedbackBanner)
         }
     }
 
@@ -587,21 +590,31 @@ class OrderListViewModel @Inject constructor(
 
     fun onIPPBannerCTAClicked() {
         val bannerState = viewState.ippBannerState as IPPBannerState.Visible
-        _event.postValue(
-            OrderListEvent.OpenIPPFeedbackSurveyLink(bannerState.bannerData.url, R.string.feedback_banner_ipp_title)
-        )
+        _event.postValue(OrderListEvent.OpenIPPFeedbackSurveyLink(bannerState.bannerData.url))
         markFeedbackBannerAsCompleted()
         viewState = viewState.copy(ippBannerState = IPPBannerState.Hidden)
+
+        refreshOrdersBannerVisibilityWithDelay()
     }
 
     fun onIPPBannerDismissedForever() {
         markFeedbackBannerAsDismissedForever()
         viewState = viewState.copy(ippBannerState = IPPBannerState.Hidden)
+
+        refreshOrdersBannerVisibilityWithDelay()
     }
 
     fun onIPPBannerDismissedShowLater() {
         markFeedbackBannerAsDismissed()
         viewState = viewState.copy(ippBannerState = IPPBannerState.Hidden)
+
+        refreshOrdersBannerVisibilityWithDelay()
+    }
+
+    private fun refreshOrdersBannerVisibilityWithDelay(delayMillis: Long = 0) = viewModelScope.launch {
+        delay(delayMillis)
+        val isOrdersBannerVisible = viewState.ippBannerState is IPPBannerState.Hidden
+        viewState = viewState.copy(isSimplePaymentsWIPNoticeCardVisible = isOrdersBannerVisible)
     }
 
     sealed class OrderListEvent : Event() {
@@ -620,7 +633,7 @@ class OrderListViewModel @Inject constructor(
 
         object ShowIPPDismissConfirmationDialog : OrderListEvent()
 
-        data class OpenIPPFeedbackSurveyLink(val url: String, @StringRes val title: Int) : OrderListEvent()
+        data class OpenIPPFeedbackSurveyLink(val url: String) : OrderListEvent()
     }
 
     @Parcelize
@@ -629,6 +642,7 @@ class OrderListViewModel @Inject constructor(
         val arePaymentGatewaysFetched: Boolean = false,
         val filterCount: Int = 0,
         val ippBannerState: IPPBannerState = IPPBannerState.Hidden,
+        val isSimplePaymentsWIPNoticeCardVisible: Boolean = false,
     ) : Parcelable {
         @IgnoredOnParcel
         val isFilteringActive = filterCount > 0

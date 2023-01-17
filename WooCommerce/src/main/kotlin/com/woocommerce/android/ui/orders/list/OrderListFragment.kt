@@ -194,7 +194,6 @@ class OrderListFragment :
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
         initSwipeBehaviour()
-        displaySimplePaymentsWIPCard(true)
     }
 
     private fun initSwipeBehaviour() {
@@ -315,12 +314,9 @@ class OrderListFragment :
                     )
                 }
                 is OrderListViewModel.OrderListEvent.OpenIPPFeedbackSurveyLink -> {
-                    findNavController().navigate(
-                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                            urlToLoad = event.url,
-                            title = getString(event.title)
-                        )
-                    )
+                    NavGraphMainDirections
+                        .actionGlobalFeedbackSurveyFragment(customUrl = event.url)
+                        .apply { findNavController().navigateSafely(this) }
                 }
                 is OrderListViewModel.OrderListEvent.NotifyOrderChanged -> {
                     binding.orderListView.ordersList.adapter?.notifyItemChanged(event.position)
@@ -382,6 +378,9 @@ class OrderListFragment :
             }
             new.ippBannerState.takeIfNotEqualTo(old?.ippBannerState) { bannerState ->
                 renderIPPBanner(bannerState)
+            }
+            new.isSimplePaymentsWIPNoticeCardVisible.takeIfNotEqualTo(old?.isSimplePaymentsWIPNoticeCardVisible) {
+                displaySimplePaymentsWIPCard(it)
             }
         }
     }
