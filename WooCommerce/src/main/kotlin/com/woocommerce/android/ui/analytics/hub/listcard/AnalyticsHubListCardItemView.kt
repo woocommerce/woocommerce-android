@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.analytics.listcard
+package com.woocommerce.android.ui.analytics.hub.listcard
 
 import android.content.Context
 import android.util.AttributeSet

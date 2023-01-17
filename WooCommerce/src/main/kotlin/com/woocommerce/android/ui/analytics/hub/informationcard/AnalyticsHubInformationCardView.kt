@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.analytics.informationcard
+package com.woocommerce.android.ui.analytics.hub.informationcard
 
 import android.content.Context
 import android.util.AttributeSet
@@ -7,10 +7,10 @@ import android.view.View
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsInformationCardViewBinding
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsHubInformationViewState.DataViewState
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsHubInformationViewState.HiddenState
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsHubInformationViewState.LoadingViewState
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsHubInformationViewState.NoDataState
+import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.DataViewState
+import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.HiddenState
+import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.LoadingViewState
+import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.NoDataState
 import com.woocommerce.android.widgets.SkeletonView
 
 class AnalyticsHubInformationCardView @JvmOverloads constructor(

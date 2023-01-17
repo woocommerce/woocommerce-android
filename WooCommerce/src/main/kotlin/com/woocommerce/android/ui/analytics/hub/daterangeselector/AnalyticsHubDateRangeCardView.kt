@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.analytics.daterangeselector
+package com.woocommerce.android.ui.analytics.hub.daterangeselector
 
 import android.content.Context
 import android.text.SpannableStringBuilder

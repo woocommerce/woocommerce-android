@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.analytics.daterangeselector
+package com.woocommerce.android.ui.analytics.hub.daterangeselector
 
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
 

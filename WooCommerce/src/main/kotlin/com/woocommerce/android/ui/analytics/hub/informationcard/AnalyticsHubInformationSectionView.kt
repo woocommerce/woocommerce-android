@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.analytics.informationcard
+package com.woocommerce.android.ui.analytics.hub.informationcard
 
 import android.content.Context
 import android.os.Build
@@ -15,7 +15,7 @@ import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsInformationSectionViewBinding
 import com.woocommerce.android.extensions.greaterThan
-import com.woocommerce.android.ui.analytics.LineChart
+import com.woocommerce.android.ui.analytics.hub.LineChart
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.widgets.tags.ITag
 import com.woocommerce.android.widgets.tags.TagConfig

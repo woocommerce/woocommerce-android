@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.analytics
+package com.woocommerce.android.ui.analytics.hub
 
 import android.os.Bundle
 import android.view.View
@@ -13,7 +13,8 @@ import com.woocommerce.android.databinding.FragmentAnalyticsBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
-import com.woocommerce.android.ui.analytics.RefreshIndicator.ShowIndicator
+import com.woocommerce.android.ui.analytics.AnalyticsHubFragmentDirections
+import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.base.BaseFragment

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.analytics.informationcard
+package com.woocommerce.android.ui.analytics.hub.informationcard
 
 sealed class AnalyticsHubInformationViewState {
     object HiddenState : AnalyticsHubInformationViewState()

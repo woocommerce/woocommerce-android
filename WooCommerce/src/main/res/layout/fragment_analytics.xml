@@ -5,7 +5,7 @@
     android:id="@+id/analyticsRefreshLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.analytics.AnalyticsHubFragment">
+    tools:context=".ui.analytics.hub.AnalyticsHubFragment">
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView"
@@ -26,7 +26,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsHubDateRangeCardView
+            <com.woocommerce.android.ui.analytics.hub.daterangeselector.AnalyticsHubDateRangeCardView
                 android:id="@+id/analyticsDateSelectorCard"
                 style="@style/Woo.Card.WithoutPadding"
                 android:layout_width="0dp"
@@ -37,7 +37,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <com.woocommerce.android.ui.analytics.informationcard.AnalyticsHubInformationCardView
+            <com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationCardView
                 android:id="@+id/analyticsRevenueCard"
                 style="@style/Woo.Card.WithoutPadding"
                 android:layout_width="0dp"
@@ -48,7 +48,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/analyticsDateSelectorCard" />
 
-            <com.woocommerce.android.ui.analytics.informationcard.AnalyticsHubInformationCardView
+            <com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationCardView
                 android:id="@+id/analyticsOrdersCard"
                 style="@style/Woo.Card.WithoutPadding"
                 android:layout_width="0dp"
@@ -59,7 +59,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/analyticsRevenueCard" />
 
-            <com.woocommerce.android.ui.analytics.listcard.AnalyticsHubListCardView
+            <com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListCardView
                 android:id="@+id/analyticsProductsCard"
                 style="@style/Woo.Card.WithoutPadding"
                 android:layout_width="0dp"
@@ -70,7 +70,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/analyticsOrdersCard" />
 
-            <com.woocommerce.android.ui.analytics.informationcard.AnalyticsHubInformationCardView
+            <com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationCardView
                 android:id="@+id/analyticsVisitorsCard"
                 style="@style/Woo.Card.WithoutPadding"
                 android:layout_width="0dp"

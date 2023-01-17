@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.analytics.informationcard
+package com.woocommerce.android.ui.analytics.hub.informationcard
 
 data class AnalyticsHubInformationSectionViewState(
     val title: String,

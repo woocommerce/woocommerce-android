@@ -126,7 +126,7 @@
     </fragment>
     <fragment
         android:id="@+id/analytics"
-        android:name="com.woocommerce.android.ui.analytics.AnalyticsHubFragment"
+        android:name="com.woocommerce.android.ui.analytics.hub.AnalyticsHubFragment"
         android:label="fragment_analytics"
         tools:layout="@layout/fragment_analytics">
         <argument

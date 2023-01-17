@@ -1,10 +1,10 @@
-package com.woocommerce.android.ui.analytics.listcard
+package com.woocommerce.android.ui.analytics.hub.listcard
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.analytics.listcard.AnalyticsHubListAdapter.ViewHolder
+import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListAdapter.ViewHolder
 
 class AnalyticsHubListAdapter(
     private val items: List<AnalyticsHubListCardItemViewState>,

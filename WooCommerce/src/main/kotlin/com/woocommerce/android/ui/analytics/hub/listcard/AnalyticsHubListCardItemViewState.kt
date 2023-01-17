@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.analytics.listcard
+package com.woocommerce.android.ui.analytics.hub.listcard
 
 data class AnalyticsHubListCardItemViewState(
     val imageUri: String?,

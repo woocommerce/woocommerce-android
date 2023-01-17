@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.analytics.sync
+package com.woocommerce.android.ui.analytics.hub.sync
 
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.model.DeltaPercentage
@@ -13,10 +13,10 @@ import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelectio
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.TODAY
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.WEEK_TO_DATE
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.YEAR_TO_DATE
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.OrdersResult.OrdersError
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.ProductsResult.ProductsError
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.RevenueResult.RevenueData
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.RevenueResult.RevenueError
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.OrdersResult.OrdersError
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.ProductsResult.ProductsError
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.RevenueResult.RevenueData
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.RevenueResult.RevenueError
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.Deferred
@@ -130,7 +130,10 @@ class AnalyticsRepository @Inject constructor(
         return OrdersResult.OrdersData(
             OrdersStat(
                 currentOrdersCount,
-                calculateDeltaPercentage(previousOrdersCount.toDouble(), currentOrdersCount.toDouble()),
+                calculateDeltaPercentage(
+                    previousOrdersCount.toDouble(),
+                    currentOrdersCount.toDouble()
+                ),
                 currentAvgOrderValue,
                 calculateDeltaPercentage(previousOrderValue, currentAvgOrderValue),
                 getCurrencyCode(),
