@@ -1,11 +1,9 @@
 package com.woocommerce.android.ui.payments.feedback.ipp
 
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.daysAgo
 import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.ui.payments.GetActivePaymentsPlugin
-import com.woocommerce.android.ui.payments.feedback.ipp.GetIPPFeedbackBannerData.Companion.BANNER_MESSAGE_BEGINNER
-import com.woocommerce.android.ui.payments.feedback.ipp.GetIPPFeedbackBannerData.Companion.BANNER_MESSAGE_NEWBIE
-import com.woocommerce.android.ui.payments.feedback.ipp.GetIPPFeedbackBannerData.Companion.BANNER_MESSAGE_NINJA
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -146,7 +144,7 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         val result = sut()
 
         // then
-        assertEquals(BANNER_MESSAGE_NEWBIE, result.message)
+        assertEquals(R.string.feedback_banner_ipp_message_newbie, result.message)
     }
 
     @Test
@@ -164,7 +162,7 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         val result = sut()
 
         // then
-        assertEquals(BANNER_MESSAGE_BEGINNER, result.message)
+        assertEquals(R.string.feedback_banner_ipp_message_beginner, result.message)
     }
 
     @Test
@@ -182,7 +180,7 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         val result = sut()
 
         // then
-        assertEquals(BANNER_MESSAGE_NINJA, result.message)
+        assertEquals(R.string.feedback_banner_ipp_message_ninja, result.message)
     }
 
     @Test

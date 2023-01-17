@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.payments.feedback.ipp
 
 import android.os.Parcelable
 import androidx.annotation.StringRes
-import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.daysAgo
 import com.woocommerce.android.extensions.formatToYYYYmmDD
@@ -85,14 +84,11 @@ class GetIPPFeedbackBannerData @Inject constructor(
 
         private const val SURVEY_URL_IPP_NINJA = "https://woocommerce.com/ninja"
 
-        @VisibleForTesting
-        const val BANNER_MESSAGE_NEWBIE = R.string.feedback_banner_ipp_message_newbie
+        private const val BANNER_MESSAGE_NEWBIE = R.string.feedback_banner_ipp_message_newbie
 
-        @VisibleForTesting
-        const val BANNER_MESSAGE_BEGINNER = R.string.feedback_banner_ipp_message_beginner
+        private const val BANNER_MESSAGE_BEGINNER = R.string.feedback_banner_ipp_message_beginner
 
-        @VisibleForTesting
-        const val BANNER_MESSAGE_NINJA = R.string.feedback_banner_ipp_message_ninja
+        private const val BANNER_MESSAGE_NINJA = R.string.feedback_banner_ipp_message_ninja
 
         private val IPP_BEGINNER_TRANSACTIONS_RANGE = 1..10
     }
