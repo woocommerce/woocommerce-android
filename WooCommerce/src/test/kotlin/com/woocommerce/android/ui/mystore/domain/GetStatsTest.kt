@@ -187,7 +187,7 @@ class GetStatsTest : BaseUnitTest() {
     }
 
     private suspend fun givenFetchVisitorStats(result: Result<Map<String, Int>>) {
-        whenever(statsRepository.fetchVisitorStats(any(), anyBoolean()))
+        whenever(statsRepository.fetchVisitorStats(any(), anyBoolean(), anyString(), anyString()))
             .thenReturn(flow { emit(result) })
     }
 
