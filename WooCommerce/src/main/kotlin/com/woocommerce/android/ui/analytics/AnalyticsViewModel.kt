@@ -120,7 +120,8 @@ class AnalyticsViewModel @Inject constructor(
         viewModelScope.launch {
             updateStats(
                 rangeSelection = ranges,
-                fetchStrategy = getFetchStrategy(isRefreshing = true)
+                fetchStrategy = getFetchStrategy(isRefreshing = true),
+                scope = viewModelScope
             ).collect {
                 mutableState.update { viewState ->
                     viewState.copy(refreshIndicator = if (it is Finished) NotShowIndicator else ShowIndicator)
@@ -148,7 +149,8 @@ class AnalyticsViewModel @Inject constructor(
             trackSelectedDateRange()
             updateStats(
                 rangeSelection = it,
-                fetchStrategy = getFetchStrategy(isRefreshing = false)
+                fetchStrategy = getFetchStrategy(isRefreshing = false),
+                scope = viewModelScope
             )
         }.launchIn(viewModelScope)
     }
