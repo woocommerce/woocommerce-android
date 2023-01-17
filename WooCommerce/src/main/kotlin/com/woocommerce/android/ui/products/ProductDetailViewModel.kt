@@ -40,6 +40,8 @@ import com.woocommerce.android.model.addTags
 import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
@@ -112,6 +114,7 @@ class ProductDetailViewModel @Inject constructor(
     private val addonRepository: AddonRepository,
     private val duplicateProduct: DuplicateProduct,
     private val analyticsTracker: AnalyticsTrackerWrapper,
+    private val selectedSite: SelectedSite,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -861,7 +864,13 @@ class ProductDetailViewModel @Inject constructor(
     fun onSettingsVisibilityButtonClicked() {
         val visibility = getProductVisibility()
         val password = viewState.draftPassword ?: viewState.storedPassword
-        triggerEvent(ProductNavigationTarget.ViewProductVisibility(visibility, password))
+        triggerEvent(
+            ProductNavigationTarget.ViewProductVisibility(
+                selectedSite.connectionType == SiteConnectionType.ApplicationPasswords,
+                visibility,
+                password
+            )
+        )
     }
 
     /**
