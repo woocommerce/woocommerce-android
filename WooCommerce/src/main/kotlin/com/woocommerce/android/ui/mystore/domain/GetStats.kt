@@ -1,11 +1,17 @@
 package com.woocommerce.android.ui.mystore.domain
 
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository.StatsException
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.locale.LocaleProvider
+import java.util.Calendar
+import java.util.Locale
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
@@ -15,10 +21,10 @@ import kotlinx.coroutines.flow.transform
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
-import javax.inject.Inject
 
 class GetStats @Inject constructor(
     private val selectedSite: SelectedSite,
+    private val localeProvider: LocaleProvider,
     private val statsRepository: StatsRepository,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val coroutineDispatchers: CoroutineDispatchers
@@ -40,24 +46,31 @@ class GetStats @Inject constructor(
                 }
             }
 
-    private suspend fun revenueStats(forceRefresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> =
-        statsRepository.fetchRevenueStats(granularity, forceRefresh)
-            .transform { result ->
-                result.fold(
-                    onSuccess = { stats ->
-                        appPrefsWrapper.setV4StatsSupported(true)
-                        emit(LoadStatsResult.RevenueStatsSuccess(stats))
-                    },
-                    onFailure = {
-                        if (isPluginNotActiveError(it)) {
-                            appPrefsWrapper.setV4StatsSupported(false)
-                            emit(LoadStatsResult.PluginNotActive)
-                        } else {
-                            emit(LoadStatsResult.RevenueStatsError)
-                        }
+    private suspend fun revenueStats(forceRefresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> {
+        val (startDate, endDate) = granularity.statsDateRange
+        return statsRepository.fetchRevenueStats(
+            granularity,
+            forceRefresh,
+            startDate,
+            endDate,
+            true
+        ).transform { result ->
+            result.fold(
+                onSuccess = { stats ->
+                    appPrefsWrapper.setV4StatsSupported(true)
+                    emit(LoadStatsResult.RevenueStatsSuccess(stats))
+                },
+                onFailure = {
+                    if (isPluginNotActiveError(it)) {
+                        appPrefsWrapper.setV4StatsSupported(false)
+                        emit(LoadStatsResult.PluginNotActive)
+                    } else {
+                        emit(LoadStatsResult.RevenueStatsError)
                     }
-                )
-            }
+                }
+            )
+        }
+    }
 
     private suspend fun visitorStats(forceRefresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> =
         // Visitor stats are only available for Jetpack connected sites
@@ -78,6 +91,18 @@ class GetStats @Inject constructor(
 
     private fun isPluginNotActiveError(error: Throwable): Boolean =
         (error as? StatsException)?.error?.type == OrderStatsErrorType.PLUGIN_NOT_ACTIVE
+
+    private val StatsGranularity.statsDateRange
+        get() = AnalyticsHubDateRangeSelection.SelectionType.from(this)
+            .generateSelectionData(
+                calendar = Calendar.getInstance(),
+                locale = localeProvider.provideLocale() ?: Locale.getDefault()
+            ).let {
+                Pair(
+                    it.currentRange.start.formatToYYYYmmDDhhmmss(),
+                    it.currentRange.end.formatToYYYYmmDDhhmmss()
+                )
+            }
 
     sealed class LoadStatsResult {
         data class RevenueStatsSuccess(
