@@ -25,11 +25,11 @@ import com.woocommerce.android.ui.analytics.ranges.data.WeekToDateRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.YearToDateRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.YesterdayRangeData
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import java.io.Serializable
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 
 @Parcelize
 data class AnalyticsHubTimeRange(
