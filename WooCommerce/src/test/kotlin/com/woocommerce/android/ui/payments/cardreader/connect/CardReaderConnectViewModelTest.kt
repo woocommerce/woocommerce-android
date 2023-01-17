@@ -42,6 +42,8 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectV
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.BluetoothDisabledError
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ConnectingFailedState
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ExternalReaderConnectingState
+import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ExternalReaderFoundState
+import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ExternalReaderScanningState
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.InvalidMerchantAddressPostCodeError
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.LocationDisabledError
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.LocationPermissionRationale
@@ -49,9 +51,7 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectV
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.MissingLocationPermissionsError
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.MissingMerchantAddressError
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.MultipleExternalReadersFoundState
-import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ExternalReaderFoundState
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ScanningFailedState
-import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ExternalReaderScanningState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
@@ -805,7 +805,8 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         testBlocking {
             init(scanState = MULTIPLE_READERS_FOUND)
 
-            val reader = (viewModel.viewStateData.value as MultipleExternalReadersFoundState).listItems[1] as CardReaderListItem
+            val reader = (viewModel.viewStateData.value as MultipleExternalReadersFoundState).listItems[1]
+                as CardReaderListItem
             reader.onConnectClicked()
 
             verify(cardReaderManager).startConnectionToReader(argThat { this.id == reader.readerId }, eq(locationId))
@@ -818,7 +819,8 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             val locationId = "old_location_id"
             whenever(reader2.locationId).thenReturn(locationId)
 
-            val reader = (viewModel.viewStateData.value as MultipleExternalReadersFoundState).listItems[1] as CardReaderListItem
+            val reader = (viewModel.viewStateData.value as MultipleExternalReadersFoundState).listItems[1]
+                as CardReaderListItem
             reader.onConnectClicked()
 
             verify(cardReaderManager).startConnectionToReader(argThat { this.id == reader.readerId }, eq(locationId))
@@ -848,7 +850,8 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         testBlocking {
             init(scanState = MULTIPLE_READERS_FOUND)
 
-            val reader = (viewModel.viewStateData.value as MultipleExternalReadersFoundState).listItems[1] as CardReaderListItem
+            val reader = (viewModel.viewStateData.value as MultipleExternalReadersFoundState).listItems[1]
+                as CardReaderListItem
             reader.onConnectClicked()
 
             verify(tracker).trackOnConnectTapped()
