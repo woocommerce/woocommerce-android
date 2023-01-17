@@ -9,9 +9,6 @@ import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository.StatsException
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.locale.LocaleProvider
-import java.util.Calendar
-import java.util.Locale
-import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
@@ -21,6 +18,9 @@ import kotlinx.coroutines.flow.transform
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import java.util.Calendar
+import java.util.Locale
+import javax.inject.Inject
 
 class GetStats @Inject constructor(
     private val selectedSite: SelectedSite,
@@ -52,8 +52,7 @@ class GetStats @Inject constructor(
             granularity,
             forceRefresh,
             startDate,
-            endDate,
-            true
+            endDate
         ).transform { result ->
             result.fold(
                 onSuccess = { stats ->

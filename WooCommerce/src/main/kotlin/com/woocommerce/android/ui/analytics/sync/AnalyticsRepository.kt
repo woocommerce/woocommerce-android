@@ -304,8 +304,7 @@ class AnalyticsRepository @Inject constructor(
             granularity,
             fetchStrategy is FetchStrategy.ForceNew,
             startDate,
-            endDate,
-            true
+            endDate
         ).flowOn(dispatchers.io).single().mapCatching { it }
 
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
