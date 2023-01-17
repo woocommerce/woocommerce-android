@@ -88,9 +88,14 @@ class StatsRepository @Inject constructor(
             }
         }
 
-    suspend fun fetchVisitorStats(granularity: StatsGranularity, forced: Boolean): Flow<Result<Map<String, Int>>> =
+    suspend fun fetchVisitorStats(
+        granularity: StatsGranularity,
+        forced: Boolean,
+        startDate: String = "",
+        endDate: String = "",
+    ): Flow<Result<Map<String, Int>>> =
         flow {
-            val visitsPayload = FetchNewVisitorStatsPayload(selectedSite.get(), granularity, forced)
+            val visitsPayload = FetchNewVisitorStatsPayload(selectedSite.get(), granularity, forced, startDate, endDate)
             val result = wcStatsStore.fetchNewVisitorStats(visitsPayload)
             if (!result.isError) {
                 val visitorStats = wcStatsStore.getNewVisitorStats(
