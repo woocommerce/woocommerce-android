@@ -56,17 +56,19 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.WCPAY_RECEIPTS_SENDING_SUPPORT_VERSION
+import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderCapturingPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderCollectPaymentState
-import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.CapturingPaymentState
+import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderProcessingPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.CollectRefundState
+import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderCapturingPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderCollectPaymentState
+import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderProcessingPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.FailedPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.FailedRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.LoadingDataState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.PaymentSuccessfulReceiptSentAutomaticallyState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.PaymentSuccessfulState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.PrintingReceiptState
-import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ProcessingPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ProcessingRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ReFetchingOrderState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundLoadingDataState
@@ -298,12 +300,7 @@ class CardReaderPaymentViewModel
         when (paymentStatus) {
             InitializingPayment -> viewState.postValue(LoadingDataState(::onCancelPaymentFlow))
             CollectingPayment -> viewState.postValue(provideCollectPaymentState(amountLabel))
-            ProcessingPayment -> viewState.postValue(
-                ProcessingPaymentState(
-                    amountLabel,
-                    onSecondaryActionClicked = ::onCancelPaymentFlow
-                )
-            )
+            ProcessingPayment -> viewState.postValue(provideProcessingPaymentState(amountLabel))
             is ProcessingPaymentCompleted -> {
                 cardReaderTrackingInfoKeeper.setPaymentMethodType(paymentStatus.paymentMethodType.stringRepresentation)
                 when (paymentStatus.paymentMethodType) {
@@ -312,7 +309,7 @@ class CardReaderPaymentViewModel
                     else -> {}
                 }
             }
-            CapturingPayment -> viewState.postValue(CapturingPaymentState(amountLabel))
+            CapturingPayment -> viewState.postValue(provideCapturingPaymentState(amountLabel))
             is PaymentCompleted -> {
                 tracker.trackPaymentSucceeded()
                 onPaymentCompleted(paymentStatus, orderId)
@@ -719,14 +716,32 @@ class CardReaderPaymentViewModel
 
     private fun provideCollectPaymentState(amountLabel: String): ViewState =
         when (arguments.cardReaderType) {
-            BUILT_IN -> ExternalReaderCollectPaymentState(
+            BUILT_IN -> BuiltInReaderCollectPaymentState(
                 amountLabel,
                 onSecondaryActionClicked = ::onCancelPaymentFlow
             )
-            EXTERNAL -> BuiltInReaderCollectPaymentState(
+            EXTERNAL -> ExternalReaderCollectPaymentState(
                 amountLabel,
                 onSecondaryActionClicked = ::onCancelPaymentFlow
             )
+        }
+
+    private fun provideProcessingPaymentState(amountLabel: String): ViewState =
+        when (arguments.cardReaderType) {
+            BUILT_IN -> BuiltInReaderProcessingPaymentState(
+                amountLabel,
+                onSecondaryActionClicked = ::onCancelPaymentFlow
+            )
+            EXTERNAL -> ExternalReaderProcessingPaymentState(
+                amountLabel,
+                onSecondaryActionClicked = ::onCancelPaymentFlow
+            )
+        }
+
+    private fun provideCapturingPaymentState(amountLabel: String): ViewState =
+        when (arguments.cardReaderType) {
+            BUILT_IN -> BuiltInReaderCapturingPaymentState(amountLabel)
+            EXTERNAL -> ExternalReaderCapturingPaymentState(amountLabel)
         }
 
     class ShowSnackbarInDialog(@StringRes val message: Int) : Event()

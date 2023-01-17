@@ -53,7 +53,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.InteracRefundFlowE
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError.AmountTooSmall
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError.Unknown
-import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.CapturingPaymentState
+import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderCapturingPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderCollectPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.CollectRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.FailedPaymentState
@@ -62,7 +62,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.LoadingD
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.PaymentSuccessfulReceiptSentAutomaticallyState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.PaymentSuccessfulState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.PrintingReceiptState
-import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ProcessingPaymentState
+import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderProcessingPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ProcessingRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ReFetchingOrderState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.RefundLoadingDataState
@@ -509,7 +509,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(ProcessingPaymentState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ExternalReaderProcessingPaymentState::class.java)
         }
 
     @Test
@@ -593,7 +593,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(CapturingPaymentState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ExternalReaderCapturingPaymentState::class.java)
         }
 
     @Test
@@ -1589,7 +1589,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
             viewModel.start()
 
-            (viewModel.viewStateData.value as ProcessingPaymentState).onSecondaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderProcessingPaymentState).onSecondaryActionClicked.invoke()
 
             verify(tracker).trackPaymentCancelled("Processing")
         }
@@ -1602,7 +1602,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
             viewModel.start()
 
-            (viewModel.viewStateData.value as ProcessingPaymentState).onSecondaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderProcessingPaymentState).onSecondaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
         }
@@ -1792,7 +1792,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat((viewModel.event.value)).isNull()
-            assertThat(viewModel.viewStateData.value).isInstanceOf(ProcessingPaymentState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ExternalReaderProcessingPaymentState::class.java)
         }
 
     @Test
