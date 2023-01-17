@@ -566,7 +566,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             AnalyticsInformationViewState.DataViewState(
                 title = resourceProvider.getString(R.string.analytics_session_card_title),
                 leftSection = AnalyticsInformationSectionViewState(
-                    title = resourceProvider.getString(R.string.analytics_views_subtitle),
+                    title = resourceProvider.getString(R.string.analytics_visitors_subtitle),
                     value = DEFAULT_VISITORS_COUNT.toString(),
                     delta = null,
                     chartInfo = emptyList()
