@@ -11,11 +11,13 @@ interface MainSettingsContract {
         fun hasMultipleStores(): Boolean
         fun setupAnnouncementOption()
         fun setupJetpackInstallOption()
+        fun setupApplicationPasswordsSettings()
     }
 
     interface View : BaseView<Presenter> {
         fun showDeviceAppNotificationSettings()
         fun showLatestAnnouncementOption(announcement: FeatureAnnouncement)
         fun handleJetpackInstallOption(isJetpackCPSite: Boolean)
+        fun handleApplicationPasswordsSettings()
     }
 }
