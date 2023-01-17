@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.iap.pub.PurchaseWPComPlanActions
 import com.woocommerce.android.iap.pub.PurchaseWpComPlanSupportChecker
+import com.woocommerce.android.iap.pub.model.IAPError
 import com.woocommerce.android.iap.pub.model.IAPSupportedResult
 import com.woocommerce.android.iap.pub.model.PurchaseStatus
 import com.woocommerce.android.iap.pub.model.WPComIsPurchasedResult
@@ -37,20 +38,12 @@ class IapEligibilityViewModel @Inject constructor(
             launch {
                 when (val result = planSupportChecker.isIAPSupported()) {
                     is IAPSupportedResult.Success -> onSuccess(result)
-                    is IAPSupportedResult.Error -> onError(result)
+                    is IAPSupportedResult.Error -> onIAPError(result.errorType)
                 }
             }
         } else {
             triggerEvent(NavigateToNextStep)
         }
-    }
-
-    private fun onError(result: IAPSupportedResult.Error) {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.SITE_CREATION_IAP_ELIGIBILITY_ERROR,
-            mapOf(AnalyticsTracker.KEY_ERROR_TYPE to result.errorType.toString())
-        )
-        onUserNotEligibleForIAP(message = R.string.store_creation_iap_eligibility_check_error_not_available_for_country)
     }
 
     private fun onUserNotEligibleForIAP(
@@ -103,9 +96,32 @@ class IapEligibilityViewModel @Inject constructor(
                         PurchaseStatus.NOT_PURCHASED -> triggerEvent(NavigateToNextStep)
                     }
                 }
-                is WPComIsPurchasedResult.Error -> triggerEvent(NavigateToNextStep)
+                is WPComIsPurchasedResult.Error -> onIAPError(result.errorType)
             }
         }
+    }
+
+    private fun onIAPError(error: IAPError) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.SITE_CREATION_IAP_ELIGIBILITY_ERROR,
+            mapOf(AnalyticsTracker.KEY_ERROR_TYPE to error.toString())
+        )
+        val message = when (error) {
+            is IAPError.RemoteCommunication,
+            is IAPError.Billing.DeveloperError,
+            is IAPError.Billing.ServiceDisconnected,
+            is IAPError.Billing.FeatureNotSupported,
+            is IAPError.Billing.BillingUnavailable,
+            is IAPError.Billing.Unknown,
+            is IAPError.Billing.ItemUnavailable,
+            is IAPError.Billing.ServiceTimeout,
+            is IAPError.Billing.ServiceUnavailable,
+            is IAPError.Billing.ItemNotOwned,
+            is IAPError.Billing.UserCancelled,
+            is IAPError.RemoteCommunication.Network -> R.string.store_creation_iap_eligibility_check_generic_error
+            is IAPError.Billing.ItemAlreadyOwned -> R.string.store_creation_iap_eligibility_check_error_existing_subscription
+        }
+        onUserNotEligibleForIAP(message = message)
     }
 
     sealed class IapEligibilityEvent : MultiLiveEvent.Event() {
