@@ -427,7 +427,6 @@ class MyStoreStatsView @JvmOverloads constructor(
         binding.statsViewRow.visitorsValueTextview.isVisible = false
     }
 
-    @Suppress("MagicNumber")
     private fun updateConversionRate() {
         val ordersCount = ordersValue.text.toString().toIntOrNull()
         val visitorsCount = visitorsValue.text.toString().toIntOrNull()
