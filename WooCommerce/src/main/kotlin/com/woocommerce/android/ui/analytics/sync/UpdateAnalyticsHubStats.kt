@@ -8,6 +8,9 @@ import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelectio
 import com.woocommerce.android.ui.analytics.sync.AnalyticsHubUpdateState.Finished
 import com.woocommerce.android.ui.analytics.sync.AnalyticsHubUpdateState.Loading
 import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.FetchStrategy
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -35,17 +38,20 @@ class UpdateAnalyticsHubStats @Inject constructor(
 
     suspend operator fun invoke(
         rangeSelection: AnalyticsHubDateRangeSelection,
-        fetchStrategy: FetchStrategy
+        fetchStrategy: FetchStrategy,
+        scope: CoroutineScope
     ): Flow<AnalyticsHubUpdateState> {
         _ordersState.update { OrdersState.Loading }
         _revenueState.update { RevenueState.Loading }
         _productsState.update { ProductsState.Loading }
         visitorsCountState.update { VisitorsState.Loading }
 
-        fetchOrdersData(rangeSelection, fetchStrategy)
-        fetchVisitorsCount(rangeSelection, fetchStrategy)
-        fetchRevenueData(rangeSelection, fetchStrategy)
-        fetchProductsData(rangeSelection, fetchStrategy)
+        awaitAll(
+            scope.fetchOrdersDataAsync(rangeSelection, fetchStrategy),
+            scope.fetchVisitorsCountAsync(rangeSelection, fetchStrategy),
+            scope.fetchRevenueDataAsync(rangeSelection, fetchStrategy),
+            scope.fetchProductsDataAsync(rangeSelection, fetchStrategy)
+        )
 
         return fullStatsRequestState
     }
@@ -66,40 +72,40 @@ class UpdateAnalyticsHubStats @Inject constructor(
             }
         }.distinctUntilChanged()
 
-    private suspend fun fetchOrdersData(
+    private fun CoroutineScope.fetchOrdersDataAsync(
         rangeSelection: AnalyticsHubDateRangeSelection,
         fetchStrategy: FetchStrategy
-    ) {
+    ) = async {
         analyticsRepository.fetchOrdersData(rangeSelection, fetchStrategy)
             .run { this as? AnalyticsRepository.OrdersResult.OrdersData }
             ?.let { _ordersState.value = OrdersState.Available(it.ordersStat) }
             ?: _ordersState.update { OrdersState.Error }
     }
 
-    private suspend fun fetchVisitorsCount(
+    private fun CoroutineScope.fetchVisitorsCountAsync(
         rangeSelection: AnalyticsHubDateRangeSelection,
         fetchStrategy: FetchStrategy
-    ) {
+    ) = async {
         analyticsRepository.fetchVisitorsData(rangeSelection, fetchStrategy)
             .run { this as? AnalyticsRepository.VisitorsResult.VisitorsData }
             ?.let { visitorsCountState.value = VisitorsState.Available(it.visitorsCount) }
             ?: visitorsCountState.update { VisitorsState.Error }
     }
 
-    private suspend fun fetchRevenueData(
+    private fun CoroutineScope.fetchRevenueDataAsync(
         rangeSelection: AnalyticsHubDateRangeSelection,
         fetchStrategy: FetchStrategy
-    ) {
+    ) = async {
         analyticsRepository.fetchRevenueData(rangeSelection, fetchStrategy)
             .run { this as? AnalyticsRepository.RevenueResult.RevenueData }
             ?.let { _revenueState.value = RevenueState.Available(it.revenueStat) }
             ?: _revenueState.update { RevenueState.Error }
     }
 
-    private suspend fun fetchProductsData(
+    private fun CoroutineScope.fetchProductsDataAsync(
         rangeSelection: AnalyticsHubDateRangeSelection,
         fetchStrategy: FetchStrategy
-    ) {
+    ) = async {
         analyticsRepository.fetchProductsData(rangeSelection, fetchStrategy)
             .run { this as? AnalyticsRepository.ProductsResult.ProductsData }
             ?.let { _productsState.value = ProductsState.Available(it.productsStat) }

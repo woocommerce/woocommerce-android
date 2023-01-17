@@ -266,13 +266,7 @@ class AnalyticsRepository @Inject constructor(
         rangeSelection: AnalyticsHubDateRangeSelection,
         fetchStrategy: FetchStrategy
     ): Result<Map<String, Int>> = coroutineScope {
-        val isSelectionAvailableInMyStoreSection =
-            rangeSelection.selectionType == TODAY ||
-                rangeSelection.selectionType == WEEK_TO_DATE ||
-                rangeSelection.selectionType == MONTH_TO_DATE ||
-                rangeSelection.selectionType == YEAR_TO_DATE
-
-        if (isSelectionAvailableInMyStoreSection) {
+        if (rangeSelection.isRangeAvailableInMyStoreSection) {
             statsRepository.fetchVisitorStats(
                 getGranularity(rangeSelection.selectionType),
                 fetchStrategy is FetchStrategy.ForceNew,
@@ -327,6 +321,18 @@ class AnalyticsRepository @Inject constructor(
 
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
     private fun getAdminPanelUrl() = selectedSite.getIfExists()?.adminUrl
+
+    /***
+     * If true, it means that the selected range is available in the My Store section.
+     *
+     * For example, if the selected range is Week to Date, this means that My Store also displays it as This Week.
+     * Month to date as This Month, Year to date as This Year, and Today as Today.
+     */
+    private val AnalyticsHubDateRangeSelection.isRangeAvailableInMyStoreSection
+        get() = selectionType == TODAY ||
+            selectionType == WEEK_TO_DATE ||
+            selectionType == MONTH_TO_DATE ||
+            selectionType == YEAR_TO_DATE
 
     companion object {
         const val ANALYTICS_REVENUE_PATH = "admin.php?page=wc-admin&path=%2Fanalytics%2Frevenue"
