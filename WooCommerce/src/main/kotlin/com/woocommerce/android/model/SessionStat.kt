@@ -1,6 +1,5 @@
 package com.woocommerce.android.model
 
-import com.woocommerce.android.extensions.limitTo
 import java.text.DecimalFormat
 
 data class SessionStat(
@@ -9,9 +8,9 @@ data class SessionStat(
 ) {
     val conversionRate: String
         get() = when {
-            visitorsCount > 0 -> (ordersCount / visitorsCount.toDouble()) * PERCENT_BASE
-            else -> 0.0
-        }.limitTo(PERCENT_BASE).let { DecimalFormat("##.#").format(it) + "%" }
+            visitorsCount > 0 -> (ordersCount / visitorsCount.toFloat()) * PERCENT_BASE
+            else -> 0f
+        }.let { DecimalFormat("##.#").format(it) + "%" }
 
     companion object {
         val EMPTY = SessionStat(
