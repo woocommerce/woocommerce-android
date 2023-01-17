@@ -46,7 +46,7 @@ abstract class BaseStoreProfilerViewModel(
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
-    fun onOptionSelected(option: StoreProfilerOptionUi) {
+    open fun onOptionSelected(option: StoreProfilerOptionUi) {
         profilerOptions.update { currentOptions ->
             currentOptions.map {
                 if (option.name == it.name) it.copy(isSelected = true)
