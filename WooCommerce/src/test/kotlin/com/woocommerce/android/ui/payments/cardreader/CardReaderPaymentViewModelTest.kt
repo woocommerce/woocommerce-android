@@ -42,6 +42,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderInteracRefundErrorMapper
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderInteracRefundableChecker
@@ -141,11 +142,13 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     )
 
     private val savedState: SavedStateHandle = CardReaderPaymentDialogFragmentArgs(
-        CardReaderFlowParam.PaymentOrRefund.Payment(ORDER_ID, ORDER)
+        CardReaderFlowParam.PaymentOrRefund.Payment(ORDER_ID, ORDER),
+        EXTERNAL,
     ).initSavedStateHandle()
 
     private val interacRefundSavedState: SavedStateHandle = CardReaderPaymentDialogFragmentArgs(
-        CardReaderFlowParam.PaymentOrRefund.Refund(ORDER_ID, refundAmount = BigDecimal(10.72))
+        CardReaderFlowParam.PaymentOrRefund.Refund(ORDER_ID, refundAmount = BigDecimal(10.72)),
+        EXTERNAL,
     ).initSavedStateHandle()
 
     private val errorMapper: CardReaderPaymentErrorMapper = mock()

@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -60,7 +61,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(vm.event.value)
-            .isEqualTo(CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToPayment(param))
+            .isEqualTo(CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToPayment(param, EXTERNAL))
     }
 
     @Test
