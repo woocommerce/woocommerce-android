@@ -5,10 +5,10 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.copyToClipboard
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import com.woocommerce.android.util.copyToClipboard
 import org.wordpress.android.util.ToastUtils
 
 class WooLogViewerActivity : AppCompatActivity() {

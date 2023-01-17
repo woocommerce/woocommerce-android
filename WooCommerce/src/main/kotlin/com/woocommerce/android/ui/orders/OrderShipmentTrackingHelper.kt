@@ -6,9 +6,9 @@ import android.widget.PopupMenu
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.copyToClipboard
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.copyToClipboard
 import com.woocommerce.android.widgets.AppRatingDialog
 import org.wordpress.android.util.ToastUtils
 

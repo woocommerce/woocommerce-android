@@ -11,6 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentCardReaderDetailBinding
+import com.woocommerce.android.extensions.copyToClipboard
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.expandHitArea
 import com.woocommerce.android.extensions.handleResult
@@ -30,7 +31,6 @@ import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateDia
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.UpdateResult
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
-import com.woocommerce.android.util.copyToClipboard
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils.dpToPx

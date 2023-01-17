@@ -2,8 +2,6 @@ package com.woocommerce.android.util
 
 import android.app.Activity
 import android.content.ActivityNotFoundException
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -140,11 +138,5 @@ object ActivityUtils {
         }
         val title = context.resources.getText(R.string.share_store_dialog_title)
         context.startActivity(Intent.createChooser(sendIntent, title))
-    }
-}
-
-fun Context.copyToClipboard(label: String, text: String) {
-    with(getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager) {
-        setPrimaryClip(ClipData.newPlainText(label, text))
     }
 }
