@@ -261,25 +261,12 @@ class AnalyticsRepository @Inject constructor(
         rangeSelection: AnalyticsHubDateRangeSelection,
         fetchStrategy: FetchStrategy
     ): Result<Map<String, Int>> = coroutineScope {
-        val isSelectionAvailableInMyStoreSection =
-            rangeSelection.selectionType == TODAY ||
-                rangeSelection.selectionType == WEEK_TO_DATE ||
-                rangeSelection.selectionType == MONTH_TO_DATE ||
-                rangeSelection.selectionType == YEAR_TO_DATE
-
-        if (isSelectionAvailableInMyStoreSection) {
-            statsRepository.fetchVisitorStats(
-                getGranularity(rangeSelection.selectionType),
-                fetchStrategy is FetchStrategy.ForceNew,
-            ).single()
-        } else {
-            statsRepository.fetchVisitorStats(
-                rangeSelection.currentRange.start.formatToYYYYmmDDhhmmss(),
-                rangeSelection.currentRange.end.formatToYYYYmmDDhhmmss(),
-                getGranularity(rangeSelection.selectionType),
-                fetchStrategy is FetchStrategy.ForceNew
-            )
-        }
+        statsRepository.fetchVisitorStats(
+            getGranularity(rangeSelection.selectionType),
+            fetchStrategy is FetchStrategy.ForceNew,
+            rangeSelection.currentRange.start.formatToYYYYmmDDhhmmss(),
+            rangeSelection.currentRange.end.formatToYYYYmmDDhhmmss()
+        ).single()
     }
 
     private fun getGranularity(selectionType: SelectionType) =
