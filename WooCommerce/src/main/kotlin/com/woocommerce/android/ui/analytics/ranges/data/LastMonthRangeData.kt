@@ -1,12 +1,14 @@
 package com.woocommerce.android.ui.analytics.ranges.data
 
 import com.woocommerce.android.extensions.endOfCurrentMonth
+import com.woocommerce.android.extensions.formatAsRangeWith
 import com.woocommerce.android.extensions.oneMonthAgo
 import com.woocommerce.android.extensions.startOfCurrentMonth
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRangeData
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 // Responsible for defining two ranges of data, the current one, starting from the first day of the last month
 // until the final day of that same month, and the previous one as two months ago, also starting
@@ -19,24 +21,33 @@ import java.util.Date
 //
 class LastMonthRangeData(
     referenceDate: Date,
+    locale: Locale,
     referenceCalendar: Calendar
 ) : AnalyticsHubTimeRangeData(referenceCalendar) {
     override val currentRange: AnalyticsHubTimeRange
     override val previousRange: AnalyticsHubTimeRange
+    override val formattedCurrentRange: String
+    override val formattedPreviousRange: String
 
     init {
         val oneMonthAgo = referenceDate.oneMonthAgo()
         calendar.time = oneMonthAgo
+        val currentStart = calendar.startOfCurrentMonth()
+        val currentEnd = calendar.endOfCurrentMonth()
         currentRange = AnalyticsHubTimeRange(
-            start = calendar.startOfCurrentMonth(),
-            end = calendar.endOfCurrentMonth()
+            start = currentStart,
+            end = currentEnd
         )
+        formattedCurrentRange = currentStart.formatAsRangeWith(currentEnd, locale, calendar)
 
         val twoMonthsAgo = oneMonthAgo.oneMonthAgo()
         calendar.time = twoMonthsAgo
+        val previousStart = calendar.startOfCurrentMonth()
+        val previousEnd = calendar.endOfCurrentMonth()
         previousRange = AnalyticsHubTimeRange(
-            start = calendar.startOfCurrentMonth(),
-            end = calendar.endOfCurrentMonth()
+            start = previousStart,
+            end = previousEnd
         )
+        formattedPreviousRange = previousStart.formatAsRangeWith(previousEnd, locale, calendar)
     }
 }

@@ -9,6 +9,7 @@ import androidx.core.text.bold
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsDateRangeCardViewBinding
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
 
 class AnalyticsDateRangeCardView @JvmOverloads constructor(
     ctx: Context,
@@ -21,8 +22,8 @@ class AnalyticsDateRangeCardView @JvmOverloads constructor(
         binding.root.setOnClickListener(onClickListener)
     }
 
-    fun updateSelectionTitle(selectionTitle: String) {
-        binding.selectionTitle.text = selectionTitle
+    fun updateSelectionTitle(selectionType: SelectionType) {
+        binding.selectionTitle.text = context.getString(selectionType.localizedResourceId)
     }
 
     fun updatePreviousRange(previousRange: String) {

@@ -83,7 +83,7 @@ class AnalyticsFragment :
             requestKey = KEY_DATE_RANGE_SELECTOR_RESULT,
             keys = viewModel.selectableRangeOptions,
             values = AnalyticsHubDateRangeSelection.SelectionType.names,
-            selectedItem = getDateRangeSelectorViewState().selectionTitle
+            selectedItem = getDateRangeSelectorViewState().selectionType.name
         )
 
     private fun setupResultHandlers(viewModel: AnalyticsViewModel) {
@@ -104,13 +104,13 @@ class AnalyticsFragment :
     }
 
     private fun handleStateChange(viewState: AnalyticsViewState) {
-        binding.analyticsDateSelectorCard.updateSelectionTitle(viewState.analyticsDateRangeSelectorState.selectionTitle)
+        binding.analyticsDateSelectorCard.updateSelectionTitle(viewState.analyticsDateRangeSelectorState.selectionType)
         binding.analyticsDateSelectorCard.updatePreviousRange(viewState.analyticsDateRangeSelectorState.previousRange)
         binding.analyticsDateSelectorCard.updateCurrentRange(viewState.analyticsDateRangeSelectorState.currentRange)
         binding.analyticsRevenueCard.updateInformation(viewState.revenueState)
         binding.analyticsOrdersCard.updateInformation(viewState.ordersState)
         binding.analyticsProductsCard.updateInformation(viewState.productsState)
-        binding.analyticsVisitorsCard.updateInformation(viewState.visitorsState)
+        binding.analyticsVisitorsCard.updateInformation(viewState.sessionState)
         binding.analyticsRefreshLayout.isRefreshing = viewState.refreshIndicator == ShowIndicator
     }
 

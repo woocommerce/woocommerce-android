@@ -36,6 +36,7 @@ import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthYear
 import com.woocommerce.android.extensions.formatDateToYearMonth
 import com.woocommerce.android.extensions.formatToDateOnly
 import com.woocommerce.android.extensions.formatToMonthDateOnly
+import com.woocommerce.android.extensions.limitTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.MyStoreFragment.Companion.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.util.CurrencyFormatter
@@ -427,6 +428,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         binding.statsViewRow.visitorsValueTextview.isVisible = false
     }
 
+    @Suppress("MagicNumber")
     private fun updateConversionRate() {
         val ordersCount = ordersValue.text.toString().toIntOrNull()
         val visitorsCount = visitorsValue.text.toString().toIntOrNull()
@@ -440,7 +442,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         val conversionRateDisplayValue = when (visitorsCount) {
             0 -> "0%"
             else -> {
-                val conversionRate = (ordersCount / visitorsCount.toFloat()) * 100
+                val conversionRate = ((ordersCount / visitorsCount.toDouble()) * 100).limitTo(100.0)
                 DecimalFormat("##.#").format(conversionRate) + "%"
             }
         }

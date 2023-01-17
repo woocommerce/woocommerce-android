@@ -1,11 +1,14 @@
 package com.woocommerce.android.ui.analytics.ranges.data
 
+import com.woocommerce.android.extensions.endOfCurrentMonth
+import com.woocommerce.android.extensions.formatAsRangeWith
 import com.woocommerce.android.extensions.oneMonthAgo
 import com.woocommerce.android.extensions.startOfCurrentMonth
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRangeData
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 // Responsible for defining two ranges of data, the current one, starting from the first day of the current month
 // until the current date, and the previous one, starting from the first day of the previous month
@@ -18,23 +21,30 @@ import java.util.Date
 //
 class MonthToDateRangeData(
     referenceDate: Date,
+    locale: Locale,
     referenceCalendar: Calendar
 ) : AnalyticsHubTimeRangeData(referenceCalendar) {
     override val currentRange: AnalyticsHubTimeRange
     override val previousRange: AnalyticsHubTimeRange
+    override val formattedCurrentRange: String
+    override val formattedPreviousRange: String
 
     init {
         calendar.time = referenceDate
+        val currentStart = calendar.startOfCurrentMonth()
         currentRange = AnalyticsHubTimeRange(
-            start = calendar.startOfCurrentMonth(),
-            end = referenceDate
+            start = currentStart,
+            end = calendar.endOfCurrentMonth()
         )
+        formattedCurrentRange = currentStart.formatAsRangeWith(referenceDate, locale, calendar)
 
         val oneMonthAgo = referenceDate.oneMonthAgo()
         calendar.time = oneMonthAgo
+        val previousStart = calendar.startOfCurrentMonth()
         previousRange = AnalyticsHubTimeRange(
-            start = calendar.startOfCurrentMonth(),
+            start = previousStart,
             end = oneMonthAgo
         )
+        formattedPreviousRange = previousStart.formatAsRangeWith(oneMonthAgo, locale, calendar)
     }
 }

@@ -1,21 +1,22 @@
-package com.woocommerce.android.ui.analytics
+package com.woocommerce.android.ui.analytics.sync
 
-import com.woocommerce.android.extensions.formatToYYYYmmDD
-import com.woocommerce.android.extensions.oneDayAgo
+import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
-import com.woocommerce.android.model.VisitorsStat
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersError
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsError
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.MONTH_TO_DATE
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.TODAY
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.WEEK_TO_DATE
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.YEAR_TO_DATE
+import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.OrdersResult.OrdersError
+import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.ProductsResult.ProductsError
+import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.RevenueResult.RevenueData
+import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.RevenueResult.RevenueError
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.Deferred
@@ -26,8 +27,6 @@ import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
-import org.wordpress.android.fluxc.model.stats.time.VisitsAndViewsModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.DAYS
@@ -35,8 +34,6 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.MONTHS
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.WEEKS
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import org.wordpress.android.fluxc.utils.DateUtils
-import java.util.Date
 import javax.inject.Inject
 import kotlin.math.round
 
@@ -182,73 +179,20 @@ class AnalyticsRepository @Inject constructor(
         )
     }
 
-    suspend fun fetchRecentVisitorsData(
+    suspend fun fetchVisitorsData(
         rangeSelection: AnalyticsHubDateRangeSelection,
         fetchStrategy: FetchStrategy
     ): VisitorsResult {
-        val (previousVisitors, previousViews) = getVisitorsStats(
-            rangeSelection.previousRange.end,
-            getGranularity(rangeSelection.selectionType),
-            fetchStrategy,
-            MOST_RECENT_VISITORS_AND_VIEW_FETCH_LIMIT
-        ).model?.dates?.lastOrNull()
-            ?.let { Pair(it.visitors, it.views) }
-            ?: Pair(0, 0)
-
-        val currentPeriodStats = getVisitorsStats(
-            rangeSelection.previousRange.end,
-            getGranularity(rangeSelection.selectionType),
-            fetchStrategy,
-            MOST_RECENT_VISITORS_AND_VIEW_FETCH_LIMIT
-        ).model?.dates?.lastOrNull()
-
-        return currentPeriodStats?.let {
-            VisitorsResult.VisitorsData(
-                VisitorsStat(
-                    it.visitors.toInt(),
-                    it.views.toInt(),
-                    calculateDeltaPercentage(previousVisitors.toDouble(), it.visitors.toDouble()),
-                    calculateDeltaPercentage(previousViews.toDouble(), it.views.toDouble())
-                )
+        return getVisitorsCount(rangeSelection, fetchStrategy)
+            .fold(
+                onFailure = { VisitorsResult.VisitorsError },
+                onSuccess = { VisitorsResult.VisitorsData(it.values.sum()) }
             )
-        } ?: VisitorsResult.VisitorsError
-    }
-
-    suspend fun fetchQuarterVisitorsData(
-        rangeSelection: AnalyticsHubDateRangeSelection,
-        fetchStrategy: FetchStrategy
-    ): VisitorsResult {
-        val (previousVisitors, previousViews) = getVisitorsStats(
-            rangeSelection.previousRange.end,
-            getGranularity(rangeSelection.selectionType),
-            fetchStrategy,
-            QUARTER_VISITORS_AND_VIEW_FETCH_LIMIT
-        ).model?.dates?.foldStatsWithin(rangeSelection.previousRange)
-            ?: Pair(0, 0)
-
-        val currentPeriodStats = getVisitorsStats(
-            rangeSelection.previousRange.end,
-            getGranularity(rangeSelection.selectionType),
-            fetchStrategy,
-            QUARTER_VISITORS_AND_VIEW_FETCH_LIMIT
-        ).model?.dates?.foldStatsWithin(rangeSelection.previousRange)
-
-        return currentPeriodStats?.let { (currentVisitors, currentViews) ->
-            VisitorsResult.VisitorsData(
-                VisitorsStat(
-                    currentVisitors.toInt(),
-                    currentViews.toInt(),
-                    calculateDeltaPercentage(previousVisitors.toDouble(), currentVisitors.toDouble()),
-                    calculateDeltaPercentage(previousViews.toDouble(), currentViews.toDouble())
-                )
-            )
-        } ?: VisitorsResult.VisitorsError
     }
 
     fun getRevenueAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_REVENUE_PATH
     fun getOrdersAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_ORDERS_PATH
     fun getProductsAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_PRODUCTS_PATH
-    fun getJetpackStatsPanelUrl() = getAdminPanelUrl() + ANALYTICS_JETPACK_STATS_PATH
 
     private suspend fun getCurrentPeriodStats(
         rangeSelection: AnalyticsHubDateRangeSelection,
@@ -256,8 +200,8 @@ class AnalyticsRepository @Inject constructor(
     ): Result<WCRevenueStatsModel?> = coroutineScope {
         val granularity = getGranularity(rangeSelection.selectionType)
         val currentPeriod = rangeSelection.currentRange
-        val startDate = currentPeriod.start.formatToYYYYmmDD()
-        val endDate = currentPeriod.end.formatToYYYYmmDD()
+        val startDate = currentPeriod.start.formatToYYYYmmDDhhmmss()
+        val endDate = currentPeriod.end.formatToYYYYmmDDhhmmss()
 
         getCurrentRevenueMutex.withLock {
             if (shouldUpdateCurrentStats(startDate, endDate, fetchStrategy == FetchStrategy.ForceNew)) {
@@ -278,8 +222,8 @@ class AnalyticsRepository @Inject constructor(
     ): Result<WCRevenueStatsModel?> = coroutineScope {
         val granularity = getGranularity(rangeSelection.selectionType)
         val previousPeriod = rangeSelection.previousRange
-        val startDate = previousPeriod.start.formatToYYYYmmDD()
-        val endDate = previousPeriod.end.formatToYYYYmmDD()
+        val startDate = previousPeriod.start.formatToYYYYmmDDhhmmss()
+        val endDate = previousPeriod.end.formatToYYYYmmDDhhmmss()
 
         getPreviousRevenueMutex.withLock {
             if (shouldUpdatePreviousStats(startDate, endDate, fetchStrategy == FetchStrategy.ForceNew)) {
@@ -300,56 +244,40 @@ class AnalyticsRepository @Inject constructor(
         quantity: Int
     ): Result<List<TopPerformerProductEntity>> {
         val totalPeriod = rangeSelection.currentRange
-        val startDate = totalPeriod.start.formatToYYYYmmDD()
-        val endDate = totalPeriod.end.formatToYYYYmmDD()
-
-        val site = selectedSite.get()
-        val startDateFormatted = DateUtils.getStartDateForSite(site, startDate)
-        val endDateFormatted = DateUtils.getEndDateForSite(site, endDate)
+        val startDate = totalPeriod.start.formatToYYYYmmDDhhmmss()
+        val endDate = totalPeriod.end.formatToYYYYmmDDhhmmss()
 
         return statsRepository.fetchTopPerformerProducts(
             forceRefresh = fetchStrategy is FetchStrategy.ForceNew,
-            startDate = startDateFormatted,
-            endDate = endDateFormatted,
+            startDate = startDate,
+            endDate = endDate,
             quantity = quantity
         ).map {
-            statsRepository.getTopPerformers(startDateFormatted, endDateFormatted)
+            statsRepository.getTopPerformers(startDate, endDate)
         }
     }
 
-    private suspend fun getVisitorsStats(
-        endDate: Date,
-        granularity: StatsGranularity,
-        fetchStrategy: FetchStrategy,
-        fetchingAmountLimit: Int = VISITORS_AND_VIEW_DEFAULT_FETCH_LIMIT
-    ): WooResult<VisitsAndViewsModel> = coroutineScope {
-        val site = selectedSite.get()
-
-        statsRepository.fetchViewAndVisitorsStatsWithinRange(
-            endDate = endDate,
-            granularity = granularity.asJetpackGranularity(),
-            forced = fetchStrategy is FetchStrategy.ForceNew,
-            site = site,
-            fetchingAmountLimit
-        )
+    private suspend fun getVisitorsCount(
+        rangeSelection: AnalyticsHubDateRangeSelection,
+        fetchStrategy: FetchStrategy
+    ): Result<Map<String, Int>> = coroutineScope {
+        statsRepository.fetchVisitorStats(
+            getGranularity(rangeSelection.selectionType),
+            fetchStrategy is FetchStrategy.ForceNew,
+            rangeSelection.currentRange.start.formatToYYYYmmDDhhmmss(),
+            rangeSelection.currentRange.end.formatToYYYYmmDDhhmmss()
+        ).single()
     }
 
     private fun getGranularity(selectionType: SelectionType) =
         when (selectionType) {
-            SelectionType.TODAY, SelectionType.YESTERDAY -> DAYS
-            SelectionType.LAST_WEEK, SelectionType.WEEK_TO_DATE -> WEEKS
-            SelectionType.LAST_MONTH, SelectionType.MONTH_TO_DATE -> MONTHS
+            TODAY, SelectionType.YESTERDAY -> DAYS
+            SelectionType.LAST_WEEK, WEEK_TO_DATE -> WEEKS
+            SelectionType.LAST_MONTH, MONTH_TO_DATE -> MONTHS
             SelectionType.LAST_QUARTER, SelectionType.QUARTER_TO_DATE -> MONTHS
-            SelectionType.LAST_YEAR, SelectionType.YEAR_TO_DATE -> YEARS
+            SelectionType.LAST_YEAR, YEAR_TO_DATE -> YEARS
             SelectionType.CUSTOM -> DAYS
         }
-
-    private fun StatsGranularity.asJetpackGranularity() = when (this) {
-        DAYS -> org.wordpress.android.fluxc.network.utils.StatsGranularity.DAYS
-        WEEKS -> org.wordpress.android.fluxc.network.utils.StatsGranularity.WEEKS
-        MONTHS -> org.wordpress.android.fluxc.network.utils.StatsGranularity.MONTHS
-        YEARS -> org.wordpress.android.fluxc.network.utils.StatsGranularity.YEARS
-    }
 
     private fun calculateDeltaPercentage(previousVal: Double, currentVal: Double): DeltaPercentage = when {
         previousVal <= ZERO_VALUE -> DeltaPercentage.NotExist
@@ -382,36 +310,16 @@ class AnalyticsRepository @Inject constructor(
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
     private fun getAdminPanelUrl() = selectedSite.getIfExists()?.adminUrl
 
-    /***
-     * This method will select all Visitors and Views data within a given date range interval
-     * and fold all this data into a Pair containing the total visitors and total views of that period
-     */
-    private fun List<VisitsAndViewsModel.PeriodData>.foldStatsWithin(
-        dateRange: AnalyticsHubTimeRange
-    ): Pair<Long, Long> {
-        val startDate = dateRange.start.oneDayAgo()
-
-        return this.asSequence()
-            .filter { startDate.before(DateUtils.getDateFromString(it.period)) }
-            .map { Pair(it.visitors, it.views) }
-            .fold(Pair(0L, 0L)) { acc, pair -> Pair(acc.first + pair.first, acc.second + pair.second) }
-    }
-
     companion object {
         const val ANALYTICS_REVENUE_PATH = "admin.php?page=wc-admin&path=%2Fanalytics%2Frevenue"
         const val ANALYTICS_ORDERS_PATH = "admin.php?page=wc-admin&path=%2Fanalytics%2Forders"
         const val ANALYTICS_PRODUCTS_PATH = "admin.php?page=wc-admin&path=%2Fanalytics%2Fproducts"
-        const val ANALYTICS_JETPACK_STATS_PATH = "admin.php?page=stats"
 
         const val ZERO_VALUE = 0.0
         const val MINUS_ONE = -1
         const val ONE_H_PERCENT = 100
 
         const val TOP_PRODUCTS_LIST_SIZE = 5
-
-        const val VISITORS_AND_VIEW_DEFAULT_FETCH_LIMIT = 15
-        const val MOST_RECENT_VISITORS_AND_VIEW_FETCH_LIMIT = 1
-        const val QUARTER_VISITORS_AND_VIEW_FETCH_LIMIT = 3
     }
 
     sealed class RevenueResult {
@@ -431,7 +339,7 @@ class AnalyticsRepository @Inject constructor(
 
     sealed class VisitorsResult {
         object VisitorsError : VisitorsResult()
-        data class VisitorsData(val visitorsStat: VisitorsStat) : VisitorsResult()
+        data class VisitorsData(val visitorsCount: Int) : VisitorsResult()
     }
 
     sealed class FetchStrategy {

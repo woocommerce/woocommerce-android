@@ -1,11 +1,14 @@
 package com.woocommerce.android.ui.analytics.ranges.data
 
+import com.woocommerce.android.extensions.endOfCurrentQuarter
+import com.woocommerce.android.extensions.formatAsRangeWith
 import com.woocommerce.android.extensions.oneQuarterAgo
 import com.woocommerce.android.extensions.startOfCurrentQuarter
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRangeData
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 // Responsible for defining two ranges of data, the current one, starting from the first day of the current quarter
 // until the current date and the previous one, starting from the first day of the previous quarter
@@ -18,23 +21,30 @@ import java.util.Date
 //
 class QuarterToDateRangeData(
     referenceDate: Date,
+    locale: Locale,
     referenceCalendar: Calendar
 ) : AnalyticsHubTimeRangeData(referenceCalendar) {
     override val currentRange: AnalyticsHubTimeRange
     override val previousRange: AnalyticsHubTimeRange
+    override val formattedCurrentRange: String
+    override val formattedPreviousRange: String
 
     init {
         calendar.time = referenceDate
+        val currentStart = calendar.startOfCurrentQuarter()
         currentRange = AnalyticsHubTimeRange(
-            start = calendar.startOfCurrentQuarter(),
-            end = referenceDate
+            start = currentStart,
+            end = calendar.endOfCurrentQuarter()
         )
+        formattedCurrentRange = currentStart.formatAsRangeWith(referenceDate, locale, calendar)
 
         val oneQuarterAgo = referenceDate.oneQuarterAgo()
         calendar.time = oneQuarterAgo
+        val previousStart = calendar.startOfCurrentQuarter()
         previousRange = AnalyticsHubTimeRange(
-            start = calendar.startOfCurrentQuarter(),
+            start = previousStart,
             end = oneQuarterAgo
         )
+        formattedPreviousRange = previousStart.formatAsRangeWith(oneQuarterAgo, locale, calendar)
     }
 }

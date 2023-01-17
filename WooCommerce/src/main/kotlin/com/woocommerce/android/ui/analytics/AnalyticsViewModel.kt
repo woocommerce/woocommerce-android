@@ -7,31 +7,27 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.DeltaPercentage
-import com.woocommerce.android.model.ProductItem
-import com.woocommerce.android.model.VisitorsStat
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.ForceNew
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.Saved
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersData
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersError
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsData
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsError
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult.VisitorsData
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult.VisitorsError
+import com.woocommerce.android.model.OrdersStat
+import com.woocommerce.android.model.ProductsStat
+import com.woocommerce.android.model.RevenueStat
+import com.woocommerce.android.model.SessionStat
 import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.DataViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.LoadingViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.NoDataState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListCardItemViewState
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.LAST_QUARTER
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.QUARTER_TO_DATE
+import com.woocommerce.android.ui.analytics.sync.AnalyticsHubUpdateState.Finished
+import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.FetchStrategy.ForceNew
+import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.FetchStrategy.Saved
+import com.woocommerce.android.ui.analytics.sync.OrdersState
+import com.woocommerce.android.ui.analytics.sync.ProductsState
+import com.woocommerce.android.ui.analytics.sync.RevenueState
+import com.woocommerce.android.ui.analytics.sync.SessionState
+import com.woocommerce.android.ui.analytics.sync.UpdateAnalyticsHubStats
 import com.woocommerce.android.ui.mystore.MyStoreStatsUsageTracksEventEmitter
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.locale.LocaleProvider
@@ -42,6 +38,9 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Date
@@ -55,11 +54,11 @@ import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.NoDa
 class AnalyticsViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
-    private val analyticsRepository: AnalyticsRepository,
     private val transactionLauncher: AnalyticsHubTransactionLauncher,
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
+    private val updateStats: UpdateAnalyticsHubStats,
     private val localeProvider: LocaleProvider,
-    savedState: SavedStateHandle,
+    savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
     private val navArgs: AnalyticsFragmentArgs by savedState.navArgs()
@@ -70,9 +69,6 @@ class AnalyticsViewModel @Inject constructor(
         scope = viewModelScope,
         initialValue = navArgs.targetGranularity.generateLocalizedSelectionData()
     )
-
-    private val ranges
-        get() = rangeSelectionState.value
 
     private val mutableState = MutableStateFlow(
         AnalyticsViewState(
@@ -92,14 +88,15 @@ class AnalyticsViewModel @Inject constructor(
             .toTypedArray()
     }
 
+    private val ranges
+        get() = rangeSelectionState.value
+
     init {
-        viewModelScope.launch {
-            rangeSelectionState.collect {
-                updateDateSelector()
-                trackSelectedDateRange()
-                refreshAllAnalyticsAtOnce(isRefreshing = false, showSkeleton = true)
-            }
-        }
+        observeOrdersStatChanges()
+        observeSessionChanges()
+        observeProductsChanges()
+        observeRevenueChanges()
+        observeRangeSelectionChanges()
     }
 
     fun onNewRangeSelection(selectionType: SelectionType) {
@@ -114,14 +111,21 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     fun onCustomDateRangeClicked() {
-        val fromMillis = ranges.currentRange.start.time
-        val toMillis = ranges.currentRange.end.time
-        triggerEvent(AnalyticsViewEvent.OpenDatePicker(fromMillis, toMillis))
+        val startTimestamp = ranges.currentRange.start.time
+        val endTimestamp = ranges.currentRange.end.time
+        triggerEvent(AnalyticsViewEvent.OpenDatePicker(startTimestamp, endTimestamp))
     }
 
     fun onRefreshRequested() {
         viewModelScope.launch {
-            refreshAllAnalyticsAtOnce(isRefreshing = true, showSkeleton = false)
+            updateStats(
+                rangeSelection = ranges,
+                fetchStrategy = getFetchStrategy(isRefreshing = true)
+            ).collect {
+                mutableState.update { viewState ->
+                    viewState.copy(refreshIndicator = if (it is Finished) NotShowIndicator else ShowIndicator)
+                }
+            }
         }
     }
 
@@ -133,131 +137,92 @@ class AnalyticsViewModel @Inject constructor(
 
     fun onTrackableUIInteraction() = usageTracksEventEmitter.interacted()
 
-    private fun refreshAllAnalyticsAtOnce(isRefreshing: Boolean, showSkeleton: Boolean) {
-        updateRevenue(isRefreshing, showSkeleton)
-        updateOrders(isRefreshing, showSkeleton)
-        updateProducts(isRefreshing, showSkeleton)
-        updateVisitors(isRefreshing, showSkeleton)
+    private fun formatValue(value: String, currencyCode: String?) =
+        currencyCode?.let { currencyFormatter.formatCurrency(value, it) } ?: value
+
+    private fun getFetchStrategy(isRefreshing: Boolean) = if (isRefreshing) ForceNew else Saved
+
+    private fun observeRangeSelectionChanges() {
+        rangeSelectionState.onEach {
+            updateDateSelector()
+            trackSelectedDateRange()
+            updateStats(
+                rangeSelection = it,
+                fetchStrategy = getFetchStrategy(isRefreshing = false)
+            )
+        }.launchIn(viewModelScope)
     }
 
-    private fun updateRevenue(isRefreshing: Boolean, showSkeleton: Boolean) =
-        launch {
-            val fetchStrategy = getFetchStrategy(isRefreshing)
-
-            if (showSkeleton) mutableState.value = viewState.value.copy(revenueState = LoadingViewState)
-            mutableState.value = viewState.value.copy(
-                refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
-            )
-
-            analyticsRepository.fetchRevenueData(rangeSelectionState.value, fetchStrategy)
-                .let {
-                    when (it) {
-                        is RevenueData -> {
-                            mutableState.value = viewState.value.copy(
-                                refreshIndicator = NotShowIndicator,
-                                revenueState = buildRevenueDataViewState(it)
-                            )
-                            transactionLauncher.onRevenueFetched()
-                        }
-                        is RevenueError -> mutableState.value = viewState.value.copy(
-                            refreshIndicator = NotShowIndicator,
-                            revenueState = NoDataState(resourceProvider.getString(R.string.analytics_revenue_no_data))
-                        )
-                    }
+    private fun observeOrdersStatChanges() {
+        updateStats.ordersState.onEach { state ->
+            when (state) {
+                is OrdersState.Available -> mutableState.update { viewState ->
+                    transactionLauncher.onOrdersFetched()
+                    viewState.copy(ordersState = buildOrdersDataViewState(state.orders))
                 }
-        }
-
-    private fun updateOrders(isRefreshing: Boolean, showSkeleton: Boolean) =
-        launch {
-            val fetchStrategy = getFetchStrategy(isRefreshing)
-
-            if (showSkeleton) mutableState.value = viewState.value.copy(ordersState = LoadingViewState)
-            mutableState.value = viewState.value.copy(
-                refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
-            )
-            analyticsRepository.fetchOrdersData(rangeSelectionState.value, fetchStrategy)
-                .let {
-                    when (it) {
-                        is OrdersData -> {
-                            mutableState.value = viewState.value.copy(
-                                ordersState = buildOrdersDataViewState(it)
-                            )
-                            transactionLauncher.onOrdersFetched()
-                        }
-                        is OrdersError -> mutableState.value = viewState.value.copy(
-                            ordersState = NoDataState(resourceProvider.getString(R.string.analytics_orders_no_data))
-                        )
-                    }
+                is OrdersState.Error -> mutableState.update { viewState ->
+                    val message = resourceProvider.getString(R.string.analytics_orders_no_data)
+                    viewState.copy(ordersState = NoDataState(message))
                 }
-        }
-
-    private fun updateProducts(isRefreshing: Boolean, showSkeleton: Boolean) =
-        launch {
-            val fetchStrategy = getFetchStrategy(isRefreshing)
-            if (showSkeleton) mutableState.value = viewState.value.copy(productsState = LoadingProductsViewState)
-            mutableState.value = viewState.value.copy(
-                refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
-            )
-            analyticsRepository.fetchProductsData(rangeSelectionState.value, fetchStrategy)
-                .let {
-                    when (it) {
-                        is ProductsData -> {
-                            mutableState.value = viewState.value.copy(
-                                productsState = buildProductsDataState(
-                                    it.productsStat.itemsSold,
-                                    it.productsStat.itemsSoldDelta,
-                                    it.productsStat.products
-                                )
-                            )
-                            transactionLauncher.onProductsFetched()
-                        }
-                        ProductsError -> mutableState.value = viewState.value.copy(
-                            productsState = ProductsNoDataState(
-                                resourceProvider.getString(R.string.analytics_products_no_data)
-                            )
-                        )
-                    }
+                is OrdersState.Loading -> mutableState.update { viewState ->
+                    LoadingViewState.let { viewState.copy(ordersState = it) }
                 }
-        }
-
-    private fun updateVisitors(isRefreshing: Boolean, showSkeleton: Boolean) =
-        launch {
-            val timePeriod = ranges.selectionType
-            val fetchStrategy = getFetchStrategy(isRefreshing)
-            val isQuarterSelection = (timePeriod == QUARTER_TO_DATE) || (timePeriod == LAST_QUARTER)
-
-            if (timePeriod == SelectionType.CUSTOM) {
-                mutableState.value = viewState.value.copy(visitorsState = AnalyticsInformationViewState.HiddenState)
-                transactionLauncher.onVisitorsFetched()
-                return@launch
             }
+        }.launchIn(viewModelScope)
+    }
 
-            if (showSkeleton) mutableState.value = viewState.value.copy(visitorsState = LoadingViewState)
-            mutableState.value = viewState.value.copy(
-                refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
-            )
-
-            if (isQuarterSelection) {
-                analyticsRepository.fetchQuarterVisitorsData(rangeSelectionState.value, fetchStrategy)
-            } else {
-                analyticsRepository.fetchRecentVisitorsData(rangeSelectionState.value, fetchStrategy)
-            }.handleVisitorsResult()
-        }
-
-    private fun VisitorsResult.handleVisitorsResult() {
-        when (this) {
-            is VisitorsData -> {
-                mutableState.value = viewState.value.copy(
-                    refreshIndicator = NotShowIndicator,
-                    visitorsState = buildVisitorsDataViewState(visitorsStat)
-                )
-                transactionLauncher.onVisitorsFetched()
+    private fun observeSessionChanges() {
+        updateStats.sessionState.onEach { state ->
+            when (state) {
+                is SessionState.Available -> mutableState.update { viewState ->
+                    transactionLauncher.onSessionFetched()
+                    viewState.copy(sessionState = buildSessionViewState(state.session))
+                }
+                is SessionState.Error -> mutableState.update { viewState ->
+                    val message = "No session data"
+                    viewState.copy(sessionState = NoDataState(message))
+                }
+                is SessionState.Loading -> mutableState.update { viewState ->
+                    LoadingViewState.let { viewState.copy(sessionState = it) }
+                }
             }
-            is VisitorsError -> mutableState.value = viewState.value.copy(
-                refreshIndicator = NotShowIndicator,
-                visitorsState = NoDataState("No visitors data")
-            )
-        }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun observeProductsChanges() {
+        updateStats.productsState.onEach { state ->
+            when (state) {
+                is ProductsState.Available -> mutableState.update { viewState ->
+                    transactionLauncher.onProductsFetched()
+                    viewState.copy(productsState = buildProductsDataState(state.products))
+                }
+                is ProductsState.Error -> mutableState.update { viewState ->
+                    val message = resourceProvider.getString(R.string.analytics_products_no_data)
+                    viewState.copy(productsState = ProductsNoDataState(message))
+                }
+                is ProductsState.Loading -> mutableState.update { viewState ->
+                    ProductsViewState.LoadingViewState.let { viewState.copy(productsState = it) }
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun observeRevenueChanges() {
+        updateStats.revenueState.onEach { state ->
+            when (state) {
+                is RevenueState.Available -> mutableState.update { viewState ->
+                    transactionLauncher.onRevenueFetched()
+                    viewState.copy(revenueState = buildRevenueDataViewState(state.revenue))
+                }
+                is RevenueState.Error -> mutableState.update { viewState ->
+                    val message = resourceProvider.getString(R.string.analytics_revenue_no_data)
+                    viewState.copy(revenueState = NoDataState(message))
+                }
+                is RevenueState.Loading -> mutableState.update { viewState ->
+                    LoadingViewState.let { viewState.copy(revenueState = it) }
+                }
+            }
+        }.launchIn(viewModelScope)
     }
 
     private fun updateDateSelector() {
@@ -265,77 +230,76 @@ class AnalyticsViewModel @Inject constructor(
             analyticsDateRangeSelectorState = viewState.value.analyticsDateRangeSelectorState.copy(
                 previousRange = ranges.previousRangeDescription,
                 currentRange = ranges.currentRangeDescription,
-                selectionTitle = resourceProvider.getString(ranges.selectionType.localizedResourceId)
+                selectionType = ranges.selectionType
             )
         )
     }
 
-    private fun formatValue(value: String, currencyCode: String?) = currencyCode
-        ?.let { currencyFormatter.formatCurrency(value, it) }
-        ?: value
-
-    private fun buildVisitorsDataViewState(
-        stats: VisitorsStat
+    private fun buildSessionViewState(
+        stats: SessionStat
     ) = DataViewState(
-        title = resourceProvider.getString(R.string.analytics_visitors_and_views_card_title),
+        title = resourceProvider.getString(R.string.analytics_session_card_title),
         leftSection = AnalyticsInformationSectionViewState(
-            title = resourceProvider.getString(R.string.analytics_visitors_subtitle),
+            resourceProvider.getString(R.string.analytics_views_subtitle),
             stats.visitorsCount.toString(),
-            stats.avgVisitorsDelta.run { this as? DeltaPercentage.Value }?.value,
-            listOf() /** Add charts calculation to Visitors and Views stats **/
+            null,
+            listOf()
         ),
         rightSection = AnalyticsInformationSectionViewState(
-            resourceProvider.getString(R.string.analytics_views_subtitle),
-            stats.viewsCount.toString(),
-            stats.avgViewsDelta.run { this as? DeltaPercentage.Value }?.value,
-            listOf() /** Add charts calculation to Visitors and Views stats **/
+            resourceProvider.getString(R.string.analytics_conversion_subtitle),
+            stats.conversionRate,
+            null,
+            listOf()
         )
     )
 
-    private fun buildRevenueDataViewState(data: RevenueData) =
+    private fun buildRevenueDataViewState(revenueStat: RevenueStat) =
         DataViewState(
             title = resourceProvider.getString(R.string.analytics_revenue_card_title),
             leftSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_total_sales_title),
-                formatValue(data.revenueStat.totalValue.toString(), data.revenueStat.currencyCode),
-                if (data.revenueStat.totalDelta is DeltaPercentage.Value) data.revenueStat.totalDelta.value else null,
-                data.revenueStat.totalRevenueByInterval.map { it.toFloat() }
+                formatValue(revenueStat.totalValue.toString(), revenueStat.currencyCode),
+                if (revenueStat.totalDelta is DeltaPercentage.Value) revenueStat.totalDelta.value else null,
+                revenueStat.totalRevenueByInterval.map { it.toFloat() }
             ),
             rightSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_net_sales_title),
-                formatValue(data.revenueStat.netValue.toString(), data.revenueStat.currencyCode),
-                if (data.revenueStat.netDelta is DeltaPercentage.Value) data.revenueStat.netDelta.value else null,
-                data.revenueStat.netRevenueByInterval.map { it.toFloat() }
+                formatValue(revenueStat.netValue.toString(), revenueStat.currencyCode),
+                if (revenueStat.netDelta is DeltaPercentage.Value) revenueStat.netDelta.value else null,
+                revenueStat.netRevenueByInterval.map { it.toFloat() }
             ),
         )
 
-    private fun buildOrdersDataViewState(data: OrdersData) =
+    private fun buildOrdersDataViewState(ordersStats: OrdersStat) =
         DataViewState(
             title = resourceProvider.getString(R.string.analytics_orders_card_title),
             leftSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_total_orders_title),
-                data.ordersStat.ordersCount.toString(),
-                if (data.ordersStat.ordersCountDelta is DeltaPercentage.Value) {
-                    data.ordersStat.ordersCountDelta.value
+                ordersStats.ordersCount.toString(),
+                if (ordersStats.ordersCountDelta is DeltaPercentage.Value) {
+                    ordersStats.ordersCountDelta.value
                 } else {
                     null
                 },
-                data.ordersStat.ordersCountByInterval.map { it.toFloat() }
+                ordersStats.ordersCountByInterval.map { it.toFloat() }
             ),
             rightSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_avg_orders_title),
-                formatValue(data.ordersStat.avgOrderValue.toString(), data.ordersStat.currencyCode),
-                if (data.ordersStat.avgOrderDelta is DeltaPercentage.Value) {
-                    data.ordersStat.avgOrderDelta.value
+                formatValue(ordersStats.avgOrderValue.toString(), ordersStats.currencyCode),
+                if (ordersStats.avgOrderDelta is DeltaPercentage.Value) {
+                    ordersStats.avgOrderDelta.value
                 } else {
                     null
                 },
-                data.ordersStat.avgOrderValueByInterval.map { it.toFloat() }
+                ordersStats.avgOrderValueByInterval.map { it.toFloat() }
             )
         )
 
-    private fun buildProductsDataState(itemsSold: Int, delta: DeltaPercentage, products: List<ProductItem>) =
-        ProductsViewState.DataViewState(
+    private fun buildProductsDataState(productsStat: ProductsStat): ProductsViewState.DataViewState {
+        val itemsSold = productsStat.itemsSold
+        val delta = productsStat.itemsSoldDelta
+        val products = productsStat.products
+        return ProductsViewState.DataViewState(
             title = resourceProvider.getString(R.string.analytics_products_card_title),
             subTitle = resourceProvider.getString(R.string.analytics_products_list_items_sold),
             subTitleValue = itemsSold.toString(),
@@ -357,8 +321,7 @@ class AnalyticsViewModel @Inject constructor(
                     )
                 }
         )
-
-    private fun getFetchStrategy(isRefreshing: Boolean) = if (isRefreshing) ForceNew else Saved
+    }
 
     private fun trackSelectedDateRange() {
         onTrackableUIInteraction()
