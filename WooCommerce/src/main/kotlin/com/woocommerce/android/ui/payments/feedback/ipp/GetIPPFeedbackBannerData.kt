@@ -1,9 +1,12 @@
 package com.woocommerce.android.ui.payments.feedback.ipp
 
+import android.os.Parcelable
+import androidx.annotation.StringRes
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.daysAgo
 import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.ui.payments.GetActivePaymentsPlugin
-import org.jetbrains.annotations.VisibleForTesting
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentTransactionsSummaryResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
@@ -11,15 +14,14 @@ import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import java.util.Date
 import javax.inject.Inject
 
-class GetIPPFeedbackSurveyUrl @Inject constructor(
+class GetIPPFeedbackBannerData @Inject constructor(
     private val shouldShowFeedbackBanner: ShouldShowFeedbackBanner,
     private val ippStore: WCInPersonPaymentsStore,
     private val siteModel: SiteModel,
     private val getActivePaymentsPlugin: GetActivePaymentsPlugin,
 ) {
     @Suppress("ReturnCount")
-    @Throws(IllegalStateException::class)
-    suspend operator fun invoke(): String {
+    suspend operator fun invoke(): IPPFeedbackBanner {
         requireShouldShowFeedbackBanner()
 
         val activePaymentsPlugin = requireWooCommercePaymentsPlugin()
@@ -38,14 +40,14 @@ class GetIPPFeedbackSurveyUrl @Inject constructor(
         requirePositiveNumberOfTransactions(numberOfTransactions)
 
         return when (numberOfTransactions) {
-            0 -> SURVEY_URL_IPP_NEWBIE
-            in IPP_BEGINNER_TRANSACTIONS_RANGE -> SURVEY_URL_IPP_BEGINNER
-            else -> SURVEY_URL_IPP_NINJA
+            0 -> IPPFeedbackBanner(BANNER_MESSAGE_NEWBIE, SURVEY_URL_IPP_NEWBIE)
+            in IPP_BEGINNER_TRANSACTIONS_RANGE -> IPPFeedbackBanner(BANNER_MESSAGE_BEGINNER, SURVEY_URL_IPP_BEGINNER)
+            else -> IPPFeedbackBanner(BANNER_MESSAGE_NINJA, SURVEY_URL_IPP_NINJA)
         }
     }
 
     private fun requireTransactionsCount(response: WooPayload<WCPaymentTransactionsSummaryResult>): Int {
-        return response.result?.transactionsCount ?: throw IllegalStateException("Transactions count must not be null")
+        return checkNotNull(response.result?.transactionsCount) { "Transactions count must not be null" }
     }
 
     private fun requireSuccessfulTransactionsSummaryResponse(response: WooPayload<WCPaymentTransactionsSummaryResult>) {
@@ -67,18 +69,26 @@ class GetIPPFeedbackSurveyUrl @Inject constructor(
         }
     }
 
+    @Parcelize
+    data class IPPFeedbackBanner(
+        @StringRes val message: Int,
+        val url: String
+    ) : Parcelable
+
     companion object {
-        @VisibleForTesting
-        const val STATS_TIME_WINDOW_LENGTH_DAYS = 30
+        private const val STATS_TIME_WINDOW_LENGTH_DAYS = 30
 
-        @VisibleForTesting
-        const val SURVEY_URL_IPP_NEWBIE = "https://woocommerce.com/newbie"
+        private const val SURVEY_URL_IPP_NEWBIE = "https://woocommerce.com/newbie"
 
-        @VisibleForTesting
-        const val SURVEY_URL_IPP_BEGINNER = "https://woocommerce.com/beginner"
+        private const val SURVEY_URL_IPP_BEGINNER = "https://woocommerce.com/beginner"
 
-        @VisibleForTesting
-        const val SURVEY_URL_IPP_NINJA = "https://woocommerce.com/ninja"
+        private const val SURVEY_URL_IPP_NINJA = "https://woocommerce.com/ninja"
+
+        private const val BANNER_MESSAGE_NEWBIE = R.string.feedback_banner_ipp_message_newbie
+
+        private const val BANNER_MESSAGE_BEGINNER = R.string.feedback_banner_ipp_message_beginner
+
+        private const val BANNER_MESSAGE_NINJA = R.string.feedback_banner_ipp_message_ninja
 
         private val IPP_BEGINNER_TRANSACTIONS_RANGE = 1..10
     }
