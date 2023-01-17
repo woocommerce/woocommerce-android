@@ -132,7 +132,7 @@ private fun MoreMenuHeader(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(
-                enabled = true,
+                enabled = state.isStoreSwitcherEnabled,
                 onClickLabel = stringResource(id = string.settings_switch_store),
                 role = Role.Button,
                 onClick = onSwitchStore
@@ -152,7 +152,7 @@ private fun MoreMenuHeader(
             userAvatarUrl = state.userAvatarUrl,
             siteName = state.siteName,
             siteUrl = state.siteUrl,
-            showStoreSwitcher = state.showStoreSwitcher
+            isStoreSwitcherEnabled = state.isStoreSwitcherEnabled
         )
         SettingsButton(
             modifier = Modifier
@@ -183,7 +183,7 @@ private fun StoreDetailsHeader(
     userAvatarUrl: String,
     siteName: String,
     siteUrl: String,
-    showStoreSwitcher: Boolean
+    isStoreSwitcherEnabled: Boolean
 ) {
     Row(modifier = modifier) {
         MoreMenuUserAvatar(avatarUrl = userAvatarUrl)
@@ -199,7 +199,7 @@ private fun StoreDetailsHeader(
                 style = MaterialTheme.typography.body2,
                 modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_50))
             )
-            if (showStoreSwitcher) {
+            if (isStoreSwitcherEnabled) {
                 Text(
                     text = stringResource(string.settings_switch_store),
                     color = MaterialTheme.colors.secondary,

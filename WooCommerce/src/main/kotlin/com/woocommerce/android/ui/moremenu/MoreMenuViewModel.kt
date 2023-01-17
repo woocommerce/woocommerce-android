@@ -52,7 +52,7 @@ class MoreMenuViewModel @Inject constructor(
                 siteName = selectedSite.getSelectedSiteName(),
                 siteUrl = selectedSite.getSelectedSiteAbsoluteUrl(),
                 userAvatarUrl = accountStore.account.avatarUrl,
-                showStoreSwitcher = selectedSite.connectionType != SiteConnectionType.ApplicationPasswords
+                isStoreSwitcherEnabled = selectedSite.connectionType != SiteConnectionType.ApplicationPasswords
             )
         }.asLiveData()
 
@@ -180,7 +180,7 @@ class MoreMenuViewModel @Inject constructor(
         val siteName: String = "",
         val siteUrl: String = "",
         val userAvatarUrl: String = "",
-        val showStoreSwitcher: Boolean = false
+        val isStoreSwitcherEnabled: Boolean = false
     )
 
     sealed class MoreMenuEvent : MultiLiveEvent.Event() {
