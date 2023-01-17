@@ -4,8 +4,12 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.ExperimentTracker
+import com.woocommerce.android.config.RemoteConfigFetchStatus
 import com.woocommerce.android.config.RemoteConfigRepository
 import com.woocommerce.android.util.PackageUtils
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withTimeoutOrNull
 import javax.inject.Inject
 
 class RestAPILoginExperiment @Inject constructor(
@@ -13,8 +17,18 @@ class RestAPILoginExperiment @Inject constructor(
     private val experimentTracker: ExperimentTracker,
     private val remoteConfigRepository: RemoteConfigRepository,
 ) {
+    companion object {
+        private const val AB_TEST_MAX_WAIT_TIME = 5000L
+    }
 
-    fun activate() {
+    suspend fun activate() {
+        // Wait until fetch is done
+        val fetchStatus = withTimeoutOrNull(AB_TEST_MAX_WAIT_TIME) {
+            remoteConfigRepository.fetchStatus.filter { it != RemoteConfigFetchStatus.Pending }.first()
+        }
+        // Activate the AB test only if the fetch was successful
+        if (fetchStatus != RemoteConfigFetchStatus.Success) return
+
         // Track Firebase's activation event for the A/B testing.
         experimentTracker.log(ExperimentTracker.REST_API_ELIGIBLE_EVENT)
 

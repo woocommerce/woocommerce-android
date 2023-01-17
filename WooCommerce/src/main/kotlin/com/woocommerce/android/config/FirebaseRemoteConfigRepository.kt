@@ -8,7 +8,10 @@ import com.woocommerce.android.experiment.RestAPILoginExperiment.RestAPILoginVar
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Provider
@@ -33,6 +36,9 @@ class FirebaseRemoteConfigRepository @Inject constructor(
             RELEASE_INTERVAL // 12 hours
 
     private val changesTrigger = MutableSharedFlow<Unit>(replay = 1)
+
+    private val _fetchStatus = MutableStateFlow(RemoteConfigFetchStatus.Pending)
+    override val fetchStatus: Flow<RemoteConfigFetchStatus> = _fetchStatus.asStateFlow()
 
     private val defaultValues by lazy {
         @Suppress("RemoveExplicitTypeArguments")
@@ -59,9 +65,11 @@ class FirebaseRemoteConfigRepository @Inject constructor(
         remoteConfig.fetchAndActivate()
             .addOnSuccessListener { hasChanges ->
                 WooLog.d(T.UTILS, "Remote config fetched successfully, hasChanges: $hasChanges")
+                _fetchStatus.value = RemoteConfigFetchStatus.Success
                 if (hasChanges) changesTrigger.tryEmit(Unit)
             }
             .addOnFailureListener {
+                _fetchStatus.value = RemoteConfigFetchStatus.Failure
                 WooLog.e(T.UTILS, it)
             }
     }
