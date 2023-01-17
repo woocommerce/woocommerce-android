@@ -72,11 +72,12 @@ class GetStats @Inject constructor(
         }
     }
 
-    private suspend fun visitorStats(forceRefresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> =
+    private suspend fun visitorStats(forceRefresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> {
+        val (startDate, endDate) = granularity.statsDateRange
         // Visitor stats are only available for Jetpack connected sites
-        when (selectedSite.connectionType) {
+        return when (selectedSite.connectionType) {
             SiteConnectionType.Jetpack -> {
-                statsRepository.fetchVisitorStats(granularity, forceRefresh)
+                statsRepository.fetchVisitorStats(granularity, forceRefresh, startDate, endDate)
                     .transform { result ->
                         result.fold(
                             onSuccess = { stats -> emit(LoadStatsResult.VisitorsStatsSuccess(stats)) },
@@ -88,6 +89,7 @@ class GetStats @Inject constructor(
                 flowOf(LoadStatsResult.VisitorStatUnavailable(it))
             } ?: emptyFlow()
         }
+    }
 
     private fun isPluginNotActiveError(error: Throwable): Boolean =
         (error as? StatsException)?.error?.type == OrderStatsErrorType.PLUGIN_NOT_ACTIVE
