@@ -8,6 +8,9 @@ import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelectio
 import com.woocommerce.android.ui.analytics.sync.AnalyticsHubUpdateState.Finished
 import com.woocommerce.android.ui.analytics.sync.AnalyticsHubUpdateState.Loading
 import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.FetchStrategy
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -15,9 +18,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 
 class UpdateAnalyticsHubStats @Inject constructor(
     private val analyticsRepository: AnalyticsRepository

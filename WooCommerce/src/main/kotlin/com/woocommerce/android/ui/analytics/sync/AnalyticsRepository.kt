@@ -19,8 +19,6 @@ import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.RevenueResu
 import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.RevenueResult.RevenueError
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
-import javax.inject.Inject
-import kotlin.math.round
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -37,6 +35,8 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.WEEKS
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.DateUtils
+import javax.inject.Inject
+import kotlin.math.round
 
 @Suppress("TooManyFunctions")
 class AnalyticsRepository @Inject constructor(
