@@ -21,7 +21,7 @@ class GetIPPFeedbackBannerData @Inject constructor(
     private val siteModel: SiteModel,
     private val getActivePaymentsPlugin: GetActivePaymentsPlugin,
 ) {
-    @Suppress("ReturnCount")
+    @Suppress("ReturnCount", "MaxLineLength")
     suspend operator fun invoke(): IPPFeedbackBanner {
         requireShouldShowFeedbackBanner()
 
@@ -79,11 +79,12 @@ class GetIPPFeedbackBannerData @Inject constructor(
     companion object {
         private const val STATS_TIME_WINDOW_LENGTH_DAYS = 30
 
-        private const val SURVEY_URL_IPP_NEWBIE = "https://woocommerce.com/newbie"
+        private const val SURVEY_URL_IPP_NEWBIE = "https://automattic.survey.fm/woo-app-–-cod-survey"
 
-        private const val SURVEY_URL_IPP_BEGINNER = "https://woocommerce.com/beginner"
+        private const val SURVEY_URL_IPP_BEGINNER =
+            "https://automattic.survey.fm/woo-app-–-ipp-first-transaction-survey"
 
-        private const val SURVEY_URL_IPP_NINJA = "https://woocommerce.com/ninja"
+        private const val SURVEY_URL_IPP_NINJA = "https://automattic.survey.fm/woo-app-–-cod-survey"
 
         @VisibleForTesting
         const val BANNER_MESSAGE_NEWBIE = R.string.feedback_banner_ipp_message_newbie

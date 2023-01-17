@@ -92,7 +92,7 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         val result = sut()
 
         // then
-        assertEquals("https://woocommerce.com/newbie", result.url)
+        assertEquals("https://automattic.survey.fm/woo-app-–-cod-survey", result.url)
     }
 
     @Test
@@ -110,7 +110,7 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         val result = sut()
 
         // then
-        assertEquals("https://woocommerce.com/beginner", result.url)
+        assertEquals("https://automattic.survey.fm/woo-app-–-ipp-first-transaction-survey", result.url)
     }
 
     @Test
@@ -128,7 +128,7 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         val result = sut()
 
         // then
-        assertEquals("https://woocommerce.com/ninja", result.url)
+        assertEquals("https://automattic.survey.fm/woo-app-–-cod-survey", result.url)
     }
 
     @Test
