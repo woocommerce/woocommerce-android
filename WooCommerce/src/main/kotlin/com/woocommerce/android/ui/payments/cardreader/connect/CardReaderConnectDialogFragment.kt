@@ -231,7 +231,8 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
                     findNavController().navigateSafely(
                         CardReaderConnectDialogFragmentDirections
                             .actionCardReaderConnectDialogFragmentToCardReaderTutorialDialogFragment(
-                                event.cardReaderFlowParam
+                                event.cardReaderFlowParam,
+                                event.cardReaderType
                             )
                     )
                 }

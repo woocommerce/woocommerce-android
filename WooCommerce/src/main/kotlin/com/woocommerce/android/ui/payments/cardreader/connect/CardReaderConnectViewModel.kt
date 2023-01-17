@@ -503,7 +503,7 @@ class CardReaderConnectViewModel @Inject constructor(
         if (!connected) {
             triggerEvent(ExitWithResult(false))
         } else {
-            triggerEvent(ShowCardReaderTutorial(arguments.cardReaderFlowParam))
+            triggerEvent(ShowCardReaderTutorial(arguments.cardReaderFlowParam, arguments.cardReaderType))
         }
     }
 

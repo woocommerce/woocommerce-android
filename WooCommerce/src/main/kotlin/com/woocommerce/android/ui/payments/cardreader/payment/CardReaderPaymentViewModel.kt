@@ -52,11 +52,14 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.WCPAY_RECEIPTS_SENDING_SUPPORT_VERSION
+import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderCollectPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.CapturingPaymentState
-import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.CollectPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.CollectRefundState
+import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderCollectPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.FailedPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.FailedRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.LoadingDataState
@@ -77,7 +80,6 @@ import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.STARTED
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -295,12 +297,7 @@ class CardReaderPaymentViewModel
         paymentDataForRetry = null
         when (paymentStatus) {
             InitializingPayment -> viewState.postValue(LoadingDataState(::onCancelPaymentFlow))
-            CollectingPayment -> viewState.postValue(
-                CollectPaymentState(
-                    amountLabel,
-                    onSecondaryActionClicked = ::onCancelPaymentFlow
-                )
-            )
+            CollectingPayment -> viewState.postValue(provideCollectPaymentState(amountLabel))
             ProcessingPayment -> viewState.postValue(
                 ProcessingPaymentState(
                     amountLabel,
@@ -523,11 +520,14 @@ class CardReaderPaymentViewModel
                     hintLabel = type.toHintLabel(true)
                 )
             }
-            is CollectPaymentState -> {
+            is ExternalReaderCollectPaymentState ->
                 viewState.value = state.copy(
                     hintLabel = type.toHintLabel(false)
                 )
-            }
+            is BuiltInReaderCollectPaymentState ->
+                viewState.value = state.copy(
+                    hintLabel = type.toHintLabel(false)
+                )
             else -> WooLog.e(
                 WooLog.T.CARD_READER, "Got SDK message when cardReaderPaymentViewModel is in ${viewState.value}"
             )
@@ -717,9 +717,21 @@ class CardReaderPaymentViewModel
         }
     }
 
+    private fun provideCollectPaymentState(amountLabel: String): ViewState =
+        when (arguments.cardReaderType) {
+            BUILT_IN -> ExternalReaderCollectPaymentState(
+                amountLabel,
+                onSecondaryActionClicked = ::onCancelPaymentFlow
+            )
+            EXTERNAL -> BuiltInReaderCollectPaymentState(
+                amountLabel,
+                onSecondaryActionClicked = ::onCancelPaymentFlow
+            )
+        }
+
     class ShowSnackbarInDialog(@StringRes val message: Int) : Event()
 
-    object PlayChaChing : MultiLiveEvent.Event()
+    object PlayChaChing : Event()
 
-    object InteracRefundSuccessful : MultiLiveEvent.Event()
+    object InteracRefundSuccessful : Event()
 }

@@ -58,14 +58,29 @@ sealed class ViewState(
         illustration = R.drawable.img_products_error
     )
 
-    data class CollectPaymentState(
+    data class ExternalReaderCollectPaymentState(
         override val amountWithCurrencyLabel: String,
-        override val hintLabel: Int = R.string.card_reader_payment_collect_payment_hint,
         override val headerLabel: Int = R.string.card_reader_payment_collect_payment_header,
+        override val hintLabel: Int = R.string.card_reader_payment_collect_payment_hint,
         override val onSecondaryActionClicked: (() -> Unit),
     ) : ViewState(
         paymentStateLabel = R.string.card_reader_payment_collect_payment_state,
         illustration = R.drawable.img_card_reader_available,
+        secondaryActionLabel = R.string.cancel,
+    ),
+        PaymentFlow {
+        override val nameForTracking: String
+            get() = "Collecting"
+    }
+
+    data class BuiltInReaderCollectPaymentState(
+        override val amountWithCurrencyLabel: String,
+        override val headerLabel: Int = R.string.card_reader_payment_collect_payment_header,
+        override val hintLabel: Int = R.string.card_reader_payment_collect_payment_built_in_hint,
+        override val onSecondaryActionClicked: (() -> Unit),
+    ) : ViewState(
+        paymentStateLabel = R.string.card_reader_payment_collect_payment_built_in_state,
+        illustration = R.drawable.img_ipp_reader_type_selection,
         secondaryActionLabel = R.string.cancel,
     ),
         PaymentFlow {

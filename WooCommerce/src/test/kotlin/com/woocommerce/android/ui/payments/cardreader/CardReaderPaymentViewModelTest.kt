@@ -54,7 +54,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError.AmountTooSmall
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError.Unknown
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.CapturingPaymentState
-import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.CollectPaymentState
+import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderCollectPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.CollectRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.FailedPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.FailedRefundState
@@ -227,7 +227,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
             advanceUntilIdle()
 
-            assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
+            assertThat((viewModel.viewStateData.value as ExternalReaderCollectPaymentState).hintLabel)
                 .isEqualTo(R.string.card_reader_payment_retry_card_prompt)
         }
 
@@ -246,7 +246,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
+            assertThat((viewModel.viewStateData.value as ExternalReaderCollectPaymentState).hintLabel)
                 .isEqualTo(R.string.card_reader_payment_collect_payment_hint)
         }
 
@@ -265,7 +265,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
+            assertThat((viewModel.viewStateData.value as ExternalReaderCollectPaymentState).hintLabel)
                 .isEqualTo(R.string.card_reader_payment_collect_payment_hint)
         }
 
@@ -284,7 +284,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
+            assertThat((viewModel.viewStateData.value as ExternalReaderCollectPaymentState).hintLabel)
                 .isEqualTo(R.string.card_reader_payment_collect_payment_hint)
         }
 
@@ -305,7 +305,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
             advanceUntilIdle()
 
-            assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
+            assertThat((viewModel.viewStateData.value as ExternalReaderCollectPaymentState).hintLabel)
                 .isEqualTo(R.string.card_reader_payment_remove_card_prompt)
         }
 
@@ -326,7 +326,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
             advanceUntilIdle()
 
-            assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
+            assertThat((viewModel.viewStateData.value as ExternalReaderCollectPaymentState).hintLabel)
                 .isEqualTo(R.string.card_reader_payment_try_another_card_prompt)
         }
 
@@ -347,7 +347,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
             advanceUntilIdle()
 
-            assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
+            assertThat((viewModel.viewStateData.value as ExternalReaderCollectPaymentState).hintLabel)
                 .isEqualTo(R.string.card_reader_payment_try_another_read_method_prompt)
         }
 
@@ -368,7 +368,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
             advanceUntilIdle()
 
-            assertThat((viewModel.viewStateData.value as CollectPaymentState).hintLabel)
+            assertThat((viewModel.viewStateData.value as ExternalReaderCollectPaymentState).hintLabel)
                 .isEqualTo(R.string.card_reader_payment_multiple_contactless_cards_detected_prompt)
         }
 
@@ -497,7 +497,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(CollectPaymentState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ExternalReaderCollectPaymentState::class.java)
         }
 
     @Test
@@ -1563,7 +1563,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
             viewModel.start()
 
-            (viewModel.viewStateData.value as CollectPaymentState).onSecondaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderCollectPaymentState).onSecondaryActionClicked.invoke()
 
             verify(tracker).trackPaymentCancelled("Collecting")
         }
@@ -1576,7 +1576,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
             viewModel.start()
 
-            (viewModel.viewStateData.value as CollectPaymentState).onSecondaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderCollectPaymentState).onSecondaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
         }

@@ -1128,6 +1128,7 @@
     -->
     <string name="card_reader_tap_or_insert">Tap or insert to pay</string>
     <string name="card_reader_payment_collect_payment_hint" translatable="false">@string/card_reader_tap_or_insert</string>
+    <string name="card_reader_payment_collect_payment_built_in_hint" translatable="false">Follow instruction to collect the payment</string>
     <string name="card_reader_payment_processing_payment_hint" translatable="false">@string/please_wait</string>
     <string name="card_reader_payment_capturing_payment_hint" translatable="false">@string/please_wait</string>
 
@@ -1150,6 +1151,7 @@
     <string name="card_reader_payment_payment_failed_ok">OK</string>
 
     <string name="card_reader_payment_collect_payment_state">Reader is ready</string>
+    <string name="card_reader_payment_collect_payment_built_in_state">Built-in reader is ready</string>
     <string name="card_reader_payment_processing_payment_state">Processing payment</string>
     <string name="card_reader_payment_capturing_payment_state">Capturing payment</string>
     <string name="card_reader_payment_failed_no_network_state">No internet connection</string>
@@ -1200,7 +1202,7 @@
             Card Reader Connection
         -->
     <string name="card_reader_connect_scanning_header">Scanning for readers</string>
-    <string name="card_reader_connect_scanning_built_in_header">Preparing built-in phone reader…</string>
+    <string name="card_reader_connect_scanning_built_in_header">Preparing built-in reader…</string>
     <string name="card_reader_connect_scanning_progress" translatable="false">@string/card_reader_connect_scanning_header</string>
     <string name="card_reader_connect_scanning_hint">Press the power button of your reader</string>
     <string name="card_reader_connect_scanning_built_in_hint">It won\'t take long</string>
