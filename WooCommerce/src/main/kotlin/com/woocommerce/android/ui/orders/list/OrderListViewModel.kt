@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.payments.feedback.ipp.MarkFeedbackBannerAsDism
 import com.woocommerce.android.ui.payments.feedback.ipp.MarkIPPFeedbackSurveyAsCompleted
 import com.woocommerce.android.ui.payments.feedback.ipp.ShouldShowFeedbackBanner
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -173,7 +174,7 @@ class OrderListViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val shouldShowFeedbackBanner = shouldShowFeedbackBanner()
+            val shouldShowFeedbackBanner = FeatureFlag.IPP_FEEDBACK_BANNER.isEnabled() && shouldShowFeedbackBanner()
             if (shouldShowFeedbackBanner()) {
                 val bannerData = getIPPFeedbackBannerData()
                 viewState = viewState.copy(ippBannerState = IPPBannerState.Visible(bannerData))
