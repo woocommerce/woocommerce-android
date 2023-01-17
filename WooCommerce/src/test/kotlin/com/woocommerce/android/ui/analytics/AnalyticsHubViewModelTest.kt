@@ -395,7 +395,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     fun `given a view, when refresh is requested, then show indicator is the expected`() = testBlocking {
         configureSuccessfulStatsResponse()
         updateStats.stub {
-            onBlocking { invoke(any(), any()) } doReturn flow {
+            onBlocking { invoke(any(), any(), any()) } doReturn flow {
                 emit(AnalyticsHubUpdateState.Finished)
                 emit(AnalyticsHubUpdateState.Loading)
             }
@@ -568,7 +568,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             AnalyticsHubInformationViewState.DataViewState(
                 title = resourceProvider.getString(R.string.analytics_session_card_title),
                 leftSection = AnalyticsHubInformationSectionViewState(
-                    title = resourceProvider.getString(R.string.analytics_views_subtitle),
+                    title = resourceProvider.getString(R.string.analytics_visitors_subtitle),
                     value = DEFAULT_VISITORS_COUNT.toString(),
                     delta = null,
                     chartInfo = emptyList()
@@ -589,7 +589,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             onBlocking { ordersState } doReturn flow { emit(OrdersState.Available(getOrdersStats())) }
             onBlocking { productsState } doReturn flow { emit(ProductsState.Available(getProductsStats())) }
             onBlocking { sessionState } doReturn flow { emit(SessionState.Available(testSessionStat)) }
-            onBlocking { invoke(any(), any()) } doReturn flow { emit(AnalyticsHubUpdateState.Finished) }
+            onBlocking { invoke(any(), any(), any()) } doReturn flow { emit(AnalyticsHubUpdateState.Finished) }
         }
     }
 

@@ -51,7 +51,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, Saved)
+        sut(testRangeSelection, Saved, this)
 
         advanceUntilIdle()
 
@@ -74,7 +74,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, Saved)
+        sut(testRangeSelection, Saved, this)
 
         advanceUntilIdle()
 
@@ -97,7 +97,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, Saved)
+        sut(testRangeSelection, Saved, this)
 
         advanceUntilIdle()
 
@@ -120,7 +120,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, Saved)
+        sut(testRangeSelection, Saved, this)
 
         advanceUntilIdle()
 
@@ -143,7 +143,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, Saved)
+        sut(testRangeSelection, Saved, this)
 
         advanceUntilIdle()
 
@@ -166,7 +166,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, Saved)
+        sut(testRangeSelection, Saved, this)
 
         advanceUntilIdle()
 
@@ -193,7 +193,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, Saved)
+        sut(testRangeSelection, Saved, this)
 
         advanceUntilIdle()
 
@@ -216,7 +216,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut(testRangeSelection, Saved)
+        sut(testRangeSelection, Saved, this)
 
         advanceUntilIdle()
 
