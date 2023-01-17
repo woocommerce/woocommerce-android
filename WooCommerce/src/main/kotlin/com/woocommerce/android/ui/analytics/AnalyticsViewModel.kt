@@ -242,7 +242,7 @@ class AnalyticsViewModel @Inject constructor(
     ) = DataViewState(
         title = resourceProvider.getString(R.string.analytics_session_card_title),
         leftSection = AnalyticsInformationSectionViewState(
-            resourceProvider.getString(R.string.analytics_views_subtitle),
+            resourceProvider.getString(R.string.analytics_visitors_subtitle),
             stats.visitorsCount.toString(),
             null,
             listOf()

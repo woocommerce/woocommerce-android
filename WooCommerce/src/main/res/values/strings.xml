@@ -425,7 +425,7 @@
     <string name="analytics_products_list_item_description">Net sales: %1$s</string>
     <string name="analytics_session_card_title">Sessions</string>
     <string name="analytics_conversion_subtitle">Conversion Rate</string>
-    <string name="analytics_views_subtitle">Views</string>
+    <string name="analytics_visitors_subtitle">Visitors</string>
 
     <!--
         Order List View
