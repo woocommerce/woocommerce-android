@@ -1061,13 +1061,25 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given app in reader found state, when user clicks on cancel, then disconnect called`() =
+    fun `given app in reader found state and init terminal, when user clicks on cancel, then disconnect called`() =
         testBlocking {
+            whenever(cardReaderManager.initialized).thenReturn(true)
             init(scanState = READER_FOUND)
 
             (viewModel.viewStateData.value as ReaderFoundState).onTertiaryActionClicked.invoke()
 
             verify(cardReaderManager).disconnectReader()
+        }
+
+    @Test
+    fun `given app in reader found state and not init terminal, when user clicks on cancel, then discon not called`() =
+        testBlocking {
+            whenever(cardReaderManager.initialized).thenReturn(false)
+            init(scanState = READER_FOUND)
+
+            (viewModel.viewStateData.value as ReaderFoundState).onTertiaryActionClicked.invoke()
+
+            verify(cardReaderManager, never()).disconnectReader()
         }
 
     @Test
