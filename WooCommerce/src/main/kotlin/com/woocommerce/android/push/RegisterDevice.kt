@@ -1,6 +1,8 @@
 package com.woocommerce.android.push
 
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.GetDeviceRegistrationStatus
 import javax.inject.Inject
@@ -12,6 +14,9 @@ class RegisterDevice @Inject constructor(
     private val getDeviceRegistrationStatus: GetDeviceRegistrationStatus,
 ) {
     suspend operator fun invoke(mode: Mode) {
+        if (BuildConfig.DEBUG) {
+            WooLog.d(WooLog.T.UTILS, "Current FCM token: ${appPrefsWrapper.getFCMToken()}")
+        }
         when (mode) {
             Mode.IF_NEEDED -> {
                 if (getDeviceRegistrationStatus() == GetDeviceRegistrationStatus.Status.UNREGISTERED) {
