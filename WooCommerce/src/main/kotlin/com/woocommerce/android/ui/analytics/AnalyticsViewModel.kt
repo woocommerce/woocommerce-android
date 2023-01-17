@@ -120,7 +120,8 @@ class AnalyticsViewModel @Inject constructor(
         viewModelScope.launch {
             updateStats(
                 rangeSelection = ranges,
-                fetchStrategy = getFetchStrategy(isRefreshing = true)
+                fetchStrategy = getFetchStrategy(isRefreshing = true),
+                scope = viewModelScope
             ).collect {
                 mutableState.update { viewState ->
                     viewState.copy(refreshIndicator = if (it is Finished) NotShowIndicator else ShowIndicator)
@@ -148,7 +149,8 @@ class AnalyticsViewModel @Inject constructor(
             trackSelectedDateRange()
             updateStats(
                 rangeSelection = it,
-                fetchStrategy = getFetchStrategy(isRefreshing = false)
+                fetchStrategy = getFetchStrategy(isRefreshing = false),
+                scope = viewModelScope
             )
         }.launchIn(viewModelScope)
     }
@@ -165,7 +167,7 @@ class AnalyticsViewModel @Inject constructor(
                     viewState.copy(ordersState = NoDataState(message))
                 }
                 is OrdersState.Loading -> mutableState.update { viewState ->
-                    LoadingViewState.let { viewState.copy(ordersState = it) }
+                    viewState.copy(ordersState = LoadingViewState)
                 }
             }
         }.launchIn(viewModelScope)
@@ -179,11 +181,11 @@ class AnalyticsViewModel @Inject constructor(
                     viewState.copy(sessionState = buildSessionViewState(state.session))
                 }
                 is SessionState.Error -> mutableState.update { viewState ->
-                    val message = "No session data"
+                    val message = resourceProvider.getString(R.string.analytics_session_no_data)
                     viewState.copy(sessionState = NoDataState(message))
                 }
                 is SessionState.Loading -> mutableState.update { viewState ->
-                    LoadingViewState.let { viewState.copy(sessionState = it) }
+                    viewState.copy(sessionState = LoadingViewState)
                 }
             }
         }.launchIn(viewModelScope)
@@ -201,7 +203,7 @@ class AnalyticsViewModel @Inject constructor(
                     viewState.copy(productsState = ProductsNoDataState(message))
                 }
                 is ProductsState.Loading -> mutableState.update { viewState ->
-                    ProductsViewState.LoadingViewState.let { viewState.copy(productsState = it) }
+                    viewState.copy(productsState = ProductsViewState.LoadingViewState)
                 }
             }
         }.launchIn(viewModelScope)
@@ -219,7 +221,7 @@ class AnalyticsViewModel @Inject constructor(
                     viewState.copy(revenueState = NoDataState(message))
                 }
                 is RevenueState.Loading -> mutableState.update { viewState ->
-                    LoadingViewState.let { viewState.copy(revenueState = it) }
+                    viewState.copy(revenueState = LoadingViewState)
                 }
             }
         }.launchIn(viewModelScope)
@@ -240,7 +242,7 @@ class AnalyticsViewModel @Inject constructor(
     ) = DataViewState(
         title = resourceProvider.getString(R.string.analytics_session_card_title),
         leftSection = AnalyticsInformationSectionViewState(
-            resourceProvider.getString(R.string.analytics_views_subtitle),
+            resourceProvider.getString(R.string.analytics_visitors_subtitle),
             stats.visitorsCount.toString(),
             null,
             listOf()
