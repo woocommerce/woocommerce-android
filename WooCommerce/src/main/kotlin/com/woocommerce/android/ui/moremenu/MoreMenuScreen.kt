@@ -151,7 +151,8 @@ private fun MoreMenuHeader(
                 ),
             userAvatarUrl = state.userAvatarUrl,
             siteName = state.siteName,
-            siteUrl = state.siteUrl
+            siteUrl = state.siteUrl,
+            showStoreSwitcher = true
         )
         SettingsButton(
             modifier = Modifier
@@ -181,7 +182,8 @@ private fun StoreDetailsHeader(
     modifier: Modifier,
     userAvatarUrl: String,
     siteName: String,
-    siteUrl: String
+    siteUrl: String,
+    showStoreSwitcher: Boolean
 ) {
     Row(modifier = modifier) {
         MoreMenuUserAvatar(avatarUrl = userAvatarUrl)
@@ -197,11 +199,13 @@ private fun StoreDetailsHeader(
                 style = MaterialTheme.typography.body2,
                 modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_50))
             )
-            Text(
-                text = stringResource(string.settings_switch_store),
-                color = MaterialTheme.colors.secondary,
-                style = MaterialTheme.typography.body2,
-            )
+            if(showStoreSwitcher) {
+                Text(
+                    text = stringResource(string.settings_switch_store),
+                    color = MaterialTheme.colors.secondary,
+                    style = MaterialTheme.typography.body2,
+                )
+            }
         }
     }
 }
