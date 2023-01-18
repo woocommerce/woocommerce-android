@@ -32,9 +32,10 @@ class MonthToDateRangeData(
     init {
         calendar.time = referenceDate
         val currentStart = calendar.startOfCurrentMonth()
+        val currentEnd = calendar.endOfCurrentMonth()
         currentRange = AnalyticsHubTimeRange(
             start = currentStart,
-            end = calendar.endOfCurrentMonth()
+            end = currentEnd
         )
         formattedCurrentRange = currentStart.formatAsRangeWith(referenceDate, locale, calendar)
 

@@ -32,9 +32,10 @@ class WeekToDateRangeData(
     init {
         calendar.time = referenceDate
         val currentStart = calendar.startOfCurrentWeek()
+        val currentEnd = calendar.endOfCurrentWeek()
         currentRange = AnalyticsHubTimeRange(
             start = currentStart,
-            end = calendar.endOfCurrentWeek()
+            end = currentEnd
         )
         formattedCurrentRange = currentStart.formatAsRangeWith(referenceDate, locale, calendar)
 

@@ -32,17 +32,21 @@ class YesterdayRangeData(
     init {
         val yesterday = referenceDate.oneDayAgo()
         calendar.time = yesterday
+        val currentStart = calendar.startOfCurrentDay()
+        val currentEnd = calendar.endOfCurrentDay()
         currentRange = AnalyticsHubTimeRange(
-            start = calendar.startOfCurrentDay(),
-            end = calendar.endOfCurrentDay()
+            start = currentStart,
+            end = currentEnd
         )
         formattedCurrentRange = yesterday.formatToMMMddYYYY(locale)
 
         val dayBeforeYesterday = yesterday.oneDayAgo()
         calendar.time = dayBeforeYesterday
+        val previousStart = calendar.startOfCurrentDay()
+        val previousEnd = calendar.endOfCurrentDay()
         previousRange = AnalyticsHubTimeRange(
-            start = calendar.startOfCurrentDay(),
-            end = calendar.endOfCurrentDay()
+            start = previousStart,
+            end = previousEnd
         )
         formattedPreviousRange = dayBeforeYesterday.formatToMMMddYYYY(locale)
     }
