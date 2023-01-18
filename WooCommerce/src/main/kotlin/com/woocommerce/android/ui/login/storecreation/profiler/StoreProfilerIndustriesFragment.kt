@@ -12,8 +12,6 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.NavigateToCommerceJourneyStep
-import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.NavigateToCountryPickerStep
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,23 +43,16 @@ class StoreProfilerIndustriesFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                is NavigateToCountryPickerStep -> navigateToCountryPickerStep()
-                is NavigateToCommerceJourneyStep -> navigateToCommerceJourneyStep()
+                is BaseStoreProfilerViewModel.NavigateToNextStep -> navigateToCommerceJourneyStep()
                 is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
             }
         }
     }
 
-    private fun navigateToCountryPickerStep() {
-        findNavController().navigateSafely(
-            StoreProfilerIndustriesFragmentDirections.actionStoreProfilerCategoryFragmentToCountryPickerFragment()
-        )
-    }
-
     private fun navigateToCommerceJourneyStep() {
         findNavController().navigateSafely(
             StoreProfilerIndustriesFragmentDirections
-                .actionStoreProfilerCategoryFragmentToStoreProfilerCommerceJourneyFragment()
+                .actionStoreProfilerIndustriesFragmentToStoreProfilerCommerceJourneyFragment()
         )
     }
 }

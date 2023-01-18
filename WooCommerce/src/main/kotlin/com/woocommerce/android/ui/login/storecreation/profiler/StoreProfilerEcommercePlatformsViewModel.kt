@@ -72,6 +72,6 @@ class StoreProfilerEcommercePlatformsViewModel @Inject constructor(
                         .map { it.key }
                 )
         )
-        triggerEvent(NavigateToCountryPickerStep)
+        triggerEvent(NavigateToNextStep)
     }
 }

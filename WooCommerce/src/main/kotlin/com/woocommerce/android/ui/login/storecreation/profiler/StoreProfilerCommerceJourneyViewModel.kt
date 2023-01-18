@@ -57,7 +57,7 @@ class StoreProfilerCommerceJourneyViewModel @Inject constructor(
         )
         when (alreadySellingOnlineSelected()) {
             true -> triggerEvent(NavigateToEcommercePlatformsStep)
-            false -> triggerEvent(NavigateToCountryPickerStep)
+            false -> triggerEvent(NavigateToNextStep)
         }
     }
 

@@ -58,7 +58,7 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
                     industryGroupKey = selectedIndustry.tracks
                 )
         )
-        triggerEvent(NavigateToCommerceJourneyStep)
+        triggerEvent(NavigateToNextStep)
     }
 
     private fun Industry.toStoreProfilerOptionUi() = StoreProfilerOptionUi(
