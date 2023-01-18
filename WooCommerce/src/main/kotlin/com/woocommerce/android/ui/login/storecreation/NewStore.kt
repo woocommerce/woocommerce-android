@@ -52,6 +52,6 @@ class NewStore @Inject constructor() {
         val industryKey: String? = null,
         val industryGroupKey: String? = null,
         val userCommerceJourneyKey: String? = null,
-        val eCommercePlatformKey: String? = null,
+        val eCommercePlatformKeys: List<String> = emptyList(),
     )
 }

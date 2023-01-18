@@ -200,9 +200,7 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `when discovery external readers, then config keeps bluetooth scan`() = testBlocking {
-        whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer {
-            mock<Cancelable>()
-        }
+        whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer { mock<Cancelable>() }
 
         action.discoverExternalReaders(false).first()
 
@@ -212,15 +210,12 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
             any(),
             any()
         )
-
         assertThat(configCaptor.firstValue.discoveryMethod).isEqualTo(DiscoveryMethod.BLUETOOTH_SCAN)
     }
 
     @Test
     fun `when discovery built in readers, then config keeps local mobile`() = testBlocking {
-        whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer {
-            mock<Cancelable>()
-        }
+        whenever(terminal.discoverReaders(any(), any(), any())).thenAnswer { mock<Cancelable>() }
 
         action.discoverBuildInReaders(true).first()
 
@@ -230,7 +225,6 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
             any(),
             any()
         )
-
         assertThat(configCaptor.firstValue.discoveryMethod).isEqualTo(DiscoveryMethod.LOCAL_MOBILE)
     }
 

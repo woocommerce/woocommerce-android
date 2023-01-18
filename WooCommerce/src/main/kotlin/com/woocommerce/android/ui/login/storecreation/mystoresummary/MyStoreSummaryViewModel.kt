@@ -49,7 +49,7 @@ class MyStoreSummaryViewModel @Inject constructor(
                 AnalyticsTracker.KEY_INDUSTRY_GROUP to newStoreProfilerData?.industryGroupKey,
                 AnalyticsTracker.KEY_INDUSTRY to newStoreProfilerData?.industryKey,
                 AnalyticsTracker.KEY_USER_COMMERCE_JOURNEY to newStoreProfilerData?.userCommerceJourneyKey,
-                AnalyticsTracker.KEY_ECOMMERCE_PLATFORMS to newStoreProfilerData?.eCommercePlatformKey,
+                AnalyticsTracker.KEY_ECOMMERCE_PLATFORMS to newStoreProfilerData?.eCommercePlatformKeys?.joinToString(),
                 AnalyticsTracker.KEY_COUNTRY_CODE to newStore.data.country?.code,
             )
         )

@@ -42,7 +42,7 @@ class StoreProfilerEcommercePlatformsViewModel @Inject constructor(
         StoreProfilerOptionUi(
             name = label,
             key = value,
-            isSelected = newStore.data.profilerData?.eCommercePlatformKey == value
+            isSelected = newStore.data.profilerData?.eCommercePlatformKeys?.any { it == value } == true
         )
 
     override fun getProfilerStepDescription(): String =
@@ -51,11 +51,22 @@ class StoreProfilerEcommercePlatformsViewModel @Inject constructor(
     override fun getProfilerStepTitle(): String =
         resourceProvider.getString(R.string.store_creation_store_profiler_platforms_title)
 
+    override fun onOptionSelected(option: StoreProfilerOptionUi) {
+        profilerOptions.update { currentOptions ->
+            currentOptions.map {
+                if (option.name == it.name) it.copy(isSelected = !it.isSelected)
+                else it
+            }
+        }
+    }
+
     override fun onContinueClicked() {
         newStore.update(
             profilerData = (newStore.data.profilerData ?: NewStore.ProfilerData())
                 .copy(
-                    eCommercePlatformKey = profilerOptions.value.firstOrNull { it.isSelected }?.key
+                    eCommercePlatformKeys = profilerOptions.value
+                        .filter { it.isSelected }
+                        .map { it.key }
                 )
         )
         triggerEvent(NavigateToCountryPickerStep)
