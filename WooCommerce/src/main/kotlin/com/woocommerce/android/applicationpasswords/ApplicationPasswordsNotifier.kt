@@ -31,7 +31,7 @@ class ApplicationPasswordsNotifier @Inject constructor(
         _featureUnavailableEvents.tryEmit(networkError)
     }
 
-    override fun onNewPasswordCreated() {
+    override fun onNewPasswordCreated(isPasswordRegenerated: Boolean) {
         analyticsTrackerWrapper.track(stat = AnalyticsEvent.APPLICATION_PASSWORDS_NEW_PASSWORD_CREATED)
     }
 }
