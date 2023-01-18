@@ -33,13 +33,11 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
             )
         )
         launch {
-            isLoading.value = true
             val fetchedOptions = storeProfilerRepository.fetchProfilerOptions()
             industries = fetchedOptions.industries
             profilerOptions.update {
                 industries.map { it.toStoreProfilerOptionUi() }
             }
-            isLoading.value = false
         }
     }
 
