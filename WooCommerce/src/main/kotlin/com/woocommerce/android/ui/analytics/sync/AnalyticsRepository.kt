@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.analytics.sync
 
-import com.woocommerce.android.extensions.formatToYYYYmmDD
+import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
@@ -34,7 +34,6 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.MONTHS
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.WEEKS
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import org.wordpress.android.fluxc.utils.DateUtils
 import javax.inject.Inject
 import kotlin.math.round
 
@@ -201,8 +200,8 @@ class AnalyticsRepository @Inject constructor(
     ): Result<WCRevenueStatsModel?> = coroutineScope {
         val granularity = getGranularity(rangeSelection.selectionType)
         val currentPeriod = rangeSelection.currentRange
-        val startDate = currentPeriod.start.formatToYYYYmmDD()
-        val endDate = currentPeriod.end.formatToYYYYmmDD()
+        val startDate = currentPeriod.start.formatToYYYYmmDDhhmmss()
+        val endDate = currentPeriod.end.formatToYYYYmmDDhhmmss()
 
         getCurrentRevenueMutex.withLock {
             if (shouldUpdateCurrentStats(startDate, endDate, fetchStrategy == FetchStrategy.ForceNew)) {
@@ -223,8 +222,8 @@ class AnalyticsRepository @Inject constructor(
     ): Result<WCRevenueStatsModel?> = coroutineScope {
         val granularity = getGranularity(rangeSelection.selectionType)
         val previousPeriod = rangeSelection.previousRange
-        val startDate = previousPeriod.start.formatToYYYYmmDD()
-        val endDate = previousPeriod.end.formatToYYYYmmDD()
+        val startDate = previousPeriod.start.formatToYYYYmmDDhhmmss()
+        val endDate = previousPeriod.end.formatToYYYYmmDDhhmmss()
 
         getPreviousRevenueMutex.withLock {
             if (shouldUpdatePreviousStats(startDate, endDate, fetchStrategy == FetchStrategy.ForceNew)) {
@@ -245,20 +244,16 @@ class AnalyticsRepository @Inject constructor(
         quantity: Int
     ): Result<List<TopPerformerProductEntity>> {
         val totalPeriod = rangeSelection.currentRange
-        val startDate = totalPeriod.start.formatToYYYYmmDD()
-        val endDate = totalPeriod.end.formatToYYYYmmDD()
-
-        val site = selectedSite.get()
-        val startDateFormatted = DateUtils.getStartDateForSite(site, startDate)
-        val endDateFormatted = DateUtils.getEndDateForSite(site, endDate)
+        val startDate = totalPeriod.start.formatToYYYYmmDDhhmmss()
+        val endDate = totalPeriod.end.formatToYYYYmmDDhhmmss()
 
         return statsRepository.fetchTopPerformerProducts(
             forceRefresh = fetchStrategy is FetchStrategy.ForceNew,
-            startDate = startDateFormatted,
-            endDate = endDateFormatted,
+            startDate = startDate,
+            endDate = endDate,
             quantity = quantity
         ).map {
-            statsRepository.getTopPerformers(startDateFormatted, endDateFormatted)
+            statsRepository.getTopPerformers(startDate, endDate)
         }
     }
 
@@ -266,19 +261,12 @@ class AnalyticsRepository @Inject constructor(
         rangeSelection: AnalyticsHubDateRangeSelection,
         fetchStrategy: FetchStrategy
     ): Result<Map<String, Int>> = coroutineScope {
-        if (rangeSelection.isRangeAvailableInMyStoreSection) {
-            statsRepository.fetchVisitorStats(
-                getGranularity(rangeSelection.selectionType),
-                fetchStrategy is FetchStrategy.ForceNew,
-            ).single()
-        } else {
-            statsRepository.fetchVisitorStats(
-                rangeSelection.currentRange.start.formatToYYYYmmDD(),
-                rangeSelection.currentRange.end.formatToYYYYmmDD(),
-                getGranularity(rangeSelection.selectionType),
-                fetchStrategy is FetchStrategy.ForceNew
-            )
-        }
+        statsRepository.fetchVisitorStats(
+            getGranularity(rangeSelection.selectionType),
+            fetchStrategy is FetchStrategy.ForceNew,
+            rangeSelection.currentRange.start.formatToYYYYmmDDhhmmss(),
+            rangeSelection.currentRange.end.formatToYYYYmmDDhhmmss()
+        ).single()
     }
 
     private fun getGranularity(selectionType: SelectionType) =
@@ -321,18 +309,6 @@ class AnalyticsRepository @Inject constructor(
 
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
     private fun getAdminPanelUrl() = selectedSite.getIfExists()?.adminUrl
-
-    /***
-     * If true, it means that the selected range is available in the My Store section.
-     *
-     * For example, if the selected range is Week to Date, this means that My Store also displays it as This Week.
-     * Month to date as This Month, Year to date as This Year, and Today as Today.
-     */
-    private val AnalyticsHubDateRangeSelection.isRangeAvailableInMyStoreSection
-        get() = selectionType == TODAY ||
-            selectionType == WEEK_TO_DATE ||
-            selectionType == MONTH_TO_DATE ||
-            selectionType == YEAR_TO_DATE
 
     companion object {
         const val ANALYTICS_REVENUE_PATH = "admin.php?page=wc-admin&path=%2Fanalytics%2Frevenue"

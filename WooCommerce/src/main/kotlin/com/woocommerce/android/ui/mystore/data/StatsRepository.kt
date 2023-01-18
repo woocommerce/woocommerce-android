@@ -57,8 +57,9 @@ class StatsRepository @Inject constructor(
         endDate: String = ""
     ): Flow<Result<WCRevenueStatsModel?>> =
         flow {
-            val statsPayload = FetchRevenueStatsPayload(selectedSite.get(), granularity, startDate, endDate, forced)
-            val result = wcStatsStore.fetchRevenueStats(statsPayload)
+            val result = wcStatsStore.fetchRevenueStats(
+                FetchRevenueStatsPayload(selectedSite.get(), granularity, startDate, endDate, forced)
+            )
 
             if (!result.isError) {
                 val revenueStatsModel = wcStatsStore.getRawRevenueStats(
@@ -77,9 +78,14 @@ class StatsRepository @Inject constructor(
             }
         }
 
-    suspend fun fetchVisitorStats(granularity: StatsGranularity, forced: Boolean): Flow<Result<Map<String, Int>>> =
+    suspend fun fetchVisitorStats(
+        granularity: StatsGranularity,
+        forced: Boolean,
+        startDate: String = "",
+        endDate: String = "",
+    ): Flow<Result<Map<String, Int>>> =
         flow {
-            val visitsPayload = FetchNewVisitorStatsPayload(selectedSite.get(), granularity, forced)
+            val visitsPayload = FetchNewVisitorStatsPayload(selectedSite.get(), granularity, forced, startDate, endDate)
             val result = wcStatsStore.fetchNewVisitorStats(visitsPayload)
             if (!result.isError) {
                 val visitorStats = wcStatsStore.getNewVisitorStats(
@@ -95,29 +101,6 @@ class StatsRepository @Inject constructor(
                 emit(Result.failure(Exception(errorMessage)))
             }
         }
-
-    suspend fun fetchVisitorStats(
-        startDate: String,
-        endDate: String,
-        granularity: StatsGranularity,
-        forced: Boolean
-    ): Result<Map<String, Int>> {
-        val result = FetchNewVisitorStatsPayload(
-            site = selectedSite.get(),
-            granularity = granularity,
-            forced = forced,
-            startDate = startDate,
-            endDate = endDate
-        ).let { wcStatsStore.fetchNewVisitorStats(it) }
-
-        if (result.isError) return Result.failure(Throwable(result.error?.message ?: "Timeout"))
-
-        val visitorStats = wcStatsStore.getNewVisitorStats(
-            selectedSite.get(), result.granularity, result.quantity, result.date, result.isCustomField
-        )
-
-        return Result.success(visitorStats)
-    }
 
     fun observeTopPerformers(
         granularity: StatsGranularity,

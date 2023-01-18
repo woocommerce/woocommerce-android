@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.analytics.ranges.data.WeekToDateRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.YearToDateRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.YesterdayRangeData
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import java.io.Serializable
 import java.util.Calendar
 import java.util.Date
@@ -157,6 +158,14 @@ class AnalyticsHubDateRangeSelection : Serializable {
             }
 
         companion object {
+            fun from(granularity: StatsGranularity) =
+                when (granularity) {
+                    StatsGranularity.DAYS -> TODAY
+                    StatsGranularity.WEEKS -> WEEK_TO_DATE
+                    StatsGranularity.MONTHS -> MONTH_TO_DATE
+                    StatsGranularity.YEARS -> YEAR_TO_DATE
+                }
+
             fun from(description: String): SelectionType {
                 return values().firstOrNull { it.toString() == description } ?: CUSTOM
             }
