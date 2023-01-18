@@ -783,4 +783,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
 
     APPLICATION_PASSWORDS_NEW_PASSWORD_CREATED,
     APPLICATION_PASSWORDS_NOT_AVAILABLE,
+
+    // Experiments (A/B test variants)
+    REST_API_LOGIN_EXPERIMENT
 }

@@ -1,6 +1,7 @@
 package com.woocommerce.android.config
 
 import android.app.Activity
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
@@ -9,6 +10,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -20,6 +22,7 @@ import java.util.concurrent.Executor
 @OptIn(ExperimentalCoroutinesApi::class)
 class FirebaseRemoteConfigRepositoryTests : BaseUnitTest() {
     private val remoteConfig = mock<FirebaseRemoteConfig>()
+    private val crashLogging = mock<CrashLogging>()
 
     lateinit var repository: FirebaseRemoteConfigRepository
 
@@ -34,7 +37,8 @@ class FirebaseRemoteConfigRepositoryTests : BaseUnitTest() {
             .thenReturn(StaticTask(null))
 
         repository = FirebaseRemoteConfigRepository(
-            remoteConfig = remoteConfig
+            remoteConfig = remoteConfig,
+            crashLogging = { crashLogging }
         )
     }
 
@@ -82,9 +86,46 @@ class FirebaseRemoteConfigRepositoryTests : BaseUnitTest() {
 
             assertThat(values.size).isEqualTo(1)
         }
+
+    @Test
+    fun `when remote config is initiated, then expose a pending fetch status`() = testBlocking {
+        setup()
+
+        val status = repository.fetchStatus.first()
+
+        assertThat(status).isEqualTo(RemoteConfigFetchStatus.Pending)
+    }
+
+    @Test
+    fun `when remote config fetch succeeds, then expose a success fetch status`() = testBlocking {
+        setup {
+            whenever(remoteConfig.fetchAndActivate())
+                .thenReturn(StaticTask(false))
+        }
+
+        val status = repository.fetchStatus.runAndCaptureValues {
+            repository.fetchRemoteConfig()
+        }.last()
+
+        assertThat(status).isEqualTo(RemoteConfigFetchStatus.Success)
+    }
+
+    @Test
+    fun `when remote config fetch fails, then expose a failure fetch status`() = testBlocking {
+        setup {
+            whenever(remoteConfig.fetchAndActivate())
+                .thenReturn(StaticTask(false, Exception()))
+        }
+
+        val status = repository.fetchStatus.runAndCaptureValues {
+            repository.fetchRemoteConfig()
+        }.last()
+
+        assertThat(status).isEqualTo(RemoteConfigFetchStatus.Failure)
+    }
 }
 
-class StaticTask<T>(private val value: T) : Task<T>() {
+class StaticTask<T>(private val value: T, private val exception: Exception? = null) : Task<T>() {
     override fun addOnCompleteListener(p0: OnCompleteListener<T>): Task<T> {
         p0.onComplete(this)
         return this
@@ -94,11 +135,14 @@ class StaticTask<T>(private val value: T) : Task<T>() {
         return addOnCompleteListener(p1)
     }
 
-    override fun addOnFailureListener(p0: OnFailureListener): Task<T> = this
+    override fun addOnFailureListener(p0: OnFailureListener): Task<T> {
+        exception?.let { p0.onFailure(it) }
+        return this
+    }
 
-    override fun addOnFailureListener(p0: Executor, p1: OnFailureListener): Task<T> = this
+    override fun addOnFailureListener(p0: Executor, p1: OnFailureListener): Task<T> = addOnFailureListener(p1)
 
-    override fun addOnFailureListener(p0: Activity, p1: OnFailureListener): Task<T> = this
+    override fun addOnFailureListener(p0: Activity, p1: OnFailureListener): Task<T> = addOnFailureListener(p1)
 
     override fun addOnSuccessListener(p0: OnSuccessListener<in T>): Task<T> {
         p0.onSuccess(value)
@@ -109,7 +153,7 @@ class StaticTask<T>(private val value: T) : Task<T>() {
 
     override fun addOnSuccessListener(p0: Activity, p1: OnSuccessListener<in T>): Task<T> = addOnSuccessListener(p1)
 
-    override fun getException(): Exception? = null
+    override fun getException(): Exception? = exception
 
     override fun getResult(): T = value
 
