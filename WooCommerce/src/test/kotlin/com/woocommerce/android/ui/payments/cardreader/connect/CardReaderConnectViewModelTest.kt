@@ -1114,7 +1114,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             whenever(cardReaderManager.initialized).thenReturn(false)
             init(scanState = READER_FOUND)
 
-            (viewModel.viewStateData.value as ReaderFoundState).onTertiaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onTertiaryActionClicked.invoke()
 
             verify(cardReaderManager, never()).disconnectReader()
         }

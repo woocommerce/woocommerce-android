@@ -42,6 +42,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderInteracRefundErrorMapper
@@ -54,6 +56,9 @@ import com.woocommerce.android.ui.payments.cardreader.payment.InteracRefundFlowE
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError.AmountTooSmall
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError.Unknown
+import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderCapturingPaymentState
+import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderCollectPaymentState
+import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderProcessingPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.CollectRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderCapturingPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderCollectPaymentState
@@ -504,6 +509,19 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given built in reader,when collecting payment, then ui updated to collecting payment state`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(CollectingPayment) }
+            }
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(BuiltInReaderCollectPaymentState::class.java)
+        }
+
+    @Test
     fun `when processing payment, then ui updated to processing payment state`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -513,6 +531,19 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ExternalReaderProcessingPaymentState::class.java)
+        }
+
+    @Test
+    fun `given built in reader, when processing payment, then ui updated to processing payment state`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(ProcessingPayment) }
+            }
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(BuiltInReaderProcessingPaymentState::class.java)
         }
 
     @Test
@@ -597,6 +628,19 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ExternalReaderCapturingPaymentState::class.java)
+        }
+
+    @Test
+    fun `given built in reader, when capturing payment, then ui updated to capturing payment state`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(CapturingPayment) }
+            }
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(BuiltInReaderCapturingPaymentState::class.java)
         }
 
     @Test
@@ -3013,6 +3057,29 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             wooStore = wooStore,
             dispatchers = coroutinesTestRule.testDispatchers,
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper
+        )
+    }
+
+    private fun initViewModel(readerType: CardReaderType) {
+        viewModel = CardReaderPaymentViewModel(
+            CardReaderPaymentDialogFragmentArgs(
+                CardReaderFlowParam.PaymentOrRefund.Payment(ORDER_ID, ORDER),
+                readerType,
+            ).initSavedStateHandle(),
+            cardReaderManager = cardReaderManager,
+            orderRepository = orderRepository,
+            resourceProvider = resourceProvider,
+            selectedSite = selectedSite,
+            paymentCollectibilityChecker = paymentCollectibilityChecker,
+            interacRefundableChecker = interacRefundableChecker,
+            tracker = tracker,
+            appPrefsWrapper = appPrefsWrapper,
+            currencyFormatter = currencyFormatter,
+            errorMapper = errorMapper,
+            interacRefundErrorMapper = interacRefundErrorMapper,
+            wooStore = wooStore,
+            dispatchers = coroutinesTestRule.testDispatchers,
+            cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
         )
     }
 }
