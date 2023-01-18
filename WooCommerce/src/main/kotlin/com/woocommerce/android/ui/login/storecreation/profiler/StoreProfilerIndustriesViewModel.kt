@@ -22,6 +22,8 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
 ) : BaseStoreProfilerViewModel(savedStateHandle, newStore) {
     private var industries: List<Industry> = emptyList()
+    override val hasSearchableContent: Boolean
+        get() = true
 
     init {
         analyticsTracker.track(
@@ -31,11 +33,13 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
             )
         )
         launch {
+            isLoading.value = true
             val fetchedOptions = storeProfilerRepository.fetchProfilerOptions()
             industries = fetchedOptions.industries
             profilerOptions.update {
-                fetchedOptions.industries.map { it.toStoreProfilerOptionUi() }
+                industries.map { it.toStoreProfilerOptionUi() }
             }
+            isLoading.value = false
         }
     }
 
@@ -57,6 +61,17 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
                 )
         )
         triggerEvent(NavigateToCommerceJourneyStep)
+    }
+
+    override fun onSearchQueryChanged(query: String) {
+        profilerOptions.update {
+            if (query.isBlank()) industries.map { it.toStoreProfilerOptionUi() }
+            industries
+                .filter { industry ->
+                    industry.label.contains(query, ignoreCase = true)
+                }
+                .map { it.toStoreProfilerOptionUi() }
+        }
     }
 
     private fun Industry.toStoreProfilerOptionUi() = StoreProfilerOptionUi(

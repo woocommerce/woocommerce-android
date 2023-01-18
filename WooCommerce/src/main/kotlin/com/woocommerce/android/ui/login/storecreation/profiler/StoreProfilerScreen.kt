@@ -1,6 +1,9 @@
+@file:OptIn(ExperimentalComposeUiApi::class)
+
 package com.woocommerce.android.ui.login.storecreation.profiler
 
 import android.content.res.Configuration
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,10 +14,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -22,31 +28,42 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.StoreProfilerContent
 import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.StoreProfilerOptionUi
+import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.StoreProfilerState
 
 @Composable
 fun StoreProfilerScreen(viewModel: BaseStoreProfilerViewModel) {
-    viewModel.storeProfilerContent.observeAsState().value?.let { state ->
+    viewModel.storeProfilerState.observeAsState().value?.let { state ->
         Scaffold(topBar = {
             Toolbar(
                 title = { Text("") },
@@ -65,12 +82,13 @@ fun StoreProfilerScreen(viewModel: BaseStoreProfilerViewModel) {
                 }
             )
         }) { padding ->
-            when (state) {
-                BaseStoreProfilerViewModel.LoadingState -> ProgressIndicator()
-                is StoreProfilerContent -> ProfilerContent(
+            when {
+                state.isLoading -> ProgressIndicator()
+                else -> ProfilerContent(
                     profilerStepContent = state,
                     onContinueClicked = viewModel::onContinueClicked,
                     onCategorySelected = viewModel::onOptionSelected,
+                    onSearchQueryChanged = viewModel::onSearchQueryChanged,
                     modifier = Modifier
                         .background(MaterialTheme.colors.surface)
                         .padding(padding)
@@ -82,9 +100,10 @@ fun StoreProfilerScreen(viewModel: BaseStoreProfilerViewModel) {
 
 @Composable
 private fun ProfilerContent(
-    profilerStepContent: StoreProfilerContent,
+    profilerStepContent: StoreProfilerState,
     onCategorySelected: (StoreProfilerOptionUi) -> Unit,
     onContinueClicked: () -> Unit,
+    onSearchQueryChanged: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -109,12 +128,19 @@ private fun ProfilerContent(
                 style = MaterialTheme.typography.subtitle1,
                 color = colorResource(id = R.color.color_on_surface_medium)
             )
-            CategoryList(
-                categories = profilerStepContent.options,
-                onCategorySelected = onCategorySelected,
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
+            if (profilerStepContent.isSearchableContent) SearchBar(onSearchQueryChanged)
+            if (profilerStepContent.options.isEmpty() && profilerStepContent.isSearchableContent) {
+                Text(
+                    modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
+                    text = stringResource(id = R.string.store_creation_store_profiler_industries_search_empty_results)
+                )
+            } else {
+                CategoryList(
+                    categories = profilerStepContent.options,
+                    onCategorySelected = onCategorySelected,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
         Divider(
             color = colorResource(id = R.color.divider_color),
@@ -130,6 +156,33 @@ private fun ProfilerContent(
             Text(text = stringResource(id = R.string.continue_button))
         }
     }
+}
+
+@Composable
+private fun SearchBar(onSearchQueryChanged: (String) -> Unit) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    var searchQuery by remember { mutableStateOf("") }
+    WCSearchField(
+        value = searchQuery,
+        onValueChange = {
+            searchQuery = it
+            onSearchQueryChanged.invoke(it)
+        },
+        hint = stringResource(id = string.store_creation_store_profiler_industries_search_hint),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+            .border(
+                BorderStroke(
+                    width = dimensionResource(id = R.dimen.minor_10),
+                    color = colorResource(id = R.color.gray_5)
+                ),
+                RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
+            ),
+        backgroundColor = TextFieldDefaults.outlinedTextFieldColors().backgroundColor(enabled = true).value,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
+    )
 }
 
 @Composable
@@ -202,7 +255,7 @@ private fun CategoryItem(
 fun CategoriesContentPreview() {
     WooThemeWithBackground {
         ProfilerContent(
-            profilerStepContent = StoreProfilerContent(
+            profilerStepContent = StoreProfilerState(
                 storeName = "White Christmas Tree",
                 title = "What’s your business about?",
                 description = "Choose a category that defines your business the best.",
@@ -235,12 +288,15 @@ fun CategoriesContentPreview() {
                     StoreProfilerOptionUi(
                         name = "Fashion and Apparel",
                         key = "",
-                        isSelected = false
+                        isSelected = false,
                     )
-                )
+                ),
+                isSearchableContent = true,
+                isLoading = false
             ),
             onContinueClicked = {},
-            onCategorySelected = {}
+            onCategorySelected = {},
+            onSearchQueryChanged = {},
         )
     }
 }
