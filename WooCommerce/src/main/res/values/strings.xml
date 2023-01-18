@@ -1095,6 +1095,14 @@
     <string name="card_reader_onboarding_with_pending_requirements">There is an issue that requires your attention. Please &lt;a href=\'\'&gt;take a look&lt;/a&gt;</string>
 
     <!--
+            Card Reader Type Selection
+        -->
+    <string name="card_reader_type_selection_title">Select reader type</string>
+    <string name="card_reader_type_selection_description">Your phone can be used as a card reader, or you can connect to an external reader via bluetooth</string>
+    <string name="card_reader_type_selection_tap_to_pay">Tap To Pay</string>
+    <string name="card_reader_type_selection_bluetooth_reader">Bluetooth Reader</string>
+
+    <!--
             Card Reader Interac refund
         -->
     <string name="card_reader_interac_refund_refund_loading_header">Getting ready to refund payment</string>
@@ -1546,6 +1554,11 @@
     <string name="product_pricing_update_sale_price_error">Sale price must be less than regular price</string>
     <string name="product_pricing_scheduled_sale_price_error">You must set the sale price if a sale is scheduled</string>
     <string name="product_settings">Product settings</string>
+    <string name="product_duplicate">Duplicate</string>
+    <string name="product_duplicate_error">Cannot duplicate product</string>
+    <string name="product_duplicate_progress_title">Duplicating your product…</string>
+    <string name="product_duplicate_progress_body">Please wait while we save a copy of this product to your store</string>
+    <string name="product_duplicate_copied_product_name">%1$s Copy</string>
     <string name="product_trash">Trash product</string>
     <string name="product_confirm_trash">Do you want to move this product to the Trash?</string>
     <string name="product_trash_yes">Move to trash</string>
@@ -2815,7 +2828,18 @@
     <string name="store_creation_store_name_subtitle">Don’t worry you can always change it later. </string>
     <string name="store_creation_store_name_hint">Store name</string>
 
-    <string name="store_creation_store_categories_title">What’s your business about?</string>
-    <string name="store_creation_store_categories_subtitle">Choose a category that defines your business the best.</string><string name="not_a_valid_qr_code">Scanned Qr code is not a WooCommerce code</string>
+    <string name="store_creation_store_profiler_industries_title">What will you be selling?</string>
+    <string name="store_creation_store_profiler_industries_description">Choose a category that best fits your business.</string>
+    <string name="store_creation_store_profiler_journey_title">Where are you on your commerce journey?</string>
+    <string name="store_creation_store_profiler_journey_description">To speed things up, we’ll tailor your WooCommerce experience for you based on your response.</string>
+    <string name="store_creation_store_profiler_platforms_title">In which platform are you currently selling?</string>
+    <string name="store_creation_store_profiler_platforms_description">You can choose multiple ones.</string>
+
+    <string name="store_creation_country_picker_title">Confirm your location</string>
+    <string name="store_creation_country_picker_description">We will use this information to set up payments, shipping and taxes.</string>
+    <string name="store_creation_country_picker_current_location">Current location</string>
+    <string name="store_creation_country_picker_countries_header">Countries</string>
+
+    <string name="not_a_valid_qr_code">Scanned Qr code is not a WooCommerce code</string>
     <string name="login_application_passwords_help">What are Application Passwords?</string>
 </resources>

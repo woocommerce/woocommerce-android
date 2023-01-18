@@ -67,4 +67,10 @@ class MainSettingsPresenter @Inject constructor(
             }
         }
     }
+
+    override fun setupApplicationPasswordsSettings() {
+        if (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords) {
+            appSettingsFragmentView?.handleApplicationPasswordsSettings()
+        }
+    }
 }

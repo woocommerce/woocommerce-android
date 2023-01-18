@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-12-22 13:54:04+0000
+Translation-Revision-Date: 2023-01-16 04:17:21+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="not_a_valid_qr_code">Le code QR scanné n\'est pas un code WooCommerce</string>
+    <string name="store_creation_iap_eligibility_check_error_description">La création de boutique depuis l\'appli mobile est actuellement indisponible dans votre pays.</string>
+    <string name="store_creation_iap_eligibility_check_error_title">Création de boutique indisponible</string>
+    <string name="store_creation_iap_eligibility_loading_subtitle">Veuillez rester connecté∙e.</string>
+    <string name="store_creation_iap_eligibility_loading_title">Nous nous préparons à la création de votre boutique</string>
+    <string name="review_reply_failure">Une erreur s\'est produite lors de l\'envoi de la réponse</string>
+    <string name="review_reply_success">Réponse envoyée !</string>
+    <string name="wc_reply">Répondre</string>
     <string name="store_creation_store_categories_subtitle">Choisissez la catégorie qui définit\nle mieux votre activité.</string>
     <string name="store_creation_store_categories_title">Quel est votre secteur d’activité ?</string>
     <string name="product_selection_menu_select_all">Tout sélectionner</string>

@@ -215,6 +215,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
             )
         )
+
         triggerEvent(NavigateToCardReaderPaymentFlow(cardReaderPaymentFlowParam))
     }
 
