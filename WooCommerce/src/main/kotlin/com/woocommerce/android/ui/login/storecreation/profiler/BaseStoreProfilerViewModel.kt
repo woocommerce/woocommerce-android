@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.login.storecreation.profiler
 
-import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
@@ -9,27 +8,36 @@ import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
-import kotlinx.parcelize.Parcelize
 
 abstract class BaseStoreProfilerViewModel(
     savedStateHandle: SavedStateHandle,
     private val newStore: NewStore,
 ) : ScopedViewModel(savedStateHandle) {
+    abstract val hasSearchableContent: Boolean
     protected val profilerOptions = MutableStateFlow(emptyList<StoreProfilerOptionUi>())
-    val storeProfilerContent: LiveData<ViewState> = profilerOptions
-        .map { options ->
-            if (options.isEmpty()) {
-                LoadingState
-            } else {
-                StoreProfilerContent(
-                    storeName = newStore.data.name ?: "",
-                    title = getProfilerStepTitle(),
-                    description = getProfilerStepDescription(),
-                    options = options
-                )
-            }
+
+    val isLoading = MutableStateFlow(false)
+    val searchQuery = MutableStateFlow("")
+    val storeProfilerState: LiveData<StoreProfilerState> =
+        combine(
+            profilerOptions,
+            isLoading,
+            searchQuery
+        ) { options, isLoading, searchQuery ->
+            StoreProfilerState(
+                storeName = newStore.data.name ?: "",
+                title = getProfilerStepTitle(),
+                description = getProfilerStepDescription(),
+                options = when {
+                    searchQuery.isBlank() -> options
+                    else -> options.filter { it.name.contains(searchQuery, ignoreCase = true) }
+                },
+                isLoading = isLoading,
+                isSearchableContent = hasSearchableContent,
+                searchQuery = searchQuery,
+            )
         }.asLiveData()
 
     protected abstract fun getProfilerStepDescription(): String
@@ -37,6 +45,10 @@ abstract class BaseStoreProfilerViewModel(
     protected abstract fun getProfilerStepTitle(): String
 
     abstract fun onContinueClicked()
+
+    fun onSearchQueryChanged(query: String) {
+        searchQuery.value = query
+    }
 
     fun onSkipPressed() {
         triggerEvent(NavigateToCountryPickerStep)
@@ -59,25 +71,21 @@ abstract class BaseStoreProfilerViewModel(
         triggerEvent(MultiLiveEvent.Event.NavigateToHelpScreen(HelpOrigin.STORE_CREATION))
     }
 
-    sealed class ViewState : Parcelable
-
-    @Parcelize
-    object LoadingState : ViewState()
-
-    @Parcelize
-    data class StoreProfilerContent(
+    data class StoreProfilerState(
         val storeName: String,
         val title: String,
         val description: String,
-        val options: List<StoreProfilerOptionUi> = emptyList()
-    ) : ViewState(), Parcelable
+        val options: List<StoreProfilerOptionUi> = emptyList(),
+        val isLoading: Boolean,
+        val isSearchableContent: Boolean,
+        val searchQuery: String
+    )
 
-    @Parcelize
     data class StoreProfilerOptionUi(
         val name: String,
         val key: String,
         val isSelected: Boolean,
-    ) : Parcelable
+    )
 
     object NavigateToCountryPickerStep : MultiLiveEvent.Event()
     object NavigateToCommerceJourneyStep : MultiLiveEvent.Event()

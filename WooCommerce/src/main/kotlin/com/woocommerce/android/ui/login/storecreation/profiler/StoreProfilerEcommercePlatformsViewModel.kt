@@ -20,6 +20,9 @@ class StoreProfilerEcommercePlatformsViewModel @Inject constructor(
     private val storeProfilerRepository: StoreProfilerRepository,
     private val resourceProvider: ResourceProvider,
 ) : BaseStoreProfilerViewModel(savedStateHandle, newStore) {
+    override val hasSearchableContent: Boolean
+        get() = false
+
     init {
         analyticsTracker.track(
             AnalyticsEvent.SITE_CREATION_STEP,

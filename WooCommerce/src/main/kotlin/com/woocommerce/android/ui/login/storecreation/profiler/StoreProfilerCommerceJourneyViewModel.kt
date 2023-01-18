@@ -21,6 +21,8 @@ class StoreProfilerCommerceJourneyViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
 ) : BaseStoreProfilerViewModel(savedStateHandle, newStore) {
     private var alreadySellingOnlineOption: StoreProfilerOptionUi? = null
+    override val hasSearchableContent: Boolean
+        get() = false
 
     init {
         analyticsTracker.track(

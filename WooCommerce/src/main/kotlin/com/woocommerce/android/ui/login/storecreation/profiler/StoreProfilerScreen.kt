@@ -1,6 +1,9 @@
+@file:OptIn(ExperimentalComposeUiApi::class)
+
 package com.woocommerce.android.ui.login.storecreation.profiler
 
 import android.content.res.Configuration
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -9,12 +12,16 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -22,31 +29,39 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.StoreProfilerContent
 import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.StoreProfilerOptionUi
+import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.StoreProfilerState
 
 @Composable
 fun StoreProfilerScreen(viewModel: BaseStoreProfilerViewModel) {
-    viewModel.storeProfilerContent.observeAsState().value?.let { state ->
+    viewModel.storeProfilerState.observeAsState().value?.let { state ->
         Scaffold(topBar = {
             Toolbar(
                 title = { Text("") },
@@ -65,12 +80,13 @@ fun StoreProfilerScreen(viewModel: BaseStoreProfilerViewModel) {
                 }
             )
         }) { padding ->
-            when (state) {
-                BaseStoreProfilerViewModel.LoadingState -> ProgressIndicator()
-                is StoreProfilerContent -> ProfilerContent(
+            when {
+                state.isLoading -> ProgressIndicator()
+                else -> ProfilerContent(
                     profilerStepContent = state,
                     onContinueClicked = viewModel::onContinueClicked,
                     onCategorySelected = viewModel::onOptionSelected,
+                    onSearchQueryChanged = viewModel::onSearchQueryChanged,
                     modifier = Modifier
                         .background(MaterialTheme.colors.surface)
                         .padding(padding)
@@ -82,9 +98,10 @@ fun StoreProfilerScreen(viewModel: BaseStoreProfilerViewModel) {
 
 @Composable
 private fun ProfilerContent(
-    profilerStepContent: StoreProfilerContent,
+    profilerStepContent: StoreProfilerState,
     onCategorySelected: (StoreProfilerOptionUi) -> Unit,
     onContinueClicked: () -> Unit,
+    onSearchQueryChanged: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -92,29 +109,44 @@ private fun ProfilerContent(
             modifier = Modifier
                 .fillMaxSize()
                 .weight(1f)
-                .padding(dimensionResource(id = R.dimen.major_100)),
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+                .padding(
+                    start = dimensionResource(id = R.dimen.major_100),
+                    end = dimensionResource(id = R.dimen.major_100)
+                )
         ) {
-            Text(
-                text = profilerStepContent.storeName.uppercase(),
-                style = MaterialTheme.typography.caption,
-                color = colorResource(id = R.color.color_on_surface_medium)
-            )
-            Text(
-                text = profilerStepContent.title,
-                style = MaterialTheme.typography.h5,
-            )
-            Text(
-                text = profilerStepContent.description,
-                style = MaterialTheme.typography.subtitle1,
-                color = colorResource(id = R.color.color_on_surface_medium)
-            )
-            CategoryList(
-                categories = profilerStepContent.options,
-                onCategorySelected = onCategorySelected,
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
+            val configuration = LocalConfiguration.current
+            if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                HeaderContent(profilerStepContent, onSearchQueryChanged)
+            }
+            LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    item {
+                        HeaderContent(profilerStepContent, onSearchQueryChanged)
+                    }
+                }
+                if (profilerStepContent.options.isEmpty()) {
+                    item {
+                        Text(
+                            modifier = Modifier
+                                .align(alignment = Alignment.CenterHorizontally)
+                                .padding(top = dimensionResource(id = R.dimen.major_100)),
+                            text = stringResource(id = R.string.store_creation_profiler_options_search_empty)
+                        )
+                    }
+                }
+                itemsIndexed(profilerStepContent.options) { index, category ->
+                    if (index == 0)
+                        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
+                    ProfilerOptionItem(
+                        category = category,
+                        onCategorySelected = onCategorySelected,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = dimensionResource(id = R.dimen.major_100))
+                    )
+                }
+            }
         }
         Divider(
             color = colorResource(id = R.color.divider_color),
@@ -133,26 +165,66 @@ private fun ProfilerContent(
 }
 
 @Composable
-private fun CategoryList(
-    categories: List<StoreProfilerOptionUi>,
-    onCategorySelected: (StoreProfilerOptionUi) -> Unit,
+private fun HeaderContent(
+    profilerStepContent: StoreProfilerState,
+    onSearchQueryChanged: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(modifier = modifier) {
-        itemsIndexed(categories) { _, category ->
-            CategoryItem(
-                category = category,
-                onCategorySelected = onCategorySelected,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = dimensionResource(id = R.dimen.major_100))
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+    ) {
+        Text(
+            text = profilerStepContent.storeName.uppercase(),
+            style = MaterialTheme.typography.caption,
+            color = colorResource(id = R.color.color_on_surface_medium)
+        )
+        Text(
+            text = profilerStepContent.title,
+            style = MaterialTheme.typography.h5,
+        )
+        Text(
+            text = profilerStepContent.description,
+            style = MaterialTheme.typography.subtitle1,
+            color = colorResource(id = R.color.color_on_surface_medium)
+        )
+        if (profilerStepContent.isSearchableContent)
+            SearchBar(
+                profilerStepContent.searchQuery,
+                onSearchQueryChanged
             )
-        }
     }
 }
 
 @Composable
-private fun CategoryItem(
+private fun SearchBar(
+    searchQuery: String,
+    onSearchQueryChanged: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    WCSearchField(
+        value = searchQuery,
+        onValueChange = onSearchQueryChanged,
+        hint = stringResource(id = string.store_creation_store_profiler_industries_search_hint),
+        modifier = modifier
+            .fillMaxWidth()
+            .height(52.dp)
+            .border(
+                BorderStroke(
+                    width = dimensionResource(id = R.dimen.minor_10),
+                    color = colorResource(id = R.color.gray_5)
+                ),
+                RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
+            ),
+        backgroundColor = TextFieldDefaults.outlinedTextFieldColors().backgroundColor(enabled = true).value,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
+    )
+}
+
+@Composable
+private fun ProfilerOptionItem(
     category: StoreProfilerOptionUi,
     onCategorySelected: (StoreProfilerOptionUi) -> Unit,
     modifier: Modifier = Modifier
@@ -202,7 +274,7 @@ private fun CategoryItem(
 fun CategoriesContentPreview() {
     WooThemeWithBackground {
         ProfilerContent(
-            profilerStepContent = StoreProfilerContent(
+            profilerStepContent = StoreProfilerState(
                 storeName = "White Christmas Tree",
                 title = "What’s your business about?",
                 description = "Choose a category that defines your business the best.",
@@ -235,12 +307,16 @@ fun CategoriesContentPreview() {
                     StoreProfilerOptionUi(
                         name = "Fashion and Apparel",
                         key = "",
-                        isSelected = false
+                        isSelected = false,
                     )
-                )
+                ),
+                isSearchableContent = true,
+                isLoading = false,
+                searchQuery = ""
             ),
             onContinueClicked = {},
-            onCategorySelected = {}
+            onCategorySelected = {},
+            onSearchQueryChanged = {},
         )
     }
 }
