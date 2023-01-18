@@ -30,13 +30,13 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.MyStoreStatsBinding
+import com.woocommerce.android.extensions.convertedFrom
 import com.woocommerce.android.extensions.formatDateToFriendlyDayHour
 import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthDate
 import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthYear
 import com.woocommerce.android.extensions.formatDateToYearMonth
 import com.woocommerce.android.extensions.formatToDateOnly
 import com.woocommerce.android.extensions.formatToMonthDateOnly
-import com.woocommerce.android.extensions.limitTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.MyStoreFragment.Companion.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.util.CurrencyFormatter
@@ -53,7 +53,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DisplayUtils
-import java.text.DecimalFormat
 import java.util.Locale
 import kotlin.math.round
 
@@ -438,14 +437,7 @@ class MyStoreStatsView @JvmOverloads constructor(
             binding.statsViewRow.emptyConversionRateIndicator.isVisible = true
             return
         }
-
-        val conversionRateDisplayValue = when (visitorsCount) {
-            0 -> "0%"
-            else -> {
-                val conversionRate = ((ordersCount / visitorsCount.toDouble()) * 100).limitTo(100.0)
-                DecimalFormat("##.#").format(conversionRate) + "%"
-            }
-        }
+        val conversionRateDisplayValue = ordersCount convertedFrom visitorsCount
         val color = ContextCompat.getColor(context, R.color.color_on_surface_high)
         conversionValue.setTextColor(color)
         binding.statsViewRow.emptyConversionRateIndicator.isVisible = false

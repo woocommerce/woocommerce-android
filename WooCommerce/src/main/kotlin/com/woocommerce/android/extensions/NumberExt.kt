@@ -1,5 +1,6 @@
 package com.woocommerce.android.extensions
 
+import java.text.DecimalFormat
 import kotlin.math.roundToInt
 
 fun Float.formatToString(): String {
@@ -22,9 +23,14 @@ fun Double.formatToString(): String {
 
 fun Double?.isInteger() = this?.rem(1) == 0.0
 
-fun Double.limitTo(limit: Double) =
-    if (this > limit) limit else this
+infix fun Number.convertedFrom(denominator: Number): String =
+    run { denominator.toDouble() }
+        .let { (if (it > 0) (this.toDouble() / it) * PERCENTAGE_BASE else 0.0) }
+        .coerceAtMost(PERCENTAGE_BASE)
+        .let { DecimalFormat("##.#").format(it) + "%" }
 
 infix fun <T> Comparable<T>?.greaterThan(other: T) =
     this?.let { it > other }
         ?: false
+
+const val PERCENTAGE_BASE = 100.0
