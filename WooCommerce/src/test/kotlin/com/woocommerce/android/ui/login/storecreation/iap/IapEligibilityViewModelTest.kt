@@ -110,6 +110,8 @@ class IapEligibilityViewModelTest : BaseUnitTest() {
             verify(planSupportChecker).isIAPSupported()
             assertFalse(isLoadingState)
             assertThat(event).isExactlyInstanceOf(MultiLiveEvent.Event.ShowDialog::class.java)
+            assertThat((event as MultiLiveEvent.Event.ShowDialog).messageId)
+                .isEqualTo(R.string.store_creation_iap_eligibility_check_generic_error)
         }
 
     @Test
