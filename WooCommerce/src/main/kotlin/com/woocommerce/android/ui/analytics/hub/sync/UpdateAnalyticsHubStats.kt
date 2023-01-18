@@ -1,13 +1,13 @@
-package com.woocommerce.android.ui.analytics.sync
+package com.woocommerce.android.ui.analytics.hub.sync
 
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
-import com.woocommerce.android.ui.analytics.sync.AnalyticsHubUpdateState.Finished
-import com.woocommerce.android.ui.analytics.sync.AnalyticsHubUpdateState.Loading
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.FetchStrategy
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsHubUpdateState.Finished
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsHubUpdateState.Loading
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -37,7 +37,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
     private val fullStatsRequestState by lazy { combineFullUpdateState() }
 
     suspend operator fun invoke(
-        rangeSelection: AnalyticsHubDateRangeSelection,
+        rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy,
         scope: CoroutineScope
     ): Flow<AnalyticsHubUpdateState> {
@@ -73,7 +73,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
         }.distinctUntilChanged()
 
     private fun CoroutineScope.fetchOrdersDataAsync(
-        rangeSelection: AnalyticsHubDateRangeSelection,
+        rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy
     ) = async {
         analyticsRepository.fetchOrdersData(rangeSelection, fetchStrategy)
@@ -83,7 +83,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
     }
 
     private fun CoroutineScope.fetchVisitorsCountAsync(
-        rangeSelection: AnalyticsHubDateRangeSelection,
+        rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy
     ) = async {
         analyticsRepository.fetchVisitorsData(rangeSelection, fetchStrategy)
@@ -93,7 +93,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
     }
 
     private fun CoroutineScope.fetchRevenueDataAsync(
-        rangeSelection: AnalyticsHubDateRangeSelection,
+        rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy
     ) = async {
         analyticsRepository.fetchRevenueData(rangeSelection, fetchStrategy)
@@ -103,7 +103,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
     }
 
     private fun CoroutineScope.fetchProductsDataAsync(
-        rangeSelection: AnalyticsHubDateRangeSelection,
+        rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy
     ) = async {
         analyticsRepository.fetchProductsData(rangeSelection, fetchStrategy)

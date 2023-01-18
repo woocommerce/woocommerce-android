@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.analytics
+package com.woocommerce.android.ui.analytics.hub
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearOutSlowInEasing

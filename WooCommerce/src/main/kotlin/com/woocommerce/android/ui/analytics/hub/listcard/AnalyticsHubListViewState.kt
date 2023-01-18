@@ -1,8 +1,8 @@
-package com.woocommerce.android.ui.analytics.listcard
+package com.woocommerce.android.ui.analytics.hub.listcard
 
-sealed class AnalyticsListViewState {
-    object LoadingViewState : AnalyticsListViewState()
-    data class NoDataState(val message: String) : AnalyticsListViewState()
+sealed class AnalyticsHubListViewState {
+    object LoadingViewState : AnalyticsHubListViewState()
+    data class NoDataState(val message: String) : AnalyticsHubListViewState()
     data class DataViewState(
         val title: String,
         val subTitle: String,
@@ -10,8 +10,8 @@ sealed class AnalyticsListViewState {
         val delta: Int?,
         val listLeftHeader: String,
         val listRightHeader: String,
-        val items: List<AnalyticsListCardItemViewState>
-    ) : AnalyticsListViewState() {
+        val items: List<AnalyticsHubListCardItemViewState>
+    ) : AnalyticsHubListViewState() {
         val sign: String
             get() = when {
                 delta == null -> ""

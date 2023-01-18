@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.analytics.listcard
+package com.woocommerce.android.ui.analytics.hub.listcard
 
 import android.content.Context
 import android.util.AttributeSet
@@ -11,15 +11,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsListCardViewBinding
-import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.DataViewState
-import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.LoadingViewState
-import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.NoDataState
+import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.DataViewState
+import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.LoadingViewState
+import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.NoDataState
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.tags.ITag
 import com.woocommerce.android.widgets.tags.TagConfig
 import kotlin.math.absoluteValue
 
-class AnalyticsListCardView @JvmOverloads constructor(
+class AnalyticsHubListCardView @JvmOverloads constructor(
     val ctx: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -27,7 +27,7 @@ class AnalyticsListCardView @JvmOverloads constructor(
     val binding = AnalyticsListCardViewBinding.inflate(LayoutInflater.from(ctx), this)
     private var skeletonView = SkeletonView()
 
-    internal fun updateInformation(viewState: AnalyticsListViewState) {
+    internal fun updateInformation(viewState: AnalyticsHubListViewState) {
         when (viewState) {
             is LoadingViewState -> setSkeleton()
             is DataViewState -> setDataViewState(viewState)
@@ -68,7 +68,7 @@ class AnalyticsListCardView @JvmOverloads constructor(
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
             itemAnimator = DefaultItemAnimator()
-            adapter = AnalyticsListAdapter(viewState.items)
+            adapter = AnalyticsHubListAdapter(viewState.items)
         }
         binding.analyticsItemsTag.isVisible = viewState.delta != null
         binding.analyticsCardTitle.visibility = VISIBLE

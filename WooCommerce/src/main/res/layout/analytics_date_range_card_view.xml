@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".ui.analytics.daterangeselector.AnalyticsDateRangeCardView">
+    tools:context=".ui.analytics.hub.daterangeselector.AnalyticsHubDateRangeCardView">
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"

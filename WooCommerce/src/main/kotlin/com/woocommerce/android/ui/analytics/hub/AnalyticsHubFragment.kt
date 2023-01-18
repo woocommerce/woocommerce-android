@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.analytics
+package com.woocommerce.android.ui.analytics.hub
 
 import android.os.Bundle
 import android.view.View
@@ -13,9 +13,9 @@ import com.woocommerce.android.databinding.FragmentAnalyticsBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
-import com.woocommerce.android.ui.analytics.RefreshIndicator.ShowIndicator
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.CUSTOM
+import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.ShowIndicator
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -25,14 +25,14 @@ import kotlinx.coroutines.flow.onEach
 import java.util.Date
 
 @AndroidEntryPoint
-class AnalyticsFragment :
+class AnalyticsHubFragment :
     BaseFragment(R.layout.fragment_analytics) {
     companion object {
         const val KEY_DATE_RANGE_SELECTOR_RESULT = "key_order_status_result"
         const val DATE_PICKER_FRAGMENT_TAG = "DateRangePicker"
     }
 
-    private val viewModel: AnalyticsViewModel by viewModels()
+    private val viewModel: AnalyticsHubViewModel by viewModels()
     private var _binding: FragmentAnalyticsBinding? = null
     private val binding
         get() = _binding!!
@@ -79,19 +79,19 @@ class AnalyticsFragment :
     private fun openDateRangeSelector() = findNavController().navigateSafely(buildDialogDateRangeSelectorArguments())
 
     private fun buildDialogDateRangeSelectorArguments() =
-        AnalyticsFragmentDirections.actionAnalyticsFragmentToDateRangeSelector(
+        AnalyticsHubFragmentDirections.actionAnalyticsFragmentToDateRangeSelector(
             requestKey = KEY_DATE_RANGE_SELECTOR_RESULT,
             keys = viewModel.selectableRangeOptions,
-            values = AnalyticsHubDateRangeSelection.SelectionType.names,
+            values = StatsTimeRangeSelection.SelectionType.names,
             selectedItem = getDateRangeSelectorViewState().selectionType.name
         )
 
-    private fun setupResultHandlers(viewModel: AnalyticsViewModel) {
+    private fun setupResultHandlers(viewModel: AnalyticsHubViewModel) {
         handleDialogResult<String>(
             key = KEY_DATE_RANGE_SELECTOR_RESULT,
             entryId = R.id.analytics
         ) { dateSelection ->
-            AnalyticsHubDateRangeSelection.SelectionType.from(dateSelection)
+            StatsTimeRangeSelection.SelectionType.from(dateSelection)
                 .takeIf { it != CUSTOM }
                 ?.let { viewModel.onNewRangeSelection(it) }
                 ?: viewModel.onCustomDateRangeClicked()

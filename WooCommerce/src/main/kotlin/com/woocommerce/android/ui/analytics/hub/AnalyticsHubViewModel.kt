@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.analytics
+package com.woocommerce.android.ui.analytics.hub
 
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.SavedStateHandle
@@ -11,23 +11,23 @@ import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
-import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
-import com.woocommerce.android.ui.analytics.RefreshIndicator.ShowIndicator
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.DataViewState
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.LoadingViewState
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.NoDataState
-import com.woocommerce.android.ui.analytics.listcard.AnalyticsListCardItemViewState
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
-import com.woocommerce.android.ui.analytics.sync.AnalyticsHubUpdateState.Finished
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.FetchStrategy.ForceNew
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.FetchStrategy.Saved
-import com.woocommerce.android.ui.analytics.sync.OrdersState
-import com.woocommerce.android.ui.analytics.sync.ProductsState
-import com.woocommerce.android.ui.analytics.sync.RevenueState
-import com.woocommerce.android.ui.analytics.sync.SessionState
-import com.woocommerce.android.ui.analytics.sync.UpdateAnalyticsHubStats
+import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.NotShowIndicator
+import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.ShowIndicator
+import com.woocommerce.android.ui.analytics.hub.daterangeselector.AnalyticsHubDateRangeSelectorViewState
+import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationSectionViewState
+import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.DataViewState
+import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.LoadingViewState
+import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.NoDataState
+import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListCardItemViewState
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsHubUpdateState.Finished
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.ForceNew
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.Saved
+import com.woocommerce.android.ui.analytics.hub.sync.OrdersState
+import com.woocommerce.android.ui.analytics.hub.sync.ProductsState
+import com.woocommerce.android.ui.analytics.hub.sync.RevenueState
+import com.woocommerce.android.ui.analytics.hub.sync.SessionState
+import com.woocommerce.android.ui.analytics.hub.sync.UpdateAnalyticsHubStats
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.mystore.MyStoreStatsUsageTracksEventEmitter
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.locale.LocaleProvider
@@ -46,12 +46,12 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
-import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState as ProductsViewState
-import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.LoadingViewState as LoadingProductsViewState
-import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.NoDataState as ProductsNoDataState
+import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState as ProductsViewState
+import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.LoadingViewState as LoadingProductsViewState
+import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.NoDataState as ProductsNoDataState
 
 @HiltViewModel
-class AnalyticsViewModel @Inject constructor(
+class AnalyticsHubViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
     private val transactionLauncher: AnalyticsHubTransactionLauncher,
@@ -61,7 +61,7 @@ class AnalyticsViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
-    private val navArgs: AnalyticsFragmentArgs by savedState.navArgs()
+    private val navArgs: AnalyticsHubFragmentArgs by savedState.navArgs()
 
     val performanceObserver: LifecycleObserver = transactionLauncher
 
@@ -73,7 +73,7 @@ class AnalyticsViewModel @Inject constructor(
     private val mutableState = MutableStateFlow(
         AnalyticsViewState(
             NotShowIndicator,
-            AnalyticsDateRangeSelectorViewState.EMPTY,
+            AnalyticsHubDateRangeSelectorViewState.EMPTY,
             LoadingViewState,
             LoadingViewState,
             LoadingProductsViewState,
@@ -241,13 +241,13 @@ class AnalyticsViewModel @Inject constructor(
         stats: SessionStat
     ) = DataViewState(
         title = resourceProvider.getString(R.string.analytics_session_card_title),
-        leftSection = AnalyticsInformationSectionViewState(
+        leftSection = AnalyticsHubInformationSectionViewState(
             resourceProvider.getString(R.string.analytics_visitors_subtitle),
             stats.visitorsCount.toString(),
             null,
             listOf()
         ),
-        rightSection = AnalyticsInformationSectionViewState(
+        rightSection = AnalyticsHubInformationSectionViewState(
             resourceProvider.getString(R.string.analytics_conversion_subtitle),
             stats.conversionRate,
             null,
@@ -258,13 +258,13 @@ class AnalyticsViewModel @Inject constructor(
     private fun buildRevenueDataViewState(revenueStat: RevenueStat) =
         DataViewState(
             title = resourceProvider.getString(R.string.analytics_revenue_card_title),
-            leftSection = AnalyticsInformationSectionViewState(
+            leftSection = AnalyticsHubInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_total_sales_title),
                 formatValue(revenueStat.totalValue.toString(), revenueStat.currencyCode),
                 if (revenueStat.totalDelta is DeltaPercentage.Value) revenueStat.totalDelta.value else null,
                 revenueStat.totalRevenueByInterval.map { it.toFloat() }
             ),
-            rightSection = AnalyticsInformationSectionViewState(
+            rightSection = AnalyticsHubInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_net_sales_title),
                 formatValue(revenueStat.netValue.toString(), revenueStat.currencyCode),
                 if (revenueStat.netDelta is DeltaPercentage.Value) revenueStat.netDelta.value else null,
@@ -275,7 +275,7 @@ class AnalyticsViewModel @Inject constructor(
     private fun buildOrdersDataViewState(ordersStats: OrdersStat) =
         DataViewState(
             title = resourceProvider.getString(R.string.analytics_orders_card_title),
-            leftSection = AnalyticsInformationSectionViewState(
+            leftSection = AnalyticsHubInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_total_orders_title),
                 ordersStats.ordersCount.toString(),
                 if (ordersStats.ordersCountDelta is DeltaPercentage.Value) {
@@ -285,7 +285,7 @@ class AnalyticsViewModel @Inject constructor(
                 },
                 ordersStats.ordersCountByInterval.map { it.toFloat() }
             ),
-            rightSection = AnalyticsInformationSectionViewState(
+            rightSection = AnalyticsHubInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_avg_orders_title),
                 formatValue(ordersStats.avgOrderValue.toString(), ordersStats.currencyCode),
                 if (ordersStats.avgOrderDelta is DeltaPercentage.Value) {
@@ -311,7 +311,7 @@ class AnalyticsViewModel @Inject constructor(
             items = products
                 .sortedByDescending { it.quantity }
                 .mapIndexed { index, product ->
-                    AnalyticsListCardItemViewState(
+                    AnalyticsHubListCardItemViewState(
                         product.image,
                         product.name,
                         product.quantity.toString(),

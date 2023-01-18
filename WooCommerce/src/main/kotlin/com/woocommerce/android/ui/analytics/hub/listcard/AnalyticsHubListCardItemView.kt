@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.analytics.listcard
+package com.woocommerce.android.ui.analytics.hub.listcard
 
 import android.content.Context
 import android.util.AttributeSet
@@ -12,7 +12,7 @@ import com.woocommerce.android.databinding.AnalyticsListCardItemViewBinding
 import com.woocommerce.android.di.GlideApp
 import org.wordpress.android.util.PhotonUtils
 
-class AnalyticsListCardItemView @JvmOverloads constructor(
+class AnalyticsHubListCardItemView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -22,7 +22,7 @@ class AnalyticsListCardItemView @JvmOverloads constructor(
 
     val binding = AnalyticsListCardItemViewBinding.inflate(LayoutInflater.from(ctx), this, true)
 
-    fun setInformation(viewState: AnalyticsListCardItemViewState) {
+    fun setInformation(viewState: AnalyticsHubListCardItemViewState) {
         binding.analyticsCardListItemTitle.text = viewState.title
         binding.analyticsCardListItemValue.text = viewState.value
         binding.analyticsCardListItemDescription.text = viewState.description

@@ -5,15 +5,15 @@ import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.TODAY
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.OrdersResult
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.OrdersResult.OrdersData
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.ProductsResult
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.ProductsResult.ProductsData
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.RevenueResult
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.RevenueResult.RevenueData
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.VisitorsResult
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.VisitorsResult.VisitorsData
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.OrdersResult
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.OrdersResult.OrdersData
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.ProductsResult
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.ProductsResult.ProductsData
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.RevenueResult
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.RevenueResult.RevenueData
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.VisitorsResult
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.VisitorsResult.VisitorsData
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.TODAY
 import java.util.Calendar
 import java.util.Locale
 

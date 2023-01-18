@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.analytics.ranges
 
 import java.util.Calendar
 
-abstract class AnalyticsHubTimeRangeData(
+abstract class StatsTimeRangeData(
     referenceCalendar: Calendar
 ) {
     abstract val currentRange: AnalyticsHubTimeRange

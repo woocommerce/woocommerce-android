@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.analytics
+package com.woocommerce.android.ui.analytics.hub
 
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -9,10 +9,10 @@ import com.automattic.android.tracks.crashlogging.performance.TransactionOperati
 import com.automattic.android.tracks.crashlogging.performance.TransactionStatus
 import com.woocommerce.android.analytics.AnalyticsEvent.ANALYTICS_HUB_WAITING_TIME_LOADED
 import com.woocommerce.android.analytics.WaitingTimeTracker
-import com.woocommerce.android.ui.analytics.AnalyticsHubTransactionLauncher.Conditions.ORDERS_FETCHED
-import com.woocommerce.android.ui.analytics.AnalyticsHubTransactionLauncher.Conditions.PRODUCTS_FETCHED
-import com.woocommerce.android.ui.analytics.AnalyticsHubTransactionLauncher.Conditions.REVENUE_FETCHED
-import com.woocommerce.android.ui.analytics.AnalyticsHubTransactionLauncher.Conditions.SESSION_FETCHED
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubTransactionLauncher.Conditions.ORDERS_FETCHED
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubTransactionLauncher.Conditions.PRODUCTS_FETCHED
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubTransactionLauncher.Conditions.REVENUE_FETCHED
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubTransactionLauncher.Conditions.SESSION_FETCHED
 import com.woocommerce.android.util.CoroutineDispatchers
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.CoroutineScope

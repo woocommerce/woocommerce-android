@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.analytics.daterangeselector
+package com.woocommerce.android.ui.analytics.hub.daterangeselector
 
 import android.content.Context
 import android.text.SpannableStringBuilder
@@ -9,9 +9,9 @@ import androidx.core.text.bold
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsDateRangeCardViewBinding
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 
-class AnalyticsDateRangeCardView @JvmOverloads constructor(
+class AnalyticsHubDateRangeCardView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0

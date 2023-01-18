@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.analytics.sync
+package com.woocommerce.android.ui.analytics.hub.sync
 
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.model.DeltaPercentage
@@ -7,16 +7,16 @@ import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.MONTH_TO_DATE
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.TODAY
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.WEEK_TO_DATE
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.YEAR_TO_DATE
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.OrdersResult.OrdersError
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.ProductsResult.ProductsError
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.RevenueResult.RevenueData
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.RevenueResult.RevenueError
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.OrdersResult.OrdersError
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.ProductsResult.ProductsError
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.RevenueResult.RevenueData
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.RevenueResult.RevenueError
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.MONTH_TO_DATE
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.TODAY
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.YEAR_TO_DATE
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.Deferred
@@ -51,7 +51,7 @@ class AnalyticsRepository @Inject constructor(
     private var previousRevenueStats: AnalyticsStatsResultWrapper? = null
 
     suspend fun fetchRevenueData(
-        rangeSelection: AnalyticsHubDateRangeSelection,
+        rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy
     ): RevenueResult {
         val currentPeriod = getCurrentPeriodStats(rangeSelection, fetchStrategy).getOrNull()
@@ -96,7 +96,7 @@ class AnalyticsRepository @Inject constructor(
     }
 
     suspend fun fetchOrdersData(
-        rangeSelection: AnalyticsHubDateRangeSelection,
+        rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy
     ): OrdersResult {
         val currentPeriod = getCurrentPeriodStats(rangeSelection, fetchStrategy).getOrNull()
@@ -130,7 +130,10 @@ class AnalyticsRepository @Inject constructor(
         return OrdersResult.OrdersData(
             OrdersStat(
                 currentOrdersCount,
-                calculateDeltaPercentage(previousOrdersCount.toDouble(), currentOrdersCount.toDouble()),
+                calculateDeltaPercentage(
+                    previousOrdersCount.toDouble(),
+                    currentOrdersCount.toDouble()
+                ),
                 currentAvgOrderValue,
                 calculateDeltaPercentage(previousOrderValue, currentAvgOrderValue),
                 getCurrencyCode(),
@@ -141,7 +144,7 @@ class AnalyticsRepository @Inject constructor(
     }
 
     suspend fun fetchProductsData(
-        rangeSelection: AnalyticsHubDateRangeSelection,
+        rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy
     ): ProductsResult {
         val currentPeriod = getCurrentPeriodStats(rangeSelection, fetchStrategy).getOrNull()
@@ -180,7 +183,7 @@ class AnalyticsRepository @Inject constructor(
     }
 
     suspend fun fetchVisitorsData(
-        rangeSelection: AnalyticsHubDateRangeSelection,
+        rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy
     ): VisitorsResult {
         return getVisitorsCount(rangeSelection, fetchStrategy)
@@ -195,7 +198,7 @@ class AnalyticsRepository @Inject constructor(
     fun getProductsAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_PRODUCTS_PATH
 
     private suspend fun getCurrentPeriodStats(
-        rangeSelection: AnalyticsHubDateRangeSelection,
+        rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy
     ): Result<WCRevenueStatsModel?> = coroutineScope {
         val granularity = getGranularity(rangeSelection.selectionType)
@@ -217,7 +220,7 @@ class AnalyticsRepository @Inject constructor(
     }
 
     private suspend fun getPreviousPeriodStats(
-        rangeSelection: AnalyticsHubDateRangeSelection,
+        rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy
     ): Result<WCRevenueStatsModel?> = coroutineScope {
         val granularity = getGranularity(rangeSelection.selectionType)
@@ -239,7 +242,7 @@ class AnalyticsRepository @Inject constructor(
     }
 
     private suspend fun getProductStats(
-        rangeSelection: AnalyticsHubDateRangeSelection,
+        rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy,
         quantity: Int
     ): Result<List<TopPerformerProductEntity>> {
@@ -258,7 +261,7 @@ class AnalyticsRepository @Inject constructor(
     }
 
     private suspend fun getVisitorsCount(
-        rangeSelection: AnalyticsHubDateRangeSelection,
+        rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy
     ): Result<Map<String, Int>> = coroutineScope {
         statsRepository.fetchVisitorStats(
