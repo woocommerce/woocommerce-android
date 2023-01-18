@@ -17,20 +17,26 @@ abstract class BaseStoreProfilerViewModel(
 ) : ScopedViewModel(savedStateHandle) {
     abstract val hasSearchableContent: Boolean
     protected val profilerOptions = MutableStateFlow(emptyList<StoreProfilerOptionUi>())
-    protected val isLoading = MutableStateFlow(false)
 
+    val isLoading = MutableStateFlow(false)
+    val searchQuery = MutableStateFlow("")
     val storeProfilerState: LiveData<StoreProfilerState> =
         combine(
             profilerOptions,
-            isLoading
-        ) { options, isLoading ->
+            isLoading,
+            searchQuery
+        ) { options, isLoading, searchQuery ->
             StoreProfilerState(
                 storeName = newStore.data.name ?: "",
                 title = getProfilerStepTitle(),
                 description = getProfilerStepDescription(),
-                options = options,
+                options = when {
+                    searchQuery.isBlank() -> options
+                    else -> options.filter { it.name.contains(searchQuery, ignoreCase = true) }
+                },
+                isLoading = isLoading,
                 isSearchableContent = hasSearchableContent,
-                isLoading = isLoading
+                searchQuery = searchQuery,
             )
         }.asLiveData()
 
@@ -40,7 +46,9 @@ abstract class BaseStoreProfilerViewModel(
 
     abstract fun onContinueClicked()
 
-    open fun onSearchQueryChanged(query: String) {}
+    fun onSearchQueryChanged(query: String) {
+        searchQuery.value = query
+    }
 
     fun onSkipPressed() {
         triggerEvent(NavigateToCountryPickerStep)
@@ -68,8 +76,9 @@ abstract class BaseStoreProfilerViewModel(
         val title: String,
         val description: String,
         val options: List<StoreProfilerOptionUi> = emptyList(),
+        val isLoading: Boolean,
         val isSearchableContent: Boolean,
-        val isLoading: Boolean
+        val searchQuery: String
     )
 
     data class StoreProfilerOptionUi(

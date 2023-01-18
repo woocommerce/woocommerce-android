@@ -32,11 +32,7 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -128,7 +124,11 @@ private fun ProfilerContent(
                 style = MaterialTheme.typography.subtitle1,
                 color = colorResource(id = R.color.color_on_surface_medium)
             )
-            if (profilerStepContent.isSearchableContent) SearchBar(onSearchQueryChanged)
+            if (profilerStepContent.isSearchableContent)
+                SearchBar(
+                    profilerStepContent.searchQuery,
+                    onSearchQueryChanged
+                )
             if (profilerStepContent.options.isEmpty() && profilerStepContent.isSearchableContent) {
                 Text(
                     modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
@@ -159,17 +159,17 @@ private fun ProfilerContent(
 }
 
 @Composable
-private fun SearchBar(onSearchQueryChanged: (String) -> Unit) {
+private fun SearchBar(
+    searchQuery: String,
+    onSearchQueryChanged: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    var searchQuery by remember { mutableStateOf("") }
     WCSearchField(
         value = searchQuery,
-        onValueChange = {
-            searchQuery = it
-            onSearchQueryChanged.invoke(it)
-        },
+        onValueChange = onSearchQueryChanged,
         hint = stringResource(id = string.store_creation_store_profiler_industries_search_hint),
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(52.dp)
             .border(
@@ -292,7 +292,8 @@ fun CategoriesContentPreview() {
                     )
                 ),
                 isSearchableContent = true,
-                isLoading = false
+                isLoading = false,
+                searchQuery = ""
             ),
             onContinueClicked = {},
             onCategorySelected = {},

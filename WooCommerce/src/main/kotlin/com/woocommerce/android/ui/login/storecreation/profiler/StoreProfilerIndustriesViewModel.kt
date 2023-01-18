@@ -61,17 +61,6 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
         triggerEvent(NavigateToCommerceJourneyStep)
     }
 
-    override fun onSearchQueryChanged(query: String) {
-        profilerOptions.update {
-            if (query.isBlank()) industries.map { it.toStoreProfilerOptionUi() }
-            industries
-                .filter { industry ->
-                    industry.label.contains(query, ignoreCase = true)
-                }
-                .map { it.toStoreProfilerOptionUi() }
-        }
-    }
-
     private fun Industry.toStoreProfilerOptionUi() = StoreProfilerOptionUi(
         name = label,
         key = key,
