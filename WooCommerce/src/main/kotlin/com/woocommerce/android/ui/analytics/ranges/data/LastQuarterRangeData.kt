@@ -1,12 +1,14 @@
 package com.woocommerce.android.ui.analytics.ranges.data
 
 import com.woocommerce.android.extensions.endOfCurrentQuarter
+import com.woocommerce.android.extensions.formatAsRangeWith
 import com.woocommerce.android.extensions.oneQuarterAgo
 import com.woocommerce.android.extensions.startOfCurrentQuarter
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRangeData
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 // Responsible for defining two ranges of data, the current one, starting from the first day of the last quarter
 // until the final day of that same quarter, and the previous one as two quarters ago, also starting
@@ -19,24 +21,33 @@ import java.util.Date
 //
 class LastQuarterRangeData(
     referenceDate: Date,
+    locale: Locale,
     referenceCalendar: Calendar
 ) : AnalyticsHubTimeRangeData(referenceCalendar) {
     override val currentRange: AnalyticsHubTimeRange
     override val previousRange: AnalyticsHubTimeRange
+    override val formattedCurrentRange: String
+    override val formattedPreviousRange: String
 
     init {
         val oneQuarterAgo = referenceDate.oneQuarterAgo()
         calendar.time = oneQuarterAgo
+        val currentStart = calendar.startOfCurrentQuarter()
+        val currentEnd = calendar.endOfCurrentQuarter()
         currentRange = AnalyticsHubTimeRange(
-            start = calendar.startOfCurrentQuarter(),
-            end = calendar.endOfCurrentQuarter()
+            start = currentStart,
+            end = currentEnd
         )
+        formattedCurrentRange = currentStart.formatAsRangeWith(currentEnd, locale, calendar)
 
         val twoQuartersAgo = oneQuarterAgo.oneQuarterAgo()
         calendar.time = twoQuartersAgo
+        val previousStart = calendar.startOfCurrentQuarter()
+        val previousEnd = calendar.endOfCurrentQuarter()
         previousRange = AnalyticsHubTimeRange(
-            start = calendar.startOfCurrentQuarter(),
-            end = calendar.endOfCurrentQuarter()
+            start = previousStart,
+            end = previousEnd
         )
+        formattedPreviousRange = previousStart.formatAsRangeWith(previousEnd, locale, calendar)
     }
 }

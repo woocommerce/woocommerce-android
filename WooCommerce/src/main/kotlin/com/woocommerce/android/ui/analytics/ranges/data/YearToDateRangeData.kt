@@ -1,11 +1,14 @@
 package com.woocommerce.android.ui.analytics.ranges.data
 
+import com.woocommerce.android.extensions.endOfCurrentYear
+import com.woocommerce.android.extensions.formatAsRangeWith
 import com.woocommerce.android.extensions.oneYearAgo
 import com.woocommerce.android.extensions.startOfCurrentYear
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRangeData
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 // Responsible for defining two ranges of data, the current one, starting from January 1st  of the current year
 // until the current date and the previous one, starting from January 1st of the last year
@@ -18,23 +21,31 @@ import java.util.Date
 //
 class YearToDateRangeData(
     referenceDate: Date,
+    locale: Locale,
     referenceCalendar: Calendar
 ) : AnalyticsHubTimeRangeData(referenceCalendar) {
     override val currentRange: AnalyticsHubTimeRange
     override val previousRange: AnalyticsHubTimeRange
+    override val formattedCurrentRange: String
+    override val formattedPreviousRange: String
 
     init {
         calendar.time = referenceDate
+        val currentStart = calendar.startOfCurrentYear()
+        val currentEnd = calendar.endOfCurrentYear()
         currentRange = AnalyticsHubTimeRange(
-            start = calendar.startOfCurrentYear(),
-            end = referenceDate
+            start = currentStart,
+            end = currentEnd
         )
+        formattedCurrentRange = currentStart.formatAsRangeWith(referenceDate, locale, calendar)
 
         val oneYearAgo = referenceDate.oneYearAgo()
         calendar.time = oneYearAgo
+        val previousStart = calendar.startOfCurrentYear()
         previousRange = AnalyticsHubTimeRange(
-            start = calendar.startOfCurrentYear(),
+            start = previousStart,
             end = oneYearAgo
         )
+        formattedPreviousRange = previousStart.formatAsRangeWith(oneYearAgo, locale, calendar)
     }
 }

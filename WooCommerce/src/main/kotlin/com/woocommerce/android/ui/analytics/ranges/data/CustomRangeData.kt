@@ -1,12 +1,14 @@
 package com.woocommerce.android.ui.analytics.ranges.data
 
 import com.woocommerce.android.extensions.endOfCurrentDay
+import com.woocommerce.android.extensions.formatAsRangeWith
 import com.woocommerce.android.extensions.oneDayAgo
 import com.woocommerce.android.extensions.startOfCurrentDay
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRangeData
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 // Responsible for defining two ranges of data based on user provided dates.
 // The current range will be what user provided.
@@ -18,10 +20,13 @@ import java.util.Date
 class CustomRangeData(
     selectedStartDate: Date,
     selectedEndDate: Date,
+    locale: Locale,
     referenceCalendar: Calendar
 ) : AnalyticsHubTimeRangeData(referenceCalendar) {
     override val currentRange: AnalyticsHubTimeRange
     override val previousRange: AnalyticsHubTimeRange
+    override val formattedCurrentRange: String
+    override val formattedPreviousRange: String
 
     init {
         calendar.time = selectedStartDate
@@ -34,6 +39,7 @@ class CustomRangeData(
             start = currentStart,
             end = currentEnd
         )
+        formattedCurrentRange = currentStart.formatAsRangeWith(currentEnd, locale, calendar)
 
         val dayDifference = selectedEndDate.time - selectedStartDate.time
 
@@ -47,5 +53,6 @@ class CustomRangeData(
             start = previousStart,
             end = previousEnd
         )
+        formattedPreviousRange = previousStart.formatAsRangeWith(previousEnd, locale, calendar)
     }
 }

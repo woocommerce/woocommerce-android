@@ -232,7 +232,7 @@ class AnalyticsViewModel @Inject constructor(
             analyticsDateRangeSelectorState = viewState.value.analyticsDateRangeSelectorState.copy(
                 previousRange = ranges.previousRangeDescription,
                 currentRange = ranges.currentRangeDescription,
-                selectionTitle = resourceProvider.getString(ranges.selectionType.localizedResourceId)
+                selectionType = ranges.selectionType
             )
         )
     }
