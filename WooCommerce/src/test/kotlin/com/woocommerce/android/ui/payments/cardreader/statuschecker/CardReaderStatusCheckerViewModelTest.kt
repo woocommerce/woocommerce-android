@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.payments.cardreader.statuschecker
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
@@ -10,6 +12,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable
@@ -50,19 +53,104 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given payment flow and connected reader, when vm init, then navigates to payment`() = testBlocking {
-        // GIVEN
-        val orderId = 1L
-        val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = ORDER)
-        whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
+    fun `given payment flow and connected stripe m2 reader, when vm init, then navigates to payment with external`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = ORDER)
+            val connectedReader: CardReader = mock() {
+                on { type }.thenReturn(ReaderType.ExternalReader.StripeM2.name)
+            }
+            whenever(cardReaderManager.readerStatus).thenReturn(
+                MutableStateFlow(
+                    CardReaderStatus.Connected(
+                        connectedReader
+                    )
+                )
+            )
 
-        // WHEN
-        val vm = initViewModel(param)
+            // WHEN
+            val vm = initViewModel(param)
 
-        // THEN
-        assertThat(vm.event.value)
-            .isEqualTo(CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToPayment(param, EXTERNAL))
-    }
+            // THEN
+            assertThat(vm.event.value)
+                .isEqualTo(CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToPayment(param, EXTERNAL))
+        }
+
+    @Test
+    fun `given payment flow and connected wisepad3 reader, when vm init, then navigates to payment with external`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = ORDER)
+            val connectedReader: CardReader = mock() {
+                on { type }.thenReturn(ReaderType.ExternalReader.WisePade3.name)
+            }
+            whenever(cardReaderManager.readerStatus).thenReturn(
+                MutableStateFlow(
+                    CardReaderStatus.Connected(
+                        connectedReader
+                    )
+                )
+            )
+
+            // WHEN
+            val vm = initViewModel(param)
+
+            // THEN
+            assertThat(vm.event.value)
+                .isEqualTo(CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToPayment(param, EXTERNAL))
+        }
+
+    @Test
+    fun `given payment flow and connected Chipper2X reader, when vm init, then navigates to payment with external`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = ORDER)
+            val connectedReader: CardReader = mock() {
+                on { type }.thenReturn(ReaderType.ExternalReader.Chipper2X.name)
+            }
+            whenever(cardReaderManager.readerStatus).thenReturn(
+                MutableStateFlow(
+                    CardReaderStatus.Connected(
+                        connectedReader
+                    )
+                )
+            )
+
+            // WHEN
+            val vm = initViewModel(param)
+
+            // THEN
+            assertThat(vm.event.value)
+                .isEqualTo(CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToPayment(param, EXTERNAL))
+        }
+
+    @Test
+    fun `given payment flow and connected cost reader, when vm init, then navigates to payment with built in`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = ORDER)
+            val connectedReader: CardReader = mock {
+                on { type }.thenReturn(ReaderType.BuildInReader.CotsDevice.name)
+            }
+            whenever(cardReaderManager.readerStatus).thenReturn(
+                MutableStateFlow(
+                    CardReaderStatus.Connected(
+                        connectedReader
+                    )
+                )
+            )
+
+            // WHEN
+            val vm = initViewModel(param)
+
+            // THEN
+            assertThat(vm.event.value)
+                .isEqualTo(CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToPayment(param, BUILT_IN))
+        }
 
     @Test
     fun `given payment flow and not connected and error, when vm init, then navigates to onboarding with fail`() =
