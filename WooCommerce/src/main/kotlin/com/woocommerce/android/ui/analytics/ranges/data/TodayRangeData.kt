@@ -31,16 +31,19 @@ class TodayRangeData(
 
     init {
         calendar.time = referenceDate
+        val currentStart = calendar.startOfCurrentDay()
+        val currentEnd = calendar.endOfCurrentDay()
         currentRange = AnalyticsHubTimeRange(
-            start = calendar.startOfCurrentDay(),
-            end = calendar.endOfCurrentDay()
+            start = currentStart,
+            end = currentEnd
         )
         formattedCurrentRange = referenceDate.formatToMMMddYYYY(locale)
 
         val yesterday = referenceDate.oneDayAgo()
         calendar.time = yesterday
+        val previousStart = calendar.startOfCurrentDay()
         previousRange = AnalyticsHubTimeRange(
-            start = calendar.startOfCurrentDay(),
+            start = previousStart,
             end = yesterday
         )
         formattedPreviousRange = yesterday.formatToMMMddYYYY(locale)

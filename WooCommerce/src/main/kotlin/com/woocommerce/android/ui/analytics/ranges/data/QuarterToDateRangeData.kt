@@ -32,9 +32,10 @@ class QuarterToDateRangeData(
     init {
         calendar.time = referenceDate
         val currentStart = calendar.startOfCurrentQuarter()
+        val currentEnd = calendar.endOfCurrentQuarter()
         currentRange = AnalyticsHubTimeRange(
             start = currentStart,
-            end = calendar.endOfCurrentQuarter()
+            end = currentEnd
         )
         formattedCurrentRange = currentStart.formatAsRangeWith(referenceDate, locale, calendar)
 

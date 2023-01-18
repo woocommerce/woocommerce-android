@@ -32,9 +32,10 @@ class YearToDateRangeData(
     init {
         calendar.time = referenceDate
         val currentStart = calendar.startOfCurrentYear()
+        val currentEnd = calendar.endOfCurrentYear()
         currentRange = AnalyticsHubTimeRange(
             start = currentStart,
-            end = calendar.endOfCurrentYear()
+            end = currentEnd
         )
         formattedCurrentRange = currentStart.formatAsRangeWith(referenceDate, locale, calendar)
 
