@@ -51,13 +51,13 @@
             android:layout_marginStart="@dimen/major_125"
             android:layout_marginEnd="@dimen/major_125"
             android:gravity="center"
-            app:layout_constraintBottom_toTopOf="@id/reader_selection_use_nfc_reader"
+            app:layout_constraintBottom_toTopOf="@id/reader_selection_use_built_in_reader"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/card_reader_type_selection_illustration" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/reader_selection_use_nfc_reader"
+            android:id="@+id/reader_selection_use_built_in_reader"
             style="@style/Woo.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

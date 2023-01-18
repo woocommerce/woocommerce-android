@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.exhaustive
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -63,7 +64,8 @@ class CardReaderStatusCheckerDialogFragment : DialogFragment(R.layout.card_reade
                         .navigate(
                             CardReaderStatusCheckerDialogFragmentDirections
                                 .actionCardReaderStatusCheckerDialogFragmentToCardReaderConnectDialogFragment(
-                                    event.cardReaderFlowParam
+                                    event.cardReaderFlowParam,
+                                    EXTERNAL,
                                 )
                         )
                 }

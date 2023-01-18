@@ -8,7 +8,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.F
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
-import com.woocommerce.android.cardreader.connection.SpecificReader
+import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -53,6 +53,9 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectV
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ScanningFailedState
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ScanningState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel
 import com.woocommerce.android.ui.prefs.DeveloperOptionsRepository
@@ -1058,13 +1061,25 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given app in reader found state, when user clicks on cancel, then disconnect called`() =
+    fun `given app in reader found state and init terminal, when user clicks on cancel, then disconnect called`() =
         testBlocking {
+            whenever(cardReaderManager.initialized).thenReturn(true)
             init(scanState = READER_FOUND)
 
             (viewModel.viewStateData.value as ReaderFoundState).onTertiaryActionClicked.invoke()
 
             verify(cardReaderManager).disconnectReader()
+        }
+
+    @Test
+    fun `given app in reader found state and not init terminal, when user clicks on cancel, then discon not called`() =
+        testBlocking {
+            whenever(cardReaderManager.initialized).thenReturn(false)
+            init(scanState = READER_FOUND)
+
+            (viewModel.viewStateData.value as ReaderFoundState).onTertiaryActionClicked.invoke()
+
+            verify(cardReaderManager, never()).disconnectReader()
         }
 
     @Test
@@ -1438,27 +1453,46 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when discovery readers, then supported readers list used`() {
+    fun `given external card reader type, when discovery readers, then supported readers list used`() {
         testBlocking {
-            val captor = argumentCaptor<CardReaderTypesToDiscover.SpecificReaders>()
+            val captor = argumentCaptor<CardReaderTypesToDiscover.SpecificReaders.ExternalReaders>()
 
             init()
 
             verify(cardReaderManager).discoverReaders(anyBoolean(), captor.capture())
             assertThat(captor.firstValue).isEqualTo(
-                CardReaderTypesToDiscover.SpecificReaders(
+                CardReaderTypesToDiscover.SpecificReaders.ExternalReaders(
                     listOf(
-                        SpecificReader.Chipper2X, SpecificReader.StripeM2, SpecificReader.WisePade3
+                        ReaderType.ExternalReader.Chipper2X,
+                        ReaderType.ExternalReader.StripeM2,
+                        ReaderType.ExternalReader.WisePade3
                     )
                 )
             )
         }
     }
 
+    @Test
+    fun `given built in card reader type, when discovery readers, then supported readers list used`() =
+        testBlocking {
+            val captor = argumentCaptor<CardReaderTypesToDiscover.SpecificReaders.BuiltInReaders>()
+
+            viewModel = initVM(cardReaderType = BUILT_IN)
+            init()
+
+            verify(cardReaderManager).discoverReaders(anyBoolean(), captor.capture())
+            assertThat(captor.firstValue).isEqualTo(
+                CardReaderTypesToDiscover.SpecificReaders.BuiltInReaders(
+                    listOf(ReaderType.BuildInReader.CotsDevice)
+                )
+            )
+        }
+
     private fun initVM(
-        cardReaderFlowParam: CardReaderFlowParam = CardReaderFlowParam.CardReadersHub
+        cardReaderFlowParam: CardReaderFlowParam = CardReaderFlowParam.CardReadersHub,
+        cardReaderType: CardReaderType = EXTERNAL
     ): CardReaderConnectViewModel {
-        val savedState = CardReaderConnectDialogFragmentArgs(cardReaderFlowParam).initSavedStateHandle()
+        val savedState = CardReaderConnectDialogFragmentArgs(cardReaderFlowParam, cardReaderType).initSavedStateHandle()
         return CardReaderConnectViewModel(
             savedState,
             coroutinesTestRule.testDispatchers,

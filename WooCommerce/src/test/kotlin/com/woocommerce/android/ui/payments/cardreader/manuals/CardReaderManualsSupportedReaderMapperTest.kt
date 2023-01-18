@@ -4,7 +4,7 @@ import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
-import com.woocommerce.android.cardreader.connection.SpecificReader
+import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.ui.payments.cardreader.manuals.CardReaderManualsViewModel.ManualItem
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -41,8 +41,8 @@ class CardReaderManualsSupportedReaderMapperTest : BaseUnitTest() {
         val actualManualItems = manualsMapper.mapSupportedReadersToManualItems(
             supportedCountry,
             mapOf(
-                SpecificReader.Chipper2X to ::onManualClicked,
-                SpecificReader.StripeM2 to ::onManualClicked,
+                ReaderType.ExternalReader.Chipper2X to ::onManualClicked,
+                ReaderType.ExternalReader.StripeM2 to ::onManualClicked,
             )
         )
 
@@ -62,7 +62,7 @@ class CardReaderManualsSupportedReaderMapperTest : BaseUnitTest() {
         val actualManualItems = manualsMapper.mapSupportedReadersToManualItems(
             supportedCountry,
             mapOf(
-                SpecificReader.WisePade3 to ::onManualClicked
+                ReaderType.ExternalReader.WisePade3 to ::onManualClicked
             )
         )
 

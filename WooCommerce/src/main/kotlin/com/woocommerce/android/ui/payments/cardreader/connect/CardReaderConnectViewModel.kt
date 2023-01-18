@@ -14,8 +14,12 @@ import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.R
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Started
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Succeeded
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
-import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
-import com.woocommerce.android.cardreader.connection.SpecificReader
+import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover.SpecificReaders.BuiltInReaders
+import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover.SpecificReaders.ExternalReaders
+import com.woocommerce.android.cardreader.connection.ReaderType.BuildInReader.CotsDevice
+import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.Chipper2X
+import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.StripeM2
+import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.WisePade3
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateInProgress
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
@@ -53,6 +57,8 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectV
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ReaderFoundState
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ScanningFailedState
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ScanningState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel
 import com.woocommerce.android.ui.prefs.DeveloperOptionsRepository
@@ -251,9 +257,7 @@ class CardReaderConnectViewModel @Inject constructor(
             cardReaderManager
                 .discoverReaders(
                     isSimulated = developerOptionsRepository.isSimulatedCardReaderEnabled(),
-                    cardReaderTypesToDiscover = CardReaderTypesToDiscover.SpecificReaders(
-                        listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2, SpecificReader.WisePade3)
-                    )
+                    cardReaderTypesToDiscover = buildReadersToDiscover()
                 )
                 .flowOn(dispatchers.io)
                 .collect { discoveryEvent ->
@@ -450,7 +454,9 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onCancelClicked() {
         WooLog.e(WooLog.T.CARD_READER, "Connection flow interrupted by the user.")
-        launch { cardReaderManager.disconnectReader() }
+        launch {
+            if (cardReaderManager.initialized) cardReaderManager.disconnectReader()
+        }
         exitFlow(connected = false)
     }
 
@@ -487,6 +493,18 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun trackLocationFailureFetching(errorDescription: String?) {
         tracker.trackFetchingLocationFailed(errorDescription)
     }
+
+    private fun buildReadersToDiscover() =
+        when (arguments.cardReaderType) {
+            BUILT_IN -> BuiltInReaders(listOf(CotsDevice))
+            EXTERNAL -> ExternalReaders(
+                listOf(
+                    Chipper2X,
+                    StripeM2,
+                    WisePade3
+                )
+            )
+        }
 
     sealed class ListItemViewState {
         object ScanningInProgressListItem : ListItemViewState() {
