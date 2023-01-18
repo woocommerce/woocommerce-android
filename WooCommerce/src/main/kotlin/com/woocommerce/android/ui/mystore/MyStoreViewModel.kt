@@ -20,7 +20,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.jitm.JitmTracker
 import com.woocommerce.android.ui.jitm.QueryParamsEncoder
 import com.woocommerce.android.ui.mystore.domain.GetStats
@@ -291,7 +291,7 @@ class MyStoreViewModel @Inject constructor(
         AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
         val targetPeriod = when (val state = revenueStatsState.value) {
             is RevenueStatsViewState.Content -> state.granularity.toAnalyticTimePeriod()
-            else -> AnalyticTimePeriod.TODAY
+            else -> SelectionType.TODAY
         }
         triggerEvent(MyStoreEvent.OpenAnalytics(targetPeriod))
     }
@@ -480,10 +480,10 @@ class MyStoreViewModel @Inject constructor(
     }
 
     private fun StatsGranularity.toAnalyticTimePeriod() = when (this) {
-        StatsGranularity.DAYS -> AnalyticTimePeriod.TODAY
-        StatsGranularity.WEEKS -> AnalyticTimePeriod.WEEK_TO_DATE
-        StatsGranularity.MONTHS -> AnalyticTimePeriod.MONTH_TO_DATE
-        StatsGranularity.YEARS -> AnalyticTimePeriod.YEAR_TO_DATE
+        StatsGranularity.DAYS -> SelectionType.TODAY
+        StatsGranularity.WEEKS -> SelectionType.WEEK_TO_DATE
+        StatsGranularity.MONTHS -> SelectionType.MONTH_TO_DATE
+        StatsGranularity.YEARS -> SelectionType.YEAR_TO_DATE
     }
 
     sealed class RevenueStatsViewState {
@@ -523,7 +523,7 @@ class MyStoreViewModel @Inject constructor(
             val productId: Long
         ) : MyStoreEvent()
 
-        data class OpenAnalytics(val analyticsPeriod: AnalyticTimePeriod) : MyStoreEvent()
+        data class OpenAnalytics(val analyticsPeriod: SelectionType) : MyStoreEvent()
         data class OnJitmCtaClicked(
             val url: String,
             @StringRes val titleRes: Int = R.string.card_reader_purchase_card_reader

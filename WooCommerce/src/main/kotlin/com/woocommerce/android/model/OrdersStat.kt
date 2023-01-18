@@ -8,4 +8,16 @@ data class OrdersStat(
     val currencyCode: String?,
     val ordersCountByInterval: List<Long>,
     val avgOrderValueByInterval: List<Double>
-)
+) {
+    companion object {
+        val EMPTY = OrdersStat(
+            ordersCount = 0,
+            ordersCountDelta = DeltaPercentage.NotExist,
+            avgOrderValue = 0.0,
+            avgOrderDelta = DeltaPercentage.NotExist,
+            currencyCode = null,
+            ordersCountByInterval = emptyList(),
+            avgOrderValueByInterval = emptyList()
+        )
+    }
+}
