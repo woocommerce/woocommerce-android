@@ -12,6 +12,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -37,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -107,39 +109,43 @@ private fun ProfilerContent(
             modifier = Modifier
                 .fillMaxSize()
                 .weight(1f)
-                .padding(dimensionResource(id = R.dimen.major_100)),
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+                .padding(
+                    start = dimensionResource(id = R.dimen.major_100),
+                    end = dimensionResource(id = R.dimen.major_100)
+                )
         ) {
-            Text(
-                text = profilerStepContent.storeName.uppercase(),
-                style = MaterialTheme.typography.caption,
-                color = colorResource(id = R.color.color_on_surface_medium)
-            )
-            Text(
-                text = profilerStepContent.title,
-                style = MaterialTheme.typography.h5,
-            )
-            Text(
-                text = profilerStepContent.description,
-                style = MaterialTheme.typography.subtitle1,
-                color = colorResource(id = R.color.color_on_surface_medium)
-            )
-            if (profilerStepContent.isSearchableContent)
-                SearchBar(
-                    profilerStepContent.searchQuery,
-                    onSearchQueryChanged
-                )
-            if (profilerStepContent.options.isEmpty() && profilerStepContent.isSearchableContent) {
-                Text(
-                    modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
-                    text = stringResource(id = R.string.store_creation_store_profiler_industries_search_empty_results)
-                )
-            } else {
-                CategoryList(
-                    categories = profilerStepContent.options,
-                    onCategorySelected = onCategorySelected,
-                    modifier = Modifier.fillMaxWidth()
-                )
+            val configuration = LocalConfiguration.current
+            if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                HeaderContent(profilerStepContent, onSearchQueryChanged)
+            }
+            LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    item {
+                        HeaderContent(profilerStepContent, onSearchQueryChanged)
+                    }
+                }
+                if (profilerStepContent.options.isEmpty()) {
+                    item {
+                        Text(
+                            modifier = Modifier
+                                .align(alignment = Alignment.CenterHorizontally)
+                                .padding(top = dimensionResource(id = R.dimen.major_100)),
+                            text = stringResource(id = R.string.store_creation_profiler_options_search_empty)
+                        )
+                    }
+                }
+                itemsIndexed(profilerStepContent.options) { index, category ->
+                    if (index == 0)
+                        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
+                    ProfilerOptionItem(
+                        category = category,
+                        onCategorySelected = onCategorySelected,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = dimensionResource(id = R.dimen.major_100))
+                    )
+                }
             }
         }
         Divider(
@@ -155,6 +161,38 @@ private fun ProfilerContent(
         ) {
             Text(text = stringResource(id = R.string.continue_button))
         }
+    }
+}
+
+@Composable
+private fun HeaderContent(
+    profilerStepContent: StoreProfilerState,
+    onSearchQueryChanged: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+    ) {
+        Text(
+            text = profilerStepContent.storeName.uppercase(),
+            style = MaterialTheme.typography.caption,
+            color = colorResource(id = R.color.color_on_surface_medium)
+        )
+        Text(
+            text = profilerStepContent.title,
+            style = MaterialTheme.typography.h5,
+        )
+        Text(
+            text = profilerStepContent.description,
+            style = MaterialTheme.typography.subtitle1,
+            color = colorResource(id = R.color.color_on_surface_medium)
+        )
+        if (profilerStepContent.isSearchableContent)
+            SearchBar(
+                profilerStepContent.searchQuery,
+                onSearchQueryChanged
+            )
     }
 }
 
@@ -186,26 +224,7 @@ private fun SearchBar(
 }
 
 @Composable
-private fun CategoryList(
-    categories: List<StoreProfilerOptionUi>,
-    onCategorySelected: (StoreProfilerOptionUi) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    LazyColumn(modifier = modifier) {
-        itemsIndexed(categories) { _, category ->
-            CategoryItem(
-                category = category,
-                onCategorySelected = onCategorySelected,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = dimensionResource(id = R.dimen.major_100))
-            )
-        }
-    }
-}
-
-@Composable
-private fun CategoryItem(
+private fun ProfilerOptionItem(
     category: StoreProfilerOptionUi,
     onCategorySelected: (StoreProfilerOptionUi) -> Unit,
     modifier: Modifier = Modifier

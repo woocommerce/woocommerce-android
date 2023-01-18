@@ -2829,7 +2829,7 @@
     <string name="store_creation_store_profiler_industries_title">What will you be selling?</string>
     <string name="store_creation_store_profiler_industries_description">Choose a category that best fits your business.</string>
     <string name="store_creation_store_profiler_industries_search_hint">Type a category</string>
-    <string name="store_creation_store_profiler_industries_search_empty_results">No available results for this search</string>
+    <string name="store_creation_profiler_options_search_empty">No available results for this search</string>
     <string name="store_creation_store_profiler_journey_title">Where are you on your commerce journey?</string>
     <string name="store_creation_store_profiler_journey_description">To speed things up, we’ll tailor your WooCommerce experience for you based on your response.</string>
     <string name="store_creation_store_profiler_platforms_title">In which platform are you currently selling?</string>
