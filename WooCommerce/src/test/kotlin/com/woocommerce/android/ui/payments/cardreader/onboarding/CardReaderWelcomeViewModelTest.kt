@@ -51,7 +51,8 @@ class CardReaderWelcomeViewModelTest : BaseUnitTest() {
             CardReaderWelcomeDialogFragmentArgs(
                 cardReaderFlowParam = CardReaderFlowParam.CardReadersHub,
                 countryCode = countryCode
-            ).initSavedStateHandle(), appPrefsWrapper
+            ).initSavedStateHandle(),
+            appPrefsWrapper
         )
     }
 }
