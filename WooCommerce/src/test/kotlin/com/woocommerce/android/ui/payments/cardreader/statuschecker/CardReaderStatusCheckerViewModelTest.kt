@@ -128,13 +128,38 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given payment flow and connected cots reader, when vm init, then navigates to payment with built in`() =
+    fun `given payment flow and connected COTS reader, when vm init, then navigates to payment with built in`() =
         testBlocking {
             // GIVEN
             val orderId = 1L
             val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = ORDER)
             val connectedReader: CardReader = mock {
                 on { type }.thenReturn(ReaderType.BuildInReader.CotsDevice.name)
+            }
+            whenever(cardReaderManager.readerStatus).thenReturn(
+                MutableStateFlow(
+                    CardReaderStatus.Connected(
+                        connectedReader
+                    )
+                )
+            )
+
+            // WHEN
+            val vm = initViewModel(param)
+
+            // THEN
+            assertThat(vm.event.value)
+                .isEqualTo(CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToPayment(param, BUILT_IN))
+        }
+
+    @Test
+    fun `given payment flow and connected cots reader, when vm init, then navigates to payment with built in`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = ORDER)
+            val connectedReader: CardReader = mock {
+                on { type }.thenReturn("cots_device")
             }
             whenever(cardReaderManager.readerStatus).thenReturn(
                 MutableStateFlow(
