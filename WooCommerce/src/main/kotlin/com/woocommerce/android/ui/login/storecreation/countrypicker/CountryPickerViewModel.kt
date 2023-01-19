@@ -52,6 +52,7 @@ class CountryPickerViewModel @Inject constructor(
                     )
                 }
             }
+            newStore.update(country = availableCountries.value.first { it.isSelected }.toNewStoreCountry())
         }
     }
 
