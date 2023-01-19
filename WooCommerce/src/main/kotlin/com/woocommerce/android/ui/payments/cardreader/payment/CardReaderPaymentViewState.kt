@@ -77,7 +77,6 @@ sealed class ViewState(
         override val amountWithCurrencyLabel: String,
         override val headerLabel: Int = R.string.card_reader_payment_collect_payment_header,
         override val hintLabel: Int = R.string.card_reader_payment_collect_payment_built_in_hint,
-        override val onSecondaryActionClicked: (() -> Unit),
     ) : ViewState(
         paymentStateLabel = R.string.card_reader_payment_collect_payment_built_in_state,
         illustration = R.drawable.img_ipp_reader_type_selection,
@@ -104,7 +103,6 @@ sealed class ViewState(
 
     data class BuiltInReaderProcessingPaymentState(
         override val amountWithCurrencyLabel: String,
-        override val onSecondaryActionClicked: (() -> Unit),
     ) : ViewState(
         hintLabel = R.string.card_reader_payment_processing_payment_hint,
         headerLabel = R.string.card_reader_payment_processing_payment_header,

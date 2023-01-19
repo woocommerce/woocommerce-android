@@ -716,10 +716,7 @@ class CardReaderPaymentViewModel
 
     private fun provideCollectPaymentState(amountLabel: String): ViewState =
         when (arguments.cardReaderType) {
-            BUILT_IN -> BuiltInReaderCollectPaymentState(
-                amountLabel,
-                onSecondaryActionClicked = ::onCancelPaymentFlow
-            )
+            BUILT_IN -> BuiltInReaderCollectPaymentState(amountLabel)
             EXTERNAL -> ExternalReaderCollectPaymentState(
                 amountLabel,
                 onSecondaryActionClicked = ::onCancelPaymentFlow
@@ -728,10 +725,7 @@ class CardReaderPaymentViewModel
 
     private fun provideProcessingPaymentState(amountLabel: String): ViewState =
         when (arguments.cardReaderType) {
-            BUILT_IN -> BuiltInReaderProcessingPaymentState(
-                amountLabel,
-                onSecondaryActionClicked = ::onCancelPaymentFlow
-            )
+            BUILT_IN -> BuiltInReaderProcessingPaymentState(amountLabel)
             EXTERNAL -> ExternalReaderProcessingPaymentState(
                 amountLabel,
                 onSecondaryActionClicked = ::onCancelPaymentFlow
