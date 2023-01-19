@@ -3,8 +3,11 @@ package com.woocommerce.android.ui.login
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T.LOGIN
 import com.woocommerce.android.util.WooLog.T.SITE_PICKER
 import com.woocommerce.android.util.dispatchAndAwait
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
@@ -12,10 +15,12 @@ import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
+import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Inject
 
 class AccountRepository @Inject constructor(
     private val accountStore: AccountStore,
+    private val siteStore: SiteStore,
     private val selectedSite: SelectedSite,
     private val dispatcher: Dispatcher
 ) {
@@ -50,9 +55,20 @@ class AccountRepository @Inject constructor(
                 true
             }
         } else {
-            // TODO send a request to delete the application password
-            selectedSite.reset()
-            true
+            withContext(NonCancellable) {
+                val result = siteStore.deleteApplicationPassword(selectedSite.get())
+                if (result.isError) {
+                    WooLog.e(
+                        LOGIN,
+                        "Error deleting application password: ${result.error.errorCode} > ${result.error.message}"
+                    )
+                } else {
+                    WooLog.e(LOGIN, "Application password deleted")
+                }
+
+                selectedSite.reset()
+                true
+            }
         }
     }
 }
