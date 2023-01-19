@@ -2845,10 +2845,9 @@
     <string name="not_a_valid_qr_code">Scanned Qr code is not a WooCommerce code</string>
     <string name="login_application_passwords_help">What are Application Passwords?</string>
 
-    <string name="store_creation_pofiler_industry_boat_sales">Boat Sales</string>
-
     <!-- Store profiler industries. To be removed when API is available to fetch these items localized
      TODO Github issue https://github.com/woocommerce/woocommerce-android/issues/8218  -->
+    <string name="store_creation_profiler_industry_boat_sales">Boat Sales</string>
     <string name="store_creation_profiler_industry_car_washes">Car Washes</string>
     <string name="store_creation_profiler_industry_fuel_dispensers">Fuel Dispensers</string>
     <string name="store_creation_profiler_industry_towing_services">Towing Services</string>
