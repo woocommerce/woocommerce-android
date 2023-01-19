@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.common
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.ui.common.UserEligibilityErrorViewModel.ViewState
@@ -27,12 +28,6 @@ import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class UserEligibilityErrorViewModelTest : BaseUnitTest() {
-    private val appPrefsWrapper: AppPrefs = mock()
-    private val accountRepository: AccountRepository = mock()
-    private val userEligibilityFetcher: UserEligibilityFetcher = mock()
-
-    private lateinit var viewModel: UserEligibilityErrorViewModel
-
     private val testUser = WCUserModel().apply {
         remoteUserId = 1L
         firstName = "Anitaa"
@@ -42,29 +37,37 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
         email = "reallychumma1@gmail.com"
     }
 
+    private val appPrefsWrapper: AppPrefs = mock {
+        on { getUserEmail() } doReturn testUser.email
+    }
+    private val userEligibilityFetcher: UserEligibilityFetcher = mock {
+        on { getUserByEmail(any()) } doReturn testUser
+    }
+    private val accountRepository: AccountRepository = mock()
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
+
+    private lateinit var viewModel: UserEligibilityErrorViewModel
+
     private val viewState = ViewState()
 
     @Before
     fun setup() {
         viewModel = UserEligibilityErrorViewModel(
-            SavedStateHandle(),
-            appPrefsWrapper,
-            accountRepository,
-            userEligibilityFetcher
+            savedState = SavedStateHandle(),
+            appPrefs = appPrefsWrapper,
+            accountRepository = accountRepository,
+            userEligibilityFetcher = userEligibilityFetcher,
+            analyticsTracker = analyticsTracker
         )
     }
 
     @Test
     fun `Displays the user eligibility error screen correctly`() = testBlocking {
-        doReturn(testUser).whenever(userEligibilityFetcher).getUserByEmail(any())
-        whenever(appPrefsWrapper.getUserEmail()).thenReturn(testUser.email)
-
         val expectedViewState = viewState.copy(user = testUser.toAppModel())
 
         var userData: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> userData = new }
 
-        viewModel.start()
         assertThat(userData).isEqualTo(expectedViewState)
     }
 

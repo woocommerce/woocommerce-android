@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login.sitecredentials
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
@@ -53,10 +54,11 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         on { featureUnavailableEvents } doReturn applicationPasswordsUnavailableEvents
     }
     private val userEligibilityFetcher: UserEligibilityFetcher = mock {
-        onBlocking { fetchUserInfo() } doReturn testUser
+        onBlocking { fetchUserInfo() } doReturn Result.success(testUser)
     }
     private val loginAnalyticsListener: LoginAnalyticsListener = mock()
     private val resourceProvider: ResourceProvider = mock()
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
 
     private lateinit var viewModel: LoginSiteCredentialsViewModel
 
@@ -70,7 +72,8 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             loginAnalyticsListener = loginAnalyticsListener,
             resourceProvider = resourceProvider,
             applicationPasswordsNotifier = applicationPasswordsNotifier,
-            userEligibilityFetcher = userEligibilityFetcher
+            userEligibilityFetcher = userEligibilityFetcher,
+            analyticsTracker = analyticsTracker
         )
     }
 
@@ -210,7 +213,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     @Test
     fun `give user role fetch fails, when submitting login, then show a snackbar`() = testBlocking {
         setup {
-            whenever(userEligibilityFetcher.fetchUserInfo()).thenReturn(null)
+            whenever(userEligibilityFetcher.fetchUserInfo()).thenReturn(Result.failure(Exception()))
         }
 
         viewModel.state.observeForTesting {
