@@ -191,11 +191,15 @@ class CardReaderDetailViewModel @Inject constructor(
         tracker.trackDisconnectTapped()
         launch {
             clearLastKnowReader()
-            val disconnectionResult = cardReaderManager.disconnectReader()
-            if (!disconnectionResult) {
-                WooLog.e(WooLog.T.CARD_READER, "Disconnection from reader has failed")
-                handleNotConnectedState()
-            }
+            disconnectReader()
+        }
+    }
+
+    private suspend fun disconnectReader() {
+        val disconnectionResult = cardReaderManager.disconnectReader()
+        if (!disconnectionResult) {
+            WooLog.e(WooLog.T.CARD_READER, "Disconnection from reader has failed")
+            handleNotConnectedState()
         }
     }
 
