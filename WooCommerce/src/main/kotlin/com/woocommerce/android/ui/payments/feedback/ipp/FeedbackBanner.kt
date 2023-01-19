@@ -31,4 +31,8 @@ class FeedbackBanner @JvmOverloads constructor(
     fun setMessage(@StringRes message: Int) {
         binding.message.setText(message)
     }
+
+    fun setTitle(@StringRes title: Int) {
+        binding.title.setText(title)
+    }
 }

@@ -31,7 +31,7 @@
         app:layout_constraintLeft_toRightOf="@+id/icon"
         android:textColor="@color/material_on_surface_emphasis_high_type"
         android:textSize="17sp"
-        android:text="@string/feedback_banner_ipp_title"/>
+        tools:text="@string/feedback_banner_ipp_title_beginner"/>
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/dismiss_button"
@@ -57,7 +57,7 @@
         android:paddingLeft="0dp"
         android:textColor="@color/material_on_surface_emphasis_high_type"
         android:textSize="15sp"
-        android:text="Rate your first in-person payment experience."
+        tools:text="@string/feedback_banner_ipp_message_beginner"
         tools:ignore="RtlHardcoded" />
 
     <com.google.android.material.divider.MaterialDivider
@@ -73,7 +73,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/divider"
-        android:text="Share feedback"
+        android:text="@string/feedback_banner_ipp_cta_button"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

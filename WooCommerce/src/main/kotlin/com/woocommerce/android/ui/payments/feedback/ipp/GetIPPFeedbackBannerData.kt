@@ -41,9 +41,14 @@ class GetIPPFeedbackBannerData @Inject constructor(
         requirePositiveNumberOfTransactions(numberOfTransactions)
 
         return when (numberOfTransactions) {
-            0 -> IPPFeedbackBanner(BANNER_MESSAGE_NEWBIE, SURVEY_URL_IPP_NEWBIE)
-            in IPP_BEGINNER_TRANSACTIONS_RANGE -> IPPFeedbackBanner(BANNER_MESSAGE_BEGINNER, SURVEY_URL_IPP_BEGINNER)
-            else -> IPPFeedbackBanner(BANNER_MESSAGE_NINJA, SURVEY_URL_IPP_NINJA)
+            0 -> IPPFeedbackBanner(BANNER_TITLE_NEWBIE, BANNER_MESSAGE_NEWBIE, SURVEY_URL_IPP_NEWBIE)
+            in IPP_BEGINNER_TRANSACTIONS_RANGE ->
+                IPPFeedbackBanner(
+                    BANNER_TITLE_BEGINNER,
+                    BANNER_MESSAGE_BEGINNER,
+                    SURVEY_URL_IPP_BEGINNER
+                )
+            else -> IPPFeedbackBanner(BANNER_TITLE_NINJA, BANNER_MESSAGE_NINJA, SURVEY_URL_IPP_NINJA)
         }
     }
 
@@ -72,6 +77,7 @@ class GetIPPFeedbackBannerData @Inject constructor(
 
     @Parcelize
     data class IPPFeedbackBanner(
+        @StringRes val title: Int,
         @StringRes val message: Int,
         val url: String
     ) : Parcelable
@@ -85,6 +91,12 @@ class GetIPPFeedbackBannerData @Inject constructor(
             "https://automattic.survey.fm/woo-app-–-ipp-first-transaction-survey"
 
         private const val SURVEY_URL_IPP_NINJA = "https://automattic.survey.fm/woo-app-–-cod-survey"
+
+        private const val BANNER_TITLE_NEWBIE = R.string.feedback_banner_ipp_title_newbie
+
+        private const val BANNER_TITLE_BEGINNER = R.string.feedback_banner_ipp_title_beginner
+
+        private const val BANNER_TITLE_NINJA = R.string.feedback_banner_ipp_title_ninja
 
         @VisibleForTesting
         const val BANNER_MESSAGE_NEWBIE = R.string.feedback_banner_ipp_message_newbie

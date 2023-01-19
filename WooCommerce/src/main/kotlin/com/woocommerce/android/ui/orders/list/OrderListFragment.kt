@@ -404,6 +404,7 @@ class OrderListFragment :
         if (isVisible) {
             val data = (bannerState as OrderListViewModel.IPPBannerState.Visible).bannerData
             binding.ippFeedbackBanner.setMessage(data.message)
+            binding.ippFeedbackBanner.setTitle(data.title)
             binding.ippFeedbackBanner.onDismissClickListener = {
                 viewModel.onDismissIPPBannerClicked()
             }

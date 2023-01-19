@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.payments.feedback.ipp
 
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.daysAgo
 import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.ui.payments.GetActivePaymentsPlugin
@@ -183,6 +184,60 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
 
         // then
         assertEquals(BANNER_MESSAGE_NINJA, result.message)
+    }
+
+    @Test
+    fun `given banner should be displayed and user is a newbie, then should display correct title`() = runBlocking {
+        // given
+        whenever(shouldShowFeedbackBanner()).thenReturn(true)
+        whenever(getActivePaymentsPlugin())
+            .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
+
+        val fakeNinjaTransactionsSummary = WCPaymentTransactionsSummaryResult(0, "", 0, 0, 0, null, null)
+        whenever(ippStore.fetchTransactionsSummary(any(), any(), any()))
+            .thenReturn(WooPayload(fakeNinjaTransactionsSummary))
+
+        // when
+        val result = sut()
+
+        // then
+        assertEquals(R.string.feedback_banner_ipp_title_newbie, result.title)
+    }
+
+    @Test
+    fun `given banner should be displayed and user is a beginner, then should display correct title`() = runBlocking {
+        // given
+        whenever(shouldShowFeedbackBanner()).thenReturn(true)
+        whenever(getActivePaymentsPlugin())
+            .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
+
+        val fakeNinjaTransactionsSummary = WCPaymentTransactionsSummaryResult(1, "", 0, 0, 0, null, null)
+        whenever(ippStore.fetchTransactionsSummary(any(), any(), any()))
+            .thenReturn(WooPayload(fakeNinjaTransactionsSummary))
+
+        // when
+        val result = sut()
+
+        // then
+        assertEquals(R.string.feedback_banner_ipp_title_beginner, result.title)
+    }
+
+    @Test
+    fun `given banner should be displayed and user is a ninja, then should display correct title`() = runBlocking {
+        // given
+        whenever(shouldShowFeedbackBanner()).thenReturn(true)
+        whenever(getActivePaymentsPlugin())
+            .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
+
+        val fakeNinjaTransactionsSummary = WCPaymentTransactionsSummaryResult(11, "", 0, 0, 0, null, null)
+        whenever(ippStore.fetchTransactionsSummary(any(), any(), any()))
+            .thenReturn(WooPayload(fakeNinjaTransactionsSummary))
+
+        // when
+        val result = sut()
+
+        // then
+        assertEquals(R.string.feedback_banner_ipp_title_ninja, result.title)
     }
 
     @Test
