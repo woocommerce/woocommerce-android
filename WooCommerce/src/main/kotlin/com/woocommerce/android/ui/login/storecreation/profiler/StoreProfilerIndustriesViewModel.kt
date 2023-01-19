@@ -26,6 +26,8 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
     }
 
     private var industries: List<Industry> = emptyList()
+    override val hasSearchableContent: Boolean
+        get() = true
 
     init {
         analyticsTracker.track(
@@ -38,7 +40,7 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
             val fetchedOptions = storeProfilerRepository.fetchProfilerOptions()
             industries = fetchedOptions.industries
             profilerOptions.update {
-                fetchedOptions.industries.map { it.toStoreProfilerOptionUi() }
+                industries.map { it.toStoreProfilerOptionUi() }
             }
         }
     }
