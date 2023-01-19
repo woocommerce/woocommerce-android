@@ -173,6 +173,9 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
             .onEach { usageTracksEventEmitter.interacted() }
             .launchIn(viewLifecycleOwner.lifecycleScope)
 
+        // Successful event for REST API A/B testing.
+        experimentTracker.log(ExperimentTracker.MYSTORE_DISPLAYED_EVENT)
+
         setupStateObservers()
     }
 

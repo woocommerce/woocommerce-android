@@ -174,6 +174,7 @@
     <string name="date_timeframe_older_week">Older than a week</string>
     <string name="date_timeframe_older_month">Older than a month</string>
     <string name="date_at_time">%1$s at %2$s</string>
+    <string name="date_compared_to">Compared to</string>
     <!--
         Error Strings
     -->
@@ -410,6 +411,7 @@
     <string name="analytics_revenue_no_data">No revenue this period</string>
     <string name="analytics_orders_no_data">No orders this period</string>
     <string name="analytics_products_no_data">No products this period</string>
+    <string name="analytics_session_no_data">No sessions this period</string>
     <string name="analytics_total_sales_title">Total sales</string>
     <string name="analytics_net_sales_title">Net sales</string>
     <string name="analytics_information_card_delta" translatable="false">%1$s%2$d%%</string>
@@ -421,9 +423,9 @@
     <string name="analytics_products_list_header_title">Products</string>
     <string name="analytics_products_list_header_subtitle">Items sold</string>
     <string name="analytics_products_list_item_description">Net sales: %1$s</string>
-    <string name="analytics_visitors_and_views_card_title">Visitors and Views</string>
+    <string name="analytics_session_card_title">Sessions</string>
+    <string name="analytics_conversion_subtitle">Conversion Rate</string>
     <string name="analytics_visitors_subtitle">Visitors</string>
-    <string name="analytics_views_subtitle">Views</string>
 
     <!--
         Order List View
@@ -1128,6 +1130,7 @@
     -->
     <string name="card_reader_tap_or_insert">Tap or insert to pay</string>
     <string name="card_reader_payment_collect_payment_hint" translatable="false">@string/card_reader_tap_or_insert</string>
+    <string name="card_reader_payment_collect_payment_built_in_hint" translatable="false">Follow instruction to collect the payment</string>
     <string name="card_reader_payment_processing_payment_hint" translatable="false">@string/please_wait</string>
     <string name="card_reader_payment_capturing_payment_hint" translatable="false">@string/please_wait</string>
 
@@ -1150,6 +1153,7 @@
     <string name="card_reader_payment_payment_failed_ok">OK</string>
 
     <string name="card_reader_payment_collect_payment_state">Reader is ready</string>
+    <string name="card_reader_payment_collect_payment_built_in_state">Built-in reader is ready</string>
     <string name="card_reader_payment_processing_payment_state">Processing payment</string>
     <string name="card_reader_payment_capturing_payment_state">Capturing payment</string>
     <string name="card_reader_payment_failed_no_network_state">No internet connection</string>
@@ -1200,14 +1204,17 @@
             Card Reader Connection
         -->
     <string name="card_reader_connect_scanning_header">Scanning for readers</string>
+    <string name="card_reader_connect_scanning_built_in_header">Preparing built-in reader…</string>
     <string name="card_reader_connect_scanning_progress" translatable="false">@string/card_reader_connect_scanning_header</string>
     <string name="card_reader_connect_scanning_hint">Press the power button of your reader</string>
+    <string name="card_reader_connect_scanning_built_in_hint">It won\'t take long</string>
     <string name="card_reader_connect_reader_found_header">Do you want to connect reader %s?</string>
     <string name="card_reader_connect_multiple_readers_found_header">Several readers found</string>
     <string name="card_reader_connect_to_reader">Connect to reader</string>
     <string name="card_reader_connect_connect_button">Connect</string>
     <string name="card_reader_connect_keep_searching_button">Keep Searching</string>
     <string name="card_reader_connect_connecting_header">Connecting to reader</string>
+    <string name="card_reader_connect_connecting_built_in_header">Preparing for payment</string>
     <string name="card_reader_connect_connecting_hint" translatable="false">@string/please_wait</string>
     <string name="card_reader_connect_failed_header">We couldn\’t connect your reader</string>
     <string name="card_reader_connect_missing_address">Please provide your store address in order to proceed</string>

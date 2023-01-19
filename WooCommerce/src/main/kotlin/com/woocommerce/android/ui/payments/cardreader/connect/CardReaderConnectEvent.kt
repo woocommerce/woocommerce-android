@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.payments.cardreader.connect
 
 import androidx.annotation.StringRes
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 
 sealed class CardReaderConnectEvent : MultiLiveEvent.Event() {
@@ -32,7 +33,8 @@ sealed class CardReaderConnectEvent : MultiLiveEvent.Event() {
     data class OpenLocationSettings(val onLocationSettingsClosed: () -> Unit) : CardReaderConnectEvent()
 
     data class ShowCardReaderTutorial(
-        val cardReaderFlowParam: CardReaderFlowParam
+        val cardReaderFlowParam: CardReaderFlowParam,
+        val cardReaderType: CardReaderType,
     ) : CardReaderConnectEvent()
 
     object ShowUpdateInProgress : CardReaderConnectEvent()
