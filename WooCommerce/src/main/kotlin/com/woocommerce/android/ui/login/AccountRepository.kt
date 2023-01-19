@@ -63,7 +63,7 @@ class AccountRepository @Inject constructor(
                         "Error deleting application password: ${result.error.errorCode} > ${result.error.message}"
                     )
                 } else {
-                    WooLog.e(LOGIN, "Application password deleted")
+                    WooLog.i(LOGIN, "Application password deleted")
                 }
 
                 selectedSite.reset()
