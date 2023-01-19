@@ -13,6 +13,7 @@ import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
+import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus.StatusChanged
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
@@ -66,20 +67,24 @@ class CardReaderDetailViewModel @Inject constructor(
             cardReaderManager.readerStatus.collect { status ->
                 when (status) {
                     is Connected -> {
-                        triggerEvent(
-                            CardReaderDetailEvent.CardReaderConnected(
-                                R.string.card_reader_accessibility_reader_is_connected
+                        if (ReaderType.isExternalReaderType(status.cardReader.type)) {
+                            triggerEvent(
+                                CardReaderDetailEvent.CardReaderConnected(
+                                    R.string.card_reader_accessibility_reader_is_connected
+                                )
                             )
-                        )
-                        softwareUpdateAvailabilityJob = launch {
-                            cardReaderManager.softwareUpdateAvailability.collect(
-                                ::handleSoftwareUpdateAvailability
-                            )
-                        }
-                        batteryStatusUpdateJob = launch {
-                            cardReaderManager.batteryStatus.collect(
-                                ::handleBatteryStatusChange
-                            )
+                            softwareUpdateAvailabilityJob = launch {
+                                cardReaderManager.softwareUpdateAvailability.collect(
+                                    ::handleSoftwareUpdateAvailability
+                                )
+                            }
+                            batteryStatusUpdateJob = launch {
+                                cardReaderManager.batteryStatus.collect(
+                                    ::handleBatteryStatusChange
+                                )
+                            }
+                        } else {
+                            disconnectReader()
                         }
                     }
                     is Connecting -> {
