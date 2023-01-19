@@ -24,7 +24,11 @@ class GetIPPFeedbackBannerData @Inject constructor(
     suspend operator fun invoke(): IPPFeedbackBanner {
         requireShouldShowFeedbackBanner()
 
-        val activePaymentsPlugin = requireWooCommercePaymentsPlugin()
+        val activePaymentsPlugin = checkNotNull(getActivePaymentsPlugin())
+
+        if (activePaymentsPlugin != WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS) {
+            return IPP_NEWBIE_BANNER
+        }
 
         val timeWindowStartDate = Date().daysAgo(STATS_TIME_WINDOW_LENGTH_DAYS)
         val response = ippStore.fetchTransactionsSummary(
@@ -40,14 +44,13 @@ class GetIPPFeedbackBannerData @Inject constructor(
         requirePositiveNumberOfTransactions(numberOfTransactions)
 
         return when (numberOfTransactions) {
-            0 -> IPPFeedbackBanner(BANNER_TITLE_NEWBIE, BANNER_MESSAGE_NEWBIE, SURVEY_URL_IPP_NEWBIE)
-            in IPP_BEGINNER_TRANSACTIONS_RANGE ->
-                IPPFeedbackBanner(
-                    BANNER_TITLE_BEGINNER,
-                    BANNER_MESSAGE_BEGINNER,
-                    SURVEY_URL_IPP_BEGINNER
-                )
-            else -> IPPFeedbackBanner(BANNER_TITLE_NINJA, BANNER_MESSAGE_NINJA, SURVEY_URL_IPP_NINJA)
+            0 -> if (hasUserEverMadeIppTransaction()) {
+                IPP_BEGINNER_BANNER
+            } else {
+                IPP_NEWBIE_BANNER
+            }
+            in IPP_BEGINNER_TRANSACTIONS_RANGE -> IPP_BEGINNER_BANNER
+            else -> IPP_NINJA_BANNER
         }
     }
 
@@ -65,13 +68,28 @@ class GetIPPFeedbackBannerData @Inject constructor(
         if (numberOfTransactions < 0) throw IllegalStateException("Number of transactions should be positive.")
     }
 
-    private suspend fun requireWooCommercePaymentsPlugin(): WCInPersonPaymentsStore.InPersonPaymentsPluginType =
-        getActivePaymentsPlugin() ?: throw IllegalStateException("No active payments plugin found.")
-
     private suspend fun requireShouldShowFeedbackBanner() {
         if (!shouldShowFeedbackBanner()) {
             throw IllegalStateException("IPP feedback banner should not be shown to the current user & site.")
         }
+    }
+
+    private suspend fun hasUserEverMadeIppTransaction(): Boolean {
+        val activePaymentsPlugin = checkNotNull(getActivePaymentsPlugin())
+
+        if (activePaymentsPlugin != WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS) {
+            return false
+        }
+
+        val response = ippStore.fetchTransactionsSummary(activePaymentsPlugin, siteModel)
+
+        requireSuccessfulTransactionsSummaryResponse(response)
+
+        val numberOfTransactions = requireTransactionsCount(response)
+
+        requirePositiveNumberOfTransactions(numberOfTransactions)
+
+        return numberOfTransactions > 0
     }
 
     @Parcelize
@@ -82,6 +100,22 @@ class GetIPPFeedbackBannerData @Inject constructor(
     ) : Parcelable
 
     companion object {
+        private val IPP_NEWBIE_BANNER by lazy {
+            IPPFeedbackBanner(BANNER_TITLE_NEWBIE, BANNER_MESSAGE_NEWBIE, SURVEY_URL_IPP_NEWBIE)
+        }
+
+        private val IPP_BEGINNER_BANNER by lazy {
+            IPPFeedbackBanner(
+                BANNER_TITLE_BEGINNER,
+                BANNER_MESSAGE_BEGINNER,
+                SURVEY_URL_IPP_BEGINNER
+            )
+        }
+
+        private val IPP_NINJA_BANNER by lazy {
+            IPPFeedbackBanner(BANNER_TITLE_NINJA, BANNER_MESSAGE_NINJA, SURVEY_URL_IPP_NINJA)
+        }
+
         private const val STATS_TIME_WINDOW_LENGTH_DAYS = 30
 
         private const val SURVEY_URL_IPP_NEWBIE = "https://automattic.survey.fm/woo-app-–-cod-survey"
@@ -89,7 +123,7 @@ class GetIPPFeedbackBannerData @Inject constructor(
         private const val SURVEY_URL_IPP_BEGINNER =
             "https://automattic.survey.fm/woo-app-–-ipp-first-transaction-survey"
 
-        private const val SURVEY_URL_IPP_NINJA = "https://automattic.survey.fm/woo-app-–-cod-survey"
+        private const val SURVEY_URL_IPP_NINJA = "https://automattic.survey.fm/woo-app-–-ipp-survey-for-power-users"
 
         private const val BANNER_TITLE_NEWBIE = R.string.feedback_banner_ipp_title_newbie
 

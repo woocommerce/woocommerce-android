@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.payments.feedback.ipp
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
 import com.woocommerce.android.extensions.daysAgo
-import com.woocommerce.android.ui.payments.GetActivePaymentsPlugin
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -15,7 +14,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCSettingsModel
-import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.Calendar
 import kotlin.test.assertFalse
@@ -24,7 +22,6 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class ShouldShowFeedbackBannerTest : BaseUnitTest() {
     private val appPrefs: AppPrefsWrapper = mock()
-    private val getActivePaymentsPlugin: GetActivePaymentsPlugin = mock()
     private val cashOnDeliverySettings: CashOnDeliverySettingsRepository = mock()
     private val siteModel: SiteModel = SiteModel()
     private val wooCommerceStore: WooCommerceStore = mock()
@@ -32,7 +29,6 @@ class ShouldShowFeedbackBannerTest : BaseUnitTest() {
 
     private val sut = ShouldShowFeedbackBanner(
         prefs = appPrefs,
-        getActivePaymentsPlugin = getActivePaymentsPlugin,
         cashOnDeliverySettings = cashOnDeliverySettings,
         wooCommerceStore = wooCommerceStore,
         siteModel = siteModel,
@@ -44,8 +40,6 @@ class ShouldShowFeedbackBannerTest : BaseUnitTest() {
         whenever(cashOnDeliverySettings.isCashOnDeliveryEnabled()).thenReturn(true)
         whenever(appPrefs.isIPPFeedbackSurveyCompleted()).thenReturn(false)
         whenever(appPrefs.isIPPFeedbackBannerDismissedForever()).thenReturn(false)
-        whenever(getActivePaymentsPlugin())
-            .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
         whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(siteSettings)
         whenever(siteSettings.countryCode).thenReturn("US")
         Unit
@@ -100,15 +94,15 @@ class ShouldShowFeedbackBannerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given Stripe plugin is used, then banner should not be shown`() = runBlocking {
+    fun `given COD is enabled, then banner should be shown`() = runBlocking {
         // given
-        whenever(getActivePaymentsPlugin()).thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.STRIPE)
+        whenever(cashOnDeliverySettings.isCashOnDeliveryEnabled()).thenReturn(true)
 
         // when
         val result = sut()
 
         // then
-        assertFalse(result)
+        assertTrue(result)
     }
 
     @Test
