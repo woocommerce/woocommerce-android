@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.common
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.model.User
 import com.woocommerce.android.model.toAppModel
@@ -46,14 +47,18 @@ class UserEligibilityErrorViewModel @Inject constructor(
     fun onRetryButtonClicked() {
         launch {
             viewState = viewState.copy(isProgressDialogShown = true)
-            val userModel = userEligibilityFetcher.fetchUserInfo()
-            userModel?.let {
-                val isUserEligible = it.isUserEligible()
+            userEligibilityFetcher.fetchUserInfo().fold(
+                onSuccess = {
+                    val isUserEligible = it.isUserEligible()
 
-                if (isUserEligible) {
-                    triggerEvent(Exit)
-                } else triggerEvent(ShowSnackbar(string.user_role_access_error_retry))
-            }
+                    if (isUserEligible) {
+                        triggerEvent(Exit)
+                    } else triggerEvent(ShowSnackbar(string.user_role_access_error_retry))
+                },
+                onFailure = {
+                    triggerEvent(ShowSnackbar(R.string.error_generic))
+                }
+            )
 
             viewState = viewState.copy(isProgressDialogShown = false)
         }

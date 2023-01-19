@@ -171,12 +171,14 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     private suspend fun fetchUserInfo() {
         isLoading.value = true
-        val userInfo = userEligibilityFetcher.fetchUserInfo()
-        if (userInfo != null) {
-            triggerEvent(LoggedIn(selectedSite.getSelectedSiteId()))
-        } else {
-            triggerEvent(ShowSnackbar(R.string.error_generic))
-        }
+        userEligibilityFetcher.fetchUserInfo().fold(
+            onSuccess = {
+                triggerEvent(LoggedIn(selectedSite.getSelectedSiteId()))
+            },
+            onFailure = {
+                triggerEvent(ShowSnackbar(R.string.error_generic))
+            }
+        )
         isLoading.value = false
     }
 
