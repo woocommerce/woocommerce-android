@@ -18,6 +18,8 @@ import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
+import com.woocommerce.android.ui.payments.feedback.ipp.GetIPPFeedbackBannerData
+import com.woocommerce.android.ui.payments.feedback.ipp.ShouldShowFeedbackBanner
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -78,6 +80,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters = mock()
     private val getWCOrderListDescriptorWithFiltersAndSearchQuery: GetWCOrderListDescriptorWithFiltersAndSearchQuery = mock()
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount = mock()
+    private val shouldShowFeedbackBanner: ShouldShowFeedbackBanner = mock()
+    private val getIPPFeedbackBannerData: GetIPPFeedbackBannerData = mock()
 
     @Before
     fun setup() = testBlocking {
@@ -97,29 +101,31 @@ class OrderListViewModelTest : BaseUnitTest() {
         ).doReturn(pagedListWrapper)
         doReturn(true).whenever(networkStatus).isConnected()
 
-        viewModel = OrderListViewModel(
-            savedState = savedStateHandle,
-            dispatchers = coroutinesTestRule.testDispatchers,
-            orderListRepository = orderListRepository,
-            orderDetailRepository = orderDetailRepository,
-            orderStore = orderStore,
-            listStore = listStore,
-            networkStatus = networkStatus,
-            dispatcher = dispatcher,
-            selectedSite = selectedSite,
-            fetcher = orderFetcher,
-            resourceProvider = resourceProvider,
-            getWCOrderListDescriptorWithFilters = getWCOrderListDescriptorWithFilters,
-            getWCOrderListDescriptorWithFiltersAndSearchQuery = getWCOrderListDescriptorWithFiltersAndSearchQuery,
-            getSelectedOrderFiltersCount = getSelectedOrderFiltersCount,
-            orderListTransactionLauncher = mock(),
-            getIPPFeedbackBannerData = mock(),
-            shouldShowFeedbackBanner = mock(),
-            markFeedbackBannerAsDismissed = mock(),
-            markFeedbackBannerAsDismissedForever = mock(),
-            markFeedbackBannerAsCompleted = mock(),
-        )
+        viewModel = createViewModel()
     }
+
+    private fun createViewModel() = OrderListViewModel(
+        savedState = savedStateHandle,
+        dispatchers = coroutinesTestRule.testDispatchers,
+        orderListRepository = orderListRepository,
+        orderDetailRepository = orderDetailRepository,
+        orderStore = orderStore,
+        listStore = listStore,
+        networkStatus = networkStatus,
+        dispatcher = dispatcher,
+        selectedSite = selectedSite,
+        fetcher = orderFetcher,
+        resourceProvider = resourceProvider,
+        getWCOrderListDescriptorWithFilters = getWCOrderListDescriptorWithFilters,
+        getWCOrderListDescriptorWithFiltersAndSearchQuery = getWCOrderListDescriptorWithFiltersAndSearchQuery,
+        getSelectedOrderFiltersCount = getSelectedOrderFiltersCount,
+        orderListTransactionLauncher = mock(),
+        getIPPFeedbackBannerData = getIPPFeedbackBannerData,
+        shouldShowFeedbackBanner = shouldShowFeedbackBanner,
+        markFeedbackBannerAsDismissed = mock(),
+        markFeedbackBannerAsDismissedForever = mock(),
+        markFeedbackBannerAsCompleted = mock(),
+    )
 
     @Test
     fun `Request to load new list fetches order status options and payment gateways if connected`() = testBlocking {
@@ -503,6 +509,34 @@ class OrderListViewModelTest : BaseUnitTest() {
         // Then when the order status change fails, the retry message is shown
         val resultEvent = viewModel.event.getOrAwaitValue()
         assertTrue(resultEvent is OrderListViewModel.OrderListEvent.ShowRetryErrorSnack)
+    }
+
+    @Test
+    fun `given IPP banner is shown, then Orders banner should be hidden`() = testBlocking {
+        // given
+        whenever(shouldShowFeedbackBanner()).thenReturn(true)
+        val fakeBanner = GetIPPFeedbackBannerData.IPPFeedbackBanner(-1, -1, "")
+        whenever(getIPPFeedbackBannerData()).thenReturn(fakeBanner)
+
+        // when
+        viewModel = createViewModel()
+
+        // then
+        assertFalse(viewModel.viewState.isSimplePaymentsWIPNoticeCardVisible)
+        assertTrue(viewModel.viewState.ippBannerState is OrderListViewModel.IPPBannerState.Visible)
+    }
+
+    @Test
+    fun `given IPP banner is not shown, then Orders banner should be visible`() = testBlocking {
+        // given
+        whenever(shouldShowFeedbackBanner()).thenReturn(false)
+
+        // when
+        viewModel = createViewModel()
+
+        // then
+        assertTrue(viewModel.viewState.isSimplePaymentsWIPNoticeCardVisible)
+        assertTrue(viewModel.viewState.ippBannerState is OrderListViewModel.IPPBannerState.Hidden)
     }
 
     private companion object {
