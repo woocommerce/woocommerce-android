@@ -68,21 +68,9 @@ class CardReaderDetailViewModel @Inject constructor(
                 when (status) {
                     is Connected -> {
                         if (ReaderType.isExternalReaderType(status.cardReader.type)) {
-                            triggerEvent(
-                                CardReaderDetailEvent.CardReaderConnected(
-                                    R.string.card_reader_accessibility_reader_is_connected
-                                )
-                            )
-                            softwareUpdateAvailabilityJob = launch {
-                                cardReaderManager.softwareUpdateAvailability.collect(
-                                    ::handleSoftwareUpdateAvailability
-                                )
-                            }
-                            batteryStatusUpdateJob = launch {
-                                cardReaderManager.batteryStatus.collect(
-                                    ::handleBatteryStatusChange
-                                )
-                            }
+                            triggerCardReaderConnectedEvent()
+                            listenForSoftwareUpdateAvailability()
+                            listenForBatteryStatus()
                         } else {
                             disconnectReader()
                         }
@@ -101,6 +89,30 @@ class CardReaderDetailViewModel @Inject constructor(
                 }.exhaustive
             }
         }
+    }
+
+    private fun listenForBatteryStatus() {
+        batteryStatusUpdateJob = launch {
+            cardReaderManager.batteryStatus.collect(
+                ::handleBatteryStatusChange
+            )
+        }
+    }
+
+    private fun listenForSoftwareUpdateAvailability() {
+        softwareUpdateAvailabilityJob = launch {
+            cardReaderManager.softwareUpdateAvailability.collect(
+                ::handleSoftwareUpdateAvailability
+            )
+        }
+    }
+
+    private fun triggerCardReaderConnectedEvent() {
+        triggerEvent(
+            CardReaderDetailEvent.CardReaderConnected(
+                R.string.card_reader_accessibility_reader_is_connected
+            )
+        )
     }
 
     fun onUpdateReaderResult(updateResult: UpdateResult) {
