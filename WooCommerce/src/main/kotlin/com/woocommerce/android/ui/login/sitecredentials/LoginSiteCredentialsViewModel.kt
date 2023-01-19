@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.login.sitecredentials
 
 import android.os.Parcelable
 import androidx.annotation.StringRes
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -273,7 +274,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         val isValid = username.isNotBlank() && password.isNotBlank()
     }
 
-    private enum class Step {
+    @VisibleForTesting
+    enum class Step {
         AUTHENTICATION, APPLICATION_PASSWORD_GENERATION, WOO_STATUS, USER_ROLE
     }
 
