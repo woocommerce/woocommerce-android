@@ -21,6 +21,10 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
     private val storeProfilerRepository: StoreProfilerRepository,
     private val resourceProvider: ResourceProvider,
 ) : BaseStoreProfilerViewModel(savedStateHandle, newStore) {
+    private companion object {
+        const val DEFAULT_INDUSTRY_STRING_KEY_PREFIX = "store_creation_profiler_industry_"
+    }
+
     private var industries: List<Industry> = emptyList()
 
     init {
@@ -60,8 +64,16 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
     }
 
     private fun Industry.toStoreProfilerOptionUi() = StoreProfilerOptionUi(
-        name = label,
+        name = getLocalisedIndustryString(stringKeySuffix = key, fallbackValue = label),
         key = key,
         isSelected = newStore.data.profilerData?.industryKey == key
     )
+
+    private fun getLocalisedIndustryString(stringKeySuffix: String, fallbackValue: String): String {
+        val industryStringKey = DEFAULT_INDUSTRY_STRING_KEY_PREFIX + stringKeySuffix
+        val stringRes = resourceProvider.getStringResFromStringName(industryStringKey)
+        return stringRes?.let {
+            resourceProvider.getString(it)
+        } ?: fallbackValue
+    }
 }
