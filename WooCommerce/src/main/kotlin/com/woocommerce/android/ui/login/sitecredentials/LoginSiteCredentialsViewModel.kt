@@ -7,6 +7,11 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsEvent.LOGIN_SITE_CREDENTIALS_LOGIN_FAILED
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.applicationpasswords.ApplicationPasswordGenerationException
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -21,6 +26,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
@@ -51,8 +57,9 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val loginAnalyticsListener: LoginAnalyticsListener,
     private val resourceProvider: ResourceProvider,
-    applicationPasswordsNotifier: ApplicationPasswordsNotifier,
-    private val userEligibilityFetcher: UserEligibilityFetcher
+    private val applicationPasswordsNotifier: ApplicationPasswordsNotifier,
+    private val userEligibilityFetcher: UserEligibilityFetcher,
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val SITE_ADDRESS_KEY = "site-address"
@@ -122,9 +129,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 checkWooStatus(it)
             },
             onFailure = { exception ->
-                var errorMessage: Int? = null
                 if (exception is OnChangedException && exception.error is AuthenticationError) {
-                    errorMessage = exception.error.toErrorMessage()
+                    val errorMessage = exception.error.toErrorMessage()
                     if (errorMessage == null) {
                         val message = exception.error.message?.takeIf { it.isNotEmpty() }
                             ?.let { UiStringText(it) } ?: UiStringRes(R.string.error_generic)
@@ -134,24 +140,21 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 } else {
                     triggerEvent(ShowSnackbar(R.string.error_generic))
                 }
-
-                // Track errors
-                val errorType = (exception as? OnChangedException)?.error ?: exception
-                loginAnalyticsListener.trackLoginFailed(
-                    errorContext = errorType.javaClass.simpleName,
-                    errorType = (errorType as? AuthenticationError)?.type?.toString(),
+                val error = (exception as? OnChangedException)?.error ?: exception
+                trackLoginFailure(
+                    step = Step.AUTHENTICATION,
+                    errorContext = error.javaClass.simpleName,
+                    errorType = (error as? AuthenticationError)?.type?.toString(),
                     errorDescription = exception.message
-                )
-                loginAnalyticsListener.trackFailure(
-                    message = errorMessage?.let { resourceProvider.getString(it) } ?: exception.message
                 )
             }
         )
         isLoading.value = false
     }
 
-    private suspend fun checkWooStatus(site: SiteModel) {
+    private suspend fun checkWooStatus(site: SiteModel) = coroutineScope {
         isLoading.value = true
+
         wpApiSiteRepository.checkWooStatus(site = site).fold(
             onSuccess = { isWooInstalled ->
                 if (isWooInstalled) {
@@ -162,8 +165,28 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     triggerEvent(ShowNonWooErrorScreen(siteAddress))
                 }
             },
-            onFailure = {
+            onFailure = { exception ->
                 triggerEvent(ShowSnackbar(R.string.error_generic))
+
+                when (exception) {
+                    is ApplicationPasswordGenerationException -> {
+                        trackLoginFailure(
+                            step = Step.APPLICATION_PASSWORD_GENERATION,
+                            errorContext = exception.networkError.javaClass.simpleName,
+                            errorType = exception.networkError.type.name,
+                            errorDescription = exception.message
+                        )
+                    }
+                    else -> {
+                        val wooError = (exception as? WooException)?.error
+                        trackLoginFailure(
+                            step = Step.WOO_STATUS,
+                            errorContext = (wooError ?: exception).javaClass.simpleName,
+                            errorType = wooError?.type?.name,
+                            errorDescription = exception.message
+                        )
+                    }
+                }
             }
         )
         isLoading.value = false
@@ -175,8 +198,15 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             onSuccess = {
                 triggerEvent(LoggedIn(selectedSite.getSelectedSiteId()))
             },
-            onFailure = {
+            onFailure = { exception ->
                 triggerEvent(ShowSnackbar(R.string.error_generic))
+                val wooError = (exception as? WooException)?.error
+                trackLoginFailure(
+                    step = Step.USER_ROLE,
+                    errorContext = (wooError ?: exception).javaClass.simpleName,
+                    errorType = wooError?.type?.name,
+                    errorDescription = exception.message
+                )
             }
         )
         isLoading.value = false
@@ -198,6 +228,21 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         checkWooStatus(wpApiSiteRepository.getSiteByUrl(siteAddress)!!)
     }
 
+    private fun trackLoginFailure(step: Step, errorContext: String?, errorType: String?, errorDescription: String?) {
+        loginAnalyticsListener.trackFailure(
+            message = errorMessage.value.takeIf { it != 0 }?.let { resourceProvider.getString(it) }
+                ?: errorDescription
+        )
+
+        analyticsTracker.track(
+            LOGIN_SITE_CREDENTIALS_LOGIN_FAILED,
+            mapOf(AnalyticsTracker.KEY_STEP to step.name.lowercase()),
+            errorContext = errorContext,
+            errorType = errorType,
+            errorDescription = errorDescription
+        )
+    }
+
     private fun String.removeSchemeAndSuffix() = UrlUtils.removeScheme(UrlUtils.removeXmlrpcSuffix(this))
 
     private fun AuthenticationError.toErrorMessage() = when (type) {
@@ -210,6 +255,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
         INVALID_OTP, INVALID_TOKEN, AUTHORIZATION_REQUIRED, NEEDS_2FA ->
             R.string.login_2fa_not_supported_self_hosted_site
+
         else -> {
             null
         }
@@ -225,6 +271,10 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     ) : Parcelable {
         @IgnoredOnParcel
         val isValid = username.isNotBlank() && password.isNotBlank()
+    }
+
+    private enum class Step {
+        AUTHENTICATION, APPLICATION_PASSWORD_GENERATION, WOO_STATUS, USER_ROLE
     }
 
     data class LoggedIn(val localSiteId: Int) : MultiLiveEvent.Event()

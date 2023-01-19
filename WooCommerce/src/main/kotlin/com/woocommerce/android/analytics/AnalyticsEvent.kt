@@ -110,12 +110,12 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     LOGIN_JETPACK_CONNECTION_VERIFICATION_FAILED(siteless = true),
     LOGIN_WITH_QR_CODE_BUTTON_TAPPED(siteless = true),
     LOGIN_WITH_QR_CODE_SCANNED(siteless = true),
-
     LOGIN_PROLOGUE_CREATE_SITE_TAPPED(siteless = true),
     SIGNUP_LOGIN_BUTTON_TAPPED(siteless = true),
     SIGNUP_SUBMITTED(siteless = true),
     SIGNUP_SUCCESS(siteless = true),
     SIGNUP_ERROR(siteless = true),
+    LOGIN_SITE_CREDENTIALS_LOGIN_FAILED(siteless = true),
 
     // -- Site Picker
     SITE_PICKER_STORES_SHOWN(siteless = true),

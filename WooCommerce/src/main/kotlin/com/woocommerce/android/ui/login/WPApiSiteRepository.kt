@@ -2,12 +2,15 @@ package com.woocommerce.android.ui.login
 
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.WooException
+import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.awaitEvent
 import com.woocommerce.android.util.dispatchAndAwait
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.Dispatcher
@@ -24,7 +27,8 @@ import javax.inject.Inject
 class WPApiSiteRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val siteStore: SiteStore,
-    private val wooCommerceStore: WooCommerceStore
+    private val wooCommerceStore: WooCommerceStore,
+    private val applicationPasswordsNotifier: ApplicationPasswordsNotifier
 ) {
     /**
      * Handles authentication to the given [url] using wp-admin credentials.
@@ -42,14 +46,34 @@ class WPApiSiteRepository @Inject constructor(
             }
     }
 
-    suspend fun checkWooStatus(site: SiteModel): Result<Boolean> {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    suspend fun checkWooStatus(site: SiteModel): Result<Boolean> = coroutineScope {
         WooLog.d(WooLog.T.LOGIN, "Fetch site ${site.url} to check if Woo installed")
 
-        return wooCommerceStore.fetchWooCommerceSite(site)
+        val applicationPasswordErrorTask = async {
+            applicationPasswordsNotifier.passwordGenerationFailures.first()
+        }
+
+        return@coroutineScope wooCommerceStore.fetchWooCommerceSite(site)
             .let {
                 when {
-                    it.isError -> Result.failure(WooException(it.error))
-                    else -> Result.success(it.model!!.hasWooCommerce)
+                    it.isError -> {
+                        // Wait a bit to make sure that if there is any Application Password failure it was processed
+                        @Suppress("MagicNumber")
+                        withTimeoutOrNull(100L) { applicationPasswordErrorTask.join() }
+
+                        if (applicationPasswordErrorTask.isCompleted) {
+                            Result.failure(applicationPasswordErrorTask.getCompleted())
+                        } else {
+                            // Make sure the task is cancelled
+                            applicationPasswordErrorTask.cancel()
+                            Result.failure(WooException(it.error))
+                        }
+                    }
+                    else -> {
+                        applicationPasswordErrorTask.cancel()
+                        Result.success(it.model!!.hasWooCommerce)
+                    }
                 }
             }
     }
