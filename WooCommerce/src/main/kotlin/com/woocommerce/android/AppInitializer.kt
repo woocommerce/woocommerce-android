@@ -42,6 +42,9 @@ import com.woocommerce.android.util.encryptedlogging.ObserveEncryptedLogsUploadR
 import com.woocommerce.android.widgets.AppRatingDialog
 import dagger.android.DispatchingAndroidInjector
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -64,6 +67,7 @@ import javax.inject.Singleton
 class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     companion object {
         private const val SECONDS_BETWEEN_SITE_UPDATE = 60 * 60 // 1 hour
+        private const val UNAUTHORIZED_STATUS_CODE = 401
     }
 
     @Inject lateinit var crashLogging: CrashLogging
@@ -245,15 +249,30 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     }
 
     private fun monitorApplicationPasswordsStatus() {
+        fun logUserOut() {
+            selectedSite.reset()
+            restartMainActivity()
+        }
+
         appCoroutineScope.launch {
             // Log user out if the Application Passwords feature gets disabled
-            applicationPasswordsNotifier.featureUnavailableEvents.collect {
-                if (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords) {
-                    WooLog.w(T.LOGIN, "Application Passwords support has been disabled in the current site")
-                    selectedSite.reset()
-                    restartMainActivity()
-                }
-            }
+            applicationPasswordsNotifier.featureUnavailableEvents
+                .onEach {
+                    if (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords) {
+                        WooLog.w(T.LOGIN, "Application Passwords support has been disabled in the current site")
+                        logUserOut()
+                    }
+                }.launchIn(this)
+
+            // Log user out if the Application Passwords generation fails due to a 401 error
+            applicationPasswordsNotifier.passwordGenerationFailures
+                .filter { it.networkError.volleyError?.networkResponse?.statusCode == UNAUTHORIZED_STATUS_CODE }
+                .onEach {
+                    if (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords) {
+                        WooLog.w(T.LOGIN, "Use is unauthorized to generate a new application password")
+                        logUserOut()
+                    }
+                }.launchIn(this)
         }
     }
 
