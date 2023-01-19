@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.login.storecreation.countrypicker
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.util.EmojiUtils
@@ -18,9 +21,10 @@ import javax.inject.Inject
 @HiltViewModel
 class CountryPickerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val newStore: NewStore,
     private val localCountriesRepository: LocalCountriesRepository,
-    private val emojiUtils: EmojiUtils
+    private val emojiUtils: EmojiUtils,
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val DEFAULT_LOCATION_CODE = "US"
@@ -35,6 +39,12 @@ class CountryPickerViewModel @Inject constructor(
     }.asLiveData()
 
     init {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.SITE_CREATION_STEP,
+            mapOf(
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_PROFILER_COUNTRY
+            )
+        )
         launch {
             val loadedCountriesMap = localCountriesRepository.getLocalCountries()
             val defaultCountryCode = when {
