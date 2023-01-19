@@ -212,7 +212,7 @@ class LoginAnalyticsTracker(
 
     override fun trackConnectedSiteInfoRequested(url: String?) {
         AnalyticsTracker.track(
-            AnalyticsEvent.LOGIN_CONNECTED_SITE_INFO_REQUESTED,
+            AnalyticsEvent.LOGIN_SITE_ADDRESS_SITE_INFO_REQUESTED,
             mapOf(AnalyticsTracker.KEY_URL to url)
         )
     }
@@ -224,7 +224,7 @@ class LoginAnalyticsTracker(
         errorDescription: String?
     ) {
         AnalyticsTracker.track(
-            AnalyticsEvent.LOGIN_CONNECTED_SITE_INFO_FAILED,
+            AnalyticsEvent.LOGIN_SITE_ADDRESS_SITE_INFO_FAILED,
             errorContext,
             errorType,
             errorDescription
@@ -232,7 +232,7 @@ class LoginAnalyticsTracker(
     }
 
     override fun trackConnectedSiteInfoSucceeded(properties: Map<String, *>) {
-        AnalyticsTracker.track(AnalyticsEvent.LOGIN_CONNECTED_SITE_INFO_SUCCEEDED, properties)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_SITE_ADDRESS_SITE_INFO_SUCCEEDED, properties)
     }
 
     override fun trackSignupMagicLinkOpenEmailClientViewed() {
