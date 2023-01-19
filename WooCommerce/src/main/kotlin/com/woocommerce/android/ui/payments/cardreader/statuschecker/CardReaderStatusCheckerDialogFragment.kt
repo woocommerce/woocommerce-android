@@ -46,7 +46,8 @@ class CardReaderStatusCheckerDialogFragment : DialogFragment(R.layout.card_reade
                         .navigate(
                             CardReaderStatusCheckerDialogFragmentDirections
                                 .actionCardReaderStatusCheckerDialogFragmentToCardReaderTutorialDialogFragment(
-                                    event.cardReaderFlowParam
+                                    event.cardReaderFlowParam,
+                                    event.cardReaderType
                                 )
                         )
                 }

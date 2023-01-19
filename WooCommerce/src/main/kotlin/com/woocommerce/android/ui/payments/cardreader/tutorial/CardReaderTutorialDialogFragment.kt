@@ -15,6 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.CardReaderTutorialDialogBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -30,7 +31,7 @@ class CardReaderTutorialDialogFragment : DialogFragment(R.layout.card_reader_tut
             it.requestWindowFeature(Window.FEATURE_NO_TITLE)
         }
 
-        if (!appPrefs.getShowCardReaderConnectedTutorial()) {
+        if (!appPrefs.getShowCardReaderConnectedTutorial() || args.cardReaderType == BUILT_IN) {
             navigateNext()
             dismiss()
             return null
@@ -61,7 +62,7 @@ class CardReaderTutorialDialogFragment : DialogFragment(R.layout.card_reader_tut
             CardReaderFlowParam.CardReadersHub -> findNavController().popBackStack()
             is CardReaderFlowParam.PaymentOrRefund -> {
                 val action = CardReaderTutorialDialogFragmentDirections
-                    .actionCardReaderTutorialDialogFragmentToCardReaderPaymentDialogFragment(param)
+                    .actionCardReaderTutorialDialogFragmentToCardReaderPaymentDialogFragment(param, args.cardReaderType)
                 findNavController().navigateSafely(action, skipThrottling = true)
             }
         }
