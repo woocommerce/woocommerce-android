@@ -5,6 +5,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -122,9 +123,9 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         testBlocking {
             // GIVEN
             setup {
-                val siteModel: SiteModel = mock()
-                whenever(selectedSite.get()).thenReturn(siteModel)
-                whenever(selectedSite.get().origin).thenReturn(SiteModel.ORIGIN_XMLRPC)
+                whenever(selectedSite.connectionType).thenReturn(
+                    SiteConnectionType.ApplicationPasswords
+                )
             }
 
             // WHEN
