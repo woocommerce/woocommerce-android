@@ -515,7 +515,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `given IPP banner is shown, then Orders banner should be hidden`() = testBlocking {
         // given
         whenever(shouldShowFeedbackBanner()).thenReturn(true)
-        val fakeBanner = GetIPPFeedbackBannerData.IPPFeedbackBanner(-1, -1, "")
+        val fakeBanner = GetIPPFeedbackBannerData.IPPFeedbackBanner(-1, -1, "", "")
         whenever(getIPPFeedbackBannerData()).thenReturn(fakeBanner)
 
         // when

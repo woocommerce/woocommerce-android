@@ -96,46 +96,56 @@ class GetIPPFeedbackBannerData @Inject constructor(
     data class IPPFeedbackBanner(
         @StringRes val title: Int,
         @StringRes val message: Int,
-        val url: String
+        val url: String,
+        val campaignName: String,
     ) : Parcelable
 
     companion object {
         private val IPP_NEWBIE_BANNER by lazy {
-            IPPFeedbackBanner(BANNER_TITLE_NEWBIE, BANNER_MESSAGE_NEWBIE, SURVEY_URL_IPP_NEWBIE)
+            IPPFeedbackBanner(
+                BANNER_TITLE_NEWBIE,
+                BANNER_MESSAGE_NEWBIE,
+                SURVEY_URL_IPP_NEWBIE,
+                CAMPAIGN_NAME_IPP_NEWBIE,
+            )
         }
 
         private val IPP_BEGINNER_BANNER by lazy {
             IPPFeedbackBanner(
                 BANNER_TITLE_BEGINNER,
                 BANNER_MESSAGE_BEGINNER,
-                SURVEY_URL_IPP_BEGINNER
+                SURVEY_URL_IPP_BEGINNER,
+                CAMPAIGN_NAME_IPP_BEGINNER,
             )
         }
 
         private val IPP_NINJA_BANNER by lazy {
-            IPPFeedbackBanner(BANNER_TITLE_NINJA, BANNER_MESSAGE_NINJA, SURVEY_URL_IPP_NINJA)
+            IPPFeedbackBanner(
+                BANNER_TITLE_NINJA,
+                BANNER_MESSAGE_NINJA,
+                SURVEY_URL_IPP_NINJA,
+                CAMPAIGN_NAME_IPP_NINJA,
+            )
         }
 
         private const val STATS_TIME_WINDOW_LENGTH_DAYS = 30
 
         private const val SURVEY_URL_IPP_NEWBIE = "https://automattic.survey.fm/woo-app-–-cod-survey"
-
         private const val SURVEY_URL_IPP_BEGINNER =
             "https://automattic.survey.fm/woo-app-–-ipp-first-transaction-survey"
-
         private const val SURVEY_URL_IPP_NINJA = "https://automattic.survey.fm/woo-app-–-ipp-survey-for-power-users"
 
         private const val BANNER_TITLE_NEWBIE = R.string.feedback_banner_ipp_title_newbie
-
         private const val BANNER_TITLE_BEGINNER = R.string.feedback_banner_ipp_title_beginner
-
         private const val BANNER_TITLE_NINJA = R.string.feedback_banner_ipp_title_ninja
 
         private const val BANNER_MESSAGE_NEWBIE = R.string.feedback_banner_ipp_message_newbie
-
         private const val BANNER_MESSAGE_BEGINNER = R.string.feedback_banner_ipp_message_beginner
-
         private const val BANNER_MESSAGE_NINJA = R.string.feedback_banner_ipp_message_ninja
+
+        private const val CAMPAIGN_NAME_IPP_NEWBIE = "ipp_not_user"
+        private const val CAMPAIGN_NAME_IPP_BEGINNER = "ipp_new_user"
+        private const val CAMPAIGN_NAME_IPP_NINJA = "ipp_heavy_user"
 
         private val IPP_BEGINNER_TRANSACTIONS_RANGE = 1..10
     }
