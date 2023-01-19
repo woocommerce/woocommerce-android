@@ -19,6 +19,11 @@ class ApplicationPasswordsNotifier @Inject constructor(
     private val _featureUnavailableEvents = MutableSharedFlow<WPAPINetworkError>(extraBufferCapacity = 1)
     val featureUnavailableEvents: Flow<WPAPINetworkError> = _featureUnavailableEvents.asSharedFlow()
 
+    private val _passwordGenerationFailures =
+        MutableSharedFlow<ApplicationPasswordGenerationException>(extraBufferCapacity = 1)
+    val passwordGenerationFailures: Flow<ApplicationPasswordGenerationException> =
+        _passwordGenerationFailures.asSharedFlow()
+
     override fun onFeatureUnavailable(siteModel: SiteModel, networkError: WPAPINetworkError) {
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.APPLICATION_PASSWORDS_NOT_AVAILABLE,
@@ -31,7 +36,13 @@ class ApplicationPasswordsNotifier @Inject constructor(
         _featureUnavailableEvents.tryEmit(networkError)
     }
 
+    override fun onPasswordGenerationFailed(networkError: WPAPINetworkError) {
+        _passwordGenerationFailures.tryEmit(ApplicationPasswordGenerationException(networkError))
+    }
+
     override fun onNewPasswordCreated(isPasswordRegenerated: Boolean) {
         analyticsTrackerWrapper.track(stat = AnalyticsEvent.APPLICATION_PASSWORDS_NEW_PASSWORD_CREATED)
     }
 }
+
+data class ApplicationPasswordGenerationException(val networkError: WPAPINetworkError): Exception(networkError.message)
