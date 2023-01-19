@@ -119,7 +119,7 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
     private fun observeState(binding: CardReaderConnectDialogBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { viewState ->
             if (viewState is CardReaderConnectViewState.ExternalReaderFoundState) {
-                moveToReaderFoundState(binding, viewState)
+                moveToExternalReaderFoundStateWithAnimation(binding, viewState)
             } else {
                 moveToState(binding, viewState)
             }
@@ -136,7 +136,10 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
      * When a reader is found, we fade out the scanning illustration, update the UI to the new state, then
      * fade in the reader found illustration
      */
-    private fun moveToReaderFoundState(binding: CardReaderConnectDialogBinding, viewState: CardReaderConnectViewState) {
+    private fun moveToExternalReaderFoundStateWithAnimation(
+        binding: CardReaderConnectDialogBinding,
+        viewState: CardReaderConnectViewState
+    ) {
         val fadeOut = WooAnimUtils.getFadeOutAnim(binding.illustration, WooAnimUtils.Duration.LONG)
         val fadeIn = WooAnimUtils.getFadeInAnim(binding.illustration, WooAnimUtils.Duration.LONG)
 
