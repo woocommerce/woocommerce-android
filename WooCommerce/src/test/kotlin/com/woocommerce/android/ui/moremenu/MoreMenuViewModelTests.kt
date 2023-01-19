@@ -116,4 +116,21 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         assertThat(reviewsButton.badgeState?.textState?.fontSize)
             .isEqualTo(R.dimen.text_minor_80)
     }
+
+    @Test
+    fun `given application passwords login, when building state, then store switcher state is disabled `() =
+        testBlocking {
+            // GIVEN
+            setup {
+                val siteModel: SiteModel = mock()
+                whenever(selectedSite.get()).thenReturn(siteModel)
+                whenever(selectedSite.get().origin).thenReturn(SiteModel.ORIGIN_XMLRPC)
+            }
+
+            // WHEN
+            val states = viewModel.moreMenuViewState.captureValues()
+
+            // THEN
+            assertThat(states.last().isStoreSwitcherEnabled).isEqualTo(false)
+        }
 }
