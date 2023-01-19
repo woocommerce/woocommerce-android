@@ -27,11 +27,19 @@ class CardReaderWelcomeViewModel @Inject constructor(
     }
 
     private fun onButtonClick() {
-        triggerEvent(CardReaderWelcomeDialogEvent.NavigateToOnboardingFlow(arguments.cardReaderFlowParam))
+        triggerEvent(
+            CardReaderWelcomeDialogEvent.NavigateToOnboardingFlow(
+                arguments.cardReaderFlowParam,
+                arguments.countryCode
+            )
+        )
     }
 
     sealed class CardReaderWelcomeDialogEvent : Event() {
-        data class NavigateToOnboardingFlow(val cardReaderFlowParam: CardReaderFlowParam) : Event()
+        data class NavigateToOnboardingFlow(
+            val cardReaderFlowParam: CardReaderFlowParam,
+            val countryCode: String,
+        ) : Event()
     }
 
     data class ViewState(val buttonAction: () -> Unit) {

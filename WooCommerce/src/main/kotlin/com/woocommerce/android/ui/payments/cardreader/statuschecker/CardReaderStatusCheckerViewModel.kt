@@ -75,13 +75,13 @@ class CardReaderStatusCheckerViewModel
                 if (appPrefsWrapper.isCardReaderWelcomeDialogShown()) {
                     cardReaderTracker.trackOnboardingState(state)
 
-                    if (isTapToPayAvailable()) {
-                        triggerEvent(NavigateToIPPReaderTypeSelection(param))
+                    if (isTapToPayAvailable(state.countryCode)) {
+                        triggerEvent(NavigateToIPPReaderTypeSelection(param, state.countryCode))
                     } else {
                         triggerEvent(NavigateToConnection(param))
                     }
                 } else {
-                    triggerEvent(StatusCheckerEvent.NavigateToWelcome(param))
+                    triggerEvent(StatusCheckerEvent.NavigateToWelcome(param, state.countryCode))
                 }
             }
             else -> triggerEvent(
@@ -100,9 +100,15 @@ class CardReaderStatusCheckerViewModel
         }
 
     sealed class StatusCheckerEvent : MultiLiveEvent.Event() {
-        data class NavigateToWelcome(val cardReaderFlowParam: CardReaderFlowParam) : MultiLiveEvent.Event()
-        data class NavigateToIPPReaderTypeSelection(val cardReaderFlowParam: CardReaderFlowParam) :
-            MultiLiveEvent.Event()
+        data class NavigateToWelcome(
+            val cardReaderFlowParam: CardReaderFlowParam,
+            val countryCode: String,
+        ) : MultiLiveEvent.Event()
+
+        data class NavigateToIPPReaderTypeSelection(
+            val cardReaderFlowParam: CardReaderFlowParam,
+            val countryCode: String,
+        ) : MultiLiveEvent.Event()
 
         data class NavigateToConnection(val cardReaderFlowParam: CardReaderFlowParam) : MultiLiveEvent.Event()
 
