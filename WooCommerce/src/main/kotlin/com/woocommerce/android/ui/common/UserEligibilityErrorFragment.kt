@@ -135,7 +135,6 @@ class UserEligibilityErrorFragment : BaseFragment(layout.fragment_user_eligibili
                 else -> event.isHandled = false
             }
         }
-        viewModel.start()
     }
 
     private fun showView(user: User) {

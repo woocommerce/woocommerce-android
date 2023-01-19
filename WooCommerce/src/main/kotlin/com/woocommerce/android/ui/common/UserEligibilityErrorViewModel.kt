@@ -5,6 +5,8 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.User
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.ui.login.AccountRepository
@@ -21,18 +23,29 @@ import javax.inject.Inject
 @HiltViewModel
 class UserEligibilityErrorViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val appPrefs: AppPrefs,
+    appPrefs: AppPrefs,
     private val accountRepository: AccountRepository,
-    private val userEligibilityFetcher: UserEligibilityFetcher
+    private val userEligibilityFetcher: UserEligibilityFetcher,
+    analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
+    companion object {
+        private const val ROLES_KEY = "current_roles"
+    }
+
     final val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
-    fun start() {
+    init {
         val email = appPrefs.getUserEmail()
         if (email.isNotEmpty()) {
             val user = userEligibilityFetcher.getUserByEmail(email)
             viewState = viewState.copy(user = user?.toAppModel())
+            analyticsTracker.track(
+                AnalyticsEvent.LOGIN_INSUFFICIENT_ROLE,
+                mapOf(
+                    ROLES_KEY to user?.getUserRoles()?.joinToString(",") { it.value }
+                )
+            )
         }
     }
 
