@@ -194,7 +194,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(vm.event.value)
-                .isEqualTo(CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToWelcome(param))
+                .isEqualTo(CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToWelcome(param, countryCode))
         }
 
     @Test
@@ -234,14 +234,19 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
                     countryCode
                 )
             )
-            whenever(isTapToPayAvailable()).thenReturn(true)
+            whenever(isTapToPayAvailable(countryCode)).thenReturn(true)
 
             // WHEN
             val vm = initViewModel(param)
 
             // THEN
             assertThat(vm.event.value)
-                .isEqualTo(CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToIPPReaderTypeSelection(param))
+                .isEqualTo(
+                    CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToIPPReaderTypeSelection(
+                        param,
+                        countryCode
+                    )
+                )
         }
 
     @Test
@@ -259,7 +264,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
                     countryCode
                 )
             )
-            whenever(isTapToPayAvailable()).thenReturn(false)
+            whenever(isTapToPayAvailable(countryCode)).thenReturn(false)
 
             // WHEN
             val vm = initViewModel(param)
