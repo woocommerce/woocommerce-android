@@ -158,7 +158,6 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         wpApiSiteRepository.checkWooStatus(site = site).fold(
             onSuccess = { isWooInstalled ->
                 if (isWooInstalled) {
-                    loginAnalyticsListener.trackAnalyticsSignIn(false)
                     selectedSite.set(site)
                     fetchUserInfo()
                 } else {
@@ -196,6 +195,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         isLoading.value = true
         userEligibilityFetcher.fetchUserInfo().fold(
             onSuccess = {
+                loginAnalyticsListener.trackAnalyticsSignIn(false)
                 triggerEvent(LoggedIn(selectedSite.getSelectedSiteId()))
             },
             onFailure = { exception ->
