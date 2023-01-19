@@ -194,6 +194,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_USER_COMMERCE_JOURNEY = "user_commerce_journey"
         const val KEY_ECOMMERCE_PLATFORMS = "ecommerce_platforms"
         const val KEY_COUNTRY_CODE = "country_code"
+        const val KEY_CAUSE = "cause"
+        const val KEY_SCENARIO = "scenario"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_SORT_NAME_ASC = "name,ascending"

@@ -3,6 +3,7 @@ package com.woocommerce.android.applicationpasswords
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -14,8 +15,13 @@ import javax.inject.Singleton
 
 @Singleton
 class ApplicationPasswordsNotifier @Inject constructor(
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val selectedSite: SelectedSite
 ) : ApplicationPasswordsListener {
+    companion object {
+        private const val UNAUTHORIZED_STATUS_CODE = 401
+    }
+
     private val _featureUnavailableEvents = MutableSharedFlow<WPAPINetworkError>(extraBufferCapacity = 1)
     val featureUnavailableEvents: Flow<WPAPINetworkError> = _featureUnavailableEvents.asSharedFlow()
 
@@ -25,24 +31,58 @@ class ApplicationPasswordsNotifier @Inject constructor(
         _passwordGenerationFailures.asSharedFlow()
 
     override fun onFeatureUnavailable(siteModel: SiteModel, networkError: WPAPINetworkError) {
-        analyticsTrackerWrapper.track(
-            stat = AnalyticsEvent.APPLICATION_PASSWORDS_NOT_AVAILABLE,
-            properties = mapOf(
-                AnalyticsTracker.KEY_NETWORK_STATUS_CODE to networkError.volleyError?.networkResponse?.statusCode,
-                AnalyticsTracker.KEY_ERROR_CODE to networkError.errorCode,
-                AnalyticsTracker.KEY_ERROR_MESSAGE to networkError.message
-            )
+        trackGenerationFailure(
+            cause = GenerationFailureCause.FEATURE_DISABLED,
+            networkError = networkError
         )
         _featureUnavailableEvents.tryEmit(networkError)
     }
 
     override fun onPasswordGenerationFailed(networkError: WPAPINetworkError) {
+        val statusCode = networkError.volleyError?.networkResponse?.statusCode
+        trackGenerationFailure(
+            cause = if (statusCode == UNAUTHORIZED_STATUS_CODE) GenerationFailureCause.AUTHORIZATION_FAILED
+            else GenerationFailureCause.OTHER,
+            networkError = networkError
+        )
         _passwordGenerationFailures.tryEmit(ApplicationPasswordGenerationException(networkError))
     }
 
     override fun onNewPasswordCreated(isPasswordRegenerated: Boolean) {
-        analyticsTrackerWrapper.track(stat = AnalyticsEvent.APPLICATION_PASSWORDS_NEW_PASSWORD_CREATED)
+        val scenario = if (isPasswordRegenerated) GenerationFailureScenario.REGENERATION
+        else GenerationFailureScenario.GENERATION
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.APPLICATION_PASSWORDS_NEW_PASSWORD_CREATED,
+            properties = mapOf(AnalyticsTracker.KEY_SCENARIO to scenario.name.lowercase())
+        )
+    }
+
+    private fun trackGenerationFailure(
+        cause: GenerationFailureCause,
+        networkError: WPAPINetworkError
+    ) {
+        val scenario = if (selectedSite.exists()) GenerationFailureScenario.REGENERATION
+        else GenerationFailureScenario.GENERATION
+
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.APPLICATION_PASSWORDS_GENERATION_FAILED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_SCENARIO to scenario.name.lowercase(),
+                AnalyticsTracker.KEY_CAUSE to cause.name.lowercase()
+            ),
+            errorContext = networkError.javaClass.simpleName,
+            errorType = networkError.type.name,
+            errorDescription = networkError.message
+        )
+    }
+
+    private enum class GenerationFailureCause {
+        AUTHORIZATION_FAILED, FEATURE_DISABLED, OTHER
+    }
+
+    private enum class GenerationFailureScenario {
+        GENERATION, REGENERATION
     }
 }
 
-data class ApplicationPasswordGenerationException(val networkError: WPAPINetworkError): Exception(networkError.message)
+data class ApplicationPasswordGenerationException(val networkError: WPAPINetworkError) : Exception(networkError.message)
