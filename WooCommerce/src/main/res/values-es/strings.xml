@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-01-15 12:12:14+0000
+Translation-Revision-Date: 2023-01-18 17:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="login_application_passwords_help">¿Qué son las contraseñas de aplicación?</string>
+    <string name="store_creation_country_picker_countries_header">Países</string>
+    <string name="store_creation_country_picker_current_location">Ubicación actual</string>
+    <string name="store_creation_country_picker_description">Utilizaremos esta información para configurar los pagos, los envíos y los impuestos.</string>
+    <string name="store_creation_country_picker_title">Confirma tu ubicación</string>
+    <string name="store_creation_store_profiler_platforms_description">Puedes elegir varias opciones.</string>
+    <string name="store_creation_store_profiler_platforms_title">¿En qué plataforma vendes actualmente?</string>
+    <string name="store_creation_store_profiler_journey_description">Para agilizar las cosas, adaptaremos tu experiencia WooCommerce en función de tu respuesta.</string>
+    <string name="store_creation_store_profiler_journey_title">¿En qué punto de tu recorrido comercial te encuentras?</string>
+    <string name="store_creation_store_profiler_industries_description">Elige la categoría que encaje mejor con tu negocio.</string>
+    <string name="store_creation_store_profiler_industries_title">¿Qué vas a vender?</string>
+    <string name="login_application_passwords_unavailable">Parece que la función de contraseñas de aplicación está desactivada en tu sitio %1$s.\n Actívala para usar la aplicación de WooCommerce.</string>
+    <string name="login_open_installation_page">Abrir página de instalación</string>
     <string name="not_a_valid_qr_code">El código QR escaneado no es un código de WooCommerce</string>
     <string name="store_creation_iap_eligibility_check_error_description">La creación de una tienda mediante la aplicación móvil no está disponible actualmente en tu país.</string>
     <string name="store_creation_iap_eligibility_check_error_title">Creación de tienda no disponible</string>
@@ -14,8 +27,6 @@ Language: es
     <string name="review_reply_failure">Ha habido un error al enviar la respuesta</string>
     <string name="review_reply_success">¡Respuesta enviada!</string>
     <string name="wc_reply">Responder</string>
-    <string name="store_creation_store_categories_subtitle">Elige la categoría que defina\nmejor tu negocio.</string>
-    <string name="store_creation_store_categories_title">¿De qué trata tu negocio?</string>
     <string name="product_selection_menu_select_all">Seleccionar todo</string>
     <string name="product_selection_menu_update_price">Actualizar precio</string>
     <string name="product_selection_menu_update_status">Actualizar estado</string>

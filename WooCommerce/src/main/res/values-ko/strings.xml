@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-01-13 15:48:14+0000
+Translation-Revision-Date: 2023-01-19 08:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="login_application_passwords_help">애플리케이션 비밀번호가 무엇인가요?</string>
+    <string name="store_creation_country_picker_countries_header">국가</string>
+    <string name="store_creation_country_picker_current_location">현재 위치</string>
+    <string name="store_creation_country_picker_description">이 정보는 결제, 배송 및 세금 설정에 사용됩니다.</string>
+    <string name="store_creation_country_picker_title">위치 확인</string>
+    <string name="store_creation_store_profiler_platforms_description">여러 개를 선택할 수 있습니다.</string>
+    <string name="store_creation_store_profiler_platforms_title">현재 어떤 플랫폼에서 판매 중이신가요?</string>
+    <string name="store_creation_store_profiler_journey_description">빠르게 진행되도록 응답에 따라 우커머스 경험이 알맞게 조정됩니다.</string>
+    <string name="store_creation_store_profiler_journey_title">상거래 여정의 어디쯤 계시는가요?</string>
+    <string name="store_creation_store_profiler_industries_description">비즈니스에 가장 알맞은 카테고리를 선택하세요.</string>
+    <string name="store_creation_store_profiler_industries_title">무엇을 판매하실 예정인가요?</string>
+    <string name="login_application_passwords_unavailable">%1$s 사이트에서 애플리케이션 비밀번호가 비활성화된 것 같습니다.\n 우커머스 앱을 사용하려면 활성화하세요.</string>
+    <string name="login_open_installation_page">설치 페이지 열기</string>
     <string name="not_a_valid_qr_code">스캔한 QR 코드는 WooCommerce 코드가 아닙니다</string>
     <string name="store_creation_iap_eligibility_check_error_description">현재 회원님의 국가에서는 모바일 앱을 통해 스토어를 생성할 수 없습니다.</string>
     <string name="store_creation_iap_eligibility_check_error_title">스토어 생성 불가</string>
@@ -14,8 +27,6 @@ Language: ko_KR
     <string name="review_reply_failure">답변을 발송하는 도중에 오류가 발생했습니다</string>
     <string name="review_reply_success">답변 발송!</string>
     <string name="wc_reply">답변</string>
-    <string name="store_creation_store_categories_subtitle">비즈니스를 가장 잘 정의하는\n카테고리를 선택합니다.</string>
-    <string name="store_creation_store_categories_title">비즈니스 분야가 무엇인가요?</string>
     <string name="product_selection_menu_select_all">모두 선택</string>
     <string name="product_selection_menu_update_price">가격 업데이트</string>
     <string name="product_selection_menu_update_status">상태 업데이트</string>

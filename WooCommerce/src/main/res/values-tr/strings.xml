@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-01-13 22:48:46+0000
+Translation-Revision-Date: 2023-01-19 16:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="login_application_passwords_help">Uygulama Şifreleri nedir?</string>
+    <string name="store_creation_country_picker_countries_header">Ülkeler</string>
+    <string name="store_creation_country_picker_current_location">Mevcut konum</string>
+    <string name="store_creation_country_picker_description">Bu bilgileri ödemeleri, teslimatı ve vergileri ayarlamak için kullanacağız.</string>
+    <string name="store_creation_country_picker_title">Konumunuzu onaylayın</string>
+    <string name="store_creation_store_profiler_platforms_description">Birden çok seçebilirsiniz.</string>
+    <string name="store_creation_store_profiler_platforms_title">Şu anda hangi platformda satış yapıyorsunuz?</string>
+    <string name="store_creation_store_profiler_journey_description">İşleri hızlandırmak için yanıtınıza göre WooCommerce deneyiminizi size göre uyarlarız.</string>
+    <string name="store_creation_store_profiler_journey_title">Ticaret yolculuğunuzun neresindesiniz?</string>
+    <string name="store_creation_store_profiler_industries_description">İşletmenize en uygun kategoriyi seçin.</string>
+    <string name="store_creation_store_profiler_industries_title">Ne satacaksınız?</string>
+    <string name="login_application_passwords_unavailable">Görünüşe göre Uygulama Şifreleri özelliği %1$s sitenizde devre dışı bırakılmış.\n WooCommerce uygulamasını kullanmak için lütfen Uygulama Şifresini etkinleştirin.</string>
+    <string name="login_open_installation_page">Kurulum sayfasını açın</string>
     <string name="not_a_valid_qr_code">Taranan Qr kodu bir WooCommerce kodu değil.</string>
     <string name="store_creation_iap_eligibility_check_error_description">Mobil uygulamadan mağaza oluşturma seçeneği şu an ülkenizde mevcut değil.</string>
     <string name="store_creation_iap_eligibility_check_error_title">Mağaza Oluşturma Mevcut Değil</string>
@@ -14,8 +27,6 @@ Language: tr
     <string name="review_reply_failure">Yanıtı gönderirken bir hata oluştu</string>
     <string name="review_reply_success">Yanıt gönderildi!</string>
     <string name="wc_reply">Yanıtla</string>
-    <string name="store_creation_store_categories_subtitle">İşletmenizi en iyi şekilde\ntanımlayan bir kategori seçin.</string>
-    <string name="store_creation_store_categories_title">İşletmenizin faaliyet alanı nedir?</string>
     <string name="product_selection_menu_select_all">Tümünü seç</string>
     <string name="product_selection_menu_update_price">Fiyatı güncelle</string>
     <string name="product_selection_menu_update_status">Durumu güncelle</string>
