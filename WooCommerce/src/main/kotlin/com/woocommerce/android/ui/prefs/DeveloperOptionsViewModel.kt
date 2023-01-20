@@ -132,8 +132,8 @@ class DeveloperOptionsViewModel @Inject constructor(
     private fun onEnableInteracToggled(isChecked: Boolean) {
         if(cardReaderManager.initialized) {
             cardReaderManager.enableSimulatorInterac()
-            enableInteracStateChange(isChecked)
         }
+        enableInteracStateChange(isChecked)
     }
 
     private fun onUpdateSimulatedReaderClicked() {
