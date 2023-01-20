@@ -1,13 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-12-23 08:54:03+0000
+Translation-Revision-Date: 2023-01-18 11:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
-    <string name="store_creation_store_categories_subtitle">选择最能符合\n您的业务的分类。</string>
-    <string name="store_creation_store_categories_title">您的业务内容是什么？</string>
+    <string name="login_application_passwords_help">什么是应用程序密码？</string>
+    <string name="store_creation_country_picker_countries_header">国家/地区</string>
+    <string name="store_creation_country_picker_current_location">当前位置</string>
+    <string name="store_creation_country_picker_description">我们将使用此信息设置付款、运费和税费。</string>
+    <string name="store_creation_country_picker_title">确认您的位置</string>
+    <string name="store_creation_store_profiler_platforms_description">您可以选择多项。</string>
+    <string name="store_creation_store_profiler_platforms_title">您目前在哪个平台销售？</string>
+    <string name="store_creation_store_profiler_journey_description">为了加快速度，我们将根据您的回复为您量身定制 WooCommerce 体验。</string>
+    <string name="store_creation_store_profiler_journey_title">您处于商务之旅的什么阶段？</string>
+    <string name="store_creation_store_profiler_industries_description">选择更适合您的业务的分类。</string>
+    <string name="store_creation_store_profiler_industries_title">您将销售什么？</string>
+    <string name="login_application_passwords_unavailable">您的站点 %1$s 似乎禁用应用程序密码功能。\n 请启用该功能以使用 WooCommerce 应用。</string>
+    <string name="login_open_installation_page">打开安装页面</string>
+    <string name="not_a_valid_qr_code">扫进来的 QR code 不是 WooCommerce 代码</string>
+    <string name="store_creation_iap_eligibility_check_error_description">您所在的国家暂不提供自手机 App 开设商店功能。</string>
+    <string name="store_creation_iap_eligibility_check_error_title">不提供商店开设功能</string>
+    <string name="store_creation_iap_eligibility_loading_subtitle">请保持连接状态。</string>
+    <string name="store_creation_iap_eligibility_loading_title">我们正在为您的商店创建做准备</string>
+    <string name="review_reply_failure">在发送回复时出现错误</string>
+    <string name="review_reply_success">回复已发送！</string>
+    <string name="wc_reply">回复</string>
     <string name="product_selection_menu_select_all">全选</string>
     <string name="product_selection_menu_update_price">更新价格</string>
     <string name="product_selection_menu_update_status">更新状态</string>

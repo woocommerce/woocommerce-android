@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-01-14 23:36:09+0000
+Translation-Revision-Date: 2023-01-18 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="login_application_passwords_help">Apa itu Kata Sandi Aplikasi?</string>
+    <string name="store_creation_country_picker_countries_header">Negara</string>
+    <string name="store_creation_country_picker_current_location">Lokasi saat ini</string>
+    <string name="store_creation_country_picker_description">Kami akan menggunakan informasi ini untuk menyiapkan pembayaran, pengiriman, dan pajak.</string>
+    <string name="store_creation_country_picker_title">Konfirmasi lokasi Anda</string>
+    <string name="store_creation_store_profiler_platforms_description">Anda dapat memilih lebih dari satu.</string>
+    <string name="store_creation_store_profiler_platforms_title">Di platform manakah Anda berdagang saat ini?</string>
+    <string name="store_creation_store_profiler_journey_description">Untuk mempercepat segalanya, kami akan menyesuaikan pengalaman WooCommerce untuk Anda, berdasarkan tanggapan Anda.</string>
+    <string name="store_creation_store_profiler_journey_title">Di mana posisi Anda dalam perjalanan perdagangan Anda?</string>
+    <string name="store_creation_store_profiler_industries_description">Pilih kategori yang paling sesuai dengan bisnis Anda.</string>
+    <string name="store_creation_store_profiler_industries_title">Apa yang akan Anda jual?</string>
+    <string name="login_application_passwords_unavailable">Sepertinya fitur Kata Sandi Aplikasi dinonaktifkan di situs Anda %1$s.\n Aktifkan Kata Sandi untuk menggunakan aplikasi WooCommerce.</string>
+    <string name="login_open_installation_page">Buka halaman instalasi</string>
     <string name="not_a_valid_qr_code">Kode QR yang dipindai bukan kode WooCommerce</string>
     <string name="store_creation_iap_eligibility_check_error_description">Pembuatan toko dari aplikasi seluler saat ini tidak tersedia untuk negara Anda.</string>
     <string name="store_creation_iap_eligibility_check_error_title">Pembuatan Toko Tidak Tersedia</string>
@@ -14,8 +27,6 @@ Language: id
     <string name="review_reply_failure">Terjadi kendala saat mengirimkan balasan</string>
     <string name="review_reply_success">Balasan dikirim!</string>
     <string name="wc_reply">Balas</string>
-    <string name="store_creation_store_categories_subtitle">Plih kategori paling sesuai\ndengan bisnis Anda.</string>
-    <string name="store_creation_store_categories_title">Apa bisnis Anda?</string>
     <string name="product_selection_menu_select_all">Pilih semua</string>
     <string name="product_selection_menu_update_price">Perbarui harga</string>
     <string name="product_selection_menu_update_status">Perbarui status</string>

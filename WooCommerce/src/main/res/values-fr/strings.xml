@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-01-16 04:17:21+0000
+Translation-Revision-Date: 2023-01-19 16:54:05+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="login_application_passwords_help">Que sont les mots de passe d\'applications ?</string>
+    <string name="store_creation_country_picker_countries_header">Pays</string>
+    <string name="store_creation_country_picker_current_location">Emplacement actuel</string>
+    <string name="store_creation_country_picker_description">Nous utiliserons ces informations pour configurer rapidement les paiements, les expéditions et les taxes.</string>
+    <string name="store_creation_country_picker_title">Confirmer votre position</string>
+    <string name="store_creation_store_profiler_platforms_description">Vous pouvez en choisir plusieurs.</string>
+    <string name="store_creation_store_profiler_platforms_title">Quelle plateforme utilisez-vous actuellement pour vendre vos produits ou services ?</string>
+    <string name="store_creation_store_profiler_journey_description">Pour accélérer le processus, nous allons personnaliser votre expérience WooCommerce en fonction de votre réponse.</string>
+    <string name="store_creation_store_profiler_journey_title">À quel stade commercial vous trouvez-vous ?</string>
+    <string name="store_creation_store_profiler_industries_description">Choisissez la catégorie qui correspond au mieux à votre activité.</string>
+    <string name="store_creation_store_profiler_industries_title">Qu\'allez-vous vendre ?</string>
+    <string name="login_application_passwords_unavailable">Il semblerait que la fonctionnalité Mots de passe d\'applications s\'affiche sur votre site %1$s.\n Veuillez l’activer pour utiliser l’application WooCommerce.</string>
+    <string name="login_open_installation_page">Ouvrir la page d\'installation</string>
     <string name="not_a_valid_qr_code">Le code QR scanné n\'est pas un code WooCommerce</string>
     <string name="store_creation_iap_eligibility_check_error_description">La création de boutique depuis l\'appli mobile est actuellement indisponible dans votre pays.</string>
     <string name="store_creation_iap_eligibility_check_error_title">Création de boutique indisponible</string>
@@ -14,8 +27,6 @@ Language: fr
     <string name="review_reply_failure">Une erreur s\'est produite lors de l\'envoi de la réponse</string>
     <string name="review_reply_success">Réponse envoyée !</string>
     <string name="wc_reply">Répondre</string>
-    <string name="store_creation_store_categories_subtitle">Choisissez la catégorie qui définit\nle mieux votre activité.</string>
-    <string name="store_creation_store_categories_title">Quel est votre secteur d’activité ?</string>
     <string name="product_selection_menu_select_all">Tout sélectionner</string>
     <string name="product_selection_menu_update_price">Mettre à jour le tarif</string>
     <string name="product_selection_menu_update_status">Mettre à jour l’état</string>

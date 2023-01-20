@@ -1,13 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-12-23 08:54:03+0000
+Translation-Revision-Date: 2023-01-19 08:54:08+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
-    <string name="store_creation_store_categories_subtitle">あなたのビジネスに相応しい\nカテゴリーを選択してください。</string>
-    <string name="store_creation_store_categories_title">あなたのビジネスについて</string>
+    <string name="login_application_passwords_help">アプリケーションパスワードとは</string>
+    <string name="store_creation_country_picker_countries_header">国</string>
+    <string name="store_creation_country_picker_current_location">現在の位置</string>
+    <string name="store_creation_country_picker_description">この情報を使用して、支払い、配送、税金を設定します。</string>
+    <string name="store_creation_country_picker_title">場所を確認</string>
+    <string name="store_creation_store_profiler_platforms_description">複数選択できます。</string>
+    <string name="store_creation_store_profiler_platforms_title">現在どのプラットフォームで販売していますか ?</string>
+    <string name="store_creation_store_profiler_journey_description">作業がスピードアップするように、回答いただいた内容に基づき WooCommerce を自動的にカスタマイズします。</string>
+    <string name="store_creation_store_profiler_journey_title">現在、ストア販売プロセスのどの段階ですか ?</string>
+    <string name="store_creation_store_profiler_industries_description">あなたのビジネスに相応しいカテゴリーを選択してください。</string>
+    <string name="store_creation_store_profiler_industries_title">何を販売する予定ですか ?</string>
+    <string name="login_application_passwords_unavailable">サイト %1$s でアプリケーションパスワード機能が無効になっているようです。\n WooCommerce アプリを使用するには、アプリケーションパスワードを有効にしてください。</string>
+    <string name="login_open_installation_page">インストールページを開く</string>
+    <string name="not_a_valid_qr_code">スキャンされた QR コードは WooCommerce コードではありません</string>
+    <string name="store_creation_iap_eligibility_check_error_description">現在お住まいの国ではモバイルアプリでストアを作成することはできません。</string>
+    <string name="store_creation_iap_eligibility_check_error_title">ストアを作成できません </string>
+    <string name="store_creation_iap_eligibility_loading_subtitle">連携を維持してください。</string>
+    <string name="store_creation_iap_eligibility_loading_title">ストア作成の準備を進めています</string>
+    <string name="review_reply_failure">返信の送信時にエラーが発生しました</string>
+    <string name="review_reply_success">返信を送信しました !</string>
+    <string name="wc_reply">返信</string>
     <string name="product_selection_menu_select_all">すべて選択</string>
     <string name="product_selection_menu_update_price">価格を更新</string>
     <string name="product_selection_menu_update_status">ステータスを更新</string>

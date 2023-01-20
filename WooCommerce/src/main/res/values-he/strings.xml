@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-01-15 15:04:07+0000
+Translation-Revision-Date: 2023-01-19 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="login_application_passwords_help">מהן \'סיסמאות אפליקציה\'?</string>
+    <string name="store_creation_country_picker_countries_header">ארצות</string>
+    <string name="store_creation_country_picker_current_location">מיקום נוכחי</string>
+    <string name="store_creation_country_picker_description">אנחנו נשתמש בפרטים האלה כדי להגדיר את התשלומים, המשלוח והמיסים.</string>
+    <string name="store_creation_country_picker_title">עליך לאשר את המיקום שלך</string>
+    <string name="store_creation_store_profiler_platforms_description">ניתן לבחור מספר אפשרויות.</string>
+    <string name="store_creation_store_profiler_platforms_title">באיזו פלטפורמה המכירות שלך מתבצעות כרגע?</string>
+    <string name="store_creation_store_profiler_journey_description">כדי לזרז את העניינים, נתאים את לך החוויה ב-WooCommerce על בסיס התגובה שלך.</string>
+    <string name="store_creation_store_profiler_journey_title">מה המיקום שלך במסע המסחרי שלך?</string>
+    <string name="store_creation_store_profiler_industries_description">יש לבחור קטגוריה שמגדירה את העסק שלך בצורה הטובה ביותר.</string>
+    <string name="store_creation_store_profiler_industries_title">מה בכוונתך למכור?</string>
+    <string name="login_application_passwords_unavailable">נראה שהאפשרות \'סיסמאות אפליקציה\' מושבתת באתר ⁦%1$s⁩.\n יש להפעיל אותה כדי להשתמש באפליקציית WooCommerce.</string>
+    <string name="login_open_installation_page">יש לפתוח את עמוד ההתקנה</string>
     <string name="not_a_valid_qr_code">קוד Qr סרוק אינו קוד WooCommerce</string>
     <string name="store_creation_iap_eligibility_check_error_description">יצירת חנות מהאפליקציה לא זמינה כרגע עבור המדינה שלך.</string>
     <string name="store_creation_iap_eligibility_check_error_title">יצירת חנות לא זמינה</string>
@@ -14,8 +27,6 @@ Language: he_IL
     <string name="review_reply_failure">אירעה שגיאה בשליחת התגובה</string>
     <string name="review_reply_success">התגובה נשלחה!</string>
     <string name="wc_reply">להגיב</string>
-    <string name="store_creation_store_categories_subtitle">יש לבחור קטגוריה שמגדירה\nאת העסק שלך בצורה הכי מדויקת.</string>
-    <string name="store_creation_store_categories_title">מה העסק שלך עושה?</string>
     <string name="product_selection_menu_select_all">לבחור הכול</string>
     <string name="product_selection_menu_update_price">לעדכן מחיר</string>
     <string name="product_selection_menu_update_status">לעדכן סטטוס</string>
