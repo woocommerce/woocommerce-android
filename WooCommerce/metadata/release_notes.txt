@@ -1,1 +1,2 @@
-This release includes a few bug fixes and improvements to make your experience smoother. Stay tuned for exciting updates in the coming weeks!
+- [**] Add a feature of duplicating products [https://github.com/woocommerce/woocommerce-android/pull/8164]
+
