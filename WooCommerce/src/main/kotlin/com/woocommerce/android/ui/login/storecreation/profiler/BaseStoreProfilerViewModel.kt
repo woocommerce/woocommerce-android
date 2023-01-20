@@ -51,7 +51,7 @@ abstract class BaseStoreProfilerViewModel(
     }
 
     fun onSkipPressed() {
-        triggerEvent(NavigateToCountryPickerStep)
+        triggerEvent(NavigateToNextStep)
     }
 
     fun onArrowBackPressed() {
@@ -87,7 +87,6 @@ abstract class BaseStoreProfilerViewModel(
         val isSelected: Boolean,
     )
 
-    object NavigateToCountryPickerStep : MultiLiveEvent.Event()
-    object NavigateToCommerceJourneyStep : MultiLiveEvent.Event()
+    object NavigateToNextStep : MultiLiveEvent.Event()
     object NavigateToEcommercePlatformsStep : MultiLiveEvent.Event()
 }
