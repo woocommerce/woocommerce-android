@@ -5,13 +5,14 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.update
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.doReturn
@@ -26,13 +27,14 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     private val unseenReviewsCountHandler: UnseenReviewsCountHandler = mock {
         on { observeUnseenCount() } doReturn flowOf(0)
     }
+    private val selectedSiteFlow = MutableStateFlow(
+        SiteModel().apply {
+            displayName = "Site"
+            url = "url"
+        }
+    )
     private val selectedSite: SelectedSite = mock {
-        on { observe() } doReturn flowOf(
-            SiteModel().apply {
-                displayName = "Site"
-                url = "url"
-            }
-        )
+        on { observe() } doReturn selectedSiteFlow
     }
     private val moreMenuRepository: MoreMenuRepository = mock {
         onBlocking { isInboxEnabled() } doReturn true
@@ -48,7 +50,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
     private lateinit var viewModel: MoreMenuViewModel
 
-    suspend fun setup(setupMocks: suspend () -> Unit) {
+    suspend fun setup(setupMocks: suspend () -> Unit = {}) {
         setupMocks()
         viewModel = MoreMenuViewModel(
             savedState = SavedStateHandle(),
@@ -122,11 +124,8 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     fun `given application passwords login, when building state, then store switcher state is disabled `() =
         testBlocking {
             // GIVEN
-            setup {
-                whenever(selectedSite.connectionType).thenReturn(
-                    SiteConnectionType.ApplicationPasswords
-                )
-            }
+            selectedSiteFlow.update { it.apply { origin = SiteModel.ORIGIN_XMLRPC } }
+            setup()
 
             // WHEN
             val states = viewModel.moreMenuViewState.captureValues()
