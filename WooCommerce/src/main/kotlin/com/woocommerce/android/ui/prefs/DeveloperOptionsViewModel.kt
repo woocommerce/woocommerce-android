@@ -11,8 +11,8 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem
-import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.SpinnerListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.ToggleableListItem
+import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.SpinnerListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -30,7 +30,7 @@ class DeveloperOptionsViewModel @Inject constructor(
     private val _viewState = MutableLiveData(
         DeveloperOptionsViewState(
             rows = if (developerOptionsRepository.isSimulatedCardReaderEnabled()) {
-                createDeveloperOptionsList() + createReaderUpdateFrequencyItem()
+                createDeveloperOptionsList() + createReaderUpdateFrequencyItem() + createEnableInteractItem()
             } else {
                 createDeveloperOptionsList()
             }
@@ -60,6 +60,16 @@ class DeveloperOptionsViewModel @Inject constructor(
             onClick = ::onUpdateSimulatedReaderClicked,
         )
 
+    private fun createEnableInteractItem() =
+        ToggleableListItem(
+            icon = drawable.ic_credit_card_give,
+            label = UiStringRes(string.enable_interac_payment),
+            key = UiStringRes(string.enable_interac_key),
+            isEnabled = true,
+            isChecked = developerOptionsRepository.isInteracPaymentEnabled(),
+            onToggled = ::onEnableInteracToggled
+        )
+
     private fun onSimulatedReaderToggled(isChecked: Boolean) {
         if (!isChecked) {
             viewState.value?.rows = createDeveloperOptionsList()
@@ -68,7 +78,8 @@ class DeveloperOptionsViewModel @Inject constructor(
                 DeveloperOptionsEvents.ShowToastString(string.simulated_reader_toast)
             )
         } else {
-            viewState.value?.rows = createDeveloperOptionsList() + createReaderUpdateFrequencyItem()
+            viewState.value?.rows =
+                createDeveloperOptionsList() + createReaderUpdateFrequencyItem() + createEnableInteractItem()
         }
         simulatedReaderStateChanged(isChecked)
     }
@@ -95,6 +106,33 @@ class DeveloperOptionsViewModel @Inject constructor(
                     else it
                 }
             )
+        }
+    }
+
+    private fun enableInteracStateChange(isChecked: Boolean) {
+        developerOptionsRepository.changeEnableInteracPaymentState(isChecked)
+        val currentViewState = viewState.value
+        (
+            currentViewState?.rows?.find {
+                it.key == UiStringRes(string.enable_interac_key)
+            } as? ToggleableListItem
+            )?.let { originalListItem ->
+                val newState = originalListItem.copy(isChecked = isChecked)
+                _viewState.value = currentViewState.copy(
+                    rows = currentViewState.rows.map {
+                        if (it.label == newState.label)
+                            newState
+                        else it
+                    }
+                )
+
+            }
+    }
+
+    private fun onEnableInteracToggled(isChecked: Boolean) {
+        if(cardReaderManager.initialized) {
+            cardReaderManager.enableSimulatorInterac()
+            enableInteracStateChange(isChecked)
         }
     }
 
