@@ -1862,6 +1862,8 @@
     <string name="always_update_reader">Always</string>
     <string name="never_update_reader">Never</string>
     <string name="randomly_update_reader">Randomly</string>
+    <string name="enable_interac_payment">Enable Interac Payment</string>
+    <string name="enable_interac_key">Enbale Interac Key</string>
 
 
     <!--
