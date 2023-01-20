@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.storecreation.iap
 
+import android.content.DialogInterface
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
@@ -14,8 +15,10 @@ import com.woocommerce.android.iap.pub.model.IAPError
 import com.woocommerce.android.iap.pub.model.IAPSupportedResult
 import com.woocommerce.android.iap.pub.model.PurchaseStatus
 import com.woocommerce.android.iap.pub.model.WPComIsPurchasedResult
+import com.woocommerce.android.support.help.HelpOrigin.STORE_CREATION
 import com.woocommerce.android.ui.login.storecreation.iap.IapEligibilityViewModel.IapEligibilityEvent.NavigateToNextStep
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.NavigateToHelpScreen
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -48,25 +51,36 @@ class IapEligibilityViewModel @Inject constructor(
 
     private fun onUserNotEligibleForIAP(
         @StringRes title: Int = R.string.store_creation_iap_eligibility_check_error_title,
-        @StringRes message: Int
+        @StringRes message: Int,
+        @StringRes positiveButtonId: Int? = null,
+        positiveBtnAction: DialogInterface.OnClickListener? = null,
     ) {
         _isCheckingIapEligibility.value = false
         triggerDialogError(
             title = title,
-            message = message
+            message = message,
+            positiveButtonId = positiveButtonId,
+            positiveBtnAction = positiveBtnAction
         )
     }
 
-    private fun triggerDialogError(@StringRes title: Int, @StringRes message: Int) {
+    private fun triggerDialogError(
+        @StringRes title: Int,
+        @StringRes message: Int,
+        @StringRes positiveButtonId: Int? = null,
+        positiveBtnAction: DialogInterface.OnClickListener? = null,
+    ) {
         triggerEvent(
             MultiLiveEvent.Event.ShowDialog(
                 titleId = title,
                 messageId = message,
+                positiveButtonId = positiveButtonId,
+                positiveBtnAction = positiveBtnAction,
                 negativeBtnAction = { dialog, _ ->
                     triggerEvent(MultiLiveEvent.Event.Exit)
                     dialog.dismiss()
                 },
-                negativeButtonId = R.string.close
+                negativeButtonId = R.string.close,
             )
         )
     }
@@ -89,8 +103,16 @@ class IapEligibilityViewModel @Inject constructor(
             when (val result = iapManager.isWPComPlanPurchased()) {
                 is WPComIsPurchasedResult.Success -> {
                     when (result.purchaseStatus) {
-                        PurchaseStatus.PURCHASED_AND_ACKNOWLEDGED,
-                        PurchaseStatus.PURCHASED -> onUserNotEligibleForIAP(
+                        PurchaseStatus.PURCHASED -> {
+                            onUserNotEligibleForIAP(
+                                message = R.string.store_creation_iap_eligibility_existing_purchase_not_acknowledged,
+                                positiveButtonId = R.string.support_contact,
+                                positiveBtnAction = { dialog, _ ->
+                                    triggerEvent(NavigateToHelpScreen(STORE_CREATION))
+                                    dialog.dismiss()
+                                })
+                        }
+                        PurchaseStatus.PURCHASED_AND_ACKNOWLEDGED -> onUserNotEligibleForIAP(
                             message = R.string.store_creation_iap_eligibility_check_error_existing_subscription
                         )
                         PurchaseStatus.NOT_PURCHASED -> triggerEvent(NavigateToNextStep)

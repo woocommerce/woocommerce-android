@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.iap.IapEligibilityViewModel.IapEligibilityEvent.NavigateToNextStep
@@ -49,6 +50,10 @@ class CheckIapEligibilityFragment : BaseFragment() {
                 is NavigateToNextStep -> navigateToStoreCreationNative()
                 is Exit -> findNavController().popBackStack()
                 is MultiLiveEvent.Event.ShowDialog -> event.showDialog()
+                is MultiLiveEvent.Event.NavigateToHelpScreen -> {
+                    findNavController().popBackStack()
+                    navigateToHelpScreen(event.origin)
+                }
             }
         }
     }
