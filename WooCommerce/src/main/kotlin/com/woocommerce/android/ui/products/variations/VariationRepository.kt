@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.variations
 
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_CREATION_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_CREATION_SUCCESS
@@ -16,6 +17,7 @@ import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -129,6 +131,22 @@ class VariationRepository @Inject constructor(
             } else {
                 RequestResult.SUCCESS
             }
+        }
+    }
+
+    suspend fun createVariations(
+        remoteProductId: Long,
+        variations: List<ProductVariation>
+    ): Result<Unit> = withContext(dispatchers.io) {
+        productStore.createVariations(
+            selectedSite.get(),
+            productId = LocalOrRemoteId.RemoteId(remoteProductId),
+            variations = variations.map {
+                it.toDataModel()
+            }
+        ).let {
+            if (it.isError) Result.failure(WooException(it.error))
+            else Result.success(Unit)
         }
     }
 

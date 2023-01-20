@@ -6,7 +6,7 @@ data class ProfilerOptions(
 )
 
 data class AboutMerchant(
-    val id: String,
+    val id: Int,
     val value: String,
     val heading: String,
     val description: String,

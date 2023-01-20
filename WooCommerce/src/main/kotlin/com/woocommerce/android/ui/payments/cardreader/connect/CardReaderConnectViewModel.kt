@@ -14,8 +14,12 @@ import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.R
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Started
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Succeeded
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
-import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
-import com.woocommerce.android.cardreader.connection.SpecificReader
+import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover.SpecificReaders.BuiltInReaders
+import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover.SpecificReaders.ExternalReaders
+import com.woocommerce.android.cardreader.connection.ReaderType.BuildInReader.CotsDevice
+import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.Chipper2X
+import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.StripeM2
+import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.WisePade3
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateInProgress
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.UiString
@@ -41,18 +45,22 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectE
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.ShowToastString
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.ShowUpdateInProgress
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.BluetoothDisabledError
+import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.BuiltInReaderConnectingState
+import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.BuiltInReaderScanningState
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ConnectingFailedState
-import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ConnectingState
+import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ExternalReaderConnectingState
+import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ExternalReaderFoundState
+import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ExternalReaderScanningState
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.InvalidMerchantAddressPostCodeError
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.LocationDisabledError
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.LocationPermissionRationale
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.MissingBluetoothPermissionsError
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.MissingLocationPermissionsError
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.MissingMerchantAddressError
-import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.MultipleReadersFoundState
-import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ReaderFoundState
+import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.MultipleExternalReadersFoundState
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ScanningFailedState
-import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ScanningState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel
 import com.woocommerce.android.ui.prefs.DeveloperOptionsRepository
@@ -99,12 +107,7 @@ class CardReaderConnectViewModel @Inject constructor(
     override val event: LiveData<Event> = _event
 
     // The app shouldn't store the state as connection flow gets canceled when the vm dies
-    private val viewState = MutableLiveData<CardReaderConnectViewState>(
-        ScanningState(
-            ::onCancelClicked,
-            ::onLearnMoreClicked
-        )
-    )
+    private val viewState = MutableLiveData(provideScanningState())
     private var requiredUpdateStarted: Boolean = false
     private var connectionStarted: Boolean = false
 
@@ -115,7 +118,7 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun startFlow() {
-        viewState.value = ScanningState(::onCancelClicked, ::onLearnMoreClicked)
+        viewState.value = provideScanningState()
         triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
     }
 
@@ -251,9 +254,7 @@ class CardReaderConnectViewModel @Inject constructor(
             cardReaderManager
                 .discoverReaders(
                     isSimulated = developerOptionsRepository.isSimulatedCardReaderEnabled(),
-                    cardReaderTypesToDiscover = CardReaderTypesToDiscover.SpecificReaders(
-                        listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2, SpecificReader.WisePade3)
-                    )
+                    cardReaderTypesToDiscover = buildReadersToDiscover()
                 )
                 .flowOn(dispatchers.io)
                 .collect { discoveryEvent ->
@@ -274,7 +275,7 @@ class CardReaderConnectViewModel @Inject constructor(
                 }
                 CardReaderStatus.Connecting -> {
                     connectionStarted = true
-                    viewState.value = ConnectingState(::onCancelClicked)
+                    viewState.value = provideConnectingState()
                 }
             }.exhaustive
         }
@@ -297,7 +298,7 @@ class CardReaderConnectViewModel @Inject constructor(
         when (discoveryEvent) {
             Started -> {
                 if (viewState.value !is ScanningState) {
-                    viewState.value = ScanningState(::onCancelClicked, ::onLearnMoreClicked)
+                    viewState.value = provideScanningState()
                 }
             }
             is ReadersFound -> {
@@ -335,30 +336,40 @@ class CardReaderConnectViewModel @Inject constructor(
             tracker.trackAutoConnectionStarted()
             connectToReader(lastKnownReader)
         } else {
-            viewState.value = when {
-                availableReaders.isEmpty() -> ScanningState(::onCancelClicked, ::onLearnMoreClicked)
-                availableReaders.size == 1 -> buildSingleReaderFoundState(availableReaders[0])
-                availableReaders.size > 1 -> buildMultipleReadersFoundState(availableReaders)
-                else -> throw IllegalStateException("Unreachable code")
+            handleFoundReaders(availableReaders)
+        }
+    }
+
+    private fun handleFoundReaders(availableReaders: List<CardReader>) {
+        if (availableReaders.isEmpty()) {
+            viewState.value = provideScanningState()
+        } else {
+            when (arguments.cardReaderType) {
+                BUILT_IN -> connectToReader(availableReaders[0])
+                EXTERNAL -> viewState.value = when (availableReaders.size) {
+                    1 -> buildSingleExternalReaderFoundState(availableReaders[0])
+                    else -> buildMultipleExternalReadersFoundState(availableReaders)
+                }
             }
         }
     }
 
-    private fun buildSingleReaderFoundState(reader: CardReader) =
-        ReaderFoundState(
+    private fun buildSingleExternalReaderFoundState(reader: CardReader) =
+        ExternalReaderFoundState(
             onPrimaryActionClicked = { onConnectToReaderClicked(reader) },
             onSecondaryActionClicked = ::onKeepSearchingClicked,
             onTertiaryActionClicked = ::onCancelClicked,
             readerId = reader.id.orEmpty()
         )
 
-    private fun buildMultipleReadersFoundState(availableReaders: List<CardReader>): MultipleReadersFoundState {
-        val listItems: MutableList<ListItemViewState> = availableReaders
-            .map { mapReaderToListItem(it) }
-            .toMutableList()
-            .also { it.add(ListItemViewState.ScanningInProgressListItem) }
-        return MultipleReadersFoundState(listItems, ::onCancelClicked)
-    }
+    private fun buildMultipleExternalReadersFoundState(availableReaders: List<CardReader>) =
+        MultipleExternalReadersFoundState(
+            availableReaders
+                .map { mapReaderToListItem(it) }
+                .toMutableList()
+                .also { it.add(ListItemViewState.ScanningInProgressListItem) },
+            ::onCancelClicked
+        )
 
     private fun mapReaderToListItem(reader: CardReader): ListItemViewState =
         ListItemViewState.CardReaderListItem(
@@ -374,6 +385,24 @@ class CardReaderConnectViewModel @Inject constructor(
         tracker.trackOnConnectTapped()
         connectToReader(cardReader)
     }
+
+    private fun provideScanningState(): CardReaderConnectViewState =
+        when (arguments.cardReaderType) {
+            BUILT_IN -> BuiltInReaderScanningState(
+                ::onCancelClicked,
+                ::onLearnMoreClicked
+            )
+            EXTERNAL -> ExternalReaderScanningState(
+                ::onCancelClicked,
+                ::onLearnMoreClicked
+            )
+        }
+
+    private fun provideConnectingState(): CardReaderConnectViewState =
+        when (arguments.cardReaderType) {
+            BUILT_IN -> BuiltInReaderConnectingState(::onCancelClicked)
+            EXTERNAL -> ExternalReaderConnectingState(::onCancelClicked)
+        }
 
     private fun connectToReader(cardReader: CardReader) {
         launch {
@@ -445,12 +474,14 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun onKeepSearchingClicked() {
-        viewState.value = ScanningState(::onCancelClicked, ::onLearnMoreClicked)
+        viewState.value = ExternalReaderScanningState(::onCancelClicked, ::onLearnMoreClicked)
     }
 
     private fun onCancelClicked() {
         WooLog.e(WooLog.T.CARD_READER, "Connection flow interrupted by the user.")
-        launch { cardReaderManager.disconnectReader() }
+        launch {
+            if (cardReaderManager.initialized) cardReaderManager.disconnectReader()
+        }
         exitFlow(connected = false)
     }
 
@@ -472,7 +503,7 @@ class CardReaderConnectViewModel @Inject constructor(
         if (!connected) {
             triggerEvent(ExitWithResult(false))
         } else {
-            triggerEvent(ShowCardReaderTutorial(arguments.cardReaderFlowParam))
+            triggerEvent(ShowCardReaderTutorial(arguments.cardReaderFlowParam, arguments.cardReaderType))
         }
     }
 
@@ -487,6 +518,18 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun trackLocationFailureFetching(errorDescription: String?) {
         tracker.trackFetchingLocationFailed(errorDescription)
     }
+
+    private fun buildReadersToDiscover() =
+        when (arguments.cardReaderType) {
+            BUILT_IN -> BuiltInReaders(listOf(CotsDevice))
+            EXTERNAL -> ExternalReaders(
+                listOf(
+                    Chipper2X,
+                    StripeM2,
+                    WisePade3
+                )
+            )
+        }
 
     sealed class ListItemViewState {
         object ScanningInProgressListItem : ListItemViewState() {

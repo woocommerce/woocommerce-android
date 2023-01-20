@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-12-22 20:54:04+0000
+Translation-Revision-Date: 2023-01-13 22:48:46+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="not_a_valid_qr_code">Taranan Qr kodu bir WooCommerce kodu değil.</string>
+    <string name="store_creation_iap_eligibility_check_error_description">Mobil uygulamadan mağaza oluşturma seçeneği şu an ülkenizde mevcut değil.</string>
+    <string name="store_creation_iap_eligibility_check_error_title">Mağaza Oluşturma Mevcut Değil</string>
+    <string name="store_creation_iap_eligibility_loading_subtitle">Lütfen bağlantınızı koparmayın</string>
+    <string name="store_creation_iap_eligibility_loading_title">Mağazanızı oluşturmaya hazırlanıyoruz</string>
+    <string name="review_reply_failure">Yanıtı gönderirken bir hata oluştu</string>
+    <string name="review_reply_success">Yanıt gönderildi!</string>
+    <string name="wc_reply">Yanıtla</string>
     <string name="store_creation_store_categories_subtitle">İşletmenizi en iyi şekilde\ntanımlayan bir kategori seçin.</string>
     <string name="store_creation_store_categories_title">İşletmenizin faaliyet alanı nedir?</string>
     <string name="product_selection_menu_select_all">Tümünü seç</string>

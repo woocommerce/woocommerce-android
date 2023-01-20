@@ -57,6 +57,7 @@ sealed class ProductNavigationTarget : Event() {
         ProductNavigationTarget()
 
     data class ViewProductVisibility(
+        val isApplicationPasswordsLogin: Boolean,
         val visibility: ProductVisibility?,
         val password: String?
     ) : ProductNavigationTarget()

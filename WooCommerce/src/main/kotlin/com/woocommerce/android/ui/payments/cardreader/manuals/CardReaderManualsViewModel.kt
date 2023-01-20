@@ -2,9 +2,9 @@ package com.woocommerce.android.ui.payments.cardreader.manuals
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppUrls
-import com.woocommerce.android.cardreader.connection.SpecificReader.Chipper2X
-import com.woocommerce.android.cardreader.connection.SpecificReader.StripeM2
-import com.woocommerce.android.cardreader.connection.SpecificReader.WisePade3
+import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.Chipper2X
+import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.StripeM2
+import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.WisePade3
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs

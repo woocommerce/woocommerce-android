@@ -174,6 +174,23 @@
         <View style="@style/Woo.Divider" />
 
         <!--
+            Store settings
+        -->
+        <com.woocommerce.android.ui.prefs.WCSettingsCategoryHeaderView
+            android:id="@+id/category_store_settings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_store" />
+
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/option_domain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:optionTitle="@string/domain" />
+
+        <View style="@style/Woo.Divider" />
+
+        <!--
             About
         -->
         <com.woocommerce.android.ui.prefs.WCSettingsCategoryHeaderView

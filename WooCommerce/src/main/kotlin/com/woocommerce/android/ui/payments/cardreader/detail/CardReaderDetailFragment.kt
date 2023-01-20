@@ -11,6 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentCardReaderDetailBinding
+import com.woocommerce.android.extensions.copyToClipboard
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.expandHitArea
 import com.woocommerce.android.extensions.handleResult
@@ -25,11 +26,11 @@ import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailVie
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.ViewState.Loading
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.ViewState.NotConnectedState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateDialogFragment
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.UpdateResult
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
-import com.woocommerce.android.util.copyToClipboard
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils.dpToPx
@@ -59,7 +60,10 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                     findNavController()
                         .navigateSafely(
                             CardReaderDetailFragmentDirections
-                                .actionCardReaderDetailFragmentToCardReaderConnectFragment(event.cardReaderFlowParam)
+                                .actionCardReaderDetailFragmentToCardReaderConnectFragment(
+                                    event.cardReaderFlowParam,
+                                    EXTERNAL,
+                                )
                         )
                 is CardReaderUpdateScreen ->
                     findNavController().navigateSafely(

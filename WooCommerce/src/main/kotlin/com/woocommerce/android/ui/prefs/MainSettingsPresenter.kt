@@ -4,6 +4,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.filter
@@ -67,4 +68,13 @@ class MainSettingsPresenter @Inject constructor(
             }
         }
     }
+
+    override fun setupApplicationPasswordsSettings() {
+        if (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords) {
+            appSettingsFragmentView?.handleApplicationPasswordsSettings()
+        }
+    }
+
+    override val isDomainOptionVisible: Boolean
+        get() = selectedSite.get().isWPComAtomic && FeatureFlag.DOMAIN_CHANGE.isEnabled()
 }

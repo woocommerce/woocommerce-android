@@ -5,6 +5,7 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import com.android.volley.VolleyLog
 import com.woocommerce.android.config.RemoteConfigRepository
+import com.woocommerce.android.extensions.getCurrentProcessName
 import com.yarolegovich.wellsql.WellSql
 import dagger.Lazy
 import dagger.android.AndroidInjector
@@ -17,11 +18,19 @@ open class WooCommerce : Application(), HasAndroidInjector, Configuration.Provid
 
     // inject it lazily to avoid creating it before initializing WellSql
     @Inject lateinit var appInitializer: Lazy<AppInitializer>
-    @Inject lateinit var remoteConfigRepository: RemoteConfigRepository
+
+    @Inject lateinit var remoteConfigRepository: Lazy<RemoteConfigRepository>
+
     @Inject lateinit var workerFactory: HiltWorkerFactory
 
     override fun onCreate() {
         super.onCreate()
+
+        // Stripe Tap to Pay library starts it's own process. That causes the crash:
+        //  > Caused by: java.lang.IllegalStateException: Default FirebaseApp is not initialized in this process
+        //  > com.stripe.cots.aidlservice. Make sure to call FirebaseApp.initializeApp(Context) first.
+        // In this case we don't want to initialize any Firebase (or any at all) features of the app in their process.
+        if (getCurrentProcessName() == TAP_TO_PAY_STRIPE_PROCESS_NAME) return
 
         // Disables Volley debug logging on release build and prevents the "Marker added to finished log" crash
         // https://github.com/woocommerce/woocommerce-android/issues/817
@@ -32,7 +41,7 @@ open class WooCommerce : Application(), HasAndroidInjector, Configuration.Provid
         val wellSqlConfig = WooWellSqlConfig(applicationContext)
         WellSql.init(wellSqlConfig)
 
-        remoteConfigRepository.fetchRemoteConfig()
+        remoteConfigRepository.get().fetchRemoteConfig()
 
         appInitializer.get().init(this)
     }
@@ -44,4 +53,8 @@ open class WooCommerce : Application(), HasAndroidInjector, Configuration.Provid
     }
 
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
+
+    companion object {
+        private const val TAP_TO_PAY_STRIPE_PROCESS_NAME = "com.stripe.cots.aidlservice"
+    }
 }

@@ -1,0 +1,70 @@
+package com.woocommerce.android.ui.products
+
+import com.woocommerce.android.R
+import com.woocommerce.android.WooException
+import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.products.variations.VariationRepository
+import com.woocommerce.android.viewmodel.ResourceProvider
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
+import javax.inject.Inject
+
+class DuplicateProduct @Inject constructor(
+    private val productDetailRepository: ProductDetailRepository,
+    private val variationRepository: VariationRepository,
+    private val resourceProvider: ResourceProvider,
+) {
+
+    suspend operator fun invoke(product: Product): Result<Long> {
+        val newProduct = product.copy(
+            remoteId = 0,
+            name = resourceProvider.getString(R.string.product_duplicate_copied_product_name, product.name),
+            sku = "",
+            status = ProductStatus.DRAFT
+        )
+
+        val (duplicateProductSuccess, duplicatedProductRemoteId) = productDetailRepository.addProduct(newProduct)
+
+        return if (duplicateProductSuccess) {
+            if (product.numVariations > 0) {
+                duplicateVariations(product, duplicatedProductRemoteId)
+            } else {
+                Result.success(duplicatedProductRemoteId)
+            }
+        } else {
+            Result.failure(
+                WooException(
+                    WooError(
+                        GENERIC_ERROR,
+                        NETWORK_ERROR,
+                        "Couldn't publish product $duplicatedProductRemoteId"
+                    )
+                )
+            )
+        }
+    }
+
+    private suspend fun duplicateVariations(
+        product: Product,
+        duplicatedProductRemoteId: Long
+    ): Result<Long> {
+        val duplicatedVariations = variationRepository.getAllVariations(product.remoteId).map {
+            it.copy(remoteProductId = duplicatedProductRemoteId, sku = "")
+        }
+
+        val variationsDuplicationResult = variationRepository.createVariations(
+            duplicatedProductRemoteId,
+            duplicatedVariations
+        )
+
+        return variationsDuplicationResult.fold(
+            onSuccess = {
+                Result.success(duplicatedProductRemoteId)
+            },
+            onFailure = {
+                Result.failure(it)
+            }
+        )
+    }
+}
