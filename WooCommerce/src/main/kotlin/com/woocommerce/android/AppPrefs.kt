@@ -103,6 +103,7 @@ object AppPrefs {
         NEW_SIGN_UP,
         STORE_CREATION_SOURCE,
         UPDATE_SIMULATED_READER_OPTION,
+        ENABLE_SIMULATED_INTERAC
     }
 
     /**
@@ -214,6 +215,10 @@ object AppPrefs {
     var isSimulatedReaderEnabled: Boolean
         get() = getBoolean(DeletablePrefKey.USE_SIMULATED_READER, false)
         set(value) = setBoolean(DeletablePrefKey.USE_SIMULATED_READER, value)
+
+    var isInteracEnabled: Boolean
+    get() = getBoolean(DeletablePrefKey.ENABLE_SIMULATED_INTERAC, false)
+    set(value) = setBoolean(DeletablePrefKey.ENABLE_SIMULATED_INTERAC, value)
 
     var updateReaderOptionSelected: String
         get() = getString(UPDATE_SIMULATED_READER_OPTION, UpdateOptions.RANDOM.toString())
