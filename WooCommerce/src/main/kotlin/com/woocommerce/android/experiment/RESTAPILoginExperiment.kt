@@ -43,7 +43,7 @@ class RESTAPILoginExperiment @Inject constructor(
     fun getCurrentVariant(): RESTAPILoginVariant = if (PackageUtils.isTesting()) {
         RESTAPILoginVariant.CONTROL
     } else {
-        RESTAPILoginVariant.TREATMENT
+        remoteConfigRepository.getRestAPILoginVariant()
     }
 
     enum class RESTAPILoginVariant {
