@@ -1,3 +1,5 @@
+@file:Suppress("MaxLineLength")
+
 package com.woocommerce.android.ui.login.storecreation.iap
 
 import androidx.lifecycle.SavedStateHandle
@@ -115,11 +117,28 @@ class IapEligibilityViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given an active IAP subscription, when checking user eligibility, then show error dialog and hide loading`() =
+    fun `given a purchased subscription not acknowledged, when checking IAP eligibility, then show not acknowledged error`() =
         testBlocking {
             whenever(isIAPEnabled.invoke()).thenReturn(true)
             givenUserIsEligibleForIAP(isEligible = true)
             givenWpPlanPurchasedReturns(PurchaseStatus.PURCHASED)
+
+            viewModel.checkIapEligibility()
+            val event = viewModel.event.captureValues().last()
+            val isLoadingState = viewModel.isCheckingIapEligibility.captureValues().last()
+
+            assertFalse(isLoadingState)
+            assertThat(event).isExactlyInstanceOf(MultiLiveEvent.Event.ShowDialog::class.java)
+            assertThat((event as MultiLiveEvent.Event.ShowDialog).messageId)
+                .isEqualTo(R.string.store_creation_iap_eligibility_existing_purchase_not_acknowledged)
+        }
+
+    @Test
+    fun `given an acknowledged purchased subscription, when checking IAP eligibility, then show existing subscription error`() =
+        testBlocking {
+            whenever(isIAPEnabled.invoke()).thenReturn(true)
+            givenUserIsEligibleForIAP(isEligible = true)
+            givenWpPlanPurchasedReturns(PurchaseStatus.PURCHASED_AND_ACKNOWLEDGED)
 
             viewModel.checkIapEligibility()
             val event = viewModel.event.captureValues().last()
