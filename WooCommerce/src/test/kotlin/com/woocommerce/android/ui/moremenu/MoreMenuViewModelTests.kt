@@ -133,4 +133,44 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             // THEN
             assertThat(states.last().isStoreSwitcherEnabled).isEqualTo(false)
         }
+
+    @Test
+    fun `given wpcom login on Jetpack connected site, when building state, then store switcher state is enabled `() =
+        testBlocking {
+            // GIVEN
+            selectedSiteFlow.update {
+                it.apply {
+                    origin = SiteModel.ORIGIN_WPCOM_REST
+                }
+            }
+            selectedSiteFlow.value.setIsJetpackConnected(true)
+
+            setup()
+
+            // WHEN
+            val states = viewModel.moreMenuViewState.captureValues()
+
+            // THEN
+            assertThat(states.last().isStoreSwitcherEnabled).isEqualTo(true)
+        }
+
+    @Test
+    fun `given wpcom login on Jetpack CP site, when building state, then store switcher state is enabled `() =
+        testBlocking {
+            // GIVEN
+            selectedSiteFlow.update {
+                it.apply {
+                    origin = SiteModel.ORIGIN_WPCOM_REST
+                }
+            }
+            selectedSiteFlow.value.setIsJetpackCPConnected(true)
+
+            setup()
+
+            // WHEN
+            val states = viewModel.moreMenuViewState.captureValues()
+
+            // THEN
+            assertThat(states.last().isStoreSwitcherEnabled).isEqualTo(true)
+        }
 }
