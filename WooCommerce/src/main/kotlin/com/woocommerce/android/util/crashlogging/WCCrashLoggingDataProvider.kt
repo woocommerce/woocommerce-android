@@ -113,11 +113,15 @@ class WCCrashLoggingDataProvider @Inject constructor(
         return false
     }
 
-    private fun AccountModel.toCrashLoggingUser() = CrashLoggingUser(
-        userID = userId.toString(),
-        email = email,
-        username = userName
-    )
+    private fun AccountModel.toCrashLoggingUser(): CrashLoggingUser? {
+        if (userId == 0L) return null
+
+        return CrashLoggingUser(
+            userID = userId.toString(),
+            email = email,
+            username = userName
+        )
+    }
 
     companion object {
         const val SITE_ID_KEY = "site_id"
