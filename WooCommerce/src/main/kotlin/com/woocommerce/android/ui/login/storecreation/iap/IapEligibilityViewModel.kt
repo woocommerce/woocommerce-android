@@ -107,7 +107,6 @@ class IapEligibilityViewModel @Inject constructor(
             mapOf(AnalyticsTracker.KEY_ERROR_TYPE to error.toString())
         )
         val message = when (error) {
-            is IAPError.RemoteCommunication,
             is IAPError.Billing.DeveloperError,
             is IAPError.Billing.ServiceDisconnected,
             is IAPError.Billing.FeatureNotSupported,
@@ -117,10 +116,10 @@ class IapEligibilityViewModel @Inject constructor(
             is IAPError.Billing.ServiceTimeout,
             is IAPError.Billing.ServiceUnavailable,
             is IAPError.Billing.ItemNotOwned,
-            is IAPError.Billing.UserCancelled,
-            is IAPError.RemoteCommunication.Network -> R.string.store_creation_iap_eligibility_check_generic_error
+            is IAPError.Billing.UserCancelled -> R.string.store_creation_iap_eligibility_check_generic_error
             is IAPError.Billing.ItemAlreadyOwned ->
                 R.string.store_creation_iap_eligibility_check_error_existing_subscription
+            is IAPError.RemoteCommunication -> R.string.store_creation_iap_eligibility_network_error
         }
         onUserNotEligibleForIAP(message = message)
     }
