@@ -110,7 +110,8 @@ class IapEligibilityViewModel @Inject constructor(
                                 positiveBtnAction = { dialog, _ ->
                                     triggerEvent(NavigateToHelpScreen(STORE_CREATION))
                                     dialog.dismiss()
-                                })
+                                }
+                            )
                         }
                         PurchaseStatus.PURCHASED_AND_ACKNOWLEDGED -> onUserNotEligibleForIAP(
                             message = R.string.store_creation_iap_eligibility_check_error_existing_subscription
