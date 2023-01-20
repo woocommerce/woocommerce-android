@@ -3,6 +3,10 @@ package com.woocommerce.android.cardreader.internal
 import android.app.Application
 import android.content.ComponentCallbacks2
 import android.content.res.Configuration
+import com.stripe.stripeterminal.Terminal
+import com.stripe.stripeterminal.external.models.SimulatedCard
+import com.stripe.stripeterminal.external.models.SimulatedCardType
+import com.stripe.stripeterminal.external.models.SimulatorConfiguration
 import com.stripe.stripeterminal.log.LogLevel
 import com.woocommerce.android.cardreader.BuildConfig
 import com.woocommerce.android.cardreader.CardReaderManager
@@ -85,6 +89,17 @@ internal class CardReaderManagerImpl(
         terminal.setupSimulator(updateFrequency)
     }
 
+    override fun enableSimulatorInterac() {
+        Terminal.getInstance().simulatorConfiguration = SimulatorConfiguration(
+            simulatedCard = SimulatedCard(SimulatedCardType.INTERAC)
+        )
+    }
+
+    override fun disableSimulatorInteract() {
+        Terminal.getInstance().simulatorConfiguration = SimulatorConfiguration(
+            simulatedCard = SimulatedCard(SimulatedCardType.VISA)
+        )
+    }
     override fun discoverReaders(
         isSimulated: Boolean,
         cardReaderTypesToDiscover: CardReaderTypesToDiscover,
