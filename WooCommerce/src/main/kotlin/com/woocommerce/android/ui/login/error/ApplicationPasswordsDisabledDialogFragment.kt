@@ -11,13 +11,20 @@ class ApplicationPasswordsDisabledDialogFragment : LoginBaseErrorDialogFragment(
     companion object {
         const val RETRY_RESULT = "retry"
         private const val SITE_URL_KEY = "site-url"
+        private const val IS_JETPACK_CONNECTED_KEY = "is-jetpack-connected"
         private const val APPLICATION_PASSWORDS_GUIDE =
             "https://make.wordpress.org/core/2020/11/05/application-passwords-integration-guide/"
 
-        fun newInstance(siteUrl: String) = ApplicationPasswordsDisabledDialogFragment().apply {
-            arguments = bundleOf(SITE_URL_KEY to siteUrl)
-        }
+        fun newInstance(siteUrl: String, isJetpackConnected: Boolean) =
+            ApplicationPasswordsDisabledDialogFragment().apply {
+                arguments = bundleOf(
+                    SITE_URL_KEY to siteUrl,
+                    IS_JETPACK_CONNECTED_KEY to isJetpackConnected
+                )
+            }
     }
+
+    private val isJetpackConnected by lazy { requireArguments().getBoolean(IS_JETPACK_CONNECTED_KEY) }
 
     override val text: CharSequence
         get() = getString(R.string.login_application_passwords_unavailable, requireArguments().getString(SITE_URL_KEY))
