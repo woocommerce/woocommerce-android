@@ -12,6 +12,8 @@ interface MainSettingsContract {
         fun setupAnnouncementOption()
         fun setupJetpackInstallOption()
         fun setupApplicationPasswordsSettings()
+
+        val isDomainOptionVisible: Boolean
     }
 
     interface View : BaseView<Presenter> {

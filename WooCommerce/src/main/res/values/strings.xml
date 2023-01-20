@@ -64,6 +64,7 @@
     <string name="discard">Discard</string>
     <string name="products">Products</string>
     <string name="refunds">Refunds</string>
+    <string name="domain">Domain</string>
     <string name="shipping_labels">Shipping Labels</string>
     <string name="product_variations">Variations</string>
     <string name="product_variation_options">%1$s (%2$s options)</string>
