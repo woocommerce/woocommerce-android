@@ -4,6 +4,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import com.woocommerce.android.R
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.error.base.LoginBaseErrorDialogFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 
@@ -42,11 +43,21 @@ class ApplicationPasswordsDisabledDialogFragment : LoginBaseErrorDialogFragment(
         )
 
     override val primaryButton: LoginErrorButton
-        get() = LoginErrorButton(
-            title = R.string.retry,
-            onClick = {
-                setFragmentResult(RETRY_RESULT, bundleOf())
-                dismiss()
-            }
-        )
+        get() = if (isJetpackConnected) {
+            LoginErrorButton(
+                title = R.string.login_with_wordpress,
+                onClick = {
+                    dismiss()
+                    (requireActivity() as LoginActivity).showEmailLoginScreen()
+                }
+            )
+        } else {
+            LoginErrorButton(
+                title = R.string.retry,
+                onClick = {
+                    setFragmentResult(RETRY_RESULT, bundleOf())
+                    dismiss()
+                }
+            )
+        }
 }
