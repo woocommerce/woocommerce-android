@@ -31,6 +31,8 @@ interface CardReaderManager {
     fun initialize(updateFrequency: SimulatorUpdateFrequency)
     // reinitialize the simulated reader when the user changes the update frequency option
     fun initializeOnUpdateFrequencyChange(updateFrequency: SimulatorUpdateFrequency)
+    fun enableSimulatorInterac()
+    fun disableSimulatorInteract()
     fun discoverReaders(
         isSimulated: Boolean,
         cardReaderTypesToDiscover: CardReaderTypesToDiscover,
