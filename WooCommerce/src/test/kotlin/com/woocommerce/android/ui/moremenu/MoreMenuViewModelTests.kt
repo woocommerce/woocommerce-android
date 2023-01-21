@@ -141,9 +141,9 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             selectedSiteFlow.update {
                 it.apply {
                     origin = SiteModel.ORIGIN_WPCOM_REST
+                    setIsJetpackConnected(true)
                 }
             }
-            selectedSiteFlow.value.setIsJetpackConnected(true)
 
             setup()
 
@@ -161,9 +161,9 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             selectedSiteFlow.update {
                 it.apply {
                     origin = SiteModel.ORIGIN_WPCOM_REST
+                    setIsJetpackCPConnected(true)
                 }
             }
-            selectedSiteFlow.value.setIsJetpackCPConnected(true)
 
             setup()
 
