@@ -96,9 +96,7 @@ internal class CardReaderManagerImpl(
     }
 
     override fun disableSimulatorInteract() {
-        Terminal.getInstance().simulatorConfiguration = SimulatorConfiguration(
-            simulatedCard = SimulatedCard(SimulatedCardType.VISA)
-        )
+        Terminal.getInstance().simulatorConfiguration = SimulatorConfiguration()
     }
     override fun discoverReaders(
         isSimulated: Boolean,
