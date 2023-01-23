@@ -33,7 +33,7 @@ class DeveloperOptionsViewModel @Inject constructor(
     private val developerOptionsRepository: DeveloperOptionsRepository,
     private val cardReaderManager: CardReaderManager,
 
-) : ScopedViewModel(savedState) {
+    ) : ScopedViewModel(savedState) {
     private val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
     private val countryConfig = cardReaderCountryConfigProvider.provideCountryConfigFor(storeCountryCode)
     private val _viewState = MutableLiveData(
@@ -115,25 +115,6 @@ class DeveloperOptionsViewModel @Inject constructor(
                 it.key == UiStringRes(string.simulated_reader_key)
             } as? ToggleableListItem
             )?.let { originalListItem ->
-            val newState = originalListItem.copy(isChecked = isChecked)
-            _viewState.value = currentViewState.copy(
-                rows = currentViewState.rows.map {
-                    if (it.label == newState.label)
-                        newState
-                    else it
-                }
-            )
-        }
-    }
-
-    private fun enableInteracStateChange(isChecked: Boolean) {
-        developerOptionsRepository.changeEnableInteracPaymentState(isChecked)
-        val currentViewState = viewState.value
-        (
-            currentViewState?.rows?.find {
-                it.key == UiStringRes(string.enable_interac_key)
-            } as? ToggleableListItem
-            )?.let { originalListItem ->
                 val newState = originalListItem.copy(isChecked = isChecked)
                 _viewState.value = currentViewState.copy(
                     rows = currentViewState.rows.map {
@@ -142,15 +123,18 @@ class DeveloperOptionsViewModel @Inject constructor(
                         else it
                     }
                 )
-
             }
+    }
+
+    private fun enableInteracStateChange(isChecked: Boolean) {
+        developerOptionsRepository.changeEnableInteracPaymentState(isChecked)
     }
 
     private fun onEnableInteracToggled(isChecked: Boolean) {
         if (cardReaderManager.initialized) {
             if (!isChecked) {
                 cardReaderManager.disableSimulatorInteract()
-            } else  {
+            } else {
                 cardReaderManager.enableSimulatorInterac()
             }
         }
@@ -223,7 +207,7 @@ class DeveloperOptionsViewModel @Inject constructor(
                 override var key: UiString,
                 val onClick: () -> Unit,
 
-            ) : ListItem()
+                ) : ListItem()
         }
 
         enum class UpdateOptions(@StringRes val title: Int) {
