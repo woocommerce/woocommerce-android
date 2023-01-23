@@ -49,7 +49,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -595,25 +594,24 @@ class OrderListViewModel @Inject constructor(
         markFeedbackBannerAsCompleted()
         viewState = viewState.copy(ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden)
 
-        refreshOrdersBannerVisibilityWithDelay()
+        refreshOrdersBannerVisibility()
     }
 
     fun onIPPFeedbackBannerDismissedForever() {
         markFeedbackBannerAsDismissedForever()
         viewState = viewState.copy(ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden)
 
-        refreshOrdersBannerVisibilityWithDelay()
+        refreshOrdersBannerVisibility()
     }
 
     fun onIPPFeedbackBannerDismissedShowLater() {
         markFeedbackBannerAsDismissed()
         viewState = viewState.copy(ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden)
 
-        refreshOrdersBannerVisibilityWithDelay()
+        refreshOrdersBannerVisibility()
     }
 
-    private fun refreshOrdersBannerVisibilityWithDelay(delayMillis: Long = 0) = viewModelScope.launch {
-        delay(delayMillis)
+    private fun refreshOrdersBannerVisibility() {
         val isOrdersBannerVisible = viewState.ippFeedbackBannerState is IPPSurveyFeedbackBannerState.Hidden
         viewState = viewState.copy(isSimplePaymentsWIPNoticeCardVisible = isOrdersBannerVisible)
     }
