@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.list
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -194,6 +195,12 @@ class OrderListFragment :
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
         initSwipeBehaviour()
+        initIPPFeedbackBanner()
+    }
+
+    private fun initIPPFeedbackBanner() {
+        val isPortrait = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        binding.ippFeedbackBanner.isVisible = isPortrait
     }
 
     private fun initSwipeBehaviour() {
@@ -315,7 +322,7 @@ class OrderListFragment :
                 }
                 is OrderListViewModel.OrderListEvent.OpenIPPFeedbackSurveyLink -> {
                     NavGraphMainDirections
-                        .actionGlobalFeedbackSurveyFragment(customUrl = event.url)
+                        .actionGlobalFeedbackSurveyFragment(customUrll = event.url)
                         .apply { findNavController().navigateSafely(this) }
                 }
                 is OrderListViewModel.OrderListEvent.NotifyOrderChanged -> {
