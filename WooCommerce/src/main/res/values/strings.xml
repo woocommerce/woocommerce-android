@@ -2119,7 +2119,7 @@
 
     <!-- In-person Payments feedback banner -->
     <string name="feedback_banner_ipp_title_newbie">How can we help you with in-person selling?</string>
-    <string name="feedback_banner_ipp_message_newbie">Share your own experience or how you collect in-person payments.</string>
+    <string name="feedback_banner_ipp_message_newbie">Share your own experience on how you collect in-person payments.</string>
     <string name="feedback_banner_ipp_title_beginner">Enjoy your in-person payment?</string>
     <string name="feedback_banner_ipp_message_beginner">Rate your first in-person payment experience.</string>
     <string name="feedback_banner_ipp_title_ninja">Let us know what you think</string>
