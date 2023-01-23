@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
+import androidx.multidex.BuildConfig
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
@@ -217,8 +218,8 @@ object AppPrefs {
         set(value) = setBoolean(DeletablePrefKey.USE_SIMULATED_READER, value)
 
     var isInteracEnabled: Boolean
-    get() = getBoolean(DeletablePrefKey.ENABLE_SIMULATED_INTERAC, false)
-    set(value) = setBoolean(DeletablePrefKey.ENABLE_SIMULATED_INTERAC, value)
+        get() = getBoolean(DeletablePrefKey.ENABLE_SIMULATED_INTERAC, false)
+        set(value) = setBoolean(DeletablePrefKey.ENABLE_SIMULATED_INTERAC, value)
 
     var updateReaderOptionSelected: String
         get() = getString(UPDATE_SIMULATED_READER_OPTION, UpdateOptions.RANDOM.toString())
