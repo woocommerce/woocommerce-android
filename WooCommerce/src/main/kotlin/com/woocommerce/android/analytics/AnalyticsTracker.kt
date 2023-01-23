@@ -442,6 +442,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_STEP_STORE_PROFILER_INDUSTRIES = "store_profiler_industries"
         const val VALUE_STEP_STORE_PROFILER_COMMERCE_JOURNEY = "store_profiler_commerce_journey"
         const val VALUE_STEP_STORE_PROFILER_ECOMMERCE_PLATFORMS = "store_profiler_ecommerce_platforms"
+        const val VALUE_STEP_STORE_PROFILER_COUNTRY = "store_profiler_country"
         const val VALUE_STEP_DOMAIN_PICKER = "domain_picker"
         const val VALUE_STEP_STORE_SUMMARY = "store_summary"
         const val VALUE_STEP_PLAN_PURCHASE = "plan_purchase"

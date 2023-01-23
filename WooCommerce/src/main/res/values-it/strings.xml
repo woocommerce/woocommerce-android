@@ -1,13 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-12-21 17:54:03+0000
+Translation-Revision-Date: 2023-01-18 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
-    <string name="store_creation_store_categories_subtitle">Scegli una categoria che definisce\nal meglio il tuo business.</string>
-    <string name="store_creation_store_categories_title">Di cosa si occupa il tuo business?</string>
+    <string name="login_application_passwords_help">Dove si trovano le Password applicazione?</string>
+    <string name="store_creation_country_picker_countries_header">Paesi</string>
+    <string name="store_creation_country_picker_current_location">Posizione corrente</string>
+    <string name="store_creation_country_picker_description">Utilizzeremo queste informazioni per impostare pagamenti, spedizioni e imposte.</string>
+    <string name="store_creation_country_picker_title">Conferma la tua posizione</string>
+    <string name="store_creation_store_profiler_platforms_description">Puoi scegliere più di una opzione.</string>
+    <string name="store_creation_store_profiler_platforms_title">In quale piattaforma stai attualmente vendendo?</string>
+    <string name="store_creation_store_profiler_journey_description">Per accelerare le cose, personalizzeremo la tua esperienza WooCommerce per te in base alla tua risposta.</string>
+    <string name="store_creation_store_profiler_journey_title">In che punto ti trovi del tuo viaggio nel commercio?</string>
+    <string name="store_creation_store_profiler_industries_description">Scegli una categoria che si adatta al meglio alla tua attività.</string>
+    <string name="store_creation_store_profiler_industries_title">Cosa venderai?</string>
+    <string name="login_application_passwords_unavailable">Sembra che la funzione Password applicazione sia disabilitata nel tuo sito %1$s.\n Abilitalo all\'uso dell\'app WooCommerce.</string>
+    <string name="login_open_installation_page">Apri la pagina di installazione</string>
+    <string name="not_a_valid_qr_code">Il codice QR scansionato non è un codice WooCommerce</string>
+    <string name="store_creation_iap_eligibility_check_error_description">La creazione del negozio dall\'app per dispositivi mobili non è attualmente disponibile per il tuo Paese.</string>
+    <string name="store_creation_iap_eligibility_check_error_title">Creazione negozio non disponibile </string>
+    <string name="store_creation_iap_eligibility_loading_subtitle">Rimani connesso.</string>
+    <string name="store_creation_iap_eligibility_loading_title">Ci stiamo preparando alla creazione del tuo negozio</string>
+    <string name="review_reply_failure">Si è verificato un errore durante l\'invio della risposta</string>
+    <string name="review_reply_success">Risposta inviata!</string>
+    <string name="wc_reply">Rispondi</string>
     <string name="product_selection_menu_select_all">Seleziona tutto</string>
     <string name="product_selection_menu_update_price">Aggiorna prezzo</string>
     <string name="product_selection_menu_update_status">Aggiorna stato</string>

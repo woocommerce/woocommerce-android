@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+12.0
+Exciting news! It's now possible to duplicate a product from the app. Just tap on the More Menu available inside the Product detail screen.
+
 ## 11.9
 This release includes a few bug fixes and improvements to make your experience smoother. Stay tuned for exciting updates in the coming weeks!
 

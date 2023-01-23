@@ -148,6 +148,7 @@ private fun DomainSearchForm(
         WCColoredButton(
             modifier = Modifier.fillMaxWidth(),
             onClick = onContinueClicked,
+            enabled = state.loadingState == Idle
         ) {
             Text(text = stringResource(id = R.string.continue_button))
         }

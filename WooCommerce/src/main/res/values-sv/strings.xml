@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-01-13 12:56:50+0000
+Translation-Revision-Date: 2023-01-18 14:54:07+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="login_application_passwords_help">Vad är applikationslösenord?</string>
+    <string name="store_creation_country_picker_countries_header">Länder</string>
+    <string name="store_creation_country_picker_current_location">Nuvarande plats</string>
+    <string name="store_creation_country_picker_description">Vi använder den här informationen för att konfigurera betalningar, frakt och moms.</string>
+    <string name="store_creation_country_picker_title">Bekräfta din plats</string>
+    <string name="store_creation_store_profiler_platforms_description">Du kan välja flera stycken.</string>
+    <string name="store_creation_store_profiler_platforms_title">Vilken plattform säljer du på för närvarande?</string>
+    <string name="store_creation_store_profiler_journey_description">För att snabba upp saker och ting skräddarsyr vi din WooCommerce-upplevelse baserat på ditt svar.</string>
+    <string name="store_creation_store_profiler_journey_title">Var är du på din handelsresa?</string>
+    <string name="store_creation_store_profiler_industries_description">Välj en kategori som stämmer in på ditt företag.</string>
+    <string name="store_creation_store_profiler_industries_title">Vad kommer du att sälja?</string>
+    <string name="login_application_passwords_unavailable">Det verkar som att funktionen Applikationslösenord är inaktiverad på din webbplats %1$s.\n Aktivera den om du vill använda WooCommerce-appen.</string>
+    <string name="login_open_installation_page">Öppna installationssida</string>
     <string name="not_a_valid_qr_code">Skannad QR-kod är inte en WooCommerce-kod</string>
     <string name="store_creation_iap_eligibility_check_error_description">Skapa butik från mobilappen är för närvarande inte tillgängligt för ditt land.</string>
     <string name="store_creation_iap_eligibility_check_error_title">Skapande av butik är inte tillgängligt</string>
@@ -14,8 +27,6 @@ Language: sv_SE
     <string name="review_reply_failure">Det uppstod ett fel när svaret skulle skickas</string>
     <string name="review_reply_success">Svar skickat!</string>
     <string name="wc_reply">Svara</string>
-    <string name="store_creation_store_categories_subtitle">Välj en kategori som definierar\nditt företag bäst.</string>
-    <string name="store_creation_store_categories_title">Vad handlar ditt företag om?</string>
     <string name="product_selection_menu_select_all">Välj alla</string>
     <string name="product_selection_menu_update_price">Uppdatera pris</string>
     <string name="product_selection_menu_update_status">Uppdatera status</string>
