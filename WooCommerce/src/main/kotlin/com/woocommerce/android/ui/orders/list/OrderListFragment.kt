@@ -195,12 +195,6 @@ class OrderListFragment :
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
         initSwipeBehaviour()
-        initIPPFeedbackBanner()
-    }
-
-    private fun initIPPFeedbackBanner() {
-        val isPortrait = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-        binding.ippFeedbackBanner.isVisible = isPortrait
     }
 
     private fun initSwipeBehaviour() {
@@ -405,7 +399,8 @@ class OrderListFragment :
     }
 
     private fun renderIPPBanner(bannerState: OrderListViewModel.IPPSurveyFeedbackBannerState) {
-        val isVisible = bannerState is OrderListViewModel.IPPSurveyFeedbackBannerState.Visible
+        val isVisible = bannerState is OrderListViewModel.IPPSurveyFeedbackBannerState.Visible && isPortrait()
+
         binding.ippFeedbackBanner.isVisible = isVisible
 
         if (isVisible) {
@@ -421,6 +416,9 @@ class OrderListFragment :
             }
         }
     }
+
+    private fun isPortrait() =
+        resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
     private fun initializeResultHandlers() {
         handleResult<String>(FILTER_CHANGE_NOTICE_KEY) {
