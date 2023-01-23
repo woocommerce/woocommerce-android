@@ -3,6 +3,9 @@ package com.woocommerce.android.ui.prefs
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.config.CardReaderConfig
+import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
+import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
@@ -99,7 +102,37 @@ class DeveloperOptionsTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given reader disabled, when dev options screen accessed, then update reader row not displayes`() {
+    fun `when simulated card reader btn toggled, given CA store, then interac row displayed`() {
+        val supportedCountry: CardReaderConfig = CardReaderConfigForCanada
+        whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("CA")).thenReturn(supportedCountry)
+        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("CA")
+        whenever(developerOptionsRepository.isSimulatedCardReaderEnabled()).thenReturn(true)
+
+        initViewModel()
+
+        assertThat(viewModel.viewState.value?.rows)
+            .anyMatch {
+                it.label == UiString.UiStringRes(R.string.enable_interac_payment)
+            }
+    }
+
+    @Test
+    fun `when simulated card reader btn toggled, given US store, then interac row not displayed`() {
+        val supportedCountry: CardReaderConfig = CardReaderConfigForUSA
+        whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US")).thenReturn(supportedCountry)
+        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+        whenever(developerOptionsRepository.isSimulatedCardReaderEnabled()).thenReturn(true)
+
+        initViewModel()
+
+        assertThat(viewModel.viewState.value?.rows)
+            .noneMatch {
+                it.label == UiString.UiStringRes(R.string.enable_interac_payment)
+            }
+    }
+
+    @Test
+    fun `given reader disabled, when dev options screen accessed, then update reader row not displayed`() {
         whenever(developerOptionsRepository.isSimulatedCardReaderEnabled()).thenReturn(false)
 
         initViewModel()
@@ -107,6 +140,18 @@ class DeveloperOptionsTest : BaseUnitTest() {
         assertThat(viewModel.viewState.value?.rows)
             .noneMatch {
                 it.label == UiString.UiStringRes(R.string.update_simulated_reader)
+            }
+    }
+
+    @Test
+    fun `given reader disabled, when dev options screen accessed, then interac row not displayed`() {
+        whenever(developerOptionsRepository.isSimulatedCardReaderEnabled()).thenReturn(false)
+
+        initViewModel()
+
+        assertThat(viewModel.viewState.value?.rows)
+            .noneMatch {
+                it.label == UiString.UiStringRes(R.string.enable_interac_payment)
             }
     }
 
