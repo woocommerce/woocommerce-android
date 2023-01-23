@@ -523,7 +523,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         // then
         assertFalse(viewModel.viewState.isSimplePaymentsWIPNoticeCardVisible)
-        assertTrue(viewModel.viewState.ippBannerState is OrderListViewModel.IPPBannerState.Visible)
+        assertTrue(viewModel.viewState.ippBannerState is OrderListViewModel.IPPSurveyFeedbackBannerState.Visible)
     }
 
     @Test
@@ -536,7 +536,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         // then
         assertTrue(viewModel.viewState.isSimplePaymentsWIPNoticeCardVisible)
-        assertTrue(viewModel.viewState.ippBannerState is OrderListViewModel.IPPBannerState.Hidden)
+        assertTrue(viewModel.viewState.ippBannerState is OrderListViewModel.IPPSurveyFeedbackBannerState.Hidden)
     }
 
     private companion object {

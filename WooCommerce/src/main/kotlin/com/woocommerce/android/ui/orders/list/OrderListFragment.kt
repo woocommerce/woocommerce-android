@@ -397,12 +397,13 @@ class OrderListFragment :
         )
     }
 
-    private fun renderIPPBanner(bannerState: OrderListViewModel.IPPBannerState) {
-        val isVisible = bannerState is OrderListViewModel.IPPBannerState.Visible
+    private fun renderIPPBanner(bannerState: OrderListViewModel.IPPSurveyFeedbackBannerState) {
+        val isVisible = bannerState is OrderListViewModel.IPPSurveyFeedbackBannerState.Visible
         binding.ippFeedbackBanner.isVisible = isVisible
 
         if (isVisible) {
-            val data = (bannerState as OrderListViewModel.IPPBannerState.Visible).bannerData
+            val data =
+                (bannerState as OrderListViewModel.IPPSurveyFeedbackBannerState.Visible).bannerData
             binding.ippFeedbackBanner.setMessage(data.message)
             binding.ippFeedbackBanner.setTitle(data.title)
             binding.ippFeedbackBanner.onDismissClickListener = {
