@@ -14,8 +14,8 @@ import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem
-import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.SpinnerListItem
+import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -33,7 +33,7 @@ class DeveloperOptionsViewModel @Inject constructor(
     private val developerOptionsRepository: DeveloperOptionsRepository,
     private val cardReaderManager: CardReaderManager,
 
-    ) : ScopedViewModel(savedState) {
+) : ScopedViewModel(savedState) {
     private val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
     private val countryConfig = cardReaderCountryConfigProvider.provideCountryConfigFor(storeCountryCode)
     private val _viewState = MutableLiveData(
@@ -115,15 +115,15 @@ class DeveloperOptionsViewModel @Inject constructor(
                 it.key == UiStringRes(string.simulated_reader_key)
             } as? ToggleableListItem
             )?.let { originalListItem ->
-                val newState = originalListItem.copy(isChecked = isChecked)
-                _viewState.value = currentViewState.copy(
-                    rows = currentViewState.rows.map {
-                        if (it.label == newState.label)
-                            newState
-                        else it
-                    }
-                )
-            }
+            val newState = originalListItem.copy(isChecked = isChecked)
+            _viewState.value = currentViewState.copy(
+                rows = currentViewState.rows.map {
+                    if (it.label == newState.label)
+                        newState
+                    else it
+                }
+            )
+        }
     }
 
     private fun enableInteracStateChange(isChecked: Boolean) {
@@ -207,7 +207,7 @@ class DeveloperOptionsViewModel @Inject constructor(
                 override var key: UiString,
                 val onClick: () -> Unit,
 
-                ) : ListItem()
+            ) : ListItem()
         }
 
         enum class UpdateOptions(@StringRes val title: Int) {
