@@ -512,7 +512,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given IPP banner is shown, then Orders banner should be hidden`() = testBlocking {
+    fun `given IPP banner should be shown, when ViewModel init, then Orders banner is hidden`() = testBlocking {
         // given
         whenever(shouldShowFeedbackBanner()).thenReturn(true)
         val fakeBanner = GetIPPFeedbackBannerData.IPPFeedbackBanner(-1, -1, "")
@@ -523,11 +523,24 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         // then
         assertFalse(viewModel.viewState.isSimplePaymentsWIPNoticeCardVisible)
+    }
+
+    @Test
+    fun `given IPP banner should be shown, when ViewModel init, then IPP banner is shown`() = testBlocking {
+        // given
+        whenever(shouldShowFeedbackBanner()).thenReturn(true)
+        val fakeBanner = GetIPPFeedbackBannerData.IPPFeedbackBanner(-1, -1, "")
+        whenever(getIPPFeedbackBannerData()).thenReturn(fakeBanner)
+
+        // when
+        viewModel = createViewModel()
+
+        // then
         assertTrue(viewModel.viewState.ippFeedbackBannerState is OrderListViewModel.IPPSurveyFeedbackBannerState.Visible)
     }
 
     @Test
-    fun `given IPP banner is not shown, then Orders banner should be visible`() = testBlocking {
+    fun `given IPP banner should not be shown, when ViewModel init, then Orders banner is shown`() = testBlocking {
         // given
         whenever(shouldShowFeedbackBanner()).thenReturn(false)
 
@@ -536,6 +549,17 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         // then
         assertTrue(viewModel.viewState.isSimplePaymentsWIPNoticeCardVisible)
+    }
+
+    @Test
+    fun `given IPP banner should not be shown, when ViewModel init, then IPP banner is hidden`() = testBlocking {
+        // given
+        whenever(shouldShowFeedbackBanner()).thenReturn(false)
+
+        // when
+        viewModel = createViewModel()
+
+        // then
         assertTrue(viewModel.viewState.ippFeedbackBannerState is OrderListViewModel.IPPSurveyFeedbackBannerState.Hidden)
     }
 
