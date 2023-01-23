@@ -136,9 +136,9 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         whenever(getActivePaymentsPlugin())
             .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
 
-        val fakeNinjaTransactionsSummary = WCPaymentTransactionsSummaryResult(0, "", 0, 0, 0, null, null)
+        val fakeNewbieTransactionsSummary = WCPaymentTransactionsSummaryResult(0, "", 0, 0, 0, null, null)
         whenever(ippStore.fetchTransactionsSummary(any(), any(), any()))
-            .thenReturn(WooPayload(fakeNinjaTransactionsSummary))
+            .thenReturn(WooPayload(fakeNewbieTransactionsSummary))
 
         // when
         val result = sut()
@@ -154,9 +154,9 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         whenever(getActivePaymentsPlugin())
             .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
 
-        val fakeNinjaTransactionsSummary = WCPaymentTransactionsSummaryResult(1, "", 0, 0, 0, null, null)
+        val fakeBeginnerTransactionsSummary = WCPaymentTransactionsSummaryResult(1, "", 0, 0, 0, null, null)
         whenever(ippStore.fetchTransactionsSummary(any(), any(), any()))
-            .thenReturn(WooPayload(fakeNinjaTransactionsSummary))
+            .thenReturn(WooPayload(fakeBeginnerTransactionsSummary))
 
         // when
         val result = sut()
@@ -190,9 +190,9 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         whenever(getActivePaymentsPlugin())
             .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
 
-        val fakeNinjaTransactionsSummary = WCPaymentTransactionsSummaryResult(0, "", 0, 0, 0, null, null)
+        val fakeNewbieTransactionsSummary = WCPaymentTransactionsSummaryResult(0, "", 0, 0, 0, null, null)
         whenever(ippStore.fetchTransactionsSummary(any(), any(), any()))
-            .thenReturn(WooPayload(fakeNinjaTransactionsSummary))
+            .thenReturn(WooPayload(fakeNewbieTransactionsSummary))
 
         // when
         val result = sut()
@@ -208,9 +208,9 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         whenever(getActivePaymentsPlugin())
             .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
 
-        val fakeNinjaTransactionsSummary = WCPaymentTransactionsSummaryResult(1, "", 0, 0, 0, null, null)
+        val fakeBeginnerTransactionsSummary = WCPaymentTransactionsSummaryResult(1, "", 0, 0, 0, null, null)
         whenever(ippStore.fetchTransactionsSummary(any(), any(), any()))
-            .thenReturn(WooPayload(fakeNinjaTransactionsSummary))
+            .thenReturn(WooPayload(fakeBeginnerTransactionsSummary))
 
         // when
         val result = sut()
