@@ -46,6 +46,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         onBlocking { checkWooStatus(testSite) } doReturn Result.success(true)
         onBlocking { getSiteByUrl(siteAddress) } doReturn testSite
     }
+    private var isJetpackConnected: Boolean = false
     private val selectedSite: SelectedSite = mock {
         on { exists() } doReturn false
     }
@@ -64,7 +65,12 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         prepareMocks()
 
         viewModel = LoginSiteCredentialsViewModel(
-            savedStateHandle = SavedStateHandle(mapOf(LoginSiteCredentialsViewModel.SITE_ADDRESS_KEY to siteAddress)),
+            savedStateHandle = SavedStateHandle(
+                mapOf(
+                    LoginSiteCredentialsViewModel.SITE_ADDRESS_KEY to siteAddress,
+                    LoginSiteCredentialsViewModel.IS_JETPACK_CONNECTED_KEY to isJetpackConnected
+                )
+            ),
             wpApiSiteRepository = wpApiSiteRepository,
             selectedSite = selectedSite,
             loginAnalyticsListener = loginAnalyticsListener,
@@ -204,7 +210,8 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             applicationPasswordsUnavailableEvents.tryEmit(mock())
         }
 
-        assertThat(viewModel.event.value).isEqualTo(ShowApplicationPasswordsUnavailableScreen(siteAddress))
+        assertThat(viewModel.event.value)
+            .isEqualTo(ShowApplicationPasswordsUnavailableScreen(siteAddress, isJetpackConnected))
     }
 
     @Test

@@ -28,8 +28,6 @@ import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
 import com.woocommerce.android.experiment.RESTAPILoginExperiment
 import com.woocommerce.android.experiment.RESTAPILoginExperiment.RESTAPILoginVariant
-import com.woocommerce.android.experiment.RESTAPILoginExperiment.RESTAPILoginVariant.CONTROL
-import com.woocommerce.android.experiment.RESTAPILoginExperiment.RESTAPILoginVariant.TREATMENT
 import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.support.ZendeskExtraTags
 import com.woocommerce.android.support.ZendeskHelper
@@ -564,8 +562,8 @@ class LoginActivity :
         AppPrefs.setLoginSiteAddress(siteAddressClean)
 
         val shouldUseEmailLogin = when (restApiLoginExperiment.getCurrentVariant()) {
-            CONTROL -> hasJetpack
-            TREATMENT -> connectSiteInfo?.isWPCom == true
+            RESTAPILoginVariant.CONTROL -> hasJetpack
+            RESTAPILoginVariant.TREATMENT -> connectSiteInfo?.isWPCom == true
         }
 
         if (shouldUseEmailLogin) {
@@ -831,6 +829,7 @@ class LoginActivity :
             Pair(
                 LoginSiteCredentialsFragment.newInstance(
                     siteAddress = requireNotNull(siteAddress),
+                    isJetpackConnected = connectSiteInfo?.isJetpackConnected ?: false,
                     username = inputUsername,
                     password = inputPassword
                 ),
