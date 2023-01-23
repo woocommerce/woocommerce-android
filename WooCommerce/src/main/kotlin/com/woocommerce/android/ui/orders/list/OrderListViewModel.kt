@@ -177,7 +177,7 @@ class OrderListViewModel @Inject constructor(
             val shouldShowFeedbackBanner = FeatureFlag.IPP_FEEDBACK_BANNER.isEnabled() && shouldShowFeedbackBanner()
             if (shouldShowFeedbackBanner) {
                 val bannerData = getIPPFeedbackBannerData()
-                viewState = viewState.copy(ippBannerState = IPPSurveyFeedbackBannerState.Visible(bannerData))
+                viewState = viewState.copy(ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(bannerData))
             }
             viewState = viewState.copy(isSimplePaymentsWIPNoticeCardVisible = !shouldShowFeedbackBanner)
         }
@@ -585,36 +585,36 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    fun onDismissIPPBannerClicked() {
+    fun onDismissIPPFeedbackBannerClicked() {
         _event.postValue(OrderListEvent.ShowIPPDismissConfirmationDialog)
     }
 
-    fun onIPPBannerCTAClicked() {
-        val bannerState = viewState.ippBannerState as IPPSurveyFeedbackBannerState.Visible
+    fun onIPPFeedbackBannerCTAClicked() {
+        val bannerState = viewState.ippFeedbackBannerState as IPPSurveyFeedbackBannerState.Visible
         _event.postValue(OrderListEvent.OpenIPPFeedbackSurveyLink(bannerState.bannerData.url))
         markFeedbackBannerAsCompleted()
-        viewState = viewState.copy(ippBannerState = IPPSurveyFeedbackBannerState.Hidden)
+        viewState = viewState.copy(ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden)
 
         refreshOrdersBannerVisibilityWithDelay()
     }
 
-    fun onIPPBannerDismissedForever() {
+    fun onIPPFeedbackBannerDismissedForever() {
         markFeedbackBannerAsDismissedForever()
-        viewState = viewState.copy(ippBannerState = IPPSurveyFeedbackBannerState.Hidden)
+        viewState = viewState.copy(ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden)
 
         refreshOrdersBannerVisibilityWithDelay()
     }
 
-    fun onIPPBannerDismissedShowLater() {
+    fun onIPPFeedbackBannerDismissedShowLater() {
         markFeedbackBannerAsDismissed()
-        viewState = viewState.copy(ippBannerState = IPPSurveyFeedbackBannerState.Hidden)
+        viewState = viewState.copy(ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden)
 
         refreshOrdersBannerVisibilityWithDelay()
     }
 
     private fun refreshOrdersBannerVisibilityWithDelay(delayMillis: Long = 0) = viewModelScope.launch {
         delay(delayMillis)
-        val isOrdersBannerVisible = viewState.ippBannerState is IPPSurveyFeedbackBannerState.Hidden
+        val isOrdersBannerVisible = viewState.ippFeedbackBannerState is IPPSurveyFeedbackBannerState.Hidden
         viewState = viewState.copy(isSimplePaymentsWIPNoticeCardVisible = isOrdersBannerVisible)
     }
 
@@ -642,7 +642,7 @@ class OrderListViewModel @Inject constructor(
         val isRefreshPending: Boolean = false,
         val arePaymentGatewaysFetched: Boolean = false,
         val filterCount: Int = 0,
-        val ippBannerState: IPPSurveyFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden,
+        val ippFeedbackBannerState: IPPSurveyFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden,
         val isSimplePaymentsWIPNoticeCardVisible: Boolean = false,
     ) : Parcelable {
         @IgnoredOnParcel
