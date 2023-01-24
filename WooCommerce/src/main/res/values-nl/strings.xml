@@ -1,13 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-12-22 11:54:03+0000
+Translation-Revision-Date: 2023-01-18 17:54:08+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
-    <string name="store_creation_store_categories_subtitle">Kies een categorie die je bedrijf\nhet beste weergeeft.</string>
-    <string name="store_creation_store_categories_title">Waar staat je bedrijf voor?</string>
+    <string name="login_application_passwords_help">Wat zijn applicatiewachtwoorden?</string>
+    <string name="store_creation_country_picker_countries_header">Landen</string>
+    <string name="store_creation_country_picker_current_location">Huidige locatie</string>
+    <string name="store_creation_country_picker_description">We gebruiken deze gegevens om betalingen, verzending en belasting in te stellen.</string>
+    <string name="store_creation_country_picker_title">Bevestig je locatie</string>
+    <string name="store_creation_store_profiler_platforms_description">Je kan er meerdere kiezen.</string>
+    <string name="store_creation_store_profiler_platforms_title">Op welk platform verkoop je momenteel?</string>
+    <string name="store_creation_store_profiler_journey_description">Om alles een beetje te versnellen, zullen we je WooCommerce-ervaring aanpassen aan de hand van je antwoord.</string>
+    <string name="store_creation_store_profiler_journey_title">Hoe vordert je reis omtrent handelen?</string>
+    <string name="store_creation_store_profiler_industries_description">Kies een categorie die bij je bedrijf past.</string>
+    <string name="store_creation_store_profiler_industries_title">Wat ga je verkopen?</string>
+    <string name="login_application_passwords_unavailable">Het lijkt erop dat de functie Applicatiewachtwoorden is uitgeschakeld op je site %1$s.\n Schakel dit in om de WooCommerce-app te kunnen gebruiken.</string>
+    <string name="login_open_installation_page">Installatiepagina openen</string>
+    <string name="not_a_valid_qr_code">De ingescande QR-code is geen WooCommerce code</string>
+    <string name="store_creation_iap_eligibility_check_error_description">Het aanmaken van winkels vanuit de mobiele app is momenteel niet beschikbaar in je land.</string>
+    <string name="store_creation_iap_eligibility_check_error_title">Winkel aanmaken niet beschikbaar</string>
+    <string name="store_creation_iap_eligibility_loading_subtitle">Verbreek de verbinding niet</string>
+    <string name="store_creation_iap_eligibility_loading_title">We zijn klaar om je winkel aan te maken</string>
+    <string name="review_reply_failure">Er is een fout opgetreden bij het versturen van de reactie.</string>
+    <string name="review_reply_success">Antwoord verstuurd!</string>
+    <string name="wc_reply">Antwoord</string>
     <string name="product_selection_menu_select_all">Alles selecteren</string>
     <string name="product_selection_menu_update_price">Prijs bijwerken</string>
     <string name="product_selection_menu_update_status">Status bijwerken</string>

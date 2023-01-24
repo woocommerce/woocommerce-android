@@ -54,6 +54,23 @@ class MainActivityViewModel @Inject constructor(
         determineMenuBadgeState(reviewsCount)
     }.asLiveData()
 
+    fun handleShortcutAction(action: String?) {
+        when (action) {
+            SHORTCUT_PAYMENTS -> {
+                analyticsTrackerWrapper.track(
+                    AnalyticsEvent.SHORTCUT_PAYMENTS_TAPPED
+                )
+                triggerEvent(ShortcutOpenPayments)
+            }
+            SHORTCUT_OPEN_ORDER_CREATION -> {
+                analyticsTrackerWrapper.track(
+                    AnalyticsEvent.SHORTCUT_ORDERS_ADD_NEW
+                )
+                triggerEvent(ShortcutOpenOrderCreation)
+            }
+        }
+    }
+
     fun removeOrderNotifications() {
         notificationHandler.removeNotificationsOfTypeFromSystemsBar(
             NotificationChannelType.NEW_ORDER, selectedSite.get().siteId
@@ -175,6 +192,8 @@ class MainActivityViewModel @Inject constructor(
     object ViewMyStoreStats : Event()
     object ViewZendeskTickets : Event()
     object ViewPayments : Event()
+    object ShortcutOpenPayments : Event()
+    object ShortcutOpenOrderCreation : Event()
     data class RestartActivityForNotification(val pushId: Int, val notification: Notification) : Event()
     data class RestartActivityForAppLink(val data: Uri) : Event()
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
@@ -184,5 +203,10 @@ class MainActivityViewModel @Inject constructor(
     sealed class MoreMenuBadgeState {
         data class UnseenReviews(val count: Int) : MoreMenuBadgeState()
         object Hidden : MoreMenuBadgeState()
+    }
+
+    companion object {
+        const val SHORTCUT_PAYMENTS = "com.woocommerce.android.payments"
+        const val SHORTCUT_OPEN_ORDER_CREATION = "com.woocommerce.android.ordercreation"
     }
 }

@@ -1,13 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-12-21 14:54:03+0000
+Translation-Revision-Date: 2023-01-18 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
-    <string name="store_creation_store_categories_subtitle">Wähle eine Kategorie aus, die\ndein Unternehmen am besten definiert.</string>
-    <string name="store_creation_store_categories_title">Unter welche Kategorie fällt dein Unternehmen?</string>
+    <string name="login_application_passwords_help">Was sind Anwendungs-Passwörter?</string>
+    <string name="store_creation_country_picker_countries_header">Länder</string>
+    <string name="store_creation_country_picker_current_location">Aktueller Standort</string>
+    <string name="store_creation_country_picker_description">Wir verwenden diese Informationen, um alles rund um Zahlungen, Versand und Steuern schnell einzurichten.</string>
+    <string name="store_creation_country_picker_title">Bestätige deinen Ort</string>
+    <string name="store_creation_store_profiler_platforms_description">Du kannst mehrere auswählen.</string>
+    <string name="store_creation_store_profiler_platforms_title">Auf welcher Plattform verkaufst du deine Produkte derzeit?</string>
+    <string name="store_creation_store_profiler_journey_description">Wir passen deine WooCommerce-Erfahrung basierend auf deiner Antwort für dich an, um den Vorgang zu beschleunigen.</string>
+    <string name="store_creation_store_profiler_journey_title">An welchem Punkt deiner Commerce-Reise befindest du dich?</string>
+    <string name="store_creation_store_profiler_industries_description">Wähle eine Kategorie aus, die am besten zu deinem Unternehmen passt.</string>
+    <string name="store_creation_store_profiler_industries_title">Was wirst du verkaufen?</string>
+    <string name="login_application_passwords_unavailable">Anscheinend ist die Funktion „Anwendungs-Passwörter“ auf deiner Website %1$s deaktiviert.\n Bitte aktiviere sie, um die WooCommerce-App verwenden zu können.</string>
+    <string name="login_open_installation_page">Installationsseite öffnen</string>
+    <string name="not_a_valid_qr_code">Der gescannte QR-Code ist kein WooCommerce-Code.</string>
+    <string name="store_creation_iap_eligibility_check_error_description">Die Shop-Erstellung über die Mobil-App ist in deinem Land aktuell nicht verfügbar.</string>
+    <string name="store_creation_iap_eligibility_check_error_title">Shop-Erstellung nicht verfügbar</string>
+    <string name="store_creation_iap_eligibility_loading_subtitle">Bitte bleib verbunden.</string>
+    <string name="store_creation_iap_eligibility_loading_title">Wir machen uns für die Erstellung deines Shops bereit.</string>
+    <string name="review_reply_failure">Beim Senden der Antwort ist ein Fehler aufgetreten.</string>
+    <string name="review_reply_success">Antwort gesendet!</string>
+    <string name="wc_reply">Antworten</string>
     <string name="product_selection_menu_select_all">Alle auswählen</string>
     <string name="product_selection_menu_update_price">Preis aktualisieren</string>
     <string name="product_selection_menu_update_status">Status aktualisieren</string>

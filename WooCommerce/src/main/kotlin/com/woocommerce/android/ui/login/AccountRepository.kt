@@ -1,10 +1,14 @@
 package com.woocommerce.android.ui.login
 
 import com.woocommerce.android.OnChangedException
+import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T.LOGIN
 import com.woocommerce.android.util.WooLog.T.SITE_PICKER
 import com.woocommerce.android.util.dispatchAndAwait
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
@@ -12,13 +16,17 @@ import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
+import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Inject
 
 class AccountRepository @Inject constructor(
     private val accountStore: AccountStore,
+    private val siteStore: SiteStore,
     private val selectedSite: SelectedSite,
-    private val dispatcher: Dispatcher
+    private val dispatcher: Dispatcher,
+    @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
+
     fun getUserAccount(): AccountModel? = accountStore.account.takeIf { it.userId != 0L }
 
     suspend fun fetchUserAccount(): Result<Unit> {
@@ -50,7 +58,18 @@ class AccountRepository @Inject constructor(
                 true
             }
         } else {
-            // TODO send a request to delete the application password
+            appCoroutineScope.launch {
+                val result = siteStore.deleteApplicationPassword(selectedSite.get())
+                if (result.isError) {
+                    WooLog.e(
+                        LOGIN,
+                        "Error deleting application password: ${result.error.errorCode} > ${result.error.message}"
+                    )
+                } else {
+                    WooLog.i(LOGIN, "Application password deleted")
+                }
+            }
+
             selectedSite.reset()
             true
         }

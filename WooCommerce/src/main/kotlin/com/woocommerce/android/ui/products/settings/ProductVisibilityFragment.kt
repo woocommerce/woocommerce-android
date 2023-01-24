@@ -43,19 +43,38 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(R.layout.fragment_
         }
 
         binding.btnPublic.setOnClickListener(this)
-        binding.btnPasswordProtected.setOnClickListener(this)
         binding.btnPrivate.setOnClickListener(this)
 
-        if (selectedVisibility == PASSWORD_PROTECTED.toString()) {
-            (savedInstanceState?.getString(ARG_PASSWORD) ?: navArgs.password)?.let { password ->
-                binding.editPassword.text = password
-                showPassword(password.isNotBlank())
-            }
-        }
+        val password = savedInstanceState?.getString(ARG_PASSWORD) ?: navArgs.password
+        setupPasswordProtectedSetting(
+            isApplicationPasswordsLogin = navArgs.isApplicationPasswordsLogin,
+            selectedVisibility = selectedVisibility,
+            password = password
+        )
+    }
 
-        binding.editPassword.setOnTextChangedListener {
-            if (it.toString().isNotBlank()) {
-                binding.editPassword.clearError()
+    private fun setupPasswordProtectedSetting(
+        isApplicationPasswordsLogin: Boolean,
+        selectedVisibility: String?,
+        password: String?
+    ) {
+        if (isApplicationPasswordsLogin) {
+            // Hide "Password protected" visibility setting on login with application passwords,
+            // because this feature specifically uses WP.com API.
+            binding.btnPasswordProtected.visibility = View.GONE
+        } else {
+            if (selectedVisibility == PASSWORD_PROTECTED.toString()) {
+                password?.let {
+                    binding.editPassword.text = it
+                    showPassword(it.isNotBlank())
+                }
+            }
+            binding.btnPasswordProtected.setOnClickListener(this)
+            binding.btnPasswordProtected.visibility = View.VISIBLE
+            binding.editPassword.setOnTextChangedListener {
+                if (it.toString().isNotBlank()) {
+                    binding.editPassword.clearError()
+                }
             }
         }
     }

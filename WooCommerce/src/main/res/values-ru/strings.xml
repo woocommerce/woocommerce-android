@@ -1,13 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-12-22 09:54:04+0000
+Translation-Revision-Date: 2023-01-18 14:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
-    <string name="store_creation_store_categories_subtitle">Выберите категорию, которая лучше всего\nхарактеризует ваш бизнес.</string>
-    <string name="store_creation_store_categories_title">В чем заключается ваш бизнес?</string>
+    <string name="login_application_passwords_help">Что такое пароли приложения?</string>
+    <string name="store_creation_country_picker_countries_header">Страны</string>
+    <string name="store_creation_country_picker_current_location">Текущее местоположение</string>
+    <string name="store_creation_country_picker_description">Эти данные позволят быстрее настроить платежи, доставку и расчёт налогов.</string>
+    <string name="store_creation_country_picker_title">Подтвердите местоположение</string>
+    <string name="store_creation_store_profiler_platforms_description">Можно выбрать несколько вариантов.</string>
+    <string name="store_creation_store_profiler_platforms_title">Какую платформу вы используете для продажи товаров сейчас?</string>
+    <string name="store_creation_store_profiler_journey_description">Мы настроим WooCommerce с учётом вашего ответа, чтобы ускорить процесс.</string>
+    <string name="store_creation_store_profiler_journey_title">На каком этапе развития находится ваш бизнес?</string>
+    <string name="store_creation_store_profiler_industries_description">Выберите наиболее подходящую категорию.</string>
+    <string name="store_creation_store_profiler_industries_title">Что вы планируете продавать?</string>
+    <string name="login_application_passwords_unavailable">Кажется, на вашем сайте %1$s отключена функция паролей приложения.\n Включите её, чтобы использовать приложение WooCommerce.</string>
+    <string name="login_open_installation_page">Открыть страницу установки</string>
+    <string name="not_a_valid_qr_code">Просканированный QR-код не является кодом WooCommerce</string>
+    <string name="store_creation_iap_eligibility_check_error_description">Создание магазина через мобильное приложение в настоящий момент недоступно в вашей стране.</string>
+    <string name="store_creation_iap_eligibility_check_error_title">Создание магазина недоступно</string>
+    <string name="store_creation_iap_eligibility_loading_subtitle">Не прерывайте подключение.</string>
+    <string name="store_creation_iap_eligibility_loading_title">Мы готовимся к созданию вашего магазина</string>
+    <string name="review_reply_failure">При отправке ответа произошла ошибка</string>
+    <string name="review_reply_success">Ответ отправлен!</string>
+    <string name="wc_reply">Ответить</string>
     <string name="product_selection_menu_select_all">Выбрать всё</string>
     <string name="product_selection_menu_update_price">Обновить цену</string>
     <string name="product_selection_menu_update_status">Обновить статус</string>

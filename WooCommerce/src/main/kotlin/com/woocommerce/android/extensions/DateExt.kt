@@ -49,6 +49,10 @@ fun Date.formatToMMMddYYYYhhmm(locale: Locale = Locale.getDefault()): String = S
     "MMM d, yyyy hh:mm a", locale
 ).format(this)
 
+fun Date.formatToDDyyyy(locale: Locale): String = SimpleDateFormat(
+    "d, yyyy", locale
+).format(this)
+
 fun Date.formatToEEEEMMMddhha(locale: Locale): String {
     val symbols = DateFormatSymbols(locale)
     symbols.amPmStrings = arrayOf("am", "pm")
@@ -83,14 +87,75 @@ val Date.pastTimeDeltaFromNowInDays
         ?.let { TimeUnit.DAYS.convert(it, MILLISECONDS) }
         ?.toInt()
 
-fun Date.theDayBeforeIt() =
-    Calendar.getInstance()
-        .apply { time = this@theDayBeforeIt }
-        .apply { add(Calendar.DATE, -1) }
-        .time
-
 fun Date.daysAgo(daysAgo: Int) =
     Calendar.getInstance()
         .apply { time = this@daysAgo }
         .apply { add(Calendar.DATE, -daysAgo) }
         .time
+
+fun Date.oneDayAgo(): Date =
+    Calendar.getInstance().apply {
+        time = this@oneDayAgo
+        add(Calendar.DATE, -1)
+    }.time
+
+fun Date.oneWeekAgo(): Date =
+    Calendar.getInstance().apply {
+        time = this@oneWeekAgo
+        add(Calendar.DATE, -SEVEN_DAYS)
+    }.time
+
+fun Date.oneMonthAgo(): Date =
+    Calendar.getInstance().apply {
+        time = this@oneMonthAgo
+        add(Calendar.MONTH, -1)
+    }.time
+
+fun Date.oneQuarterAgo(): Date =
+    Calendar.getInstance().apply {
+        time = this@oneQuarterAgo
+        add(Calendar.MONTH, -THREE_MONTHS)
+    }.time
+
+fun Date.oneYearAgo(): Date =
+    Calendar.getInstance().apply {
+        time = this@oneYearAgo
+        add(Calendar.YEAR, -1)
+    }.time
+
+fun Date.isInSameYearAs(other: Date, baseCalendar: Calendar): Boolean {
+    val calendar = baseCalendar.clone() as Calendar
+    calendar.time = this
+    val thisYear = calendar.get(Calendar.YEAR)
+    calendar.time = other
+    val otherYear = calendar.get(Calendar.YEAR)
+    return thisYear == otherYear
+}
+
+fun Date.isInSameMonthAs(other: Date, baseCalendar: Calendar): Boolean {
+    val calendar = baseCalendar.clone() as Calendar
+    calendar.time = this
+    val thisMonth = calendar.get(Calendar.MONTH)
+    calendar.time = other
+    val otherMonth = calendar.get(Calendar.MONTH)
+    return thisMonth == otherMonth && isInSameYearAs(other, calendar)
+}
+
+fun Date.formatAsRangeWith(other: Date, locale: Locale, calendar: Calendar): String {
+    val formattedStartDate = if (this.isInSameYearAs(other, calendar)) {
+        this.formatToMMMdd(locale)
+    } else {
+        this.formatToMMMddYYYY(locale)
+    }
+
+    val formattedEndDate = if (this.isInSameMonthAs(other, calendar)) {
+        other.formatToDDyyyy(locale)
+    } else {
+        other.formatToMMMddYYYY(locale)
+    }
+
+    return "$formattedStartDate - $formattedEndDate"
+}
+
+private const val THREE_MONTHS = 3
+private const val SEVEN_DAYS = 7

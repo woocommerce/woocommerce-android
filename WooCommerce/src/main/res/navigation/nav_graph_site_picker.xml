@@ -42,9 +42,6 @@
         android:name="com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryFragment"
         android:label="SitePickerSiteDiscoveryFragment">
         <action
-            android:id="@+id/action_sitePickerSiteDiscoveryFragment_to_accountMismatchErrorFragment"
-            app:destination="@id/accountMismatchErrorFragment" />
-        <action
             android:id="@+id/action_sitePickerSiteDiscoveryFragment_to_jetpackActivation"
             app:destination="@id/nav_graph_jetpack_activation">
             <argument

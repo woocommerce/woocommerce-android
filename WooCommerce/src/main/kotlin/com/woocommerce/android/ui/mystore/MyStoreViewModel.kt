@@ -13,14 +13,17 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.experiment.RESTAPILoginExperiment
+import com.woocommerce.android.experiment.RESTAPILoginExperiment.RESTAPILoginVariant
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
+import com.woocommerce.android.tools.AuthenticationType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.jitm.JitmTracker
 import com.woocommerce.android.ui.jitm.QueryParamsEncoder
 import com.woocommerce.android.ui.mystore.domain.GetStats
@@ -86,6 +89,7 @@ class MyStoreViewModel @Inject constructor(
     private val jitmTracker: JitmTracker,
     private val myStoreUtmProvider: MyStoreUtmProvider,
     private val queryParamsEncoder: QueryParamsEncoder,
+    private val restAPILoginExperiment: RESTAPILoginExperiment
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
@@ -143,6 +147,10 @@ class MyStoreViewModel @Inject constructor(
             }
         }
         observeTopPerformerUpdates()
+
+        if (selectedSite.exists()) {
+            trackRESTAPIExperimentSuccess()
+        }
     }
 
     private fun fetchJitms() {
@@ -291,7 +299,7 @@ class MyStoreViewModel @Inject constructor(
         AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
         val targetPeriod = when (val state = revenueStatsState.value) {
             is RevenueStatsViewState.Content -> state.granularity.toAnalyticTimePeriod()
-            else -> AnalyticTimePeriod.TODAY
+            else -> SelectionType.TODAY
         }
         triggerEvent(MyStoreEvent.OpenAnalytics(targetPeriod))
     }
@@ -479,11 +487,22 @@ class MyStoreViewModel @Inject constructor(
             .getOrElse { StatsGranularity.DAYS }
     }
 
+    private fun trackRESTAPIExperimentSuccess() {
+        // Log success unless: the user is in the treatment group and the sign in used WordPress.com
+        // for a self-hosted site
+        val isTreatmentGroup = restAPILoginExperiment.getCurrentVariant() == RESTAPILoginVariant.TREATMENT
+        val isWPComLogin = selectedSite.connectionType?.authenticationType == AuthenticationType.WPCom
+        val isSelfHostedSite = !selectedSite.get().isWPComAtomic
+        if (isTreatmentGroup && isWPComLogin && isSelfHostedSite) return
+
+        restAPILoginExperiment.trackSuccess()
+    }
+
     private fun StatsGranularity.toAnalyticTimePeriod() = when (this) {
-        StatsGranularity.DAYS -> AnalyticTimePeriod.TODAY
-        StatsGranularity.WEEKS -> AnalyticTimePeriod.WEEK_TO_DATE
-        StatsGranularity.MONTHS -> AnalyticTimePeriod.MONTH_TO_DATE
-        StatsGranularity.YEARS -> AnalyticTimePeriod.YEAR_TO_DATE
+        StatsGranularity.DAYS -> SelectionType.TODAY
+        StatsGranularity.WEEKS -> SelectionType.WEEK_TO_DATE
+        StatsGranularity.MONTHS -> SelectionType.MONTH_TO_DATE
+        StatsGranularity.YEARS -> SelectionType.YEAR_TO_DATE
     }
 
     sealed class RevenueStatsViewState {
@@ -523,7 +542,7 @@ class MyStoreViewModel @Inject constructor(
             val productId: Long
         ) : MyStoreEvent()
 
-        data class OpenAnalytics(val analyticsPeriod: AnalyticTimePeriod) : MyStoreEvent()
+        data class OpenAnalytics(val analyticsPeriod: SelectionType) : MyStoreEvent()
         data class OnJitmCtaClicked(
             val url: String,
             @StringRes val titleRes: Int = R.string.card_reader_purchase_card_reader

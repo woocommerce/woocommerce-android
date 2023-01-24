@@ -58,10 +58,10 @@ sealed class ViewState(
         illustration = R.drawable.img_products_error
     )
 
-    data class CollectPaymentState(
+    data class ExternalReaderCollectPaymentState(
         override val amountWithCurrencyLabel: String,
-        override val hintLabel: Int = R.string.card_reader_payment_collect_payment_hint,
         override val headerLabel: Int = R.string.card_reader_payment_collect_payment_header,
+        override val hintLabel: Int = R.string.card_reader_payment_collect_payment_hint,
         override val onSecondaryActionClicked: (() -> Unit),
     ) : ViewState(
         paymentStateLabel = R.string.card_reader_payment_collect_payment_state,
@@ -73,7 +73,20 @@ sealed class ViewState(
             get() = "Collecting"
     }
 
-    data class ProcessingPaymentState(
+    data class BuiltInReaderCollectPaymentState(
+        override val amountWithCurrencyLabel: String,
+        override val headerLabel: Int = R.string.card_reader_payment_collect_payment_header,
+        override val hintLabel: Int = R.string.card_reader_payment_collect_payment_built_in_hint,
+    ) : ViewState(
+        paymentStateLabel = R.string.card_reader_payment_collect_payment_built_in_state,
+        illustration = R.drawable.img_ipp_reader_type_selection,
+    ),
+        PaymentFlow {
+        override val nameForTracking: String
+            get() = "Collecting"
+    }
+
+    data class ExternalReaderProcessingPaymentState(
         override val amountWithCurrencyLabel: String,
         override val onSecondaryActionClicked: (() -> Unit),
     ) : ViewState(
@@ -88,12 +101,37 @@ sealed class ViewState(
             get() = "Processing"
     }
 
-    data class CapturingPaymentState(override val amountWithCurrencyLabel: String) :
+    data class BuiltInReaderProcessingPaymentState(
+        override val amountWithCurrencyLabel: String,
+    ) : ViewState(
+        hintLabel = R.string.card_reader_payment_processing_payment_hint,
+        headerLabel = R.string.card_reader_payment_processing_payment_header,
+        paymentStateLabel = R.string.card_reader_payment_processing_payment_state,
+        illustration = R.drawable.img_ipp_reader_type_selection,
+    ),
+        PaymentFlow {
+        override val nameForTracking: String
+            get() = "Processing"
+    }
+
+    data class ExternalReaderCapturingPaymentState(override val amountWithCurrencyLabel: String) :
         ViewState(
             hintLabel = R.string.card_reader_payment_capturing_payment_hint,
             headerLabel = R.string.card_reader_payment_capturing_payment_header,
             paymentStateLabel = R.string.card_reader_payment_capturing_payment_state,
             illustration = R.drawable.img_card_reader_available
+        ),
+        PaymentFlow {
+        override val nameForTracking: String
+            get() = "Capturing"
+    }
+
+    data class BuiltInReaderCapturingPaymentState(override val amountWithCurrencyLabel: String) :
+        ViewState(
+            hintLabel = R.string.card_reader_payment_capturing_payment_hint,
+            headerLabel = R.string.card_reader_payment_capturing_payment_header,
+            paymentStateLabel = R.string.card_reader_payment_capturing_payment_state,
+            illustration = R.drawable.img_ipp_reader_type_selection
         ),
         PaymentFlow {
         override val nameForTracking: String

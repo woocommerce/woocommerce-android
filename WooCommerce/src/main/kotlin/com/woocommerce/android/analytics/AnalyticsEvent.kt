@@ -614,6 +614,11 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     PRODUCT_IMAGE_ADDED,
     PRODUCT_IMAGE_REMOVED,
 
+    // -- Duplicate product
+    DUPLICATE_PRODUCT_SUCCESS,
+    DUPLICATE_PRODUCT_FAILED,
+    PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED,
+
     // -- Help & Support
     SUPPORT_HELP_CENTER_VIEWED(siteless = true),
     SUPPORT_IDENTITY_SET(siteless = true),
@@ -722,6 +727,10 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     HUB_MENU_OPTION_TAPPED,
     HUB_MENU_SETTINGS_TAPPED,
 
+    // Shortcuts
+    SHORTCUT_PAYMENTS_TAPPED,
+    SHORTCUT_ORDERS_ADD_NEW,
+
     // Inbox
     INBOX_NOTES_LOADED,
     INBOX_NOTES_LOAD_FAILED,
@@ -754,11 +763,6 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     LOGIN_LOCAL_NOTIFICATION_TAPPED(siteless = true),
     LOGIN_LOCAL_NOTIFICATION_DISMISSED(siteless = true),
 
-    // Experiments (A/B test variants)
-    PROLOGUE_EXPERIMENT,
-    JETPACK_TIMEOUT_EXPERIMENT,
-    JETPACK_INSTALLATION_EXPERIMENT,
-
     // Widgets
     WIDGET_TAPPED,
 
@@ -780,7 +784,11 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     SITE_CREATION_IAP_ELIGIBILITY_ERROR(siteless = true),
     SITE_CREATION_IAP_PURCHASE_SUCCESS(siteless = true),
     SITE_CREATION_IAP_PURCHASE_ERROR(siteless = true),
+    SITE_CREATION_PROFILER_DATA(siteless = true),
 
     APPLICATION_PASSWORDS_NEW_PASSWORD_CREATED,
     APPLICATION_PASSWORDS_NOT_AVAILABLE,
+
+    // Experiments (A/B test variants)
+    REST_API_LOGIN_EXPERIMENT
 }

@@ -69,7 +69,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                 is CardReaderOnboardingViewModel.OnboardingEvent.ContinueToConnection -> {
                     findNavController().navigate(
                         CardReaderOnboardingFragmentDirections
-                            .actionCardReaderOnboardingFragmentToCardReaderConnectDialogFragment(
+                            .actionCardReaderOnboardingFragmentToCardReaderTypeSelectionDialogFragment(
                                 event.cardReaderFlowParam
                             )
                     )
@@ -364,4 +364,10 @@ sealed class CardReaderFlowParam : Parcelable {
         @Parcelize
         data class Refund(override val orderId: Long, val refundAmount: BigDecimal) : PaymentOrRefund()
     }
+}
+
+@Parcelize
+enum class CardReaderType : Parcelable {
+    BUILT_IN,
+    EXTERNAL,
 }

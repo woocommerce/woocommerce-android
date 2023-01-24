@@ -1,13 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-12-22 09:54:04+0000
+Translation-Revision-Date: 2023-01-18 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
-    <string name="store_creation_store_categories_subtitle">選擇最符合\n你業務定義的類別。</string>
-    <string name="store_creation_store_categories_title">你的業務內容是什麼？</string>
+    <string name="login_application_passwords_help">什麼是應用程式密碼？</string>
+    <string name="store_creation_country_picker_countries_header">國家/地區</string>
+    <string name="store_creation_country_picker_current_location">目前的位置</string>
+    <string name="store_creation_country_picker_description">我們會使用這些資訊完成付款、運送和稅務設定。</string>
+    <string name="store_creation_country_picker_title">確認你的位置</string>
+    <string name="store_creation_store_profiler_platforms_description">可複選。</string>
+    <string name="store_creation_store_profiler_platforms_title">你目前使用哪個平台進行銷售？</string>
+    <string name="store_creation_store_profiler_journey_description">為提升效率，我們會根據你的回應為你量身打造 WooCommerce 體驗。</string>
+    <string name="store_creation_store_profiler_journey_title">你的商務旅程進展到了哪個階段？</string>
+    <string name="store_creation_store_profiler_industries_description">選擇最符合你業務的類別。</string>
+    <string name="store_creation_store_profiler_industries_title">你要銷售什麼商品？</string>
+    <string name="login_application_passwords_unavailable">你的網站 %1$s 似乎已停用應用程式密碼功能。\n 若要使用 WooCommerce 應用程式，請啟用此功能。</string>
+    <string name="login_open_installation_page">開啟安裝頁面</string>
+    <string name="not_a_valid_qr_code">掃進來的 QR code 不是 WooCommerce 代碼</string>
+    <string name="store_creation_iap_eligibility_check_error_description">你所在的國家暫不提供自手機 App 開設商店功能。</string>
+    <string name="store_creation_iap_eligibility_check_error_title">不提供商店開設功能</string>
+    <string name="store_creation_iap_eligibility_loading_subtitle">請保持連線狀態。</string>
+    <string name="store_creation_iap_eligibility_loading_title">已準備好開設你的商店</string>
+    <string name="review_reply_failure">傳送回覆時發生錯誤</string>
+    <string name="review_reply_success">回覆已傳送！</string>
+    <string name="wc_reply">回覆</string>
     <string name="product_selection_menu_select_all">全部選取</string>
     <string name="product_selection_menu_update_price">更新價格</string>
     <string name="product_selection_menu_update_status">更新狀態</string>

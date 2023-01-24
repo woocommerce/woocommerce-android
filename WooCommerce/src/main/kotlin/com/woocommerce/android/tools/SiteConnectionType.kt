@@ -1,11 +1,17 @@
 package com.woocommerce.android.tools
 
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.tools.AuthenticationType.SiteCredentials
+import com.woocommerce.android.tools.AuthenticationType.WPCom
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.model.SiteModel
 
-enum class SiteConnectionType {
-    Jetpack, JetpackConnectionPackage, ApplicationPasswords
+enum class SiteConnectionType(val authenticationType: AuthenticationType) {
+    Jetpack(WPCom), JetpackConnectionPackage(WPCom), ApplicationPasswords(SiteCredentials)
+}
+
+enum class AuthenticationType {
+    WPCom, SiteCredentials
 }
 
 val SiteModel.connectionType

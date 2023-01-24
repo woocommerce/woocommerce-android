@@ -7,6 +7,7 @@ import com.automattic.android.tracks.crashlogging.ExtraKnownKey
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.di.AppCoroutineScope
+import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.locale.LocaleProvider
@@ -56,9 +57,10 @@ class WCCrashLoggingDataProvider @Inject constructor(
         .map { site ->
             site?.let {
                 mapOf(
-                    SITE_ID_KEY to site.siteId.toString(),
+                    SITE_ID_KEY to site.siteId.takeIf { it != 0L }?.toString(),
                     SITE_URL_KEY to site.url
                 )
+                    .filterNotNull()
             }.orEmpty()
         }
 
@@ -113,11 +115,15 @@ class WCCrashLoggingDataProvider @Inject constructor(
         return false
     }
 
-    private fun AccountModel.toCrashLoggingUser() = CrashLoggingUser(
-        userID = userId.toString(),
-        email = email,
-        username = userName
-    )
+    private fun AccountModel.toCrashLoggingUser(): CrashLoggingUser? {
+        if (userId == 0L) return null
+
+        return CrashLoggingUser(
+            userID = userId.toString(),
+            email = email,
+            username = userName
+        )
+    }
 
     companion object {
         const val SITE_ID_KEY = "site_id"

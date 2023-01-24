@@ -16,6 +16,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_M
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
 import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -49,7 +51,8 @@ class MoreMenuViewModel @Inject constructor(
                 ),
                 siteName = selectedSite.getSelectedSiteName(),
                 siteUrl = selectedSite.getSelectedSiteAbsoluteUrl(),
-                userAvatarUrl = accountStore.account.avatarUrl
+                userAvatarUrl = accountStore.account.avatarUrl,
+                isStoreSwitcherEnabled = selectedSite.connectionType != SiteConnectionType.ApplicationPasswords
             )
         }.asLiveData()
 
@@ -176,7 +179,8 @@ class MoreMenuViewModel @Inject constructor(
         val moreMenuItems: List<MenuUiButton> = emptyList(),
         val siteName: String = "",
         val siteUrl: String = "",
-        val userAvatarUrl: String = ""
+        val userAvatarUrl: String = "",
+        val isStoreSwitcherEnabled: Boolean = false
     )
 
     sealed class MoreMenuEvent : MultiLiveEvent.Event() {
