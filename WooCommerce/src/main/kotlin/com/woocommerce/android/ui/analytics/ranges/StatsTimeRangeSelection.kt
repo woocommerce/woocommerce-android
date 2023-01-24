@@ -26,7 +26,6 @@ import com.woocommerce.android.ui.analytics.ranges.data.YearToDateRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.YesterdayRangeData
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
-import java.io.Serializable
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -45,65 +44,68 @@ data class AnalyticsHubTimeRange(
  *
  * When creating the object through the available constructor, the Selection will be set as [CUSTOM]
  */
-class StatsTimeRangeSelection : Serializable {
-    val selectionType: SelectionType
-    val currentRange: AnalyticsHubTimeRange
-    val previousRange: AnalyticsHubTimeRange
-    val currentRangeDescription: String
-    val previousRangeDescription: String
+@Parcelize
+class StatsTimeRangeSelection private constructor(
+    val selectionType: SelectionType,
+    val currentRange: AnalyticsHubTimeRange,
+    val previousRange: AnalyticsHubTimeRange,
+    val currentRangeDescription: String,
+    val previousRangeDescription: String,
+) : Parcelable {
 
-    private constructor(
-        rangeStart: Date,
-        rangeEnd: Date,
-        calendar: Calendar,
-        locale: Locale,
-    ) {
-        val rangeData = CustomRangeData(rangeStart, rangeEnd, locale, calendar)
-        selectionType = CUSTOM
-        currentRange = rangeData.currentRange
-        previousRange = rangeData.previousRange
-        currentRangeDescription = rangeData.formattedCurrentRange
-        previousRangeDescription = rangeData.formattedPreviousRange
-    }
-
-    private constructor(
-        selectionType: SelectionType,
-        referenceDate: Date,
-        calendar: Calendar,
-        locale: Locale
-    ) {
-        val rangeData = generateTimeRangeData(selectionType, referenceDate, locale, calendar)
-        this.selectionType = selectionType
-        currentRange = rangeData.currentRange
-        previousRange = rangeData.previousRange
-        currentRangeDescription = rangeData.formattedCurrentRange
-        previousRangeDescription = rangeData.formattedPreviousRange
-    }
-
-    private fun generateTimeRangeData(
-        selectionType: SelectionType,
-        referenceDate: Date,
-        locale: Locale,
-        calendar: Calendar
-    ): StatsTimeRangeData {
-        return when (selectionType) {
-            TODAY -> TodayRangeData(referenceDate, locale, calendar)
-            YESTERDAY -> YesterdayRangeData(referenceDate, locale, calendar)
-            WEEK_TO_DATE -> WeekToDateRangeData(referenceDate, locale, calendar)
-            LAST_WEEK -> LastWeekRangeData(referenceDate, locale, calendar)
-            MONTH_TO_DATE -> MonthToDateRangeData(referenceDate, locale, calendar)
-            LAST_MONTH -> LastMonthRangeData(referenceDate, locale, calendar)
-            QUARTER_TO_DATE -> QuarterToDateRangeData(referenceDate, locale, calendar)
-            LAST_QUARTER -> LastQuarterRangeData(referenceDate, locale, calendar)
-            YEAR_TO_DATE -> YearToDateRangeData(referenceDate, locale, calendar)
-            LAST_YEAR -> LastYearRangeData(referenceDate, locale, calendar)
-            else -> throw IllegalStateException("Custom selection type should use the correct constructor")
+    companion object Factory {
+        fun build(
+            rangeStart: Date,
+            rangeEnd: Date,
+            calendar: Calendar,
+            locale: Locale,
+        ): StatsTimeRangeSelection {
+            val rangeData = CustomRangeData(rangeStart, rangeEnd, locale, calendar)
+            return StatsTimeRangeSelection(
+                selectionType = CUSTOM,
+                currentRange = rangeData.currentRange,
+                previousRange = rangeData.previousRange,
+                currentRangeDescription = rangeData.formattedCurrentRange,
+                previousRangeDescription = rangeData.formattedPreviousRange,
+            )
         }
-    }
 
-    companion object {
-        // Needed to avoid the [SerialVersionUIDInSerializableClass] warning from detekt
-        const val serialVersionUID = 1L
+        fun build(
+            selectionType: SelectionType,
+            referenceDate: Date,
+            calendar: Calendar,
+            locale: Locale
+        ): StatsTimeRangeSelection {
+            val rangeData = generateTimeRangeData(selectionType, referenceDate, locale, calendar)
+            return StatsTimeRangeSelection(
+                selectionType = selectionType,
+                currentRange = rangeData.currentRange,
+                previousRange = rangeData.previousRange,
+                currentRangeDescription = rangeData.formattedCurrentRange,
+                previousRangeDescription = rangeData.formattedPreviousRange,
+            )
+        }
+
+        private fun generateTimeRangeData(
+            selectionType: SelectionType,
+            referenceDate: Date,
+            locale: Locale,
+            calendar: Calendar
+        ): StatsTimeRangeData {
+            return when (selectionType) {
+                TODAY -> TodayRangeData(referenceDate, locale, calendar)
+                YESTERDAY -> YesterdayRangeData(referenceDate, locale, calendar)
+                WEEK_TO_DATE -> WeekToDateRangeData(referenceDate, locale, calendar)
+                LAST_WEEK -> LastWeekRangeData(referenceDate, locale, calendar)
+                MONTH_TO_DATE -> MonthToDateRangeData(referenceDate, locale, calendar)
+                LAST_MONTH -> LastMonthRangeData(referenceDate, locale, calendar)
+                QUARTER_TO_DATE -> QuarterToDateRangeData(referenceDate, locale, calendar)
+                LAST_QUARTER -> LastQuarterRangeData(referenceDate, locale, calendar)
+                YEAR_TO_DATE -> YearToDateRangeData(referenceDate, locale, calendar)
+                LAST_YEAR -> LastYearRangeData(referenceDate, locale, calendar)
+                else -> throw IllegalStateException("Custom selection type should use the correct constructor")
+            }
+        }
     }
 
     enum class SelectionType(val localizedResourceId: Int) {
@@ -126,14 +128,14 @@ class StatsTimeRangeSelection : Serializable {
             locale: Locale
         ): StatsTimeRangeSelection {
             return if (this == CUSTOM) {
-                StatsTimeRangeSelection(
+                build(
                     rangeStart = referenceStartDate,
                     rangeEnd = referenceEndDate,
                     calendar = calendar,
                     locale = locale
                 )
             } else {
-                StatsTimeRangeSelection(
+                build(
                     selectionType = this,
                     referenceDate = referenceStartDate,
                     calendar = calendar,
