@@ -27,7 +27,7 @@
         android:layout_width="@dimen/minor_00"
         android:layout_height="wrap_content"
         android:textColor="@color/material_on_surface_emphasis_high_type"
-        android:textSize="18sp"
+        android:textSize="@dimen/text_minor_130"
         app:layout_constraintLeft_toRightOf="@+id/icon"
         app:layout_constraintRight_toLeftOf="@+id/dismiss_button"
         app:layout_constraintTop_toTopOf="@+id/icon"

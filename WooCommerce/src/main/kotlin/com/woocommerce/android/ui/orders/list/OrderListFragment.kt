@@ -376,7 +376,7 @@ class OrderListFragment :
             new.filterCount.takeIfNotEqualTo(old?.filterCount) { filterCount ->
                 binding.orderFiltersCard.updateFilterSelection(filterCount)
             }
-            new.ippBannerState.takeIfNotEqualTo(old?.ippBannerState) { bannerState ->
+            new.ippFeedbackBannerState.takeIfNotEqualTo(old?.ippFeedbackBannerState) { bannerState ->
                 renderIPPBanner(bannerState)
             }
             new.isSimplePaymentsWIPNoticeCardVisible.takeIfNotEqualTo(old?.isSimplePaymentsWIPNoticeCardVisible) {
@@ -392,24 +392,27 @@ class OrderListFragment :
             messageId = R.string.feedback_banner_ipp_dismiss_confirmation_message,
             positiveButtonId = R.string.feedback_banner_ipp_dismiss_confirmation_remind_later_button,
             negativeButtonId = R.string.feedback_banner_ipp_dismiss_confirmation_remind_later_dont_show_again_button,
-            negBtnAction = { _, _ -> viewModel.onIPPBannerDismissedForever() },
-            posBtnAction = { _, _ -> viewModel.onIPPBannerDismissedShowLater() }
+            negBtnAction = { _, _ -> viewModel.onIPPFeedbackBannerDismissedForever() },
+            posBtnAction = { _, _ -> viewModel.onIPPFeedbackBannerDismissedShowLater() }
         )
     }
 
-    private fun renderIPPBanner(bannerState: OrderListViewModel.IPPBannerState) {
-        val isVisible = bannerState is OrderListViewModel.IPPBannerState.Visible
+    private fun renderIPPBanner(bannerState: OrderListViewModel.IPPSurveyFeedbackBannerState) {
+        val isVisible =
+            bannerState is OrderListViewModel.IPPSurveyFeedbackBannerState.Visible && !DisplayUtils.isLandscape(context)
+
         binding.ippFeedbackBanner.isVisible = isVisible
 
         if (isVisible) {
-            val data = (bannerState as OrderListViewModel.IPPBannerState.Visible).bannerData
+            val data =
+                (bannerState as OrderListViewModel.IPPSurveyFeedbackBannerState.Visible).bannerData
             binding.ippFeedbackBanner.setMessage(data.message)
             binding.ippFeedbackBanner.setTitle(data.title)
             binding.ippFeedbackBanner.onDismissClickListener = {
-                viewModel.onDismissIPPBannerClicked()
+                viewModel.onDismissIPPFeedbackBannerClicked()
             }
             binding.ippFeedbackBanner.onCTAClickListener = {
-                viewModel.onIPPBannerCTAClicked()
+                viewModel.onIPPFeedbackBannerCTAClicked()
             }
         }
     }
