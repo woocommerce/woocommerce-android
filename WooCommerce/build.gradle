@@ -84,8 +84,6 @@ android {
         // P.S. Update the targetSdkVersion in all the modules, otherwise static analysis tools won't give you a heads-up about potential issues.
         targetSdkVersion gradle.ext.targetSdkVersion
 
-        vectorDrawables.useSupportLibrary = true
-
         testInstrumentationRunner 'com.woocommerce.android.WooCommerceTestRunner'
         // TODO remove this once the hilt migration is complete
         javaCompileOptions.annotationProcessorOptions.arguments['dagger.hilt.disableModulesHaveInstallInCheck'] = 'true'
