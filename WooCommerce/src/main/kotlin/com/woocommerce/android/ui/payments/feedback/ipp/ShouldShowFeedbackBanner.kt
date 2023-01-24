@@ -3,10 +3,8 @@ package com.woocommerce.android.ui.payments.feedback.ipp
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
-import com.woocommerce.android.ui.payments.GetActivePaymentsPlugin
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
@@ -14,7 +12,6 @@ import javax.inject.Inject
 
 class ShouldShowFeedbackBanner @Inject constructor(
     private val prefs: AppPrefsWrapper,
-    private val getActivePaymentsPlugin: GetActivePaymentsPlugin,
     private val cashOnDeliverySettings: CashOnDeliverySettingsRepository,
     private val wooCommerceStore: WooCommerceStore,
     private val siteModel: SiteModel,
@@ -22,7 +19,7 @@ class ShouldShowFeedbackBanner @Inject constructor(
 ) {
     suspend operator fun invoke(): Boolean {
         return isStoreInSupportedCountry() &&
-            isIPPEnabled() &&
+            isCashOnDeliveryEnabled() &&
             !isSurveyCompletedOrDismissedForever() &&
             wasDismissedLongAgoEnoughToShowAgain()
     }
@@ -32,14 +29,11 @@ class ShouldShowFeedbackBanner @Inject constructor(
         return config is CardReaderConfigForSupportedCountry
     }
 
-    private suspend fun isIPPEnabled(): Boolean =
-        cashOnDeliverySettings.isCashOnDeliveryEnabled() && isWooCommercePaymentsPluginEnabled()
+    private suspend fun isCashOnDeliveryEnabled(): Boolean =
+        cashOnDeliverySettings.isCashOnDeliveryEnabled()
 
     private fun isSurveyCompletedOrDismissedForever(): Boolean =
         prefs.isIPPFeedbackSurveyCompleted() || prefs.isIPPFeedbackBannerDismissedForever()
-
-    private suspend fun isWooCommercePaymentsPluginEnabled() =
-        getActivePaymentsPlugin() == WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
 
     private fun wasDismissedLongAgoEnoughToShowAgain(): Boolean {
         val lastDismissed = prefs.getIPPFeedbackBannerLastDismissed()

@@ -572,10 +572,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             viewModel.onDismissIPPFeedbackBannerClicked()
 
             // then
-            assertEquals(
-                OrderListViewModel.OrderListEvent.ShowIPPDismissConfirmationDialog,
-                viewModel.event.value
-            )
+            assertEquals(OrderListViewModel.OrderListEvent.ShowIPPDismissConfirmationDialog, viewModel.event.value)
         }
 
     @Test
@@ -599,10 +596,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel.onIPPFeedbackBannerCTAClicked()
 
         // then
-        assertEquals(
-            OrderListViewModel.IPPSurveyFeedbackBannerState.Hidden,
-            viewModel.viewState.ippFeedbackBannerState
-        )
+        assertEquals(OrderListViewModel.IPPSurveyFeedbackBannerState.Hidden, viewModel.viewState.ippFeedbackBannerState)
     }
 
     @Test
@@ -626,10 +620,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel.onIPPFeedbackBannerDismissedForever()
 
         // then
-        assertEquals(
-            OrderListViewModel.IPPSurveyFeedbackBannerState.Hidden,
-            viewModel.viewState.ippFeedbackBannerState
-        )
+        assertEquals(OrderListViewModel.IPPSurveyFeedbackBannerState.Hidden, viewModel.viewState.ippFeedbackBannerState)
     }
 
     @Test
@@ -653,10 +644,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel.onIPPFeedbackBannerDismissedShowLater()
 
         // then
-        assertEquals(
-            OrderListViewModel.IPPSurveyFeedbackBannerState.Hidden,
-            viewModel.viewState.ippFeedbackBannerState
-        )
+        assertEquals(OrderListViewModel.IPPSurveyFeedbackBannerState.Hidden, viewModel.viewState.ippFeedbackBannerState)
     }
 
     @Test
@@ -674,6 +662,6 @@ class OrderListViewModelTest : BaseUnitTest() {
     private companion object {
         const val ANY_SEARCH_QUERY = "search query"
 
-        val FAKE_IPP_FEEDBACK_BANNER_DATA = GetIPPFeedbackBannerData.IPPFeedbackBanner(-1, -1, "")
+        val FAKE_IPP_FEEDBACK_BANNER_DATA = GetIPPFeedbackBannerData.IPPFeedbackBanner(-1, -1, "", "")
     }
 }
