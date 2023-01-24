@@ -305,7 +305,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAccountChanged(event: OnAccountChanged) {
         val isLoggedOut = event.causeOfChange == AccountAction.SIGN_OUT && event.error == null
-        if ((!accountStore.hasAccessToken() && isLoggedOut)) {
+        if (!accountStore.hasAccessToken() && isLoggedOut) {
             // Logged out
             AnalyticsTracker.track(AnalyticsEvent.ACCOUNT_LOGOUT)
 
