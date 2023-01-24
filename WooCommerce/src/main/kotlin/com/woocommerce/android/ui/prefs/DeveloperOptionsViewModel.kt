@@ -38,11 +38,7 @@ class DeveloperOptionsViewModel @Inject constructor(
     private val _viewState = MutableLiveData(
         DeveloperOptionsViewState(
             rows = if (developerOptionsRepository.isSimulatedCardReaderEnabled()) {
-                if (countryConfig is CardReaderConfigForCanada) {
-                    createDeveloperOptionsList() + createReaderUpdateFrequencyItem() + createEnableInteractItem()
-                } else {
-                    createDeveloperOptionsList() + createReaderUpdateFrequencyItem()
-                }
+                showInteracRowForCanadianStore()
             } else {
                 createDeveloperOptionsList()
             }
@@ -91,11 +87,7 @@ class DeveloperOptionsViewModel @Inject constructor(
             )
         } else {
             viewState.value?.rows =
-                if (countryConfig is CardReaderConfigForCanada) {
-                    createDeveloperOptionsList() + createReaderUpdateFrequencyItem() + createEnableInteractItem()
-                } else {
-                    createDeveloperOptionsList() + createReaderUpdateFrequencyItem()
-                }
+                showInteracRowForCanadianStore()
         }
         simulatedReaderStateChanged(isChecked)
     }
@@ -170,6 +162,14 @@ class DeveloperOptionsViewModel @Inject constructor(
             val options: List<UpdateOptions>,
             var selectedValue: UpdateOptions,
         ) : DeveloperOptionsEvents()
+    }
+
+    private fun showInteracRowForCanadianStore(): List<ListItem> {
+        return if (countryConfig is CardReaderConfigForCanada) {
+            createDeveloperOptionsList() + createReaderUpdateFrequencyItem() + createEnableInteractItem()
+        } else {
+            createDeveloperOptionsList() + createReaderUpdateFrequencyItem()
+        }
     }
 
     data class DeveloperOptionsViewState(
