@@ -32,7 +32,6 @@ class DeveloperOptionsViewModel @Inject constructor(
     wooStore: WooCommerceStore,
     private val developerOptionsRepository: DeveloperOptionsRepository,
     private val cardReaderManager: CardReaderManager,
-
 ) : ScopedViewModel(savedState) {
     private val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
     private val countryConfig = cardReaderCountryConfigProvider.provideCountryConfigFor(storeCountryCode)
