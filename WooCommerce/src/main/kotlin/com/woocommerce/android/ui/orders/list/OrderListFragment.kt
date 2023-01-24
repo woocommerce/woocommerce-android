@@ -316,7 +316,7 @@ class OrderListFragment :
                 }
                 is OrderListViewModel.OrderListEvent.OpenIPPFeedbackSurveyLink -> {
                     NavGraphMainDirections
-                        .actionGlobalFeedbackSurveyFragment(customUrll = event.url)
+                        .actionGlobalFeedbackSurveyFragment(customUrl = event.url)
                         .apply { findNavController().navigateSafely(this) }
                 }
                 is OrderListViewModel.OrderListEvent.NotifyOrderChanged -> {
@@ -399,7 +399,7 @@ class OrderListFragment :
     }
 
     private fun renderIPPBanner(bannerState: OrderListViewModel.IPPSurveyFeedbackBannerState) {
-        val isVisible = bannerState is OrderListViewModel.IPPSurveyFeedbackBannerState.Visible && isPortrait()
+        val isVisible = bannerState is OrderListViewModel.IPPSurveyFeedbackBannerState.Visible && !DisplayUtils.isLandscape(context)
 
         binding.ippFeedbackBanner.isVisible = isVisible
 
