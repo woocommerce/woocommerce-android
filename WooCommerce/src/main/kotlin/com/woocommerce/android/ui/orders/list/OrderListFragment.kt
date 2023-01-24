@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.list
 
-import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -316,7 +315,7 @@ class OrderListFragment :
                 }
                 is OrderListViewModel.OrderListEvent.OpenIPPFeedbackSurveyLink -> {
                     NavGraphMainDirections
-                        .actionGlobalFeedbackSurveyFragment(customUrll = event.url)
+                        .actionGlobalFeedbackSurveyFragment(customUrl = event.url)
                         .apply { findNavController().navigateSafely(this) }
                 }
                 is OrderListViewModel.OrderListEvent.NotifyOrderChanged -> {
@@ -399,7 +398,8 @@ class OrderListFragment :
     }
 
     private fun renderIPPBanner(bannerState: OrderListViewModel.IPPSurveyFeedbackBannerState) {
-        val isVisible = bannerState is OrderListViewModel.IPPSurveyFeedbackBannerState.Visible && isPortrait()
+        val isVisible =
+            bannerState is OrderListViewModel.IPPSurveyFeedbackBannerState.Visible && !DisplayUtils.isLandscape(context)
 
         binding.ippFeedbackBanner.isVisible = isVisible
 
@@ -416,9 +416,6 @@ class OrderListFragment :
             }
         }
     }
-
-    private fun isPortrait() =
-        resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
     private fun initializeResultHandlers() {
         handleResult<String>(FILTER_CHANGE_NOTICE_KEY) {
