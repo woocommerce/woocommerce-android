@@ -171,7 +171,7 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
             assertEquals("https://automattic.survey.fm/woo-app-–-ipp-survey-for-power-users", result.url)
             assertEquals(R.string.feedback_banner_ipp_message_ninja, result.message)
             assertEquals(R.string.feedback_banner_ipp_title_ninja, result.title)
-            assertEquals("ipp_heavy_user", result.campaignName)
+            assertEquals("ipp_power_user", result.campaignName)
         }
 
     @Test

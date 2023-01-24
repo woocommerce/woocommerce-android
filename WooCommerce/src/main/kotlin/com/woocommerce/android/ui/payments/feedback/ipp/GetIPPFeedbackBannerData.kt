@@ -145,7 +145,7 @@ class GetIPPFeedbackBannerData @Inject constructor(
 
         private const val CAMPAIGN_NAME_IPP_NEWBIE = "ipp_not_user"
         private const val CAMPAIGN_NAME_IPP_BEGINNER = "ipp_new_user"
-        private const val CAMPAIGN_NAME_IPP_NINJA = "ipp_heavy_user"
+        private const val CAMPAIGN_NAME_IPP_NINJA = "ipp_power_user"
 
         private val IPP_BEGINNER_TRANSACTIONS_RANGE = 1..10
     }
