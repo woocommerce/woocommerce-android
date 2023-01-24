@@ -38,16 +38,16 @@ class DeveloperOptionsViewModel @Inject constructor(
     private val _viewState = MutableLiveData(
         DeveloperOptionsViewState(
             rows = if (developerOptionsRepository.isSimulatedCardReaderEnabled()) {
-                showInteracRowForCanadianStore()
+                getListItemsForSimulatedReader()
             } else {
-                createDeveloperOptionsList()
+                getListItemsForHardwareReader()
             }
         )
     )
 
     val viewState: LiveData<DeveloperOptionsViewState> = _viewState
 
-    private fun createDeveloperOptionsList(): List<ListItem> = mutableListOf<ListItem>(
+    private fun getListItemsForHardwareReader(): List<ListItem> = mutableListOf<ListItem>(
         ToggleableListItem(
             icon = drawable.img_card_reader_connecting,
             label = UiStringRes(string.enable_card_reader),
@@ -80,14 +80,14 @@ class DeveloperOptionsViewModel @Inject constructor(
 
     private fun onSimulatedReaderToggled(isChecked: Boolean) {
         if (!isChecked) {
-            viewState.value?.rows = createDeveloperOptionsList()
+            viewState.value?.rows = getListItemsForHardwareReader()
             disconnectAndClearSelectedCardReader()
             triggerEvent(
                 DeveloperOptionsEvents.ShowToastString(string.simulated_reader_toast)
             )
         } else {
             viewState.value?.rows =
-                showInteracRowForCanadianStore()
+                getListItemsForSimulatedReader()
         }
         simulatedReaderStateChanged(isChecked)
     }
@@ -164,11 +164,11 @@ class DeveloperOptionsViewModel @Inject constructor(
         ) : DeveloperOptionsEvents()
     }
 
-    private fun showInteracRowForCanadianStore(): List<ListItem> {
+    private fun getListItemsForSimulatedReader(): List<ListItem> {
         return if (countryConfig is CardReaderConfigForCanada) {
-            createDeveloperOptionsList() + createReaderUpdateFrequencyItem() + createEnableInteractItem()
+            getListItemsForHardwareReader() + createReaderUpdateFrequencyItem() + createEnableInteractItem()
         } else {
-            createDeveloperOptionsList() + createReaderUpdateFrequencyItem()
+            getListItemsForHardwareReader() + createReaderUpdateFrequencyItem()
         }
     }
 
