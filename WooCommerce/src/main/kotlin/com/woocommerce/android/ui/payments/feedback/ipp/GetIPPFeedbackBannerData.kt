@@ -39,11 +39,11 @@ class GetIPPFeedbackBannerData @Inject constructor(
 
         requireSuccessfulTransactionsSummaryResponse(response)
 
-        val numberOfTransactions = requireTransactionsCount(response)
+        val numberOfTransactionsInLast30Days = requireTransactionsCount(response)
 
-        requirePositiveNumberOfTransactions(numberOfTransactions)
+        requirePositiveNumberOfTransactions(numberOfTransactionsInLast30Days)
 
-        return when (numberOfTransactions) {
+        return when (numberOfTransactionsInLast30Days) {
             0 -> if (hasUserEverMadeIppTransaction()) {
                 IPP_BEGINNER_BANNER
             } else {
