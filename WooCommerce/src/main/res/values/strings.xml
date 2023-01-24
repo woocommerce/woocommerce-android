@@ -2118,10 +2118,17 @@
     <string name="feedback_product_give_feedback_button_text">Give Feedback</string>
 
     <!-- In-person Payments feedback banner -->
-    <string name="feedback_banner_ipp_message_newbie">Do you sell in person?</string>
+    <string name="feedback_banner_ipp_title_newbie">How can we help you with in-person selling?</string>
+    <string name="feedback_banner_ipp_message_newbie">Share your own experience on how you collect in-person payments.</string>
+    <string name="feedback_banner_ipp_title_beginner">Enjoy your in-person payment?</string>
     <string name="feedback_banner_ipp_message_beginner">Rate your first in-person payment experience.</string>
-    <string name="feedback_banner_ipp_message_ninja">Enjoy your in-person payments so far?</string>
-    <string name="feedback_banner_ipp_message_thank_you">Thank you for sharing your feedback about our feature. ♥️</string>
+    <string name="feedback_banner_ipp_title_ninja">Let us know what you think</string>
+    <string name="feedback_banner_ipp_message_ninja">Tell us about your experience with in-person payments.</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_title">Share feedback</string>
+    <string name="feedback_banner_ipp_cta_button">Share feedback</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_message">No worries! You can always go to the Settings in the Menu to send us feedback.</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_button">Remind me later</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_dont_show_again_button">Don\'t show again</string>
 
     <!-- permissions -->
     <string name="permissions_denied_title">Permissions</string>

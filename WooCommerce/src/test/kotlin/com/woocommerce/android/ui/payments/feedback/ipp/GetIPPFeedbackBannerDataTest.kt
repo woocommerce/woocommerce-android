@@ -90,7 +90,7 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         val result = sut()
 
         // then
-        assertEquals("https://woocommerce.com/newbie", result.url)
+        assertEquals("https://automattic.survey.fm/woo-app-–-cod-survey", result.url)
     }
 
     @Test
@@ -108,7 +108,7 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         val result = sut()
 
         // then
-        assertEquals("https://woocommerce.com/beginner", result.url)
+        assertEquals("https://automattic.survey.fm/woo-app-–-ipp-first-transaction-survey", result.url)
     }
 
     @Test
@@ -126,7 +126,7 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         val result = sut()
 
         // then
-        assertEquals("https://woocommerce.com/ninja", result.url)
+        assertEquals("https://automattic.survey.fm/woo-app-–-cod-survey", result.url)
     }
 
     @Test
@@ -136,9 +136,9 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         whenever(getActivePaymentsPlugin())
             .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
 
-        val fakeNinjaTransactionsSummary = WCPaymentTransactionsSummaryResult(0, "", 0, 0, 0, null, null)
+        val fakeNewbieTransactionsSummary = WCPaymentTransactionsSummaryResult(0, "", 0, 0, 0, null, null)
         whenever(ippStore.fetchTransactionsSummary(any(), any(), any()))
-            .thenReturn(WooPayload(fakeNinjaTransactionsSummary))
+            .thenReturn(WooPayload(fakeNewbieTransactionsSummary))
 
         // when
         val result = sut()
@@ -154,9 +154,9 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         whenever(getActivePaymentsPlugin())
             .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
 
-        val fakeNinjaTransactionsSummary = WCPaymentTransactionsSummaryResult(1, "", 0, 0, 0, null, null)
+        val fakeBeginnerTransactionsSummary = WCPaymentTransactionsSummaryResult(1, "", 0, 0, 0, null, null)
         whenever(ippStore.fetchTransactionsSummary(any(), any(), any()))
-            .thenReturn(WooPayload(fakeNinjaTransactionsSummary))
+            .thenReturn(WooPayload(fakeBeginnerTransactionsSummary))
 
         // when
         val result = sut()
@@ -181,6 +181,60 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
 
         // then
         assertEquals(R.string.feedback_banner_ipp_message_ninja, result.message)
+    }
+
+    @Test
+    fun `given banner should be displayed and user is a newbie, then should display correct title`() = runBlocking {
+        // given
+        whenever(shouldShowFeedbackBanner()).thenReturn(true)
+        whenever(getActivePaymentsPlugin())
+            .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
+
+        val fakeNewbieTransactionsSummary = WCPaymentTransactionsSummaryResult(0, "", 0, 0, 0, null, null)
+        whenever(ippStore.fetchTransactionsSummary(any(), any(), any()))
+            .thenReturn(WooPayload(fakeNewbieTransactionsSummary))
+
+        // when
+        val result = sut()
+
+        // then
+        assertEquals(R.string.feedback_banner_ipp_title_newbie, result.title)
+    }
+
+    @Test
+    fun `given banner should be displayed and user is a beginner, then should display correct title`() = runBlocking {
+        // given
+        whenever(shouldShowFeedbackBanner()).thenReturn(true)
+        whenever(getActivePaymentsPlugin())
+            .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
+
+        val fakeBeginnerTransactionsSummary = WCPaymentTransactionsSummaryResult(1, "", 0, 0, 0, null, null)
+        whenever(ippStore.fetchTransactionsSummary(any(), any(), any()))
+            .thenReturn(WooPayload(fakeBeginnerTransactionsSummary))
+
+        // when
+        val result = sut()
+
+        // then
+        assertEquals(R.string.feedback_banner_ipp_title_beginner, result.title)
+    }
+
+    @Test
+    fun `given banner should be displayed and user is a ninja, then should display correct title`() = runBlocking {
+        // given
+        whenever(shouldShowFeedbackBanner()).thenReturn(true)
+        whenever(getActivePaymentsPlugin())
+            .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
+
+        val fakeNinjaTransactionsSummary = WCPaymentTransactionsSummaryResult(11, "", 0, 0, 0, null, null)
+        whenever(ippStore.fetchTransactionsSummary(any(), any(), any()))
+            .thenReturn(WooPayload(fakeNinjaTransactionsSummary))
+
+        // when
+        val result = sut()
+
+        // then
+        assertEquals(R.string.feedback_banner_ipp_title_ninja, result.title)
     }
 
     @Test
