@@ -5,7 +5,6 @@ import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.LOGIN
-import com.woocommerce.android.util.WooLog.T.SITE_PICKER
 import com.woocommerce.android.util.dispatchAndAwait
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -44,21 +43,22 @@ class AccountRepository @Inject constructor(
     }
 
     suspend fun logout(): Boolean {
+        val event: OnAccountChanged = dispatcher.dispatchAndAwait(AccountActionBuilder.newSignOutAction())
+        if (event.isError) {
+            WooLog.e(
+                LOGIN,
+                "Account error [type = ${event.causeOfChange}] : " +
+                    "${event.error.type} > ${event.error.message}"
+            )
+            return false
+        }
+
         return if (accountStore.hasAccessToken()) {
-            val event: OnAccountChanged = dispatcher.dispatchAndAwait(AccountActionBuilder.newSignOutAction())
-            if (event.isError) {
-                WooLog.e(
-                    SITE_PICKER,
-                    "Account error [type = ${event.causeOfChange}] : " +
-                        "${event.error.type} > ${event.error.message}"
-                )
-                false
-            } else {
-                dispatcher.dispatch(SiteActionBuilder.newRemoveWpcomAndJetpackSitesAction())
-                true
-            }
+            // WPCom account logout
+            dispatcher.dispatch(SiteActionBuilder.newRemoveWpcomAndJetpackSitesAction())
+            true
         } else {
-            dispatcher.dispatch(AccountActionBuilder.newSignOutAction())
+            // Application passwords logout
             appCoroutineScope.launch {
                 val result = siteStore.deleteApplicationPassword(selectedSite.get())
                 if (result.isError) {
