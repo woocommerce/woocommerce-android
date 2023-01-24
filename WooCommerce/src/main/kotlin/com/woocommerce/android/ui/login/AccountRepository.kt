@@ -58,6 +58,7 @@ class AccountRepository @Inject constructor(
                 true
             }
         } else {
+            dispatcher.dispatch(AccountActionBuilder.newSignOutAction())
             appCoroutineScope.launch {
                 val result = siteStore.deleteApplicationPassword(selectedSite.get())
                 if (result.isError) {
