@@ -253,7 +253,7 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         sut()
 
         // then
-        verify(logger).e(AppLog.T.API, "Error fetching transactions summary: $errorMessage")
+        verify(logger).e(AppLog.T.API, "Error fetching transactions summary: $error")
     }
 
     @Test
