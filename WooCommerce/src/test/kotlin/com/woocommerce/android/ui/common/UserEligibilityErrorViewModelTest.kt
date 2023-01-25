@@ -5,7 +5,8 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.User
+import com.woocommerce.android.model.UserRole
 import com.woocommerce.android.ui.common.UserEligibilityErrorViewModel.ViewState
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -22,20 +23,19 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.user.WCUserModel
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class UserEligibilityErrorViewModelTest : BaseUnitTest() {
-    private val testUser = WCUserModel().apply {
-        remoteUserId = 1L
-        firstName = "Anitaa"
-        lastName = "Murthy"
-        username = "murthyanitaa"
-        roles = "[author, editor]"
-        email = "reallychumma1@gmail.com"
-    }
+    private val testUser = User(
+        id = 1L,
+        firstName = "Anitaa",
+        lastName = "Murthy",
+        username = "murthyanitaa",
+        email = "reallychumma1@gmail.com",
+        roles = listOf(UserRole.Editor, UserRole.Author)
+    )
 
     private val appPrefsWrapper: AppPrefs = mock {
         on { getUserEmail() } doReturn testUser.email
@@ -63,7 +63,7 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Displays the user eligibility error screen correctly`() = testBlocking {
-        val expectedViewState = viewState.copy(user = testUser.toAppModel())
+        val expectedViewState = viewState.copy(user = testUser)
 
         var userData: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> userData = new }
@@ -100,8 +100,8 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Handles retry button correctly when user is eligible`() = testBlocking {
-        testUser.roles = "[\"shop_manager\"]"
-        doReturn(testUser).whenever(userEligibilityFetcher).fetchUserInfo()
+        val user = testUser.copy(roles = listOf(UserRole.ShopManager))
+        doReturn(user).whenever(userEligibilityFetcher).fetchUserInfo()
         doReturn(true).whenever(appPrefsWrapper).isUserEligible()
 
         val isProgressDialogShown = ArrayList<Boolean>()
