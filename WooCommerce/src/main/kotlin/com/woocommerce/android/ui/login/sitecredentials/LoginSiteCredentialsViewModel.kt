@@ -196,8 +196,12 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         isLoading.value = true
         userEligibilityFetcher.fetchUserInfo().fold(
             onSuccess = {
-                loginAnalyticsListener.trackAnalyticsSignIn(false)
-                triggerEvent(LoggedIn(selectedSite.getSelectedSiteId()))
+                // Track success only if the user is eligible, for the other cases, the user eligibility screen will
+                // handle the flow
+                if (it.isUserEligible()) {
+                    loginAnalyticsListener.trackAnalyticsSignIn(false)
+                    triggerEvent(LoggedIn(selectedSite.getSelectedSiteId()))
+                }
             },
             onFailure = { exception ->
                 triggerEvent(ShowSnackbar(R.string.error_generic))
