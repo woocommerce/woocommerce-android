@@ -27,10 +27,10 @@ class GetIPPFeedbackBannerData @Inject constructor(
     private val logger: AppLogWrapper,
 ) {
     @Suppress("ReturnCount", "MaxLineLength")
-    suspend operator fun invoke(): IPPFeedbackBanner? {
+    suspend operator fun invoke(): IPPFeedbackBanner {
         requireShouldShowFeedbackBanner()
 
-        val activePaymentsPlugin = checkNotNull(getActivePaymentsPlugin())
+        val activePaymentsPlugin = getActivePaymentsPlugin()
 
         if (activePaymentsPlugin != WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS) {
             return IPP_NEWBIE_BANNER
@@ -45,7 +45,7 @@ class GetIPPFeedbackBannerData @Inject constructor(
 
         if (!response.isSuccessful()) {
             logger.e(AppLog.T.API, "Error fetching transactions summary: ${response.error.message}")
-            return null
+            return IPP_NEWBIE_BANNER
         }
 
         val numberOfTransactionsInLast30Days = requireTransactionsCount(response)
