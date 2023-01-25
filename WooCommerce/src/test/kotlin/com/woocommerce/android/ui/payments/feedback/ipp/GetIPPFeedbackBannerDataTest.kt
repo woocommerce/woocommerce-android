@@ -257,7 +257,7 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given endpoint returns null response, then should throw exception`() = runBlocking {
+    fun `given endpoint returns null response, then should detect newbie`() = runBlocking {
         // given
         whenever(shouldShowFeedbackBanner()).thenReturn(true)
         whenever(getActivePaymentsPlugin())
@@ -265,12 +265,13 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
 
         whenever(ippStore.fetchTransactionsSummary(any(), any(), any())).thenReturn(WooPayload(null))
 
-        // then
-        assertFailsWith(IllegalStateException::class) {
-            runBlocking { sut() }
-        }
+        // when
+        val result = sut()
 
-        Unit
+        // then
+        assertEquals(R.string.feedback_banner_ipp_message_newbie, result.message)
+        assertEquals(R.string.feedback_banner_ipp_title_newbie, result.title)
+        assertEquals("https://automattic.survey.fm/woo-app-–-cod-survey", result.url)
     }
 
     @Test

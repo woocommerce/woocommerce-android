@@ -44,7 +44,7 @@ class GetIPPFeedbackBannerData @Inject constructor(
         )
 
         if (!response.isSuccessful()) {
-            logger.e(AppLog.T.API, "Error fetching transactions summary: ${response.error.message}")
+            logger.e(AppLog.T.API, "Error fetching transactions summary: ${response.error}")
             return IPP_NEWBIE_BANNER
         }
 
@@ -68,7 +68,7 @@ class GetIPPFeedbackBannerData @Inject constructor(
     }
 
     private fun WooPayload<WCPaymentTransactionsSummaryResult>.isSuccessful(): Boolean {
-        return !isError || result != null
+        return !isError && result != null
     }
 
     private fun requirePositiveNumberOfTransactions(numberOfTransactions: Int) {
