@@ -229,7 +229,6 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
             val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = ORDER)
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
             whenever(appPrefsWrapper.isCardReaderWelcomeDialogShown()).thenReturn(true)
-            whenever(isTapToPayEnabled.invoke()).thenReturn(true)
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(
                 CardReaderOnboardingState.OnboardingCompleted(
                     PluginType.WOOCOMMERCE_PAYMENTS,
@@ -267,7 +266,6 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
                     countryCode
                 )
             )
-            whenever(isTapToPayEnabled.invoke()).thenReturn(true)
             whenever(isTapToPayAvailable(countryCode, isTapToPayEnabled)).thenReturn(false)
 
             // WHEN
