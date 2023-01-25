@@ -20,21 +20,8 @@ class CardReaderTypeSelectionDialogFragment : DialogFragment(R.layout.card_reade
         super.onViewCreated(view, savedInstanceState)
         val binding = CardReaderTypeSelectionDialogBinding.bind(view)
         setIllustration(binding)
-        setDescription(binding)
         initClicks(CardReaderTypeSelectionDialogBinding.bind(view))
         initObservers()
-    }
-
-    private fun setDescription(binding: CardReaderTypeSelectionDialogBinding) {
-        /**
-         * We are hiding the description in the landscape mode since the description text gets cut off
-         * in smaller devices.
-         * Read more: https://github.com/woocommerce/woocommerce-android/pull/8229#issuecomment-1398667439
-         */
-        UiHelpers.setTextOrHideInLandscape(
-            binding.cardReaderTypeSelectionDescription,
-            R.string.card_reader_type_selection_description
-        )
     }
 
     private fun setIllustration(binding: CardReaderTypeSelectionDialogBinding) {
