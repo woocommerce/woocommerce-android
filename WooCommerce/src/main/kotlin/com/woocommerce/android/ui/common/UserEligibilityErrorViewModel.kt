@@ -8,7 +8,6 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.User
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -32,18 +31,18 @@ class UserEligibilityErrorViewModel @Inject constructor(
         private const val ROLES_KEY = "current_roles"
     }
 
-    final val viewStateData = LiveDataDelegate(savedState, ViewState())
+    val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
     init {
         val email = appPrefs.getUserEmail()
         if (email.isNotEmpty()) {
             val user = userEligibilityFetcher.getUserByEmail(email)
-            viewState = viewState.copy(user = user?.toAppModel())
+            viewState = viewState.copy(user = user)
             analyticsTracker.track(
                 AnalyticsEvent.LOGIN_INSUFFICIENT_ROLE,
                 mapOf(
-                    ROLES_KEY to user?.getUserRoles()?.joinToString(",") { it.value }
+                    ROLES_KEY to user?.roles?.joinToString(",") { it.value }
                 )
             )
         }
@@ -62,7 +61,7 @@ class UserEligibilityErrorViewModel @Inject constructor(
             viewState = viewState.copy(isProgressDialogShown = true)
             userEligibilityFetcher.fetchUserInfo().fold(
                 onSuccess = {
-                    val isUserEligible = it.isUserEligible()
+                    val isUserEligible = it.isEligible
 
                     if (isUserEligible) {
                         triggerEvent(Exit)

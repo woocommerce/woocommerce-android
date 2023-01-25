@@ -217,7 +217,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             if (selectedSite.exists()) {
                 appCoroutineScope.launch {
                     userEligibilityFetcher.fetchUserInfo().onSuccess {
-                        if (!it.isUserEligible()) {
+                        if (!it.isEligible) {
                             WooLog.w(T.LOGIN, "Current user is not eligible to access the current site")
                             restartMainActivity()
                         }
