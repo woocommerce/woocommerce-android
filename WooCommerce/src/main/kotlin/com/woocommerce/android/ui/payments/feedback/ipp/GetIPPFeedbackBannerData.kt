@@ -3,6 +3,9 @@ package com.woocommerce.android.ui.payments.feedback.ipp
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_IPP_BANNER_CAMPAIGN_NAME_BEGINNER
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_IPP_BANNER_CAMPAIGN_NAME_NEWBIE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_IPP_BANNER_CAMPAIGN_NAME_NINJA
 import com.woocommerce.android.extensions.daysAgo
 import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.ui.payments.GetActivePaymentsPlugin
@@ -114,7 +117,7 @@ class GetIPPFeedbackBannerData @Inject constructor(
                 BANNER_TITLE_NEWBIE,
                 BANNER_MESSAGE_NEWBIE,
                 SURVEY_URL_IPP_NEWBIE,
-                CAMPAIGN_NAME_IPP_NEWBIE,
+                VALUE_IPP_BANNER_CAMPAIGN_NAME_NEWBIE,
             )
         }
 
@@ -123,7 +126,7 @@ class GetIPPFeedbackBannerData @Inject constructor(
                 BANNER_TITLE_BEGINNER,
                 BANNER_MESSAGE_BEGINNER,
                 SURVEY_URL_IPP_BEGINNER,
-                CAMPAIGN_NAME_IPP_BEGINNER,
+                VALUE_IPP_BANNER_CAMPAIGN_NAME_BEGINNER,
             )
         }
 
@@ -132,7 +135,7 @@ class GetIPPFeedbackBannerData @Inject constructor(
                 BANNER_TITLE_NINJA,
                 BANNER_MESSAGE_NINJA,
                 SURVEY_URL_IPP_NINJA,
-                CAMPAIGN_NAME_IPP_NINJA,
+                VALUE_IPP_BANNER_CAMPAIGN_NAME_NINJA,
             )
         }
 
@@ -150,10 +153,6 @@ class GetIPPFeedbackBannerData @Inject constructor(
         private const val BANNER_MESSAGE_NEWBIE = R.string.feedback_banner_ipp_message_newbie
         private const val BANNER_MESSAGE_BEGINNER = R.string.feedback_banner_ipp_message_beginner
         private const val BANNER_MESSAGE_NINJA = R.string.feedback_banner_ipp_message_ninja
-
-        private const val CAMPAIGN_NAME_IPP_NEWBIE = "ipp_not_user"
-        private const val CAMPAIGN_NAME_IPP_BEGINNER = "ipp_new_user"
-        private const val CAMPAIGN_NAME_IPP_NINJA = "ipp_power_user"
 
         private val IPP_BEGINNER_TRANSACTIONS_RANGE = 1..10
     }

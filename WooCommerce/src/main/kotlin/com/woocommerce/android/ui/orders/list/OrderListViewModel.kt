@@ -21,6 +21,10 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_CAMPAIGN_NAME
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_REMIND_LATER
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_IPP_BANNER_SOURCE_ORDER_LIST
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.RequestResult.SUCCESS
@@ -621,7 +625,7 @@ class OrderListViewModel @Inject constructor(
     fun onIPPFeedbackBannerDismissedShowLater() {
         trackIPPBannerEvent(
             AnalyticsEvent.IPP_FEEDBACK_BANNER_DISMISSED,
-            "remind_later" to true
+            KEY_IPP_BANNER_REMIND_LATER to true
         )
 
         markFeedbackBannerAsDismissed()
@@ -643,8 +647,8 @@ class OrderListViewModel @Inject constructor(
         val bannerData = (viewState.ippFeedbackBannerState as IPPSurveyFeedbackBannerState.Visible).bannerData
 
         return customArgs.toMap() + mapOf(
-            "source" to "order_list",
-            "campaign" to bannerData.campaignName
+            KEY_IPP_BANNER_SOURCE to VALUE_IPP_BANNER_SOURCE_ORDER_LIST,
+            KEY_IPP_BANNER_CAMPAIGN_NAME to bannerData.campaignName
         )
     }
 

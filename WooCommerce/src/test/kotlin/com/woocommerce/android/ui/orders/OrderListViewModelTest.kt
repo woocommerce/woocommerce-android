@@ -3,6 +3,12 @@ package com.woocommerce.android.ui.orders
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_CAMPAIGN_NAME
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_REMIND_LATER
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_IPP_BANNER_SOURCE_ORDER_LIST
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.RequestResult
@@ -44,6 +50,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -83,6 +90,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount = mock()
     private val shouldShowFeedbackBanner: ShouldShowFeedbackBanner = mock()
     private val getIPPFeedbackBannerData: GetIPPFeedbackBannerData = mock()
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
 
     @Before
     fun setup() = testBlocking {
@@ -126,7 +134,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         markFeedbackBannerAsDismissed = mock(),
         markFeedbackBannerAsDismissedForever = mock(),
         markFeedbackBannerAsCompleted = mock(),
-        analyticsTracker = mock(),
+        analyticsTracker = analyticsTracker,
     )
 
     @Test
@@ -667,6 +675,110 @@ class OrderListViewModelTest : BaseUnitTest() {
         // then
         assertTrue(viewModel.viewState.isSimplePaymentsWIPNoticeCardVisible)
     }
+
+    @Test
+    fun `given IPP banner is shown, when dismissed temporarily, then correct event is tracked`() =
+        testBlocking {
+            // given
+            whenever(shouldShowFeedbackBanner()).thenReturn(true)
+            whenever(getIPPFeedbackBannerData()).thenReturn(FAKE_IPP_FEEDBACK_BANNER_DATA)
+            viewModel = createViewModel()
+
+            // when
+            viewModel.onIPPFeedbackBannerDismissedShowLater()
+
+            // then
+            verify(analyticsTracker).track(
+                AnalyticsEvent.IPP_FEEDBACK_BANNER_DISMISSED,
+                mapOf(
+                    KEY_IPP_BANNER_REMIND_LATER to true,
+                    KEY_IPP_BANNER_SOURCE to VALUE_IPP_BANNER_SOURCE_ORDER_LIST,
+                    KEY_IPP_BANNER_CAMPAIGN_NAME to FAKE_IPP_FEEDBACK_BANNER_DATA.campaignName
+                )
+            )
+        }
+
+    @Test
+    fun `given IPP banner is shown, when dismissed forever, then correct event is tracked`() =
+        testBlocking {
+            // given
+            whenever(shouldShowFeedbackBanner()).thenReturn(true)
+            whenever(getIPPFeedbackBannerData()).thenReturn(FAKE_IPP_FEEDBACK_BANNER_DATA)
+            viewModel = createViewModel()
+
+            // when
+            viewModel.onIPPFeedbackBannerDismissedForever()
+
+            // then
+            verify(analyticsTracker).track(
+                AnalyticsEvent.IPP_FEEDBACK_BANNER_DISMISSED,
+                mapOf(
+                    KEY_IPP_BANNER_REMIND_LATER to false,
+                    KEY_IPP_BANNER_SOURCE to VALUE_IPP_BANNER_SOURCE_ORDER_LIST,
+                    KEY_IPP_BANNER_CAMPAIGN_NAME to FAKE_IPP_FEEDBACK_BANNER_DATA.campaignName
+                )
+            )
+        }
+
+    @Test
+    fun `given IPP banner is shown, when CTA clicked, then correct event is tracked`() =
+        testBlocking {
+            // given
+            whenever(shouldShowFeedbackBanner()).thenReturn(true)
+            whenever(getIPPFeedbackBannerData()).thenReturn(FAKE_IPP_FEEDBACK_BANNER_DATA)
+            viewModel = createViewModel()
+
+            // when
+            viewModel.onIPPFeedbackBannerCTAClicked()
+
+            // then
+            verify(analyticsTracker).track(
+                AnalyticsEvent.IPP_FEEDBACK_BANNER_CTA_TAPPED,
+                mapOf(
+                    KEY_IPP_BANNER_SOURCE to VALUE_IPP_BANNER_SOURCE_ORDER_LIST,
+                    KEY_IPP_BANNER_CAMPAIGN_NAME to FAKE_IPP_FEEDBACK_BANNER_DATA.campaignName
+                )
+            )
+        }
+
+    @Test
+    fun `given IPP banner is not shown, then events are not tracked`() =
+        testBlocking {
+            // given
+            whenever(shouldShowFeedbackBanner()).thenReturn(false)
+
+            // when
+            viewModel = createViewModel()
+
+            // then
+            verify(analyticsTracker, never()).track(
+                AnalyticsEvent.IPP_FEEDBACK_BANNER_SHOWN,
+                mapOf(
+                    KEY_IPP_BANNER_SOURCE to VALUE_IPP_BANNER_SOURCE_ORDER_LIST,
+                    KEY_IPP_BANNER_CAMPAIGN_NAME to FAKE_IPP_FEEDBACK_BANNER_DATA.campaignName
+                )
+            )
+        }
+
+    @Test
+    fun `given IPP banner is shown, then correct event is tracked`() =
+        testBlocking {
+            // given
+            whenever(shouldShowFeedbackBanner()).thenReturn(true)
+            whenever(getIPPFeedbackBannerData()).thenReturn(FAKE_IPP_FEEDBACK_BANNER_DATA)
+
+            // when
+            viewModel = createViewModel()
+
+            // then
+            verify(analyticsTracker).track(
+                AnalyticsEvent.IPP_FEEDBACK_BANNER_SHOWN,
+                mapOf(
+                    KEY_IPP_BANNER_SOURCE to VALUE_IPP_BANNER_SOURCE_ORDER_LIST,
+                    KEY_IPP_BANNER_CAMPAIGN_NAME to FAKE_IPP_FEEDBACK_BANNER_DATA.campaignName
+                )
+            )
+        }
 
     private companion object {
         const val ANY_SEARCH_QUERY = "search query"
