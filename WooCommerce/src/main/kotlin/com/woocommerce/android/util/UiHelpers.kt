@@ -81,7 +81,9 @@ object UiHelpers {
         val isLandscape = DisplayUtils.isLandscape(textView.context)
         updateVisibility(textView, resId != null && !isLandscape, setInvisible)
         val text = resId?.let { textView.context.getString(resId) }
-        setTextOrHide(textView, text)
+        text?.let {
+            textView.text = it
+        }
     }
 
     fun setDrawableOrHide(imageView: ImageView, image: Drawable?) {
