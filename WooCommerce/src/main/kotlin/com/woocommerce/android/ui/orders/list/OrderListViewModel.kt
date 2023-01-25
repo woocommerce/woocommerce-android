@@ -178,10 +178,14 @@ class OrderListViewModel @Inject constructor(
             val shouldShowFeedbackBanner = FeatureFlag.IPP_FEEDBACK_BANNER.isEnabled() && shouldShowFeedbackBanner()
             if (shouldShowFeedbackBanner) {
                 val bannerData = getIPPFeedbackBannerData()
-                viewState = viewState.copy(ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(bannerData))
-                trackIPPBannerEvent(AnalyticsEvent.IPP_FEEDBACK_BANNER_SHOWN)
+                if (bannerData != null) {
+                    viewState =
+                        viewState.copy(ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(bannerData))
+
+                    trackIPPBannerEvent(AnalyticsEvent.IPP_FEEDBACK_BANNER_SHOWN)
+                }
             }
-            viewState = viewState.copy(isSimplePaymentsWIPNoticeCardVisible = !shouldShowFeedbackBanner)
+            refreshOrdersBannerVisibility()
         }
     }
 

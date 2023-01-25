@@ -24,6 +24,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
+import org.wordpress.android.fluxc.utils.AppLogWrapper
+import org.wordpress.android.util.AppLog
 import java.util.Date
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -35,12 +37,14 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
     private val ippStore: WCInPersonPaymentsStore = mock()
     private val siteModel: SiteModel = mock()
     private val getActivePaymentsPlugin: GetActivePaymentsPlugin = mock()
+    private val logger: AppLogWrapper = mock()
 
     private val sut = GetIPPFeedbackBannerData(
         shouldShowFeedbackBanner = shouldShowFeedbackBanner,
         ippStore = ippStore,
         siteModel = siteModel,
         getActivePaymentsPlugin = getActivePaymentsPlugin,
+        logger = logger,
     )
 
     @Before
@@ -94,10 +98,10 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         val result = sut()
 
         // then
-        assertEquals("https://automattic.survey.fm/woo-app-–-cod-survey", result.url)
-        assertEquals(R.string.feedback_banner_ipp_title_newbie, result.title)
-        assertEquals(R.string.feedback_banner_ipp_message_newbie, result.message)
-        assertEquals("ipp_not_user", result.campaignName)
+        assertEquals("https://automattic.survey.fm/woo-app-–-cod-survey", result?.url)
+        assertEquals(R.string.feedback_banner_ipp_title_newbie, result?.title)
+        assertEquals(R.string.feedback_banner_ipp_message_newbie, result?.message)
+        assertEquals("ipp_not_user", result?.campaignName)
     }
 
     @Test
@@ -116,10 +120,10 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
             val result = sut()
 
             // then
-            assertEquals("https://automattic.survey.fm/woo-app-–-ipp-first-transaction-survey", result.url)
-            assertEquals(R.string.feedback_banner_ipp_message_beginner, result.message)
-            assertEquals(R.string.feedback_banner_ipp_title_beginner, result.title)
-            assertEquals("ipp_new_user", result.campaignName)
+            assertEquals("https://automattic.survey.fm/woo-app-–-ipp-first-transaction-survey", result?.url)
+            assertEquals(R.string.feedback_banner_ipp_message_beginner, result?.message)
+            assertEquals(R.string.feedback_banner_ipp_title_beginner, result?.title)
+            assertEquals("ipp_new_user", result?.campaignName)
         }
 
     @Test
@@ -143,11 +147,11 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
             val result = sut()
 
             // then
-            assertEquals(R.string.feedback_banner_ipp_message_beginner, result.message)
-            assertEquals(R.string.feedback_banner_ipp_title_beginner, result.title)
-            assertEquals("https://automattic.survey.fm/woo-app-–-ipp-first-transaction-survey", result.url)
-            assertEquals("https://automattic.survey.fm/woo-app-–-ipp-first-transaction-survey", result.url)
-            assertEquals("ipp_new_user", result.campaignName)
+            assertEquals(R.string.feedback_banner_ipp_message_beginner, result?.message)
+            assertEquals(R.string.feedback_banner_ipp_title_beginner, result?.title)
+            assertEquals("https://automattic.survey.fm/woo-app-–-ipp-first-transaction-survey", result?.url)
+            assertEquals("https://automattic.survey.fm/woo-app-–-ipp-first-transaction-survey", result?.url)
+            assertEquals("ipp_new_user", result?.campaignName)
             assertNull(expectedTimeWindowCaptor.allValues.last())
             assertEquals(Date().daysAgo(30).formatToYYYYmmDD(), expectedTimeWindowCaptor.firstValue)
         }
@@ -168,10 +172,10 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
             val result = sut()
 
             // then
-            assertEquals("https://automattic.survey.fm/woo-app-–-ipp-survey-for-power-users", result.url)
-            assertEquals(R.string.feedback_banner_ipp_message_ninja, result.message)
-            assertEquals(R.string.feedback_banner_ipp_title_ninja, result.title)
-            assertEquals("ipp_power_user", result.campaignName)
+            assertEquals("https://automattic.survey.fm/woo-app-–-ipp-survey-for-power-users", result?.url)
+            assertEquals(R.string.feedback_banner_ipp_message_ninja, result?.message)
+            assertEquals(R.string.feedback_banner_ipp_title_ninja, result?.title)
+            assertEquals("ipp_power_user", result?.campaignName)
         }
 
     @Test
@@ -184,9 +188,9 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         val result = sut()
 
         // then
-        assertEquals(R.string.feedback_banner_ipp_message_newbie, result.message)
-        assertEquals(R.string.feedback_banner_ipp_title_newbie, result.title)
-        assertEquals("https://automattic.survey.fm/woo-app-–-cod-survey", result.url)
+        assertEquals(R.string.feedback_banner_ipp_message_newbie, result?.message)
+        assertEquals(R.string.feedback_banner_ipp_title_newbie, result?.title)
+        assertEquals("https://automattic.survey.fm/woo-app-–-cod-survey", result?.url)
     }
 
     @Test
@@ -213,7 +217,7 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given endpoint returns error, then should throw error`() = runBlocking {
+    fun `given endpoint returns error, then should return null`() = runBlocking {
         // given
         whenever(shouldShowFeedbackBanner()).thenReturn(true)
         whenever(getActivePaymentsPlugin())
@@ -223,11 +227,25 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         whenever(ippStore.fetchTransactionsSummary(any(), any(), any())).thenReturn(WooPayload(error))
 
         // then
-        assertFailsWith(IllegalStateException::class) {
-            runBlocking { sut() }
-        }
+        assertNull(sut())
+    }
 
-        Unit
+    @Test
+    fun `given endpoint returns error, when use case invoked, then should log error`() = runBlocking {
+        // given
+        whenever(shouldShowFeedbackBanner()).thenReturn(true)
+        whenever(getActivePaymentsPlugin())
+            .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
+
+        val errorMessage = "error"
+        val error = WooError(WooErrorType.API_ERROR, BaseRequest.GenericErrorType.NO_CONNECTION, errorMessage)
+        whenever(ippStore.fetchTransactionsSummary(any(), any(), any())).thenReturn(WooPayload(error))
+
+        // when
+        sut()
+
+        // then
+        verify(logger).e(AppLog.T.API, "Error fetching transactions summary: $errorMessage")
     }
 
     @Test

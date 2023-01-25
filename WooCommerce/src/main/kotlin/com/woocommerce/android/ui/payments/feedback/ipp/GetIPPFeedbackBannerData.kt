@@ -11,6 +11,8 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentTransactionsSummaryResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
+import org.wordpress.android.fluxc.utils.AppLogWrapper
+import org.wordpress.android.util.AppLog
 import java.util.Date
 import javax.inject.Inject
 
@@ -19,9 +21,10 @@ class GetIPPFeedbackBannerData @Inject constructor(
     private val ippStore: WCInPersonPaymentsStore,
     private val siteModel: SiteModel,
     private val getActivePaymentsPlugin: GetActivePaymentsPlugin,
+    private val logger: AppLogWrapper,
 ) {
     @Suppress("ReturnCount", "MaxLineLength")
-    suspend operator fun invoke(): IPPFeedbackBanner {
+    suspend operator fun invoke(): IPPFeedbackBanner? {
         requireShouldShowFeedbackBanner()
 
         val activePaymentsPlugin = checkNotNull(getActivePaymentsPlugin())
@@ -37,7 +40,10 @@ class GetIPPFeedbackBannerData @Inject constructor(
             timeWindowStartDate.formatToYYYYmmDD()
         )
 
-        requireSuccessfulTransactionsSummaryResponse(response)
+        if (!response.isSuccessful()) {
+            logger.e(AppLog.T.API, "Error fetching transactions summary: ${response.error.message}")
+            return null
+        }
 
         val numberOfTransactionsInLast30Days = requireTransactionsCount(response)
 
@@ -58,10 +64,8 @@ class GetIPPFeedbackBannerData @Inject constructor(
         return checkNotNull(response.result?.transactionsCount) { "Transactions count must not be null" }
     }
 
-    private fun requireSuccessfulTransactionsSummaryResponse(response: WooPayload<WCPaymentTransactionsSummaryResult>) {
-        if (response.isError || response.result == null) {
-            throw IllegalStateException("Failed to fetch transactions summary")
-        }
+    private fun WooPayload<WCPaymentTransactionsSummaryResult>.isSuccessful(): Boolean {
+        return !isError || result != null
     }
 
     private fun requirePositiveNumberOfTransactions(numberOfTransactions: Int) {
@@ -74,6 +78,7 @@ class GetIPPFeedbackBannerData @Inject constructor(
         }
     }
 
+    @Suppress("ReturnCount")
     private suspend fun hasUserEverMadeIppTransaction(): Boolean {
         val activePaymentsPlugin = checkNotNull(getActivePaymentsPlugin())
 
@@ -83,7 +88,10 @@ class GetIPPFeedbackBannerData @Inject constructor(
 
         val response = ippStore.fetchTransactionsSummary(activePaymentsPlugin, siteModel)
 
-        requireSuccessfulTransactionsSummaryResponse(response)
+        if (!response.isSuccessful()) {
+            logger.e(AppLog.T.API, "Error fetching transactions summary: ${response.error.message}")
+            return false
+        }
 
         val numberOfTransactions = requireTransactionsCount(response)
 
