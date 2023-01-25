@@ -113,7 +113,7 @@ internal class CollectPaymentActionTest : CardReaderBaseUnitTest() {
         }
 
     @Test
-    fun `given flow not terminated built int reader, when job canceled, then collect payment not canceled`() =
+    fun `given flow not terminated built in reader, when job canceled, then collect payment not canceled`() =
         testBlocking {
             val cancelable = mock<Cancelable>()
             whenever(cancelable.isCompleted).thenReturn(false)
