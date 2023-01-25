@@ -198,7 +198,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             onSuccess = {
                 // Track success only if the user is eligible, for the other cases, the user eligibility screen will
                 // handle the flow
-                if (it.isUserEligible()) {
+                if (it.isEligible) {
                     loginAnalyticsListener.trackAnalyticsSignIn(false)
                     triggerEvent(LoggedIn(selectedSite.getSelectedSiteId()))
                 }
