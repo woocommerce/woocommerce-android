@@ -46,9 +46,6 @@ class MainActivityViewModel @Inject constructor(
         launch {
             featureAnnouncementRepository.getFeatureAnnouncements(fromCache = false)
         }
-        prefs.setIPPFeedbackSurveyCompleted(false)
-        prefs.setIPPFeedbackBannerDismissedForever(false)
-        prefs.setIPPFeedbackBannerDismissedRemindLater(1L)
     }
 
     val startDestination = if (selectedSite.exists()) R.id.dashboard else R.id.nav_graph_site_picker
