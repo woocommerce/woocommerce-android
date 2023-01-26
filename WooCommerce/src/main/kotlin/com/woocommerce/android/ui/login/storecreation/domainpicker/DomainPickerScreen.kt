@@ -48,7 +48,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -61,9 +61,9 @@ import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerV
 fun DomainPickerScreen(viewModel: DomainPickerViewModel) {
     viewModel.viewState.observeAsState(DomainPickerState()).value.let { viewState ->
         Scaffold(topBar = {
-            Toolbar(
+            ToolbarWithHelpButton(
                 onNavigationButtonClick = viewModel::onBackPressed,
-                onActionButtonClick = viewModel::onHelpPressed,
+                onHelpButtonClick = viewModel::onHelpPressed,
             )
         }) { padding ->
             DomainSearchForm(

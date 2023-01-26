@@ -26,7 +26,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -35,9 +35,9 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 fun StoreNamePickerScreen(viewModel: StoreNamePickerViewModel) {
     viewModel.storeName.observeAsState().value?.let { storeName ->
         Scaffold(topBar = {
-            Toolbar(
+            ToolbarWithHelpButton(
                 onNavigationButtonClick = viewModel::onCancelPressed,
-                onActionButtonClick = viewModel::onHelpPressed,
+                onHelpButtonClick = viewModel::onHelpPressed,
             )
         }) { padding ->
             NamePickerForm(
