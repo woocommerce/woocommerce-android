@@ -17,6 +17,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
+import com.woocommerce.android.ui.compose.autoMirror
 
 @Composable
 fun Toolbar(
@@ -91,7 +92,8 @@ fun Toolbar(
                 IconButton(onClick = onNavigationButtonClick) {
                     Icon(
                         navigationIcon,
-                        contentDescription = navigationIconContentDescription
+                        contentDescription = navigationIconContentDescription,
+                        modifier = Modifier.autoMirror()
                     )
                 }
             } else if (onNavigationButtonClick == null && navigationIcon != null || onNavigationButtonClick != null) {
