@@ -60,7 +60,6 @@ class AccountRepository @Inject constructor(
                 )
                 false
             } else {
-                dispatcher.dispatch(SiteActionBuilder.newRemoveWpcomAndJetpackSitesAction())
                 cleanup()
                 true
             }
@@ -94,5 +93,8 @@ class AccountRepository @Inject constructor(
 
         // Wipe user-specific preferences
         prefs.resetUserPreferences()
+
+        // Delete sites
+        dispatcher.dispatch(SiteActionBuilder.newRemoveAllSitesAction())
     }
 }
