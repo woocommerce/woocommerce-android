@@ -207,10 +207,18 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
         binding.categoryStoreSettings.isVisible = presenter.isDomainOptionVisible
         binding.optionDomain.isVisible = presenter.isDomainOptionVisible
+        binding.optionDomain.setOnClickListener {
+            showDomainChooser()
+        }
 
         presenter.setupAnnouncementOption()
         presenter.setupJetpackInstallOption()
         presenter.setupApplicationPasswordsSettings()
+    }
+
+    private fun showDomainChooser() {
+        findNavController()
+            .navigateSafely(MainSettingsFragmentDirections.actionMainSettingsFragmentToNavGraphDomainChange())
     }
 
     override fun onResume() {
