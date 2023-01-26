@@ -8,6 +8,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordGenerationException
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
+import com.woocommerce.android.model.User
+import com.woocommerce.android.model.UserRole
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.WPApiSiteRepository
@@ -32,7 +34,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.user.WCUserModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
@@ -46,7 +47,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     private val testPassword = "password"
     private val siteAddress: String = "http://site.com"
     private val testSite = SiteModel()
-    private val testUser = WCUserModel()
+    private val testUser = User(1L, "firstName", "lastName", "username", "email", listOf(UserRole.Administrator))
     private val applicationPasswordsUnavailableEvents = MutableSharedFlow<WPAPINetworkError>(extraBufferCapacity = 1)
 
     private val wpApiSiteRepository: WPApiSiteRepository = mock {
@@ -54,6 +55,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         onBlocking { checkWooStatus(testSite) } doReturn Result.success(true)
         onBlocking { getSiteByUrl(siteAddress) } doReturn testSite
     }
+    private var isJetpackConnected: Boolean = false
     private val selectedSite: SelectedSite = mock {
         on { exists() } doReturn false
     }
@@ -73,7 +75,12 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         prepareMocks()
 
         viewModel = LoginSiteCredentialsViewModel(
-            savedStateHandle = SavedStateHandle(mapOf(LoginSiteCredentialsViewModel.SITE_ADDRESS_KEY to siteAddress)),
+            savedStateHandle = SavedStateHandle(
+                mapOf(
+                    LoginSiteCredentialsViewModel.SITE_ADDRESS_KEY to siteAddress,
+                    LoginSiteCredentialsViewModel.IS_JETPACK_CONNECTED_KEY to isJetpackConnected
+                )
+            ),
             wpApiSiteRepository = wpApiSiteRepository,
             selectedSite = selectedSite,
             loginAnalyticsListener = loginAnalyticsListener,
@@ -264,7 +271,8 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             applicationPasswordsUnavailableEvents.tryEmit(mock())
         }
 
-        assertThat(viewModel.event.value).isEqualTo(ShowApplicationPasswordsUnavailableScreen(siteAddress))
+        assertThat(viewModel.event.value)
+            .isEqualTo(ShowApplicationPasswordsUnavailableScreen(siteAddress, isJetpackConnected))
     }
 
     @Test

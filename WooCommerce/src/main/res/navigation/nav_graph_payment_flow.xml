@@ -219,6 +219,10 @@
             android:name="cardReaderFlowParam"
             app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam"
             app:nullable="false" />
+        <argument
+            android:name="cardReaderType"
+            app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType"
+            app:nullable="false" />
         <action
             android:id="@+id/action_cardReaderTutorialDialogFragment_to_cardReaderPaymentDialogFragment"
             app:destination="@id/cardReaderPaymentDialogFragment"
@@ -234,6 +238,10 @@
         <argument
             android:name="paymentOrRefund"
             app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam$PaymentOrRefund"
+            app:nullable="false" />
+        <argument
+            android:name="cardReaderType"
+            app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType"
             app:nullable="false" />
     </dialog>
     <fragment

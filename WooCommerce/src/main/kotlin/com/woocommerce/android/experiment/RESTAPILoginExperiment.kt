@@ -40,6 +40,10 @@ class RESTAPILoginExperiment @Inject constructor(
         )
     }
 
+    fun trackSuccess() {
+        experimentTracker.log(ExperimentTracker.MYSTORE_DISPLAYED_EVENT)
+    }
+
     fun getCurrentVariant(): RESTAPILoginVariant = if (PackageUtils.isTesting()) {
         RESTAPILoginVariant.CONTROL
     } else {

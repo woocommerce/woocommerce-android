@@ -66,6 +66,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         const val SITE_ADDRESS_KEY = "site-address"
         const val USERNAME_KEY = "username"
         const val PASSWORD_KEY = "password"
+        const val IS_JETPACK_CONNECTED_KEY = "is-jetpack-connected"
     }
 
     private val siteAddress: String = savedStateHandle[SITE_ADDRESS_KEY]!!
@@ -93,7 +94,12 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         loginAnalyticsListener.trackUsernamePasswordFormViewed()
         applicationPasswordsNotifier.featureUnavailableEvents
             .onEach {
-                triggerEvent(ShowApplicationPasswordsUnavailableScreen(siteAddress))
+                triggerEvent(
+                    ShowApplicationPasswordsUnavailableScreen(
+                        siteAddress = siteAddress,
+                        isJetpackConnected = savedStateHandle[IS_JETPACK_CONNECTED_KEY]!!
+                    )
+                )
             }
             .launchIn(this)
     }
@@ -196,7 +202,11 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         isLoading.value = true
         userEligibilityFetcher.fetchUserInfo().fold(
             onSuccess = {
-                loginAnalyticsListener.trackAnalyticsSignIn(false)
+                if (it.isEligible) {
+                    // Track success only if the user is eligible, for the other cases, the user eligibility screen will
+                    // handle the flow
+                    loginAnalyticsListener.trackAnalyticsSignIn(false)
+                }
                 triggerEvent(LoggedIn(selectedSite.getSelectedSiteId()))
             },
             onFailure = { exception ->
@@ -282,5 +292,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     data class LoggedIn(val localSiteId: Int) : MultiLiveEvent.Event()
     data class ShowResetPasswordScreen(val siteAddress: String) : MultiLiveEvent.Event()
     data class ShowNonWooErrorScreen(val siteAddress: String) : MultiLiveEvent.Event()
-    data class ShowApplicationPasswordsUnavailableScreen(val siteAddress: String) : MultiLiveEvent.Event()
+    data class ShowApplicationPasswordsUnavailableScreen(
+        val siteAddress: String,
+        val isJetpackConnected: Boolean
+    ) : MultiLiveEvent.Event()
 }

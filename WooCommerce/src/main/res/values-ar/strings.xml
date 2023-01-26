@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-01-14 13:03:23+0000
+Translation-Revision-Date: 2023-01-19 14:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="login_application_passwords_help">ما المقصود بكلمات مرور التطبيقات؟</string>
+    <string name="store_creation_country_picker_countries_header">البلدان</string>
+    <string name="store_creation_country_picker_current_location">الموقع الحالي</string>
+    <string name="store_creation_country_picker_description">سنستخدم هذه المعلومات لإعداد المدفوعات والشحن والضرائب.</string>
+    <string name="store_creation_country_picker_title">تأكيد موقعك</string>
+    <string name="store_creation_store_profiler_platforms_description">يمكنك اختيار العديد منها.</string>
+    <string name="store_creation_store_profiler_platforms_title">ما المنصة التي تبيع عليها حاليًا.</string>
+    <string name="store_creation_store_profiler_journey_description">لتسريع الأمور، قمنا بمواءمة تجربتك في WooCommerce لكي تناسبك حسب الردود التي أرسلتها.</string>
+    <string name="store_creation_store_profiler_journey_title">أين تتمركز في رحلتك التجارية؟</string>
+    <string name="store_creation_store_profiler_industries_description">اختر تصنيفًا يلائم أعمالك على أفضل نحو.</string>
+    <string name="store_creation_store_profiler_industries_title">ما الذي ستبيعه؟</string>
+    <string name="login_application_passwords_unavailable">يبدو أن ميزة كلمات مرور التطبيقات قد تم تعطيلها في موقعك ⁦%1$s⁩.\n يرجى تمكينها لاستخدام تطبيق WooCommerce.</string>
+    <string name="login_open_installation_page">فتح صفحة التثبيت</string>
     <string name="not_a_valid_qr_code">رمز Qr الذي تم مسحه ضوئيًا ليس رمز WooCommerce</string>
     <string name="store_creation_iap_eligibility_check_error_description">إنشاء متجر من تطبيق الجوال غير متاح حاليًا في بلدك.</string>
     <string name="store_creation_iap_eligibility_check_error_title">إنشاء المتجر غير متوفر</string>
@@ -14,8 +27,6 @@ Language: ar
     <string name="review_reply_failure">لقد حدث خطأ عند إرسال الرد</string>
     <string name="review_reply_success">تم إرسال الإجابة</string>
     <string name="wc_reply">إجابة</string>
-    <string name="store_creation_store_categories_subtitle">اختيار تصنيف يُعرّف\nعملك على أفضل وجه.</string>
-    <string name="store_creation_store_categories_title">ما الفكرة التي يدور عملك حولها؟</string>
     <string name="product_selection_menu_select_all">تحديد الكل</string>
     <string name="product_selection_menu_update_price">تحديث السعر</string>
     <string name="product_selection_menu_update_status">تحديث الحالة</string>

@@ -28,10 +28,11 @@ import javax.inject.Inject
 class LoginSiteCredentialsFragment : Fragment() {
     companion object {
         const val TAG = "LoginSiteCredentialsFragment"
-        fun newInstance(siteAddress: String, username: String?, password: String?) =
+        fun newInstance(siteAddress: String, isJetpackConnected: Boolean, username: String?, password: String?) =
             LoginSiteCredentialsFragment().apply {
                 arguments = bundleOf(
                     LoginSiteCredentialsViewModel.SITE_ADDRESS_KEY to siteAddress,
+                    LoginSiteCredentialsViewModel.IS_JETPACK_CONNECTED_KEY to isJetpackConnected,
                     LoginSiteCredentialsViewModel.USERNAME_KEY to username.orEmpty(),
                     LoginSiteCredentialsViewModel.PASSWORD_KEY to password.orEmpty()
                 )
@@ -72,7 +73,7 @@ class LoginSiteCredentialsFragment : Fragment() {
                 is ShowNonWooErrorScreen -> LoginNotWooDialogFragment.newInstance(it.siteAddress)
                     .show(childFragmentManager, LoginNotWooDialogFragment.TAG)
                 is ShowApplicationPasswordsUnavailableScreen ->
-                    ApplicationPasswordsDisabledDialogFragment.newInstance(it.siteAddress)
+                    ApplicationPasswordsDisabledDialogFragment.newInstance(it.siteAddress, it.isJetpackConnected)
                         .show(childFragmentManager, LoginNotWooDialogFragment.TAG)
                 is ShowSnackbar -> uiMessageResolver.showSnack(it.message)
                 is ShowUiStringSnackbar -> uiMessageResolver.showSnack(it.message)

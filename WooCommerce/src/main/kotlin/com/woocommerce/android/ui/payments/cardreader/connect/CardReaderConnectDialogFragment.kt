@@ -118,8 +118,8 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
 
     private fun observeState(binding: CardReaderConnectDialogBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { viewState ->
-            if (viewState is CardReaderConnectViewState.ReaderFoundState) {
-                moveToReaderFoundState(binding, viewState)
+            if (viewState is CardReaderConnectViewState.ExternalReaderFoundState) {
+                moveToExternalReaderFoundStateWithAnimation(binding, viewState)
             } else {
                 moveToState(binding, viewState)
             }
@@ -136,14 +136,17 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
      * When a reader is found, we fade out the scanning illustration, update the UI to the new state, then
      * fade in the reader found illustration
      */
-    private fun moveToReaderFoundState(binding: CardReaderConnectDialogBinding, viewState: CardReaderConnectViewState) {
+    private fun moveToExternalReaderFoundStateWithAnimation(
+        binding: CardReaderConnectDialogBinding,
+        viewState: CardReaderConnectViewState
+    ) {
         val fadeOut = WooAnimUtils.getFadeOutAnim(binding.illustration, WooAnimUtils.Duration.LONG)
         val fadeIn = WooAnimUtils.getFadeInAnim(binding.illustration, WooAnimUtils.Duration.LONG)
 
         fadeOut.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
                 // make sure we haven't moved to another state before starting the fade in animation
-                if (viewModel.viewStateData.value is CardReaderConnectViewState.ReaderFoundState) {
+                if (viewModel.viewStateData.value is CardReaderConnectViewState.ExternalReaderFoundState) {
                     moveToState(binding, viewState)
                     if (lifecycle.currentState == Lifecycle.State.RESUMED) fadeIn.start()
                 }
@@ -231,7 +234,8 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
                     findNavController().navigateSafely(
                         CardReaderConnectDialogFragmentDirections
                             .actionCardReaderConnectDialogFragmentToCardReaderTutorialDialogFragment(
-                                event.cardReaderFlowParam
+                                event.cardReaderFlowParam,
+                                event.cardReaderType
                             )
                     )
                 }

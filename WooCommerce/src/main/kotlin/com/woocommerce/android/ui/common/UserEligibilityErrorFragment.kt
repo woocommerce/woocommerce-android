@@ -139,7 +139,7 @@ class UserEligibilityErrorFragment : BaseFragment(layout.fragment_user_eligibili
 
     private fun showView(user: User) {
         binding.textDisplayname.text = user.getUserNameForDisplay()
-        binding.textUserRoles.text = user.roles.joinToString(", ")
+        binding.textUserRoles.text = user.roles.joinToString(", ") { it.value }
     }
 
     private fun showProgressDialog(show: Boolean) {

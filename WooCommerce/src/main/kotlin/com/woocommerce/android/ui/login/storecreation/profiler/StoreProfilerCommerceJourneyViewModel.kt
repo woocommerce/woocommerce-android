@@ -20,6 +20,12 @@ class StoreProfilerCommerceJourneyViewModel @Inject constructor(
     private val storeProfilerRepository: StoreProfilerRepository,
     private val resourceProvider: ResourceProvider,
 ) : BaseStoreProfilerViewModel(savedStateHandle, newStore) {
+    private companion object {
+        const val STARTING_BUSINESS_KEY = "im_just_starting_my_business"
+        const val NOT_SELLING_ONLINE_KEY = "im_already_selling_but_not_online"
+        const val SELLING_ONLINE_KEY = "im_already_selling_online"
+    }
+
     private var alreadySellingOnlineOption: StoreProfilerOptionUi? = null
     override val hasSearchableContent: Boolean
         get() = false
@@ -57,16 +63,26 @@ class StoreProfilerCommerceJourneyViewModel @Inject constructor(
         )
         when (alreadySellingOnlineSelected()) {
             true -> triggerEvent(NavigateToEcommercePlatformsStep)
-            false -> triggerEvent(NavigateToCountryPickerStep)
+            false -> triggerEvent(NavigateToNextStep)
         }
     }
 
     private fun AboutMerchant.toStoreProfilerOptionUi() = StoreProfilerOptionUi(
-        name = value,
+        name = getLocalizedCommerceJourney(tracks),
         key = tracks,
         isSelected = newStore.data.profilerData?.userCommerceJourneyKey == tracks,
     )
 
     private fun alreadySellingOnlineSelected() = profilerOptions.value
         .firstOrNull { it.isSelected && it.name == alreadySellingOnlineOption?.name } != null
+
+    private fun getLocalizedCommerceJourney(commerceJourneyKey: String): String =
+        resourceProvider.getString(
+            when (commerceJourneyKey) {
+                STARTING_BUSINESS_KEY -> R.string.store_creation_profiler_merchant_journey_starting_business
+                NOT_SELLING_ONLINE_KEY -> R.string.store_creation_profiler_merchant_journey_selling_not_online
+                SELLING_ONLINE_KEY -> R.string.store_creation_profiler_merchant_journey_selling_online
+                else -> R.string.store_creation_profiler_merchant_journey_starting_business
+            }
+        )
 }

@@ -213,7 +213,7 @@ private const val PROFILER_OPTIONS_JSON = """{
     {
       "id": 26,
       "label": "Amusement Parks, Carnivals, Or Circuses",
-      "key": "amusement_parks,_carnivals,_or_circuses",
+      "key": "amusement_parks_carnivals_or_circuses",
       "tracks": "entertainment_and_recreation"
     },
     {
@@ -249,7 +249,7 @@ private const val PROFILER_OPTIONS_JSON = """{
     {
       "id": 32,
       "label": "Musicians, Bands, Or Orchestras",
-      "key": "musicians,_bands,_or_orchestras",
+      "key": "musicians_bands_or_orchestras",
       "tracks": "entertainment_and_recreation"
     },
     {
@@ -531,7 +531,7 @@ private const val PROFILER_OPTIONS_JSON = """{
     {
       "id": 80,
       "label": "Civic, Fraternal, Or Social Associations",
-      "key": "civic,_fraternal,_or_social_associations",
+      "key": "civic_fraternal_or_social_associations",
       "tracks": "membership_organizations"
     },
     {
@@ -621,7 +621,7 @@ private const val PROFILER_OPTIONS_JSON = """{
     {
       "id": 96,
       "label": "Accounting, Auditing, Or Tax Prep",
-      "key": "accounting,_auditing,_or_tax_prep",
+      "key": "accounting_auditing_or_tax_prep",
       "tracks": "professional_services"
     },
     {
@@ -813,7 +813,7 @@ private const val PROFILER_OPTIONS_JSON = """{
     {
       "id": 129,
       "label": "Vapes, E-cigarettes, E-juice Or Related Products",
-      "key": "vapes,_e_cigarettes,_e_juice_or_related_products",
+      "key": "vapes_e_cigarettes_e_juice_or_related_products",
       "tracks": "regulated_and_age_restricted_products"
     },
     {
@@ -975,7 +975,7 @@ private const val PROFILER_OPTIONS_JSON = """{
     {
       "id": 156,
       "label": "Hotels, Inns, Or Motels",
-      "key": "hotels,_inns,_or_motels",
+      "key": "hotels_inns_or_motels",
       "tracks": "travel_leisure"
     },
     {

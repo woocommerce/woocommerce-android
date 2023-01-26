@@ -28,21 +28,18 @@
         android:label="fragment_store_name_picker">
         <action
             android:id="@+id/action_storeNamePickerFragment_to_storeProfilerCategoryFragment"
-            app:destination="@id/storeProfilerCategoryFragment" />
+            app:destination="@id/storeProfilerIndustriesFragment" />
         <action
             android:id="@+id/action_storeNamePickerFragment_to_domainPickerFragment"
             app:destination="@id/domainPickerFragment" />
     </fragment>
 
     <fragment
-        android:id="@+id/storeProfilerCategoryFragment"
+        android:id="@+id/storeProfilerIndustriesFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerIndustriesFragment"
         android:label="fragment_store_profiler_industries">
         <action
-            android:id="@+id/action_storeProfilerCategoryFragment_to_countryPickerFragment"
-            app:destination="@id/countryPickerFragment" />
-        <action
-            android:id="@+id/action_storeProfilerCategoryFragment_to_storeProfilerCommerceJourneyFragment"
+            android:id="@+id/action_storeProfilerIndustriesFragment_to_storeProfilerCommerceJourneyFragment"
             app:destination="@id/storeProfilerCommerceJourneyFragment" />
     </fragment>
 

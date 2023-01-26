@@ -50,4 +50,13 @@ class ResourceProvider @Inject constructor(private val context: Context) {
         zero,
         one,
     )
+
+    @StringRes
+    fun getStringResFromStringName(stringName: String): Int? {
+        val stringRes = context.resources.getIdentifier(stringName, "string", context.packageName)
+        return when (stringRes) {
+            0 -> null // String not found for given key, return null so it can be handled from calling function
+            else -> stringRes
+        }
+    }
 }

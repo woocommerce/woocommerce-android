@@ -1,10 +1,11 @@
 package com.woocommerce.android.ui.sitepicker
 
 import com.woocommerce.android.R
+import com.woocommerce.android.model.User
+import com.woocommerce.android.model.UserRole.Administrator
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.user.WCUserModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
@@ -41,7 +42,7 @@ object SitePickerTestUtils {
         BaseRequest.GenericErrorType.UNKNOWN
     )
 
-    val userModel = WCUserModel()
+    val userModel = User(1L, "firstName", "lastName", "username", "email", listOf(Administrator))
 
     fun getDefaultLoginViewState(defaultViewState: SitePickerViewModel.SitePickerViewState) = defaultViewState.copy(
         isHelpBtnVisible = true,
