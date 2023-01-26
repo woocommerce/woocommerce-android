@@ -305,18 +305,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAccountChanged(event: OnAccountChanged) {
         val isLoggedOut = event.causeOfChange == AccountAction.SIGN_OUT && event.error == null
-        if (!accountStore.hasAccessToken() && isLoggedOut) {
-            // Logged out
-            AnalyticsTracker.track(AnalyticsEvent.ACCOUNT_LOGOUT)
-
-            // Reset analytics
-            AnalyticsTracker.flush()
-            AnalyticsTracker.clearAllData()
-            zendeskHelper.reset()
-
-            // Wipe user-specific preferences
-            prefs.resetUserPreferences()
-        } else if (event.causeOfChange == AccountAction.FETCH_SETTINGS) {
+        if (event.causeOfChange == AccountAction.FETCH_SETTINGS) {
             // make sure local usage tracking matches the account setting
             val hasUserOptedOut = !AnalyticsTracker.sendUsageStats
             if (hasUserOptedOut != accountStore.account.tracksOptOut) {

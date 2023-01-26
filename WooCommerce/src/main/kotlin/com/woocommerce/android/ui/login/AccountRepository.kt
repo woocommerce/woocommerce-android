@@ -1,7 +1,11 @@
 package com.woocommerce.android.ui.login
 
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.OnChangedException
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.AppCoroutineScope
+import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.LOGIN
@@ -23,6 +27,8 @@ class AccountRepository @Inject constructor(
     private val siteStore: SiteStore,
     private val selectedSite: SelectedSite,
     private val dispatcher: Dispatcher,
+    private val zendeskHelper: ZendeskHelper,
+    private val prefs: AppPrefs,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
 
@@ -43,19 +49,19 @@ class AccountRepository @Inject constructor(
     }
 
     suspend fun logout(): Boolean {
-        val event: OnAccountChanged = dispatcher.dispatchAndAwait(AccountActionBuilder.newSignOutAction())
-        if (event.isError) {
-            WooLog.e(
-                LOGIN,
-                "Account error [type = ${event.causeOfChange}] : " +
-                    "${event.error.type} > ${event.error.message}"
-            )
-            return false
-        }
-
         return if (accountStore.hasAccessToken()) {
-            // WPCom account logout
+            val event: OnAccountChanged = dispatcher.dispatchAndAwait(AccountActionBuilder.newSignOutAction())
+            if (event.isError) {
+                WooLog.e(
+                    LOGIN,
+                    "Account error [type = ${event.causeOfChange}] : " +
+                        "${event.error.type} > ${event.error.message}"
+                )
+                return false
+            }
+
             dispatcher.dispatch(SiteActionBuilder.newRemoveWpcomAndJetpackSitesAction())
+            cleanup()
             true
         } else {
             // Application passwords logout
@@ -72,7 +78,20 @@ class AccountRepository @Inject constructor(
             }
 
             selectedSite.reset()
+            cleanup()
             true
         }
+    }
+
+    private fun cleanup() {
+        AnalyticsTracker.track(AnalyticsEvent.ACCOUNT_LOGOUT)
+
+        // Reset analytics
+        AnalyticsTracker.flush()
+        AnalyticsTracker.clearAllData()
+        zendeskHelper.reset()
+
+        // Wipe user-specific preferences
+        prefs.resetUserPreferences()
     }
 }
