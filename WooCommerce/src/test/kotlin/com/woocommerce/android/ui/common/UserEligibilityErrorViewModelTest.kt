@@ -3,8 +3,10 @@ package com.woocommerce.android.ui.common
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.User
+import com.woocommerce.android.model.UserRole
 import com.woocommerce.android.ui.common.UserEligibilityErrorViewModel.ViewState
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -21,50 +23,51 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.user.WCUserModel
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class UserEligibilityErrorViewModelTest : BaseUnitTest() {
-    private val appPrefsWrapper: AppPrefs = mock()
+    private val testUser = User(
+        id = 1L,
+        firstName = "Anitaa",
+        lastName = "Murthy",
+        username = "murthyanitaa",
+        email = "reallychumma1@gmail.com",
+        roles = listOf(UserRole.Editor, UserRole.Author)
+    )
+
+    private val appPrefsWrapper: AppPrefs = mock {
+        on { getUserEmail() } doReturn testUser.email
+    }
+    private val userEligibilityFetcher: UserEligibilityFetcher = mock {
+        on { getUserByEmail(any()) } doReturn testUser
+    }
     private val accountRepository: AccountRepository = mock()
-    private val userEligibilityFetcher: UserEligibilityFetcher = mock()
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
 
     private lateinit var viewModel: UserEligibilityErrorViewModel
-
-    private val testUser = WCUserModel().apply {
-        remoteUserId = 1L
-        firstName = "Anitaa"
-        lastName = "Murthy"
-        username = "murthyanitaa"
-        roles = "[author, editor]"
-        email = "reallychumma1@gmail.com"
-    }
 
     private val viewState = ViewState()
 
     @Before
     fun setup() {
         viewModel = UserEligibilityErrorViewModel(
-            SavedStateHandle(),
-            appPrefsWrapper,
-            accountRepository,
-            userEligibilityFetcher
+            savedState = SavedStateHandle(),
+            appPrefs = appPrefsWrapper,
+            accountRepository = accountRepository,
+            userEligibilityFetcher = userEligibilityFetcher,
+            analyticsTracker = analyticsTracker
         )
     }
 
     @Test
     fun `Displays the user eligibility error screen correctly`() = testBlocking {
-        doReturn(testUser).whenever(userEligibilityFetcher).getUserByEmail(any())
-        whenever(appPrefsWrapper.getUserEmail()).thenReturn(testUser.email)
-
-        val expectedViewState = viewState.copy(user = testUser.toAppModel())
+        val expectedViewState = viewState.copy(user = testUser)
 
         var userData: ViewState? = null
         viewModel.viewStateData.observeForever { _, new -> userData = new }
 
-        viewModel.start()
         assertThat(userData).isEqualTo(expectedViewState)
     }
 
@@ -97,8 +100,8 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Handles retry button correctly when user is eligible`() = testBlocking {
-        testUser.roles = "[\"shop_manager\"]"
-        doReturn(testUser).whenever(userEligibilityFetcher).fetchUserInfo()
+        val user = testUser.copy(roles = listOf(UserRole.ShopManager))
+        doReturn(user).whenever(userEligibilityFetcher).fetchUserInfo()
         doReturn(true).whenever(appPrefsWrapper).isUserEligible()
 
         val isProgressDialogShown = ArrayList<Boolean>()

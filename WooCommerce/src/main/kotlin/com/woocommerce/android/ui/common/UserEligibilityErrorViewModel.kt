@@ -3,9 +3,11 @@ package com.woocommerce.android.ui.common
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.R
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.User
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -20,18 +22,29 @@ import javax.inject.Inject
 @HiltViewModel
 class UserEligibilityErrorViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val appPrefs: AppPrefs,
+    appPrefs: AppPrefs,
     private val accountRepository: AccountRepository,
-    private val userEligibilityFetcher: UserEligibilityFetcher
+    private val userEligibilityFetcher: UserEligibilityFetcher,
+    analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
-    final val viewStateData = LiveDataDelegate(savedState, ViewState())
+    companion object {
+        private const val ROLES_KEY = "current_roles"
+    }
+
+    val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
-    fun start() {
+    init {
         val email = appPrefs.getUserEmail()
         if (email.isNotEmpty()) {
             val user = userEligibilityFetcher.getUserByEmail(email)
-            viewState = viewState.copy(user = user?.toAppModel())
+            viewState = viewState.copy(user = user)
+            analyticsTracker.track(
+                AnalyticsEvent.LOGIN_INSUFFICIENT_ROLE,
+                mapOf(
+                    ROLES_KEY to user?.roles?.joinToString(",") { it.value }
+                )
+            )
         }
     }
 
@@ -46,14 +59,18 @@ class UserEligibilityErrorViewModel @Inject constructor(
     fun onRetryButtonClicked() {
         launch {
             viewState = viewState.copy(isProgressDialogShown = true)
-            val userModel = userEligibilityFetcher.fetchUserInfo()
-            userModel?.let {
-                val isUserEligible = it.isUserEligible()
+            userEligibilityFetcher.fetchUserInfo().fold(
+                onSuccess = {
+                    val isUserEligible = it.isEligible
 
-                if (isUserEligible) {
-                    triggerEvent(Exit)
-                } else triggerEvent(ShowSnackbar(string.user_role_access_error_retry))
-            }
+                    if (isUserEligible) {
+                        triggerEvent(Exit)
+                    } else triggerEvent(ShowSnackbar(string.user_role_access_error_retry))
+                },
+                onFailure = {
+                    triggerEvent(ShowSnackbar(R.string.error_generic))
+                }
+            )
 
             viewState = viewState.copy(isProgressDialogShown = false)
         }
