@@ -25,6 +25,7 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tracker.SendTelemetry
 import com.woocommerce.android.ui.appwidgets.getWidgetName
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
@@ -40,8 +41,12 @@ import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.util.crashlogging.UploadEncryptedLogs
 import com.woocommerce.android.util.encryptedlogging.ObserveEncryptedLogsUploadResult
 import com.woocommerce.android.widgets.AppRatingDialog
+import dagger.Lazy
 import dagger.android.DispatchingAndroidInjector
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -64,6 +69,7 @@ import javax.inject.Singleton
 class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     companion object {
         private const val SECONDS_BETWEEN_SITE_UPDATE = 60 * 60 // 1 hour
+        private const val UNAUTHORIZED_STATUS_CODE = 401
     }
 
     @Inject lateinit var crashLogging: CrashLogging
@@ -72,6 +78,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var dispatcher: Dispatcher
     @Inject lateinit var accountStore: AccountStore
+    @Inject lateinit var accountRepository: Lazy<AccountRepository>
     @Inject lateinit var siteStore: SiteStore // Required to ensure the SiteStore is initialized
     @Inject lateinit var wooCommerceStore: WooCommerceStore // Required to ensure the WooCommerceStore is initialized
 
@@ -245,15 +252,30 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     }
 
     private fun monitorApplicationPasswordsStatus() {
+        suspend fun logUserOut() {
+            accountRepository.get().logout()
+            restartMainActivity()
+        }
+
         appCoroutineScope.launch {
             // Log user out if the Application Passwords feature gets disabled
-            applicationPasswordsNotifier.featureUnavailableEvents.collect {
-                if (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords) {
-                    WooLog.w(T.LOGIN, "Application Passwords support has been disabled in the current site")
-                    selectedSite.reset()
-                    restartMainActivity()
-                }
-            }
+            applicationPasswordsNotifier.featureUnavailableEvents
+                .onEach {
+                    if (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords) {
+                        WooLog.w(T.LOGIN, "Application Passwords support has been disabled in the current site")
+                        logUserOut()
+                    }
+                }.launchIn(this)
+
+            // Log user out if the Application Passwords generation fails due to a 401 error
+            applicationPasswordsNotifier.passwordGenerationFailures
+                .filter { it.networkError.volleyError?.networkResponse?.statusCode == UNAUTHORIZED_STATUS_CODE }
+                .onEach {
+                    if (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords) {
+                        WooLog.w(T.LOGIN, "Use is unauthorized to generate a new application password")
+                        logUserOut()
+                    }
+                }.launchIn(this)
         }
     }
 
