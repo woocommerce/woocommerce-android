@@ -50,19 +50,19 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
     @Before
     fun setup() {
         val fakeSummary = WCPaymentTransactionsSummaryResult(99, "", 0, 0, 0, null, null)
-        runBlocking {
+        testBlocking {
             whenever(ippStore.fetchTransactionsSummary(any(), any(), any())).thenReturn(WooPayload(fakeSummary))
         }
     }
 
     @Test
-    fun `given banner should not be displayed, then should throw exception`() = runBlocking {
+    fun `given banner should not be displayed, then should throw exception`() = testBlocking {
         // given
         whenever(shouldShowFeedbackBanner()).thenReturn(false)
 
         // then
         assertFailsWith(IllegalStateException::class) {
-            runBlocking { sut() }
+            testBlocking { sut() }
         }
 
         Unit
@@ -70,7 +70,7 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
 
     @Test
     fun `given banner should be shown and no active payments plugin found, then newbie should be detected`() =
-        runBlocking {
+        testBlocking {
             // given
             whenever(shouldShowFeedbackBanner()).thenReturn(true)
             whenever(getActivePaymentsPlugin()).thenReturn(null)
@@ -86,7 +86,7 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given COD enabled and zero IPP transactions ever, then newbie user should be detected`() = runBlocking {
+    fun `given COD enabled and zero IPP transactions ever, then newbie user should be detected`() = testBlocking {
         // given
         whenever(shouldShowFeedbackBanner()).thenReturn(true)
 
@@ -109,7 +109,7 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
 
     @Test
     fun `given COD enabled and at least one IPP transaction in last 30 days, then should detect a beginner`() =
-        runBlocking {
+        testBlocking {
             // given
             whenever(shouldShowFeedbackBanner()).thenReturn(true)
             whenever(getActivePaymentsPlugin())
@@ -131,7 +131,7 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
 
     @Test
     fun `given COD enabled and zero IPP transactions in last 30 days and at least one IPP transaction ever, then should detect a beginner`() =
-        runBlocking {
+        testBlocking {
             // given
             whenever(shouldShowFeedbackBanner()).thenReturn(true)
             whenever(getActivePaymentsPlugin())
@@ -161,7 +161,7 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
 
     @Test
     fun `given COD enabled and more than 10 IPP transactions done in last 30 days, then should detect a ninja`() =
-        runBlocking {
+        testBlocking {
             // given
             whenever(shouldShowFeedbackBanner()).thenReturn(true)
             whenever(getActivePaymentsPlugin())
@@ -182,7 +182,7 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given COD is enabled and payments plugin is Stripe, then should detect newbie`() = runBlocking {
+    fun `given COD is enabled and payments plugin is Stripe, then should detect newbie`() = testBlocking {
         // given
         whenever(shouldShowFeedbackBanner()).thenReturn(true)
         whenever(getActivePaymentsPlugin()).thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.STRIPE)
@@ -197,7 +197,7 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given banner should be displayed, then should analyze IPP stats from the correct time window`() = runBlocking {
+    fun `given banner should be displayed, then should analyze IPP stats from the correct time window`() = testBlocking {
         // given
         whenever(shouldShowFeedbackBanner()).thenReturn(true)
         whenever(getActivePaymentsPlugin())
@@ -220,7 +220,7 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given COD enabled and endpoint returns error, then should detect newbie`() = runBlocking {
+    fun `given COD enabled and endpoint returns error, then should detect newbie`() = testBlocking {
         // given
         whenever(shouldShowFeedbackBanner()).thenReturn(true)
         whenever(getActivePaymentsPlugin())
@@ -239,7 +239,7 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given endpoint returns error, when use case invoked, then should log error`() = runBlocking {
+    fun `given endpoint returns error, when use case invoked, then should log error`() = testBlocking {
         // given
         whenever(shouldShowFeedbackBanner()).thenReturn(true)
         whenever(getActivePaymentsPlugin())
@@ -257,7 +257,7 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given endpoint returns null response, then should detect newbie`() = runBlocking {
+    fun `given endpoint returns null response, then should detect newbie`() = testBlocking {
         // given
         whenever(shouldShowFeedbackBanner()).thenReturn(true)
         whenever(getActivePaymentsPlugin())
@@ -276,7 +276,7 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
 
     @Test
     fun `given successful endpoint response, when transactions count is negative, then should throw exception `() =
-        runBlocking {
+        testBlocking {
             // given
             whenever(shouldShowFeedbackBanner()).thenReturn(true)
             whenever(getActivePaymentsPlugin())
