@@ -610,7 +610,7 @@ class OrderListViewModel @Inject constructor(
     fun onIPPFeedbackBannerDismissedForever() {
         trackIPPBannerEvent(
             AnalyticsEvent.IPP_FEEDBACK_BANNER_DISMISSED,
-            "remind_later" to false
+            KEY_IPP_BANNER_REMIND_LATER to false
         )
 
         markFeedbackBannerAsDismissedForever()
