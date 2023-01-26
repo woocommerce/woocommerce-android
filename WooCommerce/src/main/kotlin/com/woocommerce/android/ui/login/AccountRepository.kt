@@ -50,6 +50,7 @@ class AccountRepository @Inject constructor(
 
     suspend fun logout(): Boolean {
         return if (accountStore.hasAccessToken()) {
+            // WordPress.com account logout
             val event: OnAccountChanged = dispatcher.dispatchAndAwait(AccountActionBuilder.newSignOutAction())
             if (event.isError) {
                 WooLog.e(
@@ -57,12 +58,12 @@ class AccountRepository @Inject constructor(
                     "Account error [type = ${event.causeOfChange}] : " +
                         "${event.error.type} > ${event.error.message}"
                 )
-                return false
+                false
+            } else {
+                dispatcher.dispatch(SiteActionBuilder.newRemoveWpcomAndJetpackSitesAction())
+                cleanup()
+                true
             }
-
-            dispatcher.dispatch(SiteActionBuilder.newRemoveWpcomAndJetpackSitesAction())
-            cleanup()
-            true
         } else {
             // Application passwords logout
             appCoroutineScope.launch {
