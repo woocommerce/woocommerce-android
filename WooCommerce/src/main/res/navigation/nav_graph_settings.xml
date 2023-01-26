@@ -62,6 +62,11 @@
             android:name="surveyType"
             android:defaultValue='MAIN'
             app:argType="com.woocommerce.android.ui.feedback.SurveyType" />
+        <argument
+            android:name="customUrl"
+            app:argType="string"
+            android:defaultValue="@null"
+            app:nullable="true" />
         <action
             android:id="@+id/action_feedbackSurveyFragment_to_feedbackCompletedFragment"
             app:destination="@id/feedbackCompletedFragment"
