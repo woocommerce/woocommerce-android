@@ -25,6 +25,7 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tracker.SendTelemetry
 import com.woocommerce.android.ui.appwidgets.getWidgetName
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
@@ -40,6 +41,7 @@ import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.util.crashlogging.UploadEncryptedLogs
 import com.woocommerce.android.util.encryptedlogging.ObserveEncryptedLogsUploadResult
 import com.woocommerce.android.widgets.AppRatingDialog
+import dagger.Lazy
 import dagger.android.DispatchingAndroidInjector
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.filter
@@ -76,6 +78,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var dispatcher: Dispatcher
     @Inject lateinit var accountStore: AccountStore
+    @Inject lateinit var accountRepository: Lazy<AccountRepository>
     @Inject lateinit var siteStore: SiteStore // Required to ensure the SiteStore is initialized
     @Inject lateinit var wooCommerceStore: WooCommerceStore // Required to ensure the WooCommerceStore is initialized
 
@@ -249,8 +252,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     }
 
     private fun monitorApplicationPasswordsStatus() {
-        fun logUserOut() {
-            selectedSite.reset()
+        suspend fun logUserOut() {
+            accountRepository.get().logout()
             restartMainActivity()
         }
 
