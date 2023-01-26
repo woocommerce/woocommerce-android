@@ -41,7 +41,7 @@ fun WCUserModel.toAppModel(): User {
             .removePrefix("[") // remove the String prefix
             .removeSuffix("]") // remove the String suffix
             .split(",")
-            .map { UserRole.fromString(it) }
+            .map { UserRole.fromString(it.trim('"')) }
     )
 }
 
