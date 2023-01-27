@@ -3,10 +3,6 @@ package com.woocommerce.android.cardreader.internal
 import android.app.Application
 import android.content.ComponentCallbacks2
 import android.content.res.Configuration
-import com.stripe.stripeterminal.Terminal
-import com.stripe.stripeterminal.external.models.SimulatedCard
-import com.stripe.stripeterminal.external.models.SimulatedCardType
-import com.stripe.stripeterminal.external.models.SimulatorConfiguration
 import com.stripe.stripeterminal.log.LogLevel
 import com.woocommerce.android.cardreader.BuildConfig
 import com.woocommerce.android.cardreader.CardReaderManager
@@ -61,7 +57,7 @@ internal class CardReaderManagerImpl(
 
     override val displayBluetoothCardReaderMessages = connectionManager.displayBluetoothCardReaderMessages
 
-    override fun initialize(updateFrequency: CardReaderManager.SimulatorUpdateFrequency) {
+    override fun initialize(updateFrequency: CardReaderManager.SimulatorUpdateFrequency, useInterac: Boolean) {
         if (!terminal.isInitialized()) {
             terminal.getLifecycleObserver().onCreate(application)
 
@@ -79,25 +75,19 @@ internal class CardReaderManagerImpl(
 
             initStripeTerminal(logLevel)
 
-            terminal.setupSimulator(updateFrequency)
+            terminal.setupSimulator(updateFrequency, useInterac)
         } else {
             logWrapper.w(TAG, "CardReaderManager is already initialized")
         }
     }
 
-    override fun initializeOnUpdateFrequencyChange(updateFrequency: CardReaderManager.SimulatorUpdateFrequency) {
-        terminal.setupSimulator(updateFrequency)
+    override fun reinitializeSimulatedTerminal(
+        updateFrequency: CardReaderManager.SimulatorUpdateFrequency,
+        useInterac: Boolean
+    ) {
+        terminal.setupSimulator(updateFrequency, useInterac)
     }
 
-    override fun enableSimulatorInterac() {
-        Terminal.getInstance().simulatorConfiguration = SimulatorConfiguration(
-            simulatedCard = SimulatedCard(SimulatedCardType.INTERAC)
-        )
-    }
-
-    override fun disableSimulatorInteract() {
-        Terminal.getInstance().simulatorConfiguration = SimulatorConfiguration()
-    }
     override fun discoverReaders(
         isSimulated: Boolean,
         cardReaderTypesToDiscover: CardReaderTypesToDiscover,

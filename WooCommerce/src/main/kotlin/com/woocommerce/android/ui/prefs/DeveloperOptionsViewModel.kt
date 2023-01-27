@@ -117,19 +117,19 @@ class DeveloperOptionsViewModel @Inject constructor(
         }
     }
 
-    private fun enableInteracStateChange(isChecked: Boolean) {
+    private fun onEnableInteracToggled(isChecked: Boolean) {
         developerOptionsRepository.changeEnableInteracPaymentState(isChecked)
+
+        reinitializeSimulatedReaderIfNotInitialized()
     }
 
-    private fun onEnableInteracToggled(isChecked: Boolean) {
+    private fun reinitializeSimulatedReaderIfNotInitialized() {
         if (cardReaderManager.initialized) {
-            if (!isChecked) {
-                cardReaderManager.disableSimulatorInteract()
-            } else {
-                cardReaderManager.enableSimulatorInterac()
-            }
+            cardReaderManager.reinitializeSimulatedTerminal(
+                updateFrequency = mapUpdateOptions(developerOptionsRepository.getUpdateSimulatedReaderOption()),
+                useInterac = developerOptionsRepository.isInteracPaymentEnabled()
+            )
         }
-        enableInteracStateChange(isChecked)
     }
 
     private fun onUpdateSimulatedReaderClicked() {
@@ -142,10 +142,9 @@ class DeveloperOptionsViewModel @Inject constructor(
     }
 
     fun onUpdateReaderOptionChanged(selectedOption: UpdateOptions) {
-        if (cardReaderManager.initialized) {
-            cardReaderManager.initializeOnUpdateFrequencyChange(mapUpdateOptions(selectedOption))
-        }
         developerOptionsRepository.updateSimulatedReaderOption(selectedOption)
+
+        reinitializeSimulatedReaderIfNotInitialized()
     }
 
     private fun mapUpdateOptions(updateFrequency: UpdateOptions): CardReaderManager.SimulatorUpdateFrequency {

@@ -28,11 +28,10 @@ interface CardReaderManager {
     val batteryStatus: Flow<CardReaderBatteryStatus>
     val displayBluetoothCardReaderMessages: Flow<BluetoothCardReaderMessages>
 
-    fun initialize(updateFrequency: SimulatorUpdateFrequency)
-    // reinitialize the simulated reader when the user changes the update frequency option
-    fun initializeOnUpdateFrequencyChange(updateFrequency: SimulatorUpdateFrequency)
-    fun enableSimulatorInterac()
-    fun disableSimulatorInteract()
+    fun initialize(updateFrequency: SimulatorUpdateFrequency, useInterac: Boolean)
+
+    fun reinitializeSimulatedTerminal(updateFrequency: SimulatorUpdateFrequency, useInterac: Boolean)
+
     fun discoverReaders(
         isSimulated: Boolean,
         cardReaderTypesToDiscover: CardReaderTypesToDiscover,
