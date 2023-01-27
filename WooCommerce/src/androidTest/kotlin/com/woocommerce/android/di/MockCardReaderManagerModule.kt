@@ -68,7 +68,6 @@ class MockCardReaderManagerModule {
             useInterac: Boolean
         ) {}
 
-
         override fun discoverReaders(
             isSimulated: Boolean,
             cardReaderTypesToDiscover: CardReaderTypesToDiscover
