@@ -17,6 +17,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
+import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenOrderCreation
+import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
@@ -398,6 +400,83 @@ class MainActivityViewModelTest : BaseUnitTest() {
             // THEN
             assertThat(viewModel.moreMenuBadgeState.value).isEqualTo(UnseenReviews(1))
         }
+
+    // region Shortcuts
+    @Test
+    fun `given payments shortcut, when app opened, then trigger ViewPayments event`() {
+        testBlocking {
+            // GIVEN
+            createViewModel()
+
+            // WHEN
+            viewModel.handleShortcutAction("com.woocommerce.android.payments")
+
+            // THEN
+            assertThat(viewModel.event.value).isInstanceOf(ShortcutOpenPayments::class.java)
+        }
+    }
+
+    @Test
+    fun `given order creation shortcut, when app opened, then trigger OpenOrderCreation event`() {
+        testBlocking {
+            // GIVEN
+            createViewModel()
+
+            // WHEN
+            viewModel.handleShortcutAction("com.woocommerce.android.ordercreation")
+
+            // THEN
+            assertThat(viewModel.event.value).isInstanceOf(ShortcutOpenOrderCreation::class.java)
+        }
+    }
+
+    @Test
+    fun `given irrelevant shortcut, when app opened, then do not trigger any event`() {
+        testBlocking {
+            // GIVEN
+            createViewModel()
+
+            // WHEN
+            viewModel.handleShortcutAction("com.woocommerce.android.irrelevant")
+
+            // THEN
+            assertThat(viewModel.event.value).isNull()
+        }
+    }
+
+    @Test
+    fun `given payments shortcut, when app opened, then track payments opened event`() {
+        testBlocking {
+            // GIVEN
+            createViewModel()
+
+            // WHEN
+            viewModel.handleShortcutAction("com.woocommerce.android.payments")
+
+            // THEN
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.SHORTCUT_PAYMENTS_TAPPED
+            )
+        }
+    }
+
+    @Test
+    fun `given order creation shortcut, when app opened, then track orders add new event`() {
+        testBlocking {
+            // GIVEN
+            createViewModel()
+
+            // WHEN
+            viewModel.handleShortcutAction("com.woocommerce.android.ordercreation")
+
+            // THEN
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.SHORTCUT_ORDERS_ADD_NEW
+            )
+        }
+    }
+
+//endregion
 
     private fun createViewModel() {
         viewModel = spy(

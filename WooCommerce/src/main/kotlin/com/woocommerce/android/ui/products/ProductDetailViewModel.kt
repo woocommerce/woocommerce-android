@@ -12,6 +12,9 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_LINKED_PRODUCTS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -38,6 +41,8 @@ import com.woocommerce.android.model.addTags
 import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
@@ -114,7 +119,9 @@ class ProductDetailViewModel @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val addonRepository: AddonRepository,
     private val generateVariationCandidates: GenerateVariationCandidates,
-    private val tracker: AnalyticsTrackerWrapper
+    private val duplicateProduct: DuplicateProduct,
+    private val tracker: AnalyticsTrackerWrapper,
+    private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -927,7 +934,13 @@ class ProductDetailViewModel @Inject constructor(
     fun onSettingsVisibilityButtonClicked() {
         val visibility = getProductVisibility()
         val password = viewState.draftPassword ?: viewState.storedPassword
-        triggerEvent(ProductNavigationTarget.ViewProductVisibility(visibility, password))
+        triggerEvent(
+            ProductNavigationTarget.ViewProductVisibility(
+                selectedSite.connectionType == SiteConnectionType.ApplicationPasswords,
+                visibility,
+                password
+            )
+        )
     }
 
     /**
@@ -2138,6 +2151,25 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
+    fun onDuplicateProduct() {
+        launch {
+            tracker.track(PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED)
+            viewState.productDraft?.let { product ->
+
+                triggerEvent(ShowDuplicateProductInProgress)
+                val result = duplicateProduct(product)
+
+                if (result.isSuccess) {
+                    tracker.track(DUPLICATE_PRODUCT_SUCCESS)
+                    triggerEvent(OpenProductDetails(result.getOrThrow()))
+                } else {
+                    tracker.track(DUPLICATE_PRODUCT_FAILED)
+                    triggerEvent(ShowDuplicateProductError)
+                }
+            }
+        }
+    }
+
     /**
      * Triggered when the user scrolls past the point of loaded tags
      * already displayed on the screen or on record.
@@ -2226,6 +2258,12 @@ class ProductDetailViewModel @Inject constructor(
     object HideImageUploadErrorSnackbar : Event()
 
     object ShowLinkedProductPromoBanner : Event()
+
+    data class OpenProductDetails(val productRemoteId: Long) : Event()
+
+    object ShowDuplicateProductError : Event()
+
+    object ShowDuplicateProductInProgress : Event()
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.

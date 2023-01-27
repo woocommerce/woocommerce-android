@@ -23,11 +23,8 @@ import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragment
-import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchErrorType
-import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.CreateZendeskTicket
-import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.ShowJetpackConnectionError
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.StartNativeJetpackActivation
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.StartWebBasedJetpackInstallation
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -81,7 +78,6 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
                 is NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
                 is StartWebBasedJetpackInstallation -> startWebBasedJetpackInstallation(event.siteAddress)
                 is StartNativeJetpackActivation -> startNativeJetpackActivation(event)
-                is ShowJetpackConnectionError -> showJetpackErrorScreen(event.siteAddress)
                 is Logout -> onLogout()
                 is ExitWithResult<*> -> navigateBackWithResult(SITE_PICKER_SITE_ADDRESS_RESULT, event.data)
                 is Exit -> findNavController().navigateUp()
@@ -120,18 +116,6 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
                 .actionSitePickerSiteDiscoveryFragmentToJetpackActivation(
                     siteUrl = event.siteAddress,
                     isJetpackInstalled = event.isJetpackInstalled
-                )
-        )
-    }
-
-    private fun showJetpackErrorScreen(siteAddress: String) {
-        findNavController().navigate(
-            SitePickerSiteDiscoveryFragmentDirections
-                .actionSitePickerSiteDiscoveryFragmentToAccountMismatchErrorFragment(
-                    siteUrl = siteAddress,
-                    allowBackNavigation = true,
-                    primaryButton = AccountMismatchPrimaryButton.CONNECT_JETPACK,
-                    errorType = AccountMismatchErrorType.ACCOUNT_NOT_CONNECTED
                 )
         )
     }

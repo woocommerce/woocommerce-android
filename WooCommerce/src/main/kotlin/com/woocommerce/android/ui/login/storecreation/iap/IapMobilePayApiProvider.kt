@@ -40,6 +40,7 @@ class IapMobilePayApiProvider @Inject constructor(private val mobilePayStore: Mo
                         MobilePayRestClient.CreateOrderErrorType.API_ERROR,
                         MobilePayRestClient.CreateOrderErrorType.AUTH_ERROR,
                         MobilePayRestClient.CreateOrderErrorType.GENERIC_ERROR,
+                        MobilePayRestClient.CreateOrderErrorType.NETWORK_ERROR,
                         MobilePayRestClient.CreateOrderErrorType.INVALID_RESPONSE ->
                             CreateAndConfirmOrderResponse.Server(response.message ?: "Reason is not provided")
                         MobilePayRestClient.CreateOrderErrorType.TIMEOUT -> CreateAndConfirmOrderResponse.Network

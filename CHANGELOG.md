@@ -1,9 +1,17 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+12.1
+This release includes a handful of minor improvements and bug fixes that our team found. We’ve also made some tweaks to improve performance. Please keep sending your feedback! We read every one of them.
+
+12.0
+Exciting news! It's now possible to duplicate a product from the app. Just tap on the More Menu available inside the Product detail screen.
+
+## 11.9
+This release includes a few bug fixes and improvements to make your experience smoother. Stay tuned for exciting updates in the coming weeks!
+
 ## 11.8
 You can now reply to product reviews directly from the app! This update also includes several enhancements to the product variations and the analytics feature. Please share feedback – we read every one of them.
-
 
 ## 11.7
 Exciting news! Now you can edit products in bulk. We also focused on polishing a few things with in person payments and order creation. Please check it out and share your feedback!

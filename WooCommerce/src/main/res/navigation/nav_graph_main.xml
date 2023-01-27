@@ -31,7 +31,7 @@
             app:popExitAnim="@anim/activity_fade_out">
             <argument
                 android:name="targetGranularity"
-                app:argType="com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod" />
+                app:argType="com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection$SelectionType" />
         </action>
     </fragment>
     <fragment
@@ -126,12 +126,12 @@
     </fragment>
     <fragment
         android:id="@+id/analytics"
-        android:name="com.woocommerce.android.ui.analytics.AnalyticsFragment"
+        android:name="com.woocommerce.android.ui.analytics.hub.AnalyticsHubFragment"
         android:label="fragment_analytics"
         tools:layout="@layout/fragment_analytics">
         <argument
             android:name="targetGranularity"
-            app:argType="com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod" />
+            app:argType="com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection$SelectionType" />
         <action
             android:id="@+id/action_AnalyticsFragment_to_DateRangeSelector"
             app:destination="@id/analyticsDateRangeSelectorDialog" />
@@ -195,6 +195,11 @@
             android:name="surveyType"
             android:defaultValue='MAIN'
             app:argType="com.woocommerce.android.ui.feedback.SurveyType" />
+        <argument
+            android:name="customUrl"
+            app:argType="string"
+            android:defaultValue="@null"
+            app:nullable="true" />
         <action
             android:id="@+id/action_feedbackSurveyFragment_to_feedbackCompletedFragment"
             app:destination="@id/feedbackCompletedFragment"

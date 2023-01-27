@@ -9,8 +9,6 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.experiment.JetpackInstallationExperiment
-import com.woocommerce.android.experiment.JetpackInstallationExperiment.JetpackInstallationVariant
 import com.woocommerce.android.support.help.HelpOrigin.LOGIN_SITE_ADDRESS
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.sitepicker.SitePickerRepository
@@ -48,7 +46,6 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
     private val resourceProvider: ResourceProvider,
     private val analyticsTracker: AnalyticsTrackerWrapper,
-    private val jetpackInstallationExperiment: JetpackInstallationExperiment,
     private val urlUtils: UrlUtils
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
@@ -68,7 +65,6 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
     val viewState = stepFlow.transformLatest { step ->
         when (step) {
             Step.AddressInput -> prepareAddressViewState()
-            Step.JetpackUnavailable -> prepareJetpackUnavailableState()
             Step.NotWordpress -> prepareNotWordpressSiteState()
         }
     }.asLiveData()
@@ -131,25 +127,6 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
         }
     }
 
-    private suspend fun FlowCollector<ViewState>.prepareJetpackUnavailableState() {
-        emit(
-            ViewState.ErrorState(
-                siteAddress = siteAddressFlow.value,
-                message = resourceProvider.getString(R.string.login_jetpack_required_text, siteAddressFlow.value),
-                imageResourceId = R.drawable.img_login_jetpack_required,
-                primaryButtonText = resourceProvider.getString(R.string.login_jetpack_install),
-                primaryButtonAction = {
-                    fetchedSiteUrl.let { url ->
-                        requireNotNull(url)
-                        triggerEvent(StartWebBasedJetpackInstallation(url))
-                    }
-                },
-                secondaryButtonText = resourceProvider.getString(R.string.login_try_another_account),
-                secondaryButtonAction = ::logout
-            )
-        )
-    }
-
     private suspend fun FlowCollector<ViewState>.prepareNotWordpressSiteState() {
         emit(
             ViewState.ErrorState(
@@ -192,37 +169,16 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
                     )
                 )
 
-                // TODO simplify the checks when the jetpack installation experiment is over
                 when {
                     !it.exists -> inlineErrorFlow.value = R.string.invalid_site_url_message
                     !it.isWordPress -> stepFlow.value = Step.NotWordpress
-                    !it.isWPCom && !it.isJetpackActive -> {
-                        jetpackInstallationExperiment.activate()
-                        if (jetpackInstallationExperiment.getCurrentVariant() == JetpackInstallationVariant.NATIVE) {
-                            triggerEvent(
-                                StartNativeJetpackActivation(
-                                    siteAddress = siteAddress,
-                                    isJetpackInstalled = false
-                                )
-                            )
-                        } else {
-                            stepFlow.value = Step.JetpackUnavailable
-                        }
-                    }
                     !it.isWPCom -> {
-                        // This means a self-hosted site that has Jetpack and yet wasn't included in the user's sites
-                        // So start the Jetpack connection flow
-                        jetpackInstallationExperiment.activate()
-                        if (jetpackInstallationExperiment.getCurrentVariant() == JetpackInstallationVariant.NATIVE) {
-                            triggerEvent(
-                                StartNativeJetpackActivation(
-                                    siteAddress = siteAddress,
-                                    isJetpackInstalled = true
-                                )
+                        triggerEvent(
+                            StartNativeJetpackActivation(
+                                siteAddress = siteAddress,
+                                isJetpackInstalled = it.isJetpackActive
                             )
-                        } else {
-                            navigateToJetpackConnectionError()
-                        }
+                        )
                     }
                     else -> navigateBackToSitePicker()
                 }
@@ -256,13 +212,6 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
         }
     }
 
-    private fun navigateToJetpackConnectionError() {
-        fetchedSiteUrl.let { url ->
-            requireNotNull(url)
-            triggerEvent(ShowJetpackConnectionError(url))
-        }
-    }
-
     private fun logout() {
         launch {
             accountRepository.logout().let {
@@ -274,7 +223,7 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
     }
 
     private enum class Step {
-        AddressInput, JetpackUnavailable, NotWordpress
+        AddressInput, NotWordpress
     }
 
     sealed class ViewState {
@@ -310,6 +259,4 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
         val siteAddress: String,
         val isJetpackInstalled: Boolean
     ) : MultiLiveEvent.Event()
-
-    data class ShowJetpackConnectionError(val siteAddress: String) : MultiLiveEvent.Event()
 }

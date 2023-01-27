@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.automattic.android.tracks.crashlogging.CrashLogging
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
 import com.woocommerce.android.R
@@ -42,9 +43,13 @@ import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.ProductDetailViewModel.HideImageUploadErrorSnackbar
 import com.woocommerce.android.ui.products.ProductDetailViewModel.MenuButtonsState
+import com.woocommerce.android.ui.products.ProductDetailViewModel.OpenProductDetails
 import com.woocommerce.android.ui.products.ProductDetailViewModel.RefreshMenu
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowDuplicateProductError
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowDuplicateProductInProgress
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowLinkedProductPromoBanner
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
@@ -276,6 +281,14 @@ class ProductDetailFragment :
             showProductCards(it)
         }
 
+        observeEvents(viewModel)
+
+        viewModel.menuButtonsState.observe(viewLifecycleOwner) {
+            menu?.updateOptions(it)
+        }
+    }
+
+    private fun observeEvents(viewModel: ProductDetailViewModel) {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is LaunchUrlInChromeTab -> {
@@ -294,14 +307,29 @@ class ProductDetailFragment :
                 is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
                 is HideImageUploadErrorSnackbar -> imageUploadErrorsSnackbar?.dismiss()
                 is ShowLinkedProductPromoBanner -> showLinkedProductPromoBanner()
-
+                is OpenProductDetails -> openProductDetails(event.productRemoteId)
+                is ShowDuplicateProductError -> showDuplicateProductError()
+                is ShowDuplicateProductInProgress -> showProgressDialog(
+                    R.string.product_duplicate_progress_title,
+                    R.string.product_duplicate_progress_body
+                )
                 else -> event.isHandled = false
             }
         }
+    }
 
-        viewModel.menuButtonsState.observe(viewLifecycleOwner) {
-            menu?.updateOptions(it)
-        }
+    private fun showDuplicateProductError() {
+        hideProgressDialog()
+        MaterialAlertDialogBuilder(requireActivity())
+            .setTitle(R.string.error_generic)
+            .setMessage(R.string.product_duplicate_error)
+            .setPositiveButton(android.R.string.ok, null)
+            .show()
+    }
+
+    private fun openProductDetails(productRemoteId: Long) {
+        hideProgressDialog()
+        (activity as? MainNavigationRouter)?.showProductDetail(productRemoteId, enableTrash = true)
     }
 
     /**
@@ -424,7 +452,10 @@ class ProductDetailFragment :
                 viewModel.onSettingsButtonClicked()
                 true
             }
-
+            R.id.menu_duplicate -> {
+                viewModel.onDuplicateProduct()
+                true
+            }
             R.id.menu_trash_product -> {
                 viewModel.onTrashButtonClicked()
                 true

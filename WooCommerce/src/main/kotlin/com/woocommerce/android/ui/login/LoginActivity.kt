@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
@@ -26,6 +27,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPAC
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_LOGIN_WITH_WORDPRESS_COM
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
+import com.woocommerce.android.experiment.RESTAPILoginExperiment
+import com.woocommerce.android.experiment.RESTAPILoginExperiment.RESTAPILoginVariant
 import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.support.ZendeskExtraTags
 import com.woocommerce.android.support.ZendeskHelper
@@ -43,6 +46,8 @@ import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFrag
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragmentArgs
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchErrorType
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
+import com.woocommerce.android.ui.login.error.LoginNoWPcomAccountFoundDialogFragment
+import com.woocommerce.android.ui.login.error.LoginNotWPDialogFragment
 import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType
 import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.DEFAULT_HELP
 import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_EMAIL_ERROR
@@ -63,7 +68,6 @@ import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFrag
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.UrlUtils
 import com.woocommerce.android.util.WooLog
 import dagger.android.AndroidInjector
@@ -112,7 +116,7 @@ class LoginActivity :
     LoginEmailHelpDialogFragment.Listener,
     WooLoginEmailFragment.Listener,
     WooLoginEmailPasswordFragment.Listener,
-    LoginNoWPcomAccountFoundFragment.Listener,
+    LoginNoWPcomAccountFoundDialogFragment.Listener,
     SignUpFragment.Listener,
     QrCodeLoginListener {
     companion object {
@@ -155,6 +159,7 @@ class LoginActivity :
     @Inject internal lateinit var dispatcher: Dispatcher
     @Inject internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver
+    @Inject internal lateinit var restApiLoginExperiment: RESTAPILoginExperiment
 
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
@@ -559,7 +564,12 @@ class LoginActivity :
         val siteAddressClean = inputSiteAddress.replaceFirst(protocolRegex, "")
         AppPrefs.setLoginSiteAddress(siteAddressClean)
 
-        if (hasJetpack) {
+        val shouldUseEmailLogin = when (restApiLoginExperiment.getCurrentVariant()) {
+            RESTAPILoginVariant.CONTROL -> hasJetpack
+            RESTAPILoginVariant.TREATMENT -> connectSiteInfo?.isWPCom == true
+        }
+
+        if (shouldUseEmailLogin) {
             showEmailLoginScreen(inputSiteAddress.takeIf { connectSiteInfo?.isWPCom != true })
         } else {
             // Let user log in via site credentials first before showing Jetpack missing screen.
@@ -818,10 +828,11 @@ class LoginActivity :
         inputUsername: String?,
         inputPassword: String?
     ) {
-        val (fragment, tag) = if (FeatureFlag.REST_API.isEnabled()) {
+        val (fragment, tag) = if (restApiLoginExperiment.getCurrentVariant() == RESTAPILoginVariant.TREATMENT) {
             Pair(
                 LoginSiteCredentialsFragment.newInstance(
                     siteAddress = requireNotNull(siteAddress),
+                    isJetpackConnected = connectSiteInfo?.isJetpackConnected ?: false,
                     username = inputUsername,
                     password = inputPassword
                 ),
@@ -851,12 +862,7 @@ class LoginActivity :
 
     override fun gotUnregisteredEmail(email: String?) {
         // Show the 'No WordPress.com account found' screen
-        val fragment = LoginNoWPcomAccountFoundFragment.newInstance(email)
-        changeFragment(
-            fragment = fragment as Fragment,
-            shouldAddToBackStack = true,
-            tag = LoginNoWPcomAccountFoundFragment.TAG
-        )
+        LoginNoWPcomAccountFoundDialogFragment().show(LoginNoWPcomAccountFoundDialogFragment.TAG)
     }
 
     override fun gotUnregisteredSocialAccount(
@@ -892,21 +898,11 @@ class LoginActivity :
      */
     override fun handleSiteAddressError(siteInfo: ConnectSiteInfoPayload) {
         if (!siteInfo.isWordPress) {
-            // The url entered is not a WordPress site.
-            val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
-            val siteAddressClean = siteInfo.url.replaceFirst(protocolRegex, "")
-            val errorMessage = getString(R.string.login_not_wordpress_site_v2)
-
             // hide the keyboard
             org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
 
             // show the "not WordPress error" screen
-            val genericErrorFragment = LoginSiteCheckErrorFragment.newInstance(siteAddressClean, errorMessage)
-            changeFragment(
-                fragment = genericErrorFragment,
-                shouldAddToBackStack = true,
-                tag = LoginSiteCheckErrorFragment.TAG
-            )
+            LoginNotWPDialogFragment().show(LoginNotWPDialogFragment.TAG)
             loginNotificationScheduler.scheduleNotification(LOGIN_SITE_ADDRESS_ERROR)
         } else {
             // Just in case we use this method for a different scenario in the future
@@ -917,11 +913,6 @@ class LoginActivity :
     override fun onWhatIsWordPressLinkClicked() {
         ChromeCustomTabUtils.launchUrl(this, LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT)
         unifiedLoginTracker.trackClick(Click.WHAT_IS_WORDPRESS_COM)
-    }
-
-    override fun onWhatIsWordPressLinkNoWpcomAccountScreenClicked() {
-        ChromeCustomTabUtils.launchUrl(this, LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT)
-        unifiedLoginTracker.trackClick(Click.WHAT_IS_WORDPRESS_COM_ON_INVALID_EMAIL_SCREEN)
     }
 
     override fun onCreateAccountClicked() {
@@ -1017,6 +1008,17 @@ class LoginActivity :
                     ).show()
                 }
             }
+    }
+
+    /**
+     * Show a DialogFragment using the current Fragment's childFragmentManager.
+     * This is useful to make sure the dialog's lifecycle is linked to the Fragment that invokes it and that it would
+     * be dismissed when we navigate to another Fragment.
+     */
+    private fun DialogFragment.show(tag: String) {
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)!!
+
+        show(currentFragment.childFragmentManager, tag)
     }
 
     @Parcelize

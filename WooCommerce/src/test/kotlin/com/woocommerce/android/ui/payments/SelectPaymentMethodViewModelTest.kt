@@ -926,7 +926,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             analyticsTrackerWrapper,
             cardPaymentCollectibilityChecker,
             bannerDisplayEligibilityChecker,
-            selectPaymentUtmProvider
+            selectPaymentUtmProvider,
         )
     }
 }

@@ -5,6 +5,7 @@ import com.google.i18n.addressinput.common.AddressData
 import com.google.i18n.addressinput.common.FormOptions
 import com.google.i18n.addressinput.common.FormatInterpreter
 import com.woocommerce.android.extensions.appendWithIfNotEmpty
+import com.woocommerce.android.ui.addressformatting.presentationName
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.parcelize.Parcelize
@@ -40,7 +41,7 @@ data class Address(
         return AddressData.builder()
             .setAddressLines(mutableListOf(address1, address2))
             .setLocality(city)
-            .setAdminArea(state.codeOrRaw)
+            .setAdminArea(state.presentationName(country.code))
             .setPostalCode(postcode)
             .setCountry(country.code)
             .setOrganization(company)

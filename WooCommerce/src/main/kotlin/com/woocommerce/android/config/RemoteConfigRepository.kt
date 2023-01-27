@@ -1,9 +1,15 @@
 package com.woocommerce.android.config
 
-import com.woocommerce.android.experiment.JetpackInstallationExperiment.JetpackInstallationVariant
+import com.woocommerce.android.experiment.RESTAPILoginExperiment.RESTAPILoginVariant
+import kotlinx.coroutines.flow.Flow
 
 interface RemoteConfigRepository {
+    val fetchStatus: Flow<RemoteConfigFetchStatus>
     fun fetchRemoteConfig()
+    fun getRestAPILoginVariant(): RESTAPILoginVariant
     fun getPerformanceMonitoringSampleRate(): Double
-    fun getJetpackInstallationVariant(): JetpackInstallationVariant
+}
+
+enum class RemoteConfigFetchStatus {
+    Pending, Success, Failure
 }

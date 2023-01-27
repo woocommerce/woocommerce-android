@@ -486,14 +486,18 @@ class SitePickerViewModel @Inject constructor(
                         siteVerificationResult.model?.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3 -> {
                             experimentTracker.log(ExperimentTracker.SITE_VERIFICATION_SUCCESSFUL_EVENT)
                             selectedSite.set(it.site)
-                            userEligibilityFetcher.fetchUserInfo()?.let { userModel ->
-                                sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
-                                userEligibilityFetcher.updateUserInfo(userModel)
+                            userEligibilityFetcher.fetchUserInfo().fold(
+                                onSuccess = {
+                                    sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
 
-                                trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SUCCESS)
-                                appPrefsWrapper.removeLoginSiteAddress()
-                                triggerEvent(SitePickerEvent.NavigateToMainActivityEvent)
-                            }
+                                    trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SUCCESS)
+                                    appPrefsWrapper.removeLoginSiteAddress()
+                                    triggerEvent(SitePickerEvent.NavigateToMainActivityEvent)
+                                },
+                                onFailure = {
+                                    triggerEvent(ShowSnackbar(R.string.error_generic))
+                                }
+                            )
                         }
                         else -> {
                             sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)

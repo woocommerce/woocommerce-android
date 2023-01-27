@@ -1,12 +1,29 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
-11.9
+12.2
 -----
 
 
+12.1
+-----
+- [*] Adds an In-Person Payments survey banner on top of the Orders view [https://github.com/woocommerce/woocommerce-android/pull/8247]
+- [***] [Internal] Start the AB test for allowing login to the app using site credentials [https://github.com/woocommerce/woocommerce-android/pull/8204]
+
+12.0
+-----
+- [**] Add a feature of duplicating products [https://github.com/woocommerce/woocommerce-android/pull/8164]
+- [*] [Internal] Improve crash reporting for logged out state and for site credentials login [https://github.com/woocommerce/woocommerce-android/pull/8233]
+
+11.9
+-----
+- [**] Adds new profiler steps to store creation flow [https://github.com/woocommerce/woocommerce-android/pull/8097]
+- [**] Adds country picker step to store creation flow [https://github.com/woocommerce/woocommerce-android/pull/8167]
+
 11.8
+-----
 - [*] Add variations bottom sheet is fully visible right after showing up in the landscape mode [https://github.com/woocommerce/woocommerce-android/pull/8043]
 - [*] UI improvements to the products on the analytics screen [https://github.com/woocommerce/woocommerce-android/pull/8098]
 - [*] Add a feature of replying to customer reviews [https://github.com/woocommerce/woocommerce-android/pull/8045]
+- [*] Add Shortcuts for the Payments and Order Creation screen [https://github.com/woocommerce/woocommerce-android/pull/8035]
 
 11.7
 -----

@@ -108,7 +108,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(
             WooResult(SitePickerTestUtils.apiVerificationResponse)
         )
-        whenever(userEligibilityFetcher.fetchUserInfo()).thenReturn(SitePickerTestUtils.userModel)
+        whenever(userEligibilityFetcher.fetchUserInfo()).thenReturn(Result.success(SitePickerTestUtils.userModel))
     }
 
     private suspend fun whenSitesAreFetched(returnsError: Boolean = false, returnsEmpty: Boolean = false) {
@@ -405,7 +405,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
         verify(repository, times(1)).verifySiteWooAPIVersion(any())
         verify(selectedSite, times(1)).set(any())
         verify(userEligibilityFetcher, times(1)).fetchUserInfo()
-        verify(userEligibilityFetcher, times(1)).updateUserInfo(any())
         verify(appPrefsWrapper, times(1)).removeLoginSiteAddress()
 
         assertThat(view).isEqualTo(NavigateToMainActivityEvent)
@@ -439,7 +438,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
             verify(repository, times(1)).verifySiteWooAPIVersion(any())
             verify(selectedSite, times(0)).set(any())
             verify(userEligibilityFetcher, times(0)).fetchUserInfo()
-            verify(userEligibilityFetcher, times(0)).updateUserInfo(any())
             verify(appPrefsWrapper, times(0)).removeLoginSiteAddress()
 
             assertThat(view).isEqualTo(ShowWooUpgradeDialogEvent)

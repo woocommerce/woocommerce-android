@@ -74,17 +74,15 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "11.8-rc-1"
+            versionName "12.1-rc-1"
         }
-        versionCode 372
+        versionCode 378
 
         minSdkVersion gradle.ext.minSdkVersion
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
         // and thoroughly testing the app. Consider publishing a p2 post to inform the team about the upcoming change.
         // P.S. Update the targetSdkVersion in all the modules, otherwise static analysis tools won't give you a heads-up about potential issues.
         targetSdkVersion gradle.ext.targetSdkVersion
-
-        vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner 'com.woocommerce.android.WooCommerceTestRunner'
         // TODO remove this once the hilt migration is complete

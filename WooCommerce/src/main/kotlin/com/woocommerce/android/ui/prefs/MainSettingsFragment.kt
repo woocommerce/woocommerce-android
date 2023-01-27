@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -28,6 +29,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_WE_ARE_HIRING_B
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTING_CHANGE
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentSettingsMainBinding
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.FeatureAnnouncement
@@ -203,8 +205,20 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             showThemeChooser()
         }
 
+        binding.categoryStoreSettings.isVisible = presenter.isDomainOptionVisible
+        binding.optionDomain.isVisible = presenter.isDomainOptionVisible
+        binding.optionDomain.setOnClickListener {
+            showDomainChooser()
+        }
+
         presenter.setupAnnouncementOption()
         presenter.setupJetpackInstallOption()
+        presenter.setupApplicationPasswordsSettings()
+    }
+
+    private fun showDomainChooser() {
+        findNavController()
+            .navigateSafely(MainSettingsFragmentDirections.actionMainSettingsFragmentToNavGraphDomainChange())
     }
 
     override fun onResume() {
@@ -266,6 +280,10 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
                     )
                 )
         }
+    }
+
+    override fun handleApplicationPasswordsSettings() {
+        binding.optionNotifications.hide()
     }
 
     private fun updateStoreSettings() {

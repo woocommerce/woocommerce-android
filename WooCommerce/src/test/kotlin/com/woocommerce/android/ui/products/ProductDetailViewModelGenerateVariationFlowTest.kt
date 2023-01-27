@@ -105,7 +105,9 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
                 prefs,
                 addonRepository,
                 generateVariationCandidates,
-                tracker
+                mock(),
+                tracker,
+                mock()
             )
         )
 

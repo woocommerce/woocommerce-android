@@ -38,6 +38,11 @@
         app:showAsAction="withText" />
 
     <item
+        android:id="@+id/menu_duplicate"
+        android:title="@string/product_duplicate"
+        app:showAsAction="withText" />
+
+    <item
         android:id="@+id/menu_trash_product"
         android:title="@string/product_trash"
         android:visible="false"

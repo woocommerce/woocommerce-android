@@ -7,8 +7,8 @@ interface ExperimentTracker {
         const val PROLOGUE_EXPERIMENT_ELIGIBLE_EVENT = "prologue_carousel_displayed"
         const val LOGIN_SUCCESSFUL_EVENT = "login_successful"
         const val SITE_VERIFICATION_SUCCESSFUL_EVENT = "site_verification_successful"
-        const val JETPACK_INSTALLATION_ELIGIBLE_EVENT = "wcandroid_jetpack_installation_eligible"
-        const val SIMPLIFIED_LOGIN_SUCCESSFUL_EVENT = "my_store_displayed"
+        const val REST_API_ELIGIBLE_EVENT = "wcandroid_rest_api_experiment_eligible"
+        const val MYSTORE_DISPLAYED_EVENT = "my_store_displayed"
     }
 
     fun log(event: String, block: (ParametersBuilder.() -> Unit)? = null)

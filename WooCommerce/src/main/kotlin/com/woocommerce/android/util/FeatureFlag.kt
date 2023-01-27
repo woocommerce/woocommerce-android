@@ -14,9 +14,10 @@ enum class FeatureFlag {
     UNIFIED_ORDER_EDITING,
     ORDER_CREATION_CUSTOMER_SEARCH,
     NATIVE_STORE_CREATION_FLOW,
-    STORE_PROFILER_FLOW,
-    REST_API,
-    IAP_FOR_STORE_CREATION;
+    IAP_FOR_STORE_CREATION,
+    IPP_TAP_TO_PAY,
+    DOMAIN_CHANGE,
+    IPP_FEEDBACK_BANNER;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -28,13 +29,14 @@ enum class FeatureFlag {
             JETPACK_CP,
             ORDER_CREATION_CUSTOMER_SEARCH,
             UNIFIED_ORDER_EDITING,
-            NATIVE_STORE_CREATION_FLOW -> true
+            NATIVE_STORE_CREATION_FLOW,
+            IPP_FEEDBACK_BANNER -> true
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
-            STORE_PROFILER_FLOW,
-            REST_API,
-            IAP_FOR_STORE_CREATION -> PackageUtils.isDebugBuild()
+            IAP_FOR_STORE_CREATION,
+            IPP_TAP_TO_PAY,
+            DOMAIN_CHANGE -> PackageUtils.isDebugBuild()
         }
     }
 }
