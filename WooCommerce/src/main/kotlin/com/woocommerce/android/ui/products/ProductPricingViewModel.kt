@@ -36,7 +36,7 @@ class ProductPricingViewModel @Inject constructor(
     wooCommerceStore: WooCommerceStore,
     selectedSite: SelectedSite,
     parameterRepository: ParameterRepository,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val analyticsTracker: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
@@ -150,7 +150,7 @@ class ProductPricingViewModel @Inject constructor(
     }
 
     fun onExit() {
-        analyticsTrackerWrapper.track(
+        analyticsTracker.track(
             AnalyticsEvent.PRODUCT_PRICE_SETTINGS_DONE_BUTTON_TAPPED,
             mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)
         )

@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.products.ProductBackorderStatus.No
 import com.woocommerce.android.ui.products.ProductBackorderStatus.Yes
@@ -11,18 +14,22 @@ import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.OutOfStock
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 class ProductInventoryViewModelTest : BaseUnitTest() {
     private val productDetailRepository: ProductDetailRepository = mock()
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
 
     private val takenSku = "taken"
 
@@ -65,7 +72,8 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
         return spy(
             ProductInventoryViewModel(
                 savedState,
-                productDetailRepository
+                productDetailRepository,
+                analyticsTracker,
             )
         )
     }
@@ -201,4 +209,29 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
             }
             assertThat(viewState?.isStockQuantityEditable).isFalse()
         }
+
+    @Test
+    fun `Send tracks event upon exit if there was no changes`() {
+        // when
+        viewModel.onExit()
+
+        // then
+        verify(analyticsTracker).track(
+            AnalyticsEvent.PRODUCT_INVENTORY_SETTINGS_DONE_BUTTON_TAPPED,
+            mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to false)
+        )
+    }
+
+    @Test
+    fun `Send tracks event upon exit if there was a change`() {
+        // when
+        viewModel.onSkuChanged("a random sku")
+        viewModel.onExit()
+
+        // then
+        verify(analyticsTracker).track(
+            AnalyticsEvent.PRODUCT_INVENTORY_SETTINGS_DONE_BUTTON_TAPPED,
+            mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to true)
+        )
+    }
 }
