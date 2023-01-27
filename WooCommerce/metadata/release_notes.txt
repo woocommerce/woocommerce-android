@@ -1,1 +1,3 @@
-Exciting news! It's now possible to duplicate a product from the app. Just tap on the More Menu available inside the Product detail screen.
+- [*] Adds an In-Person Payments survey banner on top of the Orders view [https://github.com/woocommerce/woocommerce-android/pull/8247]
+- [***] [Internal] Start the AB test for allowing login to the app using site credentials [https://github.com/woocommerce/woocommerce-android/pull/8204]
+
