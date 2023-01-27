@@ -67,6 +67,7 @@ class DomainChangeViewModel @Inject constructor(
     }
 
     fun onFindDomainButtonTapped() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.DOMAIN_CHANGE_SEARCH_FOR_DOMAIN_BUTTON_TAPPED)
         triggerEvent(NavigateToNextStep)
     }
 
