@@ -17,7 +17,8 @@ enum class FeatureFlag {
     IAP_FOR_STORE_CREATION,
     IPP_TAP_TO_PAY,
     DOMAIN_CHANGE,
-    IPP_FEEDBACK_BANNER;
+    IPP_FEEDBACK_BANNER,
+    STORE_CREATION_ONBOARDING;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -36,7 +37,8 @@ enum class FeatureFlag {
             WC_SHIPPING_BANNER,
             IAP_FOR_STORE_CREATION,
             IPP_TAP_TO_PAY,
-            DOMAIN_CHANGE -> PackageUtils.isDebugBuild()
+            DOMAIN_CHANGE,
+            STORE_CREATION_ONBOARDING -> PackageUtils.isDebugBuild()
         }
     }
 }
