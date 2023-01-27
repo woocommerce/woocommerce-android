@@ -1,3 +1,1 @@
-- [*] Adds an In-Person Payments survey banner on top of the Orders view [https://github.com/woocommerce/woocommerce-android/pull/8247]
-- [***] [Internal] Start the AB test for allowing login to the app using site credentials [https://github.com/woocommerce/woocommerce-android/pull/8204]
-
+This release includes a handful of minor improvements and bug fixes that our team found. We’ve also made some tweaks to improve performance. Please keep sending your feedback! We read every one of them.
