@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.products
 
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.tools.NetworkStatus
@@ -17,6 +20,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Index
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 
 @ExperimentalCoroutinesApi
 class ProductImagesViewModelTest : BaseUnitTest() {
@@ -25,6 +29,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val mediaFileUploadHandler: MediaFileUploadHandler = mock()
     private val resourceProvider: ResourceProvider = mock()
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
 
     private fun savedState(productImages: List<Image>) = ProductImagesFragmentArgs(
         remoteId = 0,
@@ -39,6 +44,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
             networkStatus,
             mediaFileUploadHandler,
             resourceProvider,
+            analyticsTracker,
             savedState(productImages)
         ).apply {
             viewStateData.observeForever { _, _ -> }
@@ -195,6 +201,37 @@ class ProductImagesViewModelTest : BaseUnitTest() {
         observeState { state ->
             assertThat(state.images).isEqualTo(images)
         }
+    }
+
+    @Test
+    fun `Send tracks event upon exit if there was no changes`() {
+        // given
+        initialize()
+
+        // when
+        viewModel.onNavigateBackButtonClicked()
+
+        // then
+        verify(analyticsTracker).track(
+            AnalyticsEvent.PRODUCT_IMAGE_SETTINGS_DONE_BUTTON_TAPPED,
+            mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to false)
+        )
+    }
+
+    @Test
+    fun `Send tracks event upon exit if there was a change`() {
+        // given
+        initialize(emptyList())
+
+        // when
+        viewModel.onMediaLibraryImagesAdded(generateProductImagesList())
+        viewModel.onNavigateBackButtonClicked()
+
+        // then
+        verify(analyticsTracker).track(
+            AnalyticsEvent.PRODUCT_IMAGE_SETTINGS_DONE_BUTTON_TAPPED,
+            mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to true)
+        )
     }
 
     private fun observeState(check: (ProductImagesViewModel.ViewState) -> Unit) =
