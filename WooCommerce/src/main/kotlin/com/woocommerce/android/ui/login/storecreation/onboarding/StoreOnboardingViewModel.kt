@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login.storecreation.onboarding
 
 import android.os.Parcelable
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
@@ -21,7 +22,26 @@ class StoreOnboardingViewModel @Inject constructor(
         OnboardingState(
             show = FeatureFlag.STORE_CREATION_ONBOARDING.isEnabled(),
             title = R.string.store_onboarding_title,
-            tasks = emptyList()
+            tasks = listOf(
+                OnboardingTask(
+                    icon = R.drawable.ic_product,
+                    title = R.string.store_onboarding_task_add_product_title,
+                    description = R.string.store_onboarding_task_add_product_description,
+                    status = OnboardingTaskStatus.UNDONE
+                ),
+                OnboardingTask(
+                    icon = R.drawable.ic_product,
+                    title = R.string.store_onboarding_task_launch_store_title,
+                    description = R.string.store_onboarding_task_launch_store_description,
+                    status = OnboardingTaskStatus.UNDONE
+                ),
+                OnboardingTask(
+                    icon = R.drawable.ic_product,
+                    title = R.string.store_onboarding_task_change_domain_title,
+                    description = R.string.store_onboarding_task_change_domain_description,
+                    status = OnboardingTaskStatus.UNDONE
+                )
+            )
         )
     )
     val viewState = _viewState.asLiveData()
@@ -35,13 +55,14 @@ class StoreOnboardingViewModel @Inject constructor(
 
     @Parcelize
     data class OnboardingTask(
-        val name: String,
-        val description: String,
+        @DrawableRes val icon: Int,
+        @StringRes val title: Int,
+        @StringRes val description: Int,
         val status: OnboardingTaskStatus
     ) : Parcelable
 
     enum class OnboardingTaskStatus {
-        TODO,
+        UNDONE,
         COMPLETED
     }
 }

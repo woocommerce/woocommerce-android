@@ -3032,4 +3032,10 @@
     Store onboarding
     -->
     <string name="store_onboarding_title">Store setup</string>
+    <string name="store_onboarding_task_add_product_title">Add your first product </string>
+    <string name="store_onboarding_task_add_product_description">Start selling by adding products or services to your store.</string>
+    <string name="store_onboarding_task_launch_store_title">Launch your store</string>
+    <string name="store_onboarding_task_launch_store_description">Publish your site to the world anytime you want!</string>
+    <string name="store_onboarding_task_change_domain_title">Customize your domain</string>
+    <string name="store_onboarding_task_change_domain_description">Have a custom URL to host your store.</string>
 </resources>
