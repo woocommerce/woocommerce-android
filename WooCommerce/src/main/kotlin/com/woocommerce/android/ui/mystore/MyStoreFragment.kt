@@ -5,9 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.view.ViewGroup.LayoutParams
-import androidx.compose.material.Text
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.res.stringResource
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -38,6 +36,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingScreen
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.*
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -177,6 +176,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
             .launchIn(viewLifecycleOwner.lifecycleScope)
 
         setupStateObservers()
+        setupOnboardingView()
     }
 
     private fun applyBannerComposeUI(state: BannerState) {
@@ -196,17 +196,19 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         }
     }
 
-    private fun showStoreOnboardingView(state: OnboardingState) {
-        when (state.show) {
-            false -> binding.storeOnboardingView.hide()
-            else -> {
-                binding.storeOnboardingView.apply {
-                    binding.storeOnboardingView.show()
-                    // Dispose of the Composition when the view's LifecycleOwner is destroyed
-                    setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-                    setContent {
-                        WooThemeWithBackground {
-                            Text(stringResource(id = state.title))
+    private fun setupOnboardingView() {
+        storeOnboardingViewModel.viewState.observe(viewLifecycleOwner) { state ->
+            when (state.show) {
+                false -> binding.storeOnboardingView.hide()
+                else -> {
+                    binding.storeOnboardingView.apply {
+                        binding.storeOnboardingView.show()
+                        // Dispose of the Composition when the view's LifecycleOwner is destroyed
+                        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                        setContent {
+                            WooThemeWithBackground {
+                                StoreOnboardingScreen(onboardingState = state)
+                            }
                         }
                     }
                 }
@@ -280,9 +282,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                 }
                 else -> event.isHandled = false
             }
-        }
-        storeOnboardingViewModel.viewState.observe(viewLifecycleOwner) { onboardingState ->
-            showStoreOnboardingView(onboardingState)
         }
     }
 
