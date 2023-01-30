@@ -8,11 +8,8 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
-import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.SpinnerListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.ToggleableListItem
@@ -21,20 +18,14 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @HiltViewModel
 class DeveloperOptionsViewModel @Inject constructor(
-    cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
     savedState: SavedStateHandle,
-    selectedSite: SelectedSite,
-    wooStore: WooCommerceStore,
     private val developerOptionsRepository: DeveloperOptionsRepository,
     private val cardReaderManager: CardReaderManager,
 ) : ScopedViewModel(savedState) {
-    private val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
-    private val countryConfig = cardReaderCountryConfigProvider.provideCountryConfigFor(storeCountryCode)
     private val _viewState = MutableLiveData(
         DeveloperOptionsViewState(
             rows = if (developerOptionsRepository.isSimulatedCardReaderEnabled()) {
@@ -164,11 +155,7 @@ class DeveloperOptionsViewModel @Inject constructor(
     }
 
     private fun getListItemsForSimulatedReader(): List<ListItem> {
-        return if (countryConfig is CardReaderConfigForCanada) {
-            getListItemsForHardwareReader() + createReaderUpdateFrequencyItem() + createEnableInteractItem()
-        } else {
-            getListItemsForHardwareReader() + createReaderUpdateFrequencyItem()
-        }
+        return getListItemsForHardwareReader() + createReaderUpdateFrequencyItem() + createEnableInteractItem()
     }
 
     data class DeveloperOptionsViewState(
