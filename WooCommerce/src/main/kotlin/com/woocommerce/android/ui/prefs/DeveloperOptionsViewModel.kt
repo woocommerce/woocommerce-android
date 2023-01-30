@@ -26,20 +26,19 @@ class DeveloperOptionsViewModel @Inject constructor(
     private val developerOptionsRepository: DeveloperOptionsRepository,
     private val cardReaderManager: CardReaderManager,
 ) : ScopedViewModel(savedState) {
-
     private val _viewState = MutableLiveData(
         DeveloperOptionsViewState(
             rows = if (developerOptionsRepository.isSimulatedCardReaderEnabled()) {
-                createDeveloperOptionsList() + createReaderUpdateFrequencyItem()
+                getListItemsForSimulatedReader()
             } else {
-                createDeveloperOptionsList()
+                getListItemsForHardwareReader()
             }
         )
     )
 
     val viewState: LiveData<DeveloperOptionsViewState> = _viewState
 
-    private fun createDeveloperOptionsList(): List<ListItem> = mutableListOf<ListItem>(
+    private fun getListItemsForHardwareReader(): List<ListItem> = mutableListOf<ListItem>(
         ToggleableListItem(
             icon = drawable.img_card_reader_connecting,
             label = UiStringRes(string.enable_card_reader),
@@ -60,15 +59,26 @@ class DeveloperOptionsViewModel @Inject constructor(
             onClick = ::onUpdateSimulatedReaderClicked,
         )
 
+    private fun createEnableInteractItem() =
+        ToggleableListItem(
+            icon = drawable.ic_credit_card_give,
+            label = UiStringRes(string.enable_interac_payment),
+            key = UiStringRes(string.enable_interac_key),
+            isEnabled = true,
+            isChecked = developerOptionsRepository.isInteracPaymentEnabled(),
+            onToggled = ::onEnableInteracToggled
+        )
+
     private fun onSimulatedReaderToggled(isChecked: Boolean) {
         if (!isChecked) {
-            viewState.value?.rows = createDeveloperOptionsList()
+            viewState.value?.rows = getListItemsForHardwareReader()
             disconnectAndClearSelectedCardReader()
             triggerEvent(
                 DeveloperOptionsEvents.ShowToastString(string.simulated_reader_toast)
             )
         } else {
-            viewState.value?.rows = createDeveloperOptionsList() + createReaderUpdateFrequencyItem()
+            viewState.value?.rows =
+                getListItemsForSimulatedReader()
         }
         simulatedReaderStateChanged(isChecked)
     }
@@ -98,6 +108,21 @@ class DeveloperOptionsViewModel @Inject constructor(
         }
     }
 
+    private fun onEnableInteracToggled(isChecked: Boolean) {
+        developerOptionsRepository.changeEnableInteracPaymentState(isChecked)
+
+        reinitializeSimulatedReaderIfNotInitialized()
+    }
+
+    private fun reinitializeSimulatedReaderIfNotInitialized() {
+        if (cardReaderManager.initialized) {
+            cardReaderManager.reinitializeSimulatedTerminal(
+                updateFrequency = mapUpdateOptions(developerOptionsRepository.getUpdateSimulatedReaderOption()),
+                useInterac = developerOptionsRepository.isInteracPaymentEnabled()
+            )
+        }
+    }
+
     private fun onUpdateSimulatedReaderClicked() {
         triggerEvent(
             DeveloperOptionsEvents.ShowUpdateOptionsDialog(
@@ -108,10 +133,9 @@ class DeveloperOptionsViewModel @Inject constructor(
     }
 
     fun onUpdateReaderOptionChanged(selectedOption: UpdateOptions) {
-        if (cardReaderManager.initialized) {
-            cardReaderManager.initializeOnUpdateFrequencyChange(mapUpdateOptions(selectedOption))
-        }
         developerOptionsRepository.updateSimulatedReaderOption(selectedOption)
+
+        reinitializeSimulatedReaderIfNotInitialized()
     }
 
     private fun mapUpdateOptions(updateFrequency: UpdateOptions): CardReaderManager.SimulatorUpdateFrequency {
@@ -128,6 +152,10 @@ class DeveloperOptionsViewModel @Inject constructor(
             val options: List<UpdateOptions>,
             var selectedValue: UpdateOptions,
         ) : DeveloperOptionsEvents()
+    }
+
+    private fun getListItemsForSimulatedReader(): List<ListItem> {
+        return getListItemsForHardwareReader() + createReaderUpdateFrequencyItem() + createEnableInteractItem()
     }
 
     data class DeveloperOptionsViewState(
