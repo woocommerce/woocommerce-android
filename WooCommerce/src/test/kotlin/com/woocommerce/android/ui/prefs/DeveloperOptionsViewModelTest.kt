@@ -19,7 +19,7 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class DeveloperOptionsTest : BaseUnitTest() {
+class DeveloperOptionsViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: DeveloperOptionsViewModel
 
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
