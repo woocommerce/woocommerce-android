@@ -35,7 +35,15 @@
                         android:id="@+id/jitmView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/minor_100"/>
+                        android:layout_marginBottom="@dimen/minor_100" />
+
+                    <androidx.compose.ui.platform.ComposeView
+                        android:id="@+id/store_onboarding_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/major_100"
+                        android:layout_marginTop="@dimen/major_100"
+                        android:visibility="gone" />
 
                     <com.woocommerce.android.widgets.WCEmptyView
                         android:id="@+id/empty_view"
@@ -109,8 +117,8 @@
                 android:id="@+id/stats_availability_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:importantForAccessibility="no"
                 android:layout_marginTop="@dimen/major_250"
+                android:importantForAccessibility="no"
                 android:src="@drawable/img_empty_search"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

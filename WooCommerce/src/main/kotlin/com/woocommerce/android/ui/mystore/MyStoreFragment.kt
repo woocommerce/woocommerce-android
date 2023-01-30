@@ -36,6 +36,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingScreen
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
@@ -75,7 +77,8 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
     }
 
-    private val viewModel: MyStoreViewModel by viewModels()
+    private val myStoreViewModel: MyStoreViewModel by viewModels()
+    private val storeOnboardingViewModel: StoreOnboardingViewModel by viewModels()
 
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var currencyFormatter: CurrencyFormatter
@@ -109,7 +112,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
     private val tabSelectedListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab) {
-            viewModel.onStatsGranularityChanged(tab.tag as StatsGranularity)
+            myStoreViewModel.onStatsGranularityChanged(tab.tag as StatsGranularity)
         }
 
         override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -120,7 +123,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     private val handler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        lifecycle.addObserver(viewModel.performanceObserver)
+        lifecycle.addObserver(myStoreViewModel.performanceObserver)
         super.onCreate(savedInstanceState)
     }
 
@@ -131,7 +134,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
         binding.myStoreRefreshLayout.setOnRefreshListener {
             binding.myStoreRefreshLayout.isRefreshing = false
-            viewModel.onSwipeToRefresh()
+            myStoreViewModel.onSwipeToRefresh()
             binding.myStoreStats.clearStatsHeaderValues()
             binding.myStoreStats.clearChartData()
         }
@@ -146,13 +149,13 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         }
 
         binding.myStoreStats.initView(
-            viewModel.activeStatsGranularity.value ?: DEFAULT_STATS_GRANULARITY,
+            myStoreViewModel.activeStatsGranularity.value ?: DEFAULT_STATS_GRANULARITY,
             selectedSite,
             dateUtils,
             currencyFormatter,
             usageTracksEventEmitter,
             viewLifecycleOwner.lifecycleScope
-        ) { viewModel.onViewAnalyticsClicked() }
+        ) { myStoreViewModel.onViewAnalyticsClicked() }
 
         binding.myStoreTopPerformers.initView(selectedSite)
 
@@ -172,6 +175,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
             .launchIn(viewLifecycleOwner.lifecycleScope)
 
         setupStateObservers()
+        setupOnboardingView()
     }
 
     private fun applyBannerComposeUI(state: BannerState) {
@@ -191,9 +195,29 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         }
     }
 
+    private fun setupOnboardingView() {
+        storeOnboardingViewModel.viewState.observe(viewLifecycleOwner) { state ->
+            when (state.show) {
+                false -> binding.storeOnboardingView.hide()
+                else -> {
+                    binding.storeOnboardingView.apply {
+                        binding.storeOnboardingView.show()
+                        // Dispose of the Composition when the view's LifecycleOwner is destroyed
+                        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                        setContent {
+                            WooThemeWithBackground {
+                                StoreOnboardingScreen(onboardingState = state)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     @Suppress("ComplexMethod", "MagicNumber", "LongMethod")
     private fun setupStateObservers() {
-        viewModel.activeStatsGranularity.observe(viewLifecycleOwner) { activeGranularity ->
+        myStoreViewModel.activeStatsGranularity.observe(viewLifecycleOwner) { activeGranularity ->
             if (tabLayout.getTabAt(tabLayout.selectedTabPosition)?.tag != activeGranularity) {
                 val index = StatsGranularity.values().indexOf(activeGranularity)
                 // Small delay needed to ensure tablayout scrolls to the selected tab if tab is not visible on screen.
@@ -202,7 +226,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
             binding.myStoreStats.loadDashboardStats(activeGranularity)
             binding.myStoreTopPerformers.onDateGranularityChanged(activeGranularity)
         }
-        viewModel.revenueStatsState.observe(viewLifecycleOwner) { revenueStats ->
+        myStoreViewModel.revenueStatsState.observe(viewLifecycleOwner) { revenueStats ->
             when (revenueStats) {
                 is RevenueStatsViewState.Content -> showStats(revenueStats.revenueStats)
                 RevenueStatsViewState.GenericError -> showStatsError()
@@ -210,7 +234,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                 RevenueStatsViewState.PluginNotActiveError -> updateStatsAvailabilityError()
             }
         }
-        viewModel.visitorStatsState.observe(viewLifecycleOwner) { stats ->
+        myStoreViewModel.visitorStatsState.observe(viewLifecycleOwner) { stats ->
             when (stats) {
                 is VisitorStatsViewState.Content -> showVisitorStats(stats.stats)
                 VisitorStatsViewState.Error -> {
@@ -220,23 +244,23 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                 is VisitorStatsViewState.Unavailable -> onVisitorStatsUnavailable(stats)
             }
         }
-        viewModel.topPerformersState.observe(viewLifecycleOwner) { topPerformers ->
+        myStoreViewModel.topPerformersState.observe(viewLifecycleOwner) { topPerformers ->
             when {
                 topPerformers.isLoading -> showTopPerformersLoading()
                 topPerformers.isError -> showTopPerformersError()
                 else -> showTopPerformers(topPerformers.topPerformers)
             }
         }
-        viewModel.hasOrders.observe(viewLifecycleOwner) { newValue ->
+        myStoreViewModel.hasOrders.observe(viewLifecycleOwner) { newValue ->
             when (newValue) {
                 OrderState.Empty -> showEmptyView(true)
                 OrderState.AtLeastOne -> showEmptyView(false)
             }
         }
-        viewModel.bannerState.observe(viewLifecycleOwner) { bannerState ->
+        myStoreViewModel.bannerState.observe(viewLifecycleOwner) { bannerState ->
             applyBannerComposeUI(bannerState)
         }
-        viewModel.event.observe(viewLifecycleOwner) { event ->
+        myStoreViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is OpenTopPerformer -> findNavController().navigateSafely(
                     NavGraphMainDirections.actionGlobalProductDetailFragment(
@@ -348,7 +372,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         binding.myStoreStats.updateView(revenueStatsModel)
 
         // update the stats today widget if we're viewing today's stats
-        if (viewModel.activeStatsGranularity.value == StatsGranularity.DAYS) {
+        if (myStoreViewModel.activeStatsGranularity.value == StatsGranularity.DAYS) {
             (activity as? MainActivity)?.updateStatsWidgets()
         }
     }
@@ -396,7 +420,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
     override fun getFragmentTitle() = getString(R.string.my_store)
 
-    override fun getFragmentSubtitle(): String = viewModel.getSelectedSiteName()
+    override fun getFragmentSubtitle(): String = myStoreViewModel.getSelectedSiteName()
 
     override fun scrollToTop() {
         binding.statsScrollView.smoothScrollTo(0, 0)
