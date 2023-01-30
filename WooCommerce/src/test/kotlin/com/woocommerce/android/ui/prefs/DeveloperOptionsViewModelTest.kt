@@ -3,12 +3,7 @@ package com.woocommerce.android.ui.prefs
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.config.CardReaderConfig
-import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
-import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.model.UiString
-import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -16,7 +11,6 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DeveloperOptionsViewModelTest : BaseUnitTest() {
@@ -25,9 +19,6 @@ class DeveloperOptionsViewModelTest : BaseUnitTest() {
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
     private val developerOptionsRepository: DeveloperOptionsRepository = mock()
     private val cardReaderManager: CardReaderManager = mock()
-    private val selectedSite: SelectedSite = mock()
-    private val wooStore: WooCommerceStore = mock()
-    private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider = mock()
 
     @Before
     fun setup() {
@@ -102,31 +93,13 @@ class DeveloperOptionsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when simulated card reader btn toggled, given CA store, then interac row displayed`() {
-        val supportedCountry: CardReaderConfig = CardReaderConfigForCanada
-        whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("CA")).thenReturn(supportedCountry)
-        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("CA")
+    fun `when simulated card reader btn toggled, then interac row displayed`() {
         whenever(developerOptionsRepository.isSimulatedCardReaderEnabled()).thenReturn(true)
 
         initViewModel()
 
         assertThat(viewModel.viewState.value?.rows)
             .anyMatch {
-                it.label == UiString.UiStringRes(R.string.enable_interac_payment)
-            }
-    }
-
-    @Test
-    fun `when simulated card reader btn toggled, given US store, then interac row not displayed`() {
-        val supportedCountry: CardReaderConfig = CardReaderConfigForUSA
-        whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US")).thenReturn(supportedCountry)
-        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(developerOptionsRepository.isSimulatedCardReaderEnabled()).thenReturn(true)
-
-        initViewModel()
-
-        assertThat(viewModel.viewState.value?.rows)
-            .noneMatch {
                 it.label == UiString.UiStringRes(R.string.enable_interac_payment)
             }
     }
@@ -157,10 +130,7 @@ class DeveloperOptionsViewModelTest : BaseUnitTest() {
 
     private fun initViewModel() {
         viewModel = DeveloperOptionsViewModel(
-            cardReaderCountryConfigProvider,
             savedStateHandle,
-            selectedSite,
-            wooStore,
             developerOptionsRepository,
             cardReaderManager,
         )
