@@ -38,7 +38,6 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingScreen
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.*
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
