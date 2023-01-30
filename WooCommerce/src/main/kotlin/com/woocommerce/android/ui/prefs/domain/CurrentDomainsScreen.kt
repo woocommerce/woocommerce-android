@@ -7,6 +7,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,7 +40,11 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -64,7 +69,7 @@ fun CurrentDomainsScreen(viewModel: DomainChangeViewModel) {
                 Toolbar(
                     title = stringResource(id = string.domains),
                     onNavigationButtonClick = viewModel::onCancelPressed,
-                    onActionButtonClick = viewModel::onHelpPressed,
+                    onActionButtonClick = viewModel::onHelpPressed
                 )
             }) { padding ->
                 when (viewState) {
@@ -73,6 +78,7 @@ fun CurrentDomainsScreen(viewModel: DomainChangeViewModel) {
                             domainsState = viewState,
                             onFindDomainButtonTapped = viewModel::onFindDomainButtonTapped,
                             onDismissBannerButtonTapped = viewModel::onDismissBannerButtonTapped,
+                            onLearnMoreButtonTapped = viewModel::onLearnMoreButtonTapped,
                             modifier = Modifier
                                 .background(MaterialTheme.colors.surface)
                                 .fillMaxSize()
@@ -92,6 +98,7 @@ private fun DomainChange(
     domainsState: DomainsState,
     onFindDomainButtonTapped: () -> Unit,
     onDismissBannerButtonTapped: () -> Unit,
+    onLearnMoreButtonTapped: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -124,18 +131,38 @@ private fun DomainChange(
                 Text(text = stringResource(id = string.domains_search_for_domain_button_title))
             }
             Row(
-                Modifier.padding(
-                    horizontal = dimensionResource(id = dimen.major_100),
-                    vertical = dimensionResource(id = dimen.minor_50)
-                )
+                Modifier
+                    .padding(
+                        start = dimensionResource(id = dimen.major_100),
+                        end = dimensionResource(id = dimen.major_100),
+                        top = dimensionResource(id = dimen.minor_50),
+                        bottom = dimensionResource(id = dimen.major_100)
+                    )
+                    .clickable {
+                        onLearnMoreButtonTapped()
+                    }
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = drawable.ic_info_outline_20dp),
-                    contentDescription = stringResource(string.domains_learn_more)
+                    contentDescription = stringResource(string.learn_more)
                 )
+                val learnMoreColor = colorResource(id = color.color_primary)
+                val learnMore = stringResource(id = string.learn_more)
+                val learnMoreContinued = stringResource(id = string.domains_learn_more)
                 Text(
                     modifier = Modifier.padding(start = dimensionResource(id = dimen.major_100)),
-                    text = stringResource(id = string.domains_learn_more),
+                    text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                color = learnMoreColor,
+                                textDecoration = TextDecoration.Underline
+                            )
+                        ) {
+                            append(learnMore)
+                        }
+                        append(" ")
+                        append(learnMoreContinued)
+                    },
                     style = MaterialTheme.typography.caption,
                     color = colorResource(id = color.color_on_surface_medium)
                 )
@@ -356,7 +383,31 @@ fun NamePickerPreview() {
                 ),
             ),
             onFindDomainButtonTapped = {},
-            onDismissBannerButtonTapped = {}
+            onDismissBannerButtonTapped = {},
+            onLearnMoreButtonTapped = {}
+        )
+    }
+}
+
+@ExperimentalFoundationApi
+@Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Composable
+fun NoDomainsPickerPreview() {
+    WooThemeWithBackground {
+        DomainChange(
+            domainsState = DomainsState(
+                wpComDomain = DomainsState.Domain(
+                    url = "www.test.com",
+                    renewalDate = "Renewal date: 12/12/2020",
+                    isPrimary = true
+                ),
+                isDomainClaimBannerVisible = true,
+                paidDomains = listOf(),
+            ),
+            onFindDomainButtonTapped = {},
+            onDismissBannerButtonTapped = {},
+            onLearnMoreButtonTapped = {}
         )
     }
 }

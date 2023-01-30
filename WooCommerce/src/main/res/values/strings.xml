@@ -538,7 +538,7 @@
     <string name="domains_claim_your_free_domain_link">Claim Domain</string>
     <string name="domains_purchase_redirect_notice">The domain purchased will redirect users to your primary address.</string>
     <string name="domains_search_for_domain_button_title">Search for a domain</string>
-    <string name="domains_learn_more">Learn more about domains and how to take domain-related actions.</string>
+    <string name="domains_learn_more">about domains and how to take domain-related actions.</string>
     <string name="domains_primary_address">Primary site address</string>
     <string name="domains_your_domains">Your site domains</string>
     <string name="domains_add_domain_button_title">Add a domain</string>
