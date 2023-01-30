@@ -65,6 +65,7 @@
     <string name="products">Products</string>
     <string name="refunds">Refunds</string>
     <string name="domain">Domain</string>
+    <string name="domains">Domains</string>
     <string name="shipping_labels">Shipping Labels</string>
     <string name="product_variations">Variations</string>
     <string name="product_variation_options">%1$s (%2$s options)</string>
@@ -527,6 +528,20 @@
     <string name="order_creation_customer_search_empty">No customers found</string>
     <string name="order_creation_customer_search_hint">Search customers</string>
     <string name="order_creation_change_product_quantity">Change the product quantity from %1$d to %2$d</string>
+
+    <!--
+        Domains
+    -->
+    <string name="domains_your_free_store_address">Your free store address</string>
+    <string name="domains_claim_your_free_domain_title">Claim your free domain</string>
+    <string name="domains_claim_your_free_domain_description">You have a free one-year domain registration included with your plan.</string>
+    <string name="domains_claim_your_free_domain_link">Claim Domain</string>
+    <string name="domains_purchase_redirect_notice">The domain purchased will redirect users to your primary address.</string>
+    <string name="domains_search_for_domain_button_title">Search for a domain</string>
+    <string name="domains_learn_more">Learn more about domains and how to take domain-related actions.</string>
+    <string name="domains_primary_address">Primary site address</string>
+    <string name="domains_your_domains">Your site domains</string>
+    <string name="domains_add_domain_button_title">Add a domain</string>
     <!--
         Order Editing
     -->
@@ -2139,6 +2154,19 @@
     <string name="feedback_completed_contact_us">Contact us here</string>
     <string name="feedback_completed_back_to_store_button_text">Back to store</string>
     <string name="feedback_product_give_feedback_button_text">Give Feedback</string>
+
+    <!-- In-person Payments feedback banner -->
+    <string name="feedback_banner_ipp_title_newbie">How can we help you with in-person selling?</string>
+    <string name="feedback_banner_ipp_message_newbie">Share your own experience on how you collect in-person payments.</string>
+    <string name="feedback_banner_ipp_title_beginner">Enjoy your in-person payment?</string>
+    <string name="feedback_banner_ipp_message_beginner">Rate your first in-person payment experience.</string>
+    <string name="feedback_banner_ipp_title_ninja">Let us know what you think</string>
+    <string name="feedback_banner_ipp_message_ninja">Tell us about your experience with in-person payments.</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_title">Share feedback</string>
+    <string name="feedback_banner_ipp_cta_button">Share feedback</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_message">No worries! You can always go to the Settings in the Menu to send us feedback.</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_button">Remind me later</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_dont_show_again_button">Don\'t show again</string>
 
     <!-- permissions -->
     <string name="permissions_denied_title">Permissions</string>

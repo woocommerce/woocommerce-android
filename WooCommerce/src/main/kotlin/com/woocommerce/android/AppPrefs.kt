@@ -164,6 +164,15 @@ object AppPrefs {
         WC_SHIPPING_BANNER_DISMISSED,
 
         ONBOARDING_CAROUSEL_DISPLAYED,
+
+        // If the IPP feedback survey was completed
+        IPP_FEEDBACK_SURVEY_COMPLETED,
+
+        // Timestamp of when the IPP feedback request banner was last dismissed
+        IPP_FEEDBACK_SURVEY_BANNER_LAST_DISMISSED,
+
+        // Was the IPP feedback survey banner dismissed forever
+        IPP_FEEDBACK_SURVEY_BANNER_DISMISSED_FOREVER,
     }
 
     fun init(context: Context) {
@@ -889,6 +898,28 @@ object AppPrefs {
 
     private fun getActiveStatsGranularityFilterKey(currentSiteId: Int) =
         PrefKeyString("${DeletablePrefKey.ACTIVE_STATS_GRANULARITY}:$currentSiteId")
+
+    /**
+     * Used for storing IPP feedback banner interaction data.
+     */
+    fun isIPPFeedbackSurveyCompleted() = getBoolean(UndeletablePrefKey.IPP_FEEDBACK_SURVEY_COMPLETED, false)
+
+    fun setIPPFeedbackSurveyCompleted(completed: Boolean) {
+        setBoolean(UndeletablePrefKey.IPP_FEEDBACK_SURVEY_COMPLETED, completed)
+    }
+
+    fun getIPPFeedbackBannerLastDismissed() = getLong(UndeletablePrefKey.IPP_FEEDBACK_SURVEY_BANNER_LAST_DISMISSED, -1L)
+
+    fun setIPPFeedbackBannerDismissedRemindLater(dismissDateTime: Long) {
+        setLong(UndeletablePrefKey.IPP_FEEDBACK_SURVEY_BANNER_LAST_DISMISSED, dismissDateTime)
+    }
+
+    fun isIPPFeedbackBannerDismissedForever() =
+        getBoolean(UndeletablePrefKey.IPP_FEEDBACK_SURVEY_BANNER_DISMISSED_FOREVER, false)
+
+    fun setIPPFeedbackBannerDismissedForever(dismissedForever: Boolean) {
+        setBoolean(UndeletablePrefKey.IPP_FEEDBACK_SURVEY_BANNER_DISMISSED_FOREVER, dismissedForever)
+    }
 
     /**
      * Remove all user and site-related preferences.

@@ -1,7 +1,12 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
-12.1
+12.2
 -----
 
+
+12.1
+-----
+- [*] Adds an In-Person Payments survey banner on top of the Orders view [https://github.com/woocommerce/woocommerce-android/pull/8247]
+- [***] [Internal] Start the AB test for allowing login to the app using site credentials [https://github.com/woocommerce/woocommerce-android/pull/8204]
 
 12.0
 -----

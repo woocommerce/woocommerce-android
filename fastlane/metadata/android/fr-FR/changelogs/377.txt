@@ -1,0 +1,2 @@
+12.0 :
+Grande nouvelle ! Il est désormais possible de dupliquer un produit à partir de l'application. Il vous suffit de sélectionner le menu More (Plus) dans l'écran Product detail (Détails sur le produit).

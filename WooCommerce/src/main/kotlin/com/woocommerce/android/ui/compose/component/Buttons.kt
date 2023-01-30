@@ -5,6 +5,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,12 +22,14 @@ import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toUpperCase
@@ -204,6 +207,43 @@ fun WCTextButton(
     }
 }
 
+@Composable
+fun WCTextButton(
+    onClick: () -> Unit,
+    text: String,
+    icon: ImageVector,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    allCaps: Boolean = true,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    contentPadding: PaddingValues = ButtonDefaults.TextButtonContentPadding,
+    colors: ButtonColors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colors.secondary),
+) {
+    TextButton(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        contentPadding = contentPadding,
+        interactionSource = interactionSource,
+        colors = colors
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start,
+            modifier = modifier.fillMaxWidth()
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(end = 8.dp)
+            )
+            Text(text = text.let { if (allCaps) it.toUpperCase(Locale.current) else it })
+        }
+    }
+}
+
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
@@ -256,6 +296,12 @@ private fun ButtonsPreview() {
                 Text(text = "Text button")
             }
             WCTextButton(onClick = {}, text = "Text Button")
+            WCTextButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {},
+                text = "Text Button",
+                icon = Icons.Default.Add
+            )
         }
     }
 }

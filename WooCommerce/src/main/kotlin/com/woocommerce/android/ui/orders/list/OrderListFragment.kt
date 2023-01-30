@@ -42,6 +42,7 @@ import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.dialog.WooDialog.showDialog
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
@@ -193,7 +194,6 @@ class OrderListFragment :
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
         initSwipeBehaviour()
-        displaySimplePaymentsWIPCard(true)
     }
 
     private fun initSwipeBehaviour() {
@@ -313,6 +313,11 @@ class OrderListFragment :
                         )
                     )
                 }
+                is OrderListViewModel.OrderListEvent.OpenIPPFeedbackSurveyLink -> {
+                    NavGraphMainDirections
+                        .actionGlobalFeedbackSurveyFragment(customUrl = event.url)
+                        .apply { findNavController().navigateSafely(this) }
+                }
                 is OrderListViewModel.OrderListEvent.NotifyOrderChanged -> {
                     binding.orderListView.ordersList.adapter?.notifyItemChanged(event.position)
                 }
@@ -333,6 +338,9 @@ class OrderListFragment :
                         it.show()
                     }
                     binding.orderRefreshLayout.isRefreshing = false
+                }
+                is OrderListViewModel.OrderListEvent.ShowIPPDismissConfirmationDialog -> {
+                    showIPPFeedbackDismissConfirmationDialog()
                 }
                 else -> event.isHandled = false
             }
@@ -367,6 +375,44 @@ class OrderListFragment :
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.filterCount.takeIfNotEqualTo(old?.filterCount) { filterCount ->
                 binding.orderFiltersCard.updateFilterSelection(filterCount)
+            }
+            new.ippFeedbackBannerState.takeIfNotEqualTo(old?.ippFeedbackBannerState) { bannerState ->
+                renderIPPBanner(bannerState)
+            }
+            new.isSimplePaymentsWIPNoticeCardVisible.takeIfNotEqualTo(old?.isSimplePaymentsWIPNoticeCardVisible) {
+                displaySimplePaymentsWIPCard(it)
+            }
+        }
+    }
+
+    private fun showIPPFeedbackDismissConfirmationDialog() {
+        showDialog(
+            activity = requireActivity(),
+            titleId = R.string.feedback_banner_ipp_dismiss_confirmation_title,
+            messageId = R.string.feedback_banner_ipp_dismiss_confirmation_message,
+            positiveButtonId = R.string.feedback_banner_ipp_dismiss_confirmation_remind_later_button,
+            negativeButtonId = R.string.feedback_banner_ipp_dismiss_confirmation_remind_later_dont_show_again_button,
+            negBtnAction = { _, _ -> viewModel.onIPPFeedbackBannerDismissedForever() },
+            posBtnAction = { _, _ -> viewModel.onIPPFeedbackBannerDismissedShowLater() }
+        )
+    }
+
+    private fun renderIPPBanner(bannerState: OrderListViewModel.IPPSurveyFeedbackBannerState) {
+        val isVisible =
+            bannerState is OrderListViewModel.IPPSurveyFeedbackBannerState.Visible && !DisplayUtils.isLandscape(context)
+
+        binding.ippFeedbackBanner.isVisible = isVisible
+
+        if (isVisible) {
+            val data =
+                (bannerState as OrderListViewModel.IPPSurveyFeedbackBannerState.Visible).bannerData
+            binding.ippFeedbackBanner.setMessage(data.message)
+            binding.ippFeedbackBanner.setTitle(data.title)
+            binding.ippFeedbackBanner.onDismissClickListener = {
+                viewModel.onDismissIPPFeedbackBannerClicked()
+            }
+            binding.ippFeedbackBanner.onCTAClickListener = {
+                viewModel.onIPPFeedbackBannerCTAClicked()
             }
         }
     }
