@@ -78,9 +78,16 @@ fun OnboardingTaskList(
             ) {
                 Image(
                     modifier = Modifier.fillMaxHeight(),
-                    painter = painterResource(id = task.icon),
+                    painter = painterResource(
+                        id = if (task.isCompleted)
+                            R.drawable.ic_onboarding_task_completed
+                        else task.icon
+                    ),
                     contentDescription = "",
-                    colorFilter = ColorFilter.tint(color = colorResource(id = R.color.color_icon))
+                    colorFilter =
+                    if (!task.isCompleted)
+                        ColorFilter.tint(color = colorResource(id = R.color.color_icon))
+                    else null
                 )
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
@@ -161,7 +168,7 @@ private fun OnboardingPreview() {
                     icon = R.drawable.ic_product,
                     title = R.string.store_onboarding_task_launch_store_title,
                     description = R.string.store_onboarding_task_launch_store_description,
-                    isCompleted = false
+                    isCompleted = true
                 ),
                 OnboardingTask(
                     icon = R.drawable.ic_product,
