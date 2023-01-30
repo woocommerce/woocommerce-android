@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
@@ -23,6 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -130,11 +132,11 @@ fun OnboardingTaskLinearProgress(
     Column(modifier) {
         LinearProgressIndicator(
             progress = animatedProgress,
-            modifier = with(Modifier) {
-                height(dimensionResource(id = R.dimen.minor_100))
-            },
+            modifier = Modifier
+                .height(dimensionResource(id = R.dimen.minor_100))
+                .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))),
             color = MaterialTheme.colors.primary,
-            backgroundColor = colorResource(id = R.color.divider_color)
+            backgroundColor = colorResource(id = R.color.divider_color),
         )
         Text(
             modifier = Modifier.padding(top = dimensionResource(id = R.dimen.minor_100)),
