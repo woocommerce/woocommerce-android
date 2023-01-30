@@ -27,19 +27,19 @@ class StoreOnboardingViewModel @Inject constructor(
                     icon = R.drawable.ic_product_onboarding_list,
                     title = R.string.store_onboarding_task_add_product_title,
                     description = R.string.store_onboarding_task_add_product_description,
-                    status = OnboardingTaskStatus.UNDONE
+                    isCompleted = false
                 ),
                 OnboardingTask(
                     icon = R.drawable.ic_store_onboarding_list,
                     title = R.string.store_onboarding_task_launch_store_title,
                     description = R.string.store_onboarding_task_launch_store_description,
-                    status = OnboardingTaskStatus.UNDONE
+                    isCompleted = true
                 ),
                 OnboardingTask(
                     icon = R.drawable.ic_globe_onboarding_list,
                     title = R.string.store_onboarding_task_change_domain_title,
                     description = R.string.store_onboarding_task_change_domain_description,
-                    status = OnboardingTaskStatus.UNDONE
+                    isCompleted = false
                 )
             )
         )
@@ -58,11 +58,6 @@ class StoreOnboardingViewModel @Inject constructor(
         @DrawableRes val icon: Int,
         @StringRes val title: Int,
         @StringRes val description: Int,
-        val status: OnboardingTaskStatus
+        val isCompleted: Boolean
     ) : Parcelable
-
-    enum class OnboardingTaskStatus {
-        UNDONE,
-        COMPLETED
-    }
 }
