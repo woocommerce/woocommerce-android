@@ -24,19 +24,19 @@ class StoreOnboardingViewModel @Inject constructor(
             title = R.string.store_onboarding_title,
             tasks = listOf(
                 OnboardingTask(
-                    icon = R.drawable.ic_product,
+                    icon = R.drawable.ic_product_onboarding_list,
                     title = R.string.store_onboarding_task_add_product_title,
                     description = R.string.store_onboarding_task_add_product_description,
                     status = OnboardingTaskStatus.UNDONE
                 ),
                 OnboardingTask(
-                    icon = R.drawable.ic_product,
+                    icon = R.drawable.ic_store_onboarding_list,
                     title = R.string.store_onboarding_task_launch_store_title,
                     description = R.string.store_onboarding_task_launch_store_description,
                     status = OnboardingTaskStatus.UNDONE
                 ),
                 OnboardingTask(
-                    icon = R.drawable.ic_product,
+                    icon = R.drawable.ic_globe_onboarding_list,
                     title = R.string.store_onboarding_task_change_domain_title,
                     description = R.string.store_onboarding_task_change_domain_description,
                     status = OnboardingTaskStatus.UNDONE

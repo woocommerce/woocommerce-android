@@ -65,7 +65,7 @@ fun OnboardingTaskList(
                     modifier = Modifier.fillMaxHeight(),
                     painter = painterResource(id = task.icon),
                     contentDescription = "",
-                    colorFilter = ColorFilter.tint(color = MaterialTheme.colors.onSurface)
+                    colorFilter = ColorFilter.tint(color = colorResource(id = R.color.color_icon))
                 )
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
