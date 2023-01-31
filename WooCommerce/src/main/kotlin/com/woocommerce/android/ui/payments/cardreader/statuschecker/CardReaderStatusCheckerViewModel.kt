@@ -93,10 +93,10 @@ class CardReaderStatusCheckerViewModel
     }
 
     private fun CardReader.toCardReaderType() =
-        if (type.equals(ReaderType.BuildInReader.CotsDevice.name, ignoreCase = true)) {
-            CardReaderType.BUILT_IN
-        } else {
+        if (ReaderType.isExternalReaderType(type)) {
             CardReaderType.EXTERNAL
+        } else {
+            CardReaderType.BUILT_IN
         }
 
     sealed class StatusCheckerEvent : MultiLiveEvent.Event() {

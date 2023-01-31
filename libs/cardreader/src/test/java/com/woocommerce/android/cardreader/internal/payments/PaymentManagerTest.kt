@@ -547,6 +547,32 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
 
             assertThat(result).isInstanceOf(CapturingPayment::class.java)
         }
+
+    @Test
+    fun `given PaymentStatus CANCELED, when retrying payment, then PaymentFailed is emitted`() =
+        testBlocking {
+            val paymentIntent = createPaymentIntent(CANCELED)
+            val paymentData = PaymentDataImpl(paymentIntent)
+
+            val result = manager
+                .retryPayment(1, paymentData).toList()
+
+            assertThat(result.last()).isInstanceOf(PaymentFailed::class.java)
+        }
+
+    @Test
+    fun `given PaymentStatus null, when retrying payment, then PaymentFailed is emitted`() =
+        testBlocking {
+            val paymentIntent = mock<PaymentIntent>().also {
+                whenever(it.status).thenReturn(null)
+            }
+            val paymentData = PaymentDataImpl(paymentIntent)
+
+            val result = manager
+                .retryPayment(1, paymentData).toList()
+
+            assertThat(result.last()).isInstanceOf(PaymentFailed::class.java)
+        }
     // END - Retry
 
     // BEGIN - Cancel
