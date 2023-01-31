@@ -16,13 +16,9 @@ class CardReaderWelcomeViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderWelcomeViewModel
     private val appPrefsWrapper: AppPrefsWrapper = mock()
 
-    private val savedState = CardReaderWelcomeDialogFragmentArgs(
-        cardReaderFlowParam = CardReaderFlowParam.CardReadersHub
-    ).initSavedStateHandle()
-
     @Before
     fun setUp() {
-        viewModel = CardReaderWelcomeViewModel(savedState, appPrefsWrapper)
+        initVM()
     }
 
     @Test
@@ -31,9 +27,32 @@ class CardReaderWelcomeViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when user clicks on continue, then the app navigates to onboarding flow`() {
+    fun `given US country code, when user clicks on continue, then the app navigates to onboarding flow with US`() {
+        initVM("US")
+
         viewModel.viewState.value!!.buttonAction.invoke()
 
         assertThat(viewModel.event.value).isInstanceOf(NavigateToOnboardingFlow::class.java)
+        assertThat((viewModel.event.value as NavigateToOnboardingFlow).countryCode).isEqualTo("US")
+    }
+
+    @Test
+    fun `given CA country code, when user clicks on continue, then the app navigates to onboarding flow with CA`() {
+        initVM("CA")
+
+        viewModel.viewState.value!!.buttonAction.invoke()
+
+        assertThat(viewModel.event.value).isInstanceOf(NavigateToOnboardingFlow::class.java)
+        assertThat((viewModel.event.value as NavigateToOnboardingFlow).countryCode).isEqualTo("CA")
+    }
+
+    private fun initVM(countryCode: String = "US") {
+        viewModel = CardReaderWelcomeViewModel(
+            CardReaderWelcomeDialogFragmentArgs(
+                cardReaderFlowParam = CardReaderFlowParam.CardReadersHub,
+                countryCode = countryCode
+            ).initSavedStateHandle(),
+            appPrefsWrapper
+        )
     }
 }

@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable
+import com.woocommerce.android.ui.payments.taptopay.IsTapToPayEnabled
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,6 +33,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
     private val cardReaderTracker: CardReaderTracker = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val isTapToPayAvailable: IsTapToPayAvailable = mock()
+    private val isTapToPayEnabled: IsTapToPayEnabled = mock()
     private val countryCode = "US"
     private val pluginVersion = "4.0.0"
 
@@ -219,7 +221,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(vm.event.value)
-                .isEqualTo(CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToWelcome(param))
+                .isEqualTo(CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToWelcome(param, countryCode))
         }
 
     @Test
@@ -259,14 +261,19 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
                     countryCode
                 )
             )
-            whenever(isTapToPayAvailable()).thenReturn(true)
+            whenever(isTapToPayAvailable(countryCode, isTapToPayEnabled)).thenReturn(true)
 
             // WHEN
             val vm = initViewModel(param)
 
             // THEN
             assertThat(vm.event.value)
-                .isEqualTo(CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToIPPReaderTypeSelection(param))
+                .isEqualTo(
+                    CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToIPPReaderTypeSelection(
+                        param,
+                        countryCode
+                    )
+                )
         }
 
     @Test
@@ -284,7 +291,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
                     countryCode
                 )
             )
-            whenever(isTapToPayAvailable()).thenReturn(false)
+            whenever(isTapToPayAvailable(countryCode, isTapToPayEnabled)).thenReturn(false)
 
             // WHEN
             val vm = initViewModel(param)
@@ -327,5 +334,6 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
             cardReaderTracker,
             appPrefsWrapper,
             isTapToPayAvailable,
+            isTapToPayEnabled
         )
 }
