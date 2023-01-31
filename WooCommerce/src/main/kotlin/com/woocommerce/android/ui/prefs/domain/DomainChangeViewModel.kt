@@ -48,8 +48,7 @@ class DomainChangeViewModel @Inject constructor(
                         url = selectedSite.get().url,
                         isPrimary = true
                     ),
-                    paidDomains = listOf(
-                    ),
+                    paidDomains = emptyList(),
                     isDomainClaimBannerVisible = true
                 )
             }
@@ -79,7 +78,7 @@ class DomainChangeViewModel @Inject constructor(
     fun onLearnMoreButtonTapped() {
         triggerEvent(ShowMoreAboutDomains(LEARN_MORE_URL))
     }
-    
+
     sealed interface ViewState : Parcelable {
         @Parcelize
         object LoadingState : ViewState
