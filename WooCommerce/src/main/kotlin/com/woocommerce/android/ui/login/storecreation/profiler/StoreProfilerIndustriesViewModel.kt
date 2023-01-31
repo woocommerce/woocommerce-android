@@ -52,12 +52,12 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
         resourceProvider.getString(R.string.store_creation_store_profiler_industries_title)
 
     override fun onContinueClicked() {
-        val selectedOptionKey = profilerOptions.value.firstOrNull { it.isSelected }?.key
-        val selectedIndustry = industries.firstOrNull { selectedOptionKey == it.key }
+        val selectedOption = profilerOptions.value.firstOrNull { it.isSelected }
+        val selectedIndustry = industries.firstOrNull { selectedOption?.key == it.key }
         newStore.update(
             profilerData = (newStore.data.profilerData ?: ProfilerData())
                 .copy(
-                    industryLabel = selectedIndustry?.label,
+                    industryLabel = selectedOption?.name,
                     industryKey = selectedIndustry?.key,
                     industryGroupKey = selectedIndustry?.tracks
                 )
