@@ -285,11 +285,11 @@ sealed class PaymentFlowError(@StringRes val message: Int) {
 
     sealed class BuiltInReader(message: Int) : PaymentFlowError(message) {
         object NfcDisabled : BuiltInReader(R.string.card_reader_payment_failed_nfc_disabled)
-        object DeviceIsNotSupported : BuiltInReader(R.string.card_reader_payment_failed_device_is_not_supported),
-            NonRetryableError
+        object DeviceIsNotSupported :
+            BuiltInReader(R.string.card_reader_payment_failed_device_is_not_supported), NonRetryableError
 
-        object InvalidAppSetup : BuiltInReader(R.string.card_reader_payment_failed_app_setup_is_invalid),
-            NonRetryableError
+        object InvalidAppSetup :
+            BuiltInReader(R.string.card_reader_payment_failed_app_setup_is_invalid), NonRetryableError
     }
 
     interface NonRetryableError

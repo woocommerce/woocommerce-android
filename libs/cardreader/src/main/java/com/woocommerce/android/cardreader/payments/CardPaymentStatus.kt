@@ -133,7 +133,7 @@ sealed class CardPaymentStatus {
         sealed class BuiltInReader : CardPaymentStatusErrorType() {
             object NfcDisabled : BuiltInReader()
             object DeviceIsNotSupported : BuiltInReader()
-            object InvalidAppSetup: BuiltInReader()
+            object InvalidAppSetup : BuiltInReader()
         }
     }
 
