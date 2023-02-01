@@ -38,6 +38,7 @@ so that's the baseline as defined in `major_100`.
     <dimen name="text_minor_80">12sp</dimen>
     <dimen name="text_minor_100">14sp</dimen>
     <dimen name="text_minor_125">16sp</dimen>
+    <dimen name="text_minor_130">18sp</dimen>
 
     <!-- Large text dimensions (headings) -->
     <dimen name="text_major_25">20sp</dimen>

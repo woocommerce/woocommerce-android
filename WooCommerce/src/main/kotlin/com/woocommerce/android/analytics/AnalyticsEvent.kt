@@ -69,9 +69,9 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     LOGIN_WHAT_IS_JETPACK_HELP_SCREEN_VIEWED(siteless = true),
     LOGIN_WHAT_IS_JETPACK_HELP_SCREEN_LEARN_MORE_BUTTON_TAPPED(siteless = true),
     LOGIN_WHAT_IS_JETPACK_HELP_SCREEN_OK_BUTTON_TAPPED(siteless = true),
-    LOGIN_CONNECTED_SITE_INFO_REQUESTED(siteless = true),
-    LOGIN_CONNECTED_SITE_INFO_FAILED(siteless = true),
-    LOGIN_CONNECTED_SITE_INFO_SUCCEEDED(siteless = true),
+    LOGIN_SITE_ADDRESS_SITE_INFO_REQUESTED(siteless = true),
+    LOGIN_SITE_ADDRESS_SITE_INFO_FAILED(siteless = true),
+    LOGIN_SITE_ADDRESS_SITE_INFO_SUCCEEDED(siteless = true),
     LOGIN_FIND_CONNECTED_EMAIL_HELP_SCREEN_VIEWED(siteless = true),
     LOGIN_FIND_CONNECTED_EMAIL_HELP_SCREEN_NEED_MORE_HELP_LINK_TAPPED(siteless = true),
     LOGIN_FIND_CONNECTED_EMAIL_HELP_SCREEN_OK_BUTTON_TAPPED(siteless = true),
@@ -110,12 +110,13 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     LOGIN_JETPACK_CONNECTION_VERIFICATION_FAILED(siteless = true),
     LOGIN_WITH_QR_CODE_BUTTON_TAPPED(siteless = true),
     LOGIN_WITH_QR_CODE_SCANNED(siteless = true),
-
     LOGIN_PROLOGUE_CREATE_SITE_TAPPED(siteless = true),
     SIGNUP_LOGIN_BUTTON_TAPPED(siteless = true),
     SIGNUP_SUBMITTED(siteless = true),
     SIGNUP_SUCCESS(siteless = true),
     SIGNUP_ERROR(siteless = true),
+    LOGIN_SITE_CREDENTIALS_LOGIN_FAILED(siteless = true),
+    LOGIN_INSUFFICIENT_ROLE(siteless = false),
 
     // -- Site Picker
     SITE_PICKER_STORES_SHOWN(siteless = true),
@@ -194,6 +195,11 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     ORDERS_LIST_MENU_SEARCH_TAPPED,
     ORDERS_LIST_VIEW_FILTER_OPTIONS_TAPPED,
     ORDER_LIST_WAITING_TIME_LOADED,
+
+    // -- IPP feedback banner
+    IPP_FEEDBACK_BANNER_SHOWN,
+    IPP_FEEDBACK_BANNER_DISMISSED,
+    IPP_FEEDBACK_BANNER_CTA_TAPPED,
 
     // -- Order filter by status dialog
     FILTER_ORDERS_BY_STATUS_DIALOG_APPLY_FILTER_BUTTON_TAPPED,
@@ -782,7 +788,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     SITE_CREATION_PROFILER_DATA(siteless = true),
 
     APPLICATION_PASSWORDS_NEW_PASSWORD_CREATED,
-    APPLICATION_PASSWORDS_NOT_AVAILABLE,
+    APPLICATION_PASSWORDS_GENERATION_FAILED,
 
     // Experiments (A/B test variants)
     REST_API_LOGIN_EXPERIMENT

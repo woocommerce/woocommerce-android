@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.common
 
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -65,8 +66,8 @@ class UserEligibilityFetcherTest : BaseUnitTest() {
 
         val user = fetcher.getUserByEmail(expectedUser.email)
 
-        assertThat(user).isEqualTo(expectedUser)
-        assertThat(user?.isUserEligible()).isEqualTo(expectedUser.isUserEligible())
+        assertThat(user).isEqualTo(expectedUser.toAppModel())
+        assertThat(user?.isEligible).isEqualTo(expectedUser.isUserEligible())
         assertThat(user?.email).isEqualTo(expectedUser.email)
     }
 

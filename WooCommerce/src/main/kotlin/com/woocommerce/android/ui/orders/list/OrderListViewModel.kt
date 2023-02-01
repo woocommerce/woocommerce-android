@@ -15,11 +15,17 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_CAMPAIGN_NAME
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_REMIND_LATER
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_IPP_BANNER_SOURCE_ORDER_LIST
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -33,7 +39,13 @@ import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptor
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFiltersAndSearchQuery
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
+import com.woocommerce.android.ui.payments.feedback.ipp.GetIPPFeedbackBannerData
+import com.woocommerce.android.ui.payments.feedback.ipp.MarkFeedbackBannerAsDismissed
+import com.woocommerce.android.ui.payments.feedback.ipp.MarkFeedbackBannerAsDismissedForever
+import com.woocommerce.android.ui.payments.feedback.ipp.MarkIPPFeedbackSurveyAsCompleted
+import com.woocommerce.android.ui.payments.feedback.ipp.ShouldShowFeedbackBanner
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -42,7 +54,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -66,7 +77,6 @@ private const val EMPTY_VIEW_THROTTLE = 250L
 
 typealias PagedOrdersList = PagedList<OrderListItemUIType>
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("LeakingThis")
 @HiltViewModel
 class OrderListViewModel @Inject constructor(
@@ -85,6 +95,12 @@ class OrderListViewModel @Inject constructor(
     private val getWCOrderListDescriptorWithFiltersAndSearchQuery: GetWCOrderListDescriptorWithFiltersAndSearchQuery,
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount,
     private val orderListTransactionLauncher: OrderListTransactionLauncher,
+    private val getIPPFeedbackBannerData: GetIPPFeedbackBannerData,
+    private val shouldShowFeedbackBanner: ShouldShowFeedbackBanner,
+    private val markFeedbackBannerAsDismissed: MarkFeedbackBannerAsDismissed,
+    private val markFeedbackBannerAsDismissedForever: MarkFeedbackBannerAsDismissedForever,
+    private val markFeedbackBannerAsCompleted: MarkIPPFeedbackSurveyAsCompleted,
+    private val analyticsTracker: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState), LifecycleOwner {
     private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -160,6 +176,17 @@ class OrderListViewModel @Inject constructor(
                         "- siteId ${selectedSite.getSelectedSiteId()}$"
                 )
             }
+        }
+
+        viewModelScope.launch {
+            val shouldShowFeedbackBanner =
+                FeatureFlag.IPP_FEEDBACK_BANNER.isEnabled() && shouldShowFeedbackBanner()
+            if (shouldShowFeedbackBanner) {
+                val bannerData = getIPPFeedbackBannerData()
+                viewState = viewState.copy(ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(bannerData))
+                trackIPPBannerEvent(AnalyticsEvent.IPP_FEEDBACK_BANNER_SHOWN)
+            }
+            refreshOrdersBannerVisibility()
         }
     }
 
@@ -565,6 +592,63 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
+    fun onDismissIPPFeedbackBannerClicked() {
+        _event.postValue(OrderListEvent.ShowIPPDismissConfirmationDialog)
+    }
+
+    fun onIPPFeedbackBannerCTAClicked() {
+        trackIPPBannerEvent(AnalyticsEvent.IPP_FEEDBACK_BANNER_CTA_TAPPED)
+
+        val bannerState = viewState.ippFeedbackBannerState as IPPSurveyFeedbackBannerState.Visible
+        _event.postValue(OrderListEvent.OpenIPPFeedbackSurveyLink(bannerState.bannerData.url))
+        markFeedbackBannerAsCompleted()
+        viewState = viewState.copy(ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden)
+
+        refreshOrdersBannerVisibility()
+    }
+
+    fun onIPPFeedbackBannerDismissedForever() {
+        trackIPPBannerEvent(
+            AnalyticsEvent.IPP_FEEDBACK_BANNER_DISMISSED,
+            KEY_IPP_BANNER_REMIND_LATER to false
+        )
+
+        markFeedbackBannerAsDismissedForever()
+        viewState = viewState.copy(ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden)
+
+        refreshOrdersBannerVisibility()
+    }
+
+    fun onIPPFeedbackBannerDismissedShowLater() {
+        trackIPPBannerEvent(
+            AnalyticsEvent.IPP_FEEDBACK_BANNER_DISMISSED,
+            KEY_IPP_BANNER_REMIND_LATER to true
+        )
+
+        markFeedbackBannerAsDismissed()
+        viewState = viewState.copy(ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden)
+
+        refreshOrdersBannerVisibility()
+    }
+
+    private fun refreshOrdersBannerVisibility() {
+        val isOrdersBannerVisible = viewState.ippFeedbackBannerState is IPPSurveyFeedbackBannerState.Hidden
+        viewState = viewState.copy(isSimplePaymentsWIPNoticeCardVisible = isOrdersBannerVisible)
+    }
+
+    private fun trackIPPBannerEvent(event: AnalyticsEvent, vararg customProps: Pair<String, Any>) {
+        analyticsTracker.track(event, getIPPBannerEventProps(*customProps))
+    }
+
+    private fun getIPPBannerEventProps(vararg customArgs: Pair<String, Any>): Map<String, Any> {
+        val bannerData = (viewState.ippFeedbackBannerState as IPPSurveyFeedbackBannerState.Visible).bannerData
+
+        return customArgs.toMap() + mapOf(
+            KEY_IPP_BANNER_SOURCE to VALUE_IPP_BANNER_SOURCE_ORDER_LIST,
+            KEY_IPP_BANNER_CAMPAIGN_NAME to bannerData.campaignName
+        )
+    }
+
     sealed class OrderListEvent : Event() {
         data class ShowErrorSnack(@StringRes val messageRes: Int) : OrderListEvent()
         object ShowOrderFilters : OrderListEvent()
@@ -578,16 +662,32 @@ class OrderListViewModel @Inject constructor(
         ) : OrderListEvent()
 
         data class NotifyOrderChanged(val position: Int) : OrderListEvent()
+
+        object ShowIPPDismissConfirmationDialog : OrderListEvent()
+
+        data class OpenIPPFeedbackSurveyLink(val url: String) : OrderListEvent()
     }
 
     @Parcelize
     data class ViewState(
         val isRefreshPending: Boolean = false,
         val arePaymentGatewaysFetched: Boolean = false,
-        val filterCount: Int = 0
+        val filterCount: Int = 0,
+        val ippFeedbackBannerState: IPPSurveyFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden,
+        val isSimplePaymentsWIPNoticeCardVisible: Boolean = false,
     ) : Parcelable {
         @IgnoredOnParcel
         val isFilteringActive = filterCount > 0
+    }
+
+    sealed class IPPSurveyFeedbackBannerState : Parcelable {
+        @Parcelize
+        object Hidden : IPPSurveyFeedbackBannerState()
+
+        @Parcelize
+        data class Visible(
+            val bannerData: GetIPPFeedbackBannerData.IPPFeedbackBanner,
+        ) : IPPSurveyFeedbackBannerState()
     }
 
     companion object {

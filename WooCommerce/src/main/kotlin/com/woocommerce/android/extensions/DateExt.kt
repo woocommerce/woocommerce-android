@@ -87,6 +87,12 @@ val Date.pastTimeDeltaFromNowInDays
         ?.let { TimeUnit.DAYS.convert(it, MILLISECONDS) }
         ?.toInt()
 
+fun Date.daysAgo(daysAgo: Int) =
+    Calendar.getInstance()
+        .apply { time = this@daysAgo }
+        .apply { add(Calendar.DATE, -daysAgo) }
+        .time
+
 fun Date.oneDayAgo(): Date =
     Calendar.getInstance().apply {
         time = this@oneDayAgo

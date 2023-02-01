@@ -10,7 +10,9 @@ import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.update
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.doReturn
@@ -25,13 +27,14 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     private val unseenReviewsCountHandler: UnseenReviewsCountHandler = mock {
         on { observeUnseenCount() } doReturn flowOf(0)
     }
+    private val selectedSiteFlow = MutableStateFlow(
+        SiteModel().apply {
+            displayName = "Site"
+            url = "url"
+        }
+    )
     private val selectedSite: SelectedSite = mock {
-        on { observe() } doReturn flowOf(
-            SiteModel().apply {
-                displayName = "Site"
-                url = "url"
-            }
-        )
+        on { observe() } doReturn selectedSiteFlow
     }
     private val moreMenuRepository: MoreMenuRepository = mock {
         onBlocking { isInboxEnabled() } doReturn true
@@ -47,7 +50,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
     private lateinit var viewModel: MoreMenuViewModel
 
-    suspend fun setup(setupMocks: suspend () -> Unit) {
+    suspend fun setup(setupMocks: suspend () -> Unit = {}) {
         setupMocks()
         viewModel = MoreMenuViewModel(
             savedState = SavedStateHandle(),
@@ -116,4 +119,58 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         assertThat(reviewsButton.badgeState?.textState?.fontSize)
             .isEqualTo(R.dimen.text_minor_80)
     }
+
+    @Test
+    fun `given application passwords login, when building state, then store switcher state is disabled `() =
+        testBlocking {
+            // GIVEN
+            selectedSiteFlow.update { it.apply { origin = SiteModel.ORIGIN_XMLRPC } }
+            setup()
+
+            // WHEN
+            val states = viewModel.moreMenuViewState.captureValues()
+
+            // THEN
+            assertThat(states.last().isStoreSwitcherEnabled).isEqualTo(false)
+        }
+
+    @Test
+    fun `given wpcom login on Jetpack connected site, when building state, then store switcher state is enabled `() =
+        testBlocking {
+            // GIVEN
+            selectedSiteFlow.update {
+                it.apply {
+                    origin = SiteModel.ORIGIN_WPCOM_REST
+                    setIsJetpackConnected(true)
+                }
+            }
+
+            setup()
+
+            // WHEN
+            val states = viewModel.moreMenuViewState.captureValues()
+
+            // THEN
+            assertThat(states.last().isStoreSwitcherEnabled).isEqualTo(true)
+        }
+
+    @Test
+    fun `given wpcom login on Jetpack CP site, when building state, then store switcher state is enabled `() =
+        testBlocking {
+            // GIVEN
+            selectedSiteFlow.update {
+                it.apply {
+                    origin = SiteModel.ORIGIN_WPCOM_REST
+                    setIsJetpackCPConnected(true)
+                }
+            }
+
+            setup()
+
+            // WHEN
+            val states = viewModel.moreMenuViewState.captureValues()
+
+            // THEN
+            assertThat(states.last().isStoreSwitcherEnabled).isEqualTo(true)
+        }
 }

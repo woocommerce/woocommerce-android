@@ -9,6 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.CardReaderTypeSelectionDialogBinding
 import com.woocommerce.android.ui.payments.CardReaderTypeSelectionViewModel.NavigateToCardReaderPaymentFlow
+import com.woocommerce.android.util.UiHelpers
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -17,8 +18,17 @@ class CardReaderTypeSelectionDialogFragment : DialogFragment(R.layout.card_reade
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val binding = CardReaderTypeSelectionDialogBinding.bind(view)
+        setIllustration(binding)
         initClicks(CardReaderTypeSelectionDialogBinding.bind(view))
         initObservers()
+    }
+
+    private fun setIllustration(binding: CardReaderTypeSelectionDialogBinding) {
+        UiHelpers.setImageOrHideInLandscape(
+            binding.cardReaderTypeSelectionIllustration,
+            R.drawable.img_ipp_reader_type_selection
+        )
     }
 
     private fun initClicks(binding: CardReaderTypeSelectionDialogBinding) {

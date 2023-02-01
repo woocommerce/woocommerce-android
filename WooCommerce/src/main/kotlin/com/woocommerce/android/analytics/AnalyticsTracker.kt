@@ -194,6 +194,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_USER_COMMERCE_JOURNEY = "user_commerce_journey"
         const val KEY_ECOMMERCE_PLATFORMS = "ecommerce_platforms"
         const val KEY_COUNTRY_CODE = "country_code"
+        const val KEY_CAUSE = "cause"
+        const val KEY_SCENARIO = "scenario"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_SORT_NAME_ASC = "name,ascending"
@@ -454,6 +456,15 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_PRICE = "price"
         const val VALUE_STATUS = "status"
         const val KEY_SELECTED_PRODUCTS_COUNT = "selected_products_count"
+
+        // -- IPP feedback banner
+        const val KEY_IPP_BANNER_CAMPAIGN_NAME = "campaign"
+        const val KEY_IPP_BANNER_SOURCE = "source"
+        const val KEY_IPP_BANNER_REMIND_LATER = "remind_later"
+        const val VALUE_IPP_BANNER_SOURCE_ORDER_LIST = "order_list"
+        const val VALUE_IPP_BANNER_CAMPAIGN_NAME_NEWBIE = "ipp_not_user"
+        const val VALUE_IPP_BANNER_CAMPAIGN_NAME_BEGINNER = "ipp_new_user"
+        const val VALUE_IPP_BANNER_CAMPAIGN_NAME_NINJA = "ipp_power_user"
 
         var sendUsageStats: Boolean = true
             set(value) {

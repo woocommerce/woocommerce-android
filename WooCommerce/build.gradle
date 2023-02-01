@@ -74,7 +74,7 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "12.0.1"
+            versionName "12.1-rc-1"
         }
         versionCode 379
 
@@ -83,8 +83,6 @@ android {
         // and thoroughly testing the app. Consider publishing a p2 post to inform the team about the upcoming change.
         // P.S. Update the targetSdkVersion in all the modules, otherwise static analysis tools won't give you a heads-up about potential issues.
         targetSdkVersion gradle.ext.targetSdkVersion
-
-        vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner 'com.woocommerce.android.WooCommerceTestRunner'
         // TODO remove this once the hilt migration is complete
