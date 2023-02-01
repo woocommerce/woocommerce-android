@@ -43,6 +43,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -88,6 +89,8 @@ private fun DomainSearchForm(
     modifier: Modifier = Modifier,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
+    val textHighlightedColor = colorResource(id = R.color.color_on_surface_high)
+    val textColor = colorResource(id = R.color.color_on_surface_medium_selector)
 
     Column(
         modifier = modifier
@@ -100,11 +103,31 @@ private fun DomainSearchForm(
             text = stringResource(id = R.string.store_creation_domain_picker_title),
             style = MaterialTheme.typography.h5,
         )
-        Text(
-            text = stringResource(id = R.string.store_creation_domain_picker_subtitle),
-            style = MaterialTheme.typography.subtitle1,
-            color = colorResource(id = R.color.color_on_surface_medium)
-        )
+        if (state.freeUrl != null) {
+            val redirectNotice = stringResource(id = R.string.domains_redirect_notice)
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {
+                        withStyle(style = SpanStyle(color = textColor)) {
+                            append(redirectNotice)
+                        }
+                        append(" ")
+                        withStyle(style = SpanStyle(color = textHighlightedColor, fontWeight = FontWeight.Bold)) {
+                            append(state.freeUrl)
+                        }
+                    }
+                },
+                style = MaterialTheme.typography.subtitle1,
+                color = colorResource(id = R.color.color_on_surface_medium)
+            )
+        } else {
+            Text(
+                text = stringResource(id = R.string.store_creation_domain_picker_subtitle),
+                style = MaterialTheme.typography.subtitle1,
+                color = colorResource(id = R.color.color_on_surface_medium)
+            )
+        }
+
         WCSearchField(
             value = state.domainQuery,
             onValueChange = onDomainQueryChanged,
@@ -150,7 +173,7 @@ private fun DomainSearchForm(
             onClick = onContinueClicked,
             enabled = state.loadingState == Idle
         ) {
-            Text(text = stringResource(id = R.string.continue_button))
+            Text(text = stringResource(id = state.confirmButtonTitle))
         }
     }
 }
@@ -175,7 +198,7 @@ private fun DomainSuggestionList(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
     ) {
         Text(
-            text = stringResource(id = R.string.store_creation_domain_picker_suggestions_title),
+            text = stringResource(id = R.string.store_creation_domain_picker_suggestions_title).uppercase(),
             style = MaterialTheme.typography.caption,
             color = colorResource(id = R.color.color_on_surface_medium)
         )
@@ -205,37 +228,81 @@ private fun DomainSuggestionItem(
     domainSuggestion: DomainSuggestionUi,
     modifier: Modifier = Modifier
 ) {
-    val domainTextHighlightedColor = colorResource(id = R.color.color_on_surface_high)
-    val domainTextColor = colorResource(id = R.color.color_on_surface_medium_selector)
+    val textHighlightedColor = colorResource(id = R.color.color_on_surface_high)
+    val textColor = colorResource(id = R.color.color_on_surface_medium_selector)
+    val yellowColor = colorResource(id = R.color.color_alert)
     Row(
-        modifier = modifier.padding(
-            top = dimensionResource(id = R.dimen.major_75),
-            bottom = dimensionResource(id = R.dimen.major_75)
-        )
+        modifier = modifier
+            .padding(
+                top = dimensionResource(id = R.dimen.major_75),
+                bottom = dimensionResource(id = R.dimen.major_75)
+            ),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = buildAnnotatedString {
-                withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {
-                    withStyle(style = SpanStyle(color = domainTextColor)) {
-                        append(domainSuggestion.domain.substringBefore("."))
-                    }
-                    if (domainSuggestion.isSelected) {
-                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                            append(".${domainSuggestion.domain.substringAfter(delimiter = ".")}")
+        Column(Modifier.weight(1f)) {
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {
+                        withStyle(style = SpanStyle(color = textColor)) {
+                            append(domainSuggestion.domain.substringBefore("."))
                         }
-                    } else {
-                        withStyle(style = SpanStyle(color = domainTextHighlightedColor)) {
-                            append(".${domainSuggestion.domain.substringAfter(delimiter = ".")}")
+                        if (domainSuggestion.isSelected) {
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                append(".${domainSuggestion.domain.substringAfter(delimiter = ".")}")
+                            }
+                        } else {
+                            withStyle(style = SpanStyle(color = textHighlightedColor)) {
+                                append(".${domainSuggestion.domain.substringAfter(delimiter = ".")}")
+                            }
                         }
                     }
                 }
+            )
+
+            if (domainSuggestion.price != null) {
+                Row(horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))) {
+                    if (domainSuggestion.salePrice != null) {
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {
+                                    withStyle(style = SpanStyle(color = yellowColor)) {
+                                        append(domainSuggestion.salePrice)
+                                    }
+                                }
+                            }
+                        )
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {
+                                    withStyle(
+                                        style = SpanStyle(
+                                            color = textColor,
+                                            textDecoration = TextDecoration.LineThrough
+                                        )
+                                    ) {
+                                        append(domainSuggestion.price)
+                                    }
+                                }
+                            }
+                        )
+                    } else {
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {
+                                    withStyle(style = SpanStyle(color = textColor)) {
+                                        append(domainSuggestion.price)
+                                    }
+                                }
+                            }
+                        )
+                    }
+                }
             }
-        )
+        }
+
         if (domainSuggestion.isSelected) {
             Image(
-                modifier = Modifier
-                    .padding(start = dimensionResource(id = R.dimen.major_100))
-                    .weight(1f),
+                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100)),
                 alignment = Alignment.CenterEnd,
                 painter = painterResource(id = R.drawable.ic_done_secondary),
                 contentDescription = "Selected"
@@ -255,13 +322,20 @@ fun DomainPickerPreview() {
     WooThemeWithBackground {
         DomainSearchForm(
             state = DomainPickerState(
+                confirmButtonTitle = R.string.domains_select_domain,
+                freeUrl = "www.cnn.com",
                 loadingState = Idle,
                 domainQuery = "White Christmas Tress",
                 domainSuggestionsUi = listOf(
-                    DomainSuggestionUi("whitechristmastrees.mywc.mysite"),
-                    DomainSuggestionUi("whitechristmastrees.business.mywc.mysite", isSelected = true),
-                    DomainSuggestionUi("whitechristmastreesVeryLongWithLineBreak.business.test"),
-                    DomainSuggestionUi("whitechristmastrees.business.wordpress"),
+                    DomainSuggestionUi("whitechristmastrees.mywc.mysite", price = "$5.99 / year"),
+                    DomainSuggestionUi("whitechristmastrees.business.mywc.mysite"),
+                    DomainSuggestionUi("whitechristmastreesVeryLongWithLineBreak.business.test", isSelected = true),
+                    DomainSuggestionUi(
+                        "whitechristmastrees.business.wordpress",
+                        price = "$5.99 / year",
+                        salePrice = "$5.99",
+                        isSelected = true
+                    ),
                     DomainSuggestionUi("whitechristmastrees.business.more"),
                     DomainSuggestionUi("whitechristmastrees.business.another"),
                     DomainSuggestionUi("whitechristmastrees.business.any"),
