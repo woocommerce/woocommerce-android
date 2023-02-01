@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.connection.event.BatteryStatus
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus.StatusChanged
@@ -35,6 +36,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -100,6 +102,49 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
                 updateAvailable = false
             )
         }
+
+    @Test
+    fun `when view model init with built-in reader connected state, then disconnect built-in reader`() {
+        testBlocking {
+            // GIVEN
+            initConnectedState(
+                readerType = ReaderType.BuildInReader.CotsDevice
+            )
+
+            // WHEN
+            createViewModel()
+
+            // THEN
+            verify(cardReaderManager).disconnectReader()
+        }
+    }
+
+    @Test
+    fun `when view model init with external reader connected state, then do not disconnect built-in reader`() {
+        testBlocking {
+            // GIVEN
+            initConnectedState(
+                readerType = ReaderType.ExternalReader.StripeM2
+            )
+
+            // WHEN
+            createViewModel()
+
+            // THEN
+            verify(cardReaderManager, never()).disconnectReader()
+        }
+    }
+
+    @Test
+    fun `when view model init with disconnected state, then do not disconnect built-in reader`() {
+        testBlocking {
+            // WHEN
+            createViewModel()
+
+            // THEN
+            verify(cardReaderManager, never()).disconnectReader()
+        }
+    }
 
     @Test
     fun `when view model init with connected state and battery should emit correct values of connected state`() =
@@ -189,7 +234,10 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     fun `when view model init with connected state should invoke software update availability`() =
         testBlocking {
             // GIVEN
-            val status = MutableStateFlow(CardReaderStatus.Connected(mock()))
+            val reader: CardReader = mock {
+                on { this.type }.thenReturn(ReaderType.ExternalReader.StripeM2.name)
+            }
+            val status = MutableStateFlow(CardReaderStatus.Connected(reader))
             whenever(cardReaderManager.readerStatus).thenReturn(status)
 
             // WHEN
@@ -456,7 +504,10 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     fun `when card reader connected successfully, then trigger accessibility announcement`() =
         testBlocking {
             // GIVEN
-            val status = MutableStateFlow(CardReaderStatus.Connected(mock()))
+            val reader: CardReader = mock {
+                on { this.type }.thenReturn(ReaderType.ExternalReader.StripeM2.name)
+            }
+            val status = MutableStateFlow(CardReaderStatus.Connected(reader))
             whenever(cardReaderManager.readerStatus).thenReturn(status)
 
             // WHEN
@@ -604,6 +655,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
 
     private fun initConnectedState(
         readersName: String? = READER_NAME,
+        readerType: ReaderType = ReaderType.ExternalReader.StripeM2,
         batteryLevel: Float? = 0.65F,
         firmwareVersion: String = DUMMY_FIRMWARE_VERSION,
         updateAvailable: SoftwareUpdateAvailability = SoftwareUpdateAvailability.NotAvailable,
@@ -613,6 +665,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
             on { this.id }.thenReturn(readersName)
             on { this.currentBatteryLevel }.thenReturn(batteryLevel)
             on { this.firmwareVersion }.thenReturn(firmwareVersion)
+            on { this.type }.thenReturn(readerType.name)
         }
         val status = MutableStateFlow(CardReaderStatus.Connected(reader))
         whenever(cardReaderManager.readerStatus).thenReturn(status)
