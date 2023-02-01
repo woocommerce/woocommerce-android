@@ -1,7 +1,7 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 12.2
 -----
-
+- [*] [Internal] Update Stripe SDK terminal version to 2.16
 
 12.1
 -----
