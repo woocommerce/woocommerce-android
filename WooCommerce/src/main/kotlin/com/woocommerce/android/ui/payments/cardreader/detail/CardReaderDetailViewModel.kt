@@ -67,7 +67,7 @@ class CardReaderDetailViewModel @Inject constructor(
             cardReaderManager.readerStatus.collect { status ->
                 when (status) {
                     is Connected -> {
-                        if (isExternalCardReader(status)) {
+                        if (isExternalCardReader(status.cardReader)) {
                             triggerCardReaderConnectedEvent()
                             listenForSoftwareUpdateAvailability()
                             listenForBatteryStatus()
@@ -91,8 +91,8 @@ class CardReaderDetailViewModel @Inject constructor(
         }
     }
 
-    private fun isExternalCardReader(status: Connected) =
-        ReaderType.isExternalReaderType(status.cardReader.type)
+    private fun isExternalCardReader(cardReader: CardReader) =
+        ReaderType.isExternalReaderType(cardReader.type)
 
     private fun listenForBatteryStatus() {
         batteryStatusUpdateJob = launch {
