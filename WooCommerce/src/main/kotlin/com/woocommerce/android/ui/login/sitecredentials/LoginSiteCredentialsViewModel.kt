@@ -17,7 +17,6 @@ import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -27,7 +26,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
@@ -37,7 +35,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -51,8 +48,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val loginAnalyticsListener: LoginAnalyticsListener,
     private val resourceProvider: ResourceProvider,
-    private val applicationPasswordsNotifier: ApplicationPasswordsNotifier,
-    private val userEligibilityFetcher: UserEligibilityFetcher,
+    applicationPasswordsNotifier: ApplicationPasswordsNotifier,
     private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
@@ -125,8 +121,13 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             username = state.username,
             password = state.password
         ).fold(
-            onSuccess = {
-                checkWooStatus(it)
+            onSuccess = { site ->
+                if (site.hasWooCommerce) {
+                    selectedSite.set(site)
+                    fetchUserInfo()
+                } else {
+                    triggerEvent(ShowNonWooErrorScreen(siteAddress))
+                }
             },
             onFailure = { exception ->
                 val siteError = (exception as? OnChangedException)?.error as? SiteError
@@ -155,21 +156,19 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         isLoading.value = false
     }
 
-    private suspend fun checkWooStatus(site: SiteModel) = coroutineScope {
+    private suspend fun fetchUserInfo() {
         isLoading.value = true
-
-        wpApiSiteRepository.checkWooStatus(site = site).fold(
-            onSuccess = { isWooInstalled ->
-                if (isWooInstalled) {
-                    selectedSite.set(site)
-                    fetchUserInfo()
-                } else {
-                    triggerEvent(ShowNonWooErrorScreen(siteAddress))
+        wpApiSiteRepository.checkIfUserIsEligible().fold(
+            onSuccess = { isEligible ->
+                if (isEligible) {
+                    // Track success only if the user is eligible, for the other cases, the user eligibility screen will
+                    // handle the flow
+                    loginAnalyticsListener.trackAnalyticsSignIn(false)
                 }
+                triggerEvent(LoggedIn(selectedSite.getSelectedSiteId()))
             },
             onFailure = { exception ->
                 triggerEvent(ShowSnackbar(R.string.error_generic))
-
                 when (exception) {
                     is ApplicationPasswordGenerationException -> {
                         trackLoginFailure(
@@ -182,38 +181,13 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     else -> {
                         val wooError = (exception as? WooException)?.error
                         trackLoginFailure(
-                            step = Step.WOO_STATUS,
+                            step = Step.USER_ROLE,
                             errorContext = (wooError ?: exception).javaClass.simpleName,
                             errorType = wooError?.type?.name,
                             errorDescription = exception.message
                         )
                     }
                 }
-            }
-        )
-        isLoading.value = false
-    }
-
-    private suspend fun fetchUserInfo() {
-        isLoading.value = true
-        userEligibilityFetcher.fetchUserInfo().fold(
-            onSuccess = {
-                if (it.isEligible) {
-                    // Track success only if the user is eligible, for the other cases, the user eligibility screen will
-                    // handle the flow
-                    loginAnalyticsListener.trackAnalyticsSignIn(false)
-                }
-                triggerEvent(LoggedIn(selectedSite.getSelectedSiteId()))
-            },
-            onFailure = { exception ->
-                triggerEvent(ShowSnackbar(R.string.error_generic))
-                val wooError = (exception as? WooException)?.error
-                trackLoginFailure(
-                    step = Step.USER_ROLE,
-                    errorContext = (wooError ?: exception).javaClass.simpleName,
-                    errorType = wooError?.type?.name,
-                    errorDescription = exception.message
-                )
             }
         )
         isLoading.value = false
@@ -228,11 +202,13 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     fun onWooInstallationAttempted() = launch {
-        checkWooStatus(wpApiSiteRepository.getSiteByUrl(siteAddress)!!)
+        // Retry login to re-fetch the site
+        login()
     }
 
     fun retryApplicationPasswordsCheck() = launch {
-        checkWooStatus(wpApiSiteRepository.getSiteByUrl(siteAddress)!!)
+        // Retry fetching user info, it will use Application Passwords
+        fetchUserInfo()
     }
 
     private fun trackLoginFailure(step: Step, errorContext: String?, errorType: String?, errorDescription: String?) {

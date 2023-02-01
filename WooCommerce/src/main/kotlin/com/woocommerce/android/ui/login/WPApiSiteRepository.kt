@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.login
 
 import com.woocommerce.android.OnChangedException
-import com.woocommerce.android.WooException
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
+import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -11,18 +11,15 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
-import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.FetchWPAPISitePayload
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.login.util.SiteUtils
 import javax.inject.Inject
 
 class WPApiSiteRepository @Inject constructor(
-    private val dispatcher: Dispatcher,
     private val siteStore: SiteStore,
-    private val wooCommerceStore: WooCommerceStore,
+    private val userEligibilityFetcher: UserEligibilityFetcher,
     private val applicationPasswordsNotifier: ApplicationPasswordsNotifier
 ) {
     /**
@@ -59,35 +56,27 @@ class WPApiSiteRepository @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    suspend fun checkWooStatus(site: SiteModel): Result<Boolean> = coroutineScope {
-        WooLog.d(WooLog.T.LOGIN, "Fetch site ${site.url} to check if Woo installed")
+    suspend fun checkIfUserIsEligible(): Result<Boolean> = coroutineScope {
+        WooLog.d(WooLog.T.LOGIN, "Fetch user info to check if user is eligible for using the API")
 
         val applicationPasswordErrorTask = async {
             applicationPasswordsNotifier.passwordGenerationFailures.first()
         }
 
-        return@coroutineScope wooCommerceStore.fetchWooCommerceSite(site)
-            .let {
-                when {
-                    it.isError -> {
-                        // Wait a bit to make sure that if there is any Application Password failure it was processed
-                        @Suppress("MagicNumber")
-                        withTimeoutOrNull(100L) { applicationPasswordErrorTask.join() }
+        return@coroutineScope userEligibilityFetcher.fetchUserInfo()
+            .recoverCatching { exception ->
+                @Suppress("MagicNumber")
+                withTimeoutOrNull(100L) { applicationPasswordErrorTask.join() }
 
-                        if (applicationPasswordErrorTask.isCompleted) {
-                            Result.failure(applicationPasswordErrorTask.getCompleted())
-                        } else {
-                            // Make sure the task is cancelled
-                            applicationPasswordErrorTask.cancel()
-                            Result.failure(WooException(it.error))
-                        }
-                    }
-                    else -> {
-                        applicationPasswordErrorTask.cancel()
-                        Result.success(it.model!!.hasWooCommerce)
-                    }
+                if (applicationPasswordErrorTask.isCompleted) {
+                    throw applicationPasswordErrorTask.getCompleted()
+                } else {
+                    applicationPasswordErrorTask.cancel()
+                    throw exception
                 }
             }
+            .onSuccess { applicationPasswordErrorTask.cancel() }
+            .map { it.isEligible }
     }
 
     suspend fun getSiteByUrl(siteUrl: String): SiteModel? = withContext(Dispatchers.IO) {
