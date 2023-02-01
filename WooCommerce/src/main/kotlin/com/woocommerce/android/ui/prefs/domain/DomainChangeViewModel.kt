@@ -26,6 +26,10 @@ class DomainChangeViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     selectedSite: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
+    companion object {
+        private const val LEARN_MORE_URL = "https://wordpress.com/go/tutorials/what-is-a-domain-name/"
+    }
+
     private val _viewState = savedStateHandle.getStateFlow<ViewState>(this, LoadingState)
     val viewState = _viewState.asLiveData()
 
@@ -44,13 +48,7 @@ class DomainChangeViewModel @Inject constructor(
                         url = selectedSite.get().url,
                         isPrimary = true
                     ),
-                    paidDomains = listOf(
-                        DomainsState.Domain(
-                            url = "www.cnn.com",
-                            renewalDate = "Renewal date: 12/12/2020",
-                            isPrimary = false
-                        )
-                    ),
+                    paidDomains = emptyList(),
                     isDomainClaimBannerVisible = true
                 )
             }
@@ -77,6 +75,10 @@ class DomainChangeViewModel @Inject constructor(
         }
     }
 
+    fun onLearnMoreButtonTapped() {
+        triggerEvent(ShowMoreAboutDomains(LEARN_MORE_URL))
+    }
+
     sealed interface ViewState : Parcelable {
         @Parcelize
         object LoadingState : ViewState
@@ -97,4 +99,5 @@ class DomainChangeViewModel @Inject constructor(
     }
 
     object NavigateToNextStep : MultiLiveEvent.Event()
+    data class ShowMoreAboutDomains(val url: String) : MultiLiveEvent.Event()
 }
