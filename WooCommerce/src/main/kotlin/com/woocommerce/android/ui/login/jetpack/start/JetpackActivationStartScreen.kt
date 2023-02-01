@@ -44,6 +44,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -72,11 +73,11 @@ fun JetpackActivationStartScreen(
     Scaffold(
         topBar = {
             if (!viewState.isConnectionDismissed) {
-                Toolbar(
+                ToolbarWithHelpButton(
                     title = stringResource(id = string.login_jetpack_installation_screen_title),
                     onNavigationButtonClick = onBackButtonClick,
                     navigationIcon = Icons.Filled.Clear,
-                    onActionButtonClick = onHelpButtonClick,
+                    onHelpButtonClick = onHelpButtonClick,
                 )
             } else {
                 Toolbar(

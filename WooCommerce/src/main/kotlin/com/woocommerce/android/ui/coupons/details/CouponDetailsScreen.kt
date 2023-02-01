@@ -21,9 +21,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -38,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.orNullIfEmpty
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponDetailsState
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponPerformanceState
@@ -49,7 +48,7 @@ import com.woocommerce.android.util.FeatureFlag
 @Composable
 fun CouponDetailsScreen(
     viewModel: CouponDetailsViewModel,
-    onBackPress: () -> Boolean
+    onBackPress: () -> Unit
 ) {
     val couponSummaryState by viewModel.couponState.observeAsState(CouponDetailsState())
 
@@ -66,7 +65,7 @@ fun CouponDetailsScreen(
 @Composable
 fun CouponDetailsScreen(
     state: CouponDetailsState,
-    onBackPress: () -> Boolean,
+    onBackPress: () -> Unit,
     onCopyButtonClick: () -> Unit,
     onShareButtonClick: () -> Unit,
     onEditButtonClick: () -> Unit,
@@ -79,14 +78,9 @@ fun CouponDetailsScreen(
         var showMenu by remember { mutableStateOf(false) }
         var showDeleteDialog by remember { mutableStateOf(false) }
 
-        TopAppBar(
-            backgroundColor = MaterialTheme.colors.surface,
-            title = { Text(state.couponSummary?.code ?: "") },
-            navigationIcon = {
-                IconButton(onClick = { onBackPress() }) {
-                    Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
-                }
-            },
+        Toolbar(
+            title = state.couponSummary?.code ?: "",
+            onNavigationButtonClick = onBackPress,
             actions = {
                 IconButton(onClick = { showMenu = !showMenu }) {
                     Icon(
