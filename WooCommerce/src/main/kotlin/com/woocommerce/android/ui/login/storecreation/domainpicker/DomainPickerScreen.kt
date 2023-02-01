@@ -239,7 +239,7 @@ private fun DomainSuggestionItem(
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column {
+        Column(Modifier.weight(1f)) {
             Text(
                 text = buildAnnotatedString {
                     withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {
@@ -302,9 +302,7 @@ private fun DomainSuggestionItem(
 
         if (domainSuggestion.isSelected) {
             Image(
-                modifier = Modifier
-                    .padding(start = dimensionResource(id = R.dimen.major_100))
-                    .weight(1f),
+                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100)),
                 alignment = Alignment.CenterEnd,
                 painter = painterResource(id = R.drawable.ic_done_secondary),
                 contentDescription = "Selected"
