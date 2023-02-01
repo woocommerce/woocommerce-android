@@ -20,6 +20,7 @@ sealed class CardPaymentStatus {
         object NoNetwork : CardPaymentStatusErrorType()
         object Server : CardPaymentStatusErrorType()
         object Generic : CardPaymentStatusErrorType()
+        object Canceled : CardPaymentStatusErrorType()
 
         sealed class DeclinedByBackendError : CardPaymentStatusErrorType() {
             /**
@@ -127,6 +128,12 @@ sealed class CardPaymentStatus {
                  */
                 object TestModeLiveCard : CardDeclined()
             }
+        }
+
+        sealed class BuiltInReader : CardPaymentStatusErrorType() {
+            object NfcDisabled : BuiltInReader()
+            object DeviceIsNotSupported : BuiltInReader()
+            object InvalidAppSetup: BuiltInReader()
         }
     }
 
