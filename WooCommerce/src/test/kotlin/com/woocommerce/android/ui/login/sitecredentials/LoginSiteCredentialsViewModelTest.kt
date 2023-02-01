@@ -8,8 +8,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordGenerationException
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
-import com.woocommerce.android.model.User
-import com.woocommerce.android.model.UserRole
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.LoggedIn
@@ -48,18 +46,15 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     private val testSite = SiteModel().apply {
         hasWooCommerce = true
     }
-    private val testUser = User(1L, "firstName", "lastName", "username", "email", listOf(UserRole.Administrator))
     private val applicationPasswordsUnavailableEvents = MutableSharedFlow<WPAPINetworkError>(extraBufferCapacity = 1)
 
     private val wpApiSiteRepository: WPApiSiteRepository = mock {
         onBlocking { login(eq(siteAddress), any(), any()) } doReturn Result.success(testSite)
-        onBlocking { checkIfUserIsEligible() } doReturn Result.success(true)
-        onBlocking { getSiteByUrl(siteAddress) } doReturn testSite
+        onBlocking { checkIfUserIsEligible(testSite) } doReturn Result.success(true)
+        onBlocking { getSiteByLocalId(testSite.id) } doReturn testSite
     }
     private var isJetpackConnected: Boolean = false
-    private val selectedSite: SelectedSite = mock {
-        on { exists() } doReturn false
-    }
+    private val selectedSite: SelectedSite = mock()
     private val applicationPasswordsNotifier: ApplicationPasswordsNotifier = mock {
         on { featureUnavailableEvents } doReturn applicationPasswordsUnavailableEvents
     }
@@ -194,7 +189,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     fun `given application passwords generation fails, when submitting, then show snackbar`() = testBlocking {
         setup {
             val networkError = WPAPINetworkError(BaseNetworkError(GenericErrorType.UNKNOWN))
-            whenever(wpApiSiteRepository.checkIfUserIsEligible())
+            whenever(wpApiSiteRepository.checkIfUserIsEligible(testSite))
                 .thenReturn(Result.failure(ApplicationPasswordGenerationException(networkError)))
         }
 
@@ -219,10 +214,8 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given site without Woo, when attempting Woo installation, then recheck woo status`() = testBlocking {
-        setup {
-            whenever(wpApiSiteRepository.getSiteByUrl(siteAddress)).thenReturn(testSite)
-        }
+    fun `given site without Woo, when attempting Woo installation, then retry login`() = testBlocking {
+        setup()
 
         viewModel.state.observeForTesting {
             viewModel.onWooInstallationAttempted()
@@ -234,7 +227,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     @Test
     fun `given application passwords disabled, when submitting login, then show error screen`() = testBlocking {
         setup {
-            whenever(wpApiSiteRepository.checkIfUserIsEligible()).thenReturn(Result.failure(Exception()))
+            whenever(wpApiSiteRepository.checkIfUserIsEligible(testSite)).thenReturn(Result.failure(Exception()))
         }
 
         viewModel.state.observeForTesting {
@@ -251,7 +244,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     @Test
     fun `give user role fetch fails, when submitting login, then show a snackbar`() = testBlocking {
         setup {
-            whenever(wpApiSiteRepository.checkIfUserIsEligible()).thenReturn(Result.failure(Exception()))
+            whenever(wpApiSiteRepository.checkIfUserIsEligible(testSite)).thenReturn(Result.failure(Exception()))
         }
 
         viewModel.state.observeForTesting {

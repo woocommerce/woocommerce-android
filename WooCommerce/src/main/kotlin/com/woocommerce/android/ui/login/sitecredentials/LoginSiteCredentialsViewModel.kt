@@ -60,7 +60,9 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     private val siteAddress: String = savedStateHandle[SITE_ADDRESS_KEY]!!
 
-    private val errorMessage = savedStateHandle.getStateFlow(viewModelScope, 0)
+    private val errorMessage = savedStateHandle.getStateFlow(viewModelScope, 0, "error-message")
+    private val fetchedSiteId = savedStateHandle.getStateFlow(viewModelScope, -1, "site-id")
+
     private val isLoading = MutableStateFlow(false)
 
     val state = combine(
@@ -105,7 +107,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     fun onContinueClick() = launch {
         loginAnalyticsListener.trackSubmitClicked()
-        if (selectedSite.exists()) {
+        if (fetchedSiteId.value != -1) {
             // The login already succeeded, proceed to fetching user info
             fetchUserInfo()
         } else {
@@ -123,7 +125,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         ).fold(
             onSuccess = { site ->
                 if (site.hasWooCommerce) {
-                    selectedSite.set(site)
+                    fetchedSiteId.value = site.id
                     fetchUserInfo()
                 } else {
                     triggerEvent(ShowNonWooErrorScreen(siteAddress))
@@ -158,13 +160,17 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     private suspend fun fetchUserInfo() {
         isLoading.value = true
-        wpApiSiteRepository.checkIfUserIsEligible().fold(
+        val site = requireNotNull(wpApiSiteRepository.getSiteByLocalId(fetchedSiteId.value)) {
+            "Site credentials login: Site not found in DB after login"
+        }
+        wpApiSiteRepository.checkIfUserIsEligible(site).fold(
             onSuccess = { isEligible ->
                 if (isEligible) {
                     // Track success only if the user is eligible, for the other cases, the user eligibility screen will
                     // handle the flow
                     loginAnalyticsListener.trackAnalyticsSignIn(false)
                 }
+                selectedSite.set(site)
                 triggerEvent(LoggedIn(selectedSite.getSelectedSiteId()))
             },
             onFailure = { exception ->

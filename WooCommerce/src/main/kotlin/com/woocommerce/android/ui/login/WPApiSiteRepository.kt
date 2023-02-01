@@ -56,14 +56,14 @@ class WPApiSiteRepository @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    suspend fun checkIfUserIsEligible(): Result<Boolean> = coroutineScope {
+    suspend fun checkIfUserIsEligible(site: SiteModel): Result<Boolean> = coroutineScope {
         WooLog.d(WooLog.T.LOGIN, "Fetch user info to check if user is eligible for using the API")
 
         val applicationPasswordErrorTask = async {
             applicationPasswordsNotifier.passwordGenerationFailures.first()
         }
 
-        return@coroutineScope userEligibilityFetcher.fetchUserInfo()
+        return@coroutineScope userEligibilityFetcher.fetchUserInfo(site)
             .recoverCatching { exception ->
                 @Suppress("MagicNumber")
                 withTimeoutOrNull(100L) { applicationPasswordErrorTask.join() }
@@ -81,5 +81,9 @@ class WPApiSiteRepository @Inject constructor(
 
     suspend fun getSiteByUrl(siteUrl: String): SiteModel? = withContext(Dispatchers.IO) {
         SiteUtils.getSiteByMatchingUrl(siteStore, siteUrl)
+    }
+
+    suspend fun getSiteByLocalId(id: Int): SiteModel? = withContext(Dispatchers.IO) {
+        siteStore.getSiteByLocalId(id)
     }
 }
