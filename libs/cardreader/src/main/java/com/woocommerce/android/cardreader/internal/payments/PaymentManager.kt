@@ -63,7 +63,7 @@ internal class PaymentManager(
 
     private fun processPaymentIntent(orderId: Long, data: PaymentIntent) = flow {
         var paymentIntent = data
-        if (paymentIntent.status == null && paymentIntent.status == CANCELED) {
+        if (paymentIntent.status == null || paymentIntent.status == CANCELED) {
             emit(errorMapper.mapError(errorMessage = "Cannot retry paymentIntent with status ${paymentIntent.status}"))
             return@flow
         }

@@ -3,7 +3,13 @@ package com.woocommerce.android.ui.login.sitecredentials
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.applicationpasswords.ApplicationPasswordGenerationException
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
+import com.woocommerce.android.model.User
+import com.woocommerce.android.model.UserRole
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.WPApiSiteRepository
@@ -20,13 +26,16 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.user.WCUserModel
+import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationError
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.INCORRECT_USERNAME_OR_PASSWORD
@@ -38,7 +47,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     private val testPassword = "password"
     private val siteAddress: String = "http://site.com"
     private val testSite = SiteModel()
-    private val testUser = WCUserModel()
+    private val testUser = User(1L, "firstName", "lastName", "username", "email", listOf(UserRole.Administrator))
     private val applicationPasswordsUnavailableEvents = MutableSharedFlow<WPAPINetworkError>(extraBufferCapacity = 1)
 
     private val wpApiSiteRepository: WPApiSiteRepository = mock {
@@ -46,6 +55,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         onBlocking { checkWooStatus(testSite) } doReturn Result.success(true)
         onBlocking { getSiteByUrl(siteAddress) } doReturn testSite
     }
+    private var isJetpackConnected: Boolean = false
     private val selectedSite: SelectedSite = mock {
         on { exists() } doReturn false
     }
@@ -53,10 +63,11 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         on { featureUnavailableEvents } doReturn applicationPasswordsUnavailableEvents
     }
     private val userEligibilityFetcher: UserEligibilityFetcher = mock {
-        onBlocking { fetchUserInfo() } doReturn testUser
+        onBlocking { fetchUserInfo() } doReturn Result.success(testUser)
     }
     private val loginAnalyticsListener: LoginAnalyticsListener = mock()
     private val resourceProvider: ResourceProvider = mock()
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
 
     private lateinit var viewModel: LoginSiteCredentialsViewModel
 
@@ -64,13 +75,19 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         prepareMocks()
 
         viewModel = LoginSiteCredentialsViewModel(
-            savedStateHandle = SavedStateHandle(mapOf(LoginSiteCredentialsViewModel.SITE_ADDRESS_KEY to siteAddress)),
+            savedStateHandle = SavedStateHandle(
+                mapOf(
+                    LoginSiteCredentialsViewModel.SITE_ADDRESS_KEY to siteAddress,
+                    LoginSiteCredentialsViewModel.IS_JETPACK_CONNECTED_KEY to isJetpackConnected
+                )
+            ),
             wpApiSiteRepository = wpApiSiteRepository,
             selectedSite = selectedSite,
             loginAnalyticsListener = loginAnalyticsListener,
             resourceProvider = resourceProvider,
             applicationPasswordsNotifier = applicationPasswordsNotifier,
-            userEligibilityFetcher = userEligibilityFetcher
+            userEligibilityFetcher = userEligibilityFetcher,
+            analyticsTracker = analyticsTracker
         )
     }
 
@@ -129,6 +146,8 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         }
 
         assertThat(viewModel.event.value).isEqualTo(LoggedIn(testSite.id))
+        verify(loginAnalyticsListener).trackSubmitClicked()
+        verify(loginAnalyticsListener).trackAnalyticsSignIn(false)
     }
 
     @Test
@@ -146,6 +165,16 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         }.last()
 
         assertThat(state.errorMessage).isEqualTo(R.string.username_or_password_incorrect)
+        verify(analyticsTracker).track(
+            stat = eq(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_LOGIN_FAILED),
+            properties = argThat {
+                get(AnalyticsTracker.KEY_STEP) == LoginSiteCredentialsViewModel.Step.AUTHENTICATION.name.lowercase()
+            },
+            errorContext = anyOrNull(),
+            errorType = anyOrNull(),
+            errorDescription = anyOrNull()
+        )
+        verify(loginAnalyticsListener).trackFailure(anyOrNull())
     }
 
     @Test
@@ -176,6 +205,44 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         }
 
         assertThat(viewModel.event.value).isEqualTo(ShowSnackbar(R.string.error_generic))
+        verify(analyticsTracker).track(
+            stat = eq(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_LOGIN_FAILED),
+            properties = argThat {
+                get(AnalyticsTracker.KEY_STEP) == LoginSiteCredentialsViewModel.Step.WOO_STATUS.name.lowercase()
+            },
+            errorContext = anyOrNull(),
+            errorType = anyOrNull(),
+            errorDescription = anyOrNull()
+        )
+        verify(loginAnalyticsListener).trackFailure(anyOrNull())
+    }
+
+    @Test
+    fun `given application passwords generation fails, when submitting, then show snackbar`() = testBlocking {
+        setup {
+            val networkError = WPAPINetworkError(BaseNetworkError(GenericErrorType.UNKNOWN))
+            whenever(wpApiSiteRepository.checkWooStatus(testSite))
+                .thenReturn(Result.failure(ApplicationPasswordGenerationException(networkError)))
+        }
+
+        viewModel.state.observeForTesting {
+            viewModel.onUsernameChanged(testUsername)
+            viewModel.onPasswordChanged(testPassword)
+            viewModel.onContinueClick()
+        }
+
+        assertThat(viewModel.event.value).isEqualTo(ShowSnackbar(R.string.error_generic))
+        verify(analyticsTracker).track(
+            stat = eq(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_LOGIN_FAILED),
+            properties = argThat {
+                get(AnalyticsTracker.KEY_STEP) ==
+                    LoginSiteCredentialsViewModel.Step.APPLICATION_PASSWORD_GENERATION.name.lowercase()
+            },
+            errorContext = anyOrNull(),
+            errorType = anyOrNull(),
+            errorDescription = anyOrNull()
+        )
+        verify(loginAnalyticsListener).trackFailure(anyOrNull())
     }
 
     @Test
@@ -204,13 +271,14 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             applicationPasswordsUnavailableEvents.tryEmit(mock())
         }
 
-        assertThat(viewModel.event.value).isEqualTo(ShowApplicationPasswordsUnavailableScreen(siteAddress))
+        assertThat(viewModel.event.value)
+            .isEqualTo(ShowApplicationPasswordsUnavailableScreen(siteAddress, isJetpackConnected))
     }
 
     @Test
     fun `give user role fetch fails, when submitting login, then show a snackbar`() = testBlocking {
         setup {
-            whenever(userEligibilityFetcher.fetchUserInfo()).thenReturn(null)
+            whenever(userEligibilityFetcher.fetchUserInfo()).thenReturn(Result.failure(Exception()))
         }
 
         viewModel.state.observeForTesting {
@@ -220,5 +288,15 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         }
 
         assertThat(viewModel.event.value).isEqualTo(ShowSnackbar(R.string.error_generic))
+        verify(analyticsTracker).track(
+            stat = eq(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_LOGIN_FAILED),
+            properties = argThat {
+                get(AnalyticsTracker.KEY_STEP) == LoginSiteCredentialsViewModel.Step.USER_ROLE.name.lowercase()
+            },
+            errorContext = anyOrNull(),
+            errorType = anyOrNull(),
+            errorDescription = anyOrNull()
+        )
+        verify(loginAnalyticsListener).trackFailure(anyOrNull())
     }
 }

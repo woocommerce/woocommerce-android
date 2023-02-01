@@ -108,7 +108,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(
             WooResult(SitePickerTestUtils.apiVerificationResponse)
         )
-        whenever(userEligibilityFetcher.fetchUserInfo()).thenReturn(SitePickerTestUtils.userModel)
+        whenever(userEligibilityFetcher.fetchUserInfo()).thenReturn(Result.success(SitePickerTestUtils.userModel))
     }
 
     private suspend fun whenSitesAreFetched(returnsError: Boolean = false, returnsEmpty: Boolean = false) {

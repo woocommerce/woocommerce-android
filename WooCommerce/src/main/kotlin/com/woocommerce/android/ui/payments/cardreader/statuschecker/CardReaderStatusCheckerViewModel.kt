@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.statuschecker.CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToConnection
 import com.woocommerce.android.ui.payments.cardreader.statuschecker.CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToIPPReaderTypeSelection
 import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable
+import com.woocommerce.android.ui.payments.taptopay.IsTapToPayEnabled
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
@@ -34,6 +35,7 @@ class CardReaderStatusCheckerViewModel
     private val cardReaderTracker: CardReaderTracker,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val isTapToPayAvailable: IsTapToPayAvailable,
+    private val isTapToPayEnabled: IsTapToPayEnabled,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderStatusCheckerDialogFragmentArgs by savedState.navArgs()
 
@@ -75,13 +77,13 @@ class CardReaderStatusCheckerViewModel
                 if (appPrefsWrapper.isCardReaderWelcomeDialogShown()) {
                     cardReaderTracker.trackOnboardingState(state)
 
-                    if (isTapToPayAvailable()) {
-                        triggerEvent(NavigateToIPPReaderTypeSelection(param))
+                    if (isTapToPayAvailable(state.countryCode, isTapToPayEnabled)) {
+                        triggerEvent(NavigateToIPPReaderTypeSelection(param, state.countryCode))
                     } else {
                         triggerEvent(NavigateToConnection(param))
                     }
                 } else {
-                    triggerEvent(StatusCheckerEvent.NavigateToWelcome(param))
+                    triggerEvent(StatusCheckerEvent.NavigateToWelcome(param, state.countryCode))
                 }
             }
             else -> triggerEvent(
@@ -93,16 +95,22 @@ class CardReaderStatusCheckerViewModel
     }
 
     private fun CardReader.toCardReaderType() =
-        if (type.equals(ReaderType.BuildInReader.CotsDevice.name, ignoreCase = true)) {
-            CardReaderType.BUILT_IN
-        } else {
+        if (ReaderType.isExternalReaderType(type)) {
             CardReaderType.EXTERNAL
+        } else {
+            CardReaderType.BUILT_IN
         }
 
     sealed class StatusCheckerEvent : MultiLiveEvent.Event() {
-        data class NavigateToWelcome(val cardReaderFlowParam: CardReaderFlowParam) : MultiLiveEvent.Event()
-        data class NavigateToIPPReaderTypeSelection(val cardReaderFlowParam: CardReaderFlowParam) :
-            MultiLiveEvent.Event()
+        data class NavigateToWelcome(
+            val cardReaderFlowParam: CardReaderFlowParam,
+            val countryCode: String,
+        ) : MultiLiveEvent.Event()
+
+        data class NavigateToIPPReaderTypeSelection(
+            val cardReaderFlowParam: CardReaderFlowParam,
+            val countryCode: String,
+        ) : MultiLiveEvent.Event()
 
         data class NavigateToConnection(val cardReaderFlowParam: CardReaderFlowParam) : MultiLiveEvent.Event()
 

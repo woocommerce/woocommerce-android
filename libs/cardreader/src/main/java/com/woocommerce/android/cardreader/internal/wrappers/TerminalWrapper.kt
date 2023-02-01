@@ -18,6 +18,8 @@ import com.stripe.stripeterminal.external.models.PaymentIntentParameters
 import com.stripe.stripeterminal.external.models.Reader
 import com.stripe.stripeterminal.external.models.RefundParameters
 import com.stripe.stripeterminal.external.models.SimulateReaderUpdate
+import com.stripe.stripeterminal.external.models.SimulatedCard
+import com.stripe.stripeterminal.external.models.SimulatedCardType
 import com.stripe.stripeterminal.external.models.SimulatorConfiguration
 import com.stripe.stripeterminal.log.LogLevel
 import com.woocommerce.android.cardreader.CardReaderManager
@@ -86,9 +88,10 @@ internal class TerminalWrapper {
 
     fun getConnectedReader(): CardReader? = Terminal.getInstance().connectedReader?.let { CardReaderImpl(it) }
 
-    fun setupSimulator(updateFrequency: CardReaderManager.SimulatorUpdateFrequency) {
+    fun setupSimulator(updateFrequency: CardReaderManager.SimulatorUpdateFrequency, useInterac: Boolean) {
         Terminal.getInstance().simulatorConfiguration = SimulatorConfiguration(
-            update = mapFrequencyOptions(updateFrequency)
+            update = mapFrequencyOptions(updateFrequency),
+            simulatedCard = SimulatedCard(if (useInterac) SimulatedCardType.INTERAC else SimulatedCardType.VISA)
         )
     }
 

@@ -235,7 +235,10 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onReadyToStartScanning() {
         if (!cardReaderManager.initialized) {
-            cardReaderManager.initialize(mapUpdateOptions(appPrefs.selectedUpdateReaderOption()))
+            cardReaderManager.initialize(
+                updateFrequency = mapUpdateOptions(appPrefs.selectedUpdateReaderOption()),
+                useInterac = developerOptionsRepository.isInteracPaymentEnabled()
+            )
         }
         launch {
             startScanningIfNotStarted()

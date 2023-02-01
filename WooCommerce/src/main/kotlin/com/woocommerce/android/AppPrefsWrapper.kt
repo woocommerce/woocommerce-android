@@ -278,6 +278,23 @@ class AppPrefsWrapper @Inject constructor() {
     fun isV4StatsSupported() = AppPrefs.isV4StatsSupported()
 
     /**
+     * Used for storing IPP feedback banner interaction data.
+     */
+    fun isIPPFeedbackSurveyCompleted() = AppPrefs.isIPPFeedbackSurveyCompleted()
+
+    fun setIPPFeedbackSurveyCompleted(completed: Boolean) = AppPrefs.setIPPFeedbackSurveyCompleted(completed)
+
+    fun getIPPFeedbackBannerLastDismissed() = AppPrefs.getIPPFeedbackBannerLastDismissed()
+
+    fun setIPPFeedbackBannerDismissedRemindLater(dismissDateTime: Long) =
+        AppPrefs.setIPPFeedbackBannerDismissedRemindLater(dismissDateTime)
+
+    fun isIPPFeedbackBannerDismissedForever() = AppPrefs.isIPPFeedbackBannerDismissedForever()
+
+    fun setIPPFeedbackBannerDismissedForever(dismissedForever: Boolean) =
+        AppPrefs.setIPPFeedbackBannerDismissedForever(dismissedForever)
+
+    /**
      * Observes changes to the preferences
      */
     fun observePrefs(): Flow<Unit> {

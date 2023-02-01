@@ -91,6 +91,16 @@ class WCCrashLoggingDataProviderTest : BaseUnitTest() {
     }
 
     @Test
+    fun `should not send site id if it has the default value`() = testBlocking {
+        whenever(selectedSite.observe()).thenReturn(flowOf(SiteModel()))
+        reinitialize()
+
+        val appContext = sut.applicationContextProvider.single()
+
+        assertThat(appContext).doesNotContainKey(SITE_ID_KEY)
+    }
+
+    @Test
     fun `should provide empty apps context if selected site does not exist`() = testBlocking {
         whenever(selectedSite.observe()).thenReturn(flowOf(null))
         reinitialize()
@@ -136,6 +146,16 @@ class WCCrashLoggingDataProviderTest : BaseUnitTest() {
     @Test
     fun `should not provide user if user does not exist`() = testBlocking {
         whenever(accountStore.account).thenReturn(null)
+        reinitialize()
+
+        val user = sut.user.first()
+
+        assertThat(user).isNull()
+    }
+
+    @Test
+    fun `should not provide user if the account is the default one`() = testBlocking {
+        whenever(accountStore.account).thenReturn(DEFAULT_TEST_ACCOUNT)
         reinitialize()
 
         val user = sut.user.first()
@@ -230,6 +250,8 @@ class WCCrashLoggingDataProviderTest : BaseUnitTest() {
             email = "mail@a8c.com"
             userName = "username"
         }
+
+        val DEFAULT_TEST_ACCOUNT = AccountModel()
 
         val TEST_SITE_MODEL = SiteModel().apply {
             siteId = 7L
