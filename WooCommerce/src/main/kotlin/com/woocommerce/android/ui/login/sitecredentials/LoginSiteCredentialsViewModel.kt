@@ -38,15 +38,8 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.network.xmlrpc.XMLRPCRequest.XmlRpcErrorType.AUTH_REQUIRED
-import org.wordpress.android.fluxc.store.AccountStore.AuthenticationError
-import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.AUTHORIZATION_REQUIRED
-import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.HTTP_AUTH_ERROR
-import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.INCORRECT_USERNAME_OR_PASSWORD
-import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.INVALID_OTP
-import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.INVALID_TOKEN
-import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.NEEDS_2FA
-import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.NOT_AUTHENTICATED
+import org.wordpress.android.fluxc.store.SiteStore.SiteError
+import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
@@ -136,10 +129,13 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 checkWooStatus(it)
             },
             onFailure = { exception ->
-                if (exception is OnChangedException && exception.error is AuthenticationError) {
-                    val errorMessage = exception.error.toErrorMessage()
+                val siteError = (exception as? OnChangedException)?.error as? SiteError
+                if (siteError != null) {
+                    val errorMessage = if (siteError.type == SiteErrorType.NOT_AUTHENTICATED) {
+                        R.string.username_or_password_incorrect
+                    } else null
                     if (errorMessage == null) {
-                        val message = exception.error.message?.takeIf { it.isNotEmpty() }
+                        val message = siteError.message?.takeIf { it.isNotEmpty() }
                             ?.let { UiStringText(it) } ?: UiStringRes(R.string.error_generic)
                         triggerEvent(ShowUiStringSnackbar(message))
                     }
@@ -151,7 +147,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 trackLoginFailure(
                     step = Step.AUTHENTICATION,
                     errorContext = error.javaClass.simpleName,
-                    errorType = (error as? AuthenticationError)?.type?.toString(),
+                    errorType = siteError?.type?.toString(),
                     errorDescription = exception.message
                 )
             }
@@ -255,22 +251,6 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     private fun String.removeSchemeAndSuffix() = UrlUtils.removeScheme(UrlUtils.removeXmlrpcSuffix(this))
-
-    private fun AuthenticationError.toErrorMessage() = when (type) {
-        INCORRECT_USERNAME_OR_PASSWORD, NOT_AUTHENTICATED, HTTP_AUTH_ERROR ->
-            if (type == HTTP_AUTH_ERROR && xmlRpcErrorType == AUTH_REQUIRED) {
-                R.string.login_error_xml_rpc_auth_error_communicating
-            } else {
-                R.string.username_or_password_incorrect
-            }
-
-        INVALID_OTP, INVALID_TOKEN, AUTHORIZATION_REQUIRED, NEEDS_2FA ->
-            R.string.login_2fa_not_supported_self_hosted_site
-
-        else -> {
-            null
-        }
-    }
 
     @Parcelize
     data class LoginSiteCredentialsViewState(
