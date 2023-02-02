@@ -49,6 +49,7 @@ class AccountRepository @Inject constructor(
     }
 
     suspend fun logout(): Boolean {
+        if (!isUserLoggedIn()) return true
         return if (accountStore.hasAccessToken()) {
             // WordPress.com account logout
             val event: OnAccountChanged = dispatcher.dispatchAndAwait(AccountActionBuilder.newSignOutAction())
