@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.payments
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable
@@ -16,7 +17,8 @@ class CardReaderTypeSelectionViewModel
 @Inject constructor(
     savedState: SavedStateHandle,
     isTapToPayAvailable: IsTapToPayAvailable,
-    isTapToPayEnabled: IsTapToPayEnabled
+    isTapToPayEnabled: IsTapToPayEnabled,
+    private val tracker: CardReaderTracker,
 ) : ScopedViewModel(savedState) {
     private val navArgs: CardReaderTypeSelectionDialogFragmentArgs by savedState.navArgs()
 
@@ -27,10 +29,12 @@ class CardReaderTypeSelectionViewModel
     }
 
     fun onUseTapToPaySelected() {
+        tracker.trackSelectReaderTypeBuiltInTapped()
         navigateToConnectionFlow(CardReaderType.BUILT_IN)
     }
 
     fun onUseBluetoothReaderSelected() {
+        tracker.trackSelectReaderTypeBluetoothTapped()
         navigateToConnectionFlow(CardReaderType.EXTERNAL)
     }
 
