@@ -415,7 +415,7 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
         action.createPaymentIntent(createPaymentInfo()).toList()
         verify(intentParametersBuilder).setMetadata(captor.capture())
 
-        assertThat(captor.firstValue[MetaDataKeys.PLATFORM.key]).isEqualTo("android")
+        assertThat(captor.firstValue["platform"]).isEqualTo("android")
     }
 
     private fun createPaymentInfo(
