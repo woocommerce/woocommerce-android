@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.CASH_ON_DELIVERY
+import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToastString
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.HeaderItem
@@ -98,7 +99,8 @@ class CardReaderHubViewModel @Inject constructor(
                 )
                 ).sortedBy { it.index },
             isLoading = true,
-            onboardingErrorAction = null
+            onboardingErrorAction = null,
+            learMoreIpp = null,
         )
     )
 
@@ -211,6 +213,10 @@ class CardReaderHubViewModel @Inject constructor(
             },
             isLoading = false,
             onboardingErrorAction = null,
+            learMoreIpp = CardReaderHubViewState.LearMoreIpp(
+                label = UiStringRes(R.string.card_reader_connect_learn_more, containsHtml = true),
+                onClick = ::onLearnMoreIppClicked
+            ),
         )
     }
 
@@ -231,6 +237,18 @@ class CardReaderHubViewModel @Inject constructor(
             onboardingErrorAction = OnboardingErrorAction(
                 text = UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true),
                 onClick = { onOnboardingErrorClicked(state) }
+            ),
+            learMoreIpp = null
+        )
+    }
+
+    private fun onLearnMoreIppClicked() {
+        cardReaderTracker.trackLearnMoreConnectionClicked()
+        triggerEvent(
+            CardReaderHubEvents.OpenGenericWebView(
+                learnMoreUrlProvider.provideLearnMoreUrlFor(
+                    IN_PERSON_PAYMENTS
+                )
             )
         )
     }
@@ -367,6 +385,7 @@ class CardReaderHubViewModel @Inject constructor(
         val rows: List<ListItem>,
         val isLoading: Boolean,
         val onboardingErrorAction: OnboardingErrorAction?,
+        val learMoreIpp: LearMoreIpp?,
     ) {
         sealed class ListItem {
             abstract val label: UiString
@@ -406,6 +425,11 @@ class CardReaderHubViewModel @Inject constructor(
 
         data class OnboardingErrorAction(
             val text: UiString?,
+            val onClick: () -> Unit,
+        )
+
+        data class LearMoreIpp(
+            val label: UiString,
             val onClick: () -> Unit,
         )
     }
