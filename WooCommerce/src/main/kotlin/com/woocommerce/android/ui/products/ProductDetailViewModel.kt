@@ -2229,8 +2229,7 @@ class ProductDetailViewModel @Inject constructor(
             ProductExitEvent(shouldShowDiscardDialog)
 
         class ExitProductAttributeList(
-            shouldShowDiscardDialog: Boolean = true,
-            val variationCreated: Boolean = false
+            shouldShowDiscardDialog: Boolean = true
         ) : ProductExitEvent(
             shouldShowDiscardDialog
         )
