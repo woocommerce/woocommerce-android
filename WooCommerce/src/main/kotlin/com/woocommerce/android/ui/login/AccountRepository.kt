@@ -12,7 +12,6 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.LOGIN
 import com.woocommerce.android.util.dispatchAndAwait
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
@@ -67,8 +66,9 @@ class AccountRepository @Inject constructor(
             }
         } else {
             // Application passwords logout
-            appCoroutineScope.launch(Dispatchers.Main.immediate) {
-                val result = siteStore.deleteApplicationPassword(selectedSite.get())
+            val site = selectedSite.get()
+            appCoroutineScope.launch {
+                val result = siteStore.deleteApplicationPassword(site)
                 if (result.isError) {
                     WooLog.e(
                         LOGIN,
