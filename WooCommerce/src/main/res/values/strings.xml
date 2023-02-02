@@ -544,6 +544,7 @@
     <string name="domains_add_domain_button_title">Add a domain</string>
     <string name="domains_select_domain">Select domain</string>
     <string name="domains_redirect_notice">The domain purchased will redirect users to</string>
+    <string name="domains_error_title">Unable to load site domains</string>
     <!--
         Order Editing
     -->
