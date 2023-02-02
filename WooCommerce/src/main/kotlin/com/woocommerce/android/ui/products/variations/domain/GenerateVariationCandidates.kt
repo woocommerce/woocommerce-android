@@ -25,9 +25,7 @@ class GenerateVariationCandidates @Inject constructor(
             return emptyList()
         }
 
-        variationRepository.getAllVariations(product.remoteId)
-
-        val existingVariations = variationRepository.getProductVariationList(product.remoteId)
+        val existingVariations = variationRepository.getAllVariations(product.remoteId)
 
         val termAssignmentsGroupedByAttribute: List<List<VariantOption>> = product.attributes
             .filter(ProductAttribute::isVariation)
