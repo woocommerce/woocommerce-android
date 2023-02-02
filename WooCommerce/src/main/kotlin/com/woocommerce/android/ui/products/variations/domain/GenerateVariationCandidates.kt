@@ -20,10 +20,12 @@ class GenerateVariationCandidates @Inject constructor(
             get() = listOf(emptyList<VariationCandidate>())
     }
 
-    operator fun invoke(product: Product): List<VariationCandidate> {
+    suspend operator fun invoke(product: Product): List<VariationCandidate> {
         if (product.type != ProductType.VARIABLE.value) {
             return emptyList()
         }
+
+        variationRepository.getAllVariations(product.remoteId)
 
         val existingVariations = variationRepository.getProductVariationList(product.remoteId)
 

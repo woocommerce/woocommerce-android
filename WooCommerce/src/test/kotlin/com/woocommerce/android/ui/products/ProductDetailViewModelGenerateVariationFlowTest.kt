@@ -125,7 +125,7 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Display confirmation dialog if user requested variations generation and generated variations are in limits`() {
+    fun `Display confirmation when generated variations are in limits`() = testBlocking {
         // given
         val variationCandidates = listOf(
             listOf(
@@ -154,7 +154,7 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Display limit exceeded error if user requested variations generation above the limit`() {
+    fun `Display limit exceeded error if user requested variations generation above the limit`() = testBlocking {
         // given
         val variationCandidatesAboveLimit =
             List(GenerateVariationCandidates.VARIATION_CREATION_LIMIT + 1) {
@@ -342,7 +342,7 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
     }
 
     @Test
-    fun `When user requested variation generation but there are no candidates, show error`() {
+    fun `When user requested variation generation but there are no candidates, show error`() = testBlocking {
         // given
         whenever(generateVariationCandidates(product)).thenReturn(emptyList())
         val events = mutableListOf<MultiLiveEvent.Event>()
@@ -359,17 +359,5 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
                 Assertions.assertThat(lastEvent)
                     .isEqualTo(VariationListViewModel.ShowGenerateVariationsError.NoCandidates)
             }
-    }
-
-    @Test
-    fun `When user requested variation generation fetch all variations beforehand`() = testBlocking {
-        // given
-        viewModel.start()
-
-        // when
-        viewModel.onAddAllVariationsClicked()
-
-        // then
-        verify(variationRepository).getAllVariations(product.remoteId)
     }
 }

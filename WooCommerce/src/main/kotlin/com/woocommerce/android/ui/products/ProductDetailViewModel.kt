@@ -439,16 +439,15 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun onAddAllVariationsClicked() {
-        val remoteProductId = viewState.productDraft?.remoteId ?: return
         tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_REQUESTED)
         launch {
             attributeListViewState = attributeListViewState.copy(isFetchingVariations = true)
-            variationRepository.getAllVariations(remoteProductId)
-            attributeListViewState = attributeListViewState.copy(isFetchingVariations = false)
 
             val variationCandidates = viewState.productDraft?.let {
                 generateVariationCandidates.invoke(it)
             }.orEmpty()
+
+            attributeListViewState = attributeListViewState.copy(isFetchingVariations = false)
 
             when {
                 variationCandidates.isEmpty() -> {
