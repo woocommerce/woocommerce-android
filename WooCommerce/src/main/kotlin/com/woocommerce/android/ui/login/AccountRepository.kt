@@ -45,7 +45,7 @@ class AccountRepository @Inject constructor(
 
     fun isUserLoggedIn(): Boolean {
         return accountStore.hasAccessToken() ||
-            (selectedSite.exists() && selectedSite.get().origin != SiteModel.ORIGIN_WPCOM_REST)
+            (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords)
     }
 
     suspend fun logout(): Boolean {
