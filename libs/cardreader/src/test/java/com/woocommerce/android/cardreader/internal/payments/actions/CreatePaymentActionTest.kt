@@ -408,6 +408,16 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
         verify(paymentIntentParametersFactory).createBuilder(expectedPaymentMethod)
     }
 
+    @Test
+    fun `when creating payment intent, then platform set to android`() = testBlocking {
+        val captor = argumentCaptor<Map<String, String>>()
+
+        action.createPaymentIntent(createPaymentInfo()).toList()
+        verify(intentParametersBuilder).setMetadata(captor.capture())
+
+        assertThat(captor.firstValue[MetaDataKeys.PLATFORM.key]).isEqualTo("android")
+    }
+
     private fun createPaymentInfo(
         paymentDescription: String = "",
         orderId: Long = 1L,
