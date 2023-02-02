@@ -15,12 +15,14 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.FetchWPAPISitePayload
 import org.wordpress.android.login.util.SiteUtils
+import java.net.CookieManager
 import javax.inject.Inject
 
 class WPApiSiteRepository @Inject constructor(
     private val siteStore: SiteStore,
     private val userEligibilityFetcher: UserEligibilityFetcher,
-    private val applicationPasswordsNotifier: ApplicationPasswordsNotifier
+    private val applicationPasswordsNotifier: ApplicationPasswordsNotifier,
+    private val cookieManager: CookieManager
 ) {
     /**
      * Handles authentication to the given [url] using wp-admin credentials.
@@ -29,6 +31,9 @@ class WPApiSiteRepository @Inject constructor(
      */
     suspend fun login(url: String, username: String, password: String): Result<SiteModel> {
         WooLog.d(WooLog.T.LOGIN, "Authenticating in to site $url using site credentials")
+
+        // Clear cookies to make sure the new credentials are correctly checked
+        cookieManager.cookieStore.removeAll()
 
         return siteStore.fetchWPAPISite(
             FetchWPAPISitePayload(
