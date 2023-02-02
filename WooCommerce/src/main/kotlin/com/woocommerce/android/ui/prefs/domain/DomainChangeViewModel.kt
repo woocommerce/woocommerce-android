@@ -84,6 +84,9 @@ class DomainChangeViewModel @Inject constructor(
         object LoadingState : ViewState
 
         @Parcelize
+        object ErrorState : ViewState
+
+        @Parcelize
         data class DomainsState(
             val wpComDomain: Domain,
             val isDomainClaimBannerVisible: Boolean,
