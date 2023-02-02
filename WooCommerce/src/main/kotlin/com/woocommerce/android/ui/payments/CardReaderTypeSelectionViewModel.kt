@@ -5,6 +5,8 @@ import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable
+import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.Available
+import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.NotAvailable
 import com.woocommerce.android.ui.payments.taptopay.IsTapToPayEnabled
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -23,8 +25,9 @@ class CardReaderTypeSelectionViewModel
     private val navArgs: CardReaderTypeSelectionDialogFragmentArgs by savedState.navArgs()
 
     init {
-        if (!isTapToPayAvailable(navArgs.countryCode, isTapToPayEnabled)) {
-            onUseBluetoothReaderSelected()
+        when (val result = isTapToPayAvailable(navArgs.countryCode, isTapToPayEnabled)) {
+            Available -> onUseBluetoothReaderSelected()
+            is NotAvailable -> tracker.trackTapToPayNotAvailable(result)
         }
     }
 

@@ -392,6 +392,9 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     CARD_PRESENT_SELECT_READER_TYPE_BUILT_IN_TAPPED,
     CARD_PRESENT_SELECT_READER_TYPE_BLUETOOTH_TAPPED,
 
+    // -- Card Reader - tap to pay not available
+    CARD_PRESENT_TAP_TO_PAY_NOT_AVAILABLE,
+
     // -- Receipts
     RECEIPT_PRINT_TAPPED,
     RECEIPT_EMAIL_TAPPED,
