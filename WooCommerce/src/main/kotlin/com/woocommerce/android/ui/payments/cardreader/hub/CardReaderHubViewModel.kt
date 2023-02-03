@@ -100,7 +100,10 @@ class CardReaderHubViewModel @Inject constructor(
                 ).sortedBy { it.index },
             isLoading = true,
             onboardingErrorAction = null,
-            learMoreIpp = null,
+            learMoreIpp = CardReaderHubViewState.LearMoreIpp(
+                label = UiStringRes(R.string.card_reader_connect_learn_more, containsHtml = true),
+                onClick = ::onLearnMoreIppClicked
+            ),
         )
     )
 
@@ -238,7 +241,10 @@ class CardReaderHubViewModel @Inject constructor(
                 text = UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true),
                 onClick = { onOnboardingErrorClicked(state) }
             ),
-            learMoreIpp = null
+            learMoreIpp = CardReaderHubViewState.LearMoreIpp(
+                label = UiStringRes(R.string.card_reader_connect_learn_more, containsHtml = true),
+                onClick = ::onLearnMoreIppClicked
+            ),
         )
     }
 
