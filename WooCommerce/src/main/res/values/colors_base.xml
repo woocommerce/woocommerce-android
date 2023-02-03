@@ -13,6 +13,7 @@
     <color name="color_surface_elevated">@color/woo_white</color>
     <color name="color_error">@color/woo_red_50</color>
     <color name="color_alert">@color/woo_yellow_50</color>
+    <color name="color_info">@color/woo_green_50</color>
 
     <color name="color_surface_elevated_04">@color/woo_white</color>
 
