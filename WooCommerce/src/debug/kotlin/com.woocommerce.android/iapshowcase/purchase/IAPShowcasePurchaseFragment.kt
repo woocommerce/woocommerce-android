@@ -17,13 +17,14 @@ import com.woocommerce.android.R
 import com.woocommerce.android.iap.pub.IAPActivityWrapper
 import com.woocommerce.android.iap.pub.IAPSitePurchasePlanFactory
 import com.woocommerce.android.iapshowcase.IAPDebugLogWrapper
+import com.woocommerce.android.ui.login.storecreation.iap.IapMobilePayApiProvider
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class IAPShowcasePurchaseFragment : Fragment(R.layout.fragment_iap_showcase_purchase) {
     @Inject
-    lateinit var mobilePayAPIProvider: IAPShowcaseMobilePayAPIProvider
+    lateinit var mobilePayAPIProvider: IapMobilePayApiProvider
 
     @Inject
     lateinit var debugLogWrapper: IAPDebugLogWrapper

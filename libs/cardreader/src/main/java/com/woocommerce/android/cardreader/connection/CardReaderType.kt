@@ -15,6 +15,23 @@ sealed class ReaderType(val name: String) {
     sealed class BuildInReader(buildInReaderName: String) : ReaderType(buildInReaderName) {
         object CotsDevice : BuildInReader("COTS_DEVICE")
     }
+
+    object Unknown : ReaderType("UNKNOWN")
+
+    companion object {
+        private fun fromName(name: String): ReaderType =
+            when (name.uppercase()) {
+                "CHIPPER_2X" -> ExternalReader.Chipper2X
+                "STRIPE_M2" -> ExternalReader.StripeM2
+                "VERIFONE_P400" -> ExternalReader.VerifoneP400
+                "WISEPAD_3" -> ExternalReader.WisePade3
+                "WISEPOS_E" -> ExternalReader.WisePadeE
+                "COTS_DEVICE" -> BuildInReader.CotsDevice
+                else -> Unknown
+            }
+
+        fun isExternalReaderType(name: String?): Boolean = name?.let { fromName(name) is ExternalReader } ?: false
+    }
 }
 
 sealed class CardReaderTypesToDiscover {

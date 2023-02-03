@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.storecreation.domainpicker
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -126,12 +127,16 @@ class DomainPickerViewModel @Inject constructor(
         val domainQuery: String = "",
         val domainSuggestionsUi: List<DomainSuggestionUi> = emptyList(),
         val selectedDomain: String = "",
-        val error: String? = null
+        val error: String? = null,
+        val freeUrl: String? = null,
+        @StringRes val confirmButtonTitle: Int = R.string.continue_button
     )
 
     data class DomainSuggestionUi(
         val domain: String = "",
-        val isSelected: Boolean = false
+        val isSelected: Boolean = false,
+        val price: String? = null,
+        val salePrice: String? = null
     )
 
     enum class LoadingState {

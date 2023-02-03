@@ -17,6 +17,28 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
+import com.woocommerce.android.ui.compose.autoMirror
+
+@Composable
+fun ToolbarWithHelpButton(
+    modifier: Modifier = Modifier,
+    title: String = "",
+    onNavigationButtonClick: (() -> Unit)? = null,
+    navigationIcon: ImageVector? = Filled.ArrowBack,
+    navigationIconContentDescription: String = stringResource(id = string.back),
+    onHelpButtonClick: (() -> Unit)
+) {
+    Toolbar(
+        modifier = modifier,
+        title = title,
+        onNavigationButtonClick = onNavigationButtonClick,
+        navigationIcon = navigationIcon,
+        navigationIconContentDescription = navigationIconContentDescription,
+        actionButtonIcon = ImageVector.vectorResource(id = drawable.ic_help_24dp),
+        onActionButtonClick = onHelpButtonClick,
+        actionIconContentDescription = stringResource(id = string.help)
+    )
+}
 
 @Composable
 fun Toolbar(
@@ -24,10 +46,27 @@ fun Toolbar(
     title: String = "",
     onNavigationButtonClick: (() -> Unit),
     navigationIcon: ImageVector = Filled.ArrowBack,
+    navigationIconContentDescription: String = stringResource(id = string.back)
+) {
+    Toolbar(
+        modifier = modifier,
+        title = { Text(title) },
+        onNavigationButtonClick = onNavigationButtonClick,
+        navigationIcon = navigationIcon,
+        navigationIconContentDescription = navigationIconContentDescription,
+    )
+}
+
+@Composable
+fun Toolbar(
+    modifier: Modifier = Modifier,
+    title: String = "",
+    onNavigationButtonClick: (() -> Unit)? = null,
+    navigationIcon: ImageVector? = Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
+    actionButtonIcon: ImageVector,
     onActionButtonClick: (() -> Unit),
-    actionButtonIcon: ImageVector = ImageVector.vectorResource(id = drawable.ic_help_24dp),
-    actionIconContentDescription: String = stringResource(id = string.help)
+    actionIconContentDescription: String
 ) {
     Toolbar(
         modifier = modifier,
@@ -50,11 +89,30 @@ fun Toolbar(
 fun Toolbar(
     modifier: Modifier = Modifier,
     title: String = "",
-    onNavigationButtonClick: (() -> Unit),
+    onNavigationButtonClick: (() -> Unit)? = null,
     navigationIcon: ImageVector? = Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
-    onActionButtonClick: (() -> Unit)? = null,
-    actionButtonText: String? = null
+    actions: @Composable RowScope.() -> Unit = {}
+) {
+    Toolbar(
+        modifier = modifier,
+        title = { Text(title) },
+        onNavigationButtonClick = onNavigationButtonClick,
+        navigationIcon = navigationIcon,
+        navigationIconContentDescription = navigationIconContentDescription,
+        actions = actions
+    )
+}
+
+@Composable
+fun Toolbar(
+    modifier: Modifier = Modifier,
+    title: String = "",
+    onNavigationButtonClick: (() -> Unit)? = null,
+    navigationIcon: ImageVector? = Filled.ArrowBack,
+    navigationIconContentDescription: String = stringResource(id = string.back),
+    onActionButtonClick: (() -> Unit),
+    actionButtonText: String
 ) {
     Toolbar(
         modifier = modifier,
@@ -63,12 +121,8 @@ fun Toolbar(
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
         actions = {
-            if (onActionButtonClick != null && actionButtonText != null) {
-                TextButton(onClick = onActionButtonClick) {
-                    Text(text = actionButtonText)
-                }
-            } else if (onActionButtonClick == null && actionButtonText != null || onActionButtonClick != null) {
-                error("Both actionButtonText and onActionButtonClick must be set")
+            TextButton(onClick = onActionButtonClick) {
+                Text(text = actionButtonText)
             }
         }
     )
@@ -87,15 +141,17 @@ fun Toolbar(
         backgroundColor = MaterialTheme.colors.surface,
         title = title,
         navigationIcon = {
-            if (onNavigationButtonClick != null && navigationIcon != null) {
+            if (navigationIcon != null) {
+                if (onNavigationButtonClick == null) {
+                    error("Please make sure to set onNavigationButtonClick when having a navigation icon")
+                }
                 IconButton(onClick = onNavigationButtonClick) {
                     Icon(
                         navigationIcon,
-                        contentDescription = navigationIconContentDescription
+                        contentDescription = navigationIconContentDescription,
+                        modifier = Modifier.autoMirror()
                     )
                 }
-            } else if (onNavigationButtonClick == null && navigationIcon != null || onNavigationButtonClick != null) {
-                error("Both onNavigationButtonClick and navigationIcon must be set")
             }
         },
         actions = actions,
