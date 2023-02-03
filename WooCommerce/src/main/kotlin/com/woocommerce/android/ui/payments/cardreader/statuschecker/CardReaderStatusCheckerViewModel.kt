@@ -19,7 +19,6 @@ import com.woocommerce.android.ui.payments.cardreader.statuschecker.CardReaderSt
 import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable
 import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.Available
 import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.NotAvailable
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayEnabled
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
@@ -37,7 +36,6 @@ class CardReaderStatusCheckerViewModel
     private val cardReaderTracker: CardReaderTracker,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val isTapToPayAvailable: IsTapToPayAvailable,
-    private val isTapToPayEnabled: IsTapToPayEnabled,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderStatusCheckerDialogFragmentArgs by savedState.navArgs()
 
@@ -79,10 +77,10 @@ class CardReaderStatusCheckerViewModel
                 if (appPrefsWrapper.isCardReaderWelcomeDialogShown()) {
                     cardReaderTracker.trackOnboardingState(state)
 
-                    when (val result = isTapToPayAvailable(state.countryCode, isTapToPayEnabled)) {
+                    when (val result = isTapToPayAvailable(state.countryCode)) {
                         Available -> triggerEvent(NavigateToIPPReaderTypeSelection(param, state.countryCode))
                         is NotAvailable -> {
-                            cardReaderTracker.trackTapToPayNotAvailable(result)
+                            cardReaderTracker.trackTapToPayNotAvailableReason(result)
                             triggerEvent(NavigateToConnection(param))
                         }
                     }

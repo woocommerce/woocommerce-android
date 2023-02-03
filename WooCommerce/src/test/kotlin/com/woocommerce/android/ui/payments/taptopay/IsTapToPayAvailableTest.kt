@@ -2,11 +2,10 @@ package com.woocommerce.android.ui.payments.taptopay
 
 import com.woocommerce.android.util.DeviceFeatures
 import com.woocommerce.android.util.SystemVersionUtilsWrapper
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 class IsTapToPayAvailableTest {
 
@@ -16,7 +15,7 @@ class IsTapToPayAvailableTest {
     private val isTapToPayEnabled: IsTapToPayEnabled = mock()
 
     @Test
-    fun `given device has no NFC, then tap to pay is not available`() {
+    fun `given device has no NFC, when invoking, then nfc disabled returned`() {
         val deviceFeatures = mock<DeviceFeatures> {
             whenever(it.isNFCAvailable()).thenReturn(false)
             whenever(it.isGooglePlayServicesAvailable()).thenReturn(true)
@@ -24,16 +23,13 @@ class IsTapToPayAvailableTest {
         whenever(systemVersionUtilsWrapper.isAtLeastP()).thenReturn(true)
         whenever(isTapToPayEnabled.invoke()).thenReturn(true)
 
-        val result = IsTapToPayAvailable(deviceFeatures, systemVersionUtilsWrapper).invoke(
-            "US",
-            isTapToPayEnabled
-        )
+        val result = IsTapToPayAvailable(isTapToPayEnabled, deviceFeatures, systemVersionUtilsWrapper).invoke("US")
 
-        assertFalse(result)
+        assertThat(result).isEqualTo(IsTapToPayAvailable.Result.NotAvailable.NfcNotAvailable)
     }
 
     @Test
-    fun `given device has no Google Play Services, then tap to pay is not available`() {
+    fun `given device has no Google Play Services, when invoking, then GPS not available`() {
         val deviceFeatures = mock<DeviceFeatures> {
             whenever(it.isNFCAvailable()).thenReturn(true)
             whenever(it.isGooglePlayServicesAvailable()).thenReturn(false)
@@ -41,16 +37,13 @@ class IsTapToPayAvailableTest {
         whenever(systemVersionUtilsWrapper.isAtLeastP()).thenReturn(true)
         whenever(isTapToPayEnabled.invoke()).thenReturn(true)
 
-        val result = IsTapToPayAvailable(deviceFeatures, systemVersionUtilsWrapper).invoke(
-            "US",
-            isTapToPayEnabled
-        )
+        val result = IsTapToPayAvailable(isTapToPayEnabled, deviceFeatures, systemVersionUtilsWrapper).invoke("US")
 
-        assertFalse(result)
+        assertThat(result).isEqualTo(IsTapToPayAvailable.Result.NotAvailable.GooglePlayServicesNotAvailable)
     }
 
     @Test
-    fun `given device has os less than Android 9, then tap to pay is not available`() {
+    fun `given device has os less than Android 9, when invoking, then system is not supported returned`() {
         val context = mock<DeviceFeatures> {
             whenever(it.isNFCAvailable()).thenReturn(true)
             whenever(it.isGooglePlayServicesAvailable()).thenReturn(true)
@@ -58,16 +51,13 @@ class IsTapToPayAvailableTest {
         whenever(systemVersionUtilsWrapper.isAtLeastP()).thenReturn(false)
         whenever(isTapToPayEnabled.invoke()).thenReturn(true)
 
-        val result = IsTapToPayAvailable(context, systemVersionUtilsWrapper).invoke(
-            "US",
-            isTapToPayEnabled
-        )
+        val result = IsTapToPayAvailable(isTapToPayEnabled, context, systemVersionUtilsWrapper).invoke("US")
 
-        assertFalse(result)
+        assertThat(result).isEqualTo(IsTapToPayAvailable.Result.NotAvailable.SystemVersionNotSupported)
     }
 
     @Test
-    fun `given country other than US, then tap to pay is not available`() {
+    fun `given country other than US, when invoking, then country is not supported returned`() {
         val context = mock<DeviceFeatures> {
             whenever(it.isNFCAvailable()).thenReturn(true)
             whenever(it.isGooglePlayServicesAvailable()).thenReturn(true)
@@ -75,16 +65,13 @@ class IsTapToPayAvailableTest {
         whenever(systemVersionUtilsWrapper.isAtLeastP()).thenReturn(true)
         whenever(isTapToPayEnabled.invoke()).thenReturn(true)
 
-        val result = IsTapToPayAvailable(context, systemVersionUtilsWrapper).invoke(
-            "CA",
-            isTapToPayEnabled
-        )
+        val result = IsTapToPayAvailable(isTapToPayEnabled, context, systemVersionUtilsWrapper).invoke("CA")
 
-        assertFalse(result)
+        assertThat(result).isEqualTo(IsTapToPayAvailable.Result.NotAvailable.CountryNotSupported)
     }
 
     @Test
-    fun `given tap to pay feature flag is not enabled, then tap to pay is not available`() {
+    fun `given tap to pay feature flag is not enabled, when invoking, then tpp is disabled returned`() {
         val context = mock<DeviceFeatures> {
             whenever(it.isNFCAvailable()).thenReturn(true)
             whenever(it.isGooglePlayServicesAvailable()).thenReturn(true)
@@ -92,16 +79,13 @@ class IsTapToPayAvailableTest {
         whenever(systemVersionUtilsWrapper.isAtLeastP()).thenReturn(true)
         whenever(isTapToPayEnabled.invoke()).thenReturn(false)
 
-        val result = IsTapToPayAvailable(context, systemVersionUtilsWrapper).invoke(
-            "US",
-            isTapToPayEnabled
-        )
+        val result = IsTapToPayAvailable(isTapToPayEnabled, context, systemVersionUtilsWrapper).invoke("US")
 
-        assertFalse(result)
+        assertThat(result).isEqualTo(IsTapToPayAvailable.Result.NotAvailable.TapToPayDisabled)
     }
 
     @Test
-    fun `given device satisfies all the requirements, then tap to pay is available`() {
+    fun `given device satisfies all the requirements, when invoking, then tpp available returned`() {
         val context = mock<DeviceFeatures> {
             whenever(it.isNFCAvailable()).thenReturn(true)
             whenever(it.isGooglePlayServicesAvailable()).thenReturn(true)
@@ -109,11 +93,8 @@ class IsTapToPayAvailableTest {
         whenever(systemVersionUtilsWrapper.isAtLeastP()).thenReturn(true)
         whenever(isTapToPayEnabled.invoke()).thenReturn(true)
 
-        val result = IsTapToPayAvailable(context, systemVersionUtilsWrapper).invoke(
-            "US",
-            isTapToPayEnabled
-        )
+        val result = IsTapToPayAvailable(isTapToPayEnabled, context, systemVersionUtilsWrapper).invoke("US")
 
-        assertTrue(result)
+        assertThat(result).isEqualTo(IsTapToPayAvailable.Result.Available)
     }
 }

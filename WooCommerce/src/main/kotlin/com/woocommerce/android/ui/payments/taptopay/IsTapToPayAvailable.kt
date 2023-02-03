@@ -5,10 +5,11 @@ import com.woocommerce.android.util.SystemVersionUtilsWrapper
 import javax.inject.Inject
 
 class IsTapToPayAvailable @Inject constructor(
+    private val isTapToPayEnabled: IsTapToPayEnabled,
     private val deviceFeatures: DeviceFeatures,
     private val systemVersionUtilsWrapper: SystemVersionUtilsWrapper
 ) {
-    operator fun invoke(countryCode: String, isTapToPayEnabled: IsTapToPayEnabled) =
+    operator fun invoke(countryCode: String) =
         if (!isTapToPayEnabled()) Result.NotAvailable.TapToPayDisabled
         else if (!systemVersionUtilsWrapper.isAtLeastP()) Result.NotAvailable.SystemVersionNotSupported
         else if (!deviceFeatures.isGooglePlayServicesAvailable()) Result.NotAvailable.GooglePlayServicesNotAvailable
