@@ -249,7 +249,7 @@ class CardReaderHubViewModel @Inject constructor(
     }
 
     private fun onLearnMoreIppClicked() {
-        cardReaderTracker.trackLearnMoreConnectionClicked()
+        cardReaderTracker.trackLearnMoreIppClicked()
         triggerEvent(
             CardReaderHubEvents.OpenGenericWebView(
                 learnMoreUrlProvider.provideLearnMoreUrlFor(

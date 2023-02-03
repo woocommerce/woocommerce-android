@@ -35,6 +35,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ENABLE_CASH_ON_DELIVERY_
 import com.woocommerce.android.analytics.AnalyticsEvent.PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED
 import com.woocommerce.android.analytics.AnalyticsEvent.PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED_LEARN_MORE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PAYMENTS_HUB_LEARN_MORE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_EMAIL_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_EMAIL_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_CANCELED
@@ -434,6 +435,10 @@ class CardReaderTracker @Inject constructor(
 
     fun trackLearnMoreConnectionClicked() {
         track(CARD_PRESENT_CONNECTION_LEARN_MORE_TAPPED)
+    }
+
+    fun trackLearnMoreIppClicked() {
+        track(PAYMENTS_HUB_LEARN_MORE_TAPPED)
     }
 
     companion object {
