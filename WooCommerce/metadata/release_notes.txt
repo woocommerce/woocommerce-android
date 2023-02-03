@@ -1,2 +1,1 @@
-- [*] [Internal] Update Stripe SDK terminal version to 2.16
-
+This release includes a few bug fixes and improvements to our in person payments feature. Please try it out and share your feedback!
