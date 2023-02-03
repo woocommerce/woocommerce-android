@@ -1,0 +1,2 @@
+12.1:
+Den här versionen innehåller en handfull mindre förbättringar och buggkorrigeringar som vårt team har gjort. Vi har även gjort några justeringar för att förbättra prestandan. Fortsätt att skicka feedback. Vi läser allt.

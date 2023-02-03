@@ -1,2 +1,0 @@
-12.0:
-Boa notícia! Agora é possível duplicar um produto pelo aplicativo. Basta tocar no menu Mais, na tela de detalhes do produto.

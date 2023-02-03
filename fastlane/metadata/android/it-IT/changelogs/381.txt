@@ -1,0 +1,2 @@
+12.1:
+Questo rilascio include alcuni miglioramenti minori e correzioni dei bug che sono stati trovati dal nostro team. Abbiamo anche effettuato alcune piccole modifiche per migliorare le prestazioni. Continua a inviarci il tuo feedback. Li leggiamo uno a uno.
