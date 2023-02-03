@@ -98,11 +98,13 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     fun onUsernameChanged(username: String) {
         savedState[USERNAME_KEY] = username
         errorMessage.value = 0
+        fetchedSiteId.value = -1
     }
 
     fun onPasswordChanged(password: String) {
         savedState[PASSWORD_KEY] = password
         errorMessage.value = 0
+        fetchedSiteId.value = -1
     }
 
     fun onContinueClick() = launch {
