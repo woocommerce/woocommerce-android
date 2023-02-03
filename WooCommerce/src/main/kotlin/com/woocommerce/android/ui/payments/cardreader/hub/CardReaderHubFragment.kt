@@ -120,8 +120,8 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
             with(binding.learnMoreIppTv) {
                 movementMethod = LinkMovementMethod.getInstance()
                 val learnMoreIpp = state.learMoreIpp
+                setOnClickListener { learnMoreIpp?.onClick?.invoke() }
                 UiHelpers.setTextOrHide(this, learnMoreIpp?.label)
-                setOnClickListener { learnMoreIpp?.onClick }
             }
         }
     }
