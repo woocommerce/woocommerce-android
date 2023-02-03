@@ -1,1 +1,2 @@
-This release includes a handful of minor improvements and bug fixes that our team found. We’ve also made some tweaks to improve performance. Please keep sending your feedback! We read every one of them.
+- [*] [Internal] Update Stripe SDK terminal version to 2.16
+
