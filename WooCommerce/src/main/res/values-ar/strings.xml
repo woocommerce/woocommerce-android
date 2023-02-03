@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-01-26 23:54:06+0000
+Translation-Revision-Date: 2023-01-31 21:54:20+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_dont_show_again_button">عدم العرض مجددًا</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_button">ذكرني لاحقًا</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_message">لا داعي للقلق! يمكنك دومًا الانتقال إلى \"الإعدادات\" ضمن \"القائمة\" لإرسال الملاحظات إلينا.</string>
+    <string name="feedback_banner_ipp_cta_button">مشاركة الملاحظات.</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_title">مشاركة الملاحظات.</string>
+    <string name="feedback_banner_ipp_message_ninja">أخبرنا بتجربتك مع ميزة المدفوعات الشخصية.</string>
+    <string name="feedback_banner_ipp_title_ninja">السماح لنا بمعرفة رأيك</string>
+    <string name="feedback_banner_ipp_message_beginner">قيِّم تجربتك الأولى مع ميزة المدفوعات الشخصية.</string>
+    <string name="feedback_banner_ipp_title_beginner">هل تستمتع بميزة المدفوعات الشخصية لديك؟</string>
+    <string name="feedback_banner_ipp_message_newbie">شارك تجربتك الخاصة بشأن كيفية التحصيل من ميزة المدفوعات الشخصية.</string>
+    <string name="feedback_banner_ipp_title_newbie">كيف يمكننا مساعدتك على البيع بشكل شخصي.</string>
     <string name="store_creation_profiler_merchant_journey_selling_online">أبيع بالفعل وأنا متصل بالإنترنت </string>
     <string name="store_creation_profiler_merchant_journey_selling_not_online">أبيع بالفعل، ولكنني لست متصلاً بالإنترنت </string>
     <string name="store_creation_profiler_merchant_journey_starting_business">سأبدأ عملي التجاري</string>

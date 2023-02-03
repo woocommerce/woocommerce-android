@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-01-26 11:54:07+0000
+Translation-Revision-Date: 2023-02-01 10:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_dont_show_again_button">今後表示しない</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_button">後で再通知</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_message">心配はご無用です。 いつでも「メニュー」の「設定」からフィードバックを送信できます。</string>
+    <string name="feedback_banner_ipp_cta_button">フィードバックを共有</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_title">フィードバックを共有</string>
+    <string name="feedback_banner_ipp_message_ninja">オフラインでの支払いについて感想をお聞かせください。</string>
+    <string name="feedback_banner_ipp_title_ninja">ご意見をお聞かせください</string>
+    <string name="feedback_banner_ipp_message_beginner">初めてのオフラインでの支払い体験を評価してください。</string>
+    <string name="feedback_banner_ipp_title_beginner">オフラインでの支払いはいかがですか ?</string>
+    <string name="feedback_banner_ipp_message_newbie">体験談やオフラインでの支払いの受取り方法についてお聞かせください。</string>
+    <string name="feedback_banner_ipp_title_newbie">オフライン販売について、どのようなサポートをお求めですか ?</string>
     <string name="store_creation_profiler_merchant_journey_selling_online">オンラインですでに販売している</string>
     <string name="store_creation_profiler_merchant_journey_selling_not_online">すでに販売しているが、オンラインではない</string>
     <string name="store_creation_profiler_merchant_journey_starting_business">ビジネスを始めたばかりである</string>
