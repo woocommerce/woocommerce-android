@@ -32,6 +32,8 @@ class DomainChangeViewModel @Inject constructor(
         private const val NO_DOMAIN = "<NO DOMAIN>"
     }
 
+    private var hasFreeCredits = false
+
     private val _viewState = savedStateHandle.getStateFlow<ViewState>(this, LoadingState)
     val viewState = _viewState.asLiveData()
 
@@ -53,6 +55,8 @@ class DomainChangeViewModel @Inject constructor(
             val domainsResult = domainsAsync.await()
             val planResult = planAsync.await()
 
+            hasFreeCredits = planResult.getOrNull()?.hasDomainCredit == true
+
             if (domainsResult.isFailure) {
                 _viewState.update { ErrorState }
             } else {
@@ -73,7 +77,7 @@ class DomainChangeViewModel @Inject constructor(
                                     isPrimary = domain.primaryDomain
                                 )
                             },
-                            isDomainClaimBannerVisible = planResult.getOrNull()?.hasDomainCredit == true
+                            isDomainClaimBannerVisible = hasFreeCredits
                         )
                     }
                 }
@@ -92,7 +96,7 @@ class DomainChangeViewModel @Inject constructor(
 
     fun onFindDomainButtonTapped() {
         analyticsTrackerWrapper.track(AnalyticsEvent.DOMAIN_CHANGE_SEARCH_FOR_DOMAIN_BUTTON_TAPPED)
-        triggerEvent(NavigateToNextStep)
+        triggerEvent(NavigateToDomainSearch(hasFreeCredits))
     }
 
     fun onDismissBannerButtonTapped() {
@@ -127,6 +131,6 @@ class DomainChangeViewModel @Inject constructor(
         }
     }
 
-    object NavigateToNextStep : MultiLiveEvent.Event()
+    data class NavigateToDomainSearch(val hasFreeCredits: Boolean) : MultiLiveEvent.Event()
     data class ShowMoreAboutDomains(val url: String) : MultiLiveEvent.Event()
 }
