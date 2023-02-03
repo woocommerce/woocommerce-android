@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-01-26 15:54:04+0000
+Translation-Revision-Date: 2023-02-01 18:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_dont_show_again_button">Não mostrar novamente</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_button">Lembrar depois</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_message">Não se preocupe! Você pode acessar Configurações no menu e enviar seu feedback quando quiser.</string>
+    <string name="feedback_banner_ipp_cta_button">Compartilhar feedback</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_title">Compartilhar feedback</string>
+    <string name="feedback_banner_ipp_message_ninja">Conte-nos sobre sua experiência com pagamentos presenciais.</string>
+    <string name="feedback_banner_ipp_title_ninja">Dê sua opinião</string>
+    <string name="feedback_banner_ipp_message_beginner">Avalie sua primeira experiência com pagamentos presenciais.</string>
+    <string name="feedback_banner_ipp_title_beginner">Gosta do pagamento presencial?</string>
+    <string name="feedback_banner_ipp_message_newbie">Compartilhe sua experiência de recebimento de pagamentos presenciais.</string>
+    <string name="feedback_banner_ipp_title_newbie">Como podemos ajudar você com a venda presencial?</string>
     <string name="store_creation_profiler_merchant_journey_selling_online">Já estou vendendo online</string>
     <string name="store_creation_profiler_merchant_journey_selling_not_online">Já estou vendendo, mas não online</string>
     <string name="store_creation_profiler_merchant_journey_starting_business">Estou apenas começando meus negócios</string>

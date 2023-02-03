@@ -1,0 +1,2 @@
+12.1:
+Bu sürüm birkaç küçük iyileştirme ve ekibimizin bulduğu bazı hatalarla ilgili düzeltmeler içeriyor. Ayrıca, performansı iyileştiren bazı ince ayarlar yaptık. Lütfen geri bildirimlerinizi göndermeye devam edin! Her birini okuyoruz.

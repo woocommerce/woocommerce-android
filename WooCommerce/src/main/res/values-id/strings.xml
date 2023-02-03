@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-01-26 09:54:03+0000
+Translation-Revision-Date: 2023-02-01 08:54:19+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_dont_show_again_button">Jangan tampilkan lagi</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_button">Ingatkan saya nanti</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_message">Jangan khawatir! Anda dapat membuka Pengaturan di Menu untuk mengirimkan feedback kapan saja.</string>
+    <string name="feedback_banner_ipp_cta_button">Bagikan masukan</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_title">Bagikan masukan</string>
+    <string name="feedback_banner_ipp_message_ninja">Ceritakan pada kami semua pengalaman Anda terkait pembayaran langsung.</string>
+    <string name="feedback_banner_ipp_title_ninja">Beri tahu kami pendapat Anda</string>
+    <string name="feedback_banner_ipp_message_beginner">Beri rating pengalaman pembayaran langsung pertama Anda.</string>
+    <string name="feedback_banner_ipp_title_beginner">Suka pembayaran langsung Anda?</string>
+    <string name="feedback_banner_ipp_message_newbie">Bagikan pengalaman Anda menerima pembayaran langsung.</string>
+    <string name="feedback_banner_ipp_title_newbie">Apa yang dapat kami lakukan untuk membantu Anda dalam berjualan secara langsung?</string>
     <string name="store_creation_profiler_merchant_journey_selling_online">Saya sudah berdagang secara online</string>
     <string name="store_creation_profiler_merchant_journey_selling_not_online">Saya sudah berdagang tetapi tidak secara online</string>
     <string name="store_creation_profiler_merchant_journey_starting_business">Saya baru memulai bisnis</string>

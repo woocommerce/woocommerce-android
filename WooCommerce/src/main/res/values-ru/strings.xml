@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-01-26 11:54:07+0000
+Translation-Revision-Date: 2023-01-31 13:54:08+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_dont_show_again_button">Больше не показывать</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_button">Напомнить позже</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_message">Не стоит волноваться! Оставить отзыв можно в любое время в разделе «Меню» &gt; «Настройки».</string>
+    <string name="feedback_banner_ipp_cta_button">Отправить отзыв</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_title">Отправить отзыв</string>
+    <string name="feedback_banner_ipp_message_ninja">Поделитесь своим мнением об очных платежах.</string>
+    <string name="feedback_banner_ipp_title_ninja">Поделитесь своим мнением</string>
+    <string name="feedback_banner_ipp_message_beginner">Оцените первый опыт очной оплаты.</string>
+    <string name="feedback_banner_ipp_title_beginner">Нравится платить очно?</string>
+    <string name="feedback_banner_ipp_message_newbie">Расскажите о своем опыте сбора очных платежей.</string>
+    <string name="feedback_banner_ipp_title_newbie">Нужна помощь с очной оплатой?</string>
     <string name="store_creation_profiler_merchant_journey_selling_online">Уже продаю онлайн</string>
     <string name="store_creation_profiler_merchant_journey_selling_not_online">Уже продаю, но не онлайн</string>
     <string name="store_creation_profiler_merchant_journey_starting_business">Только начинаю заниматься бизнесом</string>

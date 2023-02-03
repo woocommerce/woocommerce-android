@@ -1,0 +1,2 @@
+12.1:
+Deze release omvat een aantal kleine verbeteringen en bugfixes die ons team heeft gevonden. We hebben ook wat dingetjes aangepast om de prestaties te verbeteren. Blijf ons voorzien van feedback! We lezen alles.

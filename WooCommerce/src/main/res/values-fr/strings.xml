@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-01-26 15:54:06+0000
+Translation-Revision-Date: 2023-02-01 16:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_dont_show_again_button">Ne plus afficher</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_button">Me rappeler ultérieurement</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_message">Aucune inquiétude ! Vous pouvez toujours accéder aux réglages depuis le menu pour nous envoyer des commentaires.</string>
+    <string name="feedback_banner_ipp_cta_button">Partager des commentaires</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_title">Partager des commentaires</string>
+    <string name="feedback_banner_ipp_message_ninja">Parlez-nous de votre expérience avec les paiements en personne.</string>
+    <string name="feedback_banner_ipp_title_ninja">Dites-nous ce que vous pensez</string>
+    <string name="feedback_banner_ipp_message_beginner">Évaluez votre première expérience de paiement en personne.</string>
+    <string name="feedback_banner_ipp_title_beginner">Votre paiement en personne s’est-il bien passé ?</string>
+    <string name="feedback_banner_ipp_message_newbie">Partagez votre propre expérience et dites-nous comment vous collectez les paiements en personne.</string>
+    <string name="feedback_banner_ipp_title_newbie">How can we help you with in-person selling?</string>
     <string name="store_creation_profiler_merchant_journey_selling_online">Je vends déjà mes produits ou services en ligne</string>
     <string name="store_creation_profiler_merchant_journey_selling_not_online">Je vends déjà mes produits ou services, mais pas en ligne</string>
     <string name="store_creation_profiler_merchant_journey_starting_business">Je lance à peine mon entreprise</string>

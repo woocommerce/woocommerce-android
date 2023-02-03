@@ -1,0 +1,2 @@
+12.1 :
+Cette version comporte plusieurs améliorations mineures et résolutions de bogues détectés par notre équipe. Nous avons apporté quelques modifications pour améliorer les performances. Continuez de nous donner votre avis ! Nous les lisons tous.
