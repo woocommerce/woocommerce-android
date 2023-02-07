@@ -17,6 +17,7 @@ import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
 import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.payments.banner.BannerState
@@ -208,6 +209,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     fun onCardPaymentClicked() {
+        OrderDurationRecorder.recordCardPaymentStarted()
         analyticsTrackerWrapper.track(
             AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
             mapOf(
