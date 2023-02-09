@@ -27,8 +27,8 @@ class GetIPPFeedbackBannerData @Inject constructor(
     private val logger: AppLogWrapper,
 ) {
     @Suppress("ReturnCount", "MaxLineLength")
-    suspend operator fun invoke(): IPPFeedbackBanner {
-        requireShouldShowFeedbackBanner()
+    suspend operator fun invoke(): IPPFeedbackBanner? {
+        if (!shouldShowFeedbackBanner()) return null
 
         val activePaymentsPlugin = getActivePaymentsPlugin()
 
@@ -48,9 +48,11 @@ class GetIPPFeedbackBannerData @Inject constructor(
             return IPP_NEWBIE_BANNER
         }
 
-        val numberOfTransactionsInLast30Days = requireTransactionsCount(response)
-
-        requirePositiveNumberOfTransactions(numberOfTransactionsInLast30Days)
+        val numberOfTransactionsInLast30Days = response.result?.transactionsCount
+        if (numberOfTransactionsInLast30Days == null || numberOfTransactionsInLast30Days < 0) {
+            logger.e(AppLog.T.API, "Transactions count data is not")
+            return null
+        }
 
         return when (numberOfTransactionsInLast30Days) {
             0 -> if (hasUserEverMadeIppTransaction()) {
@@ -63,22 +65,8 @@ class GetIPPFeedbackBannerData @Inject constructor(
         }
     }
 
-    private fun requireTransactionsCount(response: WooPayload<WCPaymentTransactionsSummaryResult>): Int {
-        return checkNotNull(response.result?.transactionsCount) { "Transactions count must not be null" }
-    }
-
     private fun WooPayload<WCPaymentTransactionsSummaryResult>.isSuccessful(): Boolean {
         return !isError && result != null
-    }
-
-    private fun requirePositiveNumberOfTransactions(numberOfTransactions: Int) {
-        if (numberOfTransactions < 0) throw IllegalStateException("Number of transactions should be positive.")
-    }
-
-    private suspend fun requireShouldShowFeedbackBanner() {
-        if (!shouldShowFeedbackBanner()) {
-            throw IllegalStateException("IPP feedback banner should not be shown to the current user & site.")
-        }
     }
 
     @Suppress("ReturnCount")
@@ -96,9 +84,7 @@ class GetIPPFeedbackBannerData @Inject constructor(
             return false
         }
 
-        val numberOfTransactions = requireTransactionsCount(response)
-
-        requirePositiveNumberOfTransactions(numberOfTransactions)
+        val numberOfTransactions = response.result?.transactionsCount ?: return false
 
         return numberOfTransactions > 0
     }
@@ -141,10 +127,12 @@ class GetIPPFeedbackBannerData @Inject constructor(
 
         private const val STATS_TIME_WINDOW_LENGTH_DAYS = 30
 
-        private const val SURVEY_URL_IPP_NEWBIE = "https://automattic.survey.fm/woo-app-–-cod-survey"
+        private const val SURVEY_URL_IPP_NEWBIE =
+            "https://automattic.survey.fm/woo-app-–-cod-survey"
         private const val SURVEY_URL_IPP_BEGINNER =
             "https://automattic.survey.fm/woo-app-–-ipp-first-transaction-survey"
-        private const val SURVEY_URL_IPP_NINJA = "https://automattic.survey.fm/woo-app-–-ipp-survey-for-power-users"
+        private const val SURVEY_URL_IPP_NINJA =
+            "https://automattic.survey.fm/woo-app-–-ipp-survey-for-power-users"
 
         private const val BANNER_TITLE_NEWBIE = R.string.feedback_banner_ipp_title_newbie
         private const val BANNER_TITLE_BEGINNER = R.string.feedback_banner_ipp_title_beginner
