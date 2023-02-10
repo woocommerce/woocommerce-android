@@ -35,14 +35,15 @@ REMOTE_LIBRARIES_STRINGS_PATHS = [
     import_key: 'wordPressLoginVersion',
     repository: 'wordpress-mobile/WordPress-Login-Flow-Android',
     strings_file_path: 'WordPressLoginFlow/src/main/res/values/strings.xml',
-    exclusions: ['default_web_client_id']
+    exclusions: ['default_web_client_id'],
+    source_id: 'login'
   },
   {
     name: 'About Library',
     import_key: 'aboutAutomatticVersion', # key used in build.gradle to reference the version
     repository: 'Automattic/about-automattic-android',
     strings_file_path: 'library/src/main/res/values/strings.xml',
-    exclusions: []
+    source_id: 'about'
   }
 ].freeze
 
@@ -136,8 +137,11 @@ platform :android do
   lane :complete_code_freeze do | options |
     android_completecodefreeze_prechecks(options)
 
-    localize_libs()
-    send_strings_for_translation()
+    localize_libraries
+    update_frozen_strings_for_translation
+
+    ensure_git_status_clean
+    push_to_git_remote
 
     new_version = android_get_app_version()
     trigger_release_build(branch_to_build: "release/#{new_version}")
@@ -450,19 +454,19 @@ platform :android do
   end
 
   #####################################################################################
-  # localize_libs
+  # localize_libraries
   # -----------------------------------------------------------------------------------
   # This lane gets the data from the dependencies and updates the main strings.xml file
   # -----------------------------------------------------------------------------------
   # Usage:
-  # fastlane localize_libs
+  # fastlane localize_libraries
   #
   # Example:
-  # fastlane localize_libs
+  # fastlane localize_libraries
   #####################################################################################
   desc "Merge libraries strings files into the main app one"
-  lane :localize_libs do | options |
-    REMOTE_LIBRARIES_STRINGS_PATHS.each do  | lib |
+  lane :localize_libraries do
+    REMOTE_LIBRARIES_STRINGS_PATHS.each do |lib|
       download_path = android_download_file_by_version(
         library_name: lib[:name],
         import_key: lib[:import_key],
@@ -478,21 +482,24 @@ platform :android do
         ERROR
         UI.user_error! "Abort." unless UI.confirm(error_message)
       else
-        UI.message("Strings.xml file for #{lib[:name]} downloaded to #{download_path}.")
+        UI.message("`strings.xml` file for #{lib[:name]} downloaded to #{download_path}.")
         lib_to_merge = [{
           library: lib[:name],
           strings_path: download_path,
-          exclusions: lib[:exclusions]
+          exclusions: lib[:exclusions],
+          source_id: lib[:source_id],
+          add_ignore_attr: true # The linter is not be able to detect if a merged string is used by a binary dependency
         }]
         an_localize_libs(app_strings_path: MAIN_STRINGS_PATH, libs_strings_path: lib_to_merge)
         File.delete(download_path) if File.exist?(download_path)
       end
     end
 
-    is_repo_clean = ("git status --porcelain").empty?
-    unless is_repo_clean then
-      commit_strings(options)
-    end
+    git_commit(
+      path: MAIN_STRINGS_PATH,
+      message: 'Merge strings from libraries for translation',
+      allow_nothing_to_commit: true
+    )
   end
 
   #####################################################################################
@@ -547,20 +554,6 @@ platform :android do
     )
 
     push_to_git_remote_with_confirmation
-  end
-
-  ########################################################################
-  # Helper Lanes
-  ########################################################################
-  private_lane :commit_strings do | options |
-    if (options[:auto_commit]) then
-      sh("cd .. && git add #{MAIN_STRINGS_PATH}")
-      sh("git commit -m 'Update strings for translation'")
-      sh("git push origin HEAD")
-    else
-      UI.important("Your #{MAIN_STRINGS_PATH} has changed.")
-      UI.input("Please, review the changes, commit them and press return to continue.")
-    end
   end
 
   #####################################################################################
@@ -915,10 +908,21 @@ platform :android do
     )
   end
 
-  private_lane :send_strings_for_translation do | options |
-    sh("cd .. && mkdir -p #{FROZEN_STRINGS_DIR_PATH} && cp #{MAIN_STRINGS_PATH} #{FROZEN_STRINGS_DIR_PATH} && git add #{FROZEN_STRINGS_DIR_PATH}strings.xml")
-    sh("git diff-index --quiet HEAD || git commit -m \"Send strings to translation.\"")
-    sh("git push origin HEAD")
+  private_lane :update_frozen_strings_for_translation do
+    # When you run commands from the `Fastfile`, they run relative to the `./fastfile` folder.
+    # The `*_DIR_PATH` paths, however, are relative to the repo root, so we need to `cd` there.
+    Dir.chdir('..') do
+      FileUtils.mkdir_p(FROZEN_STRINGS_DIR_PATH)
+      FileUtils.cp(MAIN_STRINGS_PATH, FROZEN_STRINGS_DIR_PATH)
+    end
+
+    # The commit has to run outside of the `chdir` block.
+    # That's because it's done via the Fastlane action, which properly handles the path.
+    git_commit(
+      path: File.join(FROZEN_STRINGS_DIR_PATH, 'strings.xml'),
+      message: 'Freeze strings for translation',
+      allow_nothing_to_commit: true
+    )
   end
 
   #####################################################################################
