@@ -1,2 +1,0 @@
-12.1:
-Rilis ini menghadirkan penyempurnaan minor dan memperbaiki bug yang tim kami temukan. Perbaikan telah dilakukan agar kinerja lebih prima. Terus kirimkan feedback Anda! Kami membaca semuanya.

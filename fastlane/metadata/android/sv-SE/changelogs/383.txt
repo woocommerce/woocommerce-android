@@ -1,0 +1,2 @@
+12.2:
+Den här versionen innehåller ett antal felkorrigeringar och förbättringar av vår funktion Personliga betalningar. Prova och dela din feedback.

@@ -1,11 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-01-31 21:54:20+0000
+Translation-Revision-Date: 2023-02-07 09:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="store_onboarding_completed_tasks_status">تم إكمال ⁦%1$d⁩/%2$d</string>
+    <string name="store_onboarding_task_change_domain_description">احصل على عنوان URL مخصص لاستضافة متجرك.</string>
+    <string name="store_onboarding_task_change_domain_title">تخصيص نطاقك</string>
+    <string name="store_onboarding_task_launch_store_description">انشر موقعك أمام العالم في أي وقت تريده!</string>
+    <string name="store_onboarding_task_launch_store_title">بدء متجرك</string>
+    <string name="store_onboarding_task_add_product_description">ابدأ البيع عن طريق إضافة المنتجات أو الخدمات إلى متجرك.</string>
+    <string name="store_onboarding_task_add_product_title">إضافة منتجك الأول </string>
+    <string name="store_onboarding_title">إعداد المتجر</string>
+    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">لديك بالفعل اشتراك نشط في التجارة الإلكترونية، يرجى الاتصال بالدعم إذا كنت تواجه مشكلات مع اشتراكك الحالي غير المرتبط بموقعك الجديد.</string>
+    <string name="store_creation_iap_eligibility_network_error">حدثت مشكلة في الشبكة. يرجى التحقّق من اتصالك والمحاولة لاحقًا.</string>
+    <string name="store_creation_iap_eligibility_check_generic_error">إنشاء المتجر عير متوافر حاليًا. ترجى المحاولة مجددًا في وقت لاحق.</string>
+    <string name="store_creation_iap_eligibility_check_error_existing_subscription">يمكنك شراء خطة التجارة الإلكترونية فقط من تطبيق الهاتف المحمول مرة واحدة. لإنشاء مواقع إضافية، تفضَّل بزيارة موقعنا على الويب. </string>
+    <string name="card_reader_payment_failed_app_setup_is_invalid">حدث خطأ ما عند إعداد التطبيق. يرجى الاتصال بالدعم للحصول على مزيد من التفاصيل</string>
+    <string name="card_reader_payment_failed_device_is_not_supported">جهازك غير مدعوم. يرجى الاتصال بالدعم للحصول على مزيد من التفاصيل</string>
+    <string name="card_reader_payment_failed_nfc_disabled">يتعذر على التطبيق تمكين قارئ البطاقات؛ لأن رقاقة NFC معطّلة</string>
+    <string name="card_reader_payment_failed_canceled">تم إلغاء المعاملة</string>
+    <string name="domains_redirect_notice">سيُعيد النطاق المشترى توجيه المستخدمين إلى</string>
+    <string name="domains_select_domain">تحديد نطاق</string>
+    <string name="domains_add_domain_button_title">إضافة نطاق</string>
+    <string name="domains_your_domains">نطاقات موقعك</string>
+    <string name="domains_primary_address">عنوان الموقع الأساسي</string>
+    <string name="domains_learn_more">&lt;a href=\'\'&gt;&lt;u&gt;تعرّف إلى المزيد&lt;/u&gt;&lt;/a&gt; عن النطاقات وكيفية اتخاذ إجراءات مرتبطة بالنطاق.</string>
+    <string name="domains_search_for_domain_button_title">البحث عن نطاق</string>
+    <string name="domains_purchase_redirect_notice">سيُعيد النطاق المشترى توجيه المستخدمين إلى عنوان الأساسي.</string>
+    <string name="domains_claim_your_free_domain_link">المطالبة بالنطاق</string>
+    <string name="domains_claim_your_free_domain_description">لديك تسجيل نطاق مجاني مدته عام واحد ضمن خطتك.</string>
+    <string name="domains_claim_your_free_domain_title">طالب بنطاقك المجاني</string>
+    <string name="domains_your_free_store_address">عنوان متجرك المجاني</string>
+    <string name="domains">النطاقات</string>
     <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_dont_show_again_button">عدم العرض مجددًا</string>
     <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_button">ذكرني لاحقًا</string>
     <string name="feedback_banner_ipp_dismiss_confirmation_message">لا داعي للقلق! يمكنك دومًا الانتقال إلى \"الإعدادات\" ضمن \"القائمة\" لإرسال الملاحظات إلينا.</string>
@@ -212,7 +241,7 @@ Language: ar
     <string name="login_application_passwords_unavailable">يبدو أن ميزة كلمات مرور التطبيقات قد تم تعطيلها في موقعك ⁦%1$s⁩.\n يرجى تمكينها لاستخدام تطبيق WooCommerce.</string>
     <string name="login_open_installation_page">فتح صفحة التثبيت</string>
     <string name="not_a_valid_qr_code">رمز Qr الذي تم مسحه ضوئيًا ليس رمز WooCommerce</string>
-    <string name="store_creation_iap_eligibility_check_error_description">إنشاء متجر من تطبيق الجوال غير متاح حاليًا في بلدك.</string>
+    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">أصبح إنشاء المتجر من تطبيق الهاتف المحمول غير متوافر حاليًا في بلدك.</string>
     <string name="store_creation_iap_eligibility_check_error_title">إنشاء المتجر غير متوفر</string>
     <string name="store_creation_iap_eligibility_loading_subtitle">يرجى البقاء متصلاً.</string>
     <string name="store_creation_iap_eligibility_loading_title">نحن نستعدّ لإنشاء متجرك</string>

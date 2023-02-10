@@ -1,11 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-02-01 12:54:04+0000
+Translation-Revision-Date: 2023-02-08 17:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="store_onboarding_completed_tasks_status">%1$d/%2$d voltooid</string>
+    <string name="store_onboarding_task_change_domain_description">Host je winkel met een aangepaste URL.</string>
+    <string name="store_onboarding_task_change_domain_title">Je domein aanpassen</string>
+    <string name="store_onboarding_task_launch_store_description">Publiceer je site voor iedereen, wanneer je maar wilt!</string>
+    <string name="store_onboarding_task_launch_store_title">Lanceer je winkel</string>
+    <string name="store_onboarding_task_add_product_description">Begin met verkopen door producten of diensten aan je winkel toe te voegen.</string>
+    <string name="store_onboarding_task_add_product_title">Je eerste product toevoegen </string>
+    <string name="store_onboarding_title">Winkel instellen</string>
+    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">Je hebt al een actieve eCommerce-abonnement. Neem contact op met de ondersteuning als je huidige abonnement niet is gekoppeld aan je nieuwe site.</string>
+    <string name="store_creation_iap_eligibility_network_error">Er is een netwerkfout opgetreden. Controleer je verbinding en probeer het nogmaals.</string>
+    <string name="store_creation_iap_eligibility_check_generic_error">Het aanmaken van winkels is momenteel niet beschikbaar. Probeer het later opnieuw.</string>
+    <string name="store_creation_iap_eligibility_check_error_existing_subscription">Je kan het eCommerce-abonnement maar één keer vanuit de mobiele app aanschaffen. Ga naar onze websites als je nog meer sites wil aanmaken.</string>
+    <string name="card_reader_payment_failed_app_setup_is_invalid">Er is iets fout gegaan met het instellen van de app. Neem contact op met de ondersteuning voor meer informatie</string>
+    <string name="card_reader_payment_failed_device_is_not_supported">Je apparaat wordt niet ondersteund. Neem contact op met de ondersteuning voor meer informatie</string>
+    <string name="card_reader_payment_failed_nfc_disabled">De app kon de kaartlezer niet inschakelen omdat de NFC-chip is uitgeschakeld</string>
+    <string name="card_reader_payment_failed_canceled">Transactie is geannuleerd</string>
+    <string name="domains_redirect_notice">Het aangeschafte domein zal gebruikers doorsturen naar</string>
+    <string name="domains_select_domain">Selecteer domein</string>
+    <string name="domains_add_domain_button_title">Een domein toevoegen</string>
+    <string name="domains_your_domains">Je sitedomeinen</string>
+    <string name="domains_primary_address">Primair site-adres</string>
+    <string name="domains_learn_more">&lt;a href=\'\'&gt;&lt;u&gt;Meer informatie&lt;/u&gt;&lt;/a&gt; over domeinen en hoe je domeingerelateerde acties kan ondernemen.</string>
+    <string name="domains_search_for_domain_button_title">Zoek naar een domein</string>
+    <string name="domains_purchase_redirect_notice">Het aangeschafte domein zal gebruikers doorsturen naar je primaire adres.</string>
+    <string name="domains_claim_your_free_domain_link">Domein ophalen</string>
+    <string name="domains_claim_your_free_domain_description">Je hebt een gratis één-jaar domein registratie met je abonnement.</string>
+    <string name="domains_claim_your_free_domain_title">Haal je gratis domein op</string>
+    <string name="domains_your_free_store_address">Jouw gratis winkeladres</string>
+    <string name="domains">Domeinen</string>
     <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_dont_show_again_button">Niet opnieuw tonen</string>
     <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_button">Herinner mij hier later aan</string>
     <string name="feedback_banner_ipp_dismiss_confirmation_message">Maak je geen zorgen! Je kunt altijd in het Menu naar Instellingen gaan en ons feedback geven.</string>
@@ -212,7 +241,7 @@ Language: nl
     <string name="login_application_passwords_unavailable">Het lijkt erop dat de functie Applicatiewachtwoorden is uitgeschakeld op je site %1$s.\n Schakel dit in om de WooCommerce-app te kunnen gebruiken.</string>
     <string name="login_open_installation_page">Installatiepagina openen</string>
     <string name="not_a_valid_qr_code">De ingescande QR-code is geen WooCommerce code</string>
-    <string name="store_creation_iap_eligibility_check_error_description">Het aanmaken van winkels vanuit de mobiele app is momenteel niet beschikbaar in je land.</string>
+    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">Het aanmaken van winkels via de mobiele app is momenteel niet beschikbaar in je land.</string>
     <string name="store_creation_iap_eligibility_check_error_title">Winkel aanmaken niet beschikbaar</string>
     <string name="store_creation_iap_eligibility_loading_subtitle">Verbreek de verbinding niet</string>
     <string name="store_creation_iap_eligibility_loading_title">We zijn klaar om je winkel aan te maken</string>

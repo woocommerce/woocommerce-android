@@ -1,11 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-02-01 16:54:08+0000
+Translation-Revision-Date: 2023-02-08 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="store_onboarding_completed_tasks_status">הושלמו ⁦%1$d⁩/%2$d</string>
+    <string name="store_onboarding_task_change_domain_description">כתובת URL מותאמת אישית לאחסון החנות שלך.</string>
+    <string name="store_onboarding_task_change_domain_title">להתאים אישית את הדומיין שלך</string>
+    <string name="store_onboarding_task_launch_store_description">להשיק את האתר שלך לעולם מתי שנוח לך!</string>
+    <string name="store_onboarding_task_launch_store_title">להשיק את החנות שלך</string>
+    <string name="store_onboarding_task_add_product_description">להתחיל למכור על ידי הוספת מוצרים ושירותים לחנות שלך.</string>
+    <string name="store_onboarding_task_add_product_title">להוסיף את המוצר הראשון שלך </string>
+    <string name="store_onboarding_title">הגדרת חנות</string>
+    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">כבר יש לך מינוי פעיל למסחר אלקטרוני. אם נתקלת בבעיה שהמינוי הנוכחי שלך לא מקושר לאתר החדש, עליך לפנות לתמיכה.</string>
+    <string name="store_creation_iap_eligibility_network_error">אירעה שגיאת רשת. יש לבדוק את החיבור ולנסות שוב.</string>
+    <string name="store_creation_iap_eligibility_check_generic_error">יצירת החנות לא זמינה כרגע. יש לנסות שוב מאוחר יותר.</string>
+    <string name="store_creation_iap_eligibility_check_error_existing_subscription">ניתן לרכוש את התוכנית למסחר אלקטרוני מהאפליקציה לנייד רק פעם אחת. כדי ליצור אתרים נוספים, יש לעבור אל אתר האינטרנט שלנו.</string>
+    <string name="card_reader_payment_failed_app_setup_is_invalid">משהו השתבש בהגדרת האפליקציה. יש לפנות לתמיכה לפרטים נוספים</string>
+    <string name="card_reader_payment_failed_device_is_not_supported">המכשיר שלך לא נתמך. יש לפנות לתמיכה לפרטים נוספים</string>
+    <string name="card_reader_payment_failed_nfc_disabled">האפליקציה לא הצליחה להפעיל את קורא הכרטיסים מאחר ששבב ה-NFC מושבת</string>
+    <string name="card_reader_payment_failed_canceled">העסקה בוטלה</string>
+    <string name="domains_redirect_notice">הדומיין שנרכש ינתב את המשתמשים אל</string>
+    <string name="domains_select_domain">לבחור דומיין</string>
+    <string name="domains_add_domain_button_title">להוסיף דומיין</string>
+    <string name="domains_your_domains">הדומיינים באתר שלך</string>
+    <string name="domains_primary_address">הכתובת הראשית של האתר</string>
+    <string name="domains_learn_more">&lt;a href=\'\'&gt;&lt;u&gt;למידע נוסף&lt;/u&gt;&lt;/a&gt; על דומיינים ואיך לבצע פעולות שקשורות לדומיינים.</string>
+    <string name="domains_search_for_domain_button_title">לחפש דומיין</string>
+    <string name="domains_purchase_redirect_notice">הדומיין שנרכש ינתב את המשתמשים אל הכתובת הראשית שלך.</string>
+    <string name="domains_claim_your_free_domain_link">לקבל בעלות על דומיין</string>
+    <string name="domains_claim_your_free_domain_description">אנחנו מעניקים לך רישום דומיין בחינם לשנה עם התוכנית שלך.</string>
+    <string name="domains_claim_your_free_domain_title">לקבל דומיין בחינם</string>
+    <string name="domains_your_free_store_address">הכתובת של החנות החינמית שלך</string>
+    <string name="domains">דומיינים</string>
     <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_dont_show_again_button">לא להציג שוב</string>
     <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_button">הזכירו לי מאוחר יותר</string>
     <string name="feedback_banner_ipp_dismiss_confirmation_message">אל דאגה! תמיד אפשר לעבור אל \'הגדרות\' ב\'תפריט\' ולשלוח אלינו משוב.</string>
@@ -212,7 +241,7 @@ Language: he_IL
     <string name="login_application_passwords_unavailable">נראה שהאפשרות \'סיסמאות אפליקציה\' מושבתת באתר ⁦%1$s⁩.\n יש להפעיל אותה כדי להשתמש באפליקציית WooCommerce.</string>
     <string name="login_open_installation_page">יש לפתוח את עמוד ההתקנה</string>
     <string name="not_a_valid_qr_code">קוד Qr סרוק אינו קוד WooCommerce</string>
-    <string name="store_creation_iap_eligibility_check_error_description">יצירת חנות מהאפליקציה לא זמינה כרגע עבור המדינה שלך.</string>
+    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">האפשרות ליצירת חנות מהאפליקציה לנייד לא זמינה כרגע בארץ שלך.</string>
     <string name="store_creation_iap_eligibility_check_error_title">יצירת חנות לא זמינה</string>
     <string name="store_creation_iap_eligibility_loading_subtitle">אין להתנתק מהמערכת.</string>
     <string name="store_creation_iap_eligibility_loading_title">אנחנו מתכוננים לקראת יצירת החנות שלך</string>

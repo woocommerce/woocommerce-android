@@ -1,11 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-01-31 13:54:08+0000
+Translation-Revision-Date: 2023-02-06 16:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="store_onboarding_completed_tasks_status">Готово: %1$d из %2$d</string>
+    <string name="store_onboarding_task_change_domain_description">Настройте URL-адрес для своего магазина.</string>
+    <string name="store_onboarding_task_change_domain_title">Настроить домен</string>
+    <string name="store_onboarding_task_launch_store_description">Покажите свой сайт всему миру, когда захотите!</string>
+    <string name="store_onboarding_task_launch_store_title">Запустите собственный магазин</string>
+    <string name="store_onboarding_task_add_product_description">Начните продажи, добавив товары или услуги в магазин.</string>
+    <string name="store_onboarding_task_add_product_title">Добавьте свой первый товар </string>
+    <string name="store_onboarding_title">Настройки магазина</string>
+    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">У вас уже есть активная подписка eCommerce. Обратитесь в службу поддержки, если возникли проблемы с текущей подпиской, не связанные с вашим новым сайтом.</string>
+    <string name="store_creation_iap_eligibility_network_error">Произошла ошибка. Проверьте подключение и повторите попытку.</string>
+    <string name="store_creation_iap_eligibility_check_generic_error">Сейчас невозможно создать магазин. Попробуйте позже.</string>
+    <string name="store_creation_iap_eligibility_check_error_existing_subscription">Вы можете приобрести тарифный план eCommerce из мобильного приложения только один раз. Чтобы создать больше сайтов, посетите наш веб-сайт.</string>
+    <string name="card_reader_payment_failed_app_setup_is_invalid">Что-то пошло не так во время настройки приложения. За подробной информацией обращайтесь в службу поддержки</string>
+    <string name="card_reader_payment_failed_device_is_not_supported">Ваше устройство не поддерживается. За подробной информацией обращайтесь в службу поддержки</string>
+    <string name="card_reader_payment_failed_nfc_disabled">Приложение не может использовать устройство чтения карт, поскольку отключён модуль NFC</string>
+    <string name="card_reader_payment_failed_canceled">Транзакция отменена</string>
+    <string name="domains_redirect_notice">Приобретенный домен будет перенаправлять пользователей на</string>
+    <string name="domains_select_domain">Выберите домен</string>
+    <string name="domains_add_domain_button_title">Добавить домен</string>
+    <string name="domains_your_domains">Домены вашего сайта</string>
+    <string name="domains_primary_address">Основной адрес сайта</string>
+    <string name="domains_learn_more">&lt;a href=\'\'&gt;&lt;u&gt;Узнайте больше&lt;/u&gt;&lt;/a&gt; о доменах и связанных с ними действиях.</string>
+    <string name="domains_search_for_domain_button_title">Поиск домена</string>
+    <string name="domains_purchase_redirect_notice">Приобретённый домен будет перенаправлять пользователей на ваш основной адрес.</string>
+    <string name="domains_claim_your_free_domain_link">Отправить заявку на домен</string>
+    <string name="domains_claim_your_free_domain_description">На вашем тарифе можно бесплатно зарегистрировать домен на один год.</string>
+    <string name="domains_claim_your_free_domain_title">Отправьте заявку на бесплатный домен</string>
+    <string name="domains_your_free_store_address">Бесплатный адрес вашего магазина</string>
+    <string name="domains">Домены</string>
     <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_dont_show_again_button">Больше не показывать</string>
     <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_button">Напомнить позже</string>
     <string name="feedback_banner_ipp_dismiss_confirmation_message">Не стоит волноваться! Оставить отзыв можно в любое время в разделе «Меню» &gt; «Настройки».</string>
@@ -212,7 +241,7 @@ Language: ru
     <string name="login_application_passwords_unavailable">Кажется, на вашем сайте %1$s отключена функция паролей приложения.\n Включите её, чтобы использовать приложение WooCommerce.</string>
     <string name="login_open_installation_page">Открыть страницу установки</string>
     <string name="not_a_valid_qr_code">Просканированный QR-код не является кодом WooCommerce</string>
-    <string name="store_creation_iap_eligibility_check_error_description">Создание магазина через мобильное приложение в настоящий момент недоступно в вашей стране.</string>
+    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">Создать магазин из мобильного приложения сейчас невозможно в вашей стране.</string>
     <string name="store_creation_iap_eligibility_check_error_title">Создание магазина недоступно</string>
     <string name="store_creation_iap_eligibility_loading_subtitle">Не прерывайте подключение.</string>
     <string name="store_creation_iap_eligibility_loading_title">Мы готовимся к созданию вашего магазина</string>
