@@ -1,1 +1,2 @@
-This release includes a few bug fixes and improvements to our in person payments feature. Please try it out and share your feedback!
+- [*] Add IPP feedback banner icon for dark mode [https://github.com/woocommerce/woocommerce-android/pull/8309]
+
