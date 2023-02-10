@@ -1,0 +1,2 @@
+12.2:
+Rilis ini termasuk sejumlah perbaikan bug serta penyempurnaan fitur pembayaran langsung kami. Cobalah dan berikan feedback Anda!

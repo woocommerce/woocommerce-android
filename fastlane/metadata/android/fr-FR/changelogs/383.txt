@@ -1,0 +1,2 @@
+12.2 :
+Cette version comprend quelques résolutions de bogues ainsi que des améliorations apportées à la fonctionnalité de paiements en personne. Faites le test et dites-nous ce que vous en pensez !
