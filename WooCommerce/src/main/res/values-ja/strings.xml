@@ -1,11 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-02-01 10:54:03+0000
+Translation-Revision-Date: 2023-02-09 09:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="store_onboarding_completed_tasks_status">%1$d/%2$d 完了</string>
+    <string name="store_onboarding_task_change_domain_description">ストアをホストするカスタム URL を所有する。</string>
+    <string name="store_onboarding_task_change_domain_title">ドメインをカスタマイズ</string>
+    <string name="store_onboarding_task_launch_store_description">いつでも好きなときに、自分のサイトを世界中に公開できます。</string>
+    <string name="store_onboarding_task_launch_store_title">ストアを立ち上げる</string>
+    <string name="store_onboarding_task_add_product_description">ストアに商品やサービスを追加して販売を開始します。</string>
+    <string name="store_onboarding_task_add_product_title">最初の商品を追加する </string>
+    <string name="store_onboarding_title">ショップの設定</string>
+    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">すでに有効な eコマースサブスクリプションがあります。新しいサイトにリンクされていない現在のサブスクリプションに問題が発生した場合は、サポートにご連絡ください。</string>
+    <string name="store_creation_iap_eligibility_network_error">ネットワークエラーが発生しました。 接続を確認して、もう一度お試しください。</string>
+    <string name="store_creation_iap_eligibility_check_generic_error">現在、ストアを作成できません。 後ほど、もう一度お試しください。</string>
+    <string name="store_creation_iap_eligibility_check_error_existing_subscription">モバイルアプリからの eコマースプランの購入は1回のみです。 追加のサイトを作成するには、当社のサイトをご覧ください。</string>
+    <string name="card_reader_payment_failed_app_setup_is_invalid">アプリの設定でエラーが発生しました。 詳細についてはサポートにお問い合わせください。</string>
+    <string name="card_reader_payment_failed_device_is_not_supported">お使いの端末はサポートされていません。 詳細についてはサポートにお問い合わせください。</string>
+    <string name="card_reader_payment_failed_nfc_disabled">NFC チップが無効になっているため、アプリでカードリーダーを有効化できませんでした</string>
+    <string name="card_reader_payment_failed_canceled">取引はキャンセルされました</string>
+    <string name="domains_redirect_notice">購入したドメインにアクセスするとこちらに転送されます:</string>
+    <string name="domains_select_domain">ドメインを選択</string>
+    <string name="domains_add_domain_button_title">ドメインを追加</string>
+    <string name="domains_your_domains">あなたのサイトドメイン</string>
+    <string name="domains_primary_address">主要サイトのアドレス</string>
+    <string name="domains_learn_more">ドメインやドメインに関連する対処方法についての&lt;a href=\'\'&gt;&lt;u&gt;詳細はこちら&lt;/u&gt;&lt;/a&gt;をご覧ください。</string>
+    <string name="domains_search_for_domain_button_title">ドメインを検索</string>
+    <string name="domains_purchase_redirect_notice">購入したドメインにアクセスするとメインアドレスに転送されます。</string>
+    <string name="domains_claim_your_free_domain_link">ドメインを取得する</string>
+    <string name="domains_claim_your_free_domain_description">このプランには、1年間の無料ドメイン登録が含まれています。</string>
+    <string name="domains_claim_your_free_domain_title">無料ドメインを取得</string>
+    <string name="domains_your_free_store_address">無料ストアのアドレス</string>
+    <string name="domains">ドメイン</string>
     <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_dont_show_again_button">今後表示しない</string>
     <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_button">後で再通知</string>
     <string name="feedback_banner_ipp_dismiss_confirmation_message">心配はご無用です。 いつでも「メニュー」の「設定」からフィードバックを送信できます。</string>
@@ -212,7 +241,7 @@ Language: ja_JP
     <string name="login_application_passwords_unavailable">サイト %1$s でアプリケーションパスワード機能が無効になっているようです。\n WooCommerce アプリを使用するには、アプリケーションパスワードを有効にしてください。</string>
     <string name="login_open_installation_page">インストールページを開く</string>
     <string name="not_a_valid_qr_code">スキャンされた QR コードは WooCommerce コードではありません</string>
-    <string name="store_creation_iap_eligibility_check_error_description">現在お住まいの国ではモバイルアプリでストアを作成することはできません。</string>
+    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">現在お住まいの国ではモバイルアプリでストアを作成することはできません。</string>
     <string name="store_creation_iap_eligibility_check_error_title">ストアを作成できません </string>
     <string name="store_creation_iap_eligibility_loading_subtitle">連携を維持してください。</string>
     <string name="store_creation_iap_eligibility_loading_title">ストア作成の準備を進めています</string>

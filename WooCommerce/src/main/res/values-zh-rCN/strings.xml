@@ -1,11 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-01-31 16:54:04+0000
+Translation-Revision-Date: 2023-02-07 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="store_onboarding_completed_tasks_status">%1$d/%2$d 已完成</string>
+    <string name="store_onboarding_task_change_domain_description">有用于托管您的商店的自定义 URL。</string>
+    <string name="store_onboarding_task_change_domain_title">自定义您的域名</string>
+    <string name="store_onboarding_task_launch_store_description">随时随地发布您的站点！</string>
+    <string name="store_onboarding_task_launch_store_title">开启您的商店</string>
+    <string name="store_onboarding_task_add_product_description">向您的商店添加产品或服务，开始进行销售。</string>
+    <string name="store_onboarding_task_add_product_title">添加您的第一个产品 </string>
+    <string name="store_onboarding_title">安装商店</string>
+    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">您已经有一个有效的电子商务版订阅，如果您遇到当前订阅未关联到您的新站点的问题，请联系技术支持。</string>
+    <string name="store_creation_iap_eligibility_network_error">发生网络错误。 请检查您的连接，然后重试。</string>
+    <string name="store_creation_iap_eligibility_check_generic_error">商店创建功能当前不可用。 请稍后重试。</string>
+    <string name="store_creation_iap_eligibility_check_error_existing_subscription">您只可以通过移动应用程序购买一次电子商务版套餐。 要创建其他站点，请访问我们的网站。</string>
+    <string name="card_reader_payment_failed_app_setup_is_invalid">应用程序设置出错了。 请联系支持团队以了解详情</string>
+    <string name="card_reader_payment_failed_device_is_not_supported">您的设备不受支持。 请联系支持团队以了解详情</string>
+    <string name="card_reader_payment_failed_nfc_disabled">应用程序无法启用读卡器，因为已禁用 NFC 芯片</string>
+    <string name="card_reader_payment_failed_canceled">交易已取消</string>
+    <string name="domains_redirect_notice">购买的域名会将用户重定向至</string>
+    <string name="domains_select_domain">选择域</string>
+    <string name="domains_add_domain_button_title">添加域名</string>
+    <string name="domains_your_domains">您的站点域名</string>
+    <string name="domains_primary_address">主要站点地址</string>
+    <string name="domains_learn_more">&lt;a href=\'\'&gt;&lt;u&gt;详细了解&lt;/u&gt;&lt;/a&gt;域名以及如何采取域名相关操作。</string>
+    <string name="domains_search_for_domain_button_title">搜索域</string>
+    <string name="domains_purchase_redirect_notice">购买的域名会将用户重定向至您的主要地址。</string>
+    <string name="domains_claim_your_free_domain_link">认领域名</string>
+    <string name="domains_claim_your_free_domain_description">您的套餐中包括为期一年的免费域名注册。</string>
+    <string name="domains_claim_your_free_domain_title">认领您的免费域名</string>
+    <string name="domains_your_free_store_address">您的免费商店地址</string>
+    <string name="domains">域名</string>
     <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_dont_show_again_button">不再显示</string>
     <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_button">稍后提醒我</string>
     <string name="feedback_banner_ipp_dismiss_confirmation_message">不必担心！ 您可以随时转到菜单中的“设置”向我们发送反馈。</string>
@@ -212,7 +241,7 @@ Language: zh_CN
     <string name="login_application_passwords_unavailable">您的站点 %1$s 似乎禁用应用程序密码功能。\n 请启用该功能以使用 WooCommerce 应用。</string>
     <string name="login_open_installation_page">打开安装页面</string>
     <string name="not_a_valid_qr_code">扫进来的 QR code 不是 WooCommerce 代码</string>
-    <string name="store_creation_iap_eligibility_check_error_description">您所在的国家暂不提供自手机 App 开设商店功能。</string>
+    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">您所在的国家/地区目前无法在移动应用程序中创建商店。</string>
     <string name="store_creation_iap_eligibility_check_error_title">不提供商店开设功能</string>
     <string name="store_creation_iap_eligibility_loading_subtitle">请保持连接状态。</string>
     <string name="store_creation_iap_eligibility_loading_title">我们正在为您的商店创建做准备</string>

@@ -1,11 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-01-31 09:54:08+0000
+Translation-Revision-Date: 2023-02-08 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="store_onboarding_completed_tasks_status">%1$d/%2$d abgeschlossen</string>
+    <string name="store_onboarding_task_change_domain_description">Sichere dir eine individuelle URL, um deinen Shop zu hosten.</string>
+    <string name="store_onboarding_task_change_domain_title">Deine Domain anpassen</string>
+    <string name="store_onboarding_task_launch_store_description">Mache deine Website für die ganze Welt zugänglich – wann immer du willst!</string>
+    <string name="store_onboarding_task_launch_store_title">Starte deinen Shop</string>
+    <string name="store_onboarding_task_add_product_description">Füge Produkte oder Dienstleistungen zu deinem Shop hinzu und beginne mit dem Verkauf.</string>
+    <string name="store_onboarding_task_add_product_title">Füge dein erstes Produkt hinzu </string>
+    <string name="store_onboarding_title">Shop Konfiguration</string>
+    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">Du hast bereits ein aktives E-Commerce-Abonnement. Bitte kontaktiere den Support, wenn du Probleme mit deinem aktuellen Abonnement hast und es nicht mit deiner neuen Website verknüpft ist.</string>
+    <string name="store_creation_iap_eligibility_network_error">Es ist ein Netzwerkfehler aufgetreten. Bitte überprüfe deine Verbindung und versuche es erneut.</string>
+    <string name="store_creation_iap_eligibility_check_generic_error">Die Shop-Erstellung ist derzeit nicht verfügbar. Bitte versuche es später erneut.</string>
+    <string name="store_creation_iap_eligibility_check_error_existing_subscription">Du kannst den E-Commerce-Tarif nur einmal über die Mobil-App kaufen. Besuche unsere Website, um weitere Websites zu erstellen.</string>
+    <string name="card_reader_payment_failed_app_setup_is_invalid">Bei der App-Einrichtung ist etwas schiefgelaufen. Bitte wende dich an den Support, um weitere Informationen zu erhalten</string>
+    <string name="card_reader_payment_failed_device_is_not_supported">Dein Gerät wird nicht unterstützt. Bitte wende dich an den Support, um weitere Informationen zu erhalten</string>
+    <string name="card_reader_payment_failed_nfc_disabled">Die App konnte den Kartenleser nicht aktivieren, da der NFC-Chip deaktiviert ist</string>
+    <string name="card_reader_payment_failed_canceled">Die Transaktion wurde abgebrochen</string>
+    <string name="domains_redirect_notice">Die erworbene Domain wird Benutzer weiterleiten zu</string>
+    <string name="domains_select_domain">Domain auswählen</string>
+    <string name="domains_add_domain_button_title">Domain hinzufügen</string>
+    <string name="domains_your_domains">Deine Website-Domains</string>
+    <string name="domains_primary_address">Haupt-Website-Adresse</string>
+    <string name="domains_learn_more">Erhalte &lt;a href=\'\'&gt;&lt;u&gt;weitere Informationen&lt;/u&gt;&lt;/a&gt; über Domains und Aktionen, die du im Zusammenhang mit Domains durchführen kannst.</string>
+    <string name="domains_search_for_domain_button_title">Nach einer Domain suchen</string>
+    <string name="domains_purchase_redirect_notice">Die erworbene Domain wird Benutzer an deine Hauptadresse weiterleiten.</string>
+    <string name="domains_claim_your_free_domain_link">Domain beantragen</string>
+    <string name="domains_claim_your_free_domain_description">In deinem Tarif ist eine kostenlose Domain-Registrierung für ein Jahr enthalten.</string>
+    <string name="domains_claim_your_free_domain_title">Kostenlose Domain in Anspruch nehmen</string>
+    <string name="domains_your_free_store_address">Deine kostenlose Shop-Adresse</string>
+    <string name="domains">Domains</string>
     <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_dont_show_again_button">Nicht erneut anzeigen</string>
     <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_button">Später daran erinnern</string>
     <string name="feedback_banner_ipp_dismiss_confirmation_message">Keine Sorge! Du kannst uns jederzeit im Menü unter „Einstellungen“ Feedback senden.</string>
@@ -212,7 +241,7 @@ Language: de
     <string name="login_application_passwords_unavailable">Anscheinend ist die Funktion „Anwendungs-Passwörter“ auf deiner Website %1$s deaktiviert.\n Bitte aktiviere sie, um die WooCommerce-App verwenden zu können.</string>
     <string name="login_open_installation_page">Installationsseite öffnen</string>
     <string name="not_a_valid_qr_code">Der gescannte QR-Code ist kein WooCommerce-Code.</string>
-    <string name="store_creation_iap_eligibility_check_error_description">Die Shop-Erstellung über die Mobil-App ist in deinem Land aktuell nicht verfügbar.</string>
+    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">Die Shop-Erstellung über die Mobil-App ist in deinem Land derzeit nicht verfügbar.</string>
     <string name="store_creation_iap_eligibility_check_error_title">Shop-Erstellung nicht verfügbar</string>
     <string name="store_creation_iap_eligibility_loading_subtitle">Bitte bleib verbunden.</string>
     <string name="store_creation_iap_eligibility_loading_title">Wir machen uns für die Erstellung deines Shops bereit.</string>

@@ -1,11 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-01-31 13:54:03+0000
+Translation-Revision-Date: 2023-02-06 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="store_onboarding_completed_tasks_status">%1$d/%2$d har slutförts</string>
+    <string name="store_onboarding_task_change_domain_description">Få en anpassad URL för din butik.</string>
+    <string name="store_onboarding_task_change_domain_title">Anpassa din domän</string>
+    <string name="store_onboarding_task_launch_store_description">Publicera din webbplats till världen när du vill!</string>
+    <string name="store_onboarding_task_launch_store_title">Lansera din butik</string>
+    <string name="store_onboarding_task_add_product_description">Börja sälja genom att lägga till produkter eller tjänster i din butik.</string>
+    <string name="store_onboarding_task_add_product_title">Lägg till din första produkt </string>
+    <string name="store_onboarding_title">Konfigurera din butik</string>
+    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">Du har redan en aktiv eCommerce-prenumeration. Kontakta supporten om du stöter på problem med att din nuvarande prenumeration inte är kopplad till din nya webbplats.</string>
+    <string name="store_creation_iap_eligibility_network_error">Ett nätverksfel uppstod. Kontrollera din anslutning och försök igen.</string>
+    <string name="store_creation_iap_eligibility_check_generic_error">Butiksskapande är inte tillgängligt för tillfället. Försök igen senare.</string>
+    <string name="store_creation_iap_eligibility_check_error_existing_subscription">Du kan bara köpa eCommerce-paketet från mobilappen en gång. Besök vår webbplats om du vill skapa ytterligare webbplatser.</string>
+    <string name="card_reader_payment_failed_app_setup_is_invalid">Något gick fel med appkonfigurationen. Kontakta supporten för mer information</string>
+    <string name="card_reader_payment_failed_device_is_not_supported">Din enhet stöds inte. Kontakta support för mer detaljer</string>
+    <string name="card_reader_payment_failed_nfc_disabled">Appen kunde inte aktivera kortläsaren, eftersom NFC-chippet är inaktiverat</string>
+    <string name="card_reader_payment_failed_canceled">Transaktionen avbröts</string>
+    <string name="domains_redirect_notice">Den köpta domänen kommer att omdirigera användare till</string>
+    <string name="domains_select_domain">Välj domän</string>
+    <string name="domains_add_domain_button_title">Lägg till en domän</string>
+    <string name="domains_your_domains">Domänerna för din webbplats</string>
+    <string name="domains_primary_address">Primär webbplatsadress</string>
+    <string name="domains_learn_more">&lt;a href=\'\'&gt;&lt;u&gt;Lär dig mer&lt;/u&gt;&lt;/a&gt; om domäner och hur man vidtar domänrelaterade åtgärder.</string>
+    <string name="domains_search_for_domain_button_title">Sök efter en domän</string>
+    <string name="domains_purchase_redirect_notice">Den köpta domänen kommer omdirigera användare till din primära adress.</string>
+    <string name="domains_claim_your_free_domain_link">Gör anspråk på domän</string>
+    <string name="domains_claim_your_free_domain_description">Ditt paket inkluderar en gratis domännamnsregistrering i ett år.</string>
+    <string name="domains_claim_your_free_domain_title">Gör anspråk på din gratisdomän</string>
+    <string name="domains_your_free_store_address">Din gratis butiksadress</string>
+    <string name="domains">Domäner</string>
     <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_dont_show_again_button">Visa inte igen</string>
     <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_button">Påminn mig senare</string>
     <string name="feedback_banner_ipp_dismiss_confirmation_message">Inga problem! Du kan alltid gå till Inställningar i menyn för att skicka feedback.</string>
@@ -212,7 +241,7 @@ Language: sv_SE
     <string name="login_application_passwords_unavailable">Det verkar som att funktionen Applikationslösenord är inaktiverad på din webbplats %1$s.\n Aktivera den om du vill använda WooCommerce-appen.</string>
     <string name="login_open_installation_page">Öppna installationssida</string>
     <string name="not_a_valid_qr_code">Skannad QR-kod är inte en WooCommerce-kod</string>
-    <string name="store_creation_iap_eligibility_check_error_description">Skapa butik från mobilappen är för närvarande inte tillgängligt för ditt land.</string>
+    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">Att skapa butik från mobilappen är för närvarande inte tillgängligt för ditt land.</string>
     <string name="store_creation_iap_eligibility_check_error_title">Skapande av butik är inte tillgängligt</string>
     <string name="store_creation_iap_eligibility_loading_subtitle">Förbli ansluten.</string>
     <string name="store_creation_iap_eligibility_loading_title">Vi gör oss redo för att skapa din butik</string>
