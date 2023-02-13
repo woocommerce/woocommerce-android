@@ -441,7 +441,9 @@ class CardReaderPaymentViewModel
                 FailedRefundState(
                     errorType,
                     amountLabel,
-                    onPrimaryActionClicked = onRetryClicked
+                    onPrimaryActionClicked = onRetryClicked,
+                    secondaryLabel = R.string.cancel,
+                    onSecondaryActionClicked = { onBackPressed() }
                 )
             )
         }
@@ -467,7 +469,9 @@ class CardReaderPaymentViewModel
                 FailedPaymentState(
                     errorType,
                     amountLabel,
-                    onPrimaryActionClicked = onRetryClicked
+                    onPrimaryActionClicked = onRetryClicked,
+                    secondaryLabel = R.string.cancel,
+                    onSecondaryActionClicked = { onBackPressed() }
                 )
             )
         }
@@ -618,6 +622,7 @@ class CardReaderPaymentViewModel
 
     fun onBackPressed() {
         onCancelPaymentFlow()
+        disconnectFromReaderIfPaymentState()
     }
 
     private fun onCancelPaymentFlow() {
@@ -633,6 +638,12 @@ class CardReaderPaymentViewModel
                 trackCancelledFlow(state)
             }
             triggerEvent(Exit)
+        }
+    }
+
+    private fun disconnectFromReaderIfPaymentState() {
+        if (viewState.value is FailedPaymentState || viewState.value is FailedRefundState) {
+            launch { cardReaderManager.disconnectReader() }
         }
     }
 
