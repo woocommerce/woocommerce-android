@@ -475,8 +475,7 @@ class CardReaderPaymentViewModel
 
     private fun showPaymentSuccessfulState() {
         launch {
-            val order = orderRepository.getOrderById(orderId)
-                ?: throw IllegalStateException("Order URL not available.")
+            val order = requireNotNull(orderRepository.getOrderById(orderId)) { "Order URL not available." }
             val amountLabel = order.getAmountLabel()
             val receiptUrl = getReceiptUrl(order.id)
             val onPrintReceiptClicked = {
@@ -681,9 +680,11 @@ class CardReaderPaymentViewModel
 
     private suspend fun getStoreCountryCode(): String {
         return withContext(dispatchers.io) {
-            wooStore.getStoreCountryCode(
-                selectedSite.get()
-            ) ?: throw IllegalStateException("Store's country code not found.")
+            requireNotNull(
+                wooStore.getStoreCountryCode(
+                    selectedSite.get()
+                )
+            ) { "Store's country code not found." }
         }
     }
 
