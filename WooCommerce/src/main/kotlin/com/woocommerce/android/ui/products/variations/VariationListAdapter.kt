@@ -52,8 +52,7 @@ class VariationListAdapter(
         )
 
         holder.itemView.setOnClickListener {
-            @Suppress("DEPRECATION")
-            onItemClick(getItem(holder.adapterPosition))
+            onItemClick(getItem(holder.bindingAdapterPosition))
         }
         return holder
     }

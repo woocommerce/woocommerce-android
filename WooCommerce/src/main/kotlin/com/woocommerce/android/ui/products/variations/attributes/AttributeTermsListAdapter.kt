@@ -143,13 +143,12 @@ class AttributeTermsListAdapter(
             areItemsTheSame(oldItemPosition, newItemPosition)
     }
 
-    @Suppress("DEPRECATION")
     @SuppressLint("ClickableViewAccessibility")
     inner class TermViewHolder(val viewBinding: AttributeTermListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
         init {
             viewBinding.root.setOnClickListener {
-                termNames.getOrNull(adapterPosition)?.let {
+                termNames.getOrNull(bindingAdapterPosition)?.let {
                     onTermListener.onTermClick(it)
                 }
             }
@@ -157,7 +156,7 @@ class AttributeTermsListAdapter(
             if (enableDeleting) {
                 viewBinding.termContainer.setBackgroundResource(defaultItemBackground.resourceId)
                 viewBinding.termDelete.setOnClickListener {
-                    termNames.getOrNull(adapterPosition)?.let {
+                    termNames.getOrNull(bindingAdapterPosition)?.let {
                         removeTerm(it)
                         onTermListener.onTermDelete(it)
                     }
