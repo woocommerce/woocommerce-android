@@ -384,13 +384,6 @@ class LoginActivity :
         finish()
     }
 
-    private fun jumpToUsernamePassword(username: String?, password: String?) {
-        val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
-            "wordpress.com", "wordpress.com", username, password, true
-        )
-        changeFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
-    }
-
     private fun startLoginViaWPCom() {
         // Clean previously saved site address, e.g: if merchants return from a store address flow.
         AppPrefs.removeLoginSiteAddress()
@@ -478,7 +471,10 @@ class LoginActivity :
     }
 
     override fun loginViaWpcomUsernameInstead() {
-        jumpToUsernamePassword(null, null)
+        val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
+            "wordpress.com", "wordpress.com", null, null, true
+        )
+        changeFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
     }
 
     override fun showMagicLinkSentScreen(email: String?, allowPassword: Boolean) {
