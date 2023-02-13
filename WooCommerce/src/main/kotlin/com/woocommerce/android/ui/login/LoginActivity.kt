@@ -27,8 +27,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPAC
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_LOGIN_WITH_WORDPRESS_COM
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
-import com.woocommerce.android.experiment.RESTAPILoginExperiment
-import com.woocommerce.android.experiment.RESTAPILoginExperiment.RESTAPILoginVariant
 import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.support.ZendeskExtraTags
 import com.woocommerce.android.support.ZendeskHelper
@@ -159,7 +157,6 @@ class LoginActivity :
     @Inject internal lateinit var dispatcher: Dispatcher
     @Inject internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver
-    @Inject internal lateinit var restApiLoginExperiment: RESTAPILoginExperiment
 
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
@@ -564,15 +561,9 @@ class LoginActivity :
         val siteAddressClean = inputSiteAddress.replaceFirst(protocolRegex, "")
         AppPrefs.setLoginSiteAddress(siteAddressClean)
 
-        val shouldUseEmailLogin = when (restApiLoginExperiment.getCurrentVariant()) {
-            RESTAPILoginVariant.CONTROL -> hasJetpack
-            RESTAPILoginVariant.TREATMENT -> connectSiteInfo?.isWPCom == true
-        }
-
-        if (shouldUseEmailLogin) {
-            showEmailLoginScreen(inputSiteAddress.takeIf { connectSiteInfo?.isWPCom != true })
+        if (hasJetpack || connectSiteInfo?.isWPCom == true) {
+            showEmailLoginScreen(null)
         } else {
-            // Let user log in via site credentials first before showing Jetpack missing screen.
             loginViaSiteCredentials(inputSiteAddress)
         }
     }
@@ -827,31 +818,16 @@ class LoginActivity :
         endpointAddress: String?,
         inputUsername: String?,
         inputPassword: String?
-    ) {
-        val (fragment, tag) = if (restApiLoginExperiment.getCurrentVariant() == RESTAPILoginVariant.TREATMENT) {
-            Pair(
-                LoginSiteCredentialsFragment.newInstance(
-                    siteAddress = requireNotNull(siteAddress),
-                    isJetpackConnected = connectSiteInfo?.isJetpackConnected ?: false,
-                    username = inputUsername,
-                    password = inputPassword
-                ),
-                LoginSiteCredentialsFragment.TAG
-            )
-        } else {
-            Pair(
-                LoginUsernamePasswordFragment.newInstance(
-                    siteAddress,
-                    endpointAddress,
-                    inputUsername,
-                    inputPassword,
-                    false
-                ),
-                LoginUsernamePasswordFragment.TAG
-            )
-        }
-        changeFragment(fragment, true, tag)
-    }
+    ) = changeFragment(
+        fragment = LoginSiteCredentialsFragment.newInstance(
+            siteAddress = requireNotNull(siteAddress),
+            isJetpackConnected = connectSiteInfo?.isJetpackConnected ?: false,
+            username = inputUsername,
+            password = inputPassword
+        ),
+        shouldAddToBackStack = true,
+        tag = LoginSiteCredentialsFragment.TAG
+    )
 
     override fun startJetpackInstall(siteAddress: String?) {
         siteAddress?.let {
