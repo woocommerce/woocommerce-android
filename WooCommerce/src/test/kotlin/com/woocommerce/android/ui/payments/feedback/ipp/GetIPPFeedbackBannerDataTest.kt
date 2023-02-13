@@ -1,4 +1,3 @@
-@file:Suppress("MaxLineLength")
 package com.woocommerce.android.ui.payments.feedback.ipp
 
 import com.woocommerce.android.R
@@ -197,27 +196,28 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given banner should be displayed, then should analyze IPP stats from the correct time window`() = testBlocking {
-        // given
-        whenever(shouldShowFeedbackBanner()).thenReturn(true)
-        whenever(getActivePaymentsPlugin())
-            .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
+    fun `given banner should be displayed, then should analyze IPP stats from the correct time window`() =
+        testBlocking {
+            // given
+            whenever(shouldShowFeedbackBanner()).thenReturn(true)
+            whenever(getActivePaymentsPlugin())
+                .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
 
-        val expectedTimeWindowCaptor = ArgumentCaptor.forClass(String::class.java)
+            val expectedTimeWindowCaptor = ArgumentCaptor.forClass(String::class.java)
 
-        // when
-        sut()
-        verify(ippStore).fetchTransactionsSummary(
-            any(),
-            any(),
-            expectedTimeWindowCaptor.capture()
-        )
+            // when
+            sut()
+            verify(ippStore).fetchTransactionsSummary(
+                any(),
+                any(),
+                expectedTimeWindowCaptor.capture()
+            )
 
-        // then
-        val timeWindowLengthDays = 30
-        val desiredTimeWindowStart = Date().daysAgo(timeWindowLengthDays).formatToYYYYmmDD()
-        assertEquals(desiredTimeWindowStart, expectedTimeWindowCaptor.value)
-    }
+            // then
+            val timeWindowLengthDays = 30
+            val desiredTimeWindowStart = Date().daysAgo(timeWindowLengthDays).formatToYYYYmmDD()
+            assertEquals(desiredTimeWindowStart, expectedTimeWindowCaptor.value)
+        }
 
     @Test
     fun `given COD enabled and endpoint returns error, then should detect newbie`() = testBlocking {
