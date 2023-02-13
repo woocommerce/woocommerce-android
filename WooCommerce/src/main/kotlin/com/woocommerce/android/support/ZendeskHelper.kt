@@ -582,7 +582,6 @@ sealed class TicketType(
 
 object ZendeskExtraTags {
     const val applicationPasswordAuthenticated = "application_password_authenticated"
-    const val connectingJetpack = "connecting_jetpack"
 
     const val paymentsCategory = "support"
     const val paymentsSubcategory = "payment"
