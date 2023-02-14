@@ -1,5 +1,9 @@
 package com.woocommerce.android.ui.payments.taptopay
 
+import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
+import com.woocommerce.android.cardreader.config.CardReaderConfigForUnsupportedCountry
+import com.woocommerce.android.cardreader.connection.ReaderType
+import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.util.DeviceFeatures
 import com.woocommerce.android.util.SystemVersionUtilsWrapper
 import javax.inject.Inject
@@ -7,15 +11,24 @@ import javax.inject.Inject
 class IsTapToPayAvailable @Inject constructor(
     private val isTapToPayEnabled: IsTapToPayEnabled,
     private val deviceFeatures: DeviceFeatures,
-    private val systemVersionUtilsWrapper: SystemVersionUtilsWrapper
+    private val systemVersionUtilsWrapper: SystemVersionUtilsWrapper,
+    private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
 ) {
     operator fun invoke(countryCode: String) =
-        if (!isTapToPayEnabled()) Result.NotAvailable.TapToPayDisabled
-        else if (!systemVersionUtilsWrapper.isAtLeastP()) Result.NotAvailable.SystemVersionNotSupported
-        else if (!deviceFeatures.isGooglePlayServicesAvailable()) Result.NotAvailable.GooglePlayServicesNotAvailable
-        else if (!deviceFeatures.isNFCAvailable()) Result.NotAvailable.NfcNotAvailable
-        else if (countryCode !in countriesWithTapToPaySupport) Result.NotAvailable.CountryNotSupported
-        else Result.Available
+        when {
+            !isTapToPayEnabled() -> Result.NotAvailable.TapToPayDisabled
+            !systemVersionUtilsWrapper.isAtLeastP() -> Result.NotAvailable.SystemVersionNotSupported
+            !deviceFeatures.isGooglePlayServicesAvailable() -> Result.NotAvailable.GooglePlayServicesNotAvailable
+            !deviceFeatures.isNFCAvailable() -> Result.NotAvailable.NfcNotAvailable
+            !isTppSupportedInCountry(countryCode) -> Result.NotAvailable.CountryNotSupported
+            else -> Result.Available
+        }
+
+    private fun isTppSupportedInCountry(countryCode: String) =
+        when (val config = cardReaderCountryConfigProvider.provideCountryConfigFor(countryCode)) {
+            is CardReaderConfigForSupportedCountry -> config.supportedReaders.any { it is ReaderType.BuildInReader }
+            CardReaderConfigForUnsupportedCountry -> false
+        }
 
     sealed class Result {
         object Available : Result()
@@ -26,9 +39,5 @@ class IsTapToPayAvailable @Inject constructor(
             object NfcNotAvailable : NotAvailable()
             object CountryNotSupported : NotAvailable()
         }
-    }
-
-    companion object {
-        private val countriesWithTapToPaySupport = listOf("US")
     }
 }
