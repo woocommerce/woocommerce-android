@@ -28,7 +28,10 @@ class GetIPPFeedbackBannerData @Inject constructor(
 ) {
     @Suppress("ReturnCount", "MaxLineLength")
     suspend operator fun invoke(): IPPFeedbackBanner? {
-        if (!shouldShowFeedbackBanner()) return null
+        if (!shouldShowFeedbackBanner()) {
+            logger.e(AppLog.T.API, "GetIPPFeedbackBannerData should not be shown.")
+            return null
+        }
 
         val activePaymentsPlugin = getActivePaymentsPlugin()
 
@@ -50,7 +53,7 @@ class GetIPPFeedbackBannerData @Inject constructor(
 
         val numberOfTransactionsInLast30Days = response.result?.transactionsCount
         if (numberOfTransactionsInLast30Days == null || numberOfTransactionsInLast30Days < 0) {
-            logger.e(AppLog.T.API, "Transactions count data is not")
+            logger.e(AppLog.T.API, "Transactions count data is malformed.")
             return null
         }
 
