@@ -2,6 +2,7 @@
 12.4
 -----
 - [*][Internal] We added a cancel button to the error states of the IPP flow
+- [*] [Internal] Add a Zendesk tag to allow differentiating sites accessed using Application Passwords [https://github.com/woocommerce/woocommerce-android/pull/8320]
 
 12.3
 -----
