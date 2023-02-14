@@ -780,6 +780,54 @@ class OrderListViewModelTest : BaseUnitTest() {
             )
         }
 
+    @Test
+    fun `given IPP banner should be shown, when banner data is null, then event is not tracked`() =
+        testBlocking {
+            // given
+            whenever(shouldShowFeedbackBanner()).thenReturn(false)
+            assertNull(getIPPFeedbackBannerData())
+
+            // when
+            viewModel = createViewModel()
+
+            // then
+            verify(analyticsTracker, never()).track(
+                AnalyticsEvent.IPP_FEEDBACK_BANNER_SHOWN,
+                mapOf(
+                    KEY_IPP_BANNER_SOURCE to VALUE_IPP_BANNER_SOURCE_ORDER_LIST,
+                    KEY_IPP_BANNER_CAMPAIGN_NAME to FAKE_IPP_FEEDBACK_BANNER_DATA.campaignName
+                )
+            )
+        }
+
+    @Test
+    fun `given IPP banner should be shown, when banner data is null, then Orders banner is shown`() =
+        testBlocking {
+            // given
+            whenever(shouldShowFeedbackBanner()).thenReturn(false)
+            assertNull(getIPPFeedbackBannerData())
+
+            // when
+            viewModel = createViewModel()
+
+            // then
+            assertTrue(viewModel.viewState.isSimplePaymentsWIPNoticeCardVisible)
+        }
+
+    @Test
+    fun `given IPP banner should be shown, when banner data is null, then IPP banner is hidden`() =
+        testBlocking {
+            // given
+            whenever(shouldShowFeedbackBanner()).thenReturn(false)
+            assertNull(getIPPFeedbackBannerData())
+
+            // when
+            viewModel = createViewModel()
+
+            // then
+            assertEquals(IPPSurveyFeedbackBannerState.Hidden, viewModel.viewState.ippFeedbackBannerState)
+        }
+
     private companion object {
         const val ANY_SEARCH_QUERY = "search query"
 
