@@ -120,6 +120,22 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when view model init with built-in reader connected state, then disconnect built-in reader tracked`() {
+        testBlocking {
+            // GIVEN
+            initConnectedState(
+                readerType = ReaderType.BuildInReader.CotsDevice
+            )
+
+            // WHEN
+            createViewModel()
+
+            // THEN
+            verify(tracker).trackManageCardReadersAutomaticDisconnectOfBuiltInReader()
+        }
+    }
+
+    @Test
     fun `when view model init with external reader connected state, then do not disconnect built-in reader`() {
         testBlocking {
             // GIVEN
