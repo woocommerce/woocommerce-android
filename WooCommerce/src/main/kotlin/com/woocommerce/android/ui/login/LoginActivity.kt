@@ -30,7 +30,6 @@ import com.woocommerce.android.databinding.ActivityLoginBinding
 import com.woocommerce.android.experiment.RESTAPILoginExperiment
 import com.woocommerce.android.experiment.RESTAPILoginExperiment.RESTAPILoginVariant
 import com.woocommerce.android.extensions.parcelable
-import com.woocommerce.android.support.ZendeskExtraTags
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
@@ -609,11 +608,10 @@ class LoginActivity :
     }
 
     private fun viewHelpAndSupport(origin: HelpOrigin) {
-        val extraSupportTags = arrayListOf(ZendeskExtraTags.connectingJetpack)
         val flow = unifiedLoginTracker.getFlow()
         val step = unifiedLoginTracker.previousStepBeforeHelpStep
 
-        startActivity(HelpActivity.createIntent(this, origin, extraSupportTags, flow?.value, step?.value))
+        startActivity(HelpActivity.createIntent(this, origin, null, flow?.value, step?.value))
     }
 
     override fun helpSiteAddress(url: String?) {
