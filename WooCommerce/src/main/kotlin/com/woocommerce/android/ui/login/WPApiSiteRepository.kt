@@ -70,6 +70,8 @@ class WPApiSiteRepository @Inject constructor(
 
         return@coroutineScope userEligibilityFetcher.fetchUserInfo(site)
             .recoverCatching { exception ->
+                // Wait for any potential application password generation error and report it as the cause of failure
+                // We use the 100L waiting time just to make sure it's correctly reported before the network failure
                 @Suppress("MagicNumber")
                 withTimeoutOrNull(100L) { applicationPasswordErrorTask.join() }
 
