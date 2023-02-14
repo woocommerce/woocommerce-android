@@ -10,7 +10,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentLoginPrologueBinding
-import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import dagger.hilt.android.AndroidEntryPoint
@@ -59,24 +58,6 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
 
         if (savedInstanceState == null) {
             unifiedLoginTracker.track(Flow.PROLOGUE, Step.PROLOGUE)
-        }
-
-        binding.showSiteAddressButtonAsPrimary()
-    }
-
-    /**
-     * Shows the site address button as primary and hides the WordPress.com button
-     * TODO move the changes to the layout files if this is the final decision for long-term
-     */
-    private fun FragmentLoginPrologueBinding.showSiteAddressButtonAsPrimary() {
-        // Since Android doesn't allow changing view's styles, we will just swap buttons in order to have the store
-        // button primary
-        buttonLoginStore.hide()
-        buttonLoginWpcom.text = buttonLoginStore.text
-        buttonLoginWpcom.layoutParams = buttonLoginStore.layoutParams
-        buttonLoginWpcom.setOnClickListener {
-            // Forward click to site address button
-            buttonLoginStore.performClick()
         }
     }
 
