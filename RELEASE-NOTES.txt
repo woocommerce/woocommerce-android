@@ -1,4 +1,12 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+12.4
+-----
+
+
+12.3
+-----
+- [*] Add IPP feedback banner icon for dark mode [https://github.com/woocommerce/woocommerce-android/pull/8309]
+
 12.2
 -----
 - [*] [Internal] Update Stripe SDK terminal version to 2.16

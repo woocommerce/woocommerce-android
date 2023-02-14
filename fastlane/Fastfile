@@ -489,7 +489,7 @@ platform :android do
       end
     end
 
-    is_repo_clean = ("git status --porcelain").empty?
+    is_repo_clean = (`git status --porcelain`).empty?
     unless is_repo_clean then
       commit_strings(options)
     end

@@ -253,6 +253,7 @@ sealed class PaymentFlowError(@StringRes val message: Int) {
     object NoNetwork : PaymentFlowError(R.string.card_reader_payment_failed_no_network_state)
     object Server : PaymentFlowError(R.string.card_reader_payment_failed_server_error_state)
     object Generic : PaymentFlowError(R.string.card_reader_payment_failed_unexpected_error_state)
+    object Canceled : PaymentFlowError(R.string.card_reader_payment_failed_canceled)
     object AmountTooSmall : Declined(R.string.card_reader_payment_failed_amount_too_small), NonRetryableError
 
     object Unknown : Declined(R.string.card_reader_payment_failed_unknown)
@@ -280,6 +281,15 @@ sealed class PaymentFlowError(@StringRes val message: Int) {
         object TooManyPinTries : Declined(R.string.card_reader_payment_failed_too_many_pin_tries)
         object TestCard : Declined(R.string.card_reader_payment_failed_test_card)
         object TestModeLiveCard : Declined(R.string.card_reader_payment_failed_test_mode_live_card)
+    }
+
+    sealed class BuiltInReader(message: Int) : PaymentFlowError(message) {
+        object NfcDisabled : BuiltInReader(R.string.card_reader_payment_failed_nfc_disabled)
+        object DeviceIsNotSupported :
+            BuiltInReader(R.string.card_reader_payment_failed_device_is_not_supported), NonRetryableError
+
+        object InvalidAppSetup :
+            BuiltInReader(R.string.card_reader_payment_failed_app_setup_is_invalid), NonRetryableError
     }
 
     interface NonRetryableError

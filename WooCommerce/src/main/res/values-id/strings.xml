@@ -1,11 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-01-26 09:54:03+0000
+Translation-Revision-Date: 2023-02-06 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="store_onboarding_completed_tasks_status">%1$d/%2$d selesai</string>
+    <string name="store_onboarding_task_change_domain_description">Miliki URL khusus untuk menjadi host toko Anda sendiri.</string>
+    <string name="store_onboarding_task_change_domain_title">Sesuaikan domain Anda</string>
+    <string name="store_onboarding_task_launch_store_description">Publikasikan situs Anda ke seluruh dunia kapan pun yang Anda mau!</string>
+    <string name="store_onboarding_task_launch_store_title">Luncurkan toko Anda</string>
+    <string name="store_onboarding_task_add_product_description">Mulai berjualan dengan menambahkan produk atau layanan ke toko Anda.</string>
+    <string name="store_onboarding_task_add_product_title">Tambahkan produk pertama Anda </string>
+    <string name="store_onboarding_title">Penyiapan toko</string>
+    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">Anda telah memiliki langganan aktif eCommerce. Hubungi dukungan jika Anda mengalami masalah dengan langganan saat ini yang tidak terhubung dengan situs baru Anda.</string>
+    <string name="store_creation_iap_eligibility_network_error">Terjadi error jaringan. Periksa koneksi Anda dan coba lagi.</string>
+    <string name="store_creation_iap_eligibility_check_generic_error">Fitur pembuatan toko saat ini tidak tersedia. Coba lagi nanti.</string>
+    <string name="store_creation_iap_eligibility_check_error_existing_subscription">Anda hanya dapat membeli paket eCommerce dari aplikasi seluler sebanyak satu kali. Untuk membuat situs-situs tambahan, kunjungi situs kami.</string>
+    <string name="card_reader_payment_failed_app_setup_is_invalid">Terjadi masalah dengan pengaturan aplikasinya. Hubungi dukungan untuk informasi selengkapnya</string>
+    <string name="card_reader_payment_failed_device_is_not_supported">Perangkat Anda tidak didukung. Hubungi dukungan untuk informasi selengkapnya</string>
+    <string name="card_reader_payment_failed_nfc_disabled">Aplikasi tidak dapat mengaktifkan pembaca kartu karena cip NFC dinonaktifkan</string>
+    <string name="card_reader_payment_failed_canceled">Transaksi dibatalkan</string>
+    <string name="domains_redirect_notice">Domain yang dibeli akan mengalihkan pengguna ke</string>
+    <string name="domains_select_domain">Pilih domain</string>
+    <string name="domains_add_domain_button_title">Tambah domain</string>
+    <string name="domains_your_domains">Domain situs Anda</string>
+    <string name="domains_primary_address">Alamat situs utama</string>
+    <string name="domains_learn_more">&lt;a href=\'\'&gt;&lt;u&gt;Baca selengkapnya&lt;/u&gt;&lt;/a&gt; tentang domain dan cara bertindak terkait domain.</string>
+    <string name="domains_search_for_domain_button_title">Cari domain</string>
+    <string name="domains_purchase_redirect_notice">Domain yang dibeli akan mengalihkan pengguna ke alamat utama Anda.</string>
+    <string name="domains_claim_your_free_domain_link">Klaim Domain</string>
+    <string name="domains_claim_your_free_domain_description">Anda memiliki registrasi domain gratis selama satu tahun bersama paket Anda.</string>
+    <string name="domains_claim_your_free_domain_title">Klaim domain gratis Anda</string>
+    <string name="domains_your_free_store_address">Alamat toko gratis Anda</string>
+    <string name="domains">Domain</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_dont_show_again_button">Jangan tampilkan lagi</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_button">Ingatkan saya nanti</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_message">Jangan khawatir! Anda dapat membuka Pengaturan di Menu untuk mengirimkan feedback kapan saja.</string>
+    <string name="feedback_banner_ipp_cta_button">Bagikan masukan</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_title">Bagikan masukan</string>
+    <string name="feedback_banner_ipp_message_ninja">Ceritakan pada kami semua pengalaman Anda terkait pembayaran langsung.</string>
+    <string name="feedback_banner_ipp_title_ninja">Beri tahu kami pendapat Anda</string>
+    <string name="feedback_banner_ipp_message_beginner">Beri rating pengalaman pembayaran langsung pertama Anda.</string>
+    <string name="feedback_banner_ipp_title_beginner">Suka pembayaran langsung Anda?</string>
+    <string name="feedback_banner_ipp_message_newbie">Bagikan pengalaman Anda menerima pembayaran langsung.</string>
+    <string name="feedback_banner_ipp_title_newbie">Apa yang dapat kami lakukan untuk membantu Anda dalam berjualan secara langsung?</string>
     <string name="store_creation_profiler_merchant_journey_selling_online">Saya sudah berdagang secara online</string>
     <string name="store_creation_profiler_merchant_journey_selling_not_online">Saya sudah berdagang tetapi tidak secara online</string>
     <string name="store_creation_profiler_merchant_journey_starting_business">Saya baru memulai bisnis</string>
@@ -201,7 +241,7 @@ Language: id
     <string name="login_application_passwords_unavailable">Sepertinya fitur Kata Sandi Aplikasi dinonaktifkan di situs Anda %1$s.\n Aktifkan Kata Sandi untuk menggunakan aplikasi WooCommerce.</string>
     <string name="login_open_installation_page">Buka halaman instalasi</string>
     <string name="not_a_valid_qr_code">Kode QR yang dipindai bukan kode WooCommerce</string>
-    <string name="store_creation_iap_eligibility_check_error_description">Pembuatan toko dari aplikasi seluler saat ini tidak tersedia untuk negara Anda.</string>
+    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">Fitur pembuatan toko dengan aplikasi seluler saat ini tidak tersedia untuk negara Anda.</string>
     <string name="store_creation_iap_eligibility_check_error_title">Pembuatan Toko Tidak Tersedia</string>
     <string name="store_creation_iap_eligibility_loading_subtitle">Harap tetap tersambung.</string>
     <string name="store_creation_iap_eligibility_loading_title">Kami sedang mempersiapkan pembuatan toko Anda</string>
