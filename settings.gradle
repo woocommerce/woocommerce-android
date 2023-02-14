@@ -31,7 +31,7 @@ pluginManagement {
         id 'org.jetbrains.kotlin.android' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.jvm' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.kapt' version gradle.ext.kotlinVersion
-        id 'org.jetbrains.kotlin.plugin.parcelize' version gradle.ext.kotlinVersion
+        id 'org.jetbrains.kotlin.plugin.parcelize' version 1.8.10
         id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin' version '1.69.0'
         id 'com.google.dagger.hilt.android' version gradle.ext.daggerVersion
     }
