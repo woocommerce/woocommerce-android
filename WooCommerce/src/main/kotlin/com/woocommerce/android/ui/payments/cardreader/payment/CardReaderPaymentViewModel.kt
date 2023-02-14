@@ -10,6 +10,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus
@@ -622,7 +623,7 @@ class CardReaderPaymentViewModel
 
     fun onBackPressed() {
         onCancelPaymentFlow()
-        disconnectFromReaderIfPaymentState()
+        disconnectFromReaderIfPaymentFailedState()
     }
 
     private fun onCancelPaymentFlow() {
@@ -641,9 +642,14 @@ class CardReaderPaymentViewModel
         }
     }
 
-    private fun disconnectFromReaderIfPaymentState() {
-        if (viewState.value is FailedPaymentState || viewState.value is FailedRefundState) {
-            launch { cardReaderManager.disconnectReader() }
+    private fun disconnectFromReaderIfPaymentFailedState() {
+        val readerStatus = cardReaderManager.readerStatus.value
+        if (readerStatus is CardReaderStatus.Connected) {
+            if (ReaderType.isBuiltInReaderType(readerStatus.cardReader.type) && (
+                    viewState.value is FailedPaymentState || viewState.value is FailedRefundState)
+            ) {
+                launch { cardReaderManager.disconnectReader() }
+            }
         }
     }
 
