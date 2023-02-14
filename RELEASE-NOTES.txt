@@ -2,6 +2,7 @@
 12.4
 -----
 - [***] [Internal] Remove XMRPC discovery steps from the REST API login [https://github.com/woocommerce/woocommerce-android/pull/8289]
+- [*] [Internal] Add a Zendesk tag to allow differentiating sites accessed using Application Passwords [https://github.com/woocommerce/woocommerce-android/pull/8320]
 
 12.3
 -----

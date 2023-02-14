@@ -11,6 +11,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.logInformation
 import com.woocommerce.android.extensions.stateLogInformation
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -158,15 +160,22 @@ class ZendeskHelper(
         require(isZendeskEnabled) {
             zendeskNeedsToBeEnabledError
         }
+
+        val siteConnectionTag = if (selectedSite?.connectionType == SiteConnectionType.ApplicationPasswords) {
+            ZendeskExtraTags.applicationPasswordAuthenticated
+        } else null
+
+        val tags = (extraTags.orEmpty() + siteConnectionTag).filterNotNull()
+
         requireIdentity(context, selectedSite) {
             val config = buildZendeskConfig(
-                context,
-                ticketType,
-                siteStore.sites,
-                origin,
-                selectedSite,
-                extraTags,
-                ssr,
+                context = context,
+                ticketType = ticketType,
+                allSites = siteStore.sites,
+                origin = origin,
+                selectedSite = selectedSite,
+                extraTags = tags,
+                ssr = ssr,
             )
             RequestActivity.builder().show(context, config)
         }
@@ -572,7 +581,7 @@ sealed class TicketType(
 }
 
 object ZendeskExtraTags {
-    const val connectingJetpack = "connecting_jetpack"
+    const val applicationPasswordAuthenticated = "application_password_authenticated"
 
     const val paymentsCategory = "support"
     const val paymentsSubcategory = "payment"

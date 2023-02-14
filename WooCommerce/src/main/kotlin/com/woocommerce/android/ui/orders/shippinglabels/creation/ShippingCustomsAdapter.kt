@@ -65,7 +65,7 @@ class ShippingCustomsAdapter(
         return customsPackages[position].data.id.hashCode().toLong()
     }
 
-    @Suppress("MagicNumber", "DEPRECATION")
+    @Suppress("MagicNumber")
     inner class PackageCustomsViewHolder(val binding: ShippingCustomsListItemBinding) : ViewHolder(binding.root) {
         private val linesAdapter: ShippingCustomsLineAdapter by lazy {
             ShippingCustomsLineAdapter(
@@ -105,36 +105,36 @@ class ShippingCustomsAdapter(
 
             // Setup listeners
             binding.returnCheckbox.setOnCheckedChangeListener { _, isChecked ->
-                listener.onReturnToSenderChanged(adapterPosition, isChecked)
+                listener.onReturnToSenderChanged(bindingAdapterPosition, isChecked)
             }
             binding.contentsTypeSpinner.setup(
                 values = ContentsType.values(),
-                onSelected = { listener.onContentsTypeChanged(adapterPosition, it) },
+                onSelected = { listener.onContentsTypeChanged(bindingAdapterPosition, it) },
                 mapper = { context.getString(it.title) }
             )
             binding.contentsTypeDescription.setOnTextChangedListener {
-                it?.let { listener.onContentsDescriptionChanged(adapterPosition, it.toString()) }
+                it?.let { listener.onContentsDescriptionChanged(bindingAdapterPosition, it.toString()) }
             }
             binding.restrictionTypeSpinner.setup(
                 values = RestrictionType.values(),
-                onSelected = { listener.onRestrictionTypeChanged(adapterPosition, it) },
+                onSelected = { listener.onRestrictionTypeChanged(bindingAdapterPosition, it) },
                 mapper = { context.getString(it.title) }
             )
             binding.restrictionTypeDescription.setOnTextChangedListener {
-                it?.let { listener.onRestrictionDescriptionChanged(adapterPosition, it.toString()) }
+                it?.let { listener.onRestrictionDescriptionChanged(bindingAdapterPosition, it.toString()) }
             }
             binding.itnEditText.setOnTextChangedListener {
-                it?.let { listener.onItnChanged(adapterPosition, it.toString()) }
+                it?.let { listener.onItnChanged(bindingAdapterPosition, it.toString()) }
             }
             binding.titleLayout.setOnClickListener {
                 if (isExpanded) {
                     binding.expandIcon.animate().rotation(0f).start()
                     binding.detailsLayout.collapse()
-                    listener.onPackageExpandedChanged(adapterPosition, false)
+                    listener.onPackageExpandedChanged(bindingAdapterPosition, false)
                 } else {
                     binding.expandIcon.animate().rotation(180f).start()
                     binding.detailsLayout.expand()
-                    listener.onPackageExpandedChanged(adapterPosition, true)
+                    listener.onPackageExpandedChanged(bindingAdapterPosition, true)
                 }
             }
         }
@@ -166,7 +166,7 @@ class ShippingCustomsAdapter(
             binding.itnEditText.setTextIfDifferent(customsPackage.itn)
             binding.itnEditText.error = validationState.itnErrorMessage
 
-            linesAdapter.parentItemPosition = adapterPosition
+            linesAdapter.parentItemPosition = bindingAdapterPosition
             linesAdapter.customsLines = uiState.customsLinesUiState
 
             if (uiState.isExpanded) {
@@ -231,7 +231,7 @@ class ShippingCustomsLineAdapter(
         holder.bind(customsLines[position])
     }
 
-    @Suppress("DEPRECATION")
+    @Suppress("MagicNumber")
     inner class CustomsLineViewHolder(val binding: ShippingCustomsLineListItemBinding) : ViewHolder(binding.root) {
         private val context
             get() = binding.root.context
@@ -264,20 +264,20 @@ class ShippingCustomsLineAdapter(
             )
 
             binding.itemDescriptionEditText.setOnTextChangedListener {
-                it?.let { listener.onItemDescriptionChanged(parentItemPosition, adapterPosition, it.toString()) }
+                it?.let { listener.onItemDescriptionChanged(parentItemPosition, bindingAdapterPosition, it.toString()) }
             }
             binding.hsTariffNumberEditText.setOnTextChangedListener {
-                it?.let { listener.onHsTariffNumberChanged(parentItemPosition, adapterPosition, it.toString()) }
+                it?.let { listener.onHsTariffNumberChanged(parentItemPosition, bindingAdapterPosition, it.toString()) }
             }
             binding.weightEditText.setOnTextChangedListener {
-                it?.let { listener.onWeightChanged(parentItemPosition, adapterPosition, it.toString()) }
+                it?.let { listener.onWeightChanged(parentItemPosition, bindingAdapterPosition, it.toString()) }
             }
             binding.valueEditText.setOnTextChangedListener {
-                it?.let { listener.onItemValueChanged(parentItemPosition, adapterPosition, it.toString()) }
+                it?.let { listener.onItemValueChanged(parentItemPosition, bindingAdapterPosition, it.toString()) }
             }
             binding.countrySpinner.setup(
                 values = countries,
-                onSelected = { listener.onOriginCountryChanged(parentItemPosition, adapterPosition, it) },
+                onSelected = { listener.onOriginCountryChanged(parentItemPosition, bindingAdapterPosition, it) },
                 mapper = { it.name }
             )
         }
@@ -294,7 +294,10 @@ class ShippingCustomsLineAdapter(
 
         fun bind(uiState: CustomsLineUiState) {
             val (customsLine, validationState) = uiState
-            binding.lineTitle.text = context.getString(R.string.shipping_label_customs_line_item, adapterPosition + 1)
+            binding.lineTitle.text = context.getString(
+                R.string.shipping_label_customs_line_item,
+                bindingAdapterPosition + 1
+            )
 
             binding.itemDescriptionEditText.setTextIfDifferent(customsLine.itemDescription)
             binding.itemDescriptionEditText.error = validationState.itemDescriptionErrorMessage
