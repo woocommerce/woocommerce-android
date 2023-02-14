@@ -25,7 +25,6 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.DismissCardReaderUpsellBanner
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.OpenGenericWebView
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.DismissCardReaderUpsellBannerViaDontShowAgain
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.DismissCardReaderUpsellBannerViaRemindMeLater
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateBackToHub
@@ -33,6 +32,7 @@ import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.Navigate
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderHubFlow
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderPaymentFlow
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderRefundFlow
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.OpenGenericWebView
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.OpenPurchaseCardReaderLink
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.SharePaymentUrl
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
