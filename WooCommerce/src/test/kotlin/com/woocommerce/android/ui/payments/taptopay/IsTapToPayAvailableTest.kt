@@ -1,5 +1,9 @@
 package com.woocommerce.android.ui.payments.taptopay
 
+import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
+import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
+import com.woocommerce.android.cardreader.config.CardReaderConfigForUnsupportedCountry
+import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.util.DeviceFeatures
 import com.woocommerce.android.util.SystemVersionUtilsWrapper
 import org.assertj.core.api.Assertions.assertThat
@@ -8,11 +12,15 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class IsTapToPayAvailableTest {
-
     private val systemVersionUtilsWrapper = mock<SystemVersionUtilsWrapper> {
         on { isAtLeastP() }.thenReturn(true)
     }
     private val isTapToPayEnabled: IsTapToPayEnabled = mock()
+    private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider = mock {
+        on { provideCountryConfigFor("US") }.thenReturn(CardReaderConfigForUSA)
+        on { provideCountryConfigFor("CA") }.thenReturn(CardReaderConfigForCanada)
+        on { provideCountryConfigFor("RU") }.thenReturn(CardReaderConfigForUnsupportedCountry)
+    }
 
     @Test
     fun `given device has no NFC, when invoking, then nfc disabled returned`() {
@@ -23,7 +31,12 @@ class IsTapToPayAvailableTest {
         whenever(systemVersionUtilsWrapper.isAtLeastP()).thenReturn(true)
         whenever(isTapToPayEnabled.invoke()).thenReturn(true)
 
-        val result = IsTapToPayAvailable(isTapToPayEnabled, deviceFeatures, systemVersionUtilsWrapper).invoke("US")
+        val result = IsTapToPayAvailable(
+            isTapToPayEnabled,
+            deviceFeatures,
+            systemVersionUtilsWrapper,
+            cardReaderCountryConfigProvider
+        ).invoke("US")
 
         assertThat(result).isEqualTo(IsTapToPayAvailable.Result.NotAvailable.NfcNotAvailable)
     }
@@ -37,7 +50,12 @@ class IsTapToPayAvailableTest {
         whenever(systemVersionUtilsWrapper.isAtLeastP()).thenReturn(true)
         whenever(isTapToPayEnabled.invoke()).thenReturn(true)
 
-        val result = IsTapToPayAvailable(isTapToPayEnabled, deviceFeatures, systemVersionUtilsWrapper).invoke("US")
+        val result = IsTapToPayAvailable(
+            isTapToPayEnabled,
+            deviceFeatures,
+            systemVersionUtilsWrapper,
+            cardReaderCountryConfigProvider
+        ).invoke("US")
 
         assertThat(result).isEqualTo(IsTapToPayAvailable.Result.NotAvailable.GooglePlayServicesNotAvailable)
     }
@@ -51,7 +69,12 @@ class IsTapToPayAvailableTest {
         whenever(systemVersionUtilsWrapper.isAtLeastP()).thenReturn(false)
         whenever(isTapToPayEnabled.invoke()).thenReturn(true)
 
-        val result = IsTapToPayAvailable(isTapToPayEnabled, context, systemVersionUtilsWrapper).invoke("US")
+        val result = IsTapToPayAvailable(
+            isTapToPayEnabled,
+            context,
+            systemVersionUtilsWrapper,
+            cardReaderCountryConfigProvider
+        ).invoke("US")
 
         assertThat(result).isEqualTo(IsTapToPayAvailable.Result.NotAvailable.SystemVersionNotSupported)
     }
@@ -65,7 +88,12 @@ class IsTapToPayAvailableTest {
         whenever(systemVersionUtilsWrapper.isAtLeastP()).thenReturn(true)
         whenever(isTapToPayEnabled.invoke()).thenReturn(true)
 
-        val result = IsTapToPayAvailable(isTapToPayEnabled, context, systemVersionUtilsWrapper).invoke("CA")
+        val result = IsTapToPayAvailable(
+            isTapToPayEnabled,
+            context,
+            systemVersionUtilsWrapper,
+            cardReaderCountryConfigProvider
+        ).invoke("CA")
 
         assertThat(result).isEqualTo(IsTapToPayAvailable.Result.NotAvailable.CountryNotSupported)
     }
@@ -79,7 +107,12 @@ class IsTapToPayAvailableTest {
         whenever(systemVersionUtilsWrapper.isAtLeastP()).thenReturn(true)
         whenever(isTapToPayEnabled.invoke()).thenReturn(false)
 
-        val result = IsTapToPayAvailable(isTapToPayEnabled, context, systemVersionUtilsWrapper).invoke("US")
+        val result = IsTapToPayAvailable(
+            isTapToPayEnabled,
+            context,
+            systemVersionUtilsWrapper,
+            cardReaderCountryConfigProvider
+        ).invoke("US")
 
         assertThat(result).isEqualTo(IsTapToPayAvailable.Result.NotAvailable.TapToPayDisabled)
     }
@@ -93,7 +126,12 @@ class IsTapToPayAvailableTest {
         whenever(systemVersionUtilsWrapper.isAtLeastP()).thenReturn(true)
         whenever(isTapToPayEnabled.invoke()).thenReturn(true)
 
-        val result = IsTapToPayAvailable(isTapToPayEnabled, context, systemVersionUtilsWrapper).invoke("US")
+        val result = IsTapToPayAvailable(
+            isTapToPayEnabled,
+            context,
+            systemVersionUtilsWrapper,
+            cardReaderCountryConfigProvider
+        ).invoke("US")
 
         assertThat(result).isEqualTo(IsTapToPayAvailable.Result.Available)
     }
