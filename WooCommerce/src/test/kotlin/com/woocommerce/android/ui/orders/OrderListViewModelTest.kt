@@ -785,7 +785,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         testBlocking {
             // given
             whenever(shouldShowFeedbackBanner()).thenReturn(false)
-            whenever(getIPPFeedbackBannerData()).thenReturn(null)
+            assertNull(getIPPFeedbackBannerData())
 
             // when
             viewModel = createViewModel()
@@ -805,7 +805,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         testBlocking {
             // given
             whenever(shouldShowFeedbackBanner()).thenReturn(false)
-            whenever(getIPPFeedbackBannerData()).thenReturn(null)
+            assertNull(getIPPFeedbackBannerData())
 
             // when
             viewModel = createViewModel()
@@ -819,7 +819,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         testBlocking {
             // given
             whenever(shouldShowFeedbackBanner()).thenReturn(false)
-            whenever(getIPPFeedbackBannerData()).thenReturn(null)
+            assertNull(getIPPFeedbackBannerData())
 
             // when
             viewModel = createViewModel()
