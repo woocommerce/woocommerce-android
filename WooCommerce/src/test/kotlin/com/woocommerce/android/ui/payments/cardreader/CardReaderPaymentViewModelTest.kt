@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.BatteryStatus
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
@@ -1777,8 +1778,14 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given payment failed state, when user presses back, then disconnect from reader invoked`() =
+    fun `given payment failed state and connected BI, when user presses back, then disconnect from reader invoked`() =
         testBlocking {
+            val cardReader: CardReader = mock {
+                on { type }.thenReturn("COTS_DEVICE")
+            }
+            whenever(cardReaderManager.readerStatus).thenReturn(
+                MutableStateFlow(CardReaderStatus.Connected(cardReader))
+            )
             whenever(errorMapper.mapPaymentErrorToUiError(NoNetwork))
                 .thenReturn(PaymentFlowError.NoNetwork)
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -1789,6 +1796,46 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.onBackPressed()
 
             verify(cardReaderManager).disconnectReader()
+        }
+
+    @Test
+    fun `given payment failed state and connected BT, when user presses back, then disconnect not invoked`() =
+        testBlocking {
+            val cardReader: CardReader = mock {
+                on { type }.thenReturn("STRIPE_M2")
+            }
+            whenever(cardReaderManager.readerStatus).thenReturn(
+                MutableStateFlow(CardReaderStatus.Connected(cardReader))
+            )
+            whenever(errorMapper.mapPaymentErrorToUiError(NoNetwork))
+                .thenReturn(PaymentFlowError.NoNetwork)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentFailed(NoNetwork, null, "")) }
+            }
+            viewModel.start()
+
+            viewModel.onBackPressed()
+
+            verify(cardReaderManager, never()).disconnectReader()
+        }
+
+    @Test
+    fun `given payment processing state and connected BT, when user presses back, then disconnect not invoked`() =
+        testBlocking {
+            val cardReader: CardReader = mock {
+                on { type }.thenReturn("STRIPE_M2")
+            }
+            whenever(cardReaderManager.readerStatus).thenReturn(
+                MutableStateFlow(CardReaderStatus.Connected(cardReader))
+            )
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            viewModel.start()
+
+            viewModel.onBackPressed()
+
+            verify(cardReaderManager, never()).disconnectReader()
         }
 
     @Test
@@ -2610,7 +2657,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when interac refund fails, then progress and secondary button are hidden`() =
+    fun `when interac refund fails, then progress and secondary button is visible`() =
         testBlocking {
             setupViewModelForInteracRefund()
             whenever(
@@ -3026,9 +3073,15 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given refund failed state, when user presses back, then disconnect from a reader invoked`() =
+    fun `given refund failed state and connected BI, when user presses back, then disconnect from a reader invoked`() =
         testBlocking {
             setupViewModelForInteracRefund()
+            val cardReader: CardReader = mock {
+                on { type }.thenReturn("COTS_DEVICE")
+            }
+            whenever(cardReaderManager.readerStatus).thenReturn(
+                MutableStateFlow(CardReaderStatus.Connected(cardReader))
+            )
             whenever(
                 interacRefundErrorMapper.mapRefundErrorToUiError(
                     CardInteracRefundStatus.RefundStatusErrorType.Generic
@@ -3054,6 +3107,78 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.onBackPressed()
 
             verify(cardReaderManager).disconnectReader()
+        }
+
+    @Test
+    fun `given refund failed state and connected BT, when user presses back, then disconnect not invoked`() =
+        testBlocking {
+            setupViewModelForInteracRefund()
+            val cardReader: CardReader = mock {
+                on { type }.thenReturn("WISEPAD_3")
+            }
+            whenever(cardReaderManager.readerStatus).thenReturn(
+                MutableStateFlow(CardReaderStatus.Connected(cardReader))
+            )
+            whenever(
+                interacRefundErrorMapper.mapRefundErrorToUiError(
+                    CardInteracRefundStatus.RefundStatusErrorType.Generic
+                )
+            ).thenReturn(InteracRefundFlowError.Generic)
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow {
+                    emit(
+                        CardInteracRefundStatus.InteracRefundFailure(
+                            CardInteracRefundStatus.RefundStatusErrorType.Generic,
+                            "",
+                            RefundParams(
+                                amount = BigDecimal.TEN,
+                                chargeId = "",
+                                currency = "CAD"
+                            )
+                        )
+                    )
+                }
+            }
+            viewModel.start()
+
+            viewModel.onBackPressed()
+
+            verify(cardReaderManager, never()).disconnectReader()
+        }
+
+    @Test
+    fun `given refund failed state and not connected, when user presses back, then disconnect not invoked`() =
+        testBlocking {
+            setupViewModelForInteracRefund()
+            whenever(cardReaderManager.readerStatus).thenReturn(
+                MutableStateFlow(CardReaderStatus.NotConnected())
+            )
+
+            viewModel.start()
+
+            viewModel.onBackPressed()
+
+            verify(cardReaderManager, never()).disconnectReader()
+        }
+
+    @Test
+    fun `given refund success state and connected BT, when user presses back, then disconnect not invoked`() =
+        testBlocking {
+            setupViewModelForInteracRefund()
+            val cardReader: CardReader = mock {
+                on { type }.thenReturn("WISEPAD_3")
+            }
+            whenever(cardReaderManager.readerStatus).thenReturn(
+                MutableStateFlow(CardReaderStatus.Connected(cardReader))
+            )
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow { emit(CardInteracRefundStatus.InteracRefundSuccess) }
+            }
+            viewModel.start()
+
+            viewModel.onBackPressed()
+
+            verify(cardReaderManager, never()).disconnectReader()
         }
 
     @Test

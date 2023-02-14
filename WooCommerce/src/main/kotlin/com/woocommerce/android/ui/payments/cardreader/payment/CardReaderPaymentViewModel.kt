@@ -645,8 +645,8 @@ class CardReaderPaymentViewModel
     private fun disconnectFromReaderIfPaymentFailedState() {
         val readerStatus = cardReaderManager.readerStatus.value
         if (readerStatus is CardReaderStatus.Connected) {
-            if (ReaderType.isBuiltInReaderType(readerStatus.cardReader.type) && (
-                    viewState.value is FailedPaymentState || viewState.value is FailedRefundState)
+            if (ReaderType.isBuiltInReaderType(readerStatus.cardReader.type) &&
+                (viewState.value is FailedPaymentState || viewState.value is FailedRefundState)
             ) {
                 launch { cardReaderManager.disconnectReader() }
             }
