@@ -31,6 +31,8 @@ sealed class ReaderType(val name: String) {
             }
 
         fun isExternalReaderType(name: String?): Boolean = name?.let { fromName(name) is ExternalReader } ?: false
+
+        fun isBuiltInReaderType(name: String?): Boolean = name?.let { fromName(name) is BuildInReader } ?: false
     }
 }
 

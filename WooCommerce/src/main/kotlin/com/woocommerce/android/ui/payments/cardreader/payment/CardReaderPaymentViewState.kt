@@ -49,13 +49,16 @@ sealed class ViewState(
         private val errorType: PaymentFlowError,
         override val amountWithCurrencyLabel: String?,
         private val primaryLabel: Int? = R.string.try_again,
-        override val onPrimaryActionClicked: (() -> Unit)
+        private val secondaryLabel: Int? = null,
+        override val onPrimaryActionClicked: (() -> Unit),
+        override val onSecondaryActionClicked: (() -> Unit)? = null,
     ) : ViewState(
         headerLabel = R.string.card_reader_payment_payment_failed_header,
         paymentStateLabel = errorType.message,
         paymentStateLabelTopMargin = R.dimen.major_100,
         primaryActionLabel = primaryLabel,
-        illustration = R.drawable.img_products_error
+        illustration = R.drawable.img_products_error,
+        secondaryActionLabel = secondaryLabel
     )
 
     data class ExternalReaderCollectPaymentState(
@@ -204,13 +207,16 @@ sealed class ViewState(
         private val errorType: InteracRefundFlowError,
         override val amountWithCurrencyLabel: String?,
         private val primaryLabel: Int? = R.string.try_again,
+        private val secondaryLabel: Int? = null,
         override val onPrimaryActionClicked: (() -> Unit),
+        override val onSecondaryActionClicked: (() -> Unit)? = null,
     ) : ViewState(
         headerLabel = R.string.card_reader_interac_refund_refund_failed_header,
         paymentStateLabel = errorType.message,
         paymentStateLabelTopMargin = R.dimen.major_100,
         primaryActionLabel = primaryLabel,
-        illustration = R.drawable.img_products_error
+        illustration = R.drawable.img_products_error,
+        secondaryActionLabel = secondaryLabel,
     )
 
     data class CollectRefundState(

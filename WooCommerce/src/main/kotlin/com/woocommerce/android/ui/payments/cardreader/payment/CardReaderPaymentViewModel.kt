@@ -10,6 +10,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus
@@ -441,7 +442,9 @@ class CardReaderPaymentViewModel
                 FailedRefundState(
                     errorType,
                     amountLabel,
-                    onPrimaryActionClicked = onRetryClicked
+                    onPrimaryActionClicked = onRetryClicked,
+                    secondaryLabel = R.string.cancel,
+                    onSecondaryActionClicked = { onBackPressed() }
                 )
             )
         }
@@ -467,7 +470,9 @@ class CardReaderPaymentViewModel
                 FailedPaymentState(
                     errorType,
                     amountLabel,
-                    onPrimaryActionClicked = onRetryClicked
+                    onPrimaryActionClicked = onRetryClicked,
+                    secondaryLabel = R.string.cancel,
+                    onSecondaryActionClicked = { onBackPressed() }
                 )
             )
         }
@@ -475,8 +480,7 @@ class CardReaderPaymentViewModel
 
     private fun showPaymentSuccessfulState() {
         launch {
-            val order = orderRepository.getOrderById(orderId)
-                ?: throw IllegalStateException("Order URL not available.")
+            val order = requireNotNull(orderRepository.getOrderById(orderId)) { "Order URL not available." }
             val amountLabel = order.getAmountLabel()
             val receiptUrl = getReceiptUrl(order.id)
             val onPrintReceiptClicked = {
@@ -619,6 +623,7 @@ class CardReaderPaymentViewModel
 
     fun onBackPressed() {
         onCancelPaymentFlow()
+        disconnectFromReaderIfPaymentFailedState()
     }
 
     private fun onCancelPaymentFlow() {
@@ -634,6 +639,17 @@ class CardReaderPaymentViewModel
                 trackCancelledFlow(state)
             }
             triggerEvent(Exit)
+        }
+    }
+
+    private fun disconnectFromReaderIfPaymentFailedState() {
+        val readerStatus = cardReaderManager.readerStatus.value
+        if (readerStatus is CardReaderStatus.Connected) {
+            if (ReaderType.isBuiltInReaderType(readerStatus.cardReader.type) &&
+                (viewState.value is FailedPaymentState || viewState.value is FailedRefundState)
+            ) {
+                launch { cardReaderManager.disconnectReader() }
+            }
         }
     }
 
@@ -681,9 +697,11 @@ class CardReaderPaymentViewModel
 
     private suspend fun getStoreCountryCode(): String {
         return withContext(dispatchers.io) {
-            wooStore.getStoreCountryCode(
-                selectedSite.get()
-            ) ?: throw IllegalStateException("Store's country code not found.")
+            requireNotNull(
+                wooStore.getStoreCountryCode(
+                    selectedSite.get()
+                )
+            ) { "Store's country code not found." }
         }
     }
 
