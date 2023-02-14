@@ -20,6 +20,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
 import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.payments.banner.BannerState
+import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment
@@ -57,6 +59,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val cardPaymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
+    private val learnMoreUrlProvider: LearnMoreUrlProvider,
+    private val cardReaderTracker: CardReaderTracker,
     @Named("select-payment") private val selectPaymentUtmProvider: UtmProvider,
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
@@ -115,7 +119,14 @@ class SelectPaymentMethodViewModel @Inject constructor(
                                 )
                             } else {
                                 BannerState.HideBannerState
-                            }
+                            },
+                            learMoreIpp = LearMoreIpp(
+                                label = UiString.UiStringRes(
+                                    R.string.card_reader_connect_learn_more,
+                                    containsHtml = true
+                                ),
+                                onClick = ::onLearnMoreIppClicked
+                            )
                         )
                         trackBannerShownIfDisplayed()
                     }
@@ -355,13 +366,25 @@ class SelectPaymentMethodViewModel @Inject constructor(
         return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis)
     }
 
+    private fun onLearnMoreIppClicked() {
+        cardReaderTracker.trackPaymentMethodsLearnMoreClicked(UTM_SOURCE)
+        triggerEvent(
+            OpenGenericWebView(
+                learnMoreUrlProvider.provideLearnMoreUrlFor(
+                    LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
+                )
+            )
+        )
+    }
+
     sealed class TakePaymentViewState {
         object Loading : TakePaymentViewState()
         data class Success(
             val paymentUrl: String,
             val orderTotal: String,
             val isPaymentCollectableWithCardReader: Boolean,
-            val bannerState: BannerState
+            val bannerState: BannerState,
+            val learMoreIpp: LearMoreIpp,
         ) : TakePaymentViewState()
     }
 
@@ -396,10 +419,17 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     object NavigateBackToOrderList : MultiLiveEvent.Event()
 
+    data class OpenGenericWebView(val url: String) : MultiLiveEvent.Event()
+
+    data class LearMoreIpp(
+        val label: UiString,
+        val onClick: () -> Unit,
+    )
+
     companion object {
         private const val DELAY_MS = 1L
         const val UTM_CAMPAIGN = "feature_announcement_card"
-        const val UTM_SOURCE = "payment_method"
+        const val UTM_SOURCE = "payment_methods"
         const val UTM_CONTENT = "upsell_card_readers"
     }
 }
