@@ -15,6 +15,13 @@ class CardReaderPaymentErrorMapper @Inject constructor() {
             CardPaymentStatus.CardPaymentStatusErrorType.CardReadTimeOut,
             CardPaymentStatus.CardPaymentStatusErrorType.Generic -> PaymentFlowError.Generic
             CardPaymentStatus.CardPaymentStatusErrorType.Server -> PaymentFlowError.Server
+            CardPaymentStatus.CardPaymentStatusErrorType.Canceled -> PaymentFlowError.Canceled
+            CardPaymentStatus.CardPaymentStatusErrorType.BuiltInReader.NfcDisabled ->
+                PaymentFlowError.BuiltInReader.NfcDisabled
+            CardPaymentStatus.CardPaymentStatusErrorType.BuiltInReader.DeviceIsNotSupported ->
+                PaymentFlowError.BuiltInReader.DeviceIsNotSupported
+            CardPaymentStatus.CardPaymentStatusErrorType.BuiltInReader.InvalidAppSetup ->
+                PaymentFlowError.BuiltInReader.InvalidAppSetup
             else -> PaymentFlowError.Generic
         }
 

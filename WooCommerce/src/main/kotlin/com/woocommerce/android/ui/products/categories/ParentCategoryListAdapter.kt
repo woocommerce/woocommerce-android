@@ -45,7 +45,7 @@ class ParentCategoryListAdapter(
         RecyclerView.ViewHolder(viewBinder.root) {
         init {
             viewBinder.root.setOnClickListener {
-                @Suppress("DEPRECATION") val position = adapterPosition
+                val position = bindingAdapterPosition
                 if (position > -1) {
                     getItem(position).let {
                         selectedCategoryId = it.category.remoteCategoryId

@@ -1,11 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-01-26 18:02:38+0000
+Translation-Revision-Date: 2023-02-06 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="store_onboarding_completed_tasks_status">已完成 %1$d/%2$d</string>
+    <string name="store_onboarding_task_change_domain_description">使用自訂 URL 來託管你的商店。</string>
+    <string name="store_onboarding_task_change_domain_title">自訂你的網域</string>
+    <string name="store_onboarding_task_launch_store_description">隨時都能將你的網站發佈到全世界！</string>
+    <string name="store_onboarding_task_launch_store_title">推出你的商店</string>
+    <string name="store_onboarding_task_add_product_description">為你的商店新增產品或服務，立即開始銷售。</string>
+    <string name="store_onboarding_task_add_product_title">新增第一個產品 </string>
+    <string name="store_onboarding_title">商店設定</string>
+    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">你的電子商務方案訂閱已啟用；如果你遇到目前訂閱未連結至新網站的問題，請聯絡支援團隊。</string>
+    <string name="store_creation_iap_eligibility_network_error">網路發生錯誤。 請檢查你的連線並再試一次。</string>
+    <string name="store_creation_iap_eligibility_check_generic_error">目前無法建立商店。 請稍後再試一次。</string>
+    <string name="store_creation_iap_eligibility_check_error_existing_subscription">你僅限從行動應用程式購買電子商務版方案一次。 若要建立其他網站，請造訪我們的網站。</string>
+    <string name="card_reader_payment_failed_app_setup_is_invalid">應用程式設定發生問題。 如需詳細資訊，請聯絡支援團隊</string>
+    <string name="card_reader_payment_failed_device_is_not_supported">你的裝置不受支援。 如需詳細資訊，請聯絡支援團隊</string>
+    <string name="card_reader_payment_failed_nfc_disabled">NFC 晶片已停用，導致應用程式無法啟用讀卡機</string>
+    <string name="card_reader_payment_failed_canceled">交易已取消</string>
+    <string name="domains_redirect_notice">購買的網域會將使用者重新導向至</string>
+    <string name="domains_select_domain">選取網域</string>
+    <string name="domains_add_domain_button_title">新增網域</string>
+    <string name="domains_your_domains">你的網站網域</string>
+    <string name="domains_primary_address">網站主要位址</string>
+    <string name="domains_learn_more">&lt;a href=\'\'&gt;&lt;u&gt;深入瞭解&lt;/u&gt;&lt;/a&gt;關於網域的資訊，以及如何採取網域相關操作。</string>
+    <string name="domains_search_for_domain_button_title">搜尋網域</string>
+    <string name="domains_purchase_redirect_notice">購買的網域會將使用者重新導向至你的主要位址。</string>
+    <string name="domains_claim_your_free_domain_link">取得網域</string>
+    <string name="domains_claim_your_free_domain_description">你的方案已包含一年免費網域註冊。</string>
+    <string name="domains_claim_your_free_domain_title">索取你的免費網域</string>
+    <string name="domains_your_free_store_address">你的免費商店位址</string>
+    <string name="domains">網域</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_dont_show_again_button">不要再顯示</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_button">稍後再提醒我</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_message">別擔心！ 你隨時可透過選單中的「設定」來傳送意見回饋給我們。</string>
+    <string name="feedback_banner_ipp_cta_button">分享意見回饋</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_title">分享意見回饋</string>
+    <string name="feedback_banner_ipp_message_ninja">告訴我們你使用親自收款功能的體驗。</string>
+    <string name="feedback_banner_ipp_title_ninja">讓我們知道你的想法</string>
+    <string name="feedback_banner_ipp_message_beginner">為你初次使用親自收款功能的體驗評分。</string>
+    <string name="feedback_banner_ipp_title_beginner">喜歡親自收款功能嗎？</string>
+    <string name="feedback_banner_ipp_message_newbie">分享你親自收款的個人體驗。</string>
+    <string name="feedback_banner_ipp_title_newbie">我們可如何協助你親自販售？</string>
     <string name="store_creation_profiler_merchant_journey_selling_online">我已經在線上銷售</string>
     <string name="store_creation_profiler_merchant_journey_selling_not_online">我已經在銷售，不過並不在線上</string>
     <string name="store_creation_profiler_merchant_journey_starting_business">我剛剛開始展開我的業務</string>
@@ -201,7 +241,7 @@ Language: zh_TW
     <string name="login_application_passwords_unavailable">你的網站 %1$s 似乎已停用應用程式密碼功能。\n 若要使用 WooCommerce 應用程式，請啟用此功能。</string>
     <string name="login_open_installation_page">開啟安裝頁面</string>
     <string name="not_a_valid_qr_code">掃進來的 QR code 不是 WooCommerce 代碼</string>
-    <string name="store_creation_iap_eligibility_check_error_description">你所在的國家暫不提供自手機 App 開設商店功能。</string>
+    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">你所在國家/地區目前無法透過行動應用程式建立商店。</string>
     <string name="store_creation_iap_eligibility_check_error_title">不提供商店開設功能</string>
     <string name="store_creation_iap_eligibility_loading_subtitle">請保持連線狀態。</string>
     <string name="store_creation_iap_eligibility_loading_title">已準備好開設你的商店</string>

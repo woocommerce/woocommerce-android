@@ -1,1 +1,1 @@
-This release includes a handful of minor improvements and bug fixes that our team found. We’ve also made some tweaks to improve performance. Please keep sending your feedback! We read every one of them.
+For this release, we focused on taking care of minor bugs that our team found. Don’t be fooled – we are working on some pretty cool stuff for you all! Keep your feedback rolling in; it helps us figure out what to work on next.

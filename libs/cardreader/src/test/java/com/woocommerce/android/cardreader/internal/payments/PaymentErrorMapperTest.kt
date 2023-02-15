@@ -6,6 +6,8 @@ import com.stripe.stripeterminal.external.models.TerminalException.TerminalError
 import com.stripe.stripeterminal.external.models.TerminalException.TerminalErrorCode.DECLINED_BY_READER
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.internal.CardReaderBaseUnitTest
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.BuiltInReader
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Canceled
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.CardReadTimeOut
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
@@ -534,6 +536,60 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
         val result = mapper.mapTerminalError(mock(), terminalException)
 
         assertThat(result.type).isEqualTo(DeclinedByBackendError.Unknown)
+    }
+
+    @Test
+    fun `given local_mobile_nfc_disabled, when terminal exception thrown, then nfc disabled type returned`() {
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.LOCAL_MOBILE_NFC_DISABLED)
+
+        val result = mapper.mapTerminalError(mock(), terminalException)
+
+        assertThat(result.type).isEqualTo(BuiltInReader.NfcDisabled)
+    }
+
+    @Test
+    fun `given local_mobile_library_not_included, when terminal exception thrown, then invalid app setup returned`() {
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.LOCAL_MOBILE_LIBRARY_NOT_INCLUDED)
+
+        val result = mapper.mapTerminalError(mock(), terminalException)
+
+        assertThat(result.type).isEqualTo(BuiltInReader.InvalidAppSetup)
+    }
+
+    @Test
+    fun `given local_mobile_unsupported_device, when terminal exception thrown, then device unsupported returned`() {
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.LOCAL_MOBILE_UNSUPPORTED_DEVICE)
+
+        val result = mapper.mapTerminalError(mock(), terminalException)
+
+        assertThat(result.type).isEqualTo(BuiltInReader.DeviceIsNotSupported)
+    }
+
+    @Test
+    fun `given local_mobile_unsupported_android_version, when terminal exception thrown, then device unsupported`() {
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.LOCAL_MOBILE_UNSUPPORTED_ANDROID_VERSION)
+
+        val result = mapper.mapTerminalError(mock(), terminalException)
+
+        assertThat(result.type).isEqualTo(BuiltInReader.DeviceIsNotSupported)
+    }
+
+    @Test
+    fun `given local_mobile_device_tampered, when terminal exception thrown, then device unsupported returned`() {
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.LOCAL_MOBILE_DEVICE_TAMPERED)
+
+        val result = mapper.mapTerminalError(mock(), terminalException)
+
+        assertThat(result.type).isEqualTo(BuiltInReader.DeviceIsNotSupported)
+    }
+
+    @Test
+    fun `given canceled, when terminal exception thrown, then canceled returned`() {
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.CANCELED)
+
+        val result = mapper.mapTerminalError(mock(), terminalException)
+
+        assertThat(result.type).isEqualTo(Canceled)
     }
 
     private fun setupStripeApiCardDeclined(declineCode: String?) {

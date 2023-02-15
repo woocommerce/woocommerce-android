@@ -1,11 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-01-25 17:54:07+0000
+Translation-Revision-Date: 2023-02-08 23:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="store_onboarding_completed_tasks_status">%1$d/%2$d completato</string>
+    <string name="store_onboarding_task_change_domain_description">Un URL personalizzato per ospitare il tuo negozio</string>
+    <string name="store_onboarding_task_change_domain_title">Personalizza il tuo dominio</string>
+    <string name="store_onboarding_task_launch_store_description">Pubblica il tuo sito nel mondo ogni volta che vuoi!</string>
+    <string name="store_onboarding_task_launch_store_title">Lancia il tuo negozio</string>
+    <string name="store_onboarding_task_add_product_description">Inizia a vendere aggiungendo prodotti o servizi al tuo negozio.</string>
+    <string name="store_onboarding_task_add_product_title">Aggiungi il tuo primo prodotto </string>
+    <string name="store_onboarding_title">Impostazioni del negozio</string>
+    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">Hai già un abbonamento eCommerce attivo, contatta l\'assistenza se riscontri problemi con il tuo abbonamento attuale non collegato al tuo nuovo sito.</string>
+    <string name="store_creation_iap_eligibility_network_error">Si è verificato un errore di rete. Controlla la connessione e riprova.</string>
+    <string name="store_creation_iap_eligibility_check_generic_error">Creazione negozio al momento non disponibile Riprova più tardi.</string>
+    <string name="store_creation_iap_eligibility_check_error_existing_subscription">Puoi acquistare il piano eCommerce dall\'app mobile solo una volta. Per creare altri siti visita il nostro sito web.</string>
+    <string name="card_reader_payment_failed_app_setup_is_invalid">Si è verificato un problema con la configurazione dell\'app. Contatta il supporto per ulteriori dettagli</string>
+    <string name="card_reader_payment_failed_device_is_not_supported">Il tuo dispositivo non è supportato. Contatta il supporto per ulteriori dettagli</string>
+    <string name="card_reader_payment_failed_nfc_disabled">L\'app non ha potuto abilitare il lettore di carte, perché il chip NFC è disabilitato</string>
+    <string name="card_reader_payment_failed_canceled">La transazione è stata annullata</string>
+    <string name="domains_redirect_notice">Il dominio acquistato reindirizzerà gli utenti a</string>
+    <string name="domains_select_domain">Seleziona il dominio</string>
+    <string name="domains_add_domain_button_title">Aggiungi un dominio</string>
+    <string name="domains_your_domains">I tuoi domini dei siti</string>
+    <string name="domains_primary_address">Indirizzo principale del sito</string>
+    <string name="domains_learn_more">&lt;a href=\'\'&gt;&lt;u&gt;Scopri di più&lt;/u&gt;&lt;/a&gt; sui domini e su come eseguire le azioni correlate.</string>
+    <string name="domains_search_for_domain_button_title">Cerca un dominio</string>
+    <string name="domains_purchase_redirect_notice">Il dominio acquistato reindirizzerà gli utenti al tuo indirizzo principale.</string>
+    <string name="domains_claim_your_free_domain_link">Scegli il dominio</string>
+    <string name="domains_claim_your_free_domain_description">Il tuo piano include la registrazione del dominio per un anno gratuitamente.</string>
+    <string name="domains_claim_your_free_domain_title">Scegli il tuo dominio gratuito</string>
+    <string name="domains_your_free_store_address">L\'indirizzo del tuo negozio gratuito</string>
+    <string name="domains">Domini</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_dont_show_again_button">Non mostrare più</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_button">Ricordamelo più tardi</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_message">Non preoccuparti. Puoi sempre andare su Impostazioni nel Menu per inviarci un feedback.</string>
+    <string name="feedback_banner_ipp_cta_button">Condividi il tuo feedback</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_title">Condividi il tuo feedback</string>
+    <string name="feedback_banner_ipp_message_ninja">Parlaci della tua esperienza con i pagamenti di persona.</string>
+    <string name="feedback_banner_ipp_title_ninja">Facci sapere cosa pensi</string>
+    <string name="feedback_banner_ipp_message_beginner">Valuta la tua prima esperienza con i pagamenti di persona.</string>
+    <string name="feedback_banner_ipp_title_beginner">Gradisci l\'opzione dei pagamenti di persona?</string>
+    <string name="feedback_banner_ipp_message_newbie">Condividi la tua esperienza sul modo in cui ricevi i pagamenti di persona.</string>
+    <string name="feedback_banner_ipp_title_newbie">Come possiamo aiutarti con la vendita di persona?</string>
     <string name="store_creation_profiler_merchant_journey_selling_online">Sto già vendendo online</string>
     <string name="store_creation_profiler_merchant_journey_selling_not_online">Sto già vendendo, ma non online</string>
     <string name="store_creation_profiler_merchant_journey_starting_business">Sto appena avviando il mio business</string>
@@ -201,7 +241,7 @@ Language: it
     <string name="login_application_passwords_unavailable">Sembra che la funzione Password applicazione sia disabilitata nel tuo sito %1$s.\n Abilitalo all\'uso dell\'app WooCommerce.</string>
     <string name="login_open_installation_page">Apri la pagina di installazione</string>
     <string name="not_a_valid_qr_code">Il codice QR che hai scansionato non è un codice WooCommerce</string>
-    <string name="store_creation_iap_eligibility_check_error_description">Al momento, non è possibile creare un negozio dall\'app per dispositivi mobili nel tuo Paese.</string>
+    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">La creazione del negozio dall\'app per dispositivi mobili non è attualmente disponibile per il tuo Paese.</string>
     <string name="store_creation_iap_eligibility_check_error_title">Impossibile creare un negozio</string>
     <string name="store_creation_iap_eligibility_loading_subtitle">Resta connesso.</string>
     <string name="store_creation_iap_eligibility_loading_title">Stiamo preparando la creazione del tuo negozio</string>

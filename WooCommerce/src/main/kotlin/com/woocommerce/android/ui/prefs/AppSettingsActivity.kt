@@ -20,6 +20,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivityAppSettingsBinding
 import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -28,7 +29,6 @@ import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import com.woocommerce.android.util.AnalyticsUtils
 import dagger.android.DispatchingAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -153,11 +153,11 @@ class AppSettingsActivity :
     }
 
     override fun confirmLogout() {
-        val message = String.format(
-            Locale.getDefault(),
-            getString(R.string.settings_confirm_logout),
-            presenter.getAccountDisplayName()
-        )
+        val message = when (selectedSite.connectionType) {
+            SiteConnectionType.ApplicationPasswords -> getString(R.string.settings_confirm_logout_site_credentials)
+            else -> getString(R.string.settings_confirm_logout, presenter.getAccountDisplayName())
+        }
+
         MaterialAlertDialogBuilder(this)
             .setMessage(message)
             .setPositiveButton(R.string.signout) { _, _ ->

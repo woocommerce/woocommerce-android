@@ -1,2 +1,0 @@
-12.0:
-Notizie straordinarie. Ora è possibile duplicare un prodotto dall'app. Basta toccare il menu Altro disponibile all'interno della schermata dei dettagli del prodotto.

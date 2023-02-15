@@ -46,11 +46,11 @@ class HelpViewModel @Inject constructor(
 
     fun contactSupport(ticketType: TicketType) {
         if (!selectedSite.exists()) {
-            triggerEvent(ContactPaymentsSupportClickEvent.CreateTicket(ticketType, emptyList()))
+            triggerEvent(ContactSupportEvent.CreateTicket(ticketType, emptyList()))
             return
         }
 
-        triggerEvent(ContactPaymentsSupportClickEvent.ShowLoading)
+        triggerEvent(ContactSupportEvent.ShowLoading)
         launch {
             wooStore.fetchSitePlugins(selectedSite.get())
             val fetchSitePluginsResult = wooStore.fetchSitePlugins(selectedSite.get())
@@ -62,7 +62,7 @@ class HelpViewModel @Inject constructor(
 
                 listOf(determineWcPayTag(wcPayPluginInfo), determineStripeTag(stripePluginInfo))
             }
-            triggerEvent(ContactPaymentsSupportClickEvent.CreateTicket(ticketType, tags))
+            triggerEvent(ContactSupportEvent.CreateTicket(ticketType, tags))
         }
     }
 
@@ -84,12 +84,12 @@ class HelpViewModel @Inject constructor(
             STRIPE_INSTALLED
         }
 
-    sealed class ContactPaymentsSupportClickEvent : MultiLiveEvent.Event() {
-        object ShowLoading : ContactPaymentsSupportClickEvent()
+    sealed class ContactSupportEvent : MultiLiveEvent.Event() {
+        object ShowLoading : ContactSupportEvent()
         data class CreateTicket(
             val ticketType: TicketType,
             val supportTags: List<String>,
-        ) : ContactPaymentsSupportClickEvent()
+        ) : ContactSupportEvent()
     }
 
     private companion object {
