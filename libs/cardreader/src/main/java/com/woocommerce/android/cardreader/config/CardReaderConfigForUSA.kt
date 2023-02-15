@@ -8,7 +8,11 @@ import kotlinx.parcelize.Parcelize
 object CardReaderConfigForUSA : CardReaderConfigForSupportedCountry(
     currency = "USD",
     countryCode = "US",
-    supportedReaders = listOf(ReaderType.ExternalReader.Chipper2X, ReaderType.ExternalReader.StripeM2),
+    supportedReaders = listOf(
+        ReaderType.ExternalReader.Chipper2X,
+        ReaderType.ExternalReader.StripeM2,
+        ReaderType.BuildInReader.CotsDevice,
+    ),
     paymentMethodTypes = listOf(PaymentMethodType.CARD_PRESENT),
     supportedExtensions = listOf(
         SupportedExtension(
