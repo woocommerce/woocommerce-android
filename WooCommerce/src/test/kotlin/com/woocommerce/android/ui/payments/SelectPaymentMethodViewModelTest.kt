@@ -21,6 +21,8 @@ import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaym
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Success
 import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.payments.banner.BannerState
+import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment
@@ -93,6 +95,8 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker = mock()
     private val selectPaymentUtmProvider: UtmProvider = mock()
+    private val learnMoreUrlProvider : LearnMoreUrlProvider = mock()
+    private val cardReaderTracker: CardReaderTracker = mock()
 
     @Test
     fun `given hub flow, when view model init, then navigate to hub flow emitted`() = testBlocking {
@@ -926,6 +930,8 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             analyticsTrackerWrapper,
             cardPaymentCollectibilityChecker,
             bannerDisplayEligibilityChecker,
+            learnMoreUrlProvider,
+            cardReaderTracker,
             selectPaymentUtmProvider,
         )
     }
