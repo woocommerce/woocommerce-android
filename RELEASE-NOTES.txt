@@ -5,7 +5,7 @@
 - [*][Internal] We added a cancel button to the error states of the IPP flow [https://github.com/woocommerce/woocommerce-android/pull/8317]
 - [*] [Internal] Add a Zendesk tag to allow differentiating sites accessed using Application Passwords [https://github.com/woocommerce/woocommerce-android/pull/8320]
 - [*] Clear button is visible on the products filter screen
-      https://github.com/woocommerce/woocommerce-android/pull/8341
+      [https://github.com/woocommerce/woocommerce-android/pull/8341]
 12.3
 -----
 - [*] Add IPP feedback banner icon for dark mode [https://github.com/woocommerce/woocommerce-android/pull/8309]
