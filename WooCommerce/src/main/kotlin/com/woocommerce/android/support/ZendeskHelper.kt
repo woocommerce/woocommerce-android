@@ -39,6 +39,7 @@ import zendesk.support.requestlist.RequestListActivity
 import java.util.Locale
 import java.util.Timer
 import kotlin.concurrent.schedule
+import zendesk.support.CreateRequest
 
 private const val zendeskNeedsToBeEnabledError = "Zendesk needs to be setup before this method can be called"
 private const val enablePushNotificationsDelayAfterIdentityChange: Long = 2500
@@ -63,6 +64,22 @@ class ZendeskHelper(
 
     private val timer: Timer by lazy {
         Timer()
+    }
+
+    private fun createRequest(
+        formID: Long,
+        subject: String,
+        description: String,
+        tags: List<String>,
+        customFields: Map<Long, String>
+    ) {
+        val request = CreateRequest().apply {
+            this.ticketFormId = formID
+            this.subject = subject
+            this.description = description
+            this.tags = tags
+            this.customFields = customFields.map { CustomField(it.key, it.value) }
+        }
     }
 
     /**
