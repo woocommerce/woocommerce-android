@@ -13,11 +13,6 @@ import com.woocommerce.android.support.help.HelpOrigin.STORE_CREATION
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.LoadingState.Idle
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.LoadingState.Loading
-import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainSuggestionsRepository.DomainSuggestion
-import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainSuggestionsRepository.DomainSuggestion.Free
-import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainSuggestionsRepository.DomainSuggestion.Paid
-import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.ifTrue
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -31,46 +26,31 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.model.products.Product
 import javax.inject.Inject
 
 @OptIn(FlowPreview::class)
 @HiltViewModel
 class DomainPickerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val domainSuggestionsRepository: DomainSuggestionsRepository,
+    domainSuggestionsRepository: DomainSuggestionsRepository,
     private val newStore: NewStore,
-    analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val currencyFormatter: CurrencyFormatter
+    val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
-    companion object {
-        const val KEY_IS_FREE_CREDIT_AVAILABLE = "key_is_free_credit_available"
-        const val KEY_SEARCH_ONLY_FREE_DOMAINS = "search_only_free_domains"
-    }
     private val domainQuery = savedState.getStateFlow(this, newStore.data.name ?: "")
     private val loadingState = MutableStateFlow(Idle)
     private val domainSuggestionsUi = domainSuggestionsRepository.domainSuggestions
     private val selectedDomain = MutableStateFlow("")
-    private val products = domainSuggestionsRepository.products
-    private val isFreeCreditAvailable: Boolean = savedStateHandle[KEY_IS_FREE_CREDIT_AVAILABLE] ?: false
-    private val searchOnlyFreeDomains: Boolean = savedStateHandle[KEY_SEARCH_ONLY_FREE_DOMAINS] ?: true
 
     val viewState = combine(
         domainQuery,
         domainSuggestionsUi,
         loadingState,
-        selectedDomain,
-        products
-    ) { domainQuery, domainSuggestions, loadingState, selectedDomain, products ->
+        selectedDomain
+    ) { domainQuery, domainSuggestions, loadingState, selectedDomain ->
         DomainPickerState(
             loadingState = loadingState,
             domainQuery = domainQuery,
-            domainSuggestionsUi = processFetchedDomainSuggestions(
-                domainQuery,
-                domainSuggestions,
-                selectedDomain,
-                products
-            )
+            domainSuggestionsUi = processFetchedDomainSuggestions(domainQuery, domainSuggestions, selectedDomain)
         )
     }.asLiveData()
 
@@ -82,8 +62,6 @@ class DomainPickerViewModel @Inject constructor(
             )
         )
         viewModelScope.launch {
-            domainSuggestionsRepository.fetchProducts()
-
             domainQuery
                 .filter { it.isNotBlank() }
                 .onEach { loadingState.value = Loading }
@@ -91,7 +69,7 @@ class DomainPickerViewModel @Inject constructor(
                 .collectLatest { query ->
                     // Make sure the loading state is correctly set after debounce too
                     loadingState.value = Loading
-                    domainSuggestionsRepository.fetchDomainSuggestions(query, searchOnlyFreeDomains)
+                    domainSuggestionsRepository.fetchDomainSuggestions(query)
                         .onFailure {
                             triggerEvent(ShowSnackbar(R.string.store_creation_domain_picker_suggestions_error))
                         }
@@ -121,51 +99,27 @@ class DomainPickerViewModel @Inject constructor(
         domainQuery.value = query
     }
 
-    private suspend fun processFetchedDomainSuggestions(
+    private fun processFetchedDomainSuggestions(
         domainQuery: String,
-        domainSuggestions: List<DomainSuggestion>,
-        selectedDomain: String,
-        products: List<Product>
+        domainSuggestions: List<String>,
+        selectedDomain: String
     ) = when {
         domainQuery.isBlank() || domainSuggestions.isEmpty() -> emptyList()
         else -> {
-            val preSelectDomain = selectedDomain.ifBlank { domainSuggestions.first().name }
+            val preSelectDomain = selectedDomain.ifBlank {
+                domainSuggestions
+                    .firstOrNull { it.substringBefore(".") == domainQuery }
+                    ?: domainSuggestions.first()
+            }
             newStore.update(domain = preSelectDomain)
 
-            domainSuggestions.mapNotNull { domain ->
-                when (domain) {
-                    is Free -> {
-                        DomainSuggestionUi(
-                            isSelected = domain.name == preSelectDomain,
-                            domain = domain.name
-                        )
-                    }
-                    is Paid -> {
-                        val product = products.firstOrNull { it.productId == domain.productId }
-                        val price = domain.cost ?: domainSuggestionsRepository.fetchDomainPrice(domain.name).getOrNull()
-                        if (price == null || product == null || product.currencyCode == null) {
-                            return@mapNotNull null
-                        } else {
-                            DomainSuggestionUi(
-                                isSelected = domain.name == preSelectDomain,
-                                domain = domain.name,
-                                price = price,
-                                salePrice = product.isDomainOnSale().ifTrue {
-                                    product.saleCost?.format(product.currencyCode!!)
-                                },
-                                isFreeWithCredits = isFreeCreditAvailable
-                            )
-                        }
-                    }
-                }
+            domainSuggestions.map { domain ->
+                DomainSuggestionUi(
+                    isSelected = domain == preSelectDomain,
+                    domain = domain
+                )
             }
         }
-    }
-
-    private fun Product.isDomainOnSale(): Boolean = this.saleCost?.let { it.compareTo(0.0) > 0 } == true
-
-    private fun Double.format(currencyCode: String): String {
-        return currencyFormatter.formatCurrency(this.toBigDecimal(), currencyCode)
     }
 
     data class DomainPickerState(
@@ -182,8 +136,7 @@ class DomainPickerViewModel @Inject constructor(
         val domain: String = "",
         val isSelected: Boolean = false,
         val price: String? = null,
-        val salePrice: String? = null,
-        val isFreeWithCredits: Boolean = false
+        val salePrice: String? = null
     )
 
     enum class LoadingState {

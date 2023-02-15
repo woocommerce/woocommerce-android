@@ -231,7 +231,6 @@ private fun DomainSuggestionItem(
     val textHighlightedColor = colorResource(id = R.color.color_on_surface_high)
     val textColor = colorResource(id = R.color.color_on_surface_medium_selector)
     val yellowColor = colorResource(id = R.color.color_alert)
-    val greenColor = colorResource(id = R.color.color_info)
     Row(
         modifier = modifier
             .padding(
@@ -287,42 +286,15 @@ private fun DomainSuggestionItem(
                             }
                         )
                     } else {
-                        if (domainSuggestion.isFreeWithCredits) {
-                            Text(
-                                text = buildAnnotatedString {
-                                    withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {
-                                        withStyle(
-                                            style = SpanStyle(
-                                                color = textColor,
-                                                textDecoration = TextDecoration.LineThrough
-                                            )
-                                        ) {
-                                            append(domainSuggestion.price)
-                                        }
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {
+                                    withStyle(style = SpanStyle(color = textColor)) {
+                                        append(domainSuggestion.price)
                                     }
                                 }
-                            )
-                            val freeWithCredits = stringResource(id = R.string.domains_free_with_credits)
-                            Text(
-                                text = buildAnnotatedString {
-                                    withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {
-                                        withStyle(style = SpanStyle(color = greenColor)) {
-                                            append(freeWithCredits)
-                                        }
-                                    }
-                                }
-                            )
-                        } else {
-                            Text(
-                                text = buildAnnotatedString {
-                                    withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {
-                                        withStyle(style = SpanStyle(color = textColor)) {
-                                            append(domainSuggestion.price)
-                                        }
-                                    }
-                                }
-                            )
-                        }
+                            }
+                        )
                     }
                 }
             }
@@ -364,12 +336,7 @@ fun DomainPickerPreview() {
                         salePrice = "$5.99",
                         isSelected = true
                     ),
-                    DomainSuggestionUi(
-                        "whitechristmastrees.business.wordpress",
-                        price = "$5.99 / year",
-                        isSelected = true,
-                        isFreeWithCredits = true
-                    ),
+                    DomainSuggestionUi("whitechristmastrees.business.more"),
                     DomainSuggestionUi("whitechristmastrees.business.another"),
                     DomainSuggestionUi("whitechristmastrees.business.any"),
                     DomainSuggestionUi("whitechristmastrees.business.domain"),
