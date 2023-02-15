@@ -22,14 +22,10 @@ class CardReaderTypeSelectionViewModel
     private val navArgs: CardReaderTypeSelectionDialogFragmentArgs by savedState.navArgs()
 
     init {
-        when (val result = isTapToPayAvailable(navArgs.countryCode)) {
-            is NotAvailable -> {
-                tracker.trackTapToPayNotAvailableReason(result)
-                onUseBluetoothReaderSelected()
-            }
-            else -> {
-                // show the dialog
-            }
+        val result = isTapToPayAvailable(navArgs.countryCode)
+        if (result is NotAvailable) {
+            tracker.trackTapToPayNotAvailableReason(result)
+            onUseBluetoothReaderSelected()
         }
     }
 
