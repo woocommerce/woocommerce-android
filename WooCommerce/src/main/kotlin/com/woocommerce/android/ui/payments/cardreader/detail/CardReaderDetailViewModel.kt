@@ -72,6 +72,7 @@ class CardReaderDetailViewModel @Inject constructor(
                             listenForSoftwareUpdateAvailability()
                             listenForBatteryStatus()
                         } else {
+                            tracker.trackManageCardReadersAutomaticDisconnectOfBuiltInReader()
                             disconnectReader()
                         }
                     }

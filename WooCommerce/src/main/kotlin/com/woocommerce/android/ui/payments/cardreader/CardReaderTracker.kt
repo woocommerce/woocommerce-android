@@ -14,6 +14,9 @@ import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_STEP_SKIPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_SELECT_READER_TYPE_BLUETOOTH_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_SELECT_READER_TYPE_BUILT_IN_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_TAP_TO_PAY_NOT_AVAILABLE
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_AUTO_CONNECTION_STARTED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_CONNECTION_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_CONNECTION_SUCCESS
@@ -32,6 +35,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.DISABLE_CASH_ON_DELIVERY
 import com.woocommerce.android.analytics.AnalyticsEvent.DISABLE_CASH_ON_DELIVERY_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.ENABLE_CASH_ON_DELIVERY_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.ENABLE_CASH_ON_DELIVERY_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.MANAGE_CARD_READERS_AUTOMATIC_DISCONNECT_BUILT_IN_READER
 import com.woocommerce.android.analytics.AnalyticsEvent.PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED
 import com.woocommerce.android.analytics.AnalyticsEvent.PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED_LEARN_MORE_TAPPED
@@ -56,6 +60,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
+import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.NotAvailable
 import javax.inject.Inject
 
 class CardReaderTracker @Inject constructor(
@@ -434,6 +439,25 @@ class CardReaderTracker @Inject constructor(
 
     fun trackLearnMoreConnectionClicked() {
         track(CARD_PRESENT_CONNECTION_LEARN_MORE_TAPPED)
+    }
+
+    fun trackSelectReaderTypeBuiltInTapped() {
+        track(CARD_PRESENT_SELECT_READER_TYPE_BUILT_IN_TAPPED)
+    }
+
+    fun trackSelectReaderTypeBluetoothTapped() {
+        track(CARD_PRESENT_SELECT_READER_TYPE_BLUETOOTH_TAPPED)
+    }
+
+    fun trackManageCardReadersAutomaticDisconnectOfBuiltInReader() {
+        track(MANAGE_CARD_READERS_AUTOMATIC_DISCONNECT_BUILT_IN_READER)
+    }
+
+    fun trackTapToPayNotAvailableReason(reason: NotAvailable) {
+        track(
+            CARD_PRESENT_TAP_TO_PAY_NOT_AVAILABLE,
+            properties = mutableMapOf(AnalyticsTracker.KEY_REASON to reason::class.java.simpleName)
+        )
     }
 
     companion object {
