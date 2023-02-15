@@ -95,7 +95,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker = mock()
     private val selectPaymentUtmProvider: UtmProvider = mock()
-    private val learnMoreUrlProvider : LearnMoreUrlProvider = mock()
+    private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
     private val cardReaderTracker: CardReaderTracker = mock()
 
     @Test
