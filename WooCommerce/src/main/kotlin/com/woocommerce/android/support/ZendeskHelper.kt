@@ -58,6 +58,9 @@ class ZendeskHelper(
     private val zendeskPushRegistrationProvider: PushRegistrationProvider?
         get() = zendeskInstance.provider()?.pushRegistrationProvider()
 
+    private val requestProvider
+        get() = Support.INSTANCE.provider()?.requestProvider()
+
     private val timer: Timer by lazy {
         Timer()
     }
@@ -101,6 +104,7 @@ class ZendeskHelper(
         zendeskInstance.init(context, zendeskUrl, applicationId, oauthClientId)
         Logger.setLoggable(enableLogs)
         Support.INSTANCE.init(zendeskInstance)
+
         refreshIdentity()
     }
 
