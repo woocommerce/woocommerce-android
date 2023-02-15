@@ -545,7 +545,6 @@
     <string name="domains_select_domain">Select domain</string>
     <string name="domains_redirect_notice">The domain purchased will redirect users to</string>
     <string name="domains_error_title">Unable to load site domains</string>
-    <string name="domains_free_with_credits">Free for the first year</string>
     <!--
         Order Editing
     -->
