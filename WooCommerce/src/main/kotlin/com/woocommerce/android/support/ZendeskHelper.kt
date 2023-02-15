@@ -67,34 +67,6 @@ class ZendeskHelper(
         Timer()
     }
 
-    private fun createRequest(
-        formID: Long,
-        subject: String,
-        description: String,
-        tags: List<String>,
-        customFields: Map<Long, String>,
-        onSuccess: (Request?) -> Unit,
-        onError: (ErrorResponse) -> Unit
-    ) {
-        val request = CreateRequest().apply {
-            this.ticketFormId = formID
-            this.subject = subject
-            this.description = description
-            this.tags = tags
-            this.customFields = customFields.map { CustomField(it.key, it.value) }
-        }
-
-        requestProvider?.createRequest(request, object : ZendeskCallback<Request>() {
-            override fun onSuccess(result: Request?) {
-                onSuccess(result)
-            }
-
-            override fun onError(error: ErrorResponse) {
-                onError(error)
-            }
-        })
-    }
-
     /**
      * These two properties are used to keep track of the Zendesk identity set. Since we allow users' to change their
      * supportEmail and reset their identity on logout, we need to ensure that the correct identity is set all times.
@@ -175,6 +147,33 @@ class ZendeskHelper(
         } else {
             builder.show(context)
         }
+    }
+
+    fun createRequest(
+        formID: Long,
+        subject: String,
+        description: String,
+        tags: List<String>,
+        customFields: Map<Long, String>,
+        onSuccess: (Request?) -> Unit,
+        onError: (ErrorResponse) -> Unit
+    ) {
+        val requestCallback = configureRequestCreationCallback(onSuccess, onError)
+        CreateRequest().apply {
+            this.ticketFormId = formID
+            this.subject = subject
+            this.description = description
+            this.tags = tags
+            this.customFields = customFields.map { CustomField(it.key, it.value) }
+        }.let { requestProvider?.createRequest(it, requestCallback) }
+    }
+
+    private fun configureRequestCreationCallback(
+        onSuccess: (Request?) -> Unit,
+        onError: (ErrorResponse) -> Unit
+    ) = object : ZendeskCallback<Request>() {
+        override fun onSuccess(result: Request?) { onSuccess(result) }
+        override fun onError(error: ErrorResponse) { onError(error) }
     }
 
     /**
