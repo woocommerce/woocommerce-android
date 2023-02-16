@@ -249,18 +249,11 @@ class SelectPaymentMethodViewModel @Inject constructor(
             if (status == CoreOrderStatus.COMPLETED.value) {
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
-                    mutableMapOf(
+                    mapOf(
                         AnalyticsTracker.KEY_AMOUNT to orderTotal,
                         AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
                         cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
-                    ).also { mutableMap ->
-                        OrderDurationRecorder.millisecondsSinceOrderAddNew().getOrNull()?.let { timeElapsed ->
-                            mutableMap[KEY_TIME_ELAPSED_SINCE_ADD_NEW_ORDER_IN_MILLIS] = timeElapsed.toString()
-                        }
-                        OrderDurationRecorder.millisecondsSinceCardPaymentStarted().getOrNull()?.let { timeElapsed ->
-                            mutableMap[KEY_TIME_ELAPSED_SINCE_CARD_COLLECT_PAYMENT_IN_MILLIS] = timeElapsed.toString()
-                        }
-                    }
+                    )
                 )
                 delay(DELAY_MS)
                 exitFlow()
