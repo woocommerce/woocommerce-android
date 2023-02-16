@@ -92,6 +92,7 @@
 
         </LinearLayout>
 
+        <!-- android:textColorHighlight="#00FFFFFF": Workaround for a bug https://stackoverflow.com/a/70394538/632516 -->
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/learn_more_ipp_payment_methods_tv"
             style="@style/Woo.TextView.Caption"
