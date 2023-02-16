@@ -44,7 +44,6 @@ object OrderDurationRecorder {
             return Result.success(timestamp)
         } ?: return Result.failure(OrderDurationRecorderException(NO_START_RECORDING_TIMESTAMP))
     }
-    }
 
     class OrderDurationRecorderException(
         val errorType: OrderDurationRecordedType
