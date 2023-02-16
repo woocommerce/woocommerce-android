@@ -6,6 +6,7 @@ import androidx.lifecycle.map
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.DATE_RANGE
@@ -43,7 +44,8 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     private val getDateRangeFilterOptions: GetDateRangeFilterOptions,
     private val orderFilterRepository: OrderFiltersRepository,
     private val getTrackingForFilterSelection: GetTrackingForFilterSelection,
-    private val dateUtils: DateUtils
+    private val dateUtils: DateUtils,
+    private val analyticsTraWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     companion object {
         const val OLD_FILTER_SELECTION_KEY = "old_filter_selection_key"
@@ -83,6 +85,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     }
 
     fun onClearFilters() {
+        analyticsTraWrapper.track(AnalyticsEvent.ORDER_FILTER_LIST_CLEAR_MENU_BUTTON_TAPPED)
         _categories = OrderFilterCategories(
             _categories.list.map {
                 it.copy(
