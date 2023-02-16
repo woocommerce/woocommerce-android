@@ -33,14 +33,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -57,6 +60,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.prefs.domain.DomainChangeViewModel.ViewState.DomainsState
+import com.woocommerce.android.ui.prefs.domain.DomainChangeViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.prefs.domain.DomainChangeViewModel.ViewState.LoadingState
 
 @Composable
@@ -83,7 +87,8 @@ fun CurrentDomainsScreen(viewModel: DomainChangeViewModel) {
                                 .padding(padding)
                         )
                     }
-                    is LoadingState -> ProgressIndicator()
+                    LoadingState -> ProgressIndicator()
+                    ErrorState -> ErrorScreen()
                 }
             }
         }
@@ -346,6 +351,36 @@ private fun PrimaryDomainTag() {
     }
 }
 
+@Composable
+fun ErrorScreen() {
+    Column(
+        modifier = Modifier
+            .background(MaterialTheme.colors.surface)
+            .fillMaxSize()
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Image(painter = painterResource(id = drawable.img_woo_generic_error), contentDescription = null)
+
+            Text(
+                text = stringResource(id = string.domains_error_title),
+                style = MaterialTheme.typography.h6,
+                modifier = Modifier
+                    .padding(
+                        top = dimensionResource(id = dimen.major_300),
+                        start = dimensionResource(id = dimen.major_300),
+                        end = dimensionResource(id = dimen.major_300),
+                        bottom = dimensionResource(id = dimen.major_100)
+                    ),
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
 @ExperimentalFoundationApi
 @Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
@@ -396,4 +431,10 @@ fun NoDomainsPickerPreview() {
             onLearnMoreButtonTapped = {}
         )
     }
+}
+
+@Preview()
+@Composable
+fun ErrorScreenPreview() {
+    ErrorScreen()
 }

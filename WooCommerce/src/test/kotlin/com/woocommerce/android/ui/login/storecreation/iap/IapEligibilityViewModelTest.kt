@@ -1,5 +1,3 @@
-@file:Suppress("MaxLineLength")
-
 package com.woocommerce.android.ui.login.storecreation.iap
 
 import androidx.lifecycle.SavedStateHandle

@@ -1,4 +1,3 @@
-@file:Suppress("MaxLineLength")
 package com.woocommerce.android.ui.orders
 
 import androidx.lifecycle.SavedStateHandle
@@ -86,7 +85,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val pagedListWrapper: PagedListWrapper<OrderListItemUIType> = mock()
     private val orderFetcher: WCOrderFetcher = mock()
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters = mock()
-    private val getWCOrderListDescriptorWithFiltersAndSearchQuery: GetWCOrderListDescriptorWithFiltersAndSearchQuery = mock()
+    private val getWCOrderListDescriptorWithFiltersAndSearchQuery: GetWCOrderListDescriptorWithFiltersAndSearchQuery =
+        mock()
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount = mock()
     private val shouldShowFeedbackBanner: ShouldShowFeedbackBanner = mock()
     private val getIPPFeedbackBannerData: GetIPPFeedbackBannerData = mock()
@@ -95,7 +95,11 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Before
     fun setup() = testBlocking {
         whenever(getWCOrderListDescriptorWithFilters.invoke()).thenReturn(WCOrderListDescriptor(site = mock()))
-        whenever(getWCOrderListDescriptorWithFiltersAndSearchQuery.invoke(anyString())).thenReturn(WCOrderListDescriptor(site = mock()))
+        whenever(getWCOrderListDescriptorWithFiltersAndSearchQuery.invoke(anyString())).thenReturn(
+            WCOrderListDescriptor(
+                site = mock()
+            )
+        )
         whenever(pagedListWrapper.listError).doReturn(mock())
         whenever(pagedListWrapper.isEmpty).doReturn(mock())
         whenever(pagedListWrapper.isFetchingFirstPage).doReturn(mock())
@@ -576,7 +580,9 @@ class OrderListViewModelTest : BaseUnitTest() {
         testBlocking {
             // given
             viewModel.viewState =
-                viewModel.viewState.copy(ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(FAKE_IPP_FEEDBACK_BANNER_DATA))
+                viewModel.viewState.copy(
+                    ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(FAKE_IPP_FEEDBACK_BANNER_DATA)
+                )
 
             // when
             viewModel.onDismissIPPFeedbackBannerClicked()
@@ -589,20 +595,31 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `given IPP banner is shown, when CTA is clicked, then survey is opened`() {
         // given
         viewModel.viewState =
-            viewModel.viewState.copy(ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(FAKE_IPP_FEEDBACK_BANNER_DATA))
+            viewModel.viewState.copy(
+                ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(
+                    FAKE_IPP_FEEDBACK_BANNER_DATA
+                )
+            )
 
         // when
         viewModel.onIPPFeedbackBannerCTAClicked()
 
         // then
-        assertEquals(OrderListViewModel.OrderListEvent.OpenIPPFeedbackSurveyLink(FAKE_IPP_FEEDBACK_BANNER_DATA.url), viewModel.event.value)
+        assertEquals(
+            OrderListViewModel.OrderListEvent.OpenIPPFeedbackSurveyLink(FAKE_IPP_FEEDBACK_BANNER_DATA.url),
+            viewModel.event.value
+        )
     }
 
     @Test
     fun `given IPP banner is shown, when CTA is clicked, then IPP banner is hidden`() {
         // given
         viewModel.viewState =
-            viewModel.viewState.copy(ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(FAKE_IPP_FEEDBACK_BANNER_DATA))
+            viewModel.viewState.copy(
+                ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(
+                    FAKE_IPP_FEEDBACK_BANNER_DATA
+                )
+            )
 
         // when
         viewModel.onIPPFeedbackBannerCTAClicked()
@@ -615,7 +632,11 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `given IPP banner is shown, when CTA is clicked, then Orders banner is shown`() {
         // given
         viewModel.viewState =
-            viewModel.viewState.copy(ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(FAKE_IPP_FEEDBACK_BANNER_DATA))
+            viewModel.viewState.copy(
+                ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(
+                    FAKE_IPP_FEEDBACK_BANNER_DATA
+                )
+            )
 
         // when
         viewModel.onIPPFeedbackBannerCTAClicked()
@@ -628,7 +649,11 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `given IPP banner is shown, when dismiss forever is clicked, then IPP banner is hidden`() {
         // given
         viewModel.viewState =
-            viewModel.viewState.copy(ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(FAKE_IPP_FEEDBACK_BANNER_DATA))
+            viewModel.viewState.copy(
+                ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(
+                    FAKE_IPP_FEEDBACK_BANNER_DATA
+                )
+            )
 
         // when
         viewModel.onIPPFeedbackBannerDismissedForever()
@@ -641,7 +666,11 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `given IPP banner is shown, when dismiss forever is clicked, then Orders banner is shown`() {
         // given
         viewModel.viewState =
-            viewModel.viewState.copy(ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(FAKE_IPP_FEEDBACK_BANNER_DATA))
+            viewModel.viewState.copy(
+                ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(
+                    FAKE_IPP_FEEDBACK_BANNER_DATA
+                )
+            )
 
         // when
         viewModel.onIPPFeedbackBannerDismissedForever()
@@ -654,7 +683,11 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `given IPP banner is shown, when dismissed temporarily, then IPP banner is hidden`() {
         // given
         viewModel.viewState =
-            viewModel.viewState.copy(ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(FAKE_IPP_FEEDBACK_BANNER_DATA))
+            viewModel.viewState.copy(
+                ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(
+                    FAKE_IPP_FEEDBACK_BANNER_DATA
+                )
+            )
 
         // when
         viewModel.onIPPFeedbackBannerDismissedShowLater()
@@ -667,7 +700,11 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `given IPP banner is shown, when dismissed temporarily, then Orders banner is shown`() {
         // given
         viewModel.viewState =
-            viewModel.viewState.copy(ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(FAKE_IPP_FEEDBACK_BANNER_DATA))
+            viewModel.viewState.copy(
+                ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(
+                    FAKE_IPP_FEEDBACK_BANNER_DATA
+                )
+            )
 
         // when
         viewModel.onIPPFeedbackBannerDismissedShowLater()
@@ -778,6 +815,54 @@ class OrderListViewModelTest : BaseUnitTest() {
                     KEY_IPP_BANNER_CAMPAIGN_NAME to FAKE_IPP_FEEDBACK_BANNER_DATA.campaignName
                 )
             )
+        }
+
+    @Test
+    fun `given IPP banner should be shown, when banner data is null, then event is not tracked`() =
+        testBlocking {
+            // given
+            whenever(shouldShowFeedbackBanner()).thenReturn(false)
+            assertNull(getIPPFeedbackBannerData())
+
+            // when
+            viewModel = createViewModel()
+
+            // then
+            verify(analyticsTracker, never()).track(
+                AnalyticsEvent.IPP_FEEDBACK_BANNER_SHOWN,
+                mapOf(
+                    KEY_IPP_BANNER_SOURCE to VALUE_IPP_BANNER_SOURCE_ORDER_LIST,
+                    KEY_IPP_BANNER_CAMPAIGN_NAME to FAKE_IPP_FEEDBACK_BANNER_DATA.campaignName
+                )
+            )
+        }
+
+    @Test
+    fun `given IPP banner should be shown, when banner data is null, then Orders banner is shown`() =
+        testBlocking {
+            // given
+            whenever(shouldShowFeedbackBanner()).thenReturn(false)
+            assertNull(getIPPFeedbackBannerData())
+
+            // when
+            viewModel = createViewModel()
+
+            // then
+            assertTrue(viewModel.viewState.isSimplePaymentsWIPNoticeCardVisible)
+        }
+
+    @Test
+    fun `given IPP banner should be shown, when banner data is null, then IPP banner is hidden`() =
+        testBlocking {
+            // given
+            whenever(shouldShowFeedbackBanner()).thenReturn(false)
+            assertNull(getIPPFeedbackBannerData())
+
+            // when
+            viewModel = createViewModel()
+
+            // then
+            assertEquals(IPPSurveyFeedbackBannerState.Hidden, viewModel.viewState.ippFeedbackBannerState)
         }
 
     private companion object {

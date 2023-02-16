@@ -71,7 +71,7 @@ class ShippingLabelPackagesAdapter(
         super.onBindViewHolder(holder, position, payloads)
     }
 
-    @Suppress("MagicNumber", "DEPRECATION")
+    @Suppress("MagicNumber")
     inner class ShippingLabelPackageViewHolder(
         val binding: ShippingLabelPackageDetailsListItemBinding
     ) : ViewHolder(binding.root) {
@@ -91,9 +91,9 @@ class ShippingLabelPackagesAdapter(
             binding.weightEditText.setOnTextChangedListener {
                 val weight = it?.toString()?.trim('.')?.ifEmpty { null }?.toFloat() ?: Float.NaN
                 // Return early if the weight wasn't changed
-                if (weight == uiModels[adapterPosition].data.weight) return@setOnTextChangedListener
+                if (weight == uiModels[bindingAdapterPosition].data.weight) return@setOnTextChangedListener
 
-                onWeightEdited(adapterPosition, weight)
+                onWeightEdited(bindingAdapterPosition, weight)
 
                 if (weight <= 0.0) {
                     val context = binding.root.context
@@ -105,18 +105,18 @@ class ShippingLabelPackagesAdapter(
             }
 
             binding.selectedPackageSpinner.setClickListener {
-                onPackageSpinnerClicked(adapterPosition)
+                onPackageSpinnerClicked(bindingAdapterPosition)
             }
 
             binding.titleLayout.setOnClickListener {
                 if (isExpanded) {
                     binding.expandIcon.animate().rotation(0f).start()
                     binding.detailsLayout.collapse()
-                    onExpandedChanged(adapterPosition, false)
+                    onExpandedChanged(bindingAdapterPosition, false)
                 } else {
                     binding.expandIcon.animate().rotation(180f).start()
                     binding.detailsLayout.expand()
-                    onExpandedChanged(adapterPosition, true)
+                    onExpandedChanged(bindingAdapterPosition, true)
                 }
             }
         }

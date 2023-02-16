@@ -1,11 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-02-02 08:54:03+0000
+Translation-Revision-Date: 2023-02-08 17:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="store_onboarding_completed_tasks_status">%1$d/%2$d tamamlandı</string>
+    <string name="store_onboarding_task_change_domain_description">Mağazanızı depolamak için özel bir URL\'ye sahip olun.</string>
+    <string name="store_onboarding_task_change_domain_title">Alan adınızı özelleştirin</string>
+    <string name="store_onboarding_task_launch_store_description">Sitenizi istediğiniz zaman dünyaya yayımlayın!</string>
+    <string name="store_onboarding_task_launch_store_title">Mağazanızı yayınlayın</string>
+    <string name="store_onboarding_task_add_product_description">Mağazanıza ürün veya hizmet ekleyerek satış yapmaya başlayın.</string>
+    <string name="store_onboarding_task_add_product_title">İlk ürününüzü ekleyin </string>
+    <string name="store_onboarding_title">Mağaza kurulumu</string>
+    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">Etkin bir e-Ticaret aboneliğiniz zaten var, mevcut aboneliğinizle ilgili olarak yeni sitenize bağlı olmayan sorunlar yaşıyorsanız lütfen destekle iletişime geçin.</string>
+    <string name="store_creation_iap_eligibility_network_error">Bir ağ sorunu meydana geldi. Lütfen bağlantınızı kontrol edip tekrar deneyin.</string>
+    <string name="store_creation_iap_eligibility_check_generic_error">Mağaza oluşturma şu anda kullanılamıyor. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="store_creation_iap_eligibility_check_error_existing_subscription">E-Ticaret paketini mobil uygulamadan yalnızca bir kez satın alabilirsiniz. Ek site oluşturmak için web sitemizi ziyaret edin.</string>
+    <string name="card_reader_payment_failed_app_setup_is_invalid">Uygulama kurulumuyla ilgili bir şeyler yanlış gitti. Daha fazla ayrıntı için lütfen destek hizmetleriyle iletişime geçin</string>
+    <string name="card_reader_payment_failed_device_is_not_supported">Cihazınız desteklenmiyor. Daha fazla ayrıntı için lütfen destek hizmetleriyle iletişime geçin</string>
+    <string name="card_reader_payment_failed_nfc_disabled">NFC çipi devre dışı olduğu için uygulama kart okuyucuyu etkinleştiremedi</string>
+    <string name="card_reader_payment_failed_canceled">İşlem iptal edildi</string>
+    <string name="domains_redirect_notice">Satın alınan alan adı kullanıcıları şuraya yönlendirecek</string>
+    <string name="domains_select_domain">Alan adı seç</string>
+    <string name="domains_add_domain_button_title">Alan adı ekle</string>
+    <string name="domains_your_domains">Sitenizin alan adları</string>
+    <string name="domains_primary_address">Birincil site adresi</string>
+    <string name="domains_learn_more">Alan adları ve alan adlarıyla ilgili işlemlerin nasıl yapılacağı hakkında &lt;a href=\'\'&gt;&lt;u&gt;daha fazla bilgi edinin&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="domains_search_for_domain_button_title">Bir alan adı ara</string>
+    <string name="domains_purchase_redirect_notice">Satın alınan alan adı, kullanıcıları birincil adresinize yönlendirir.</string>
+    <string name="domains_claim_your_free_domain_link">Alan Adı Al</string>
+    <string name="domains_claim_your_free_domain_description">Paketiniz ücretsiz bir yıllık alan adı kaydını içerir.</string>
+    <string name="domains_claim_your_free_domain_title">Ücretsiz alan adınızı talep edin</string>
+    <string name="domains_your_free_store_address">Ücretsiz mağaza adresiniz</string>
+    <string name="domains">Alan adları</string>
     <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_dont_show_again_button">Tekrar gösterme</string>
     <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_button">Daha sonra hatırlat</string>
     <string name="feedback_banner_ipp_dismiss_confirmation_message">Endişe etmeyin: Bize geri bildirim göndermek için her zaman Menüde Ayarlar\'a gidebilirsiniz.</string>
@@ -212,7 +241,7 @@ Language: tr
     <string name="login_application_passwords_unavailable">Görünüşe göre Uygulama Şifreleri özelliği %1$s sitenizde devre dışı bırakılmış.\n WooCommerce uygulamasını kullanmak için lütfen Uygulama Şifresini etkinleştirin.</string>
     <string name="login_open_installation_page">Kurulum sayfasını açın</string>
     <string name="not_a_valid_qr_code">Taranan Qr kodu bir WooCommerce kodu değil.</string>
-    <string name="store_creation_iap_eligibility_check_error_description">Mobil uygulamadan mağaza oluşturma seçeneği şu an ülkenizde mevcut değil.</string>
+    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">Mobil uygulamadan mağaza oluşturma şu anda ülkenizde kullanılamıyor.</string>
     <string name="store_creation_iap_eligibility_check_error_title">Mağaza Oluşturma Mevcut Değil</string>
     <string name="store_creation_iap_eligibility_loading_subtitle">Lütfen bağlantınızı koparmayın</string>
     <string name="store_creation_iap_eligibility_loading_title">Mağazanızı oluşturmaya hazırlanıyoruz</string>

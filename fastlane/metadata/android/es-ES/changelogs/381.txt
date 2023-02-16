@@ -1,2 +1,0 @@
-12.1:
-Esta versión incluye unas cuantas pequeñas mejoras y correcciones de errores que ha encontrado nuestro equipo. También hemos hecho algunos ajustes para mejorar el rendimiento. Sigue enviándonos tus comentarios. Los leemos todos.
