@@ -34,15 +34,15 @@ object OrderDurationRecorder {
     }
 
     private fun millisecondsSince(origin: Long?): Result<Long> {
-        origin?.let {
+        return origin?.let {
             val timestamp = System.currentTimeMillis() - it
 
-            if (timestamp > TIMEOUT) {
-                return Result.failure(OrderDurationRecorderException(DURATION_TIMEOUT_EXCEEDED))
+            return if (timestamp > TIMEOUT) {
+                Result.failure(OrderDurationRecorderException(DURATION_TIMEOUT_EXCEEDED))
+            } else {
+                Result.success(timestamp)
             }
-
-            return Result.success(timestamp)
-        } ?: return Result.failure(OrderDurationRecorderException(NO_START_RECORDING_TIMESTAMP))
+        } ?: Result.failure(OrderDurationRecorderException(NO_START_RECORDING_TIMESTAMP))
     }
 
     class OrderDurationRecorderException(
