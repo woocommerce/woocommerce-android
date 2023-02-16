@@ -124,8 +124,6 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
 
     @Test
     fun `When clear button clicked, then clear filter even is tracked`() {
-        whenever(resourceProvider.getString(R.string.orderfilters_filters_default_title))
-            .thenReturn(DEFAULT_FILTER_TITLE)
 
         viewModel.onClearFilters()
 
