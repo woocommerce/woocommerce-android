@@ -51,6 +51,7 @@ import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.Refun
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
@@ -351,11 +352,11 @@ class CardReaderTracker @Inject constructor(
     }
 
     fun trackPaymentSucceeded() {
-        track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
+        track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS, getAndResetFlowsDuration())
     }
 
     fun trackInteracPaymentSucceeded() {
-        track(CARD_PRESENT_COLLECT_INTERAC_PAYMENT_SUCCESS)
+        track(CARD_PRESENT_COLLECT_INTERAC_PAYMENT_SUCCESS, getAndResetFlowsDuration())
     }
 
     fun trackInteracPaymentFailed(
@@ -434,6 +435,20 @@ class CardReaderTracker @Inject constructor(
 
     fun trackLearnMoreConnectionClicked() {
         track(CARD_PRESENT_CONNECTION_LEARN_MORE_TAPPED)
+    }
+
+    private fun getAndResetFlowsDuration(): MutableMap<String, Any> {
+        val result = mutableMapOf<String, Any>()
+            .also { mutableMap ->
+                OrderDurationRecorder.millisecondsSinceOrderAddNew().getOrNull()?.let { timeElapsed ->
+                    mutableMap[AnalyticsTracker.KEY_TIME_ELAPSED_SINCE_ADD_NEW_ORDER_IN_MILLIS] = timeElapsed.toString()
+                }
+                OrderDurationRecorder.millisecondsSinceCardPaymentStarted().getOrNull()?.let { timeElapsed ->
+                    mutableMap[AnalyticsTracker.KEY_TIME_ELAPSED_SINCE_CARD_COLLECT_PAYMENT_IN_MILLIS] = timeElapsed.toString()
+                }
+            }
+        OrderDurationRecorder.reset()
+        return result
     }
 
     companion object {
