@@ -35,10 +35,10 @@ enum class FeatureFlag {
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
-            IAP_FOR_STORE_CREATION,
             IPP_TAP_TO_PAY,
             DOMAIN_CHANGE,
             STORE_CREATION_ONBOARDING -> PackageUtils.isDebugBuild()
+            IAP_FOR_STORE_CREATION -> false
         }
     }
 }

@@ -150,7 +150,7 @@ class DomainPickerViewModel @Inject constructor(
                             return@mapNotNull null
                         } else {
                             if (isFreeCreditAvailable && domain.cost != null) {
-                                // free credit can't be used for premium domains don't have, which don't have cost
+                                // free credit can't be used for premium domains, which don't have cost
                                 DomainSuggestionUi.FreeWithCredit(
                                     isSelected = domain.name == preSelectDomain,
                                     domain = domain.name,
