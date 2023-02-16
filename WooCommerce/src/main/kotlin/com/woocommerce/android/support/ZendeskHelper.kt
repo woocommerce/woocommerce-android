@@ -150,30 +150,28 @@ class ZendeskHelper(
     }
 
     fun createRequest(
-        formID: Long,
+        context: Context,
+        selectedSite: SiteModel?,
+        ticketType: TicketType,
         subject: String,
         description: String,
-        tags: List<String>,
-        customFields: Map<Long, String>,
+        tags: List<String> = emptyList(),
+        ssr: String? = null,
         onSuccess: (Request?) -> Unit,
         onError: (ErrorResponse) -> Unit
     ) {
-        val requestCallback = configureRequestCreationCallback(onSuccess, onError)
+        val requestCallback = object : ZendeskCallback<Request>() {
+            override fun onSuccess(result: Request?) { onSuccess(result) }
+            override fun onError(error: ErrorResponse) { onError(error) }
+        }
+
         CreateRequest().apply {
-            this.ticketFormId = formID
+            this.ticketFormId = ticketType.form
             this.subject = subject
             this.description = description
-            this.tags = tags
-            this.customFields = customFields.map { CustomField(it.key, it.value) }
+            this.tags = tags + ticketType.tags
+            this.customFields = buildZendeskCustomFields(context, ticketType, siteStore.sites, selectedSite, ssr)
         }.let { requestProvider?.createRequest(it, requestCallback) }
-    }
-
-    private fun configureRequestCreationCallback(
-        onSuccess: (Request?) -> Unit,
-        onError: (ErrorResponse) -> Unit
-    ) = object : ZendeskCallback<Request>() {
-        override fun onSuccess(result: Request?) { onSuccess(result) }
-        override fun onError(error: ErrorResponse) { onError(error) }
     }
 
     /**
@@ -457,13 +455,13 @@ private fun buildZendeskCustomFields(
         CustomField(TicketFieldIds.deviceFreeSpace, DeviceUtils.getTotalAvailableMemorySize()),
         CustomField(TicketFieldIds.networkInformation, getNetworkInformation(context)),
         CustomField(TicketFieldIds.logs, WooLog.toString().takeLast(maxLogfileLength)),
+        CustomField(TicketFieldIds.ssr, ssr),
         CustomField(TicketFieldIds.currentSite, currentSiteInformation),
         CustomField(TicketFieldIds.sourcePlatform, ZendeskConstants.sourcePlatform),
         CustomField(TicketFieldIds.appLanguage, Locale.getDefault().language),
         CustomField(TicketFieldIds.categoryId, ZendeskConstants.categoryValue),
         CustomField(TicketFieldIds.subcategoryId, ticketType.subcategoryName),
-        CustomField(TicketFieldIds.blogList, getCombinedLogInformationOfSites(allSites)),
-        CustomField(TicketFieldIds.ssr, ssr)
+        CustomField(TicketFieldIds.blogList, getCombinedLogInformationOfSites(allSites))
     )
 }
 
