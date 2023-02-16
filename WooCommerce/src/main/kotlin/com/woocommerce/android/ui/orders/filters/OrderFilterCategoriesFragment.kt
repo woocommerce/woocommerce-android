@@ -76,7 +76,6 @@ class OrderFilterCategoriesFragment :
     override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_clear -> {
-                AnalyticsTracker.track(AnalyticsEvent.ORDER_FILTER_LIST_CLEAR_MENU_BUTTON_TAPPED)
                 viewModel.onClearFilters()
                 updateClearButtonVisibility(item)
                 true

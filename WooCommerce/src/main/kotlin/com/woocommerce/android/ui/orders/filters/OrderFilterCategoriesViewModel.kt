@@ -83,6 +83,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     }
 
     fun onClearFilters() {
+        AnalyticsTracker.track(AnalyticsEvent.ORDER_FILTER_LIST_CLEAR_MENU_BUTTON_TAPPED)
         _categories = OrderFilterCategories(
             _categories.list.map {
                 it.copy(
