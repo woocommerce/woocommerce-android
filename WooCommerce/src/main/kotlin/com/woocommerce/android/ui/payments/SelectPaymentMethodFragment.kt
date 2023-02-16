@@ -17,6 +17,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentTakePaymentBinding
 import com.woocommerce.android.extensions.exhaustive
+import com.woocommerce.android.extensions.expandHitArea
 import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
@@ -47,6 +48,9 @@ import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.DisplayUtils.dpToPx
+
+private const val HIT_AREA_EXPANSION_DP = 16
 
 @AndroidEntryPoint
 class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment), BackPressListener {
@@ -153,9 +157,9 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
         }
 
         with(binding.learnMoreIppPaymentMethodsTv) {
-
             val learMoreIpp = state.learMoreIpp
             setOnClickListener { learMoreIpp.onClick.invoke() }
+            expandHitArea(0, dpToPx(requireContext(), HIT_AREA_EXPANSION_DP))
             UiHelpers.setTextOrHide(this, learMoreIpp.label)
         }
         applyBannerComposeUI(state.bannerState)

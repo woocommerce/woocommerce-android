@@ -17,6 +17,7 @@ import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentCardReaderHubBinding
+import com.woocommerce.android.extensions.expandHitArea
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
@@ -24,7 +25,10 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.DisplayUtils.dpToPx
 import org.wordpress.android.util.ToastUtils
+
+private const val HIT_AREA_EXPANSION_DP = 16
 
 private const val APPEARANCE_ANIMATION_DURATION_MS = 600L
 
@@ -120,6 +124,7 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
             with(binding.learnMoreIppTv) {
                 val learnMoreIpp = state.learMoreIpp
                 setOnClickListener { learnMoreIpp?.onClick?.invoke() }
+                expandHitArea(0, dpToPx(requireContext(), HIT_AREA_EXPANSION_DP))
                 UiHelpers.setTextOrHide(this, learnMoreIpp?.label)
             }
         }
