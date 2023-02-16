@@ -249,7 +249,7 @@ class CardReaderHubViewModel @Inject constructor(
     }
 
     private fun onLearnMoreIppClicked() {
-        cardReaderTracker.trackPaymentsMenuLearnMoreClicked(UTM_SOURCE)
+        cardReaderTracker.trackPaymentsMenuLearnMoreClicked(LEARN_MORE_SOURCE)
         triggerEvent(
             CardReaderHubEvents.OpenGenericWebView(
                 learnMoreUrlProvider.provideLearnMoreUrlFor(
@@ -448,5 +448,6 @@ class CardReaderHubViewModel @Inject constructor(
     companion object {
         const val UTM_CAMPAIGN = "payments_menu_item"
         const val UTM_SOURCE = "payments_menu"
+        const val LEARN_MORE_SOURCE = "payments_menu"
     }
 }

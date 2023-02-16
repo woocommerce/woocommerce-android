@@ -367,7 +367,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     private fun onLearnMoreIppClicked() {
-        cardReaderTracker.trackPaymentMethodsLearnMoreClicked(UTM_SOURCE)
+        cardReaderTracker.trackPaymentMethodsLearnMoreClicked(LEARN_MORE_SOURCE)
         triggerEvent(
             OpenGenericWebView(
                 learnMoreUrlProvider.provideLearnMoreUrlFor(
@@ -429,7 +429,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
     companion object {
         private const val DELAY_MS = 1L
         const val UTM_CAMPAIGN = "feature_announcement_card"
-        const val UTM_SOURCE = "payment_methods"
+        const val UTM_SOURCE = "payment_method"
         const val UTM_CONTENT = "upsell_card_readers"
+        const val LEARN_MORE_SOURCE = "payment_methods"
     }
 }
