@@ -204,6 +204,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // -- Order filter by status dialog
     FILTER_ORDERS_BY_STATUS_DIALOG_APPLY_FILTER_BUTTON_TAPPED,
     FILTER_ORDERS_BY_STATUS_DIALOG_OPTION_SELECTED,
+    ORDER_FILTER_LIST_CLEAR_MENU_BUTTON_TAPPED,
 
     // -- Payments
     PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED,
