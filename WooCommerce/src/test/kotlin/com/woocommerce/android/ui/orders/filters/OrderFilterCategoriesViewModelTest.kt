@@ -5,7 +5,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.orders.OrderTestUtils.generateOrderStatusOptions
-import com.woocommerce.android.ui.orders.filters.data.*
+import com.woocommerce.android.ui.orders.filters.data.DateRange
+import com.woocommerce.android.ui.orders.filters.data.DateRangeFilterOption
+import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
+import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
+import com.woocommerce.android.ui.orders.filters.data.OrderStatusOption
 import com.woocommerce.android.ui.orders.filters.domain.GetDateRangeFilterOptions
 import com.woocommerce.android.ui.orders.filters.domain.GetOrderStatusFilterOptions
 import com.woocommerce.android.ui.orders.filters.domain.GetTrackingForFilterSelection
@@ -119,7 +123,7 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `When clear button clicked, then clear filter even is tracked` () {
+    fun `When clear button clicked, then clear filter even is tracked`() {
         whenever(resourceProvider.getString(R.string.orderfilters_filters_default_title))
             .thenReturn(DEFAULT_FILTER_TITLE)
 
