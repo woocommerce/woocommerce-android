@@ -453,17 +453,17 @@ private fun buildZendeskCustomFields(
         "not_selected"
     }
     return listOf(
+        CustomField(TicketFieldIds.appVersion, PackageUtils.getVersionName(context)),
+        CustomField(TicketFieldIds.deviceFreeSpace, DeviceUtils.getTotalAvailableMemorySize()),
+        CustomField(TicketFieldIds.networkInformation, getNetworkInformation(context)),
+        CustomField(TicketFieldIds.logs, WooLog.toString().takeLast(maxLogfileLength)),
+        CustomField(TicketFieldIds.currentSite, currentSiteInformation),
+        CustomField(TicketFieldIds.sourcePlatform, ZendeskConstants.sourcePlatform),
+        CustomField(TicketFieldIds.appLanguage, Locale.getDefault().language),
         CustomField(TicketFieldIds.categoryId, ZendeskConstants.categoryValue),
         CustomField(TicketFieldIds.subcategoryId, ticketType.subcategoryName),
-        CustomField(TicketFieldIds.appVersion, PackageUtils.getVersionName(context)),
         CustomField(TicketFieldIds.blogList, getCombinedLogInformationOfSites(allSites)),
-        CustomField(TicketFieldIds.currentSite, currentSiteInformation),
-        CustomField(TicketFieldIds.deviceFreeSpace, DeviceUtils.getTotalAvailableMemorySize()),
-        CustomField(TicketFieldIds.logs, WooLog.toString().takeLast(maxLogfileLength)),
-        CustomField(TicketFieldIds.ssr, ssr),
-        CustomField(TicketFieldIds.networkInformation, getNetworkInformation(context)),
-        CustomField(TicketFieldIds.appLanguage, Locale.getDefault().language),
-        CustomField(TicketFieldIds.sourcePlatform, ZendeskConstants.sourcePlatform)
+        CustomField(TicketFieldIds.ssr, ssr)
     )
 }
 
