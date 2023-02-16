@@ -155,7 +155,6 @@ class ZendeskHelper(
         ticketType: TicketType,
         subject: String,
         description: String,
-        tags: List<String> = emptyList(),
         ssr: String? = null,
         onSuccess: (Request?) -> Unit,
         onError: (ErrorResponse) -> Unit
@@ -169,7 +168,7 @@ class ZendeskHelper(
             this.ticketFormId = ticketType.form
             this.subject = subject
             this.description = description
-            this.tags = tags + ticketType.tags
+            this.tags = ticketType.tags
             this.customFields = buildZendeskCustomFields(context, ticketType, siteStore.sites, selectedSite, ssr)
         }.let { requestProvider?.createRequest(it, requestCallback) }
     }
