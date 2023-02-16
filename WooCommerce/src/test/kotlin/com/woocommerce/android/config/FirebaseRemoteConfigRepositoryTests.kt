@@ -1,7 +1,6 @@
 package com.woocommerce.android.config
 
 import android.app.Activity
-import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
@@ -22,7 +21,6 @@ import java.util.concurrent.Executor
 @OptIn(ExperimentalCoroutinesApi::class)
 class FirebaseRemoteConfigRepositoryTests : BaseUnitTest() {
     private val remoteConfig = mock<FirebaseRemoteConfig>()
-    private val crashLogging = mock<CrashLogging>()
 
     lateinit var repository: FirebaseRemoteConfigRepository
 
@@ -37,8 +35,7 @@ class FirebaseRemoteConfigRepositoryTests : BaseUnitTest() {
             .thenReturn(StaticTask(null))
 
         repository = FirebaseRemoteConfigRepository(
-            remoteConfig = remoteConfig,
-            crashLogging = { crashLogging }
+            remoteConfig = remoteConfig
         )
     }
 

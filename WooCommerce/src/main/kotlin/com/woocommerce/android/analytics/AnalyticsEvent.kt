@@ -377,6 +377,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     CARD_READER_DISCONNECT_TAPPED,
     CARD_READER_AUTO_CONNECTION_STARTED,
     CARD_PRESENT_CONNECTION_LEARN_MORE_TAPPED,
+    MANAGE_CARD_READERS_AUTOMATIC_DISCONNECT_BUILT_IN_READER,
 
     // -- Card Reader - software update
     CARD_READER_SOFTWARE_UPDATE_STARTED,
@@ -387,6 +388,13 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     CARD_READER_LOCATION_SUCCESS,
     CARD_READER_LOCATION_FAILURE,
     CARD_READER_LOCATION_MISSING_TAPPED,
+
+    // -- Card Reader - reader type selection
+    CARD_PRESENT_SELECT_READER_TYPE_BUILT_IN_TAPPED,
+    CARD_PRESENT_SELECT_READER_TYPE_BLUETOOTH_TAPPED,
+
+    // -- Card Reader - tap to pay not available
+    CARD_PRESENT_TAP_TO_PAY_NOT_AVAILABLE,
 
     // -- Receipts
     RECEIPT_PRINT_TAPPED,
@@ -796,7 +804,4 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
 
     APPLICATION_PASSWORDS_NEW_PASSWORD_CREATED,
     APPLICATION_PASSWORDS_GENERATION_FAILED,
-
-    // Experiments (A/B test variants)
-    REST_API_LOGIN_EXPERIMENT
 }

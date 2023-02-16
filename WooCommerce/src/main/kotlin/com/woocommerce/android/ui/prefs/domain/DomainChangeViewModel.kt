@@ -8,13 +8,14 @@ import com.woocommerce.android.analytics.AnalyticsEvent.DOMAIN_CHANGE_CURRENT_DO
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin.DOMAIN_CHANGE
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.domain.DomainChangeViewModel.ViewState.DomainsState
+import com.woocommerce.android.ui.prefs.domain.DomainChangeViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.prefs.domain.DomainChangeViewModel.ViewState.LoadingState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -24,10 +25,11 @@ import javax.inject.Inject
 class DomainChangeViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    selectedSite: SelectedSite
+    private val repository: DomainChangeRepository
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val LEARN_MORE_URL = "https://wordpress.com/go/tutorials/what-is-a-domain-name/"
+        private const val NO_DOMAIN = "<NO DOMAIN>"
     }
 
     private val _viewState = savedStateHandle.getStateFlow<ViewState>(this, LoadingState)
@@ -41,16 +43,40 @@ class DomainChangeViewModel @Inject constructor(
             )
         )
 
+        loadData()
+    }
+
+    private fun loadData() {
         launch {
-            _viewState.update {
-                DomainsState(
-                    wpComDomain = DomainsState.Domain(
-                        url = selectedSite.get().url,
-                        isPrimary = true
-                    ),
-                    paidDomains = emptyList(),
-                    isDomainClaimBannerVisible = true
-                )
+            val domainsAsync = async { repository.fetchSiteDomains() }
+            val planAsync = async { repository.fetchActiveSitePlan() }
+            val domainsResult = domainsAsync.await()
+            val planResult = planAsync.await()
+
+            if (domainsResult.isFailure) {
+                _viewState.update { ErrorState }
+            } else {
+                val freeDomain = domainsResult.getOrNull()?.firstOrNull { it.wpcomDomain }
+                val paidDomains = domainsResult.getOrNull()
+                    ?.filter { !it.wpcomDomain && it.domain != null } ?: emptyList()
+                if (freeDomain != null) {
+                    _viewState.update {
+                        DomainsState(
+                            wpComDomain = DomainsState.Domain(
+                                url = freeDomain.domain ?: NO_DOMAIN,
+                                isPrimary = freeDomain.primaryDomain
+                            ),
+                            paidDomains = paidDomains.map { domain ->
+                                DomainsState.Domain(
+                                    url = domain.domain!!,
+                                    renewalDate = domain.expiry,
+                                    isPrimary = domain.primaryDomain
+                                )
+                            },
+                            isDomainClaimBannerVisible = planResult.getOrNull()?.hasDomainCredit == true
+                        )
+                    }
+                }
             }
         }
     }
@@ -82,6 +108,9 @@ class DomainChangeViewModel @Inject constructor(
     sealed interface ViewState : Parcelable {
         @Parcelize
         object LoadingState : ViewState
+
+        @Parcelize
+        object ErrorState : ViewState
 
         @Parcelize
         data class DomainsState(

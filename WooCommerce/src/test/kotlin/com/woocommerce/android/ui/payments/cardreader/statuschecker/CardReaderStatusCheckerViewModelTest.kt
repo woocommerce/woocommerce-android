@@ -16,7 +16,8 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayEnabled
+import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.Available
+import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.NotAvailable
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,7 +34,6 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
     private val cardReaderTracker: CardReaderTracker = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val isTapToPayAvailable: IsTapToPayAvailable = mock()
-    private val isTapToPayEnabled: IsTapToPayEnabled = mock()
     private val countryCode = "US"
     private val pluginVersion = "4.0.0"
 
@@ -261,7 +261,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
                     countryCode
                 )
             )
-            whenever(isTapToPayAvailable(countryCode, isTapToPayEnabled)).thenReturn(true)
+            whenever(isTapToPayAvailable(countryCode)).thenReturn(Available)
 
             // WHEN
             val vm = initViewModel(param)
@@ -291,7 +291,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
                     countryCode
                 )
             )
-            whenever(isTapToPayAvailable(countryCode, isTapToPayEnabled)).thenReturn(false)
+            whenever(isTapToPayAvailable(countryCode)).thenReturn(NotAvailable.TapToPayDisabled)
 
             // WHEN
             val vm = initViewModel(param)
@@ -299,6 +299,131 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
             // THEN
             assertThat(vm.event.value)
                 .isEqualTo(CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToConnection(param))
+        }
+
+    @Test
+    fun `given payment flow and not connected and tpp disabled, when vm init, then tracks tap to pay not available`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = ORDER)
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+            whenever(appPrefsWrapper.isCardReaderWelcomeDialogShown()).thenReturn(true)
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.OnboardingCompleted(
+                    PluginType.WOOCOMMERCE_PAYMENTS,
+                    pluginVersion,
+                    countryCode
+                )
+            )
+            val tapToPayDisabled = NotAvailable.TapToPayDisabled
+            whenever(isTapToPayAvailable(countryCode)).thenReturn(tapToPayDisabled)
+
+            // WHEN
+            initViewModel(param)
+
+            // THEN
+            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayDisabled)
+        }
+
+    @Test
+    fun `given payment flow and not connected and tpp system not supported, when vm init, then tracks tpp system`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = ORDER)
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+            whenever(appPrefsWrapper.isCardReaderWelcomeDialogShown()).thenReturn(true)
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.OnboardingCompleted(
+                    PluginType.WOOCOMMERCE_PAYMENTS,
+                    pluginVersion,
+                    countryCode
+                )
+            )
+            val tapToPaySystemNotSupported = NotAvailable.SystemVersionNotSupported
+            whenever(isTapToPayAvailable(countryCode)).thenReturn(tapToPaySystemNotSupported)
+
+            // WHEN
+            initViewModel(param)
+
+            // THEN
+            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPaySystemNotSupported)
+        }
+
+    @Test
+    fun `given payment flow and not connected and tpp country not supported, when vm init, then tracks tpp country`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = ORDER)
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+            whenever(appPrefsWrapper.isCardReaderWelcomeDialogShown()).thenReturn(true)
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.OnboardingCompleted(
+                    PluginType.WOOCOMMERCE_PAYMENTS,
+                    pluginVersion,
+                    countryCode
+                )
+            )
+            val tapToPayCountryNotSupported = NotAvailable.CountryNotSupported
+            whenever(isTapToPayAvailable(countryCode)).thenReturn(tapToPayCountryNotSupported)
+
+            // WHEN
+            initViewModel(param)
+
+            // THEN
+            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayCountryNotSupported)
+        }
+
+    @Test
+    fun `given payment flow and not connected and tpp gps not available, when vm init, then tracks tpp gps`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = ORDER)
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+            whenever(appPrefsWrapper.isCardReaderWelcomeDialogShown()).thenReturn(true)
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.OnboardingCompleted(
+                    PluginType.WOOCOMMERCE_PAYMENTS,
+                    pluginVersion,
+                    countryCode
+                )
+            )
+            val tapToPayGpsNotAvailable = NotAvailable.GooglePlayServicesNotAvailable
+            whenever(isTapToPayAvailable(countryCode)).thenReturn(tapToPayGpsNotAvailable)
+
+            // WHEN
+            initViewModel(param)
+
+            // THEN
+            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayGpsNotAvailable)
+        }
+
+    @Test
+    fun `given payment flow and not connected and tpp nfc not available, when vm init, then tracks tpp nfc`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = ORDER)
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+            whenever(appPrefsWrapper.isCardReaderWelcomeDialogShown()).thenReturn(true)
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.OnboardingCompleted(
+                    PluginType.WOOCOMMERCE_PAYMENTS,
+                    pluginVersion,
+                    countryCode
+                )
+            )
+            val tapToPayNfcNotAvailable = NotAvailable.NfcNotAvailable
+            whenever(isTapToPayAvailable(countryCode)).thenReturn(tapToPayNfcNotAvailable)
+
+            // WHEN
+            initViewModel(param)
+
+            // THEN
+            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayNfcNotAvailable)
         }
 
     @Test
@@ -315,6 +440,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
             )
             whenever(appPrefsWrapper.isCardReaderWelcomeDialogShown()).thenReturn(true)
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(onboardingState)
+            whenever(isTapToPayAvailable(countryCode)).thenReturn(NotAvailable.TapToPayDisabled)
 
             // WHEN
             val vm = initViewModel(param)
@@ -334,6 +460,5 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
             cardReaderTracker,
             appPrefsWrapper,
             isTapToPayAvailable,
-            isTapToPayEnabled
         )
 }
