@@ -17,7 +17,6 @@ import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -27,7 +26,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
@@ -37,16 +35,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.network.xmlrpc.XMLRPCRequest.XmlRpcErrorType.AUTH_REQUIRED
-import org.wordpress.android.fluxc.store.AccountStore.AuthenticationError
-import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.AUTHORIZATION_REQUIRED
-import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.HTTP_AUTH_ERROR
-import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.INCORRECT_USERNAME_OR_PASSWORD
-import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.INVALID_OTP
-import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.INVALID_TOKEN
-import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.NEEDS_2FA
-import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.NOT_AUTHENTICATED
+import org.wordpress.android.fluxc.store.SiteStore.SiteError
+import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
@@ -58,8 +48,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val loginAnalyticsListener: LoginAnalyticsListener,
     private val resourceProvider: ResourceProvider,
-    private val applicationPasswordsNotifier: ApplicationPasswordsNotifier,
-    private val userEligibilityFetcher: UserEligibilityFetcher,
+    applicationPasswordsNotifier: ApplicationPasswordsNotifier,
     private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
@@ -71,7 +60,9 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     private val siteAddress: String = savedStateHandle[SITE_ADDRESS_KEY]!!
 
-    private val errorMessage = savedStateHandle.getStateFlow(viewModelScope, 0)
+    private val errorMessage = savedStateHandle.getStateFlow(viewModelScope, 0, "error-message")
+    private val fetchedSiteId = savedStateHandle.getStateFlow(viewModelScope, -1, "site-id")
+
     private val isLoading = MutableStateFlow(false)
 
     val state = combine(
@@ -107,16 +98,18 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     fun onUsernameChanged(username: String) {
         savedState[USERNAME_KEY] = username
         errorMessage.value = 0
+        fetchedSiteId.value = -1
     }
 
     fun onPasswordChanged(password: String) {
         savedState[PASSWORD_KEY] = password
         errorMessage.value = 0
+        fetchedSiteId.value = -1
     }
 
     fun onContinueClick() = launch {
         loginAnalyticsListener.trackSubmitClicked()
-        if (selectedSite.exists()) {
+        if (fetchedSiteId.value != -1) {
             // The login already succeeded, proceed to fetching user info
             fetchUserInfo()
         } else {
@@ -132,14 +125,22 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             username = state.username,
             password = state.password
         ).fold(
-            onSuccess = {
-                checkWooStatus(it)
+            onSuccess = { site ->
+                if (site.hasWooCommerce) {
+                    fetchedSiteId.value = site.id
+                    fetchUserInfo()
+                } else {
+                    triggerEvent(ShowNonWooErrorScreen(siteAddress))
+                }
             },
             onFailure = { exception ->
-                if (exception is OnChangedException && exception.error is AuthenticationError) {
-                    val errorMessage = exception.error.toErrorMessage()
+                val siteError = (exception as? OnChangedException)?.error as? SiteError
+                if (siteError != null) {
+                    val errorMessage = if (siteError.type == SiteErrorType.NOT_AUTHENTICATED) {
+                        R.string.username_or_password_incorrect
+                    } else null
                     if (errorMessage == null) {
-                        val message = exception.error.message?.takeIf { it.isNotEmpty() }
+                        val message = siteError.message?.takeIf { it.isNotEmpty() }
                             ?.let { UiStringText(it) } ?: UiStringRes(R.string.error_generic)
                         triggerEvent(ShowUiStringSnackbar(message))
                     }
@@ -151,7 +152,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 trackLoginFailure(
                     step = Step.AUTHENTICATION,
                     errorContext = error.javaClass.simpleName,
-                    errorType = (error as? AuthenticationError)?.type?.toString(),
+                    errorType = siteError?.type?.toString(),
                     errorDescription = exception.message
                 )
             }
@@ -159,21 +160,23 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         isLoading.value = false
     }
 
-    private suspend fun checkWooStatus(site: SiteModel) = coroutineScope {
+    private suspend fun fetchUserInfo() {
         isLoading.value = true
-
-        wpApiSiteRepository.checkWooStatus(site = site).fold(
-            onSuccess = { isWooInstalled ->
-                if (isWooInstalled) {
-                    selectedSite.set(site)
-                    fetchUserInfo()
-                } else {
-                    triggerEvent(ShowNonWooErrorScreen(siteAddress))
+        val site = requireNotNull(wpApiSiteRepository.getSiteByLocalId(fetchedSiteId.value)) {
+            "Site credentials login: Site not found in DB after login"
+        }
+        wpApiSiteRepository.checkIfUserIsEligible(site).fold(
+            onSuccess = { isEligible ->
+                if (isEligible) {
+                    // Track success only if the user is eligible, for the other cases, the user eligibility screen will
+                    // handle the flow
+                    loginAnalyticsListener.trackAnalyticsSignIn(false)
                 }
+                selectedSite.set(site)
+                triggerEvent(LoggedIn(selectedSite.getSelectedSiteId()))
             },
             onFailure = { exception ->
                 triggerEvent(ShowSnackbar(R.string.error_generic))
-
                 when (exception) {
                     is ApplicationPasswordGenerationException -> {
                         trackLoginFailure(
@@ -186,38 +189,13 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     else -> {
                         val wooError = (exception as? WooException)?.error
                         trackLoginFailure(
-                            step = Step.WOO_STATUS,
+                            step = Step.USER_ROLE,
                             errorContext = (wooError ?: exception).javaClass.simpleName,
                             errorType = wooError?.type?.name,
                             errorDescription = exception.message
                         )
                     }
                 }
-            }
-        )
-        isLoading.value = false
-    }
-
-    private suspend fun fetchUserInfo() {
-        isLoading.value = true
-        userEligibilityFetcher.fetchUserInfo().fold(
-            onSuccess = {
-                if (it.isEligible) {
-                    // Track success only if the user is eligible, for the other cases, the user eligibility screen will
-                    // handle the flow
-                    loginAnalyticsListener.trackAnalyticsSignIn(false)
-                }
-                triggerEvent(LoggedIn(selectedSite.getSelectedSiteId()))
-            },
-            onFailure = { exception ->
-                triggerEvent(ShowSnackbar(R.string.error_generic))
-                val wooError = (exception as? WooException)?.error
-                trackLoginFailure(
-                    step = Step.USER_ROLE,
-                    errorContext = (wooError ?: exception).javaClass.simpleName,
-                    errorType = wooError?.type?.name,
-                    errorDescription = exception.message
-                )
             }
         )
         isLoading.value = false
@@ -232,11 +210,13 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     fun onWooInstallationAttempted() = launch {
-        checkWooStatus(wpApiSiteRepository.getSiteByUrl(siteAddress)!!)
+        // Retry login to re-fetch the site
+        login()
     }
 
     fun retryApplicationPasswordsCheck() = launch {
-        checkWooStatus(wpApiSiteRepository.getSiteByUrl(siteAddress)!!)
+        // Retry fetching user info, it will use Application Passwords
+        fetchUserInfo()
     }
 
     private fun trackLoginFailure(step: Step, errorContext: String?, errorType: String?, errorDescription: String?) {
@@ -255,22 +235,6 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     private fun String.removeSchemeAndSuffix() = UrlUtils.removeScheme(UrlUtils.removeXmlrpcSuffix(this))
-
-    private fun AuthenticationError.toErrorMessage() = when (type) {
-        INCORRECT_USERNAME_OR_PASSWORD, NOT_AUTHENTICATED, HTTP_AUTH_ERROR ->
-            if (type == HTTP_AUTH_ERROR && xmlRpcErrorType == AUTH_REQUIRED) {
-                R.string.login_error_xml_rpc_auth_error_communicating
-            } else {
-                R.string.username_or_password_incorrect
-            }
-
-        INVALID_OTP, INVALID_TOKEN, AUTHORIZATION_REQUIRED, NEEDS_2FA ->
-            R.string.login_2fa_not_supported_self_hosted_site
-
-        else -> {
-            null
-        }
-    }
 
     @Parcelize
     data class LoginSiteCredentialsViewState(

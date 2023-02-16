@@ -79,11 +79,12 @@
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginEnd="@dimen/major_100"
             android:text="@string/login_wpcom"
-            android:textAllCaps="false" />
+            android:textAllCaps="false"
+            android:visibility="gone" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_login_store"
-            style="@style/Woo.Button.Colored.White"
+            style="@style/Woo.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"

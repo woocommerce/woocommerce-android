@@ -9,7 +9,6 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.experiment.RESTAPILoginExperiment
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -72,7 +71,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val jitmTracker: JitmTracker = mock()
     private val utmProvider: MyStoreUtmProvider = mock()
     private val queryParamsEncoder: QueryParamsEncoder = mock()
-    private val restAPILoginExperiment: RESTAPILoginExperiment = mock()
 
     private lateinit var sut: MyStoreViewModel
 
@@ -1375,8 +1373,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             jitmStore,
             jitmTracker,
             utmProvider,
-            queryParamsEncoder,
-            restAPILoginExperiment
+            queryParamsEncoder
         )
     }
 

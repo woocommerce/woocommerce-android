@@ -117,13 +117,13 @@ class HelpActivity : AppCompatActivity() {
     private fun initObservers(binding: ActivityHelpBinding) {
         viewModel.event.observe(this) { event ->
             when (event) {
-                is HelpViewModel.ContactPaymentsSupportClickEvent -> {
+                is HelpViewModel.ContactSupportEvent -> {
                     when (event) {
-                        is HelpViewModel.ContactPaymentsSupportClickEvent.CreateTicket -> {
+                        is HelpViewModel.ContactSupportEvent.CreateTicket -> {
                             binding.helpLoading.visibility = View.GONE
                             createNewZendeskTicket(event.ticketType, extraTags = event.supportTags)
                         }
-                        HelpViewModel.ContactPaymentsSupportClickEvent.ShowLoading -> {
+                        HelpViewModel.ContactSupportEvent.ShowLoading -> {
                             binding.helpLoading.visibility = View.VISIBLE
                         }
                     }.exhaustive

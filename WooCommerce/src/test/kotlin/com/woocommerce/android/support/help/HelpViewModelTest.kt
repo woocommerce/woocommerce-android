@@ -55,7 +55,7 @@ class HelpViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(viewModel.event.value).isEqualTo(
-            HelpViewModel.ContactPaymentsSupportClickEvent.CreateTicket(
+            HelpViewModel.ContactSupportEvent.CreateTicket(
                 TicketType.General,
                 emptyList(),
             )
@@ -71,7 +71,7 @@ class HelpViewModelTest : BaseUnitTest() {
         viewModel.contactSupport(TicketType.General)
 
         // THEN
-        assertThat(viewModel.event.value).isEqualTo(HelpViewModel.ContactPaymentsSupportClickEvent.ShowLoading)
+        assertThat(viewModel.event.value).isEqualTo(HelpViewModel.ContactSupportEvent.ShowLoading)
     }
 
     @Test
@@ -92,7 +92,7 @@ class HelpViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(viewModel.event.value).isEqualTo(
-                HelpViewModel.ContactPaymentsSupportClickEvent.CreateTicket(
+                HelpViewModel.ContactSupportEvent.CreateTicket(
                     TicketType.General,
                     listOf("woo_mobile_site_plugins_fetching_error")
                 )
@@ -117,7 +117,7 @@ class HelpViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(viewModel.event.value).isEqualTo(
-                HelpViewModel.ContactPaymentsSupportClickEvent.CreateTicket(
+                HelpViewModel.ContactSupportEvent.CreateTicket(
                     TicketType.Payments,
                     listOf("woo_mobile_site_plugins_fetching_error")
                 )
@@ -136,7 +136,7 @@ class HelpViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(viewModel.event.value).isEqualTo(
-                HelpViewModel.ContactPaymentsSupportClickEvent.CreateTicket(
+                HelpViewModel.ContactSupportEvent.CreateTicket(
                     TicketType.General,
                     listOf(
                         "woo_mobile_wcpay_not_installed",
@@ -159,7 +159,7 @@ class HelpViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(viewModel.event.value).isEqualTo(
-                HelpViewModel.ContactPaymentsSupportClickEvent.CreateTicket(
+                HelpViewModel.ContactSupportEvent.CreateTicket(
                     TicketType.General,
                     listOf(
                         "woo_mobile_wcpay_installed_and_not_activated",
@@ -185,7 +185,7 @@ class HelpViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(viewModel.event.value).isEqualTo(
-                HelpViewModel.ContactPaymentsSupportClickEvent.CreateTicket(
+                HelpViewModel.ContactSupportEvent.CreateTicket(
                     TicketType.General,
                     listOf(
                         "woo_mobile_wcpay_installed_and_activated",
@@ -208,7 +208,7 @@ class HelpViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(viewModel.event.value).isEqualTo(
-                HelpViewModel.ContactPaymentsSupportClickEvent.CreateTicket(
+                HelpViewModel.ContactSupportEvent.CreateTicket(
                     TicketType.General,
                     listOf(
                         "woo_mobile_wcpay_not_installed",
@@ -234,7 +234,7 @@ class HelpViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(viewModel.event.value).isEqualTo(
-                HelpViewModel.ContactPaymentsSupportClickEvent.CreateTicket(
+                HelpViewModel.ContactSupportEvent.CreateTicket(
                     TicketType.General,
                     listOf(
                         "woo_mobile_wcpay_not_installed",
@@ -261,7 +261,7 @@ class HelpViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(viewModel.event.value).isEqualTo(
-                HelpViewModel.ContactPaymentsSupportClickEvent.CreateTicket(
+                HelpViewModel.ContactSupportEvent.CreateTicket(
                     TicketType.General,
                     listOf(
                         "woo_mobile_wcpay_installed_and_not_activated",
@@ -290,7 +290,7 @@ class HelpViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(viewModel.event.value).isEqualTo(
-                HelpViewModel.ContactPaymentsSupportClickEvent.CreateTicket(
+                HelpViewModel.ContactSupportEvent.CreateTicket(
                     TicketType.General,
                     listOf(
                         "woo_mobile_wcpay_installed_and_activated",
@@ -319,7 +319,7 @@ class HelpViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(viewModel.event.value).isEqualTo(
-                HelpViewModel.ContactPaymentsSupportClickEvent.CreateTicket(
+                HelpViewModel.ContactSupportEvent.CreateTicket(
                     TicketType.General,
                     listOf(
                         "woo_mobile_wcpay_installed_and_not_activated",
@@ -350,7 +350,7 @@ class HelpViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(viewModel.event.value).isEqualTo(
-                HelpViewModel.ContactPaymentsSupportClickEvent.CreateTicket(
+                HelpViewModel.ContactSupportEvent.CreateTicket(
                     TicketType.General,
                     listOf(
                         "woo_mobile_wcpay_installed_and_activated",

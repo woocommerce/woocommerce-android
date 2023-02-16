@@ -10,14 +10,13 @@ class DraggableItemTouchHelper(
     private val onMove: (from: Int, to: Int) -> Unit
 ) : ItemTouchHelper(
     object : ItemTouchHelper.SimpleCallback(dragDirs, 0) {
-        @Suppress("DEPRECATION")
         override fun onMove(
             recyclerView: RecyclerView,
             viewHolder: ViewHolder,
             target: ViewHolder
         ): Boolean {
-            val from = viewHolder.adapterPosition
-            val to = target.adapterPosition
+            val from = viewHolder.bindingAdapterPosition
+            val to = target.bindingAdapterPosition
             onMove(from, to)
 
             return true

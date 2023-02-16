@@ -49,7 +49,12 @@ internal enum class MetaDataKeys(val key: String) {
     /**
      * Model name of a reader which is used to collect the payment
      */
-    READER_MODEL("reader_model");
+    READER_MODEL("reader_model"),
+
+    /**
+     * The platform used to collect the payment, `android` in our case
+     */
+    PLATFORM("platform");
 
     enum class PaymentTypes(val key: String) {
         /**

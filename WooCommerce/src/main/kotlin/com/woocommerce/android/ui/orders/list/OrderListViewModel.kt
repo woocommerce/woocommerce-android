@@ -183,8 +183,12 @@ class OrderListViewModel @Inject constructor(
                 FeatureFlag.IPP_FEEDBACK_BANNER.isEnabled() && shouldShowFeedbackBanner()
             if (shouldShowFeedbackBanner) {
                 val bannerData = getIPPFeedbackBannerData()
-                viewState = viewState.copy(ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(bannerData))
-                trackIPPBannerEvent(AnalyticsEvent.IPP_FEEDBACK_BANNER_SHOWN)
+                if (bannerData != null) {
+                    viewState = viewState.copy(
+                        ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(bannerData)
+                    )
+                    trackIPPBannerEvent(AnalyticsEvent.IPP_FEEDBACK_BANNER_SHOWN)
+                }
             }
             refreshOrdersBannerVisibility()
         }

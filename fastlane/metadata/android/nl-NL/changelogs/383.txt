@@ -1,0 +1,2 @@
+12.2:
+Met deze release hebben we wat bugs verholpen en verbeteringen aangebracht aan onze functie voor fysieke betalingen. Probeer het uit en laat weten wat je ervan denkt!

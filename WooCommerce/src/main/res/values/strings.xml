@@ -544,6 +544,7 @@
     <string name="domains_add_domain_button_title">Add a domain</string>
     <string name="domains_select_domain">Select domain</string>
     <string name="domains_redirect_notice">The domain purchased will redirect users to</string>
+    <string name="domains_error_title">Unable to load site domains</string>
     <!--
         Order Editing
     -->
@@ -1195,6 +1196,12 @@
     <string name="card_reader_payment_failed_test_card">System test cards are not permitted for payment</string>
     <string name="card_reader_payment_failed_test_mode_live_card">A live card was used on a site in test mode</string>
     <string name="card_reader_payment_failed_unknown">Payment was declined for an unknown reason</string>
+    <string name="card_reader_payment_failed_canceled">Transaction was canceled</string>
+
+    <string name="card_reader_payment_failed_nfc_disabled">The app could not enable the card reader, because the NFC chip is disabled</string>
+    <string name="card_reader_payment_failed_device_is_not_supported">Your device is not supported. Please contact support for more details</string>
+    <string name="card_reader_payment_failed_app_setup_is_invalid">Something went wrong with the app setup. Please contact support for more details</string>
+
 
     <string name="card_reader_payment_retry_card_prompt">Retry with the same card</string>
     <string name="card_reader_payment_remove_card_prompt">Remove the card</string>
@@ -1814,6 +1821,7 @@
     <string name="settings_signout">Log out</string>
     <string name="settings_preferences">Preferences</string>
     <string name="settings_confirm_logout">Are you sure you want to logout from the account %s?</string>
+    <string name="settings_confirm_logout_site_credentials">Are you sure you want to log out of your account?</string>
     <string name="settings_send_stats">Collect information</string>
     <string name="settings_enable_v4_stats_title">Improved stats</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">Sorry, we couldn\'t change this feature setting right now</string>

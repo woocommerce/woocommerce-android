@@ -80,17 +80,18 @@
                 android:id="@+id/button_login_wpcom"
                 style="@style/Woo.Button.Colored"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginEnd="@dimen/minor_100"
                 android:layout_marginBottom="@dimen/minor_50"
+                android:layout_weight="1"
+                android:text="@string/login_wpcom"
                 android:textAllCaps="false"
-                android:text="@string/login_wpcom" />
+                android:visibility="gone" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_login_store"
-                style="@style/Woo.Button.Colored.White"
+                style="@style/Woo.Button.Colored"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"

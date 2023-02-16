@@ -18,6 +18,9 @@ formatting:
   Indentation:
     active: true
     autoCorrect: true
+  MaximumLineLength:
+    active: true
+    ignoreBackTickedIdentifier: true
 
 style:
   UnnecessaryAbstractClass:
@@ -27,6 +30,8 @@ style:
     ignoreAnnotated: [ 'Composable' ]
   UnusedPrivateMember:
     ignoreAnnotated: [ 'Preview' ]
+  MaxLineLength:
+    active: false
 
 naming:
   FunctionNaming:

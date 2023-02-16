@@ -2,8 +2,14 @@ package com.woocommerce.android.ui.orders.filters
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.orders.OrderTestUtils.generateOrderStatusOptions
-import com.woocommerce.android.ui.orders.filters.data.*
+import com.woocommerce.android.ui.orders.filters.data.DateRange
+import com.woocommerce.android.ui.orders.filters.data.DateRangeFilterOption
+import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
+import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
+import com.woocommerce.android.ui.orders.filters.data.OrderStatusOption
 import com.woocommerce.android.ui.orders.filters.domain.GetDateRangeFilterOptions
 import com.woocommerce.android.ui.orders.filters.domain.GetOrderStatusFilterOptions
 import com.woocommerce.android.ui.orders.filters.domain.GetTrackingForFilterSelection
@@ -35,6 +41,7 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
     private val orderFilterRepository: OrderFiltersRepository = mock()
     private val getTrackingForFilterSelection: GetTrackingForFilterSelection = mock()
     private val dateUtils: DateUtils = mock()
+    private val analyticsTraWrapper: AnalyticsTrackerWrapper = mock()
 
     private lateinit var viewModel: OrderFilterCategoriesViewModel
 
@@ -115,6 +122,16 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `When clear button clicked, then clear filter even is tracked`() {
+
+        viewModel.onClearFilters()
+
+        verify(analyticsTraWrapper).track(
+            AnalyticsEvent.ORDER_FILTER_LIST_CLEAR_MENU_BUTTON_TAPPED
+        )
+    }
+
     private fun allFilterOptionsAreUnselected() = currentCategoryList
         .map {
             it.orderFilterOptions.any { filterOption ->
@@ -134,7 +151,8 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
             getDateRangeFilterOptions,
             orderFilterRepository,
             getTrackingForFilterSelection,
-            dateUtils
+            dateUtils,
+            analyticsTraWrapper
         )
     }
 
