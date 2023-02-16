@@ -29,6 +29,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -64,7 +65,7 @@ import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerV
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.LoadingState.Loading
 
 @Composable
-fun DomainPickerScreen(viewModel: DomainPickerViewModel) {
+fun DomainPickerScreen(viewModel: DomainPickerViewModel, onDomainSelected: (String) -> Unit) {
     viewModel.viewState.observeAsState(DomainPickerState()).value.let { viewState ->
         Scaffold(topBar = {
             ToolbarWithHelpButton(
@@ -75,7 +76,7 @@ fun DomainPickerScreen(viewModel: DomainPickerViewModel) {
             DomainSearchForm(
                 state = viewState,
                 onDomainQueryChanged = viewModel::onDomainChanged,
-                onDomainSuggestionSelected = viewModel::onDomainSuggestionSelected,
+                onDomainSuggestionSelected = onDomainSelected,
                 onContinueClicked = viewModel::onContinueClicked,
                 modifier = Modifier
                     .fillMaxSize()
@@ -198,6 +199,10 @@ private fun DomainSuggestionList(
     keyboardController: SoftwareKeyboardController?,
     modifier: Modifier = Modifier,
 ) {
+    LaunchedEffect(Unit) {
+        onDomainSuggestionSelected(suggestions.first { it.isSelected }.domain)
+    }
+
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))

@@ -11,6 +11,7 @@ import com.woocommerce.android.support.help.HelpOrigin.DOMAIN_CHANGE
 import com.woocommerce.android.ui.prefs.domain.DomainChangeViewModel.ViewState.DomainsState
 import com.woocommerce.android.ui.prefs.domain.DomainChangeViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.prefs.domain.DomainChangeViewModel.ViewState.LoadingState
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -97,6 +98,10 @@ class DomainChangeViewModel @Inject constructor(
     fun onFindDomainButtonTapped() {
         analyticsTrackerWrapper.track(AnalyticsEvent.DOMAIN_CHANGE_SEARCH_FOR_DOMAIN_BUTTON_TAPPED)
         triggerEvent(NavigateToDomainSearch(hasFreeCredits))
+    }
+
+    fun onDomainSelected(domain: String) {
+        WooLog.d(WooLog.T.ONBOARDING, "Domain selected: $domain")
     }
 
     fun onDismissBannerButtonTapped() {

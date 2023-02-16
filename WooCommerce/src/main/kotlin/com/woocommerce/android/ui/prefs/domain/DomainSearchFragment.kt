@@ -34,10 +34,15 @@ class DomainSearchFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    DomainPickerScreen(domainSearchViewModel)
+                    DomainPickerScreen(domainSearchViewModel, ::onDomainSelected)
                 }
             }
         }
+    }
+
+    private fun onDomainSelected(domain: String) {
+        domainChangeViewModel.onDomainSelected(domain)
+        domainSearchViewModel.onDomainSuggestionSelected(domain)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
