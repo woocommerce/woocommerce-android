@@ -79,6 +79,11 @@ class CardReaderHubViewModel @Inject constructor(
         )
     )
 
+    private val learnMoreIppState = CardReaderHubViewState.LearMoreIpp(
+        label = UiStringRes(R.string.card_reader_connect_learn_more, containsHtml = true),
+        onClick = ::onLearnMoreIppClicked
+    )
+
     private fun onLearnMoreClicked() {
         cardReaderTracker.trackCashOnDeliveryLearnMoreTapped()
         triggerEvent(
@@ -100,10 +105,7 @@ class CardReaderHubViewModel @Inject constructor(
                 ).sortedBy { it.index },
             isLoading = true,
             onboardingErrorAction = null,
-            learMoreIpp = CardReaderHubViewState.LearMoreIpp(
-                label = UiStringRes(R.string.card_reader_connect_learn_more, containsHtml = true),
-                onClick = ::onLearnMoreIppClicked
-            ),
+            learMoreIpp = learnMoreIppState,
         )
     )
 
@@ -216,10 +218,7 @@ class CardReaderHubViewModel @Inject constructor(
             },
             isLoading = false,
             onboardingErrorAction = null,
-            learMoreIpp = CardReaderHubViewState.LearMoreIpp(
-                label = UiStringRes(R.string.card_reader_connect_learn_more, containsHtml = true),
-                onClick = ::onLearnMoreIppClicked
-            ),
+            learMoreIpp = learnMoreIppState,
         )
     }
 
@@ -241,10 +240,7 @@ class CardReaderHubViewModel @Inject constructor(
                 text = UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true),
                 onClick = { onOnboardingErrorClicked(state) }
             ),
-            learMoreIpp = CardReaderHubViewState.LearMoreIpp(
-                label = UiStringRes(R.string.card_reader_connect_learn_more, containsHtml = true),
-                onClick = ::onLearnMoreIppClicked
-            ),
+            learMoreIpp = learnMoreIppState,
         )
     }
 
