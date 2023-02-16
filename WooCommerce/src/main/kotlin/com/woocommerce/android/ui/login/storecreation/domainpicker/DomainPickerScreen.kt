@@ -49,12 +49,17 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.DomainPickerState
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.DomainSuggestionUi
+import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.DomainSuggestionUi.Free
+import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.DomainSuggestionUi.FreeWithCredit
+import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.DomainSuggestionUi.OnSale
+import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.DomainSuggestionUi.Paid
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.LoadingState.Idle
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.LoadingState.Loading
 
@@ -260,34 +265,11 @@ private fun DomainSuggestionItem(
                 }
             )
 
-            if (domainSuggestion.price != null) {
+            if (domainSuggestion !is Free) {
                 Row(horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))) {
-                    if (domainSuggestion.salePrice != null) {
-                        Text(
-                            text = buildAnnotatedString {
-                                withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {
-                                    withStyle(style = SpanStyle(color = yellowColor)) {
-                                        append(domainSuggestion.salePrice)
-                                    }
-                                }
-                            }
-                        )
-                        Text(
-                            text = buildAnnotatedString {
-                                withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {
-                                    withStyle(
-                                        style = SpanStyle(
-                                            color = textColor,
-                                            textDecoration = TextDecoration.LineThrough
-                                        )
-                                    ) {
-                                        append(domainSuggestion.price)
-                                    }
-                                }
-                            }
-                        )
-                    } else {
-                        if (domainSuggestion.isFreeWithCredits) {
+                    @Suppress("KotlinConstantConditions")
+                    when (domainSuggestion) {
+                        is FreeWithCredit -> {
                             Text(
                                 text = buildAnnotatedString {
                                     withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {
@@ -302,7 +284,7 @@ private fun DomainSuggestionItem(
                                     }
                                 }
                             )
-                            val freeWithCredits = stringResource(id = R.string.domains_free_with_credits)
+                            val freeWithCredits = stringResource(id = string.domains_free_with_credits)
                             Text(
                                 text = buildAnnotatedString {
                                     withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {
@@ -312,7 +294,33 @@ private fun DomainSuggestionItem(
                                     }
                                 }
                             )
-                        } else {
+                        }
+                        is OnSale -> {
+                            Text(
+                                text = buildAnnotatedString {
+                                    withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {
+                                        withStyle(style = SpanStyle(color = yellowColor)) {
+                                            append(domainSuggestion.salePrice)
+                                        }
+                                    }
+                                }
+                            )
+                            Text(
+                                text = buildAnnotatedString {
+                                    withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {
+                                        withStyle(
+                                            style = SpanStyle(
+                                                color = textColor,
+                                                textDecoration = TextDecoration.LineThrough
+                                            )
+                                        ) {
+                                            append(domainSuggestion.price)
+                                        }
+                                    }
+                                }
+                            )
+                        }
+                        is Paid -> {
                             Text(
                                 text = buildAnnotatedString {
                                     withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {
@@ -323,6 +331,7 @@ private fun DomainSuggestionItem(
                                 }
                             )
                         }
+                        is Free -> Unit
                     }
                 }
             }
@@ -355,29 +364,28 @@ fun DomainPickerPreview() {
                 loadingState = Idle,
                 domainQuery = "White Christmas Tress",
                 domainSuggestionsUi = listOf(
-                    DomainSuggestionUi("whitechristmastrees.mywc.mysite", price = "$5.99 / year"),
-                    DomainSuggestionUi("whitechristmastrees.business.mywc.mysite"),
-                    DomainSuggestionUi("whitechristmastreesVeryLongWithLineBreak.business.test", isSelected = true),
-                    DomainSuggestionUi(
+                    Paid("whitechristmastrees.mywc.mysite", price = "$5.99 / year"),
+                    Free("whitechristmastrees.business.mywc.mysite"),
+                    Free("whitechristmastreesVeryLongWithLineBreak.business.test", isSelected = true),
+                    OnSale(
                         "whitechristmastrees.business.wordpress",
                         price = "$5.99 / year",
                         salePrice = "$5.99",
                         isSelected = true
                     ),
-                    DomainSuggestionUi(
+                    FreeWithCredit(
                         "whitechristmastrees.business.wordpress",
                         price = "$5.99 / year",
-                        isSelected = true,
-                        isFreeWithCredits = true
+                        isSelected = true
                     ),
-                    DomainSuggestionUi("whitechristmastrees.business.another"),
-                    DomainSuggestionUi("whitechristmastrees.business.any"),
-                    DomainSuggestionUi("whitechristmastrees.business.domain"),
-                    DomainSuggestionUi("whitechristmastrees.business.site"),
-                    DomainSuggestionUi("whitechristmastrees.business.other"),
-                    DomainSuggestionUi("whitechristmastrees.business.scroll"),
-                    DomainSuggestionUi("whitechristmastrees.business.other"),
-                    DomainSuggestionUi("whitechristmastrees.business.other")
+                    Free("whitechristmastrees.business.another"),
+                    Free("whitechristmastrees.business.any"),
+                    Free("whitechristmastrees.business.domain"),
+                    Free("whitechristmastrees.business.site"),
+                    Free("whitechristmastrees.business.other"),
+                    Free("whitechristmastrees.business.scroll"),
+                    Free("whitechristmastrees.business.other"),
+                    Free("whitechristmastrees.business.other")
                 )
             ),
             onDomainQueryChanged = {},

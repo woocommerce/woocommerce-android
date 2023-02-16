@@ -17,7 +17,6 @@ import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainSuggest
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainSuggestionsRepository.DomainSuggestion.Free
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainSuggestionsRepository.DomainSuggestion.Paid
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.ifTrue
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -75,14 +74,18 @@ class DomainPickerViewModel @Inject constructor(
     }.asLiveData()
 
     init {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.SITE_CREATION_STEP,
-            mapOf(
-                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_DOMAIN_PICKER
+        if (searchOnlyFreeDomains) {
+            analyticsTrackerWrapper.track(
+                AnalyticsEvent.SITE_CREATION_STEP,
+                mapOf(
+                    AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_DOMAIN_PICKER
+                )
             )
-        )
+        }
         viewModelScope.launch {
-            domainSuggestionsRepository.fetchProducts()
+            if (!searchOnlyFreeDomains) {
+                domainSuggestionsRepository.fetchProducts()
+            }
 
             domainQuery
                 .filter { it.isNotBlank() }
@@ -135,7 +138,7 @@ class DomainPickerViewModel @Inject constructor(
             domainSuggestions.mapNotNull { domain ->
                 when (domain) {
                     is Free -> {
-                        DomainSuggestionUi(
+                        DomainSuggestionUi.Free(
                             isSelected = domain.name == preSelectDomain,
                             domain = domain.name
                         )
@@ -146,15 +149,29 @@ class DomainPickerViewModel @Inject constructor(
                         if (price == null || product == null || product.currencyCode == null) {
                             return@mapNotNull null
                         } else {
-                            DomainSuggestionUi(
-                                isSelected = domain.name == preSelectDomain,
-                                domain = domain.name,
-                                price = price,
-                                salePrice = product.isDomainOnSale().ifTrue {
-                                    product.saleCost?.format(product.currencyCode!!)
-                                },
-                                isFreeWithCredits = isFreeCreditAvailable
-                            )
+                            if (isFreeCreditAvailable && domain.cost != null) {
+                                // free credit can't be used for premium domains don't have, which don't have cost
+                                DomainSuggestionUi.FreeWithCredit(
+                                    isSelected = domain.name == preSelectDomain,
+                                    domain = domain.name,
+                                    price = price.format(product.currencyCode!!)
+                                )
+                            } else if (product.isDomainOnSale()) {
+                                // if the domain is on sale, we need to show the sale price
+                                DomainSuggestionUi.OnSale(
+                                    isSelected = domain.name == preSelectDomain,
+                                    domain = domain.name,
+                                    price = price.format(product.currencyCode!!),
+                                    salePrice = product.saleCost!!.format(product.currencyCode!!)
+                                )
+                            } else {
+                                // otherwise, we show the regular price
+                                DomainSuggestionUi.Paid(
+                                    isSelected = domain.name == preSelectDomain,
+                                    domain = domain.name,
+                                    price = price.format(product.currencyCode!!)
+                                )
+                            }
                         }
                     }
                 }
@@ -178,13 +195,34 @@ class DomainPickerViewModel @Inject constructor(
         @StringRes val confirmButtonTitle: Int = R.string.continue_button
     )
 
-    data class DomainSuggestionUi(
-        val domain: String = "",
-        val isSelected: Boolean = false,
-        val price: String? = null,
-        val salePrice: String? = null,
-        val isFreeWithCredits: Boolean = false
-    )
+    sealed interface DomainSuggestionUi {
+        val domain: String
+        val isSelected: Boolean
+
+        data class Free(
+            override val domain: String,
+            override val isSelected: Boolean = false
+        ) : DomainSuggestionUi
+
+        data class FreeWithCredit(
+            override val domain: String,
+            override val isSelected: Boolean = false,
+            val price: String
+        ) : DomainSuggestionUi
+
+        data class Paid(
+            override val domain: String,
+            override val isSelected: Boolean = false,
+            val price: String
+        ) : DomainSuggestionUi
+
+        data class OnSale(
+            override val domain: String,
+            override val isSelected: Boolean = false,
+            val price: String,
+            val salePrice: String
+        ) : DomainSuggestionUi
+    }
 
     enum class LoadingState {
         Idle, Loading

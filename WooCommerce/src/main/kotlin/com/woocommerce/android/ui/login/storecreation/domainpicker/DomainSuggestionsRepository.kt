@@ -38,7 +38,7 @@ class DomainSuggestionsRepository @Inject constructor(
             includeWordpressCom = false,
             includeDotBlogSubdomain = false,
             SUGGESTIONS_REQUEST_COUNT,
-            includeVendorDot = true
+            includeVendorDot = false
         )
         dispatcher.dispatchAndAwait<SiteStore.SuggestDomainsPayload, SiteStore.OnSuggestedDomains>(
             SiteActionBuilder.newSuggestDomainsAction(domainSuggestionsPayload)
