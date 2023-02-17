@@ -151,6 +151,12 @@ class ZendeskHelper(
         }
     }
 
+
+    /**
+     * This function creates a new customer Support Request through the Zendesk API Providers.
+     *
+     * As it is, no identity is required so far. This should be revised in the near future.
+     */
     suspend fun createRequest(
         context: Context,
         selectedSite: SiteModel?,
