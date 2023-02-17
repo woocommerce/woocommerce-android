@@ -157,8 +157,6 @@ class ZendeskHelper(
     /**
      * This function creates a new customer Support Request through the Zendesk API Providers.
      *
-     * This function should called outside the main coroutine scope as it'll suspend until the request is created.
-     *
      * As it is, no identity is required so far. This should be revised in the near future.
      */
     suspend fun createRequest(
