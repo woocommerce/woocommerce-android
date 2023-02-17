@@ -31,7 +31,9 @@ import zendesk.core.AnonymousIdentity
 import zendesk.core.Identity
 import zendesk.core.PushRegistrationProvider
 import zendesk.core.Zendesk
+import zendesk.support.CreateRequest
 import zendesk.support.CustomField
+import zendesk.support.Request
 import zendesk.support.Support
 import zendesk.support.guide.HelpCenterActivity
 import zendesk.support.request.RequestActivity
@@ -41,8 +43,6 @@ import java.util.Timer
 import kotlin.concurrent.schedule
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
-import zendesk.support.CreateRequest
-import zendesk.support.Request
 
 private const val zendeskNeedsToBeEnabledError = "Zendesk needs to be setup before this method can be called"
 private const val enablePushNotificationsDelayAfterIdentityChange: Long = 2500
@@ -150,7 +150,6 @@ class ZendeskHelper(
             builder.show(context)
         }
     }
-
 
     /**
      * This function creates a new customer Support Request through the Zendesk API Providers.
