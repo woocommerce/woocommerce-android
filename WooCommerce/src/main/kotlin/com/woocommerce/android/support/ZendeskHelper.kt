@@ -39,6 +39,8 @@ import zendesk.support.requestlist.RequestListActivity
 import java.util.Locale
 import java.util.Timer
 import kotlin.concurrent.schedule
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 import zendesk.support.CreateRequest
 import zendesk.support.Request
 
@@ -149,19 +151,17 @@ class ZendeskHelper(
         }
     }
 
-    fun createRequest(
+    suspend fun createRequest(
         context: Context,
         selectedSite: SiteModel?,
         ticketType: TicketType,
         subject: String,
         description: String,
-        ssr: String? = null,
-        onSuccess: (Request?) -> Unit,
-        onError: (ErrorResponse) -> Unit
-    ) {
+        ssr: String? = null
+    ) = suspendCoroutine<Result<Request?>> {
         val requestCallback = object : ZendeskCallback<Request>() {
-            override fun onSuccess(result: Request?) { onSuccess(result) }
-            override fun onError(error: ErrorResponse) { onError(error) }
+            override fun onSuccess(result: Request?) { it.resume(Result.success(result)) }
+            override fun onError(error: ErrorResponse) { it.resume(Result.failure(Throwable(error.reason))) }
         }
 
         CreateRequest().apply {
@@ -170,7 +170,7 @@ class ZendeskHelper(
             this.description = description
             this.tags = ticketType.tags
             this.customFields = buildZendeskCustomFields(context, ticketType, siteStore.sites, selectedSite, ssr)
-        }.let { requestProvider?.createRequest(it, requestCallback) }
+        }.let { request -> requestProvider?.createRequest(request, requestCallback) }
     }
 
     /**
