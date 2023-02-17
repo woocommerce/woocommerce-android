@@ -13,6 +13,7 @@ import com.woocommerce.android.extensions.stateLogInformation
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -43,6 +44,7 @@ import java.util.Timer
 import kotlin.concurrent.schedule
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
+import kotlinx.coroutines.withContext
 
 private const val zendeskNeedsToBeEnabledError = "Zendesk needs to be setup before this method can be called"
 private const val enablePushNotificationsDelayAfterIdentityChange: Long = 2500
@@ -51,7 +53,8 @@ private const val maxLogfileLength: Int = 63000 // Max characters allowed in the
 class ZendeskHelper(
     private val accountStore: AccountStore,
     private val siteStore: SiteStore,
-    private val supportHelper: SupportHelper
+    private val supportHelper: SupportHelper,
+    private val dispatchers: CoroutineDispatchers
 ) {
     private val zendeskInstance: Zendesk
         get() = Zendesk.INSTANCE
@@ -165,19 +168,21 @@ class ZendeskHelper(
         subject: String,
         description: String,
         ssr: String? = null
-    ) = suspendCoroutine<Result<Request?>> {
-        val requestCallback = object : ZendeskCallback<Request>() {
-            override fun onSuccess(result: Request?) { it.resume(Result.success(result)) }
-            override fun onError(error: ErrorResponse) { it.resume(Result.failure(Throwable(error.reason))) }
-        }
+    ) = withContext(dispatchers.io) {
+        suspendCoroutine<Result<Request?>> {
+            val requestCallback = object : ZendeskCallback<Request>() {
+                override fun onSuccess(result: Request?) { it.resume(Result.success(result)) }
+                override fun onError(error: ErrorResponse) { it.resume(Result.failure(Throwable(error.reason))) }
+            }
 
-        CreateRequest().apply {
-            this.ticketFormId = ticketType.form
-            this.subject = subject
-            this.description = description
-            this.tags = ticketType.tags
-            this.customFields = buildZendeskCustomFields(context, ticketType, siteStore.sites, selectedSite, ssr)
-        }.let { request -> requestProvider?.createRequest(request, requestCallback) }
+            CreateRequest().apply {
+                this.ticketFormId = ticketType.form
+                this.subject = subject
+                this.description = description
+                this.tags = ticketType.tags
+                this.customFields = buildZendeskCustomFields(context, ticketType, siteStore.sites, selectedSite, ssr)
+            }.let { request -> requestProvider?.createRequest(request, requestCallback) }
+        }
     }
 
     /**
