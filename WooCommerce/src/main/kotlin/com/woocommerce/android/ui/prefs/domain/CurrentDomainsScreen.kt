@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -32,14 +33,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -48,12 +52,15 @@ import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
+import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
+import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.ProgressIndicator
-import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.prefs.domain.DomainChangeViewModel.ViewState.DomainsState
+import com.woocommerce.android.ui.prefs.domain.DomainChangeViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.prefs.domain.DomainChangeViewModel.ViewState.LoadingState
 
 @Composable
@@ -61,10 +68,10 @@ fun CurrentDomainsScreen(viewModel: DomainChangeViewModel) {
     viewModel.viewState.observeAsState().value?.let { state ->
         Crossfade(targetState = state) { viewState ->
             Scaffold(topBar = {
-                Toolbar(
+                ToolbarWithHelpButton(
                     title = stringResource(id = string.domains),
                     onNavigationButtonClick = viewModel::onCancelPressed,
-                    onActionButtonClick = viewModel::onHelpPressed,
+                    onHelpButtonClick = viewModel::onHelpPressed
                 )
             }) { padding ->
                 when (viewState) {
@@ -73,13 +80,15 @@ fun CurrentDomainsScreen(viewModel: DomainChangeViewModel) {
                             domainsState = viewState,
                             onFindDomainButtonTapped = viewModel::onFindDomainButtonTapped,
                             onDismissBannerButtonTapped = viewModel::onDismissBannerButtonTapped,
+                            onLearnMoreButtonTapped = viewModel::onLearnMoreButtonTapped,
                             modifier = Modifier
                                 .background(MaterialTheme.colors.surface)
                                 .fillMaxSize()
                                 .padding(padding)
                         )
                     }
-                    is LoadingState -> ProgressIndicator()
+                    LoadingState -> ProgressIndicator()
+                    ErrorState -> ErrorScreen()
                 }
             }
         }
@@ -92,6 +101,7 @@ private fun DomainChange(
     domainsState: DomainsState,
     onFindDomainButtonTapped: () -> Unit,
     onDismissBannerButtonTapped: () -> Unit,
+    onLearnMoreButtonTapped: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -124,21 +134,29 @@ private fun DomainChange(
                 Text(text = stringResource(id = string.domains_search_for_domain_button_title))
             }
             Row(
-                Modifier.padding(
-                    horizontal = dimensionResource(id = dimen.major_100),
-                    vertical = dimensionResource(id = dimen.minor_50)
+                modifier = Modifier.padding(
+                    start = dimensionResource(id = dimen.major_100),
+                    end = dimensionResource(id = dimen.major_100),
+                    top = dimensionResource(id = dimen.minor_50),
+                    bottom = dimensionResource(id = dimen.major_100)
                 )
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = drawable.ic_info_outline_20dp),
                     contentDescription = stringResource(string.domains_learn_more)
                 )
-                Text(
-                    modifier = Modifier.padding(start = dimensionResource(id = dimen.major_100)),
-                    text = stringResource(id = string.domains_learn_more),
-                    style = MaterialTheme.typography.caption,
-                    color = colorResource(id = color.color_on_surface_medium)
-                )
+                val text = annotatedStringRes(stringResId = string.domains_learn_more)
+                ClickableText(
+                    modifier = Modifier.padding(start = dimensionResource(id = dimen.minor_100)),
+                    text = text,
+                    style = MaterialTheme.typography.caption.copy(
+                        color = colorResource(id = color.color_on_surface_medium)
+                    ),
+                ) {
+                    text.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
+                        .firstOrNull()
+                        ?.let { onLearnMoreButtonTapped() }
+                }
             }
         } else {
             LazyColumn(
@@ -333,6 +351,36 @@ private fun PrimaryDomainTag() {
     }
 }
 
+@Composable
+fun ErrorScreen() {
+    Column(
+        modifier = Modifier
+            .background(MaterialTheme.colors.surface)
+            .fillMaxSize()
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Image(painter = painterResource(id = drawable.img_woo_generic_error), contentDescription = null)
+
+            Text(
+                text = stringResource(id = string.domains_error_title),
+                style = MaterialTheme.typography.h6,
+                modifier = Modifier
+                    .padding(
+                        top = dimensionResource(id = dimen.major_300),
+                        start = dimensionResource(id = dimen.major_300),
+                        end = dimensionResource(id = dimen.major_300),
+                        bottom = dimensionResource(id = dimen.major_100)
+                    ),
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
 @ExperimentalFoundationApi
 @Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
@@ -356,7 +404,37 @@ fun NamePickerPreview() {
                 ),
             ),
             onFindDomainButtonTapped = {},
-            onDismissBannerButtonTapped = {}
+            onDismissBannerButtonTapped = {},
+            onLearnMoreButtonTapped = {}
         )
     }
+}
+
+@ExperimentalFoundationApi
+@Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Composable
+fun NoDomainsPickerPreview() {
+    WooThemeWithBackground {
+        DomainChange(
+            domainsState = DomainsState(
+                wpComDomain = DomainsState.Domain(
+                    url = "www.test.com",
+                    renewalDate = "Renewal date: 12/12/2020",
+                    isPrimary = true
+                ),
+                isDomainClaimBannerVisible = true,
+                paidDomains = listOf(),
+            ),
+            onFindDomainButtonTapped = {},
+            onDismissBannerButtonTapped = {},
+            onLearnMoreButtonTapped = {}
+        )
+    }
+}
+
+@Preview()
+@Composable
+fun ErrorScreenPreview() {
+    ErrorScreen()
 }

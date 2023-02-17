@@ -52,6 +52,8 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
 
     private val locationId = "locationId"
 
+    private val useInterac = false
+
     @Before
     fun setUp() {
         cardReaderManager = CardReaderManagerImpl(
@@ -70,7 +72,7 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
     @Test
     fun `when manager gets initialized, then terminal gets registered to components lifecycle`() {
 
-        cardReaderManager.initialize(updateFrequency)
+        cardReaderManager.initialize(updateFrequency, useInterac)
 
         verify(application, atLeastOnce()).registerComponentCallbacks(any())
     }
@@ -78,7 +80,7 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
     @Test
     fun `given application delegate, when manager gets initialized, then delegate calls on create`() {
 
-        cardReaderManager.initialize(updateFrequency)
+        cardReaderManager.initialize(updateFrequency, useInterac)
 
         verify(terminalApplicationDelegateWrapper).onCreate(application)
     }
@@ -101,7 +103,7 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
     fun `given terminal not initialized, when init() invoked, then Terminal init() invoked`() {
         whenever(terminalWrapper.isInitialized()).thenReturn(false)
 
-        cardReaderManager.initialize(updateFrequency)
+        cardReaderManager.initialize(updateFrequency, useInterac)
 
         verify(terminalWrapper).initTerminal(any(), any(), any(), any())
     }
@@ -110,7 +112,7 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
     fun `given terminal initialized, when init() invoked, then Terminal init() not invoked`() {
         whenever(terminalWrapper.isInitialized()).thenReturn(true)
 
-        cardReaderManager.initialize(updateFrequency)
+        cardReaderManager.initialize(updateFrequency, useInterac)
 
         verify(terminalWrapper, never()).initTerminal(any(), any(), any(), any())
     }

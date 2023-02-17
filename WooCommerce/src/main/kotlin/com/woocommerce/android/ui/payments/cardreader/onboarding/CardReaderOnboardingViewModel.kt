@@ -400,10 +400,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
     private fun continueFlow(storeCountryCode: String) {
         when (val params = arguments.cardReaderOnboardingParam.cardReaderFlowParam) {
             CardReaderFlowParam.CardReadersHub -> {
-                triggerEvent(OnboardingEvent.ContinueToHub(params, storeCountryCode))
+                triggerEvent(OnboardingEvent.ContinueToHub(params))
             }
             is CardReaderFlowParam.PaymentOrRefund -> {
-                triggerEvent(OnboardingEvent.ContinueToConnection(params))
+                triggerEvent(OnboardingEvent.ContinueToConnection(params, storeCountryCode))
             }
         }.exhaustive
     }
@@ -411,7 +411,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     private fun convertCountryCodeToCountry(countryCode: String?) =
         Locale("", countryCode.orEmpty()).displayName
 
-    private fun formatDueDate(state: CardReaderOnboardingState.StripeAccountPendingRequirement) =
+    private fun formatDueDate(state: StripeAccountPendingRequirement) =
         state.dueDate?.let { Date(it * UNIX_TO_JAVA_TIMESTAMP_OFFSET).formatToMMMMdd() } ?: ""
 
     sealed class OnboardingEvent : Event() {
@@ -420,8 +420,11 @@ class CardReaderOnboardingViewModel @Inject constructor(
         data class NavigateToUrlInWPComWebView(val url: String) : Event()
         data class NavigateToUrlInGenericWebView(val url: String) : Event()
 
-        data class ContinueToHub(val cardReaderFlowParam: CardReaderFlowParam, val storeCountryCode: String) : Event()
-        data class ContinueToConnection(val cardReaderFlowParam: CardReaderFlowParam) : Event()
+        data class ContinueToHub(val cardReaderFlowParam: CardReaderFlowParam) : Event()
+        data class ContinueToConnection(
+            val cardReaderFlowParam: CardReaderFlowParam,
+            val countryCode: String,
+        ) : Event()
     }
 
     sealed class OnboardingViewState(@LayoutRes val layoutRes: Int) {

@@ -24,12 +24,9 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
@@ -47,7 +44,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest.Builder
 import com.woocommerce.android.AppUrls
@@ -56,6 +52,7 @@ import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.ProgressDialog
+import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
@@ -78,31 +75,20 @@ fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
         BackHandler(onBack = viewState.onBackPressed)
 
         Scaffold(topBar = {
-            TopAppBar(
-                backgroundColor = MaterialTheme.colors.surface,
-                title = { },
-                navigationIcon = {
-                    if (viewState.showNavigationIcon) {
-                        IconButton(onClick = {
-                            if (webViewNavigator.canGoBack) {
-                                webViewNavigator.navigateBack()
-                            } else {
-                                viewState.onBackPressed()
-                            }
-                        }) {
-                            Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
-                        }
+            ToolbarWithHelpButton(
+                navigationIcon = if (viewState.showNavigationIcon) {
+                    Icons.Filled.ArrowBack
+                } else {
+                    null
+                },
+                onNavigationButtonClick = {
+                    if (webViewNavigator.canGoBack) {
+                        webViewNavigator.navigateBack()
+                    } else {
+                        viewState.onBackPressed()
                     }
                 },
-                actions = {
-                    IconButton(onClick = viewModel::onHelpButtonClick) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_help_24dp),
-                            contentDescription = stringResource(id = R.string.help)
-                        )
-                    }
-                },
-                elevation = 0.dp
+                onHelpButtonClick = viewModel::onHelpButtonClick
             )
         }) { paddingValues ->
             val transition = updateTransition(targetState = viewState, label = "state")

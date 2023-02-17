@@ -205,10 +205,9 @@ class OrderDetailShippingLabelsAdapter(
 
             // Shipping label header
             with(viewBinding.shippingLabelListLblPackage) {
-                @Suppress("DEPRECATION")
                 text = context.getString(
                     R.string.orderdetail_shipping_label_item_header,
-                    adapterPosition + 1
+                    bindingAdapterPosition + 1
                 )
             }
 

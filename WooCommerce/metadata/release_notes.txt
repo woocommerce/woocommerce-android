@@ -1,1 +1,1 @@
-This release includes a handful of minor improvements and bug fixes that our team found. We’ve also made some tweaks to improve performance. Please keep sending your feedback! We read every one of them.
+You’ve asked for it, and now it’s here! It's now possible to use the app without Jetpack the plugin. This is based upon your direct feedback over the years, and we know you’ll like the change!

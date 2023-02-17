@@ -13,7 +13,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class DeveloperOptionsTest : BaseUnitTest() {
+class DeveloperOptionsViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: DeveloperOptionsViewModel
 
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
@@ -93,7 +93,19 @@ class DeveloperOptionsTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given reader disabled, when dev options screen accessed, then update reader row not displayes`() {
+    fun `when simulated card reader btn toggled, then interac row displayed`() {
+        whenever(developerOptionsRepository.isSimulatedCardReaderEnabled()).thenReturn(true)
+
+        initViewModel()
+
+        assertThat(viewModel.viewState.value?.rows)
+            .anyMatch {
+                it.label == UiString.UiStringRes(R.string.enable_interac_payment)
+            }
+    }
+
+    @Test
+    fun `given reader disabled, when dev options screen accessed, then update reader row not displayed`() {
         whenever(developerOptionsRepository.isSimulatedCardReaderEnabled()).thenReturn(false)
 
         initViewModel()
@@ -101,6 +113,18 @@ class DeveloperOptionsTest : BaseUnitTest() {
         assertThat(viewModel.viewState.value?.rows)
             .noneMatch {
                 it.label == UiString.UiStringRes(R.string.update_simulated_reader)
+            }
+    }
+
+    @Test
+    fun `given reader disabled, when dev options screen accessed, then interac row not displayed`() {
+        whenever(developerOptionsRepository.isSimulatedCardReaderEnabled()).thenReturn(false)
+
+        initViewModel()
+
+        assertThat(viewModel.viewState.value?.rows)
+            .noneMatch {
+                it.label == UiString.UiStringRes(R.string.enable_interac_payment)
             }
     }
 

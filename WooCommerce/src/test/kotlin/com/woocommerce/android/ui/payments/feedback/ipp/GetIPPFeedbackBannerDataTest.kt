@@ -1,4 +1,3 @@
-@file:Suppress("MaxLineLength")
 package com.woocommerce.android.ui.payments.feedback.ipp
 
 import com.woocommerce.android.R
@@ -7,7 +6,6 @@ import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.ui.payments.GetActivePaymentsPlugin
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentCaptor
@@ -28,7 +26,6 @@ import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.util.AppLog
 import java.util.Date
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -56,16 +53,15 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given banner should not be displayed, then should throw exception`() = testBlocking {
+    fun `given banner should not be displayed, then should return null`() = testBlocking {
         // given
         whenever(shouldShowFeedbackBanner()).thenReturn(false)
 
-        // then
-        assertFailsWith(IllegalStateException::class) {
-            testBlocking { sut() }
-        }
+        // when
+        val result = sut()
 
-        Unit
+        // then
+        assertNull(result)
     }
 
     @Test
@@ -79,10 +75,10 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
             val result = sut()
 
             // then
-            assertEquals("https://automattic.survey.fm/woo-app-–-cod-survey", result.url)
-            assertEquals(R.string.feedback_banner_ipp_title_newbie, result.title)
-            assertEquals(R.string.feedback_banner_ipp_message_newbie, result.message)
-            assertEquals("ipp_not_user", result.campaignName)
+            assertEquals("https://automattic.survey.fm/woo-app-–-cod-survey", result?.url)
+            assertEquals(R.string.feedback_banner_ipp_title_newbie, result?.title)
+            assertEquals(R.string.feedback_banner_ipp_message_newbie, result?.message)
+            assertEquals("ipp_not_user", result?.campaignName)
         }
 
     @Test
@@ -101,10 +97,10 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         val result = sut()
 
         // then
-        assertEquals("https://automattic.survey.fm/woo-app-–-cod-survey", result.url)
-        assertEquals(R.string.feedback_banner_ipp_title_newbie, result.title)
-        assertEquals(R.string.feedback_banner_ipp_message_newbie, result.message)
-        assertEquals("ipp_not_user", result.campaignName)
+        assertEquals("https://automattic.survey.fm/woo-app-–-cod-survey", result?.url)
+        assertEquals(R.string.feedback_banner_ipp_title_newbie, result?.title)
+        assertEquals(R.string.feedback_banner_ipp_message_newbie, result?.message)
+        assertEquals("ipp_not_user", result?.campaignName)
     }
 
     @Test
@@ -123,10 +119,10 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
             val result = sut()
 
             // then
-            assertEquals("https://automattic.survey.fm/woo-app-–-ipp-first-transaction-survey", result.url)
-            assertEquals(R.string.feedback_banner_ipp_message_beginner, result.message)
-            assertEquals(R.string.feedback_banner_ipp_title_beginner, result.title)
-            assertEquals("ipp_new_user", result.campaignName)
+            assertEquals("https://automattic.survey.fm/woo-app-–-ipp-first-transaction-survey", result?.url)
+            assertEquals(R.string.feedback_banner_ipp_message_beginner, result?.message)
+            assertEquals(R.string.feedback_banner_ipp_title_beginner, result?.title)
+            assertEquals("ipp_new_user", result?.campaignName)
         }
 
     @Test
@@ -150,11 +146,11 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
             val result = sut()
 
             // then
-            assertEquals(R.string.feedback_banner_ipp_message_beginner, result.message)
-            assertEquals(R.string.feedback_banner_ipp_title_beginner, result.title)
-            assertEquals("https://automattic.survey.fm/woo-app-–-ipp-first-transaction-survey", result.url)
-            assertEquals("https://automattic.survey.fm/woo-app-–-ipp-first-transaction-survey", result.url)
-            assertEquals("ipp_new_user", result.campaignName)
+            assertEquals(R.string.feedback_banner_ipp_message_beginner, result?.message)
+            assertEquals(R.string.feedback_banner_ipp_title_beginner, result?.title)
+            assertEquals("https://automattic.survey.fm/woo-app-–-ipp-first-transaction-survey", result?.url)
+            assertEquals("https://automattic.survey.fm/woo-app-–-ipp-first-transaction-survey", result?.url)
+            assertEquals("ipp_new_user", result?.campaignName)
             assertNull(expectedTimeWindowCaptor.allValues.last())
             assertEquals(Date().daysAgo(30).formatToYYYYmmDD(), expectedTimeWindowCaptor.firstValue)
         }
@@ -175,10 +171,10 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
             val result = sut()
 
             // then
-            assertEquals("https://automattic.survey.fm/woo-app-–-ipp-survey-for-power-users", result.url)
-            assertEquals(R.string.feedback_banner_ipp_message_ninja, result.message)
-            assertEquals(R.string.feedback_banner_ipp_title_ninja, result.title)
-            assertEquals("ipp_power_user", result.campaignName)
+            assertEquals("https://automattic.survey.fm/woo-app-–-ipp-survey-for-power-users", result?.url)
+            assertEquals(R.string.feedback_banner_ipp_message_ninja, result?.message)
+            assertEquals(R.string.feedback_banner_ipp_title_ninja, result?.title)
+            assertEquals("ipp_power_user", result?.campaignName)
         }
 
     @Test
@@ -191,33 +187,34 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         val result = sut()
 
         // then
-        assertEquals(R.string.feedback_banner_ipp_message_newbie, result.message)
-        assertEquals(R.string.feedback_banner_ipp_title_newbie, result.title)
-        assertEquals("https://automattic.survey.fm/woo-app-–-cod-survey", result.url)
+        assertEquals(R.string.feedback_banner_ipp_message_newbie, result?.message)
+        assertEquals(R.string.feedback_banner_ipp_title_newbie, result?.title)
+        assertEquals("https://automattic.survey.fm/woo-app-–-cod-survey", result?.url)
     }
 
     @Test
-    fun `given banner should be displayed, then should analyze IPP stats from the correct time window`() = testBlocking {
-        // given
-        whenever(shouldShowFeedbackBanner()).thenReturn(true)
-        whenever(getActivePaymentsPlugin())
-            .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
+    fun `given banner should be displayed, then should analyze IPP stats from the correct time window`() =
+        testBlocking {
+            // given
+            whenever(shouldShowFeedbackBanner()).thenReturn(true)
+            whenever(getActivePaymentsPlugin())
+                .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
 
-        val expectedTimeWindowCaptor = ArgumentCaptor.forClass(String::class.java)
+            val expectedTimeWindowCaptor = ArgumentCaptor.forClass(String::class.java)
 
-        // when
-        sut()
-        verify(ippStore).fetchTransactionsSummary(
-            any(),
-            any(),
-            expectedTimeWindowCaptor.capture()
-        )
+            // when
+            sut()
+            verify(ippStore).fetchTransactionsSummary(
+                any(),
+                any(),
+                expectedTimeWindowCaptor.capture()
+            )
 
-        // then
-        val timeWindowLengthDays = 30
-        val desiredTimeWindowStart = Date().daysAgo(timeWindowLengthDays).formatToYYYYmmDD()
-        assertEquals(desiredTimeWindowStart, expectedTimeWindowCaptor.value)
-    }
+            // then
+            val timeWindowLengthDays = 30
+            val desiredTimeWindowStart = Date().daysAgo(timeWindowLengthDays).formatToYYYYmmDD()
+            assertEquals(desiredTimeWindowStart, expectedTimeWindowCaptor.value)
+        }
 
     @Test
     fun `given COD enabled and endpoint returns error, then should detect newbie`() = testBlocking {
@@ -233,9 +230,9 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         val result = sut()
 
         // then
-        assertEquals(R.string.feedback_banner_ipp_message_newbie, result.message)
-        assertEquals(R.string.feedback_banner_ipp_title_newbie, result.title)
-        assertEquals("https://automattic.survey.fm/woo-app-–-cod-survey", result.url)
+        assertEquals(R.string.feedback_banner_ipp_message_newbie, result?.message)
+        assertEquals(R.string.feedback_banner_ipp_title_newbie, result?.title)
+        assertEquals("https://automattic.survey.fm/woo-app-–-cod-survey", result?.url)
     }
 
     @Test
@@ -269,13 +266,13 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         val result = sut()
 
         // then
-        assertEquals(R.string.feedback_banner_ipp_message_newbie, result.message)
-        assertEquals(R.string.feedback_banner_ipp_title_newbie, result.title)
-        assertEquals("https://automattic.survey.fm/woo-app-–-cod-survey", result.url)
+        assertEquals(R.string.feedback_banner_ipp_message_newbie, result?.message)
+        assertEquals(R.string.feedback_banner_ipp_title_newbie, result?.title)
+        assertEquals("https://automattic.survey.fm/woo-app-–-cod-survey", result?.url)
     }
 
     @Test
-    fun `given successful endpoint response, when transactions count is negative, then should throw exception `() =
+    fun `given successful endpoint response, when transactions count is negative, then should return null`() =
         testBlocking {
             // given
             whenever(shouldShowFeedbackBanner()).thenReturn(true)
@@ -291,11 +288,10 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
                 )
             ).thenReturn(WooPayload(fakeTransactionsSummary))
 
-            // then
-            assertFailsWith(IllegalStateException::class) {
-                runBlocking { sut() }
-            }
+            // when
+            val result = sut()
 
-            Unit
+            // then
+            assertNull(result)
         }
 }

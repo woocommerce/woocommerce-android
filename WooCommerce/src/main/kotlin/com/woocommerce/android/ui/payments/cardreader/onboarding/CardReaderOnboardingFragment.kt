@@ -70,7 +70,8 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                     findNavController().navigate(
                         CardReaderOnboardingFragmentDirections
                             .actionCardReaderOnboardingFragmentToCardReaderTypeSelectionDialogFragment(
-                                event.cardReaderFlowParam
+                                event.cardReaderFlowParam,
+                                event.countryCode
                             )
                     )
                 }

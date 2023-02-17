@@ -23,16 +23,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerViewModel.CountryPickerState
@@ -42,11 +40,9 @@ import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPicke
 fun CountryPickerScreen(viewModel: CountryPickerViewModel) {
     viewModel.countryPickerState.observeAsState().value?.let { countryPickerContent ->
         Scaffold(topBar = {
-            Toolbar(
+            ToolbarWithHelpButton(
                 onNavigationButtonClick = viewModel::onArrowBackPressed,
-                actionButtonIcon = ImageVector.vectorResource(id = R.drawable.ic_help_24dp),
-                actionIconContentDescription = stringResource(id = R.string.help),
-                onActionButtonClick = viewModel::onHelpPressed
+                onHelpButtonClick = viewModel::onHelpPressed
             )
         }) { padding ->
             CountryPickerForm(

@@ -13,7 +13,7 @@ import org.junit.Before
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
-class CardReaderManualsSupportedReaderMapperTest : BaseUnitTest() {
+class CardReaderManualsSupportedReadersMapperTest : BaseUnitTest() {
     private lateinit var manualsMapper: CardReaderManualsSupportedReadersMapper
 
     @Before
@@ -23,7 +23,6 @@ class CardReaderManualsSupportedReaderMapperTest : BaseUnitTest() {
 
     @Test
     fun `given US store, when screen shown, US readers are displayed`() {
-
         val supportedCountry = CardReaderConfigForUSA
         val expectedManualItems = listOf(
             ManualItem(

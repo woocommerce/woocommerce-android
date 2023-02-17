@@ -27,4 +27,12 @@ class DeveloperOptionsRepository @Inject constructor(
     fun updateSimulatedReaderOption(selectedOption: UpdateOptions) {
         appPrefs.updateReaderOptionSelected = selectedOption.toString()
     }
+
+    fun isInteracPaymentEnabled(): Boolean {
+        return appPrefs.isInteracEnabled
+    }
+
+    fun changeEnableInteracPaymentState(isChecked: Boolean) {
+        appPrefs.isInteracEnabled = isChecked
+    }
 }

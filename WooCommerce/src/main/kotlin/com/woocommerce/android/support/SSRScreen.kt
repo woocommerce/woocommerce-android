@@ -14,9 +14,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -28,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.Toolbar
 
 @Composable
 fun SSRScreen(viewModel: SSRActivityViewModel) {
@@ -52,17 +51,9 @@ fun SSRScreen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                backgroundColor = MaterialTheme.colors.surface,
-                title = { Text(stringResource(id = R.string.support_system_status_report)) },
-                navigationIcon = {
-                    IconButton(onClick = onBackPressed) {
-                        Icon(
-                            Icons.Filled.ArrowBack,
-                            contentDescription = stringResource(id = R.string.back)
-                        )
-                    }
-                },
+            Toolbar(
+                title = stringResource(id = R.string.support_system_status_report),
+                onNavigationButtonClick = onBackPressed,
                 actions = {
                     IconButton(onClick = onCopyButtonClick, enabled = !isLoading) {
                         Icon(
