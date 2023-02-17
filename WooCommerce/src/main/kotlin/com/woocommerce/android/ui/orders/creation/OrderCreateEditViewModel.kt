@@ -327,15 +327,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 viewState = viewState.copy(isProgressDialogShown = true)
                 orderCreateEditRepository.placeOrder(order).fold(
                     onSuccess = {
-                        AnalyticsTracker.track(
-                            ORDER_CREATION_SUCCESS,
-                            mutableMapOf<String, String>().also { mutableMap ->
-                                OrderDurationRecorder.millisecondsSinceOrderAddNew().getOrNull()?.let { timeElapsed ->
-                                    mutableMap[AnalyticsTracker.KEY_TIME_ELAPSED_SINCE_ADD_NEW_ORDER_IN_MILLIS] =
-                                        timeElapsed.toString()
-                                }
-                            }
-                        )
+                        trackOrderCreationSuccess()
                         triggerEvent(ShowSnackbar(string.order_creation_success_snackbar))
                         triggerEvent(ShowCreatedOrder(it.id))
                     },
@@ -350,6 +342,18 @@ class OrderCreateEditViewModel @Inject constructor(
                 triggerEvent(Exit)
             }
         }
+    }
+
+    private fun trackOrderCreationSuccess() {
+        tracker.track(
+            ORDER_CREATION_SUCCESS,
+            mutableMapOf<String, String>().also { mutableMap ->
+                OrderDurationRecorder.millisecondsSinceOrderAddNew().getOrNull()?.let { timeElapsed ->
+                    mutableMap[AnalyticsTracker.KEY_TIME_ELAPSED_SINCE_ADD_NEW_ORDER_IN_MILLIS] =
+                        timeElapsed.toString()
+                }
+            }
+        )
     }
 
     fun onBackButtonClicked() {
