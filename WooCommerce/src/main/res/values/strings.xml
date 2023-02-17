@@ -3063,12 +3063,16 @@
     Store onboarding
     -->
     <string name="store_onboarding_title">Store setup</string>
+    <string name="store_onboarding_task_about_your_store_title">Tell us more about your store</string>
+    <string name="store_onboarding_task_about_your_store_description">We’ll use the info to get a head start on your shipping, tax, and payments settings.</string>
     <string name="store_onboarding_task_add_product_title">Add your first product </string>
     <string name="store_onboarding_task_add_product_description">Start selling by adding products or services to your store.</string>
     <string name="store_onboarding_task_launch_store_title">Launch your store</string>
     <string name="store_onboarding_task_launch_store_description">Publish your site to the world anytime you want!</string>
     <string name="store_onboarding_task_change_domain_title">Customize your domain</string>
     <string name="store_onboarding_task_change_domain_description">Have a custom URL to host your store.</string>
+    <string name="store_onboarding_task_payments_setup_title">Get paid</string>
+    <string name="store_onboarding_task_payments_setup_description">Give your customers an easy and convenient way to pay!</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d completed</string>
 
 </resources>
