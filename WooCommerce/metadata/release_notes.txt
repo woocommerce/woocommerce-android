@@ -1,1 +1,5 @@
-For this release, we focused on taking care of minor bugs that our team found. Don’t be fooled – we are working on some pretty cool stuff for you all! Keep your feedback rolling in; it helps us figure out what to work on next.
+- [***] Add support for signing to self-hosted sites without Jetpack using site credentials [https://github.com/woocommerce/woocommerce-android/pull/8323]
+- [***] [Internal] Remove XMRPC discovery steps from the REST API login [https://github.com/woocommerce/woocommerce-android/pull/8289]
+- [*][Internal] We added a cancel button to the error states of the IPP flow [https://github.com/woocommerce/woocommerce-android/pull/8317]
+- [*] [Internal] Add a Zendesk tag to allow differentiating sites accessed using Application Passwords [https://github.com/woocommerce/woocommerce-android/pull/8320]
+- [*] Clear button is visible on the products filter screen [https://github.com/woocommerce/woocommerce-android/pull/8341]
