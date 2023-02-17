@@ -47,7 +47,7 @@ sealed class CardReaderConnectViewState(
     ) : ScanningState,
         CardReaderConnectViewState(
             headerLabel = UiString.UiStringRes(R.string.card_reader_connect_scanning_built_in_header),
-            illustration = R.drawable.img_ipp_reader_type_selection,
+            illustration = R.drawable.img_card_reader_tpp_connecting,
             hintLabel = R.string.card_reader_connect_scanning_built_in_hint,
             secondaryActionLabel = R.string.cancel,
         )
@@ -92,7 +92,7 @@ sealed class CardReaderConnectViewState(
         ConnectingState,
         CardReaderConnectViewState(
             headerLabel = UiString.UiStringRes(R.string.card_reader_connect_connecting_built_in_header),
-            illustration = R.drawable.img_ipp_reader_type_selection,
+            illustration = R.drawable.img_card_reader_tpp_connecting,
             hintLabel = R.string.card_reader_connect_connecting_hint,
             secondaryActionLabel = R.string.cancel,
             illustrationTopMargin = R.dimen.major_275
