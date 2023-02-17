@@ -1,0 +1,2 @@
+12.3:
+Dalam rilis ini, kami berfokus pada penanganan bug minor yang ditemukan tim kami. Jangan salah sangka – kami sedang mengerjakan sesuatu yang keren untuk Anda! Terus berikan feedback agar kami tahu apa yang harus ditingkatkan selanjutnya.
