@@ -59,16 +59,19 @@ import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError.A
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError.Unknown
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderCapturingPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderCollectPaymentState
+import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderFailedPaymentState
+import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderPaymentSuccessfulReceiptSentAutomaticallyState
+import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderPaymentSuccessfulState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderProcessingPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.CollectRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderCapturingPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderCollectPaymentState
+import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderFailedPaymentState
+import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderPaymentSuccessfulReceiptSentAutomaticallyState
+import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderPaymentSuccessfulState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderProcessingPaymentState
-import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.FailedPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.FailedRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.LoadingDataState
-import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.PaymentSuccessfulReceiptSentAutomaticallyState
-import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.PaymentSuccessfulState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.PrintingReceiptState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ProcessingRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ReFetchingOrderState
@@ -382,13 +385,25 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given fetching order fails, when payment screen shown, then FailedPayment state is shown`() =
+    fun `given fetching order fails, when payment screen shown, then ExternalReaderFailedPaymentState state is shown`() =
         testBlocking {
             whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(null)
 
             viewModel.start()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ExternalReaderFailedPaymentState::class.java)
+        }
+
+    @Test
+    fun `given fetching order fails and tpp, when payment screen shown, then BuiltInReaderFailedPaymentState state is shown`() =
+        testBlocking {
+            whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(null)
+
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(BuiltInReaderFailedPaymentState::class.java)
         }
 
     @Test
@@ -402,13 +417,26 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given fetching order fails, when payment screen shown, then correct error message shown`() =
+    fun `given fetching order fails, when external payment screen shown, then correct error message shown`() =
         testBlocking {
             whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(null)
 
             viewModel.start()
 
-            assertThat((viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel)
+            assertThat((viewModel.viewStateData.value as ExternalReaderFailedPaymentState).paymentStateLabel)
+                .isEqualTo(R.string.order_error_fetch_generic)
+        }
+
+    @Test
+    fun `given fetching order fails, when built in payment screen shown, then correct error message shown`() =
+        testBlocking {
+            whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(null)
+
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            assertThat((viewModel.viewStateData.value as BuiltInReaderFailedPaymentState).paymentStateLabel)
                 .isEqualTo(R.string.order_error_fetch_generic)
         }
 
@@ -645,7 +673,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given billing email empty, when payment completed, then ui updated to payment successful state`() =
+    fun `given billing email empty, when external payment completed, then ui updated to external payment successful state`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(PaymentCompleted("")) }
@@ -653,11 +681,24 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(PaymentSuccessfulState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ExternalReaderPaymentSuccessfulState::class.java)
         }
 
     @Test
-    fun `given billing not empty, when payment completed, then ui updated to payment successful receipt sent state`() =
+    fun `given billing email empty, when built in payment completed, then ui updated to built in payment successful state`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(BuiltInReaderPaymentSuccessfulState::class.java)
+        }
+
+    @Test
+    fun `given billing not empty, when external payment completed, then ui updated to external payment successful receipt sent state`() =
         testBlocking {
             whenever(mockedAddress.email).thenReturn("nonemptyemail")
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -667,7 +708,23 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(
-                PaymentSuccessfulReceiptSentAutomaticallyState::class.java
+                ExternalReaderPaymentSuccessfulReceiptSentAutomaticallyState::class.java
+            )
+        }
+
+    @Test
+    fun `given billing not empty, when built in payment completed, then ui updated to built in payment successful receipt sent state`() =
+        testBlocking {
+            whenever(mockedAddress.email).thenReturn("nonemptyemail")
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(
+                BuiltInReaderPaymentSuccessfulReceiptSentAutomaticallyState::class.java
             )
         }
 
@@ -700,7 +757,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when payment fails, then ui updated to failed state`() =
+    fun `given external reader, when payment fails, then ui updated to external failed state`() =
         testBlocking {
             whenever(errorMapper.mapPaymentErrorToUiError(Generic))
                 .thenReturn(PaymentFlowError.Generic)
@@ -710,11 +767,26 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(FailedPaymentState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ExternalReaderFailedPaymentState::class.java)
         }
 
     @Test
-    fun `when payment fails because of NoNetwork, then error is mapped correctly`() =
+    fun `given built in reader, when payment fails, then ui updated to built in failed state`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(Generic))
+                .thenReturn(PaymentFlowError.Generic)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithEmptyDataForRetry) }
+            }
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(BuiltInReaderFailedPaymentState::class.java)
+        }
+
+    @Test
+    fun `given external reader, when payment fails because of NoNetwork, then error is mapped correctly`() =
         testBlocking {
             whenever(errorMapper.mapPaymentErrorToUiError(NoNetwork))
                 .thenReturn(PaymentFlowError.NoNetwork)
@@ -725,13 +797,31 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertEquals(
-                (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel,
+                (viewModel.viewStateData.value as ExternalReaderFailedPaymentState).paymentStateLabel,
                 PaymentFlowError.NoNetwork.message
             )
         }
 
     @Test
-    fun `when payment fails because of Unknown, then error is mapped correctly`() =
+    fun `given built in reader, when payment fails because of NoNetwork, then error is mapped correctly`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(NoNetwork))
+                .thenReturn(PaymentFlowError.NoNetwork)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithNoNetwork) }
+            }
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            assertEquals(
+                (viewModel.viewStateData.value as BuiltInReaderFailedPaymentState).paymentStateLabel,
+                PaymentFlowError.NoNetwork.message
+            )
+        }
+
+    @Test
+    fun `given external reader, when payment fails because of Unknown, then error is mapped correctly`() =
         testBlocking {
             whenever(errorMapper.mapPaymentErrorToUiError(DeclinedByBackendError.Unknown))
                 .thenReturn(Unknown)
@@ -742,13 +832,31 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertEquals(
-                (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel,
+                (viewModel.viewStateData.value as ExternalReaderFailedPaymentState).paymentStateLabel,
                 Unknown.message
             )
         }
 
     @Test
-    fun `when payment fails because of CARD_READ_TIMEOUT, then error is mapped correctly`() =
+    fun `given built in reader, when payment fails because of Unknown, then error is mapped correctly`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(DeclinedByBackendError.Unknown))
+                .thenReturn(Unknown)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithPaymentDeclined) }
+            }
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            assertEquals(
+                (viewModel.viewStateData.value as BuiltInReaderFailedPaymentState).paymentStateLabel,
+                Unknown.message
+            )
+        }
+
+    @Test
+    fun `given external reader, when payment fails because of CARD_READ_TIMEOUT, then error is mapped correctly`() =
         testBlocking {
             whenever(errorMapper.mapPaymentErrorToUiError(Generic))
                 .thenReturn(PaymentFlowError.Generic)
@@ -759,7 +867,25 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertEquals(
-                (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel,
+                (viewModel.viewStateData.value as ExternalReaderFailedPaymentState).paymentStateLabel,
+                PaymentFlowError.Generic.message
+            )
+        }
+
+    @Test
+    fun `given built in reader, when payment fails because of CARD_READ_TIMEOUT, then error is mapped correctly`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(Generic))
+                .thenReturn(PaymentFlowError.Generic)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithCardReadTimeOut) }
+            }
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            assertEquals(
+                (viewModel.viewStateData.value as BuiltInReaderFailedPaymentState).paymentStateLabel,
                 PaymentFlowError.Generic.message
             )
         }
@@ -777,7 +903,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when payment fails because of NO_NETWORK, then error is mapped correctly`() =
+    fun `given external reader, when payment fails because of NO_NETWORK, then error is mapped correctly`() =
         testBlocking {
             whenever(errorMapper.mapPaymentErrorToUiError(NoNetwork))
                 .thenReturn(PaymentFlowError.NoNetwork)
@@ -788,13 +914,31 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertEquals(
-                (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel,
+                (viewModel.viewStateData.value as ExternalReaderFailedPaymentState).paymentStateLabel,
                 PaymentFlowError.NoNetwork.message
             )
         }
 
     @Test
-    fun `when payment fails because of declined Unknown, then error is mapped correctly`() =
+    fun `given built in reader, when payment fails because of NO_NETWORK, then error is mapped correctly`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(NoNetwork))
+                .thenReturn(PaymentFlowError.NoNetwork)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithNoNetwork) }
+            }
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            assertEquals(
+                (viewModel.viewStateData.value as BuiltInReaderFailedPaymentState).paymentStateLabel,
+                PaymentFlowError.NoNetwork.message
+            )
+        }
+
+    @Test
+    fun `given external reader, when payment fails because of declined Unknown, then error is mapped correctly`() =
         testBlocking {
             whenever(errorMapper.mapPaymentErrorToUiError(DeclinedByBackendError.Unknown))
                 .thenReturn(Unknown)
@@ -805,13 +949,31 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertEquals(
-                (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel,
+                (viewModel.viewStateData.value as ExternalReaderFailedPaymentState).paymentStateLabel,
                 Unknown.message
             )
         }
 
     @Test
-    fun `when payment fails because of CARD_READ_TIME_OUT, then error is mapped correctly`() =
+    fun `given built in reader, when payment fails because of declined Unknown, then error is mapped correctly`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(DeclinedByBackendError.Unknown))
+                .thenReturn(Unknown)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithPaymentDeclined) }
+            }
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            assertEquals(
+                (viewModel.viewStateData.value as BuiltInReaderFailedPaymentState).paymentStateLabel,
+                Unknown.message
+            )
+        }
+
+    @Test
+    fun `given external reader, when payment fails because of CARD_READ_TIME_OUT, then error is mapped correctly`() =
         testBlocking {
             whenever(errorMapper.mapPaymentErrorToUiError(Generic))
                 .thenReturn(PaymentFlowError.Generic)
@@ -822,13 +984,31 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertEquals(
-                (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel,
+                (viewModel.viewStateData.value as ExternalReaderFailedPaymentState).paymentStateLabel,
                 PaymentFlowError.Generic.message
             )
         }
 
     @Test
-    fun `when payment fails because of GENERIC_ERROR, then error is mapped correctly`() =
+    fun `given built in reader, when payment fails because of CARD_READ_TIME_OUT, then error is mapped correctly`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(Generic))
+                .thenReturn(PaymentFlowError.Generic)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithCardReadTimeOut) }
+            }
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            assertEquals(
+                (viewModel.viewStateData.value as BuiltInReaderFailedPaymentState).paymentStateLabel,
+                PaymentFlowError.Generic.message
+            )
+        }
+
+    @Test
+    fun `given external reader, when payment fails because of GENERIC_ERROR, then error is mapped correctly`() =
         testBlocking {
             whenever(errorMapper.mapPaymentErrorToUiError(Generic))
                 .thenReturn(PaymentFlowError.Generic)
@@ -839,13 +1019,31 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertEquals(
-                (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel,
+                (viewModel.viewStateData.value as ExternalReaderFailedPaymentState).paymentStateLabel,
                 PaymentFlowError.Generic.message
             )
         }
 
     @Test
-    fun `when payment fails because of SERVER_ERROR, then error is mapped correctly`() =
+    fun `given built in reader, when payment fails because of GENERIC_ERROR, then error is mapped correctly`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(Generic))
+                .thenReturn(PaymentFlowError.Generic)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithValidDataForRetry) }
+            }
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            assertEquals(
+                (viewModel.viewStateData.value as BuiltInReaderFailedPaymentState).paymentStateLabel,
+                PaymentFlowError.Generic.message
+            )
+        }
+
+    @Test
+    fun `given external reader, when payment fails because of SERVER_ERROR, then error is mapped correctly`() =
         testBlocking {
             whenever(errorMapper.mapPaymentErrorToUiError(Server)).thenReturn(PaymentFlowError.Server)
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -855,13 +1053,30 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertEquals(
-                (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel,
+                (viewModel.viewStateData.value as ExternalReaderFailedPaymentState).paymentStateLabel,
                 PaymentFlowError.Server.message
             )
         }
 
     @Test
-    fun `when payment fails because of AMOUNT_TOO_SMALL, then error is mapped correctly`() =
+    fun `given built in reader, when payment fails because of SERVER_ERROR, then error is mapped correctly`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(Server)).thenReturn(PaymentFlowError.Server)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithServerError) }
+            }
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            assertEquals(
+                (viewModel.viewStateData.value as BuiltInReaderFailedPaymentState).paymentStateLabel,
+                PaymentFlowError.Server.message
+            )
+        }
+
+    @Test
+    fun `given external reader, when payment fails because of AMOUNT_TOO_SMALL, then error is mapped correctly`() =
         testBlocking {
             whenever(errorMapper.mapPaymentErrorToUiError(DeclinedByBackendError.AmountTooSmall))
                 .thenReturn(AmountTooSmall)
@@ -872,13 +1087,31 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertEquals(
-                (viewModel.viewStateData.value as FailedPaymentState).paymentStateLabel,
+                (viewModel.viewStateData.value as ExternalReaderFailedPaymentState).paymentStateLabel,
                 AmountTooSmall.message
             )
         }
 
     @Test
-    fun `when payment fails because of AMOUNT_TOO_SMALL, then failed state has ok button`() =
+    fun `given built in reader, when payment fails because of AMOUNT_TOO_SMALL, then error is mapped correctly`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(DeclinedByBackendError.AmountTooSmall))
+                .thenReturn(AmountTooSmall)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithAmountTooSmall) }
+            }
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            assertEquals(
+                (viewModel.viewStateData.value as BuiltInReaderFailedPaymentState).paymentStateLabel,
+                AmountTooSmall.message
+            )
+        }
+
+    @Test
+    fun `given external reader, when payment fails because of AMOUNT_TOO_SMALL, then failed state has ok button`() =
         testBlocking {
             whenever(errorMapper.mapPaymentErrorToUiError(DeclinedByBackendError.AmountTooSmall))
                 .thenReturn(AmountTooSmall)
@@ -889,13 +1122,31 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertEquals(
-                (viewModel.viewStateData.value as FailedPaymentState).primaryActionLabel,
+                (viewModel.viewStateData.value as ExternalReaderFailedPaymentState).primaryActionLabel,
                 R.string.card_reader_payment_payment_failed_ok
             )
         }
 
     @Test
-    fun `when payment fails not because of AMOUNT_TOO_SMALL, then failed state has Try again button`() =
+    fun `given built in reader, when payment fails because of AMOUNT_TOO_SMALL, then failed state has ok button`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(DeclinedByBackendError.AmountTooSmall))
+                .thenReturn(AmountTooSmall)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithAmountTooSmall) }
+            }
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            assertEquals(
+                (viewModel.viewStateData.value as BuiltInReaderFailedPaymentState).primaryActionLabel,
+                R.string.card_reader_payment_payment_failed_ok
+            )
+        }
+
+    @Test
+    fun `given external reader, when payment fails not because of AMOUNT_TOO_SMALL, then failed state has Try again button`() =
         testBlocking {
             whenever(errorMapper.mapPaymentErrorToUiError(Server))
                 .thenReturn(PaymentFlowError.Server)
@@ -906,13 +1157,31 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertEquals(
-                (viewModel.viewStateData.value as FailedPaymentState).primaryActionLabel,
+                (viewModel.viewStateData.value as ExternalReaderFailedPaymentState).primaryActionLabel,
                 R.string.try_again
             )
         }
 
     @Test
-    fun `when payment fails because of AMOUNT_TOO_SMALL, then clicking on ok button triggers exit event`() =
+    fun `given built in reader, when payment fails not because of AMOUNT_TOO_SMALL, then failed state has Try again button`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(Server))
+                .thenReturn(PaymentFlowError.Server)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithServerError) }
+            }
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            assertEquals(
+                (viewModel.viewStateData.value as BuiltInReaderFailedPaymentState).primaryActionLabel,
+                R.string.try_again
+            )
+        }
+
+    @Test
+    fun `given external reader, when payment fails because of AMOUNT_TOO_SMALL, then clicking on ok button triggers exit event`() =
         testBlocking {
             whenever(errorMapper.mapPaymentErrorToUiError(DeclinedByBackendError.AmountTooSmall))
                 .thenReturn(AmountTooSmall)
@@ -921,13 +1190,29 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
 
             viewModel.start()
-            (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFailedPaymentState).onPrimaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
         }
 
     @Test
-    fun `given user clicks on retry, when payment fails and retryData are null, then flow restarted from scratch`() =
+    fun `given built in reader, when payment fails because of AMOUNT_TOO_SMALL, then clicking on ok button triggers exit event`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(DeclinedByBackendError.AmountTooSmall))
+                .thenReturn(AmountTooSmall)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithAmountTooSmall) }
+            }
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+            (viewModel.viewStateData.value as BuiltInReaderFailedPaymentState).onPrimaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
+        }
+
+    @Test
+    fun `given user clicks on retry and external, when payment fails and retryData are null, then flow restarted from scratch`() =
         testBlocking {
             whenever(errorMapper.mapPaymentErrorToUiError(Generic))
                 .thenReturn(PaymentFlowError.Generic)
@@ -937,14 +1222,32 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
             clearInvocations(cardReaderManager)
 
-            (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFailedPaymentState).onPrimaryActionClicked.invoke()
             advanceUntilIdle()
 
             verify(cardReaderManager).collectPayment(any())
         }
 
     @Test
-    fun `given user clicks on retry, when payment fails, then retryCollectPayment invoked`() =
+    fun `given user clicks on retry and built in, when payment fails and retryData are null, then flow restarted from scratch`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(Generic))
+                .thenReturn(PaymentFlowError.Generic)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithEmptyDataForRetry) }
+            }
+            initViewModel(BUILT_IN)
+            viewModel.start()
+            clearInvocations(cardReaderManager)
+
+            (viewModel.viewStateData.value as BuiltInReaderFailedPaymentState).onPrimaryActionClicked.invoke()
+            advanceUntilIdle()
+
+            verify(cardReaderManager).collectPayment(any())
+        }
+
+    @Test
+    fun `given user clicks on retry and external, when payment fails, then retryCollectPayment invoked`() =
         testBlocking {
             whenever(errorMapper.mapPaymentErrorToUiError(Generic))
                 .thenReturn(PaymentFlowError.Generic)
@@ -953,14 +1256,31 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
             viewModel.start()
 
-            (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFailedPaymentState).onPrimaryActionClicked.invoke()
             advanceUntilIdle()
 
             verify(cardReaderManager).retryCollectPayment(any(), any())
         }
 
     @Test
-    fun `given user clicks on retry, when payment fails, then flow retried with provided PaymentData`() =
+    fun `given user clicks on retry and built in, when payment fails, then retryCollectPayment invoked`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(Generic))
+                .thenReturn(PaymentFlowError.Generic)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithValidDataForRetry) }
+            }
+            initViewModel(BUILT_IN)
+            viewModel.start()
+
+            (viewModel.viewStateData.value as BuiltInReaderFailedPaymentState).onPrimaryActionClicked.invoke()
+            advanceUntilIdle()
+
+            verify(cardReaderManager).retryCollectPayment(any(), any())
+        }
+
+    @Test
+    fun `given user clicks on retry and external, when payment fails, then flow retried with provided PaymentData`() =
         testBlocking {
             whenever(errorMapper.mapPaymentErrorToUiError(Generic)).thenReturn(PaymentFlowError.Generic)
             val paymentData = mock<PaymentData>()
@@ -969,14 +1289,31 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
             viewModel.start()
 
-            (viewModel.viewStateData.value as FailedPaymentState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFailedPaymentState).onPrimaryActionClicked.invoke()
             advanceUntilIdle()
 
             verify(cardReaderManager).retryCollectPayment(any(), eq(paymentData))
         }
 
     @Test
-    fun `given failed payment, when user clicks on secondary button, then exit event is triggered`() =
+    fun `given user clicks on retry and built in, when payment fails, then flow retried with provided PaymentData`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(Generic)).thenReturn(PaymentFlowError.Generic)
+            val paymentData = mock<PaymentData>()
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentFailed(Generic, paymentData, "dummy msg")) }
+            }
+            initViewModel(BUILT_IN)
+            viewModel.start()
+
+            (viewModel.viewStateData.value as BuiltInReaderFailedPaymentState).onPrimaryActionClicked.invoke()
+            advanceUntilIdle()
+
+            verify(cardReaderManager).retryCollectPayment(any(), eq(paymentData))
+        }
+
+    @Test
+    fun `given external failed payment, when user clicks on secondary button, then exit event is triggered`() =
         testBlocking {
             whenever(errorMapper.mapPaymentErrorToUiError(Generic)).thenReturn(PaymentFlowError.Generic)
             val paymentData = mock<PaymentData>()
@@ -986,7 +1323,24 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            (viewModel.viewStateData.value as FailedPaymentState).onSecondaryActionClicked!!.invoke()
+            (viewModel.viewStateData.value as ExternalReaderFailedPaymentState).onSecondaryActionClicked!!.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
+        }
+
+    @Test
+    fun `given built in failed payment, when user clicks on secondary button, then exit event is triggered`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(Generic)).thenReturn(PaymentFlowError.Generic)
+            val paymentData = mock<PaymentData>()
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentFailed(Generic, paymentData, "dummy msg")) }
+            }
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            (viewModel.viewStateData.value as BuiltInReaderFailedPaymentState).onSecondaryActionClicked!!.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
         }
@@ -1148,7 +1502,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when payment fails, then correct labels, illustration and button are shown`() =
+    fun `given external reader, when payment fails, then correct labels, illustration and button are shown`() =
         testBlocking {
             whenever(errorMapper.mapPaymentErrorToUiError(Generic)).thenReturn(PaymentFlowError.Generic)
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -1163,6 +1517,34 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
                 .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.img_products_error)
+            assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
+                .isEqualTo(R.string.card_reader_payment_failed_unexpected_error_state)
+            assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
+                .isEqualTo(R.dimen.major_100)
+            assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
+            assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel")
+                .isEqualTo(R.string.try_again)
+        }
+
+    @Test
+    fun `given built in reader, when payment fails, then correct labels, illustration and button are shown`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(Generic)).thenReturn(PaymentFlowError.Generic)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithEmptyDataForRetry) }
+            }
+
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+            val viewState = viewModel.viewStateData.value!!
+
+            assertThat(viewState.headerLabel).describedAs("headerLabel")
+                .isEqualTo(R.string.card_reader_payment_payment_failed_header)
+            assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
+                .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
+            assertThat(viewState.illustration).describedAs("illustration")
+                .isEqualTo(R.drawable.img_card_reader_tpp_payment_failed)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
                 .isEqualTo(R.string.card_reader_payment_failed_unexpected_error_state)
             assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
@@ -1233,7 +1615,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when payment succeeds, then correct labels, illustration and buttons are shown`() =
+    fun `given external reader, when payment succeeds, then correct labels, illustration and buttons are shown`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(PaymentCompleted("")) }
@@ -1247,6 +1629,36 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
                 .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.img_celebration)
+            assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel").isNull()
+            assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
+                .isEqualTo(R.dimen.major_275)
+            assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
+            assertThat(viewState.primaryActionLabel).describedAs("primaryActionLabel")
+                .isEqualTo(R.string.card_reader_payment_print_receipt)
+            assertThat(viewState.secondaryActionLabel).describedAs("secondaryActionLabel")
+                .isEqualTo(R.string.card_reader_payment_send_receipt)
+            assertThat(viewState.tertiaryActionLabel).describedAs("tertiaryActionLabel")
+                .isEqualTo(R.string.card_reader_payment_save_for_later)
+        }
+
+    @Test
+    fun `given built in reader, when payment succeeds, then correct labels, illustration and buttons are shown`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+            val viewState = viewModel.viewStateData.value!!
+
+            assertThat(viewState.headerLabel).describedAs("headerLabel")
+                .isEqualTo(R.string.card_reader_payment_completed_payment_header)
+            assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel")
+                .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
+            assertThat(viewState.illustration).describedAs("illustration")
+                .isEqualTo(R.drawable.img_card_reader_tpp_successful_payment)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel").isNull()
             assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
                 .isEqualTo(R.dimen.major_275)
@@ -1276,20 +1688,36 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given billing email empty, when user clicks on print receipt button, then PrintReceipt event emitted`() =
+    fun `given billing email empty and external, when user clicks on print receipt button, then PrintReceipt event emitted`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(PaymentCompleted("")) }
             }
             viewModel.start()
 
-            (viewModel.viewStateData.value as PaymentSuccessfulState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulState).onPrimaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(PrintReceipt::class.java)
         }
 
     @Test
-    fun `given billing email not empty, when user clicks on print receipt button, then PrintReceipt event emitted`() =
+    fun `given billing email empty and built in, when user clicks on print receipt button, then PrintReceipt event emitted`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            (viewModel.viewStateData.value as BuiltInReaderPaymentSuccessfulState).onPrimaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(PrintReceipt::class.java)
+        }
+
+    @Test
+    fun `given billing email not empty and external, when user clicks on print receipt button, then PrintReceipt event emitted`() =
         testBlocking {
             whenever(mockedAddress.email).thenReturn("nonemptyemail")
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -1297,28 +1725,63 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
             viewModel.start()
 
-            (viewModel.viewStateData.value as PaymentSuccessfulReceiptSentAutomaticallyState)
+            (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulReceiptSentAutomaticallyState)
                 .onPrimaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(PrintReceipt::class.java)
         }
 
     @Test
-    fun `given billing email empty, when user clicks on print receipt button, then printing receipt state shown`() =
+    fun `given billing email not empty and built in, when user clicks on print receipt button, then PrintReceipt event emitted`() =
+        testBlocking {
+            whenever(mockedAddress.email).thenReturn("nonemptyemail")
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            (viewModel.viewStateData.value as BuiltInReaderPaymentSuccessfulReceiptSentAutomaticallyState)
+                .onPrimaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(PrintReceipt::class.java)
+        }
+
+    @Test
+    fun `given billing email empty and external, when user clicks on print receipt button, then printing receipt state shown`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(PaymentCompleted("")) }
             }
             viewModel.start()
 
-            (viewModel.viewStateData.value as PaymentSuccessfulState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulState).onPrimaryActionClicked.invoke()
 
             assertThat(viewModel.viewStateData.value)
                 .isInstanceOf(PrintingReceiptState::class.java)
         }
 
     @Test
-    fun `given billing email not empty, when user clicks on print receipt button, then printing receipt state shown`() =
+    fun `given billing email empty and built in, when user clicks on print receipt button, then printing receipt state shown`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            (viewModel.viewStateData.value as BuiltInReaderPaymentSuccessfulState).onPrimaryActionClicked.invoke()
+
+            assertThat(viewModel.viewStateData.value)
+                .isInstanceOf(PrintingReceiptState::class.java)
+        }
+
+    @Test
+    fun `given billing email not empty and external, when user clicks on print receipt button, then printing receipt state shown`() =
         testBlocking {
             whenever(mockedAddress.email).thenReturn("nonemptyemail")
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -1326,7 +1789,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
             viewModel.start()
 
-            (viewModel.viewStateData.value as PaymentSuccessfulReceiptSentAutomaticallyState)
+            (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulReceiptSentAutomaticallyState)
                 .onPrimaryActionClicked.invoke()
 
             assertThat(viewModel.viewStateData.value)
@@ -1334,44 +1797,117 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given billing email empty, when print result received, then payment successful state shown`() =
+    fun `given billing email not empty and built in, when user clicks on print receipt button, then printing receipt state shown`() =
+        testBlocking {
+            whenever(mockedAddress.email).thenReturn("nonemptyemail")
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            (viewModel.viewStateData.value as BuiltInReaderPaymentSuccessfulReceiptSentAutomaticallyState)
+                .onPrimaryActionClicked.invoke()
+
+            assertThat(viewModel.viewStateData.value)
+                .isInstanceOf(PrintingReceiptState::class.java)
+        }
+
+    @Test
+    fun `given billing email empty and external, when print result received, then payment successful state shown`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(PaymentCompleted("")) }
             }
             viewModel.start()
-            (viewModel.viewStateData.value as PaymentSuccessfulState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulState).onPrimaryActionClicked.invoke()
 
             viewModel.onPrintResult(CANCELLED)
 
-            assertThat(viewModel.viewStateData.value).isInstanceOf(PaymentSuccessfulState::class.java)
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ExternalReaderPaymentSuccessfulState::class.java)
         }
 
     @Test
-    fun `given billing email not empty, when print result received, then payment success receipt sent state shown`() =
+    fun `given billing email empty and built in, when print result received, then payment successful state shown`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+            (viewModel.viewStateData.value as BuiltInReaderPaymentSuccessfulState).onPrimaryActionClicked.invoke()
+
+            viewModel.onPrintResult(CANCELLED)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(BuiltInReaderPaymentSuccessfulState::class.java)
+        }
+
+    @Test
+    fun `given billing email not empty and external, when print result received, then payment success receipt sent state shown`() =
         testBlocking {
             whenever(mockedAddress.email).thenReturn("nonemptyemail")
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(PaymentCompleted("")) }
             }
             viewModel.start()
-            (viewModel.viewStateData.value as PaymentSuccessfulReceiptSentAutomaticallyState)
+            (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulReceiptSentAutomaticallyState)
                 .onPrimaryActionClicked.invoke()
 
             viewModel.onPrintResult(CANCELLED)
 
             assertThat(viewModel.viewStateData.value)
-                .isInstanceOf(PaymentSuccessfulReceiptSentAutomaticallyState::class.java)
+                .isInstanceOf(ExternalReaderPaymentSuccessfulReceiptSentAutomaticallyState::class.java)
         }
 
     @Test
-    fun `given in printing receipt state, when view recreated, then PrintReceipt event emitted`() =
+    fun `given billing email not empty and built in, when print result received, then payment success receipt sent state shown`() =
+        testBlocking {
+            whenever(mockedAddress.email).thenReturn("nonemptyemail")
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+            (viewModel.viewStateData.value as BuiltInReaderPaymentSuccessfulReceiptSentAutomaticallyState)
+                .onPrimaryActionClicked.invoke()
+
+            viewModel.onPrintResult(CANCELLED)
+
+            assertThat(viewModel.viewStateData.value)
+                .isInstanceOf(BuiltInReaderPaymentSuccessfulReceiptSentAutomaticallyState::class.java)
+        }
+
+    @Test
+    fun `given in printing receipt state and external, when view recreated, then PrintReceipt event emitted`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(PaymentCompleted("")) }
             }
             viewModel.start()
-            (viewModel.viewStateData.value as PaymentSuccessfulState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulState).onPrimaryActionClicked.invoke()
+
+            viewModel.onViewCreated()
+
+            assertThat(viewModel.event.value).isInstanceOf(PrintReceipt::class.java)
+        }
+
+    @Test
+    fun `given in printing receipt state and built in, when view recreated, then PrintReceipt event emitted`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+            (viewModel.viewStateData.value as BuiltInReaderPaymentSuccessfulState).onPrimaryActionClicked.invoke()
 
             viewModel.onViewCreated()
 
@@ -1394,20 +1930,36 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given billing email empty, when user clicks on print receipt button, then event tracked`() =
+    fun `given billing email empty and external, when user clicks on print receipt button, then event tracked`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(PaymentCompleted("")) }
             }
             viewModel.start()
 
-            (viewModel.viewStateData.value as PaymentSuccessfulState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulState).onPrimaryActionClicked.invoke()
 
             verify(tracker).trackPrintReceiptTapped()
         }
 
     @Test
-    fun `given billing email not empty, when user clicks on print receipt button, then event tracked`() =
+    fun `given billing email empty and built in, when user clicks on print receipt button, then event tracked`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            (viewModel.viewStateData.value as BuiltInReaderPaymentSuccessfulState).onPrimaryActionClicked.invoke()
+
+            verify(tracker).trackPrintReceiptTapped()
+        }
+
+    @Test
+    fun `given billing email not empty and external, when user clicks on print receipt button, then event tracked`() =
         testBlocking {
             whenever(mockedAddress.email).thenReturn("nonemptyemail")
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -1415,7 +1967,25 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
             viewModel.start()
 
-            (viewModel.viewStateData.value as PaymentSuccessfulReceiptSentAutomaticallyState)
+            (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulReceiptSentAutomaticallyState)
+                .onPrimaryActionClicked.invoke()
+
+            verify(tracker).trackPrintReceiptTapped()
+        }
+
+    @Test
+    fun `given billing email not empty and built in, when user clicks on print receipt button, then event tracked`() =
+        testBlocking {
+            whenever(mockedAddress.email).thenReturn("nonemptyemail")
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            (viewModel.viewStateData.value as BuiltInReaderPaymentSuccessfulReceiptSentAutomaticallyState)
                 .onPrimaryActionClicked.invoke()
 
             verify(tracker).trackPrintReceiptTapped()
@@ -1443,46 +2013,94 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when user clicks on send receipt button, then SendReceipt event emitted`() =
+    fun `given external reader, when user clicks on send receipt button, then SendReceipt event emitted`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(PaymentCompleted("")) }
             }
             viewModel.start()
 
-            (viewModel.viewStateData.value as PaymentSuccessfulState).onSecondaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulState).onSecondaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(SendReceipt::class.java)
         }
 
     @Test
-    fun `when user clicks on send receipt button, then event tracked`() =
+    fun `given built in reader, when user clicks on send receipt button, then SendReceipt event emitted`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            (viewModel.viewStateData.value as BuiltInReaderPaymentSuccessfulState).onSecondaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(SendReceipt::class.java)
+        }
+
+    @Test
+    fun `given external reader, when user clicks on send receipt button, then event tracked`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(PaymentCompleted("")) }
             }
             viewModel.start()
 
-            (viewModel.viewStateData.value as PaymentSuccessfulState).onSecondaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulState).onSecondaryActionClicked.invoke()
 
             verify(tracker).trackEmailReceiptTapped()
         }
 
     @Test
-    fun `given billing email empty, when user clicks on save for later button, then Exit event emitted`() =
+    fun `given built in reader, when user clicks on send receipt button, then event tracked`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            (viewModel.viewStateData.value as BuiltInReaderPaymentSuccessfulState).onSecondaryActionClicked.invoke()
+
+            verify(tracker).trackEmailReceiptTapped()
+        }
+
+    @Test
+    fun `given billing email empty and external, when user clicks on save for later button, then Exit event emitted`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(PaymentCompleted("")) }
             }
             viewModel.start()
 
-            (viewModel.viewStateData.value as PaymentSuccessfulState).onTertiaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulState).onTertiaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
         }
 
     @Test
-    fun `given billing email not empty, when user clicks on save for later button, then Exit event emitted`() =
+    fun `given billing email built in and external, when user clicks on save for later button, then Exit event emitted`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            (viewModel.viewStateData.value as BuiltInReaderPaymentSuccessfulState).onTertiaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
+        }
+
+    @Test
+    fun `given billing email not empty and external, when user clicks on save for later button, then Exit event emitted`() =
         testBlocking {
             whenever(mockedAddress.email).thenReturn("nonemptyemail")
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -1490,7 +2108,25 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
             viewModel.start()
 
-            (viewModel.viewStateData.value as PaymentSuccessfulReceiptSentAutomaticallyState)
+            (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulReceiptSentAutomaticallyState)
+                .onTertiaryActionClicked.invoke()
+
+            assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
+        }
+
+    @Test
+    fun `given billing email not empty and built in, when user clicks on save for later button, then Exit event emitted`() =
+        testBlocking {
+            whenever(mockedAddress.email).thenReturn("nonemptyemail")
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            (viewModel.viewStateData.value as BuiltInReaderPaymentSuccessfulReceiptSentAutomaticallyState)
                 .onTertiaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(Exit::class.java)
@@ -1673,14 +2309,31 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given payment flow is receipt print state, when user presses back button, then cancel event is not tracked`() =
+    fun `given payment flow is receipt print state and external, when user presses back button, then cancel event is not tracked`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(PaymentCompleted("")) }
             }
             viewModel.start()
 
-            (viewModel.viewStateData.value as PaymentSuccessfulState).onPrimaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulState).onPrimaryActionClicked.invoke()
+            viewModel.onBackPressed()
+
+            verify(tracker, never()).trackPaymentCancelled(anyOrNull())
+        }
+
+    @Test
+    fun `given payment flow is receipt print state and built in, when user presses back button, then cancel event is not tracked`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            (viewModel.viewStateData.value as BuiltInReaderPaymentSuccessfulState).onPrimaryActionClicked.invoke()
             viewModel.onBackPressed()
 
             verify(tracker, never()).trackPaymentCancelled(anyOrNull())
@@ -1701,7 +2354,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given re-fetching order, when user clicks on save for later button, then ReFetchingOrderState shown`() =
+    fun `given re-fetching order and external, when user clicks on save for later button, then ReFetchingOrderState shown`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(PaymentCompleted("")) }
@@ -1709,7 +2362,24 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
             simulateFetchOrderJobState(inProgress = true)
 
-            (viewModel.viewStateData.value as PaymentSuccessfulState).onTertiaryActionClicked.invoke()
+            (viewModel.viewStateData.value as ExternalReaderPaymentSuccessfulState).onTertiaryActionClicked.invoke()
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(ReFetchingOrderState::class.java)
+        }
+
+    @Test
+    fun `given re-fetching order and built in, when user clicks on save for later button, then ReFetchingOrderState shown`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+            simulateFetchOrderJobState(inProgress = true)
+
+            (viewModel.viewStateData.value as BuiltInReaderPaymentSuccessfulState).onTertiaryActionClicked.invoke()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ReFetchingOrderState::class.java)
         }
@@ -1778,7 +2448,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given payment failed state and connected BI, when user presses back, then disconnect from reader invoked`() =
+    fun `given built in payment failed state and connected BI, when user presses back, then disconnect from reader invoked`() =
         testBlocking {
             val cardReader: CardReader = mock {
                 on { type }.thenReturn("COTS_DEVICE")
@@ -1791,6 +2461,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(PaymentFailed(NoNetwork, null, "")) }
             }
+            initViewModel(BUILT_IN)
             viewModel.start()
 
             viewModel.onBackPressed()
