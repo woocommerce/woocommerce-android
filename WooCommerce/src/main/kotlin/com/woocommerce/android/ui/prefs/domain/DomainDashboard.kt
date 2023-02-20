@@ -59,12 +59,12 @@ import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.prefs.domain.DomainChangeViewModel.ViewState.DomainsState
-import com.woocommerce.android.ui.prefs.domain.DomainChangeViewModel.ViewState.ErrorState
-import com.woocommerce.android.ui.prefs.domain.DomainChangeViewModel.ViewState.LoadingState
+import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ViewState.DashboardState
+import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ViewState.ErrorState
+import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ViewState.LoadingState
 
 @Composable
-fun CurrentDomainsScreen(viewModel: DomainChangeViewModel) {
+fun DomainDashboardScreen(viewModel: DomainDashboardViewModel) {
     viewModel.viewState.observeAsState().value?.let { state ->
         Crossfade(targetState = state) { viewState ->
             Scaffold(topBar = {
@@ -75,9 +75,9 @@ fun CurrentDomainsScreen(viewModel: DomainChangeViewModel) {
                 )
             }) { padding ->
                 when (viewState) {
-                    is DomainsState -> {
-                        DomainChange(
-                            domainsState = viewState,
+                    is DashboardState -> {
+                        DomainDashboard(
+                            dashboardState = viewState,
                             onFindDomainButtonTapped = viewModel::onFindDomainButtonTapped,
                             onDismissBannerButtonTapped = viewModel::onDismissBannerButtonTapped,
                             onLearnMoreButtonTapped = viewModel::onLearnMoreButtonTapped,
@@ -97,17 +97,17 @@ fun CurrentDomainsScreen(viewModel: DomainChangeViewModel) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun DomainChange(
-    domainsState: DomainsState,
+private fun DomainDashboard(
+    dashboardState: DashboardState,
     onFindDomainButtonTapped: () -> Unit,
     onDismissBannerButtonTapped: () -> Unit,
     onLearnMoreButtonTapped: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        WPComDomain(domainsState.wpComDomain.url, domainsState.wpComDomain.isPrimary)
+        WPComDomain(dashboardState.wpComDomain.url, dashboardState.wpComDomain.isPrimary)
 
-        val isBannerVisible = remember { mutableStateOf(domainsState.isDomainClaimBannerVisible) }
+        val isBannerVisible = remember { mutableStateOf(dashboardState.isDomainClaimBannerVisible) }
         AnimatedVisibility(visible = isBannerVisible.value, exit = slideOutVertically()) {
             ClaimDomainBanner(
                 onClaimDomainButtonTapped = onFindDomainButtonTapped,
@@ -115,7 +115,7 @@ private fun DomainChange(
             )
         }
 
-        if (domainsState.paidDomains.isEmpty()) {
+        if (dashboardState.paidDomains.isEmpty()) {
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -175,7 +175,7 @@ private fun DomainChange(
                         color = colorResource(id = color.color_on_surface_medium)
                     )
                 }
-                items(domainsState.paidDomains) { domain ->
+                items(dashboardState.paidDomains) { domain ->
                     Domain(domain.url, domain.renewalDate, domain.isPrimary)
                 }
                 item {
@@ -385,18 +385,18 @@ fun ErrorScreen() {
 @Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
-fun NamePickerPreview() {
+fun PaidDomainsPreview() {
     WooThemeWithBackground {
-        DomainChange(
-            domainsState = DomainsState(
-                wpComDomain = DomainsState.Domain(
+        DomainDashboard(
+            dashboardState = DashboardState(
+                wpComDomain = DashboardState.Domain(
                     url = "www.test.com",
                     renewalDate = "Renewal date: 12/12/2020",
                     isPrimary = true
                 ),
                 isDomainClaimBannerVisible = true,
                 paidDomains = listOf(
-                    DomainsState.Domain(
+                    DashboardState.Domain(
                         url = "www.cnn.com",
                         renewalDate = "Renewal date: 12/12/2020",
                         isPrimary = false
@@ -416,9 +416,9 @@ fun NamePickerPreview() {
 @Composable
 fun NoDomainsPickerPreview() {
     WooThemeWithBackground {
-        DomainChange(
-            domainsState = DomainsState(
-                wpComDomain = DomainsState.Domain(
+        DomainDashboard(
+            dashboardState = DashboardState(
+                wpComDomain = DashboardState.Domain(
                     url = "www.test.com",
                     renewalDate = "Renewal date: 12/12/2020",
                     isPrimary = true

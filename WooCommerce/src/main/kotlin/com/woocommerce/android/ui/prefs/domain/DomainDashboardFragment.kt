@@ -6,22 +6,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.prefs.domain.DomainChangeViewModel.NavigateToDomainSearch
-import com.woocommerce.android.ui.prefs.domain.DomainChangeViewModel.ShowMoreAboutDomains
+import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.NavigateToDomainSearch
+import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ShowMoreAboutDomains
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CurrentDomainsFragment : BaseFragment() {
-    private val viewModel: DomainChangeViewModel by hiltNavGraphViewModels(R.id.nav_graph_domain_change)
+class DomainDashboardFragment : BaseFragment() {
+    private val viewModel: DomainDashboardViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -31,7 +30,7 @@ class CurrentDomainsFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    CurrentDomainsScreen(viewModel)
+                    DomainDashboardScreen(viewModel)
                 }
             }
         }
@@ -49,8 +48,11 @@ class CurrentDomainsFragment : BaseFragment() {
                 is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
                 is ShowMoreAboutDomains -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 is NavigateToDomainSearch -> findNavController().navigate(
-                    CurrentDomainsFragmentDirections
-                        .actionCurrentDomainFragmentToDomainSearchFragment(event.hasFreeCredits, false, "")
+                    DomainDashboardFragmentDirections.actionDomainDashboardFragmentToDomainSearchFragment(
+                        keyIsFreeCreditAvailable = event.hasFreeCredits,
+                        searchOnlyFreeDomains = false,
+                        initialQuery = ""
+                    )
                 )
             }
         }

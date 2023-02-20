@@ -8,10 +8,9 @@ import com.woocommerce.android.analytics.AnalyticsEvent.DOMAIN_CHANGE_CURRENT_DO
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin.DOMAIN_CHANGE
-import com.woocommerce.android.ui.prefs.domain.DomainChangeViewModel.ViewState.DomainsState
-import com.woocommerce.android.ui.prefs.domain.DomainChangeViewModel.ViewState.ErrorState
-import com.woocommerce.android.ui.prefs.domain.DomainChangeViewModel.ViewState.LoadingState
-import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ViewState.DashboardState
+import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ViewState.ErrorState
+import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ViewState.LoadingState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -23,7 +22,7 @@ import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
-class DomainChangeViewModel @Inject constructor(
+class DomainDashboardViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val repository: DomainChangeRepository
@@ -66,13 +65,13 @@ class DomainChangeViewModel @Inject constructor(
                     ?.filter { !it.wpcomDomain && it.domain != null } ?: emptyList()
                 if (freeDomain != null) {
                     _viewState.update {
-                        DomainsState(
-                            wpComDomain = DomainsState.Domain(
+                        DashboardState(
+                            wpComDomain = DashboardState.Domain(
                                 url = freeDomain.domain ?: NO_DOMAIN,
                                 isPrimary = freeDomain.primaryDomain
                             ),
                             paidDomains = paidDomains.map { domain ->
-                                DomainsState.Domain(
+                                DashboardState.Domain(
                                     url = domain.domain!!,
                                     renewalDate = domain.expiry,
                                     isPrimary = domain.primaryDomain
@@ -100,13 +99,9 @@ class DomainChangeViewModel @Inject constructor(
         triggerEvent(NavigateToDomainSearch(hasFreeCredits))
     }
 
-    fun onDomainSelected(domain: String) {
-        WooLog.d(WooLog.T.ONBOARDING, "Domain selected: $domain")
-    }
-
     fun onDismissBannerButtonTapped() {
-        if ((_viewState.value is DomainsState)) {
-            _viewState.update { (it as DomainsState).copy(isDomainClaimBannerVisible = false) }
+        if ((_viewState.value is DashboardState)) {
+            _viewState.update { (it as DashboardState).copy(isDomainClaimBannerVisible = false) }
         }
     }
 
@@ -122,7 +117,7 @@ class DomainChangeViewModel @Inject constructor(
         object ErrorState : ViewState
 
         @Parcelize
-        data class DomainsState(
+        data class DashboardState(
             val wpComDomain: Domain,
             val isDomainClaimBannerVisible: Boolean,
             val paidDomains: List<Domain>
