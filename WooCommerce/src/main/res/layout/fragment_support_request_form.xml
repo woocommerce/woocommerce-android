@@ -1,6 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+        android:id="@+id/request_subject"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/major_100"
+        android:layout_marginTop="@dimen/major_100"
+        android:hint="Subject"
+        android:imeOptions="flagNoFullscreen"
+        android:inputType="textPersonName|textCapWords"
+        android:nextFocusForward="@id/last_name"
+        android:saveEnabled="false"
+        app:errorEnabled="true" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/empty_view_button"
+        style="@style/Woo.Button.Colored"
+        android:layout_marginHorizontal="@dimen/major_100"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="@dimen/major_200"
+        android:text="Submit Support Request" />
+
+</androidx.appcompat.widget.LinearLayoutCompat>
