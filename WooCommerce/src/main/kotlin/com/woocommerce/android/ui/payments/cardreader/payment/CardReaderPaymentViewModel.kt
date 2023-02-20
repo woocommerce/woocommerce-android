@@ -77,7 +77,6 @@ import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.STARTED
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -99,7 +98,6 @@ class CardReaderPaymentViewModel
     savedState: SavedStateHandle,
     private val cardReaderManager: CardReaderManager,
     private val orderRepository: OrderDetailRepository,
-    private val resourceProvider: ResourceProvider,
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
@@ -111,7 +109,8 @@ class CardReaderPaymentViewModel
     private val wooStore: WooCommerceStore,
     private val dispatchers: CoroutineDispatchers,
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
-    private val cardReaderPaymentReaderTypeStateProvider: CardReaderPaymentReaderTypeStateProvider
+    private val cardReaderPaymentReaderTypeStateProvider: CardReaderPaymentReaderTypeStateProvider,
+    private val cardReaderPaymentOrderHelper: CardReaderPaymentOrderHelper,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogFragmentArgs by savedState.navArgs()
 
@@ -265,7 +264,7 @@ class CardReaderPaymentViewModel
         )
         cardReaderManager.collectPayment(
             PaymentInfo(
-                paymentDescription = order.getPaymentDescription(),
+                paymentDescription = cardReaderPaymentOrderHelper.getPaymentDescription(order),
                 statementDescriptor = StatementDescriptor(rawStatementDescriptor),
                 orderId = order.id,
                 amount = order.total,
@@ -280,7 +279,12 @@ class CardReaderPaymentViewModel
                 feeAmount = calculateFeeInCents(countryCode)
             )
         ).collect { paymentStatus ->
-            onPaymentStatusChanged(order.id, customerEmail, paymentStatus, order.getAmountLabel())
+            onPaymentStatusChanged(
+                order.id,
+                customerEmail,
+                paymentStatus,
+                cardReaderPaymentOrderHelper.getAmountLabel(order)
+            )
         }
     }
 
@@ -493,10 +497,14 @@ class CardReaderPaymentViewModel
     private fun showPaymentSuccessfulState() {
         launch {
             val order = requireNotNull(orderRepository.getOrderById(orderId)) { "Order URL not available." }
-            val amountLabel = order.getAmountLabel()
+            val amountLabel = cardReaderPaymentOrderHelper.getAmountLabel(order)
             val receiptUrl = getReceiptUrl(order.id)
             val onPrintReceiptClicked = {
-                onPrintReceiptClicked(amountLabel, receiptUrl, order.getReceiptDocumentName())
+                onPrintReceiptClicked(
+                    amountLabel,
+                    receiptUrl,
+                    cardReaderPaymentOrderHelper.getReceiptDocumentName(order)
+                )
             }
             val onSaveUserClicked = {
                 onSaveForLaterClicked()
@@ -595,7 +603,12 @@ class CardReaderPaymentViewModel
         launch {
             val order = orderRepository.getOrderById(orderId)
                 ?: throw IllegalStateException("Order URL not available.")
-            triggerEvent(PrintReceipt(getReceiptUrl(order.id), order.getReceiptDocumentName()))
+            triggerEvent(
+                PrintReceipt(
+                    getReceiptUrl(order.id),
+                    cardReaderPaymentOrderHelper.getReceiptDocumentName(order)
+                )
+            )
         }
     }
 
@@ -701,19 +714,6 @@ class CardReaderPaymentViewModel
             appPrefsWrapper.getReceiptUrl(it.id, it.siteId, it.selfHostedSiteId, orderId)
         }
     }
-
-    private fun Order.getPaymentDescription(): String =
-        resourceProvider.getString(
-            R.string.card_reader_payment_description_v2,
-            this.number,
-            selectedSite.get().name.orEmpty(),
-            selectedSite.get().remoteId().value
-        )
-
-    private fun Order.getAmountLabel(): String = currencyFormatter
-        .formatAmountWithCurrency(this.total.toDouble(), this.currency)
-
-    private fun Order.getReceiptDocumentName() = "receipt-order-$id"
 
     private suspend fun getStoreCountryCode(): String {
         return withContext(dispatchers.io) {
