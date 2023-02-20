@@ -92,6 +92,19 @@
 
     </com.google.android.material.card.MaterialCardView>
 
+    <com.google.android.material.textview.MaterialTextView
+        style="@style/Woo.TextView.Headline6"
+        android:textSize="@dimen/text_minor_125"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/support_request_title"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/major_100"
+        android:text="@string/support_request_description"/>
+
     <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
         android:id="@+id/request_subject"
         android:layout_width="match_parent"
@@ -112,7 +125,7 @@
         android:layout_height="0dp"
         android:layout_marginHorizontal="@dimen/major_100"
         android:layout_weight="1"
-        app:strokeColor="@color/woo_gray_40">
+        app:strokeColor="@color/gray_10">
 
         <EditText
             android:id="@+id/request_message"
