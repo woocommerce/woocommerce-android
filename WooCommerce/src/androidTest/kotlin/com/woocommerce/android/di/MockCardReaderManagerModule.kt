@@ -62,8 +62,11 @@ class MockCardReaderManagerModule {
         override val displayBluetoothCardReaderMessages: Flow<BluetoothCardReaderMessages>
             get() = emptyFlow()
 
-        override fun initialize(updateFrequency: CardReaderManager.SimulatorUpdateFrequency) {}
-        override fun initializeOnUpdateFrequencyChange(updateFrequency: CardReaderManager.SimulatorUpdateFrequency) {}
+        override fun initialize(updateFrequency: CardReaderManager.SimulatorUpdateFrequency, useInterac: Boolean) {}
+        override fun reinitializeSimulatedTerminal(
+            updateFrequency: CardReaderManager.SimulatorUpdateFrequency,
+            useInterac: Boolean
+        ) {}
 
         override fun discoverReaders(
             isSimulated: Boolean,

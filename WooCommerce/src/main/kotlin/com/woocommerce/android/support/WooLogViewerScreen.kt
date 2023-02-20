@@ -16,9 +16,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -29,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.util.RollingLogEntries
 import com.woocommerce.android.util.WooLog
 import java.lang.String.format
@@ -43,17 +42,9 @@ fun WooLogViewerScreen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                backgroundColor = MaterialTheme.colors.surface,
-                title = { Text(stringResource(id = R.string.logviewer_activity_title)) },
-                navigationIcon = {
-                    IconButton(onClick = { onBackPress() }) {
-                        Icon(
-                            Icons.Filled.ArrowBack,
-                            contentDescription = stringResource(id = R.string.back)
-                        )
-                    }
-                },
+            Toolbar(
+                title = stringResource(id = R.string.logviewer_activity_title),
+                onNavigationButtonClick = onBackPress,
                 actions = {
                     IconButton(onClick = { onCopyButtonClick() }) {
                         Icon(

@@ -289,4 +289,60 @@ class CardReaderPaymentErrorMapperTest {
         assertThat((result as PaymentFlowError.Unknown).message)
             .isEqualTo(R.string.card_reader_payment_failed_unknown)
     }
+
+    @Test
+    fun `given Canceled error, when map to ui error, then Canceled error returned`() {
+        // GIVEN
+        val error = CardPaymentStatusErrorType.Canceled
+
+        // WHEN
+        val result = mapper.mapPaymentErrorToUiError(error)
+
+        // THEN
+        assertThat(result).isEqualTo(PaymentFlowError.Canceled)
+        assertThat((result as PaymentFlowError.Canceled).message)
+            .isEqualTo(R.string.card_reader_payment_failed_canceled)
+    }
+
+    @Test
+    fun `given NfcDisabled error, when map to ui error, then NfcDisable error returned`() {
+        // GIVEN
+        val error = CardPaymentStatusErrorType.BuiltInReader.NfcDisabled
+
+        // WHEN
+        val result = mapper.mapPaymentErrorToUiError(error)
+
+        // THEN
+        assertThat(result).isEqualTo(PaymentFlowError.BuiltInReader.NfcDisabled)
+        assertThat((result as PaymentFlowError.BuiltInReader.NfcDisabled).message)
+            .isEqualTo(R.string.card_reader_payment_failed_nfc_disabled)
+    }
+
+    @Test
+    fun `given DeviceIsNotSupported error, when map to ui error, then DeviceIsNotSupported error returned`() {
+        // GIVEN
+        val error = CardPaymentStatusErrorType.BuiltInReader.DeviceIsNotSupported
+
+        // WHEN
+        val result = mapper.mapPaymentErrorToUiError(error)
+
+        // THEN
+        assertThat(result).isEqualTo(PaymentFlowError.BuiltInReader.DeviceIsNotSupported)
+        assertThat((result as PaymentFlowError.BuiltInReader.DeviceIsNotSupported).message)
+            .isEqualTo(R.string.card_reader_payment_failed_device_is_not_supported)
+    }
+
+    @Test
+    fun `given InvalidAppSetup error, when map to ui error, then InvalidAppSetup error returned`() {
+        // GIVEN
+        val error = CardPaymentStatusErrorType.BuiltInReader.InvalidAppSetup
+
+        // WHEN
+        val result = mapper.mapPaymentErrorToUiError(error)
+
+        // THEN
+        assertThat(result).isEqualTo(PaymentFlowError.BuiltInReader.InvalidAppSetup)
+        assertThat((result as PaymentFlowError.BuiltInReader.InvalidAppSetup).message)
+            .isEqualTo(R.string.card_reader_payment_failed_app_setup_is_invalid)
+    }
 }

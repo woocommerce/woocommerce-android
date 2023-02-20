@@ -3,9 +3,15 @@ package com.woocommerce.android.ui.prefs
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
@@ -14,13 +20,15 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivityAppSettingsBinding
 import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.appwidgets.WidgetUpdater
+import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import com.woocommerce.android.util.AnalyticsUtils
 import dagger.android.DispatchingAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -43,7 +51,7 @@ class AppSettingsActivity :
     private var isBetaOptionChanged = false
 
     private lateinit var binding: ActivityAppSettingsBinding
-    private lateinit var toolbar: Toolbar
+    private var toolbar: Toolbar? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,12 +65,28 @@ class AppSettingsActivity :
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleObserver, false)
+
         savedInstanceState?.let {
             isBetaOptionChanged = it.getBoolean(KEY_BETA_OPTION_CHANGED)
         }
 
         if (isBetaOptionChanged) {
             setResult(RESULT_CODE_BETA_OPTIONS_CHANGED)
+        }
+    }
+
+    private val fragmentLifecycleObserver: FragmentLifecycleCallbacks = object : FragmentLifecycleCallbacks() {
+        override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
+            when ((f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
+                AppBarStatus.Hidden -> {
+                    toolbar?.isVisible = false
+                }
+                is AppBarStatus.Visible -> {
+                    toolbar?.isVisible = true
+                }
+            }
         }
     }
 
@@ -129,11 +153,11 @@ class AppSettingsActivity :
     }
 
     override fun confirmLogout() {
-        val message = String.format(
-            Locale.getDefault(),
-            getString(R.string.settings_confirm_logout),
-            presenter.getAccountDisplayName()
-        )
+        val message = when (selectedSite.connectionType) {
+            SiteConnectionType.ApplicationPasswords -> getString(R.string.settings_confirm_logout_site_credentials)
+            else -> getString(R.string.settings_confirm_logout, presenter.getAccountDisplayName())
+        }
+
         MaterialAlertDialogBuilder(this)
             .setMessage(message)
             .setPositiveButton(R.string.signout) { _, _ ->

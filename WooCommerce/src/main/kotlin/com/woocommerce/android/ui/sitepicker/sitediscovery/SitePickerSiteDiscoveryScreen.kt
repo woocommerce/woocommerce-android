@@ -31,7 +31,7 @@ import androidx.compose.ui.window.Dialog
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.DialogButtonsRowLayout
 import com.woocommerce.android.ui.compose.component.ProgressDialog
-import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
@@ -45,10 +45,10 @@ import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscove
 fun SitePickerSiteDiscoveryScreen(viewModel: SitePickerSiteDiscoveryViewModel) {
     viewModel.viewState.observeAsState().value?.let { viewState ->
         Scaffold(topBar = {
-            Toolbar(
+            ToolbarWithHelpButton(
                 title = stringResource(id = R.string.login_site_picker_enter_site_address),
                 onNavigationButtonClick = viewModel::onBackButtonClick,
-                onActionButtonClick = viewModel::onHelpButtonClick
+                onHelpButtonClick = viewModel::onHelpButtonClick
             )
         }) { paddingValues ->
             val transition = updateTransition(viewState, label = "ViewStateTransition")

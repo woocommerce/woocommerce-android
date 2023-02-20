@@ -65,6 +65,7 @@
     <string name="products">Products</string>
     <string name="refunds">Refunds</string>
     <string name="domain">Domain</string>
+    <string name="domains">Domains</string>
     <string name="shipping_labels">Shipping Labels</string>
     <string name="product_variations">Variations</string>
     <string name="product_variation_options">%1$s (%2$s options)</string>
@@ -527,6 +528,23 @@
     <string name="order_creation_customer_search_empty">No customers found</string>
     <string name="order_creation_customer_search_hint">Search customers</string>
     <string name="order_creation_change_product_quantity">Change the product quantity from %1$d to %2$d</string>
+
+    <!--
+        Domains
+    -->
+    <string name="domains_your_free_store_address">Your free store address</string>
+    <string name="domains_claim_your_free_domain_title">Claim your free domain</string>
+    <string name="domains_claim_your_free_domain_description">You have a free one-year domain registration included with your plan.</string>
+    <string name="domains_claim_your_free_domain_link">Claim Domain</string>
+    <string name="domains_purchase_redirect_notice">The domain purchased will redirect users to your primary address.</string>
+    <string name="domains_search_for_domain_button_title">Search for a domain</string>
+    <string name="domains_learn_more">&lt;a href=\'\'&gt;&lt;u&gt;Learn more&lt;/u&gt;&lt;/a&gt; about domains and how to take domain-related actions.</string>
+    <string name="domains_primary_address">Primary site address</string>
+    <string name="domains_your_domains">Your site domains</string>
+    <string name="domains_add_domain_button_title">Add a domain</string>
+    <string name="domains_select_domain">Select domain</string>
+    <string name="domains_redirect_notice">The domain purchased will redirect users to</string>
+    <string name="domains_error_title">Unable to load site domains</string>
     <!--
         Order Editing
     -->
@@ -1178,6 +1196,12 @@
     <string name="card_reader_payment_failed_test_card">System test cards are not permitted for payment</string>
     <string name="card_reader_payment_failed_test_mode_live_card">A live card was used on a site in test mode</string>
     <string name="card_reader_payment_failed_unknown">Payment was declined for an unknown reason</string>
+    <string name="card_reader_payment_failed_canceled">Transaction was canceled</string>
+
+    <string name="card_reader_payment_failed_nfc_disabled">The app could not enable the card reader, because the NFC chip is disabled</string>
+    <string name="card_reader_payment_failed_device_is_not_supported">Your device is not supported. Please contact support for more details</string>
+    <string name="card_reader_payment_failed_app_setup_is_invalid">Something went wrong with the app setup. Please contact support for more details</string>
+
 
     <string name="card_reader_payment_retry_card_prompt">Retry with the same card</string>
     <string name="card_reader_payment_remove_card_prompt">Remove the card</string>
@@ -1797,6 +1821,7 @@
     <string name="settings_signout">Log out</string>
     <string name="settings_preferences">Preferences</string>
     <string name="settings_confirm_logout">Are you sure you want to logout from the account %s?</string>
+    <string name="settings_confirm_logout_site_credentials">Are you sure you want to log out of your account?</string>
     <string name="settings_send_stats">Collect information</string>
     <string name="settings_enable_v4_stats_title">Improved stats</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">Sorry, we couldn\'t change this feature setting right now</string>
@@ -1863,6 +1888,8 @@
     <string name="always_update_reader">Always</string>
     <string name="never_update_reader">Never</string>
     <string name="randomly_update_reader">Randomly</string>
+    <string name="enable_interac_payment" translatable="false">Enable Interac Payment</string>
+    <string name="enable_interac_key" translatable="false">Enable Interac Key</string>
 
 
     <!--
@@ -2137,6 +2164,19 @@
     <string name="feedback_completed_contact_us">Contact us here</string>
     <string name="feedback_completed_back_to_store_button_text">Back to store</string>
     <string name="feedback_product_give_feedback_button_text">Give Feedback</string>
+
+    <!-- In-person Payments feedback banner -->
+    <string name="feedback_banner_ipp_title_newbie">How can we help you with in-person selling?</string>
+    <string name="feedback_banner_ipp_message_newbie">Share your own experience on how you collect in-person payments.</string>
+    <string name="feedback_banner_ipp_title_beginner">Enjoy your in-person payment?</string>
+    <string name="feedback_banner_ipp_message_beginner">Rate your first in-person payment experience.</string>
+    <string name="feedback_banner_ipp_title_ninja">Let us know what you think</string>
+    <string name="feedback_banner_ipp_message_ninja">Tell us about your experience with in-person payments.</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_title">Share feedback</string>
+    <string name="feedback_banner_ipp_cta_button">Share feedback</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_message">No worries! You can always go to the Settings in the Menu to send us feedback.</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_button">Remind me later</string>
+    <string name="feedback_banner_ipp_dismiss_confirmation_remind_later_dont_show_again_button">Don\'t show again</string>
 
     <!-- permissions -->
     <string name="permissions_denied_title">Permissions</string>
@@ -2787,7 +2827,11 @@
     <string name="store_creation_iap_eligibility_loading_title">We are getting ready for your store creation</string>
     <string name="store_creation_iap_eligibility_loading_subtitle">Please remain connected.</string>
     <string name="store_creation_iap_eligibility_check_error_title">Store Creation Unavailable </string>
-    <string name="store_creation_iap_eligibility_check_error_description">Store creation from the mobile app is currently unavailable for your country.</string>
+    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">Store creation from the mobile app is currently unavailable for your country.</string>
+    <string name="store_creation_iap_eligibility_check_error_existing_subscription">You can only purchase the eCommerce plan from the mobile app once. To create additional sites visit our website.</string>
+    <string name="store_creation_iap_eligibility_check_generic_error">Store creation is currently unavailable. Please, try again later.</string>
+    <string name="store_creation_iap_eligibility_network_error">A network error occurred. Please check your connection and try again.</string>
+    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">You already have an active eCommerce subscription, please contact support if you are experiencing issues with your current subscription not linked to your new site.</string>
     <string name="store_creation_create_new_store_label">Create a new store</string>
     <string name="store_creation_cannot_load_store">Couldn\'t load your store.\nPlease try again…</string>
     <string name="store_creation_in_progress">Creating your store…</string>
@@ -3014,4 +3058,17 @@
     <string name="store_creation_profiler_merchant_journey_starting_business">I\'m just starting my business</string>
     <string name="store_creation_profiler_merchant_journey_selling_not_online">I\'m already selling, but not online</string>
     <string name="store_creation_profiler_merchant_journey_selling_online">I\'m already selling online</string>
+
+    <!--
+    Store onboarding
+    -->
+    <string name="store_onboarding_title">Store setup</string>
+    <string name="store_onboarding_task_add_product_title">Add your first product </string>
+    <string name="store_onboarding_task_add_product_description">Start selling by adding products or services to your store.</string>
+    <string name="store_onboarding_task_launch_store_title">Launch your store</string>
+    <string name="store_onboarding_task_launch_store_description">Publish your site to the world anytime you want!</string>
+    <string name="store_onboarding_task_change_domain_title">Customize your domain</string>
+    <string name="store_onboarding_task_change_domain_description">Have a custom URL to host your store.</string>
+    <string name="store_onboarding_completed_tasks_status">%1$d/%2$d completed</string>
+
 </resources>

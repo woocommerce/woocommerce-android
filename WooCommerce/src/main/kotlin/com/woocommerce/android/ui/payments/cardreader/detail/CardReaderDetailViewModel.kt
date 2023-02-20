@@ -13,6 +13,7 @@ import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
+import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus.StatusChanged
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
@@ -66,20 +67,13 @@ class CardReaderDetailViewModel @Inject constructor(
             cardReaderManager.readerStatus.collect { status ->
                 when (status) {
                     is Connected -> {
-                        triggerEvent(
-                            CardReaderDetailEvent.CardReaderConnected(
-                                R.string.card_reader_accessibility_reader_is_connected
-                            )
-                        )
-                        softwareUpdateAvailabilityJob = launch {
-                            cardReaderManager.softwareUpdateAvailability.collect(
-                                ::handleSoftwareUpdateAvailability
-                            )
-                        }
-                        batteryStatusUpdateJob = launch {
-                            cardReaderManager.batteryStatus.collect(
-                                ::handleBatteryStatusChange
-                            )
+                        if (isExternalCardReader(status.cardReader)) {
+                            triggerCardReaderConnectedEvent()
+                            listenForSoftwareUpdateAvailability()
+                            listenForBatteryStatus()
+                        } else {
+                            tracker.trackManageCardReadersAutomaticDisconnectOfBuiltInReader()
+                            disconnectReader()
                         }
                     }
                     is Connecting -> {
@@ -96,6 +90,33 @@ class CardReaderDetailViewModel @Inject constructor(
                 }.exhaustive
             }
         }
+    }
+
+    private fun isExternalCardReader(cardReader: CardReader) =
+        ReaderType.isExternalReaderType(cardReader.type)
+
+    private fun listenForBatteryStatus() {
+        batteryStatusUpdateJob = launch {
+            cardReaderManager.batteryStatus.collect(
+                ::handleBatteryStatusChange
+            )
+        }
+    }
+
+    private fun listenForSoftwareUpdateAvailability() {
+        softwareUpdateAvailabilityJob = launch {
+            cardReaderManager.softwareUpdateAvailability.collect(
+                ::handleSoftwareUpdateAvailability
+            )
+        }
+    }
+
+    private fun triggerCardReaderConnectedEvent() {
+        triggerEvent(
+            CardReaderDetailEvent.CardReaderConnected(
+                R.string.card_reader_accessibility_reader_is_connected
+            )
+        )
     }
 
     fun onUpdateReaderResult(updateResult: UpdateResult) {
@@ -191,11 +212,15 @@ class CardReaderDetailViewModel @Inject constructor(
         tracker.trackDisconnectTapped()
         launch {
             clearLastKnowReader()
-            val disconnectionResult = cardReaderManager.disconnectReader()
-            if (!disconnectionResult) {
-                WooLog.e(WooLog.T.CARD_READER, "Disconnection from reader has failed")
-                handleNotConnectedState()
-            }
+            disconnectReader()
+        }
+    }
+
+    private suspend fun disconnectReader() {
+        val disconnectionResult = cardReaderManager.disconnectReader()
+        if (!disconnectionResult) {
+            WooLog.e(WooLog.T.CARD_READER, "Disconnection from reader has failed")
+            handleNotConnectedState()
         }
     }
 

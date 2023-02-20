@@ -106,9 +106,14 @@ internal class CreatePaymentAction(
         }
 
         map[MetaDataKeys.ORDER_ID.key] = paymentInfo.orderId.toString()
+        map[MetaDataKeys.PLATFORM.key] = PLATFORM
 
         // TODO cardreader Needs to be fixed when we add support for recurring payments
         map[MetaDataKeys.PAYMENT_TYPE.key] = MetaDataKeys.PaymentTypes.SINGLE.key
         return map
+    }
+
+    companion object {
+        private const val PLATFORM = "android"
     }
 }

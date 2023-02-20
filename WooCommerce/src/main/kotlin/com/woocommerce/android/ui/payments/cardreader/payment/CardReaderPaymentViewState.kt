@@ -49,13 +49,16 @@ sealed class ViewState(
         private val errorType: PaymentFlowError,
         override val amountWithCurrencyLabel: String?,
         private val primaryLabel: Int? = R.string.try_again,
-        override val onPrimaryActionClicked: (() -> Unit)
+        private val secondaryLabel: Int? = null,
+        override val onPrimaryActionClicked: (() -> Unit),
+        override val onSecondaryActionClicked: (() -> Unit)? = null,
     ) : ViewState(
         headerLabel = R.string.card_reader_payment_payment_failed_header,
         paymentStateLabel = errorType.message,
         paymentStateLabelTopMargin = R.dimen.major_100,
         primaryActionLabel = primaryLabel,
-        illustration = R.drawable.img_products_error
+        illustration = R.drawable.img_products_error,
+        secondaryActionLabel = secondaryLabel
     )
 
     data class ExternalReaderCollectPaymentState(
@@ -204,13 +207,16 @@ sealed class ViewState(
         private val errorType: InteracRefundFlowError,
         override val amountWithCurrencyLabel: String?,
         private val primaryLabel: Int? = R.string.try_again,
+        private val secondaryLabel: Int? = null,
         override val onPrimaryActionClicked: (() -> Unit),
+        override val onSecondaryActionClicked: (() -> Unit)? = null,
     ) : ViewState(
         headerLabel = R.string.card_reader_interac_refund_refund_failed_header,
         paymentStateLabel = errorType.message,
         paymentStateLabelTopMargin = R.dimen.major_100,
         primaryActionLabel = primaryLabel,
-        illustration = R.drawable.img_products_error
+        illustration = R.drawable.img_products_error,
+        secondaryActionLabel = secondaryLabel,
     )
 
     data class CollectRefundState(
@@ -253,6 +259,7 @@ sealed class PaymentFlowError(@StringRes val message: Int) {
     object NoNetwork : PaymentFlowError(R.string.card_reader_payment_failed_no_network_state)
     object Server : PaymentFlowError(R.string.card_reader_payment_failed_server_error_state)
     object Generic : PaymentFlowError(R.string.card_reader_payment_failed_unexpected_error_state)
+    object Canceled : PaymentFlowError(R.string.card_reader_payment_failed_canceled)
     object AmountTooSmall : Declined(R.string.card_reader_payment_failed_amount_too_small), NonRetryableError
 
     object Unknown : Declined(R.string.card_reader_payment_failed_unknown)
@@ -280,6 +287,15 @@ sealed class PaymentFlowError(@StringRes val message: Int) {
         object TooManyPinTries : Declined(R.string.card_reader_payment_failed_too_many_pin_tries)
         object TestCard : Declined(R.string.card_reader_payment_failed_test_card)
         object TestModeLiveCard : Declined(R.string.card_reader_payment_failed_test_mode_live_card)
+    }
+
+    sealed class BuiltInReader(message: Int) : PaymentFlowError(message) {
+        object NfcDisabled : BuiltInReader(R.string.card_reader_payment_failed_nfc_disabled)
+        object DeviceIsNotSupported :
+            BuiltInReader(R.string.card_reader_payment_failed_device_is_not_supported), NonRetryableError
+
+        object InvalidAppSetup :
+            BuiltInReader(R.string.card_reader_payment_failed_app_setup_is_invalid), NonRetryableError
     }
 
     interface NonRetryableError

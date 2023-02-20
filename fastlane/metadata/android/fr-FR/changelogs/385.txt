@@ -1,0 +1,2 @@
+12.3 :
+Pour cette version, nous nous sommes concentrés sur la résolution de bugs mineurs détectés par notre équipe. Mais rassurez-vous : il y aura des nouveautés intéressantes pour tout le monde ! Continuez à nous faire part de vos commentaires ; ils nous aident à nous améliorer.

@@ -13,12 +13,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.experiment.RESTAPILoginExperiment
-import com.woocommerce.android.experiment.RESTAPILoginExperiment.RESTAPILoginVariant
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
-import com.woocommerce.android.tools.AuthenticationType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
@@ -88,8 +85,7 @@ class MyStoreViewModel @Inject constructor(
     private val jitmStore: JitmStore,
     private val jitmTracker: JitmTracker,
     private val myStoreUtmProvider: MyStoreUtmProvider,
-    private val queryParamsEncoder: QueryParamsEncoder,
-    private val restAPILoginExperiment: RESTAPILoginExperiment
+    private val queryParamsEncoder: QueryParamsEncoder
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
@@ -147,10 +143,6 @@ class MyStoreViewModel @Inject constructor(
             }
         }
         observeTopPerformerUpdates()
-
-        if (selectedSite.exists()) {
-            trackRESTAPIExperimentSuccess()
-        }
     }
 
     private fun fetchJitms() {
@@ -485,17 +477,6 @@ class MyStoreViewModel @Inject constructor(
         val previouslySelectedGranularity = appPrefsWrapper.getActiveStatsGranularity(selectedSite.getSelectedSiteId())
         return runCatching { StatsGranularity.valueOf(previouslySelectedGranularity.uppercase()) }
             .getOrElse { StatsGranularity.DAYS }
-    }
-
-    private fun trackRESTAPIExperimentSuccess() {
-        // Log success unless: the user is in the treatment group and the sign in used WordPress.com
-        // for a self-hosted site
-        val isTreatmentGroup = restAPILoginExperiment.getCurrentVariant() == RESTAPILoginVariant.TREATMENT
-        val isWPComLogin = selectedSite.connectionType?.authenticationType == AuthenticationType.WPCom
-        val isSelfHostedSite = !selectedSite.get().isWPComAtomic
-        if (isTreatmentGroup && isWPComLogin && isSelfHostedSite) return
-
-        restAPILoginExperiment.trackSuccess()
     }
 
     private fun StatsGranularity.toAnalyticTimePeriod() = when (this) {

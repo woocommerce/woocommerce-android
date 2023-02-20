@@ -6,12 +6,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.mobilepay.MobilePayRestCli
 import org.wordpress.android.fluxc.store.MobilePayStore
 import javax.inject.Inject
 
-/**
- * This class provides a default implementation of IAPMobilePayAPI for store creation flow. It duplicates
- * code from IAPShowcaseMobilePayAPIProvider. We should double check if we need this duplication to remove
- * one of the files and move the other to the correct package.
- * Github issue: https://github.com/woocommerce/woocommerce-android/issues/8148
- */
 class IapMobilePayApiProvider @Inject constructor(private val mobilePayStore: MobilePayStore) {
     fun buildMobilePayAPI(customUrl: String?) = object : IAPMobilePayAPI {
         override suspend fun createAndConfirmOrder(
@@ -42,7 +36,8 @@ class IapMobilePayApiProvider @Inject constructor(private val mobilePayStore: Mo
                         MobilePayRestClient.CreateOrderErrorType.GENERIC_ERROR,
                         MobilePayRestClient.CreateOrderErrorType.INVALID_RESPONSE ->
                             CreateAndConfirmOrderResponse.Server(response.message ?: "Reason is not provided")
-                        MobilePayRestClient.CreateOrderErrorType.TIMEOUT -> CreateAndConfirmOrderResponse.Network
+                        MobilePayRestClient.CreateOrderErrorType.TIMEOUT,
+                        MobilePayRestClient.CreateOrderErrorType.NETWORK_ERROR -> CreateAndConfirmOrderResponse.Network
                     }
                 }
             }

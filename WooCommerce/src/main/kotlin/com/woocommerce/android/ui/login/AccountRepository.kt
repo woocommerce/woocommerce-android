@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.LOGIN
 import com.woocommerce.android.util.dispatchAndAwait
@@ -16,7 +17,6 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.AccountModel
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.SiteStore
@@ -45,10 +45,11 @@ class AccountRepository @Inject constructor(
 
     fun isUserLoggedIn(): Boolean {
         return accountStore.hasAccessToken() ||
-            (selectedSite.exists() && selectedSite.get().origin != SiteModel.ORIGIN_WPCOM_REST)
+            (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords)
     }
 
     suspend fun logout(): Boolean {
+        if (!isUserLoggedIn()) return true
         return if (accountStore.hasAccessToken()) {
             // WordPress.com account logout
             val event: OnAccountChanged = dispatcher.dispatchAndAwait(AccountActionBuilder.newSignOutAction())
@@ -65,8 +66,9 @@ class AccountRepository @Inject constructor(
             }
         } else {
             // Application passwords logout
+            val site = selectedSite.get()
             appCoroutineScope.launch {
-                val result = siteStore.deleteApplicationPassword(selectedSite.get())
+                val result = siteStore.deleteApplicationPassword(site)
                 if (result.isError) {
                     WooLog.e(
                         LOGIN,
