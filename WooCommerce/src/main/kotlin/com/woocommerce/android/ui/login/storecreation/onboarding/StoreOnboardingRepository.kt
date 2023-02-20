@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.login.storecreation.onboarding
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.UNKNOWN
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.values
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.onboarding.TaskDto
@@ -19,15 +19,16 @@ class StoreOnboardingRepository @Inject constructor(
                 WooLog.i(WooLog.T.ONBOARDING, "TODO ERROR HANDLING fetchOnboardingTasks")
                 emptyList()
             }
-            else -> result.model?.map { it.toOnboardingTask() }
-                ?.filter { it.type != UNKNOWN }
+            else -> result.model
+                ?.map { it.toOnboardingTask() }
+                ?.filter { it.type != MOBILE_UNSUPPORTED }
                 ?: emptyList()
         }
     }
 
     private fun TaskDto.toOnboardingTask() =
         OnboardingTask(
-            type = values().find { it.id == this.id } ?: UNKNOWN,
+            type = values().find { it.id == this.id } ?: MOBILE_UNSUPPORTED,
             isComplete = isComplete,
             isVisible = canView,
             isVisited = isVisited
@@ -46,6 +47,6 @@ class StoreOnboardingRepository @Inject constructor(
         LAUNCH_YOUR_STORE("launch_site"),
         CUSTOMIZE_DOMAIN("add_domain"),
         WC_PAYMENTS("woocommerce-payments"),
-        UNKNOWN("unknown")
+        MOBILE_UNSUPPORTED("mobile-unsupported")
     }
 }

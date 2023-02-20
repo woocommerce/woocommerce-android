@@ -64,7 +64,7 @@ class StoreOnboardingViewModel @Inject constructor(
             OnboardingTaskType.LAUNCH_YOUR_STORE -> R.drawable.ic_onboarding_launch_store
             OnboardingTaskType.CUSTOMIZE_DOMAIN -> R.drawable.ic_onboarding_customize_domain
             OnboardingTaskType.WC_PAYMENTS -> R.drawable.ic_onboarding_payments_setup
-            OnboardingTaskType.UNKNOWN -> error("UNKNOWN task type is not allowed in UI layer")
+            OnboardingTaskType.MOBILE_UNSUPPORTED -> error("UNKNOWN task type is not allowed in UI layer")
         }
 
     @StringRes
@@ -75,7 +75,7 @@ class StoreOnboardingViewModel @Inject constructor(
             OnboardingTaskType.LAUNCH_YOUR_STORE -> R.string.store_onboarding_task_launch_store_title
             OnboardingTaskType.CUSTOMIZE_DOMAIN -> R.string.store_onboarding_task_change_domain_title
             OnboardingTaskType.WC_PAYMENTS -> R.string.store_onboarding_task_payments_setup_title
-            OnboardingTaskType.UNKNOWN -> error("UNKNOWN task type is not allowed in UI layer")
+            OnboardingTaskType.MOBILE_UNSUPPORTED -> error("UNKNOWN task type is not allowed in UI layer")
         }
 
     @StringRes
@@ -86,7 +86,7 @@ class StoreOnboardingViewModel @Inject constructor(
             OnboardingTaskType.LAUNCH_YOUR_STORE -> R.string.store_onboarding_task_launch_store_description
             OnboardingTaskType.CUSTOMIZE_DOMAIN -> R.string.store_onboarding_task_change_domain_description
             OnboardingTaskType.WC_PAYMENTS -> R.string.store_onboarding_task_payments_setup_description
-            OnboardingTaskType.UNKNOWN -> error("UNKNOWN task type is not allowed in UI layer")
+            OnboardingTaskType.MOBILE_UNSUPPORTED -> error("UNKNOWN task type is not allowed in UI layer")
         }
 
     @Parcelize
