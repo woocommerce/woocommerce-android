@@ -44,7 +44,6 @@ import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.RefundParams
 import com.woocommerce.android.cardreader.payments.StatementDescriptor
 import com.woocommerce.android.extensions.exhaustive
-import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -53,8 +52,6 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
-import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
-import com.woocommerce.android.ui.payments.cardreader.onboarding.WCPAY_RECEIPTS_SENDING_SUPPORT_VERSION
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderCollectPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderFailedPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.CollectRefundState
@@ -84,7 +81,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -111,6 +107,7 @@ class CardReaderPaymentViewModel
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val cardReaderPaymentReaderTypeStateProvider: CardReaderPaymentReaderTypeStateProvider,
     private val cardReaderPaymentOrderHelper: CardReaderPaymentOrderHelper,
+    private val cardReaderPaymentReceiptHelper: CardReaderPaymentReceiptHelper,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogFragmentArgs by savedState.navArgs()
 
@@ -271,7 +268,7 @@ class CardReaderPaymentViewModel
                 currency = order.currency,
                 orderKey = order.orderKey,
                 customerEmail = customerEmail.ifEmpty { null },
-                isPluginCanSendReceipt = isPluginCanSendReceipt(site),
+                isPluginCanSendReceipt = cardReaderPaymentReceiptHelper.isPluginCanSendReceipt(site),
                 customerName = "${order.billingAddress.firstName} ${order.billingAddress.lastName}".ifBlank { null },
                 storeName = selectedSite.get().name.ifEmpty { null },
                 siteUrl = selectedSite.get().url.ifEmpty { null },
@@ -415,7 +412,7 @@ class CardReaderPaymentViewModel
         paymentStatus: PaymentCompleted,
         orderId: Long,
     ) {
-        storeReceiptUrl(orderId, paymentStatus.receiptUrl)
+        cardReaderPaymentReceiptHelper.storeReceiptUrl(orderId, paymentStatus.receiptUrl)
         triggerEvent(PlayChaChing)
         showPaymentSuccessfulState()
         reFetchOrder()
@@ -498,7 +495,7 @@ class CardReaderPaymentViewModel
         launch {
             val order = requireNotNull(orderRepository.getOrderById(orderId)) { "Order URL not available." }
             val amountLabel = cardReaderPaymentOrderHelper.getAmountLabel(order)
-            val receiptUrl = getReceiptUrl(order.id)
+            val receiptUrl = cardReaderPaymentReceiptHelper.getReceiptUrl(order.id)
             val onPrintReceiptClicked = {
                 onPrintReceiptClicked(
                     amountLabel,
@@ -605,7 +602,7 @@ class CardReaderPaymentViewModel
                 ?: throw IllegalStateException("Order URL not available.")
             triggerEvent(
                 PrintReceipt(
-                    getReceiptUrl(order.id),
+                    cardReaderPaymentReceiptHelper.getReceiptUrl(order.id),
                     cardReaderPaymentOrderHelper.getReceiptDocumentName(order)
                 )
             )
@@ -703,18 +700,6 @@ class CardReaderPaymentViewModel
         triggerEvent(Exit)
     }
 
-    private fun storeReceiptUrl(orderId: Long, receiptUrl: String) {
-        selectedSite.get().let {
-            appPrefsWrapper.setReceiptUrl(it.id, it.siteId, it.selfHostedSiteId, orderId, receiptUrl)
-        }
-    }
-
-    private fun getReceiptUrl(orderId: Long): String {
-        return selectedSite.get().let {
-            appPrefsWrapper.getReceiptUrl(it.id, it.siteId, it.selfHostedSiteId, orderId)
-        }
-    }
-
     private suspend fun getStoreCountryCode(): String {
         return withContext(dispatchers.io) {
             requireNotNull(
@@ -731,24 +716,4 @@ class CardReaderPaymentViewModel
         } else {
             null
         }
-
-    private fun isPluginCanSendReceipt(site: SiteModel): Boolean {
-        val preferredPlugin = appPrefsWrapper.getCardReaderPreferredPlugin(
-            localSiteId = site.id,
-            remoteSiteId = site.siteId,
-            selfHostedSiteId = site.selfHostedSiteId
-        )
-        return if (preferredPlugin == null || preferredPlugin != PluginType.WOOCOMMERCE_PAYMENTS) {
-            false
-        } else {
-            val pluginVersion = appPrefsWrapper.getCardReaderPreferredPluginVersion(
-                localSiteId = site.id,
-                remoteSiteId = site.siteId,
-                selfHostedSiteId = site.selfHostedSiteId,
-                preferredPlugin,
-            ) ?: return false
-
-            pluginVersion.semverCompareTo(WCPAY_RECEIPTS_SENDING_SUPPORT_VERSION) >= 0
-        }
-    }
 }

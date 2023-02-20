@@ -54,6 +54,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentD
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentErrorMapper
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentOrderHelper
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentReaderTypeStateProvider
+import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentReceiptHelper
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentViewModel
 import com.woocommerce.android.ui.payments.cardreader.payment.InteracRefundFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
@@ -167,6 +168,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val interacRefundableChecker: CardReaderInteracRefundableChecker = mock()
     private val cardReaderPaymentReaderTypeStateProvider = CardReaderPaymentReaderTypeStateProvider()
     private val cardReaderPaymentOrderHelper: CardReaderPaymentOrderHelper = mock()
+    private val cardReaderPaymentReceiptHelper: CardReaderPaymentReceiptHelper = mock()
 
     @Before
     fun setUp() = testBlocking {
@@ -187,6 +189,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
             cardReaderPaymentReaderTypeStateProvider = cardReaderPaymentReaderTypeStateProvider,
             cardReaderPaymentOrderHelper = cardReaderPaymentOrderHelper,
+            cardReaderPaymentReceiptHelper = cardReaderPaymentReceiptHelper,
         )
 
         whenever(orderRepository.getOrderById(any())).thenReturn(mockedOrder)
@@ -210,7 +213,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(cardReaderManager.retryCollectPayment(any(), any())).thenAnswer {
             flow<CardPaymentStatus> { }
         }
-        whenever(selectedSite.get()).thenReturn(SiteModel().apply { name = "testName" }.apply { url = "testUrl.com" })
+        val siteModel = SiteModel().apply { name = "testName" }.apply { url = "testUrl.com" }
+        whenever(selectedSite.get()).thenReturn(siteModel)
         whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(true)
         whenever(interacRefundableChecker.isRefundable(any())).thenReturn(true)
         whenever(appPrefsWrapper.getReceiptUrl(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
@@ -221,6 +225,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
             flow<BluetoothCardReaderMessages> {}
         }
+        whenever(cardReaderPaymentReceiptHelper.isPluginCanSendReceipt(siteModel)).thenReturn(true)
     }
 
     //region - Payments tests
@@ -3949,6 +3954,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
             cardReaderPaymentReaderTypeStateProvider = cardReaderPaymentReaderTypeStateProvider,
             cardReaderPaymentOrderHelper = cardReaderPaymentOrderHelper,
+            cardReaderPaymentReceiptHelper = cardReaderPaymentReceiptHelper,
         )
     }
 
@@ -3973,6 +3979,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
             cardReaderPaymentReaderTypeStateProvider = cardReaderPaymentReaderTypeStateProvider,
             cardReaderPaymentOrderHelper = cardReaderPaymentOrderHelper,
+            cardReaderPaymentReceiptHelper = cardReaderPaymentReceiptHelper,
         )
     }
 }
