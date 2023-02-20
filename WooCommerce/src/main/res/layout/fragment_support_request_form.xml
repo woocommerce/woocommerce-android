@@ -6,7 +6,7 @@
     android:background="@color/woo_gray_6"
     android:orientation="vertical">
 
-    <com.google.android.material.card.MaterialCardView xmlns:tools="http://schemas.android.com/tools"
+    <com.google.android.material.card.MaterialCardView
         style="@style/Widget.Material3.CardView.Outlined"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -23,11 +23,11 @@
             <RadioButton
                 android:id="@+id/mobile_app_option"
                 style="@style/Woo.RadioButton"
-                android:textAppearance="?attr/textAppearanceHeadline6"
-                android:textSize="@dimen/text_minor_130"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/support_request_help_app" />
+                android:text="@string/support_request_help_app"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:textSize="@dimen/text_minor_130" />
 
             <View
                 style="@style/Woo.Divider"
@@ -36,11 +36,11 @@
             <RadioButton
                 android:id="@+id/ipp_option"
                 style="@style/Woo.RadioButton"
-                android:textAppearance="?attr/textAppearanceHeadline6"
-                android:textSize="@dimen/text_minor_130"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/support_request_help_ipp" />
+                android:text="@string/support_request_help_ipp"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:textSize="@dimen/text_minor_130" />
 
             <View
                 style="@style/Woo.Divider"
@@ -49,11 +49,11 @@
             <RadioButton
                 android:id="@+id/payments_option"
                 style="@style/Woo.RadioButton"
-                android:textAppearance="?attr/textAppearanceHeadline6"
-                android:textSize="@dimen/text_minor_130"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/support_request_help_payments" />
+                android:text="@string/support_request_help_payments"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:textSize="@dimen/text_minor_130" />
 
             <View
                 style="@style/Woo.Divider"
@@ -62,11 +62,11 @@
             <RadioButton
                 android:id="@+id/woo_plugin_option"
                 style="@style/Woo.RadioButton"
-                android:textAppearance="?attr/textAppearanceHeadline6"
-                android:textSize="@dimen/text_minor_130"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/support_request_help_plugins" />
+                android:text="@string/support_request_help_plugins"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:textSize="@dimen/text_minor_130" />
 
             <View
                 style="@style/Woo.Divider"
@@ -75,11 +75,11 @@
             <RadioButton
                 android:id="@+id/other_option"
                 style="@style/Woo.RadioButton"
-                android:textAppearance="?attr/textAppearanceHeadline6"
-                android:textSize="@dimen/text_minor_130"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/support_request_help_other" />
+                android:text="@string/support_request_help_other"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:textSize="@dimen/text_minor_130" />
 
         </RadioGroup>
 
