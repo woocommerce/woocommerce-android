@@ -52,6 +52,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderInteracR
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragmentArgs
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentErrorMapper
+import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentReaderTypeStateProvider
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentViewModel
 import com.woocommerce.android.ui.payments.cardreader.payment.InteracRefundFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
@@ -164,6 +165,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
     private val interacRefundErrorMapper: CardReaderInteracRefundErrorMapper = mock()
     private val interacRefundableChecker: CardReaderInteracRefundableChecker = mock()
+    private val cardReaderPaymentReaderTypeStateProvider = CardReaderPaymentReaderTypeStateProvider()
 
     @Before
     fun setUp() = testBlocking {
@@ -183,6 +185,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             wooStore = wooStore,
             dispatchers = coroutinesTestRule.testDispatchers,
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
+            cardReaderPaymentReaderTypeStateProvider = cardReaderPaymentReaderTypeStateProvider,
         )
 
         whenever(orderRepository.getOrderById(any())).thenReturn(mockedOrder)
@@ -3947,7 +3950,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             interacRefundErrorMapper = interacRefundErrorMapper,
             wooStore = wooStore,
             dispatchers = coroutinesTestRule.testDispatchers,
-            cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper
+            cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
+            cardReaderPaymentReaderTypeStateProvider = cardReaderPaymentReaderTypeStateProvider,
         )
     }
 
@@ -3971,6 +3975,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             wooStore = wooStore,
             dispatchers = coroutinesTestRule.testDispatchers,
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
+            cardReaderPaymentReaderTypeStateProvider = cardReaderPaymentReaderTypeStateProvider,
         )
     }
 }
