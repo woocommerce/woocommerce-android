@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -18,8 +19,20 @@
         android:saveEnabled="false"
         app:errorEnabled="true" />
 
+    <EditText
+        android:id="@+id/request_message"
+        style="@style/Woo.EditText"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="top|start"
+        android:layout_weight="1"
+        android:hint="@string/orderdetail_customer_note_hint"
+        android:importantForAutofill="no"
+        android:inputType="textAutoComplete|textMultiLine|textCapSentences"
+        tools:text="@string/support_request_message" />
+
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/empty_view_button"
+        android:id="@+id/submit_request_button"
         style="@style/Woo.Button.Colored"
         android:layout_marginHorizontal="@dimen/major_100"
         android:layout_width="match_parent"
