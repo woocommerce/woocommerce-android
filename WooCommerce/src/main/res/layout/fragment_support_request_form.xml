@@ -27,7 +27,7 @@
                 android:textSize="@dimen/text_minor_130"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/shipping_label_address_suggestion_entered_address" />
+                android:text="@string/support_request_help_app" />
 
             <View
                 style="@style/Woo.Divider"
@@ -40,7 +40,7 @@
                 android:textSize="@dimen/text_minor_130"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/shipping_label_address_suggestion_entered_address" />
+                android:text="@string/support_request_help_ipp" />
 
             <View
                 style="@style/Woo.Divider"
@@ -53,7 +53,7 @@
                 android:textSize="@dimen/text_minor_130"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/shipping_label_address_suggestion_entered_address" />
+                android:text="@string/support_request_help_payments" />
 
             <View
                 style="@style/Woo.Divider"
@@ -66,7 +66,7 @@
                 android:textSize="@dimen/text_minor_130"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/shipping_label_address_suggestion_entered_address" />
+                android:text="@string/support_request_help_plugins" />
 
             <View
                 style="@style/Woo.Divider"
@@ -79,11 +79,7 @@
                 android:textSize="@dimen/text_minor_130"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/shipping_label_address_suggestion_entered_address" />
-
-            <View
-                style="@style/Woo.Divider"
-                android:layout_marginStart="@dimen/minor_50" />
+                android:text="@string/support_request_help_other" />
 
         </RadioGroup>
 
