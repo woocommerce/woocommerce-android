@@ -12,7 +12,6 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerScreen
 import com.woocommerce.android.ui.main.AppBarStatus

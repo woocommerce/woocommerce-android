@@ -1,35 +1,35 @@
 package com.woocommerce.android.ui.common.domain
 
 import androidx.annotation.StringRes
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository.DomainSuggestion
 import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository.DomainSuggestion.Free
 import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository.DomainSuggestion.Paid
 import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository.DomainSuggestion.Premium
+import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel.LoadingState.Idle
+import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel.LoadingState.Loading
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.model.products.Product
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
-import com.woocommerce.android.support.help.HelpOrigin
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel.LoadingState.Idle
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel.LoadingState.Loading
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.products.Product
 
 @OptIn(FlowPreview::class)
 abstract class DomainSuggestionsViewModel constructor(
@@ -56,20 +56,20 @@ abstract class DomainSuggestionsViewModel constructor(
     private val searchOnlyFreeDomains: Boolean = savedStateHandle[KEY_SEARCH_ONLY_FREE_DOMAINS] ?: true
 
     val viewState = combine(
-            domainSuggestionsUi,
-            loadingState,
-            selectedDomain,
-            products
-        ) { domainSuggestions, loadingState, selectedDomain, products ->
-            DomainSearchState(
-                loadingState = loadingState,
-                domainSuggestionsUi = processFetchedDomainSuggestions(
-                    domainSuggestions,
-                    selectedDomain,
-                    products
-                ),
-                selectedDomain = selectedDomain
-            )
+        domainSuggestionsUi,
+        loadingState,
+        selectedDomain,
+        products
+    ) { domainSuggestions, loadingState, selectedDomain, products ->
+        DomainSearchState(
+            loadingState = loadingState,
+            domainSuggestionsUi = processFetchedDomainSuggestions(
+                domainSuggestions,
+                selectedDomain,
+                products
+            ),
+            selectedDomain = selectedDomain
+        )
     }.asLiveData()
 
     init {

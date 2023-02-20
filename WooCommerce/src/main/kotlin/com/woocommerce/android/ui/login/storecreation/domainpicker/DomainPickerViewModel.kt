@@ -5,8 +5,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel
 import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository
+import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.lifecycle.HiltViewModel
