@@ -52,6 +52,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderInteracR
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragmentArgs
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentErrorMapper
+import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentOrderHelper
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentReaderTypeStateProvider
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentViewModel
 import com.woocommerce.android.ui.payments.cardreader.payment.InteracRefundFlowError
@@ -89,7 +90,6 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -134,7 +134,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val orderRepository: OrderDetailRepository = mock()
     private val mockedOrder = mock<Order>()
     private val mockedAddress = mock<Address>()
-    private var resourceProvider: ResourceProvider = mock()
     private val selectedSite: SelectedSite = mock()
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
     private val tracker: CardReaderTracker = mock()
@@ -167,6 +166,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val interacRefundErrorMapper: CardReaderInteracRefundErrorMapper = mock()
     private val interacRefundableChecker: CardReaderInteracRefundableChecker = mock()
     private val cardReaderPaymentReaderTypeStateProvider = CardReaderPaymentReaderTypeStateProvider()
+    private val cardReaderPaymentOrderHelper: CardReaderPaymentOrderHelper = mock()
 
     @Before
     fun setUp() = testBlocking {
@@ -174,7 +174,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             savedState,
             cardReaderManager = cardReaderManager,
             orderRepository = orderRepository,
-            resourceProvider = resourceProvider,
             selectedSite = selectedSite,
             paymentCollectibilityChecker = paymentCollectibilityChecker,
             interacRefundableChecker = interacRefundableChecker,
@@ -187,6 +186,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             dispatchers = coroutinesTestRule.testDispatchers,
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
             cardReaderPaymentReaderTypeStateProvider = cardReaderPaymentReaderTypeStateProvider,
+            cardReaderPaymentOrderHelper = cardReaderPaymentOrderHelper,
         )
 
         whenever(orderRepository.getOrderById(any())).thenReturn(mockedOrder)
@@ -211,7 +211,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             flow<CardPaymentStatus> { }
         }
         whenever(selectedSite.get()).thenReturn(SiteModel().apply { name = "testName" }.apply { url = "testUrl.com" })
-        whenever(resourceProvider.getString(anyOrNull(), anyOrNull())).thenReturn("")
         whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(true)
         whenever(interacRefundableChecker.isRefundable(any())).thenReturn(true)
         whenever(appPrefsWrapper.getReceiptUrl(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
@@ -491,10 +490,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                     this.siteId = siteId
                 }
             )
-            whenever(
-                resourceProvider
-                    .getString(R.string.card_reader_payment_description_v2, DUMMY_ORDER_NUMBER, siteName, siteId)
-            ).thenReturn(expectedResult)
+            whenever(cardReaderPaymentOrderHelper.getPaymentDescription(mockedOrder)).thenReturn(expectedResult)
             val captor = argumentCaptor<PaymentInfo>()
 
             viewModel.start()
@@ -3940,7 +3936,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             interacRefundSavedState,
             cardReaderManager = cardReaderManager,
             orderRepository = orderRepository,
-            resourceProvider = resourceProvider,
             selectedSite = selectedSite,
             paymentCollectibilityChecker = paymentCollectibilityChecker,
             interacRefundableChecker = interacRefundableChecker,
@@ -3953,6 +3948,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             dispatchers = coroutinesTestRule.testDispatchers,
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
             cardReaderPaymentReaderTypeStateProvider = cardReaderPaymentReaderTypeStateProvider,
+            cardReaderPaymentOrderHelper = cardReaderPaymentOrderHelper,
         )
     }
 
@@ -3964,7 +3960,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             ).initSavedStateHandle(),
             cardReaderManager = cardReaderManager,
             orderRepository = orderRepository,
-            resourceProvider = resourceProvider,
             selectedSite = selectedSite,
             paymentCollectibilityChecker = paymentCollectibilityChecker,
             interacRefundableChecker = interacRefundableChecker,
@@ -3977,6 +3972,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             dispatchers = coroutinesTestRule.testDispatchers,
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
             cardReaderPaymentReaderTypeStateProvider = cardReaderPaymentReaderTypeStateProvider,
+            cardReaderPaymentOrderHelper = cardReaderPaymentOrderHelper,
         )
     }
 }
