@@ -6,13 +6,20 @@
     android:background="@color/woo_gray_6"
     android:orientation="vertical">
 
+    <com.google.android.material.textview.MaterialTextView
+        style="@style/Woo.TextView.Caption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp"
+        android:text="@string/support_request_help_title" />
+
     <com.google.android.material.card.MaterialCardView
         style="@style/Widget.Material3.CardView.Outlined"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/major_100"
         android:layout_marginTop="@dimen/major_100"
-        app:strokeColor="@color/woo_gray_40">
+        app:strokeColor="@color/woo_gray_5">
 
         <RadioGroup
             android:layout_width="match_parent"
