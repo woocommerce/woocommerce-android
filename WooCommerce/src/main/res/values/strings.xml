@@ -3070,4 +3070,11 @@
     <string name="store_onboarding_task_change_domain_description">Have a custom URL to host your store.</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d completed</string>
 
+    <!--
+    Support Request
+    -->
+    <string name="support_request_subject">Subject</string>
+    <string name="support_request_submit">Submit Support Request</string>
+
+
 </resources>
