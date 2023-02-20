@@ -53,23 +53,12 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.WCPAY_RECEIPTS_SENDING_SUPPORT_VERSION
-import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderCapturingPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderCollectPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderFailedPaymentState
-import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderPaymentSuccessfulReceiptSentAutomaticallyState
-import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderPaymentSuccessfulState
-import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderProcessingPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.CollectRefundState
-import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderCapturingPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderCollectPaymentState
-import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderFailedPaymentState
-import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderPaymentSuccessfulReceiptSentAutomaticallyState
-import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderPaymentSuccessfulState
-import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderProcessingPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.FailedRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.LoadingDataState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.PrintingReceiptState
@@ -106,7 +95,6 @@ private const val ARTIFICIAL_RETRY_DELAY = 500L
 private const val CANADA_FEE_FLAT_IN_CENTS = 15L
 
 @HiltViewModel
-@Suppress("LargeClass")
 class CardReaderPaymentViewModel
 @Inject constructor(
     savedState: SavedStateHandle,
@@ -124,6 +112,7 @@ class CardReaderPaymentViewModel
     private val wooStore: WooCommerceStore,
     private val dispatchers: CoroutineDispatchers,
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
+    private val cardReaderPaymentReaderTypeStateProvider: CardReaderPaymentReaderTypeStateProvider
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogFragmentArgs by savedState.navArgs()
 
@@ -208,7 +197,8 @@ class CardReaderPaymentViewModel
             } ?: run {
                 tracker.trackPaymentFailed("Fetching order failed")
                 viewState.postValue(
-                    provideFailedPaymentState(
+                    cardReaderPaymentReaderTypeStateProvider.provideFailedPaymentState(
+                        cardReaderType = arguments.cardReaderType,
                         errorType = PaymentFlowError.FetchingOrderFailed,
                         amountLabel = null,
                         onPrimaryActionClicked = { initPaymentFlow(isRetry = true) }
@@ -304,8 +294,20 @@ class CardReaderPaymentViewModel
         paymentDataForRetry = null
         when (paymentStatus) {
             InitializingPayment -> viewState.postValue(LoadingDataState(::onCancelPaymentFlow))
-            CollectingPayment -> viewState.postValue(provideCollectPaymentState(amountLabel))
-            ProcessingPayment -> viewState.postValue(provideProcessingPaymentState(amountLabel))
+            CollectingPayment -> viewState.postValue(
+                cardReaderPaymentReaderTypeStateProvider.provideCollectPaymentState(
+                    arguments.cardReaderType,
+                    amountLabel,
+                    ::onCancelPaymentFlow
+                )
+            )
+            ProcessingPayment -> viewState.postValue(
+                cardReaderPaymentReaderTypeStateProvider.provideProcessingPaymentState(
+                    arguments.cardReaderType,
+                    amountLabel,
+                    ::onCancelPaymentFlow
+                )
+            )
             is ProcessingPaymentCompleted -> {
                 cardReaderTrackingInfoKeeper.setPaymentMethodType(paymentStatus.paymentMethodType.stringRepresentation)
                 when (paymentStatus.paymentMethodType) {
@@ -314,7 +316,12 @@ class CardReaderPaymentViewModel
                     else -> {}
                 }
             }
-            CapturingPayment -> viewState.postValue(provideCapturingPaymentState(amountLabel))
+            CapturingPayment -> viewState.postValue(
+                cardReaderPaymentReaderTypeStateProvider.provideCapturingPaymentState(
+                    arguments.cardReaderType,
+                    amountLabel,
+                )
+            )
             is PaymentCompleted -> {
                 tracker.trackPaymentSucceeded()
                 onPaymentCompleted(paymentStatus, orderId)
@@ -462,7 +469,8 @@ class CardReaderPaymentViewModel
         val errorType = errorMapper.mapPaymentErrorToUiError(error.type)
         if (errorType is PaymentFlowError.NonRetryableError) {
             viewState.postValue(
-                provideFailedPaymentState(
+                cardReaderPaymentReaderTypeStateProvider.provideFailedPaymentState(
+                    cardReaderType = arguments.cardReaderType,
                     errorType = errorType,
                     amountLabel = amountLabel,
                     primaryLabel = R.string.card_reader_payment_payment_failed_ok,
@@ -471,7 +479,8 @@ class CardReaderPaymentViewModel
             )
         } else {
             viewState.postValue(
-                provideFailedPaymentState(
+                cardReaderPaymentReaderTypeStateProvider.provideFailedPaymentState(
+                    cardReaderType = arguments.cardReaderType,
                     errorType = errorType,
                     amountLabel = amountLabel,
                     onPrimaryActionClicked = onRetryClicked,
@@ -499,7 +508,8 @@ class CardReaderPaymentViewModel
 
             if (order.billingAddress.email.isBlank()) {
                 viewState.postValue(
-                    providePaymentSuccessState(
+                    cardReaderPaymentReaderTypeStateProvider.providePaymentSuccessState(
+                        cardReaderType = arguments.cardReaderType,
                         amountLabel,
                         onPrintReceiptClicked,
                         onSendReceiptClicked,
@@ -513,7 +523,8 @@ class CardReaderPaymentViewModel
                     true
                 )
                 viewState.postValue(
-                    providePaymentSuccessfulReceiptSentAutomaticallyState(
+                    cardReaderPaymentReaderTypeStateProvider.providePaymentSuccessfulReceiptSentAutomaticallyState(
+                        cardReaderType = arguments.cardReaderType,
                         amountLabel,
                         receiptSentHint,
                         onPrintReceiptClicked,
@@ -741,96 +752,6 @@ class CardReaderPaymentViewModel
             pluginVersion.semverCompareTo(WCPAY_RECEIPTS_SENDING_SUPPORT_VERSION) >= 0
         }
     }
-
-    private fun provideCollectPaymentState(amountLabel: String): ViewState =
-        when (arguments.cardReaderType) {
-            BUILT_IN -> BuiltInReaderCollectPaymentState(amountLabel)
-            EXTERNAL -> ExternalReaderCollectPaymentState(
-                amountLabel,
-                onSecondaryActionClicked = ::onCancelPaymentFlow
-            )
-        }
-
-    private fun provideProcessingPaymentState(amountLabel: String): ViewState =
-        when (arguments.cardReaderType) {
-            BUILT_IN -> BuiltInReaderProcessingPaymentState(amountLabel)
-            EXTERNAL -> ExternalReaderProcessingPaymentState(
-                amountLabel,
-                onSecondaryActionClicked = ::onCancelPaymentFlow
-            )
-        }
-
-    private fun providePaymentSuccessState(
-        amountLabel: String,
-        onPrintReceiptClicked: () -> Unit,
-        onSendReceiptClicked: () -> Unit,
-        onSaveUserClicked: () -> Unit
-    ) = when (arguments.cardReaderType) {
-        BUILT_IN -> BuiltInReaderPaymentSuccessfulState(
-            amountLabel,
-            onPrintReceiptClicked,
-            onSendReceiptClicked,
-            onSaveUserClicked
-        )
-        EXTERNAL -> ExternalReaderPaymentSuccessfulState(
-            amountLabel,
-            onPrintReceiptClicked,
-            onSendReceiptClicked,
-            onSaveUserClicked
-        )
-    }
-
-    private fun providePaymentSuccessfulReceiptSentAutomaticallyState(
-        amountLabel: String,
-        receiptSentHint: UiStringRes,
-        onPrintReceiptClicked: () -> Unit,
-        onSaveUserClicked: () -> Unit
-    ) = when (arguments.cardReaderType) {
-        BUILT_IN -> BuiltInReaderPaymentSuccessfulReceiptSentAutomaticallyState(
-            amountLabel,
-            receiptSentHint,
-            onPrintReceiptClicked,
-            onSaveUserClicked
-        )
-        EXTERNAL -> ExternalReaderPaymentSuccessfulReceiptSentAutomaticallyState(
-            amountLabel,
-            receiptSentHint,
-            onPrintReceiptClicked,
-            onSaveUserClicked
-        )
-    }
-
-    private fun provideFailedPaymentState(
-        errorType: PaymentFlowError,
-        amountLabel: String?,
-        primaryLabel: Int? = R.string.try_again,
-        onPrimaryActionClicked: () -> Unit,
-        secondaryLabel: Int? = null,
-        onSecondaryActionClicked: (() -> Unit)? = null,
-    ) = when (arguments.cardReaderType) {
-        BUILT_IN -> BuiltInReaderFailedPaymentState(
-            errorType = errorType,
-            amountWithCurrencyLabel = amountLabel,
-            primaryLabel = primaryLabel,
-            onPrimaryActionClicked = onPrimaryActionClicked,
-            secondaryLabel = secondaryLabel,
-            onSecondaryActionClicked = onSecondaryActionClicked
-        )
-        EXTERNAL -> ExternalReaderFailedPaymentState(
-            errorType = errorType,
-            amountWithCurrencyLabel = amountLabel,
-            primaryLabel = primaryLabel,
-            onPrimaryActionClicked = onPrimaryActionClicked,
-            secondaryLabel = secondaryLabel,
-            onSecondaryActionClicked = onSecondaryActionClicked
-        )
-    }
-
-    private fun provideCapturingPaymentState(amountLabel: String): ViewState =
-        when (arguments.cardReaderType) {
-            BUILT_IN -> BuiltInReaderCapturingPaymentState(amountLabel)
-            EXTERNAL -> ExternalReaderCapturingPaymentState(amountLabel)
-        }
 
     class ShowSnackbarInDialog(@StringRes val message: Int) : Event()
 
