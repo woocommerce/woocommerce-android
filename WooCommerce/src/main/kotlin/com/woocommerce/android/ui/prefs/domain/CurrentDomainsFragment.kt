@@ -50,7 +50,7 @@ class CurrentDomainsFragment : BaseFragment() {
                 is ShowMoreAboutDomains -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 is NavigateToDomainSearch -> findNavController().navigate(
                     CurrentDomainsFragmentDirections
-                        .actionCurrentDomainFragmentToDomainSearchFragment(event.hasFreeCredits, false)
+                        .actionCurrentDomainFragmentToDomainSearchFragment(event.hasFreeCredits, false, "")
                 )
             }
         }

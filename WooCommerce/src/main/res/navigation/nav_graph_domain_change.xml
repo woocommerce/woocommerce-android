@@ -22,5 +22,8 @@
         <argument
             android:name="search_only_free_domains"
             app:argType="boolean" />
+        <argument
+            android:name="initial_query"
+            app:argType="string" />
     </fragment>
 </navigation>

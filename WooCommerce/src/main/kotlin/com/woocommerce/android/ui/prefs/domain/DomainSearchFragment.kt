@@ -12,9 +12,9 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerScreen
-import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.prefs.domain.DomainChangeViewModel.ShowMoreAboutDomains
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -24,7 +24,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class DomainSearchFragment : BaseFragment() {
     private val domainChangeViewModel: DomainChangeViewModel by hiltNavGraphViewModels(R.id.nav_graph_domain_change)
-    private val domainSearchViewModel: DomainPickerViewModel by viewModels()
+    private val domainSearchViewModel: DomainSearchViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -41,8 +41,8 @@ class DomainSearchFragment : BaseFragment() {
     }
 
     private fun onDomainSelected(domain: String) {
-        domainChangeViewModel.onDomainSelected(domain)
         domainSearchViewModel.onDomainSuggestionSelected(domain)
+        domainChangeViewModel.onDomainSelected(domain)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
