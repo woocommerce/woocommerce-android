@@ -55,7 +55,9 @@ class CountryPickerFragment : BaseFragment() {
 
     private fun navigateToDomainPickerStep() {
         findNavController().navigateSafely(
-            CountryPickerFragmentDirections.actionCountryPickerFragmentToDomainPickerFragment(newStore.data.name ?: "")
+            CountryPickerFragmentDirections.actionCountryPickerFragmentToDomainPickerFragment(
+                initialQuery = newStore.data.name ?: ""
+            )
         )
     }
 }

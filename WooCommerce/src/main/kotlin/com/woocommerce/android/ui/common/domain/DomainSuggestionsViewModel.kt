@@ -115,8 +115,8 @@ abstract class DomainSuggestionsViewModel constructor(
         triggerEvent(NavigateToNextStep)
     }
 
-    open fun onDomainSuggestionSelected(clickedDomain: String) {
-        selectedDomain.value = clickedDomain
+    open fun onDomainSuggestionSelected(domain: String) {
+        selectedDomain.value = domain
     }
 
     fun onDomainQueryChanged(query: String) {

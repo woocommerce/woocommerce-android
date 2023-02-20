@@ -2,14 +2,14 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph_domain_change"
-    app:startDestination="@id/currentDomainFragment">
+    app:startDestination="@id/domainDashboardFragment">
 
     <fragment
-        android:id="@+id/currentDomainFragment"
-        android:name="com.woocommerce.android.ui.prefs.domain.CurrentDomainsFragment"
+        android:id="@+id/domainDashboardFragment"
+        android:name="com.woocommerce.android.ui.prefs.domain.DomainDashboardFragment"
         android:label="CurrentDomainFragment" >
         <action
-            android:id="@+id/action_currentDomainFragment_to_domainSearchFragment"
+            android:id="@+id/action_domainDashboardFragment_to_domainSearchFragment"
             app:destination="@id/domainSearchFragment" />
     </fragment>
     <fragment
