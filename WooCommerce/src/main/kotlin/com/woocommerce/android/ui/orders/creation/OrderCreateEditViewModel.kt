@@ -235,7 +235,7 @@ class OrderCreateEditViewModel @Inject constructor(
         it.adjustProductQuantity(item.itemId, -item.quantity.toInt())
     }
 
-    fun onProductSelected(remoteProductId: Long, variationId: Long? = null) {
+    fun onProductSelected(remoteProductId: List<Long>, variationId: Long? = null) {
         tracker.track(
             ORDER_PRODUCT_ADD,
             mapOf(KEY_FLOW to flow)
@@ -243,8 +243,10 @@ class OrderCreateEditViewModel @Inject constructor(
 
         viewModelScope.launch {
             _orderDraft.value.items.toMutableList().apply {
-                add(createOrderItem(remoteProductId, variationId))
-            }.let { items -> _orderDraft.update { it.updateItems(items) } }
+                addAll(createOrderItem(remoteProductId, variationId))
+            }.let { items -> _orderDraft.update {
+                it.updateItems(items) }
+            }
         }
     }
 

@@ -15,16 +15,18 @@ class CreateOrderItem @Inject constructor(
     private val variationDetailRepository: VariationDetailRepository,
     private val productDetailRepository: ProductDetailRepository
 ) {
-    suspend operator fun invoke(remoteProductId: Long, variationId: Long? = null): Order.Item {
+    suspend operator fun invoke(remoteProductId: List<Long>, variationId: Long? = null): List<Order.Item> {
         return withContext(coroutineDispatchers.io) {
-            val product = productDetailRepository.getProduct(remoteProductId)
+            remoteProductId.map { remoteProductId ->
+                val product = productDetailRepository.getProduct(remoteProductId)
 
-            variationId?.let {
-                if (product != null) {
-                    variationDetailRepository.getVariation(remoteProductId, it)?.createItem(product)
-                } else null
-            } ?: product?.createItem()
+                variationId?.let {
+                    if (product != null) {
+                        variationDetailRepository.getVariation(remoteProductId, it)?.createItem(product)
+                    } else null
+                } ?: product?.createItem()
                 ?: Order.Item.EMPTY.copy(productId = remoteProductId, variationId = variationId ?: 0L)
+            }
         }
     }
 

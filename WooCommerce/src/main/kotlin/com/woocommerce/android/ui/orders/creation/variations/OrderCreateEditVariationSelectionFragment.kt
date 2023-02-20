@@ -67,8 +67,8 @@ class OrderCreateEditVariationSelectionFragment : BaseFragment(R.layout.fragment
                     }
                 },
                 onItemClick = {
-                    sharedViewModel.onProductSelected(it.remoteProductId, it.remoteVariationId)
-                    findNavController().popBackStack(R.id.orderCreationFragment, false)
+//                    sharedViewModel.onProductSelected(it.remoteProductId, it.remoteVariationId)
+//                    findNavController().popBackStack(R.id.orderCreationFragment, false)
                 }
             )
         }

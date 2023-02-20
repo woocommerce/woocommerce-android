@@ -1,10 +1,12 @@
 package com.woocommerce.android.ui.orders.creation.products
 
 import android.os.Parcelable
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.map
+import androidx.recyclerview.selection.SelectionTracker
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.extensions.differsFrom
 import com.woocommerce.android.model.Product
@@ -27,8 +29,11 @@ class OrderCreateEditProductSelectionViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val productListRepository: ProductListRepository
 ) : ScopedViewModel(savedState) {
+    private var selectedProductsList: MutableList<Product>? = mutableListOf()
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
+
+    var tracker: SelectionTracker<Long>? = null
 
     private val productList = MutableLiveData<List<Product>>()
     val productListData: LiveData<List<Product>> = productList.map { products ->
@@ -61,11 +66,33 @@ class OrderCreateEditProductSelectionViewModel @Inject constructor(
     }
 
     private fun loadFullProductList(loadMore: Boolean) {
+        // Add selected products from searching to the previously selected products from
+        // the product listing screen before search.
+        if (!selectedProductsList.isNullOrEmpty()) {
+            selectedProductsList!!.addAll(
+                productList.value?.filter { product ->
+                    tracker?.isSelected(product.remoteId) == true
+                } as MutableList<Product>
+            )
+        }
         loadingJob = launch {
             val cachedProducts = productListRepository.getProductList()
                 .takeIf { it.isNotEmpty() }
                 ?.apply {
-                    productList.value = this
+                    if (!selectedProductsList.isNullOrEmpty()) {
+                        val newProductList = this.map {
+                            selectedProductsList?.forEach { selectedProduct ->
+                                if (it.remoteId == selectedProduct.remoteId) {
+                                    tracker?.select(it.remoteId)
+                                    return@forEach
+                                }
+                            }
+                            it
+                        }
+                        productList.value = newProductList
+                    } else {
+                        productList.value = this
+                    }
                     viewState = viewState.copy(isSkeletonShown = false)
                 }
 
@@ -73,22 +100,36 @@ class OrderCreateEditProductSelectionViewModel @Inject constructor(
                 .takeIf {
                     it != cachedProducts
                 }
-                ?.let { productList.value = it }
+                ?.let {
+                if (!selectedProductsList.isNullOrEmpty()) {
+                    val newProductList = productList.value?.map {
+                        if (selectedProductsList?.contains(it) == true ) {
+                            tracker?.select(it.remoteId)
+                            it
+                        } else {
+                            it
+                        }
+                    }
+                    productList.value = newProductList!!
+                } else {
+                    productList.value = it
+                }
+                }
 
             viewState = viewState.copy(isSkeletonShown = false)
         }
     }
 
-    fun onProductSelected(productId: Long) {
-        productList.value!!.firstOrNull { it.remoteId == productId }?.let { product ->
-            if (product.numVariations == 0) {
-                triggerEvent(AddProduct(productId))
-            } else {
-                triggerEvent(ShowProductVariations(productId))
-            }
-        } ?: run {
-            triggerEvent(ProductNotFound)
-        }
+    fun onProductSelected() {
+            triggerEvent(
+                AddProduct(
+                    productList.value!!.filter {
+                        tracker?.isSelected(it.remoteId)!!
+                    }.map {
+                        it.remoteId
+                    }
+                )
+            )
     }
 
     fun searchProductList(query: String, loadMore: Boolean = false, delayed: Boolean = false) {
@@ -99,7 +140,7 @@ class OrderCreateEditProductSelectionViewModel @Inject constructor(
                 delay(AppConstants.SEARCH_TYPING_DELAY_MS)
             }
             if (query.isEmpty()) {
-                productList.value = emptyList()
+//                productList.value = emptyList()
                 return@launch
             }
             productListRepository.searchProductList(query, loadMore)
@@ -112,15 +153,19 @@ class OrderCreateEditProductSelectionViewModel @Inject constructor(
         searchResult: List<Product>,
         loadedMore: Boolean
     ) {
-        productList.value = productList.value
+        // store all the selected products before searching
+        selectedProductsList = productList.value?.filter { product ->
+            tracker?.isSelected(product.remoteId) == true
+        } as MutableList<Product>?
+        productList.value = (productList.value
             ?.takeIf { loadedMore && searchResult differsFrom it }
             ?.let { searchResult + it }
-            ?: searchResult
+            ?: searchResult)
         viewState = viewState.copy(isEmptyViewShowing = productListData.value?.isEmpty())
     }
 
     fun onSearchOpened() {
-        productList.value = emptyList()
+//        productList.value = emptyList()
         viewState = viewState.copy(
             isSearchActive = true
         )
@@ -137,7 +182,7 @@ class OrderCreateEditProductSelectionViewModel @Inject constructor(
     }
 
     fun onSearchQueryCleared() {
-        productList.value = emptyList()
+//        productList.value = emptyList()
         viewState = viewState.copy(
             query = null,
             isEmptyViewShowing = false
@@ -157,7 +202,7 @@ class OrderCreateEditProductSelectionViewModel @Inject constructor(
         val isEmptyViewShowing: Boolean? = null
     ) : Parcelable
 
-    data class AddProduct(val productId: Long) : MultiLiveEvent.Event()
+    data class AddProduct(val productId: List<Long>) : MultiLiveEvent.Event()
 
     object ProductNotFound : MultiLiveEvent.Event()
 }
