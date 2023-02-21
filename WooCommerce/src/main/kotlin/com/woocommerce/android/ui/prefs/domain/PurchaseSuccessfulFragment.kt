@@ -9,18 +9,16 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel.NavigateToNextStep
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerScreen
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.prefs.domain.PurchaseSuccessfulViewModel.NavigateToDashboard
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class DomainSearchFragment : BaseFragment() {
-    private val viewModel: DomainSearchViewModel by viewModels()
+class PurchaseSuccessfulFragment : BaseFragment() {
+    private val viewModel: PurchaseSuccessfulViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -30,7 +28,7 @@ class DomainSearchFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    DomainPickerScreen(viewModel, viewModel::onDomainSuggestionSelected)
+                    PurchaseSuccessfulScreen(viewModel)
                 }
             }
         }
@@ -45,15 +43,14 @@ class DomainSearchFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
-                is NavigateToNextStep -> navigateToSuccessScreen(event.selectedDomain)
+                NavigateToDashboard -> navigateToDashboard()
             }
         }
     }
 
-    private fun navigateToSuccessScreen(domain: String) {
+    private fun navigateToDashboard() {
         findNavController().navigateSafely(
-            DomainSearchFragmentDirections.actionDomainSearchFragmentToPurchaseSuccessfulFragment(domain)
+            PurchaseSuccessfulFragmentDirections.actionPurchaseSuccessfulFragmentToDomainDashboardFragment()
         )
     }
 }

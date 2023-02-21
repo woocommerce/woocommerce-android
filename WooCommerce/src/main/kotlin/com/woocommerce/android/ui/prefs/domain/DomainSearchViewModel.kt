@@ -5,7 +5,6 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository
 import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
