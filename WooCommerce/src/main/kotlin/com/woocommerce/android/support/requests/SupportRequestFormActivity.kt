@@ -19,6 +19,8 @@ class SupportRequestFormActivity : AppCompatActivity() {
             setContentView(root)
             setupActionBar()
             observeViewEvents(this)
+            // Disabled to avoid triggering a support request while testing, it will be removed later
+            submitRequestButton.isEnabled = false
         }
     }
 
