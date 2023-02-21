@@ -140,7 +140,7 @@
                         android:layout_marginTop="@dimen/major_100"
                         android:hint="@string/support_request_subject"
                         android:imeOptions="flagNoFullscreen"
-                        android:inputType="textPersonName|textCapWords"
+                        android:inputType="textAutoComplete"
                         android:nextFocusForward="@id/last_name"
                         android:saveEnabled="false"
                         app:boxBackgroundColor="@color/white"
