@@ -27,7 +27,8 @@ class StoreOnboardingViewModel @Inject constructor(
         OnboardingState(
             show = false,
             title = R.string.store_onboarding_title,
-            tasks = emptyList()
+            tasks = emptyList(),
+            isCollapsedMode = true
         )
     )
     val viewState = _viewState.asLiveData()
@@ -47,13 +48,16 @@ class StoreOnboardingViewModel @Inject constructor(
         }
     }
 
+    fun viewAllClicked() {
+
+    }
+
     private fun OnboardingTask.toOnboardingTaskUi() =
         OnboardingTaskUi(
             icon = getIconResource(),
             title = getTitleStringResource(),
             description = getDescriptionStringResource(),
             isCompleted = isComplete,
-            isVisible = isVisible
         )
 
     @DrawableRes
@@ -93,7 +97,8 @@ class StoreOnboardingViewModel @Inject constructor(
     data class OnboardingState(
         val show: Boolean,
         @StringRes val title: Int,
-        val tasks: List<OnboardingTaskUi>
+        val tasks: List<OnboardingTaskUi>,
+        val isCollapsedMode: Boolean
     ) : Parcelable
 
     @Parcelize
@@ -102,6 +107,5 @@ class StoreOnboardingViewModel @Inject constructor(
         @StringRes val title: Int,
         @StringRes val description: Int,
         val isCompleted: Boolean,
-        val isVisible: Boolean,
     ) : Parcelable
 }

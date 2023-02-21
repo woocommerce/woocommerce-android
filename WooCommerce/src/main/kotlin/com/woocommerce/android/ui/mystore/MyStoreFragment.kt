@@ -206,7 +206,10 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                         setContent {
                             WooThemeWithBackground {
-                                StoreOnboardingScreen(onboardingState = state)
+                                StoreOnboardingScreen(
+                                    onboardingState = state,
+                                    onViewAllClicked = storeOnboardingViewModel::viewAllClicked
+                                )
                             }
                         }
                     }
