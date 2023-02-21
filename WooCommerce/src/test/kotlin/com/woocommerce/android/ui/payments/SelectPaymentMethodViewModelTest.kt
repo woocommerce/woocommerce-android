@@ -917,6 +917,38 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         }
     //endregion
 
+    @Test
+    fun `when learn more link clicked, then correct event is triggered`() {
+        // WHEN
+        val viewModel = initViewModel(Payment(1L, ORDER))
+        whenever(
+            learnMoreUrlProvider.provideLearnMoreUrlFor(LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS)
+        ).thenReturn(
+            AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
+        )
+        (viewModel.onLearnMoreIppClicked())
+
+        // THEN
+        assertThat(viewModel.event.value).isInstanceOf(SelectPaymentMethodViewModel.OpenGenericWebView::class.java)
+    }
+
+    @Test
+    fun `when learn more clicked, then trigger proper event with correct url`() {
+        // WHEN
+        val viewModel = initViewModel(Payment(1L, ORDER))
+        whenever(
+            learnMoreUrlProvider.provideLearnMoreUrlFor(LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS)
+        ).thenReturn(
+            AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
+        )
+        (viewModel.onLearnMoreIppClicked())
+
+        // THEN
+        assertThat(viewModel.event.value).isEqualTo(
+            SelectPaymentMethodViewModel.OpenGenericWebView(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
+        )
+    }
+
     private fun initViewModel(cardReaderFlowParam: CardReaderFlowParam): SelectPaymentMethodViewModel {
         return SelectPaymentMethodViewModel(
             SelectPaymentMethodFragmentArgs(cardReaderFlowParam = cardReaderFlowParam).initSavedStateHandle(),
