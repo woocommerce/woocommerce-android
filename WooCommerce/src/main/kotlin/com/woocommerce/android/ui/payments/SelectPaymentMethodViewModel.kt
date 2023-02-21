@@ -366,7 +366,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis)
     }
 
-    fun onLearnMoreIppClicked() {
+    private fun onLearnMoreIppClicked() {
         cardReaderTracker.trackPaymentMethodsLearnMoreClicked(LEARN_MORE_SOURCE)
         triggerEvent(
             OpenGenericWebView(

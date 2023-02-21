@@ -926,7 +926,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         ).thenReturn(
             AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
         )
-        (viewModel.onLearnMoreIppClicked())
+        (viewModel.viewStateData.value as Success).learMoreIpp.onClick.invoke()
 
         // THEN
         assertThat(viewModel.event.value).isInstanceOf(SelectPaymentMethodViewModel.OpenGenericWebView::class.java)
@@ -941,7 +941,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         ).thenReturn(
             AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
         )
-        (viewModel.onLearnMoreIppClicked())
+        (viewModel.viewStateData.value as Success).learMoreIpp.onClick.invoke()
 
         // THEN
         assertThat(viewModel.event.value).isEqualTo(
