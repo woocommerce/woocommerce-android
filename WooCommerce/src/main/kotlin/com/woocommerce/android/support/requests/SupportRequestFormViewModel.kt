@@ -7,8 +7,8 @@ import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class SupportRequestFormViewModel @Inject constructor(
