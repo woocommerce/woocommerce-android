@@ -99,28 +99,28 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <com.google.android.material.textview.MaterialTextView
-                style="@style/Woo.TextView.Headline6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/support_request_title"
-                android:textSize="@dimen/text_minor_125" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/major_100"
-                android:text="@string/support_request_description" />
-
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/major_100">
+                android:layout_marginVertical="@dimen/major_100">
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        style="@style/Woo.TextView.Headline6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/support_request_title"
+                        android:textSize="@dimen/text_minor_125" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/major_100"
+                        android:text="@string/support_request_description" />
 
                     <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
                         android:id="@+id/request_subject"
