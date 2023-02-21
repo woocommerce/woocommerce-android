@@ -3,6 +3,9 @@ package com.woocommerce.android.ui.products
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.RequestCodes
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -17,7 +20,8 @@ import javax.inject.Inject
 class ProductShippingViewModel @Inject constructor(
     savedState: SavedStateHandle,
     parameterRepository: ParameterRepository,
-    private val productRepository: ProductDetailRepository
+    private val productRepository: ProductDetailRepository,
+    private val analyticsTracker: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -66,6 +70,10 @@ class ProductShippingViewModel @Inject constructor(
     }
 
     fun onExit() {
+        analyticsTracker.track(
+            AnalyticsEvent.PRODUCT_SHIPPING_SETTINGS_DONE_BUTTON_TAPPED,
+            mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)
+        )
         if (hasChanges) {
             triggerEvent(ExitWithResult(shippingData))
         } else {
