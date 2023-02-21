@@ -17,14 +17,18 @@ class SupportRequestFormActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         ActivitySupportRequestFormBinding.inflate(layoutInflater).apply {
             setContentView(root)
-            setSupportActionBar(toolbar.toolbar as Toolbar)
-            supportActionBar?.setHomeButtonEnabled(true)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            observeUIChanges(this)
+            setupActionBar()
+            observeViewEvents(this)
         }
     }
 
-    private fun observeUIChanges(binding: ActivitySupportRequestFormBinding) {
+    private fun ActivitySupportRequestFormBinding.setupActionBar() {
+        setSupportActionBar(toolbar.toolbar as Toolbar)
+        supportActionBar?.setHomeButtonEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    private fun observeViewEvents(binding: ActivitySupportRequestFormBinding) {
         binding.submitRequestButton.setOnClickListener {
             viewModel.onSubmitRequestButtonClicked(
                 this,
