@@ -21,14 +21,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -79,7 +76,6 @@ fun CurrentDomainsScreen(viewModel: DomainChangeViewModel) {
                         DomainChange(
                             domainsState = viewState,
                             onFindDomainButtonTapped = viewModel::onFindDomainButtonTapped,
-                            onDismissBannerButtonTapped = viewModel::onDismissBannerButtonTapped,
                             onLearnMoreButtonTapped = viewModel::onLearnMoreButtonTapped,
                             modifier = Modifier
                                 .background(MaterialTheme.colors.surface)
@@ -100,7 +96,6 @@ fun CurrentDomainsScreen(viewModel: DomainChangeViewModel) {
 private fun DomainChange(
     domainsState: DomainsState,
     onFindDomainButtonTapped: () -> Unit,
-    onDismissBannerButtonTapped: () -> Unit,
     onLearnMoreButtonTapped: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -109,10 +104,7 @@ private fun DomainChange(
 
         val isBannerVisible = remember { mutableStateOf(domainsState.isDomainClaimBannerVisible) }
         AnimatedVisibility(visible = isBannerVisible.value, exit = slideOutVertically()) {
-            ClaimDomainBanner(
-                onClaimDomainButtonTapped = onFindDomainButtonTapped,
-                onDismissBannerButtonTapped = onDismissBannerButtonTapped
-            )
+            ClaimDomainBanner(onClaimDomainButtonTapped = onFindDomainButtonTapped)
         }
 
         if (domainsState.paidDomains.isEmpty()) {
@@ -195,16 +187,13 @@ private fun DomainChange(
 }
 
 @Composable
-private fun ClaimDomainBanner(
-    onClaimDomainButtonTapped: () -> Unit,
-    onDismissBannerButtonTapped: () -> Unit
-) {
+private fun ClaimDomainBanner(onClaimDomainButtonTapped: () -> Unit) {
     Column {
         Divider()
         ConstraintLayout(
             modifier = Modifier.fillMaxWidth()
         ) {
-            val (title, description, claimLink, image, closeButton) = createRefs()
+            val (title, description, claimLink, image) = createRefs()
             Text(
                 modifier = Modifier
                     .padding(dimensionResource(id = dimen.major_100))
@@ -216,19 +205,6 @@ private fun ClaimDomainBanner(
                 style = MaterialTheme.typography.subtitle1,
                 fontWeight = FontWeight.Bold
             )
-            IconButton(
-                modifier = Modifier
-                    .constrainAs(closeButton) {
-                        top.linkTo(parent.top)
-                        end.linkTo(parent.end)
-                    },
-                onClick = onDismissBannerButtonTapped
-            ) {
-                Icon(
-                    imageVector = Filled.Close,
-                    contentDescription = stringResource(string.domains_your_free_store_address)
-                )
-            }
             Image(
                 modifier = Modifier
                     .constrainAs(image) {
@@ -404,7 +380,6 @@ fun NamePickerPreview() {
                 ),
             ),
             onFindDomainButtonTapped = {},
-            onDismissBannerButtonTapped = {},
             onLearnMoreButtonTapped = {}
         )
     }
@@ -427,7 +402,6 @@ fun NoDomainsPickerPreview() {
                 paidDomains = listOf(),
             ),
             onFindDomainButtonTapped = {},
-            onDismissBannerButtonTapped = {},
             onLearnMoreButtonTapped = {}
         )
     }
