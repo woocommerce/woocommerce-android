@@ -6,6 +6,16 @@
     android:background="@color/woo_gray_6"
     android:orientation="vertical">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include
+            layout="@layout/view_toolbar"
+            android:id="@+id/toolbar"/>
+    </com.google.android.material.appbar.AppBarLayout>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
