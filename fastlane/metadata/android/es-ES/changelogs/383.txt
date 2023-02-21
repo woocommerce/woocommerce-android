@@ -1,2 +1,0 @@
-12.2:
-Esta versión cuenta con algunas correcciones de errores y mejoras en la función Pagos en persona. Pruébala y déjanos tus comentarios.

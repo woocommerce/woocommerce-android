@@ -1,2 +1,0 @@
-12.2:
-Bu sürüm, şahsen ödeme özelliğimizde yapılan birkaç hata düzeltmesini ve iyileştirmeyi içerir. Lütfen deneyin ve geri bildiriminizi paylaşın!

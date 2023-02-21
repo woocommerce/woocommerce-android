@@ -1,2 +1,0 @@
-12.2:
-Esta versão inclui algumas correções de bugs e melhorias na nossa funcionalidade de pagamentos presenciais. Experimente e compartilhe seu feedback.
