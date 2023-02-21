@@ -46,6 +46,7 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddProduct
@@ -98,6 +99,8 @@ class OrderCreateEditViewModel @Inject constructor(
         private const val PARAMETERS_KEY = "parameters_key"
         private const val ORDER_CUSTOM_FEE_NAME = "order_custom_fee"
     }
+
+    val selectedProducts: MutableList<Pair<Long, MutableList<Long>?>> = mutableListOf()
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
@@ -235,7 +238,7 @@ class OrderCreateEditViewModel @Inject constructor(
         it.adjustProductQuantity(item.itemId, -item.quantity.toInt())
     }
 
-    fun onProductSelected(remoteProductId: Long, variationId: Long? = null) {
+    fun onProductSelected(productIds: List<Pair<Long, List<Long?>?>>) {
         tracker.track(
             ORDER_PRODUCT_ADD,
             mapOf(KEY_FLOW to flow)
@@ -243,8 +246,10 @@ class OrderCreateEditViewModel @Inject constructor(
 
         viewModelScope.launch {
             _orderDraft.value.items.toMutableList().apply {
-                add(createOrderItem(remoteProductId, variationId))
-            }.let { items -> _orderDraft.update { it.updateItems(items) } }
+                addAll(createOrderItem(productIds))
+            }.let { items -> _orderDraft.update {
+                it.updateItems(items) }
+            }
         }
     }
 

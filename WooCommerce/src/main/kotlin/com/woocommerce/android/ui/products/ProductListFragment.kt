@@ -640,8 +640,8 @@ class ProductListFragment :
         return false
     }
 
-    private fun onProductClick(remoteProductId: Long, sharedView: View?) {
-        if (shouldPreventDetailNavigation(remoteProductId)) return
+    private fun onProductClick(remoteProductId: Long, sharedView: View?, product: Product) {
+        if (shouldPreventDetailNavigation(product.remoteId)) return
         (activity as? MainNavigationRouter)?.let { router ->
             if (sharedView == null) {
                 router.showProductDetail(remoteProductId, enableTrash = true)

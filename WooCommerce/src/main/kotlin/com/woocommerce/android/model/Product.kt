@@ -80,7 +80,8 @@ data class Product(
     override val length: Float,
     override val width: Float,
     override val height: Float,
-    override val weight: Float
+    override val weight: Float,
+    var isSelected: Boolean = false,
 ) : Parcelable, IProduct {
     companion object {
         const val TAX_CLASS_DEFAULT = "standard"

@@ -8,6 +8,9 @@ import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
+import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -35,6 +38,8 @@ class VariationListAdapter(
     private val onItemClick: (variation: ProductVariation) -> Unit
 ) : ListAdapter<ProductVariation, VariationViewHolder>(VariationItemDiffCallback) {
     private val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
+    // allow the selection library to track the selections of the user
+    var tracker: SelectionTracker<Long>? = null
 
     init {
         setHasStableIds(true)
@@ -53,14 +58,28 @@ class VariationListAdapter(
 
         holder.itemView.setOnClickListener {
             @Suppress("DEPRECATION")
-            onItemClick(getItem(holder.adapterPosition))
+            val variationProduct = getItem(holder.adapterPosition)
+            variationProduct.isSelected = !variationProduct.isSelected
+            if (variationProduct.isSelected) {
+                holder.viewBinding.root.setBackgroundColor(
+                    ContextCompat.getColor(
+                        holder.viewBinding.root.context, R.color.color_primary_surface
+                    )
+                )
+                holder.viewBinding.root.background.alpha = 80
+                holder.viewBinding.variationImageSelected.isVisible = true
+            } else {
+                holder.viewBinding.variationImageSelected.isGone = true
+                holder.viewBinding.root.background = null
+            }
+            onItemClick(variationProduct)
         }
         return holder
     }
 
     override fun onBindViewHolder(holder: VariationViewHolder, position: Int) {
         val variation = getItem(position)
-        holder.bind(variation)
+        holder.bind(variation, isActivated = variation.isSelected)
 
         if (position == itemCount - 1) {
             loadMoreListener.onRequestLoadMore()
@@ -98,7 +117,7 @@ class VariationListAdapter(
     inner class VariationViewHolder(val viewBinding: VariationListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
         private val imageCornerRadius = itemView.context.resources.getDimensionPixelSize(R.dimen.corner_radius_image)
-        fun bind(variation: ProductVariation) {
+        fun bind(variation: ProductVariation, isActivated: Boolean = false) {
             viewBinding.variationOptionName.text = variation.getName(parentProduct)
 
             val stockStatus = variation.getStockStatusText()
@@ -118,13 +137,25 @@ class VariationListAdapter(
 
             viewBinding.variationOptionImage.clipToOutline = true
 
-            variation.image?.let {
-                val imageUrl = PhotonUtils.getPhotonImageUrl(it.source, imageSize, imageSize)
-                glideRequest.load(imageUrl)
-                    .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
-                    .placeholder(R.drawable.ic_product)
-                    .into(viewBinding.variationOptionImage)
-            } ?: viewBinding.variationOptionImage.setImageResource(R.drawable.ic_product)
+            if (isActivated) {
+                viewBinding.root.setBackgroundColor(
+                    ContextCompat.getColor(
+                        viewBinding.root.context, R.color.color_primary_surface
+                    )
+                )
+                viewBinding.root.background.alpha = 80
+                viewBinding.variationImageSelected.isVisible = true
+            } else {
+                viewBinding.root.background = null
+                viewBinding.variationImageSelected.isGone = true
+                variation.image?.let {
+                    val imageUrl = PhotonUtils.getPhotonImageUrl(it.source, imageSize, imageSize)
+                    glideRequest.load(imageUrl)
+                        .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
+                        .placeholder(R.drawable.ic_product)
+                        .into(viewBinding.variationOptionImage)
+                } ?: viewBinding.variationOptionImage.setImageResource(R.drawable.ic_product)
+            }
         }
     }
 

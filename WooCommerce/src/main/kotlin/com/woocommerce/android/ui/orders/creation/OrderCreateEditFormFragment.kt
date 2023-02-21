@@ -192,6 +192,7 @@ class OrderCreateEditFormFragment :
                 AddButton(
                     text = getString(R.string.order_creation_add_products),
                     onClickListener = {
+                        viewModel.selectedProducts.clear()
                         viewModel.onAddProductClicked()
                     }
                 )

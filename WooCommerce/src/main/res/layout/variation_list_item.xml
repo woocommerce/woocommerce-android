@@ -31,6 +31,18 @@
             tools:src="@drawable/ic_product" />
     </FrameLayout>
 
+    <ImageView
+        android:id="@+id/variationImageSelected"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:alpha="@dimen/alpha_emphasis_high"
+        android:importantForAccessibility="no"
+        android:src="@drawable/product_selected_overlay"
+        app:layout_constraintTop_toTopOf="@+id/variationOptionImageFrame"
+        app:layout_constraintStart_toStartOf="@+id/variationOptionImageFrame"
+        app:layout_constraintEnd_toEndOf="@+id/variationOptionImageFrame"
+        app:layout_constraintBottom_toBottomOf="@+id/variationOptionImageFrame"/>
+
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/variationOptionName"
         style="@style/Woo.ListItem.Title"

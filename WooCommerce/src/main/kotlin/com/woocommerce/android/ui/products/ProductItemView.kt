@@ -48,9 +48,15 @@ class ProductItemView @JvmOverloads constructor(
         currencyCode: String? = null,
         isActivated: Boolean = false
     ) {
+        if (product.isSelected) {
+            binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.color_primary))
+            binding.root.background.alpha = 80
+        } else {
+            binding.root.background = null
+        }
         showProductName(product.name)
         showProductSku(product.sku)
-        showProductImage(product.firstImageUrl, isActivated)
+        showProductImage(product.firstImageUrl, isActivated, product)
         showProductStockStatusPrice(product, currencyFormatter, currencyCode)
     }
 
@@ -105,7 +111,8 @@ class ProductItemView @JvmOverloads constructor(
 
     private fun showProductImage(
         imageUrl: String?,
-        isActivated: Boolean = false
+        isActivated: Boolean = false,
+        product: Product? = null
     ) {
         val size: Int
         when {
@@ -123,7 +130,7 @@ class ProductItemView @JvmOverloads constructor(
                     .into(binding.productImage)
             }
         }
-        binding.productImageSelected.visibility = if (isActivated) View.VISIBLE else View.GONE
+        binding.productImageSelected.visibility = if (isActivated || product?.isSelected == true) View.VISIBLE else View.GONE
         binding.productImage.layoutParams.apply {
             height = size
             width = size

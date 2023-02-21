@@ -12,6 +12,9 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.selection.SelectionPredicates
+import androidx.recyclerview.selection.SelectionTracker
+import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreateEditProductSelectionBinding
@@ -26,6 +29,8 @@ import com.woocommerce.android.ui.orders.creation.products.OrderCreateEditProduc
 import com.woocommerce.android.ui.orders.creation.products.OrderCreateEditProductSelectionViewModel.ViewState
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.ProductListAdapter
+import com.woocommerce.android.ui.products.ProductSelectionItemKeyProvider
+import com.woocommerce.android.ui.products.SelectableProductListItemLookup
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView
@@ -47,12 +52,17 @@ class OrderCreateEditProductSelectionFragment :
     private val skeletonView = SkeletonView()
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
+    private var doneMenuItem: MenuItem? = null
 
-    @Inject lateinit var currencyFormatter: CurrencyFormatter
+    @Inject
+    lateinit var currencyFormatter: CurrencyFormatter
+
+    private var tracker: SelectionTracker<Long>? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        with(FragmentOrderCreateEditProductSelectionBinding.bind(view)) {
+        val binding = FragmentOrderCreateEditProductSelectionBinding.bind(view)
+        with(binding) {
             productsList.layoutManager = LinearLayoutManager(requireActivity())
             setupObserversWith(this)
         }
@@ -75,8 +85,10 @@ class OrderCreateEditProductSelectionFragment :
         }
         productListViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is AddProduct -> {
-                    sharedViewModel.onProductSelected(event.productId)
+                AddProduct -> {
+                    sharedViewModel.onProductSelected(
+                        sharedViewModel.selectedProducts
+                    )
                     findNavController().navigateUp()
                 }
                 is ShowProductVariations -> OrderCreateEditNavigator.navigate(this, event)
@@ -94,11 +106,49 @@ class OrderCreateEditProductSelectionFragment :
         val adapter = productsList.adapter
             .let { it as? ProductListAdapter }
             ?: ProductListAdapter(
-                clickListener = { id, _ -> productListViewModel.onProductSelected(id) },
+                clickListener = { productId, _, product->
+//                    productListViewModel.onProductSelected()
+                    if (
+                        !sharedViewModel.selectedProducts.contains(Pair(productId, null)) &&
+                            product.numVariations == 0
+                    ) {
+                        sharedViewModel.selectedProducts.add(Pair(productId, null))
+                    } else {
+                        sharedViewModel.selectedProducts.remove(Pair(productId, null))
+                    }
+                    productListViewModel.onProductSelected(productId)
+//                    (productsList.adapter as? ProductListAdapter)?.submitList(products)
+                },
                 loadMoreListener = this@OrderCreateEditProductSelectionFragment,
                 currencyFormatter = currencyFormatter
-            ).also { productsList.adapter = it }
-        adapter.submitList(products)
+            ).also {
+                productsList.adapter = it
+//                tracker = SelectionTracker.Builder(
+//                    "myProductSelection", // a string to identity our selection in the context of this fragment
+//                    productsList, // the RecyclerView where we will apply the tracker
+//                    ProductSelectionItemKeyProvider(productsList), // the source of selection keys
+//                    SelectableProductListItemLookup(productsList), // the source of information about recycler items
+//                    StorageStrategy.createLongStorage() // strategy for type-safe storage of the selection state
+//                ).withSelectionPredicate(
+//                    SelectionPredicates.createSelectAnything() // allows multiple items to be selected without any restriction
+//                ).build()
+//                (productsList.adapter as ProductListAdapter).tracker = tracker
+//                productListViewModel.tracker = tracker
+            }
+        val newProducts = products.apply {
+            this.map {
+                if (sharedViewModel.selectedProducts.isNullOrEmpty()) {
+                    it.isSelected = false
+                } else {
+                    sharedViewModel.selectedProducts.forEach { selectedProductId ->
+                        if (it.remoteId == selectedProductId.first) {
+                            it.isSelected = true
+                        }
+                    }
+                }
+            }
+        }
+        adapter.submitList(newProducts)
     }
 
     override fun onRequestLoadMore() {
@@ -150,6 +200,7 @@ class OrderCreateEditProductSelectionFragment :
         inflater.inflate(R.menu.menu_product_selection_fragment, menu)
 
         searchMenuItem = menu.findItem(R.id.menu_search)
+        doneMenuItem = menu.findItem(R.id.menu_done)
         searchView = searchMenuItem?.actionView as SearchView?
         searchView?.queryHint = getString(R.string.product_search_hint)
         searchView?.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)
@@ -166,6 +217,10 @@ class OrderCreateEditProductSelectionFragment :
         return when (item.itemId) {
             R.id.menu_search -> {
                 registerSearchListeners()
+                true
+            }
+            R.id.menu_done -> {
+                productListViewModel.onProductSelected(0L)
                 true
             }
             else -> false

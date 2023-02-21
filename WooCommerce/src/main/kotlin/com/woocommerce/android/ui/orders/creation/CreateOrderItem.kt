@@ -15,16 +15,38 @@ class CreateOrderItem @Inject constructor(
     private val variationDetailRepository: VariationDetailRepository,
     private val productDetailRepository: ProductDetailRepository
 ) {
-    suspend operator fun invoke(remoteProductId: Long, variationId: Long? = null): Order.Item {
+    suspend operator fun invoke(productIds: List<Pair<Long, List<Long?>?>>): List<Order.Item> {
         return withContext(coroutineDispatchers.io) {
-            val product = productDetailRepository.getProduct(remoteProductId)
+            val productsWithoutVariations = productIds.filter { productPair ->
+                productPair.second == null
+            }
 
-            variationId?.let {
-                if (product != null) {
-                    variationDetailRepository.getVariation(remoteProductId, it)?.createItem(product)
-                } else null
-            } ?: product?.createItem()
-                ?: Order.Item.EMPTY.copy(productId = remoteProductId, variationId = variationId ?: 0L)
+            val productsWithVariations = productIds.filter { productPair ->
+                productPair.second != null
+            }
+
+            val productsWithoutVariationsOrderItems = productsWithoutVariations.map { productPair ->
+                val product = productDetailRepository.getProduct(productPair.first)
+                product?.createItem()
+                    ?: Order.Item.EMPTY.copy(productId = productPair.first, variationId = 0L)
+            }
+
+            var productsWithVariationsOrderItems = mutableListOf<Order.Item>()
+            productsWithVariations.forEach { productPair ->
+                val product = productDetailRepository.getProduct(productPair.first)
+                productPair.second!!.let { variationIds ->
+                    productsWithVariationsOrderItems.addAll(variationIds.map { variationId ->
+                        variationId?.let {
+                            if (product != null) {
+                                variationDetailRepository.getVariation(productPair.first, it)
+                                    ?.createItem(product)
+                            } else null
+                        } ?: product?.createItem()
+                        ?: Order.Item.EMPTY.copy(productId = productPair.first, variationId = variationId ?: 0L)
+                    }.toMutableList())
+                }
+            }
+            productsWithVariationsOrderItems + productsWithoutVariationsOrderItems
         }
     }
 

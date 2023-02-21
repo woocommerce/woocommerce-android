@@ -51,7 +51,8 @@ data class ProductVariation(
     override val length: Float,
     override val width: Float,
     override val height: Float,
-    override val weight: Float
+    override val weight: Float,
+    var isSelected: Boolean = false,
 ) : Parcelable, IProduct, Comparable<ProductVariation> {
     val isSaleInEffect: Boolean
         get() {

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.creation.variations
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import androidx.recyclerview.selection.SelectionTracker
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ProductDetailRepository
@@ -27,6 +28,8 @@ class OrderCreateEditVariationSelectionViewModel @Inject constructor(
     private val navArgs: OrderCreateEditVariationSelectionFragmentArgs by savedStateHandle.navArgs()
 
     private val loadMoreTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+
+    var tracker: SelectionTracker<Long>? = null
 
     private val parentProductFlow = flow {
         val productId = navArgs.productId
