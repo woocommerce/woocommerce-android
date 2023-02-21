@@ -46,7 +46,6 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
-import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderInteracRefundErrorMapper
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderInteracRefundableChecker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
@@ -121,13 +120,13 @@ import kotlin.test.assertEquals
 
 private val DUMMY_TOTAL = BigDecimal(10.72)
 private const val DUMMY_CURRENCY_SYMBOL = "£"
-private const val DUMMY_ORDER_NUMBER = "123"
 
 @InternalCoroutinesApi
 @ExperimentalCoroutinesApi
 class CardReaderPaymentViewModelTest : BaseUnitTest() {
     companion object {
         private const val ORDER_ID = 1L
+        private val siteModel = SiteModel().apply { name = "testName" }.apply { url = "testUrl.com" }
     }
 
     private lateinit var viewModel: CardReaderPaymentViewModel
@@ -202,7 +201,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(mockedAddress.firstName).thenReturn("Tester")
         whenever(mockedAddress.lastName).thenReturn("Test")
         whenever(mockedOrder.orderKey).thenReturn("wc_order_j0LMK3bFhalEL")
-        whenever(mockedOrder.number).thenReturn(DUMMY_ORDER_NUMBER)
         whenever(mockedOrder.id).thenReturn(ORDER_ID)
         whenever(mockedOrder.chargeId).thenReturn("chargeId")
         whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(mockedOrder)
@@ -213,12 +211,9 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(cardReaderManager.retryCollectPayment(any(), any())).thenAnswer {
             flow<CardPaymentStatus> { }
         }
-        val siteModel = SiteModel().apply { name = "testName" }.apply { url = "testUrl.com" }
         whenever(selectedSite.get()).thenReturn(siteModel)
         whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(true)
         whenever(interacRefundableChecker.isRefundable(any())).thenReturn(true)
-        whenever(appPrefsWrapper.getReceiptUrl(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
-            .thenReturn("test url")
         whenever(appPrefsWrapper.getCardReaderStatementDescriptor(anyOrNull(), anyOrNull(), anyOrNull()))
             .thenReturn("test statement descriptor")
         whenever(wooStore.getStoreCountryCode(any())).thenReturn("US")
@@ -226,6 +221,12 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             flow<BluetoothCardReaderMessages> {}
         }
         whenever(cardReaderPaymentReceiptHelper.isPluginCanSendReceipt(siteModel)).thenReturn(true)
+        whenever(cardReaderPaymentReceiptHelper.getReceiptUrl(ORDER_ID)).thenReturn("test url")
+        whenever(cardReaderPaymentOrderHelper.getPaymentDescription(mockedOrder)).thenReturn("test description")
+        whenever(cardReaderPaymentOrderHelper.getAmountLabel(mockedOrder))
+            .thenReturn("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
+        whenever(cardReaderPaymentOrderHelper.getReceiptDocumentName(mockedOrder)).thenReturn("receipt-order-1")
+        whenever(cardReaderManager.batteryStatus).thenAnswer { flow { emit(CardReaderBatteryStatus.Unknown) } }
     }
 
     //region - Payments tests
@@ -1616,7 +1617,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            verify(appPrefsWrapper).setReceiptUrl(any(), any(), any(), any(), eq(receiptUrl))
+            verify(cardReaderPaymentReceiptHelper).storeReceiptUrl(eq(ORDER_ID), eq(receiptUrl))
         }
 
     @Test
@@ -2749,10 +2750,10 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given null saved plugin, when flow started, then wc pay can send receipt is false`() =
+    fun `given plugin can not be send, when flow started, then wc pay can send receipt is false`() =
         testBlocking {
             // Given
-            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any())).thenReturn(null)
+            whenever(cardReaderPaymentReceiptHelper.isPluginCanSendReceipt(siteModel)).thenReturn(false)
             val captor = argumentCaptor<PaymentInfo>()
 
             // When
@@ -2764,82 +2765,10 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given stripe saved plugin, when flow started, then wc pay can send receipt is false`() =
+    fun `given plugin can be send, when flow started, then wc pay can send receipt is true`() =
         testBlocking {
             // Given
-            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
-                .thenReturn(PluginType.STRIPE_EXTENSION_GATEWAY)
-            val captor = argumentCaptor<PaymentInfo>()
-
-            // When
-            viewModel.start()
-
-            // Then
-            verify(cardReaderManager).collectPayment(captor.capture())
-            assertThat(captor.firstValue.isPluginCanSendReceipt).isFalse()
-        }
-
-    @Test
-    fun `given null saved plugin version, when flow started, then wc pay can send receipt is false`() =
-        testBlocking {
-            // Given
-            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
-                .thenReturn(PluginType.WOOCOMMERCE_PAYMENTS)
-            whenever(appPrefsWrapper.getCardReaderPreferredPluginVersion(any(), any(), any(), any())).thenReturn(null)
-            val captor = argumentCaptor<PaymentInfo>()
-
-            // When
-            viewModel.start()
-
-            // Then
-            verify(cardReaderManager).collectPayment(captor.capture())
-            assertThat(captor.firstValue.isPluginCanSendReceipt).isFalse()
-        }
-
-    @Test
-    fun `given saved plugin version 3-9-9, when flow started, then wc pay can send receipt is false`() =
-        testBlocking {
-            // Given
-            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
-                .thenReturn(PluginType.WOOCOMMERCE_PAYMENTS)
-            whenever(appPrefsWrapper.getCardReaderPreferredPluginVersion(any(), any(), any(), any()))
-                .thenReturn("3.9.9")
-            val captor = argumentCaptor<PaymentInfo>()
-
-            // When
-            viewModel.start()
-
-            // Then
-            verify(cardReaderManager).collectPayment(captor.capture())
-            assertThat(captor.firstValue.isPluginCanSendReceipt).isFalse()
-        }
-
-    @Test
-    fun `given saved plugin version 4-0-0, when flow started, then wc pay can send receipt is true`() =
-        testBlocking {
-            // Given
-            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
-                .thenReturn(PluginType.WOOCOMMERCE_PAYMENTS)
-            whenever(appPrefsWrapper.getCardReaderPreferredPluginVersion(any(), any(), any(), any()))
-                .thenReturn("4.0.0")
-            val captor = argumentCaptor<PaymentInfo>()
-
-            // When
-            viewModel.start()
-
-            // Then
-            verify(cardReaderManager).collectPayment(captor.capture())
-            assertThat(captor.firstValue.isPluginCanSendReceipt).isTrue()
-        }
-
-    @Test
-    fun `given saved plugin version 16-3-13, when flow started, then wc pay can send receipt is true`() =
-        testBlocking {
-            // Given
-            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
-                .thenReturn(PluginType.WOOCOMMERCE_PAYMENTS)
-            whenever(appPrefsWrapper.getCardReaderPreferredPluginVersion(any(), any(), any(), any()))
-                .thenReturn("16.3.13")
+            whenever(cardReaderPaymentReceiptHelper.isPluginCanSendReceipt(siteModel)).thenReturn(true)
             val captor = argumentCaptor<PaymentInfo>()
 
             // When
