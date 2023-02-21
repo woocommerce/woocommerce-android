@@ -139,7 +139,7 @@
                     <com.google.android.material.card.MaterialCardView
                         style="@style/Widget.Material3.CardView.Outlined"
                         android:layout_width="match_parent"
-                        android:layout_height="400dp"
+                        android:layout_height="@dimen/support_request_message_height"
                         android:layout_marginHorizontal="@dimen/major_100"
                         android:layout_marginBottom="@dimen/minor_100"
                         app:strokeColor="@color/gray_10">
