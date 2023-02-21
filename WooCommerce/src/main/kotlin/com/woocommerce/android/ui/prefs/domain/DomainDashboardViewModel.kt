@@ -99,12 +99,6 @@ class DomainDashboardViewModel @Inject constructor(
         triggerEvent(NavigateToDomainSearch(hasFreeCredits))
     }
 
-    fun onDismissBannerButtonTapped() {
-        if ((_viewState.value is DashboardState)) {
-            _viewState.update { (it as DashboardState).copy(isDomainClaimBannerVisible = false) }
-        }
-    }
-
     fun onLearnMoreButtonTapped() {
         triggerEvent(ShowMoreAboutDomains(LEARN_MORE_URL))
     }

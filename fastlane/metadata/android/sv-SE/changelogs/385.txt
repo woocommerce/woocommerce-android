@@ -1,0 +1,2 @@
+12.3:
+Med den här versionen har vi fokuserat på att åtgärda några mindre fel som vårt team hittade. Men låt er inte luras – vi har några riktigt häftiga saker på gång för er. Fortsätt att lämna feedback. Det hjälper oss att lista ut vad vi ska hitta på härnäst.

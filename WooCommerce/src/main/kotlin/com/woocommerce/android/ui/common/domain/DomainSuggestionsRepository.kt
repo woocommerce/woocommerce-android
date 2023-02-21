@@ -97,7 +97,7 @@ class DomainSuggestionsRepository @Inject constructor(
         val result = productStore.fetchProducts(DOMAINS_PRODUCT_TYPE)
         return when {
             result.isError -> {
-                AppLog.e(T.DOMAIN_REGISTRATION, "An error occurred while fetching WP.com products")
+                AppLog.e(T.DOMAIN_REGISTRATION, "An error occurred while fetching domain products")
                 Result.failure(Exception(result.error.message))
             }
             else -> {
@@ -111,7 +111,7 @@ class DomainSuggestionsRepository @Inject constructor(
     suspend fun fetchDomainPrice(domainName: String): Result<String> {
         return when (val result = siteStore.fetchDomainPrice(domainName)) {
             is WPAPIResponse.Error -> {
-                AppLog.e(T.DOMAIN_REGISTRATION, "An error occurred while fetching WP.com products")
+                AppLog.e(T.DOMAIN_REGISTRATION, "An error occurred while fetching domain price")
                 Result.failure(Exception(result.error.message))
             }
             is WPAPIResponse.Success -> {

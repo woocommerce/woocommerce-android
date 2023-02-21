@@ -1,0 +1,2 @@
+12.3:
+Met deze release hebben we ons gefocust op het oplossen van kleine bugs die ons team tegenkwam. Vergis je niet: we werken aan toffe dingen voor jullie! Blijf maar komen met jullie feedback, dat helpt ons kiezen waar we aan moeten werken.

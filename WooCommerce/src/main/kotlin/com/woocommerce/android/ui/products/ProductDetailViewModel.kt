@@ -36,6 +36,7 @@ import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.model.ProductTag
+import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.addTags
 import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.model.toAppModel
@@ -53,7 +54,12 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
+import com.woocommerce.android.ui.products.variations.VariationListViewModel
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationsError
 import com.woocommerce.android.ui.products.variations.VariationRepository
+import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCandidates
+import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
@@ -112,9 +118,10 @@ class ProductDetailViewModel @Inject constructor(
     private val mediaFileUploadHandler: MediaFileUploadHandler,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val addonRepository: AddonRepository,
+    private val generateVariationCandidates: GenerateVariationCandidates,
     private val duplicateProduct: DuplicateProduct,
-    private val analyticsTracker: AnalyticsTrackerWrapper,
-    private val selectedSite: SelectedSite,
+    private val tracker: AnalyticsTrackerWrapper,
+    private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -346,7 +353,7 @@ class ProductDetailViewModel @Inject constructor(
      * Called when the Share menu button is clicked in Product detail screen
      */
     fun onShareButtonClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
+        tracker.track(AnalyticsEvent.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
         viewState.productDraft?.let {
             triggerEvent(ProductNavigationTarget.ShareProduct(it.permalink, it.name))
         }
@@ -360,7 +367,7 @@ class ProductDetailViewModel @Inject constructor(
             triggerEvent(
                 ShowDialog(
                     positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
-                        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_PRODUCT_DELETED)
+                        tracker.track(AnalyticsEvent.PRODUCT_DETAIL_PRODUCT_DELETED)
                         viewState = viewState.copy(isConfirmingTrash = false)
                         viewState.productDraft?.let { product ->
                             triggerEvent(ExitWithResult(product.remoteId))
@@ -391,7 +398,7 @@ class ProductDetailViewModel @Inject constructor(
      * Called when the add image icon is clicked in Product detail screen
      */
     fun onAddImageButtonClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_IMAGE_TAPPED)
+        tracker.track(AnalyticsEvent.PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.productDraft?.let {
             triggerEvent(ProductNavigationTarget.ViewProductImageGallery(it.remoteId, it.images, true))
         }
@@ -414,7 +421,7 @@ class ProductDetailViewModel @Inject constructor(
      * is selected in Product detail screen
      */
     fun onEditProductCardClicked(target: ProductNavigationTarget, stat: AnalyticsEvent? = null) {
-        stat?.let { AnalyticsTracker.track(it) }
+        stat?.let { tracker.track(it) }
         triggerEvent(target)
     }
 
@@ -424,23 +431,85 @@ class ProductDetailViewModel @Inject constructor(
      */
     fun onGenerateVariationClicked() {
         launch {
-            createEmptyVariation()
-                ?.let { triggerEvent(ShowSnackbar(R.string.variation_created_title)) }
-                .also { triggerEvent(ProductExitEvent.ExitAttributesAdded) }
+            createEmptyVariation()?.let {
+                triggerEvent(ShowSnackbar(R.string.variation_created_title))
+                triggerEvent(ProductExitEvent.ExitAttributesAdded)
+            } ?: triggerEvent(ShowGenerateVariationsError.NetworkError)
+        }
+    }
+
+    fun onAddAllVariationsClicked() {
+        tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_REQUESTED)
+        launch {
+            attributeListViewState = attributeListViewState.copy(isFetchingVariations = true)
+
+            val variationCandidates = viewState.productDraft?.let {
+                generateVariationCandidates.invoke(it)
+            }.orEmpty()
+
+            attributeListViewState = attributeListViewState.copy(isFetchingVariations = false)
+
+            when {
+                variationCandidates.isEmpty() -> {
+                    triggerEvent(ShowGenerateVariationsError.NoCandidates)
+                }
+                variationCandidates.size <= GenerateVariationCandidates.VARIATION_CREATION_LIMIT -> {
+                    triggerEvent(VariationListViewModel.ShowGenerateVariationConfirmation(variationCandidates))
+                }
+                else -> {
+                    tracker.track(
+                        stat = AnalyticsEvent.PRODUCT_VARIATION_GENERATION_LIMIT_REACHED,
+                        properties = mapOf(AnalyticsTracker.KEY_VARIATIONS_COUNT to variationCandidates.size)
+                    )
+                    triggerEvent(ShowGenerateVariationsError.LimitExceeded(variationCandidates.size))
+                }
+            }
+        }
+    }
+
+    fun onGenerateVariationsConfirmed(variationCandidates: List<VariationCandidate>) {
+        tracker.track(
+            stat = AnalyticsEvent.PRODUCT_VARIATION_GENERATION_CONFIRMED,
+            properties = mapOf(AnalyticsTracker.KEY_VARIATIONS_COUNT to variationCandidates.size)
+        )
+        launch {
+            attributeListViewState = attributeListViewState.copy(
+                progressDialogState = ProgressDialogState.Shown(
+                    ProgressDialogState.Shown.VariationsCardinality.MULTIPLE
+                )
+            )
+            saveAttributeChanges()
+            viewState.productDraft?.remoteId?.let { remoteProductId ->
+                when (variationRepository.bulkCreateVariations(remoteProductId, variationCandidates)) {
+                    RequestResult.SUCCESS -> {
+                        tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_SUCCESS)
+                        productRepository.fetchProductOrLoadFromCache(remoteProductId)
+                            ?.also { updateProductState(productToUpdateFrom = it) }
+                        triggerEvent(ProductExitEvent.ExitAttributesAdded)
+                    }
+                    else -> {
+                        tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_FAILURE)
+                        triggerEvent(ShowGenerateVariationsError.NetworkError)
+                    }
+                }
+            }
+            attributeListViewState = attributeListViewState.copy(progressDialogState = ProgressDialogState.Hidden)
         }
     }
 
     private suspend fun createEmptyVariation() =
         viewState.productDraft?.let { draft ->
             saveAttributeChanges()
-            attributeListViewState = attributeListViewState.copy(isCreatingVariationDialogShown = true)
+            attributeListViewState = attributeListViewState.copy(
+                progressDialogState = ProgressDialogState.Shown(ProgressDialogState.Shown.VariationsCardinality.SINGLE)
+            )
             variationRepository.createEmptyVariation(draft)
                 ?.let {
                     productRepository.fetchProductOrLoadFromCache(draft.remoteId)
                         ?.also { updateProductState(productToUpdateFrom = it) }
                 }
         }.also {
-            attributeListViewState = attributeListViewState.copy(isCreatingVariationDialogShown = false)
+            attributeListViewState = attributeListViewState.copy(progressDialogState = ProgressDialogState.Hidden)
         }
 
     fun hasCategoryChanges() = storedProduct.value?.hasCategoryChanges(viewState.productDraft) ?: false
@@ -627,7 +696,7 @@ class ProductDetailViewModel @Inject constructor(
             is ProductExitEvent.ExitProductDownloadsSettings -> Unit // Do nothing
             is ProductExitEvent.ExitProductRenameAttribute -> Unit // Do nothing
         }
-        eventName?.let { AnalyticsTracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
+        eventName?.let { tracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
         triggerEvent(event)
     }
 
@@ -736,13 +805,13 @@ class ProductDetailViewModel @Inject constructor(
             }
             ?.takeIf { addProduct(it).first }
             ?.let {
-                AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_SUCCESS)
+                tracker.track(AnalyticsEvent.ADD_PRODUCT_SUCCESS)
             }
-            ?: AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_FAILED)
+            ?: tracker.track(AnalyticsEvent.ADD_PRODUCT_FAILED)
     }
 
     private fun startUpdateProduct(isPublish: Boolean) {
-        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
+        tracker.track(AnalyticsEvent.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED)
         viewState.productDraft?.let {
             val product = if (isPublish) it.copy(status = ProductStatus.PUBLISH) else it
             viewState = viewState.copy(isProgressDialogShown = true)
@@ -763,7 +832,7 @@ class ProductDetailViewModel @Inject constructor(
                 val snackbarMessage = pickAddProductRequestSnackbarText(isSuccess, productStatus)
                 triggerEvent(ShowSnackbar(snackbarMessage))
                 if (isSuccess) {
-                    AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_SUCCESS)
+                    tracker.track(AnalyticsEvent.ADD_PRODUCT_SUCCESS)
                     if (product.remoteId != newProductId) {
                         // Assign the current uploads to the new product id
                         mediaFileUploadHandler.assignUploadsToCreatedProduct(newProductId)
@@ -775,7 +844,7 @@ class ProductDetailViewModel @Inject constructor(
                         observeImageUploadEvents()
                     }
                 } else {
-                    AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_FAILED)
+                    tracker.track(AnalyticsEvent.ADD_PRODUCT_FAILED)
                 }
             }
         }
@@ -819,12 +888,12 @@ class ProductDetailViewModel @Inject constructor(
         } else {
             AnalyticsEvent.ADD_PRODUCT_PUBLISH_TAPPED
         }
-        AnalyticsTracker.track(statId, properties)
+        tracker.track(statId, properties)
     }
 
     private fun trackWithProductId(event: AnalyticsEvent) {
         storedProduct.value?.let {
-            AnalyticsTracker.track(
+            tracker.track(
                 event,
                 mapOf(AnalyticsTracker.KEY_PRODUCT_ID to it.remoteId)
             )
@@ -892,7 +961,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun onViewProductOnStoreLinkClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED)
+        tracker.track(AnalyticsEvent.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED)
         viewState.productDraft?.permalink?.let { url ->
             triggerEvent(LaunchUrlInChromeTab(url))
         }
@@ -1108,9 +1177,9 @@ class ProductDetailViewModel @Inject constructor(
         if (hasTrackedProductDetailLoaded.not()) {
             storedProduct.value?.let {
                 val properties = mapOf(KEY_HAS_LINKED_PRODUCTS to it.hasLinkedProducts())
-                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED, properties)
+                tracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED, properties)
             } ?: run {
-                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED)
+                tracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED)
             }
             hasTrackedProductDetailLoaded = true
         }
@@ -1649,7 +1718,7 @@ class ProductDetailViewModel @Inject constructor(
             viewState.productDraft?.hasLinkedProducts() == false
         ) {
             appPrefsWrapper.setPromoBannerShown(PromoBannerType.LINKED_PRODUCTS, true)
-            AnalyticsTracker.track(
+            tracker.track(
                 AnalyticsEvent.FEATURE_CARD_SHOWN,
                 mapOf(
                     AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.SOURCE_PRODUCT_DETAIL,
@@ -1661,7 +1730,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun onLinkedProductPromoClicked() {
-        AnalyticsTracker.track(
+        tracker.track(
             AnalyticsEvent.FEATURE_CARD_CTA_TAPPED,
             mapOf(
                 AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.SOURCE_PRODUCT_DETAIL,
@@ -1672,7 +1741,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun onLinkedProductPromoDismissed() {
-        AnalyticsTracker.track(
+        tracker.track(
             AnalyticsEvent.FEATURE_CARD_DISMISSED,
             mapOf(
                 AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.SOURCE_PRODUCT_DETAIL,
@@ -1787,7 +1856,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun onAddCategoryButtonClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CATEGORY_SETTINGS_ADD_BUTTON_TAPPED)
+        tracker.track(AnalyticsEvent.PRODUCT_CATEGORY_SETTINGS_ADD_BUTTON_TAPPED)
         triggerEvent(ProductNavigationTarget.AddProductCategory)
     }
 
@@ -2083,17 +2152,17 @@ class ProductDetailViewModel @Inject constructor(
 
     fun onDuplicateProduct() {
         launch {
-            analyticsTracker.track(PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED)
+            tracker.track(PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED)
             viewState.productDraft?.let { product ->
 
                 triggerEvent(ShowDuplicateProductInProgress)
                 val result = duplicateProduct(product)
 
                 if (result.isSuccess) {
-                    analyticsTracker.track(DUPLICATE_PRODUCT_SUCCESS)
+                    tracker.track(DUPLICATE_PRODUCT_SUCCESS)
                     triggerEvent(OpenProductDetails(result.getOrThrow()))
                 } else {
-                    analyticsTracker.track(DUPLICATE_PRODUCT_FAILED)
+                    tracker.track(DUPLICATE_PRODUCT_FAILED)
                     triggerEvent(ShowDuplicateProductError)
                 }
             }
@@ -2160,8 +2229,7 @@ class ProductDetailViewModel @Inject constructor(
             ProductExitEvent(shouldShowDiscardDialog)
 
         class ExitProductAttributeList(
-            shouldShowDiscardDialog: Boolean = true,
-            val variationCreated: Boolean = false
+            shouldShowDiscardDialog: Boolean = true
         ) : ProductExitEvent(
             shouldShowDiscardDialog
         )
@@ -2266,7 +2334,8 @@ class ProductDetailViewModel @Inject constructor(
 
     @Parcelize
     data class AttributeListViewState(
-        val isCreatingVariationDialogShown: Boolean? = null
+        val isFetchingVariations: Boolean = false,
+        val progressDialogState: ProgressDialogState? = null
     ) : Parcelable
 
     data class MenuButtonsState(

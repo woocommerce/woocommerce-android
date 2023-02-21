@@ -2,6 +2,7 @@ package com.woocommerce.android.di
 
 import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.util.CoroutineDispatchers
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,8 +19,9 @@ class SupportModule {
     fun provideZendeskHelper(
         accountStore: AccountStore,
         siteStore: SiteStore,
-        supportHelper: SupportHelper
-    ): ZendeskHelper = ZendeskHelper(accountStore, siteStore, supportHelper)
+        supportHelper: SupportHelper,
+        dispatchers: CoroutineDispatchers
+    ): ZendeskHelper = ZendeskHelper(accountStore, siteStore, supportHelper, dispatchers)
 
     @Singleton
     @Provides
