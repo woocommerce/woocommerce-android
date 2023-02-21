@@ -13,12 +13,14 @@ import com.woocommerce.android.extensions.stateLogInformation
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.zendesk.logger.Logger
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
+import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
@@ -31,7 +33,9 @@ import zendesk.core.AnonymousIdentity
 import zendesk.core.Identity
 import zendesk.core.PushRegistrationProvider
 import zendesk.core.Zendesk
+import zendesk.support.CreateRequest
 import zendesk.support.CustomField
+import zendesk.support.Request
 import zendesk.support.Support
 import zendesk.support.guide.HelpCenterActivity
 import zendesk.support.request.RequestActivity
@@ -39,6 +43,8 @@ import zendesk.support.requestlist.RequestListActivity
 import java.util.Locale
 import java.util.Timer
 import kotlin.concurrent.schedule
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 private const val zendeskNeedsToBeEnabledError = "Zendesk needs to be setup before this method can be called"
 private const val enablePushNotificationsDelayAfterIdentityChange: Long = 2500
@@ -47,7 +53,8 @@ private const val maxLogfileLength: Int = 63000 // Max characters allowed in the
 class ZendeskHelper(
     private val accountStore: AccountStore,
     private val siteStore: SiteStore,
-    private val supportHelper: SupportHelper
+    private val supportHelper: SupportHelper,
+    private val dispatchers: CoroutineDispatchers
 ) {
     private val zendeskInstance: Zendesk
         get() = Zendesk.INSTANCE
@@ -57,6 +64,9 @@ class ZendeskHelper(
 
     private val zendeskPushRegistrationProvider: PushRegistrationProvider?
         get() = zendeskInstance.provider()?.pushRegistrationProvider()
+
+    private val requestProvider
+        get() = Support.INSTANCE.provider()?.requestProvider()
 
     private val timer: Timer by lazy {
         Timer()
@@ -101,6 +111,7 @@ class ZendeskHelper(
         zendeskInstance.init(context, zendeskUrl, applicationId, oauthClientId)
         Logger.setLoggable(enableLogs)
         Support.INSTANCE.init(zendeskInstance)
+
         refreshIdentity()
     }
 
@@ -140,6 +151,35 @@ class ZendeskHelper(
             )
         } else {
             builder.show(context)
+        }
+    }
+
+    /**
+     * This function creates a new customer Support Request through the Zendesk API Providers.
+     *
+     * As it is, no identity is required so far. This should be revised in the near future.
+     */
+    suspend fun createRequest(
+        context: Context,
+        selectedSite: SiteModel?,
+        ticketType: TicketType,
+        subject: String,
+        description: String,
+        ssr: String? = null
+    ) = withContext(dispatchers.io) {
+        suspendCoroutine<Result<Request?>> {
+            val requestCallback = object : ZendeskCallback<Request>() {
+                override fun onSuccess(result: Request?) { it.resume(Result.success(result)) }
+                override fun onError(error: ErrorResponse) { it.resume(Result.failure(Throwable(error.reason))) }
+            }
+
+            CreateRequest().apply {
+                this.ticketFormId = ticketType.form
+                this.subject = subject
+                this.description = description
+                this.tags = ticketType.tags
+                this.customFields = buildZendeskCustomFields(context, ticketType, siteStore.sites, selectedSite, ssr)
+            }.let { request -> requestProvider?.createRequest(request, requestCallback) }
         }
     }
 
@@ -420,17 +460,17 @@ private fun buildZendeskCustomFields(
         "not_selected"
     }
     return listOf(
-        CustomField(TicketFieldIds.categoryId, ZendeskConstants.categoryValue),
-        CustomField(TicketFieldIds.subcategoryId, ticketType.subcategoryName),
         CustomField(TicketFieldIds.appVersion, PackageUtils.getVersionName(context)),
-        CustomField(TicketFieldIds.blogList, getCombinedLogInformationOfSites(allSites)),
-        CustomField(TicketFieldIds.currentSite, currentSiteInformation),
         CustomField(TicketFieldIds.deviceFreeSpace, DeviceUtils.getTotalAvailableMemorySize()),
+        CustomField(TicketFieldIds.networkInformation, getNetworkInformation(context)),
         CustomField(TicketFieldIds.logs, WooLog.toString().takeLast(maxLogfileLength)),
         CustomField(TicketFieldIds.ssr, ssr),
-        CustomField(TicketFieldIds.networkInformation, getNetworkInformation(context)),
+        CustomField(TicketFieldIds.currentSite, currentSiteInformation),
+        CustomField(TicketFieldIds.sourcePlatform, ZendeskConstants.sourcePlatform),
         CustomField(TicketFieldIds.appLanguage, Locale.getDefault().language),
-        CustomField(TicketFieldIds.sourcePlatform, ZendeskConstants.sourcePlatform)
+        CustomField(TicketFieldIds.categoryId, ZendeskConstants.categoryValue),
+        CustomField(TicketFieldIds.subcategoryId, ticketType.subcategoryName),
+        CustomField(TicketFieldIds.blogList, getCombinedLogInformationOfSites(allSites))
     )
 }
 

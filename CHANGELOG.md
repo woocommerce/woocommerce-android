@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 12.4
+You’ve asked for it, and now it’s here! It's now possible to use the app without Jetpack the plugin. This is based upon your direct feedback over the years, and we know you’ll like the change!
+
 ## 12.3
 For this release, we focused on taking care of minor bugs that our team found. Don’t be fooled – we are working on some pretty cool stuff for you all! Keep your feedback rolling in; it helps us figure out what to work on next.
 

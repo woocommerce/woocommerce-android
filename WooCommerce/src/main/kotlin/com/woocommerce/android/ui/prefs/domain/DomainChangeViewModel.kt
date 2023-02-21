@@ -104,12 +104,6 @@ class DomainChangeViewModel @Inject constructor(
         WooLog.d(WooLog.T.ONBOARDING, "Domain selected: $domain")
     }
 
-    fun onDismissBannerButtonTapped() {
-        if ((_viewState.value is DomainsState)) {
-            _viewState.update { (it as DomainsState).copy(isDomainClaimBannerVisible = false) }
-        }
-    }
-
     fun onLearnMoreButtonTapped() {
         triggerEvent(ShowMoreAboutDomains(LEARN_MORE_URL))
     }

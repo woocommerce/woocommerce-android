@@ -1,2 +1,0 @@
-12.2:
-Questa versione include alcune correzioni di bug e miglioramenti ai nostri pagamenti di persona. Prova l'opzione e condividi il tuo feedback.

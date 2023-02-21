@@ -291,12 +291,12 @@ class VariationListViewModel @Inject constructor(
 
         launch {
             viewState = viewState.copy(isBulkUpdateProgressDialogShown = true)
-            variationRepository.getAllVariations(remoteProductId)
-            viewState = viewState.copy(isBulkUpdateProgressDialogShown = false)
 
             val variationCandidates = viewState.parentProduct?.let {
                 generateVariationCandidates.invoke(it)
             }.orEmpty()
+
+            viewState = viewState.copy(isBulkUpdateProgressDialogShown = false)
 
             when {
                 variationCandidates.isEmpty() -> {

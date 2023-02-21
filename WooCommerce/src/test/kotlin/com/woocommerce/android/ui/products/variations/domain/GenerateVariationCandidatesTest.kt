@@ -21,7 +21,7 @@ import org.mockito.kotlin.mock
 class GenerateVariationCandidatesTest : BaseUnitTest() {
 
     private var mockedVariationRepository: VariationRepository = mock {
-        on { getProductVariationList(any()) } doReturn emptyList()
+        onBlocking { getAllVariations(any()) } doReturn emptyList()
     }
 
     private lateinit var sut: GenerateVariationCandidates
@@ -32,7 +32,7 @@ class GenerateVariationCandidatesTest : BaseUnitTest() {
     }
 
     @Test
-    fun `should generate all variation candidates for a product with 3 attributes each with 2 terms`() {
+    fun `should generate all variation candidates for a product with 3 attributes each with 2 terms`() = testBlocking {
         // given
         val product = ProductHelper.getDefaultNewProduct(ProductType.VARIABLE, isVirtual = false).copy(
             attributes = listOf(
@@ -67,7 +67,7 @@ class GenerateVariationCandidatesTest : BaseUnitTest() {
     }
 
     @Test
-    fun `should generate empty list of candidates if product has no attributes`() {
+    fun `should generate empty list of candidates if product has no attributes`() = testBlocking {
         // given
         val product =
             ProductHelper.getDefaultNewProduct(ProductType.VARIABLE, isVirtual = false).copy(attributes = emptyList())
@@ -80,7 +80,7 @@ class GenerateVariationCandidatesTest : BaseUnitTest() {
     }
 
     @Test
-    fun `should generate empty list of candidates if product is not type of variable`() {
+    fun `should generate empty list of candidates if product is not type of variable`() = testBlocking {
         // given
         val product =
             ProductHelper.getDefaultNewProduct(
@@ -96,7 +96,7 @@ class GenerateVariationCandidatesTest : BaseUnitTest() {
     }
 
     @Test
-    fun `should not generate variation candidates with an attribute that is not a variable one`() {
+    fun `should not generate variation candidates with an attribute that is not a variable one`() = testBlocking {
         // given
         val product = ProductHelper.getDefaultNewProduct(ProductType.VARIABLE, isVirtual = false).copy(
             attributes = listOf(
@@ -126,7 +126,7 @@ class GenerateVariationCandidatesTest : BaseUnitTest() {
     }
 
     @Test
-    fun `should not generate variation candidate if variation already exists`() {
+    fun `should not generate variation candidate if variation already exists`() = testBlocking {
         // given
         val product = ProductHelper.getDefaultNewProduct(ProductType.VARIABLE, isVirtual = false).copy(
             attributes = listOf(
@@ -153,7 +153,7 @@ class GenerateVariationCandidatesTest : BaseUnitTest() {
         }
 
         mockedVariationRepository = mock {
-            on { getProductVariationList(product.remoteId) } doReturn existingVariations
+            onBlocking { getAllVariations(product.remoteId) } doReturn existingVariations
         }
         initializeSut()
 
@@ -165,7 +165,7 @@ class GenerateVariationCandidatesTest : BaseUnitTest() {
     }
 
     @Test
-    fun `should return empty list if there's no generated candidates`() {
+    fun `should return empty list if there's no generated candidates`() = testBlocking {
         // given
         val product = ProductHelper.getDefaultNewProduct(ProductType.VARIABLE, isVirtual = false).copy(
             attributes = listOf(
@@ -190,7 +190,7 @@ class GenerateVariationCandidatesTest : BaseUnitTest() {
         }
 
         mockedVariationRepository = mock {
-            on { getProductVariationList(product.remoteId) } doReturn existingVariations
+            onBlocking { getAllVariations(product.remoteId) } doReturn existingVariations
         }
         initializeSut()
 
