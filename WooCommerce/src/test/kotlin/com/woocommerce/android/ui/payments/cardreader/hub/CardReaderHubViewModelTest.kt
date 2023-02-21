@@ -1231,6 +1231,38 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         }
     // endregion
 
+    @Test
+    fun `when learn more IPP clicked, then trigger correct event`() {
+        // WHEN
+        whenever(
+            learnMoreUrlProvider.provideLearnMoreUrlFor(LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS)
+        ).thenReturn(
+            AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
+        )
+        viewModel.viewStateData.value?.learMoreIpp?.onClick?.invoke()
+
+        // THEN
+        assertThat(viewModel.event.value).isEqualTo(
+            viewModel.event.value
+        ).isInstanceOf(OpenGenericWebView::class.java)
+    }
+
+    @Test
+    fun `when learn more IPP clicked, then trigger correct event with correct url`() {
+        // WHEN
+        whenever(
+            learnMoreUrlProvider.provideLearnMoreUrlFor(LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS)
+        ).thenReturn(
+            AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
+        )
+        viewModel.viewStateData.value?.learMoreIpp?.onClick?.invoke()
+
+        // THEN
+        assertThat(viewModel.event.value).isEqualTo(
+            viewModel.event.value
+        ).isEqualTo(OpenGenericWebView(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS))
+    }
+
     private fun getSuccessWooResult() = WooResult(
         model = WCGatewayModel(
             id = "",
