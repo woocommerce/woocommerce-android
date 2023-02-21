@@ -112,6 +112,10 @@
             android:label="@string/support_system_status_report"
             android:theme="@style/Theme.Woo.DayNight" />
         <activity
+            android:name=".support.requests.SupportRequestFormActivity"
+            android:label="@string/support_request"
+            android:theme="@style/Theme.Woo.DayNight" />
+        <activity
             android:name=".support.help.HelpActivity"
             android:label="@string/support_help"
             android:theme="@style/Theme.Woo.DayNight" />
