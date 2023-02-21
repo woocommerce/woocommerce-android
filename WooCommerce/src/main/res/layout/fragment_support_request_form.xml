@@ -22,6 +22,7 @@
         app:strokeColor="@color/woo_gray_5">
 
         <RadioGroup
+            android:id="@+id/help_options_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/minor_100"
