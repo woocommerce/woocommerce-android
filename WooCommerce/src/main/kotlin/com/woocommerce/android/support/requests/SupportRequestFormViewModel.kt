@@ -1,14 +1,27 @@
 package com.woocommerce.android.support.requests
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.support.TicketType
 import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class SupportRequestFormViewModel @Inject constructor(
     private val zendeskHelper: ZendeskHelper,
+    private val selectedSite: SelectedSite,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
+    fun onSubmitRequestButtonClicked(
+        context: Context,
+        ticketType: TicketType,
+        subject: String,
+        message: String
+    ) {
+        launch { zendeskHelper.createRequest(context, selectedSite.get(), ticketType, subject, message) }
+    }
 }
