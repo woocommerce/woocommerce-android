@@ -16,9 +16,4 @@ class DomainSearchViewModel @Inject constructor(
     currencyFormatter: CurrencyFormatter,
 ) : DomainSuggestionsViewModel(savedStateHandle, domainSuggestionsRepository, currencyFormatter) {
     override val helpOrigin = HelpOrigin.DOMAIN_CHANGE
-
-    override fun onDomainSuggestionSelected(domain: String) {
-        super.onDomainSuggestionSelected(domain)
-        WooLog.d(WooLog.T.ONBOARDING, "Domain selected: $domain")
-    }
 }

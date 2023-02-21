@@ -112,7 +112,7 @@ abstract class DomainSuggestionsViewModel constructor(
     }
 
     fun onContinueClicked() {
-        triggerEvent(NavigateToNextStep)
+        triggerEvent(NavigateToNextStep(selectedDomain.value))
     }
 
     open fun onDomainSuggestionSelected(domain: String) {
@@ -236,5 +236,5 @@ abstract class DomainSuggestionsViewModel constructor(
         Idle, Loading
     }
 
-    object NavigateToNextStep : MultiLiveEvent.Event()
+    data class NavigateToNextStep(val selectedDomain: String) : MultiLiveEvent.Event()
 }
