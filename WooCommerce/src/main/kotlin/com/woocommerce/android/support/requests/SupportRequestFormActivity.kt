@@ -3,6 +3,7 @@ package com.woocommerce.android.support.requests
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.woocommerce.android.databinding.ActivitySupportRequestFormBinding
 import com.woocommerce.android.support.TicketType
 import dagger.hilt.android.AndroidEntryPoint
@@ -15,6 +16,9 @@ class SupportRequestFormActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         ActivitySupportRequestFormBinding.inflate(layoutInflater).apply {
             setContentView(root)
+            setSupportActionBar(toolbar.toolbar as Toolbar)
+            supportActionBar?.setHomeButtonEnabled(true)
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
             observeUIChanges(this)
         }
     }
