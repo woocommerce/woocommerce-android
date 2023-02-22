@@ -4,17 +4,10 @@ import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.R
 import com.woocommerce.android.support.TicketType
 import com.woocommerce.android.support.TicketType.General
 import com.woocommerce.android.support.ZendeskHelper
-import com.woocommerce.android.support.requests.SupportRequestFormViewModel.HelpOption.InPersonPayments
-import com.woocommerce.android.support.requests.SupportRequestFormViewModel.HelpOption.MobileApp
-import com.woocommerce.android.support.requests.SupportRequestFormViewModel.HelpOption.OtherPlugins
-import com.woocommerce.android.support.requests.SupportRequestFormViewModel.HelpOption.Payments
-import com.woocommerce.android.support.requests.SupportRequestFormViewModel.HelpOption.WooPlugin
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,7 +21,6 @@ import javax.inject.Inject
 class SupportRequestFormViewModel @Inject constructor(
     private val zendeskHelper: ZendeskHelper,
     private val selectedSite: SelectedSite,
-    private val resourceProvider: ResourceProvider,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val viewState = savedState.getStateFlow(
@@ -60,17 +52,6 @@ class SupportRequestFormViewModel @Inject constructor(
         launch { zendeskHelper.createRequest(context, selectedSite.get(), ticketType, subject, message) }
     }
 
-    private fun generateHelpOptionFromDescription(description: String): HelpOption {
-        return when (description) {
-            resourceProvider.getString(MobileApp.descriptionResource) -> MobileApp
-            resourceProvider.getString(InPersonPayments.descriptionResource) -> InPersonPayments
-            resourceProvider.getString(Payments.descriptionResource) -> Payments
-            resourceProvider.getString(WooPlugin.descriptionResource) -> WooPlugin
-            resourceProvider.getString(OtherPlugins.descriptionResource) -> OtherPlugins
-            else -> throw IllegalArgumentException("Unknown help option: $description")
-        }
-    }
-
     data class ViewState(
         val helpOption: HelpOption?,
         val subject: String,
@@ -81,11 +62,11 @@ class SupportRequestFormViewModel @Inject constructor(
         }
     }
 
-    sealed class HelpOption(val ticketType: TicketType, val descriptionResource: Int) {
-        object MobileApp : HelpOption(General, R.string.support_request_help_app)
-        object InPersonPayments : HelpOption(TicketType.Payments, R.string.support_request_help_ipp)
-        object Payments : HelpOption(TicketType.Payments, R.string.support_request_help_payments)
-        object WooPlugin : HelpOption(General, R.string.support_request_help_plugins)
-        object OtherPlugins : HelpOption(General, R.string.support_request_help_other)
+    sealed class HelpOption(val ticketType: TicketType) {
+        object MobileApp : HelpOption(General)
+        object InPersonPayments : HelpOption(TicketType.Payments)
+        object Payments : HelpOption(TicketType.Payments)
+        object WooPlugin : HelpOption(General)
+        object OtherPlugins : HelpOption(General)
     }
 }
