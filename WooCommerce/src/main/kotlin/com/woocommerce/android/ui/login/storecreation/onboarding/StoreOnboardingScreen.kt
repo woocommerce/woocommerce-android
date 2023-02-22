@@ -35,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.Companion.MAX_NUMBER_ITEMS_IN_COLLAPSED_MODE
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.OnboardingTaskUi
 
 @Composable
@@ -60,6 +61,7 @@ fun StoreOnboardingScreen(
                 .fillMaxWidth(0.5f)
         )
         OnboardingTaskList(
+            isCollapsedMode = onboardingState.isCollapsedMode,
             tasks = onboardingState.tasks,
             modifier = Modifier
                 .padding(top = dimensionResource(id = R.dimen.major_100))
@@ -79,11 +81,15 @@ fun StoreOnboardingScreen(
 
 @Composable
 fun OnboardingTaskList(
+    isCollapsedMode: Boolean,
     tasks: List<OnboardingTaskUi>,
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
-        tasks.forEachIndexed { index, task ->
+        when {
+            isCollapsedMode -> tasks.take(MAX_NUMBER_ITEMS_IN_COLLAPSED_MODE)
+            else -> tasks
+        }.forEachIndexed { index, task ->
             Row(
                 modifier = modifier.padding(bottom = dimensionResource(id = R.dimen.major_100)),
                 verticalAlignment = Alignment.CenterVertically,
@@ -119,7 +125,7 @@ fun OnboardingTaskList(
                     contentDescription = ""
                 )
             }
-            if (index < tasks.lastIndex)
+            if (index + 1 < MAX_NUMBER_ITEMS_IN_COLLAPSED_MODE)
                 Divider(
                     color = colorResource(id = R.color.divider_color),
                     thickness = dimensionResource(id = R.dimen.minor_10)

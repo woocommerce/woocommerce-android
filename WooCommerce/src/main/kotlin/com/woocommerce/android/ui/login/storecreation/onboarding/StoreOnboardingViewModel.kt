@@ -22,6 +22,10 @@ class StoreOnboardingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val onboardingRepository: StoreOnboardingRepository
 ) : ScopedViewModel(savedStateHandle) {
+    companion object {
+        const val MAX_NUMBER_ITEMS_IN_COLLAPSED_MODE = 3
+    }
+
     private val _viewState = savedState.getStateFlow(
         this,
         OnboardingState(
@@ -49,7 +53,7 @@ class StoreOnboardingViewModel @Inject constructor(
     }
 
     fun viewAllClicked() {
-
+        // TODO
     }
 
     private fun OnboardingTask.toOnboardingTaskUi() =
@@ -98,7 +102,7 @@ class StoreOnboardingViewModel @Inject constructor(
         val show: Boolean,
         @StringRes val title: Int,
         val tasks: List<OnboardingTaskUi>,
-        val isCollapsedMode: Boolean
+        val isCollapsedMode: Boolean,
     ) : Parcelable
 
     @Parcelize
