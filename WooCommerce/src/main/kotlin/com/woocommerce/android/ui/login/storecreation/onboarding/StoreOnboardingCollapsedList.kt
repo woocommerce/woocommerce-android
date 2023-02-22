@@ -21,6 +21,7 @@ import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -39,8 +40,27 @@ import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboarding
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.OnboardingTaskUi
 
 @Composable
-@Suppress("MagicNumber")
-fun StoreOnboardingScreen(
+fun StoreOnboardingScreen(viewModel: StoreOnboardingViewModel) {
+    viewModel.viewState.observeAsState().value?.let { onboardingState ->
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colors.surface)
+                .padding(dimensionResource(id = R.dimen.major_100))
+        ) {
+            OnboardingTaskList(
+                isCollapsedMode = onboardingState.isCollapsedMode,
+                tasks = onboardingState.tasks,
+                modifier = Modifier
+                    .padding(top = dimensionResource(id = R.dimen.major_100))
+                    .fillMaxWidth()
+            )
+        }
+    }
+}
+
+@Composable
+fun StoreOnboardingCollapsedList(
     onboardingState: StoreOnboardingViewModel.OnboardingState,
     onViewAllClicked: () -> Unit
 ) {
@@ -54,6 +74,7 @@ fun StoreOnboardingScreen(
             text = stringResource(id = onboardingState.title),
             style = MaterialTheme.typography.h6,
         )
+        @Suppress("MagicNumber")
         OnboardingTaskLinearProgress(
             tasks = onboardingState.tasks,
             modifier = Modifier
@@ -172,7 +193,7 @@ fun OnboardingTaskLinearProgress(
 @Suppress("unused")
 @Composable
 private fun OnboardingPreview() {
-    StoreOnboardingScreen(
+    StoreOnboardingCollapsedList(
         StoreOnboardingViewModel.OnboardingState(
             show = true,
             title = R.string.store_onboarding_title,

@@ -8,6 +8,7 @@ import android.view.ViewGroup.LayoutParams
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.children
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -36,7 +37,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingScreen
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingCollapsedList
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
@@ -78,7 +79,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     }
 
     private val myStoreViewModel: MyStoreViewModel by viewModels()
-    private val storeOnboardingViewModel: StoreOnboardingViewModel by viewModels()
+    private val storeOnboardingViewModel: StoreOnboardingViewModel by activityViewModels()
 
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var currencyFormatter: CurrencyFormatter
@@ -206,7 +207,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                         setContent {
                             WooThemeWithBackground {
-                                StoreOnboardingScreen(
+                                StoreOnboardingCollapsedList(
                                     onboardingState = state,
                                     onViewAllClicked = storeOnboardingViewModel::viewAllClicked
                                 )
@@ -214,6 +215,14 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                         }
                     }
                 }
+            }
+        }
+
+        storeOnboardingViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is StoreOnboardingViewModel.NavigateToOnboardingFullScreen -> findNavController().navigateSafely(
+                    MyStoreFragmentDirections.actionMyStoreToOnboardingFragment()
+                )
             }
         }
     }

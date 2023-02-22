@@ -9,6 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTask
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -53,7 +54,7 @@ class StoreOnboardingViewModel @Inject constructor(
     }
 
     fun viewAllClicked() {
-        // TODO
+        triggerEvent(NavigateToOnboardingFullScreen)
     }
 
     private fun OnboardingTask.toOnboardingTaskUi() =
@@ -112,4 +113,7 @@ class StoreOnboardingViewModel @Inject constructor(
         @StringRes val description: Int,
         val isCompleted: Boolean,
     ) : Parcelable
+
+    object NavigateToOnboardingFullScreen : MultiLiveEvent.Event()
+
 }
