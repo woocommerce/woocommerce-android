@@ -10,10 +10,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
@@ -36,7 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.Companion.MAX_NUMBER_ITEMS_IN_COLLAPSED_MODE
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.Companion.NUMBER_ITEMS_IN_COLLAPSED_MODE
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.OnboardingTaskUi
 
 @Composable
@@ -44,12 +47,12 @@ fun StoreOnboardingScreen(viewModel: StoreOnboardingViewModel) {
     viewModel.viewState.observeAsState().value?.let { onboardingState ->
         Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .background(MaterialTheme.colors.surface)
                 .padding(dimensionResource(id = R.dimen.major_100))
+                .verticalScroll(rememberScrollState())
         ) {
             OnboardingTaskList(
-                isCollapsedMode = onboardingState.isCollapsedMode,
                 tasks = onboardingState.tasks,
                 modifier = Modifier
                     .padding(top = dimensionResource(id = R.dimen.major_100))
@@ -60,12 +63,14 @@ fun StoreOnboardingScreen(viewModel: StoreOnboardingViewModel) {
 }
 
 @Composable
-fun StoreOnboardingCollapsedList(
+fun StoreOnboardingCollapsed(
     onboardingState: StoreOnboardingViewModel.OnboardingState,
-    onViewAllClicked: () -> Unit
+    onViewAllClicked: () -> Unit,
+    modifier: Modifier = Modifier,
+    numberOfItemsToShowInCollapsedMode: Int = NUMBER_ITEMS_IN_COLLAPSED_MODE,
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .background(MaterialTheme.colors.surface)
             .padding(dimensionResource(id = R.dimen.major_100))
@@ -82,35 +87,28 @@ fun StoreOnboardingCollapsedList(
                 .fillMaxWidth(0.5f)
         )
         OnboardingTaskList(
-            isCollapsedMode = onboardingState.isCollapsedMode,
-            tasks = onboardingState.tasks,
+            tasks = onboardingState.tasks.take(numberOfItemsToShowInCollapsedMode),
             modifier = Modifier
                 .padding(top = dimensionResource(id = R.dimen.major_100))
                 .fillMaxWidth()
         )
-        if (onboardingState.isCollapsedMode) {
-            Text(
-                modifier = Modifier.clickable { onViewAllClicked() },
-                text = stringResource(R.string.store_onboarding_task_view_all, onboardingState.tasks.size),
-                style = MaterialTheme.typography.subtitle1,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colors.primary,
-            )
-        }
+        Text(
+            modifier = Modifier.clickable { onViewAllClicked() },
+            text = stringResource(R.string.store_onboarding_task_view_all, onboardingState.tasks.size),
+            style = MaterialTheme.typography.subtitle1,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colors.primary,
+        )
     }
 }
 
 @Composable
 fun OnboardingTaskList(
-    isCollapsedMode: Boolean,
     tasks: List<OnboardingTaskUi>,
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
-        when {
-            isCollapsedMode -> tasks.take(MAX_NUMBER_ITEMS_IN_COLLAPSED_MODE)
-            else -> tasks
-        }.forEachIndexed { index, task ->
+        tasks.forEachIndexed { index, task ->
             Row(
                 modifier = modifier.padding(bottom = dimensionResource(id = R.dimen.major_100)),
                 verticalAlignment = Alignment.CenterVertically,
@@ -146,7 +144,7 @@ fun OnboardingTaskList(
                     contentDescription = ""
                 )
             }
-            if (index + 1 < MAX_NUMBER_ITEMS_IN_COLLAPSED_MODE)
+            if (index < tasks.size - 1)
                 Divider(
                     color = colorResource(id = R.color.divider_color),
                     thickness = dimensionResource(id = R.dimen.minor_10)
@@ -193,7 +191,7 @@ fun OnboardingTaskLinearProgress(
 @Suppress("unused")
 @Composable
 private fun OnboardingPreview() {
-    StoreOnboardingCollapsedList(
+    StoreOnboardingCollapsed(
         StoreOnboardingViewModel.OnboardingState(
             show = true,
             title = R.string.store_onboarding_title,
@@ -216,8 +214,7 @@ private fun OnboardingPreview() {
                     description = R.string.store_onboarding_task_change_domain_description,
                     isCompleted = false,
                 )
-            ),
-            isCollapsedMode = true
+            )
         ),
         onViewAllClicked = {}
     )

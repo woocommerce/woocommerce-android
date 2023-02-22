@@ -37,7 +37,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingCollapsedList
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingCollapsed
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
@@ -207,7 +207,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                         setContent {
                             WooThemeWithBackground {
-                                StoreOnboardingCollapsedList(
+                                StoreOnboardingCollapsed(
                                     onboardingState = state,
                                     onViewAllClicked = storeOnboardingViewModel::viewAllClicked
                                 )

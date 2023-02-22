@@ -24,7 +24,7 @@ class StoreOnboardingViewModel @Inject constructor(
     private val onboardingRepository: StoreOnboardingRepository
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
-        const val MAX_NUMBER_ITEMS_IN_COLLAPSED_MODE = 3
+        const val NUMBER_ITEMS_IN_COLLAPSED_MODE = 3
     }
 
     private val _viewState = savedState.getStateFlow(
@@ -33,7 +33,6 @@ class StoreOnboardingViewModel @Inject constructor(
             show = false,
             title = R.string.store_onboarding_title,
             tasks = emptyList(),
-            isCollapsedMode = true
         )
     )
     val viewState = _viewState.asLiveData()
@@ -103,7 +102,6 @@ class StoreOnboardingViewModel @Inject constructor(
         val show: Boolean,
         @StringRes val title: Int,
         val tasks: List<OnboardingTaskUi>,
-        val isCollapsedMode: Boolean,
     ) : Parcelable
 
     @Parcelize
