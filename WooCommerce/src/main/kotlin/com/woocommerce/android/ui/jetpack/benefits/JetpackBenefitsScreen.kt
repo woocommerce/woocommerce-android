@@ -38,9 +38,9 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun JetpackBenefitsScreen(viewModel: JetpackBenefitsViewModel) {
-    viewModel.isLoadingDialogShown.observeAsState().value?.let {
+    viewModel.viewState.observeAsState().value?.let {
         JetpackBenefitsScreen(
-            isShowingLoadingDialog = it,
+            viewState = it,
             onInstallClick = viewModel::onInstallClick,
             onDismssClick = viewModel::onDismiss
         )
@@ -49,7 +49,7 @@ fun JetpackBenefitsScreen(viewModel: JetpackBenefitsViewModel) {
 
 @Composable
 fun JetpackBenefitsScreen(
-    isShowingLoadingDialog: Boolean,
+    viewState: JetpackBenefitsViewModel.ViewState,
     onInstallClick: () -> Unit = {},
     onDismssClick: () -> Unit = {}
 ) {
@@ -99,24 +99,39 @@ fun JetpackBenefitsScreen(
 
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
-            // User profiles
-            BenefitEntry(
-                icon = R.drawable.ic_users,
-                title = R.string.jetpack_benefits_modal_user_profiles_title,
-                subtitle = R.string.jetpack_benefits_modal_user_profiles_subtitle,
-                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
-            )
+            if (viewState.isUsingJetpackCP) {
+                // User profiles
+                BenefitEntry(
+                    icon = R.drawable.ic_users,
+                    title = R.string.jetpack_benefits_modal_user_profiles_title,
+                    subtitle = R.string.jetpack_benefits_modal_user_profiles_subtitle,
+                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                )
+            } else {
+                // Multiple stores
+                BenefitEntry(
+                    icon = R.drawable.ic_users, // TODO update this icon
+                    title = R.string.jetpack_benefits_modal_multiple_stores_title,
+                    subtitle = R.string.jetpack_benefits_modal_multiple_stores_subtitle,
+                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                )
+            }
         }
 
         WCColoredButton(onClick = onInstallClick, modifier = Modifier.fillMaxWidth()) {
-            Text(text = stringResource(id = R.string.jetpack_benefits_modal_install_jetpack))
+            Text(
+                text = stringResource(
+                    id = if (viewState.isUsingJetpackCP) R.string.jetpack_benefits_modal_install_jetpack
+                    else R.string.jetpack_benefits_modal_login
+                )
+            )
         }
         WCOutlinedButton(onClick = onDismssClick, modifier = Modifier.fillMaxWidth()) {
             Text(text = stringResource(id = R.string.jetpack_benefits_modal_dismiss))
         }
     }
 
-    if (isShowingLoadingDialog) {
+    if (viewState.isLoadingDialogShown) {
         ProgressDialog(
             title = stringResource(id = R.string.jetpack_benefits_fetching_status),
             subtitle = stringResource(id = R.string.please_wait)
@@ -133,8 +148,7 @@ private fun BenefitEntry(
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.semantics(mergeDescendants = true) {}) {
+        verticalAlignment = Alignment.CenterVertically, modifier = modifier.semantics(mergeDescendants = true) {}) {
         Image(
             painter = painterResource(id = icon),
             contentDescription = null,
@@ -155,7 +169,10 @@ private fun BenefitEntry(
 private fun JetpackBenefitsScreenPreview() {
     WooThemeWithBackground {
         JetpackBenefitsScreen(
-            isShowingLoadingDialog = false
+            viewState = JetpackBenefitsViewModel.ViewState(
+                isUsingJetpackCP = false,
+                isLoadingDialogShown = false
+            )
         )
     }
 }

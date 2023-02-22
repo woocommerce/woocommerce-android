@@ -7,14 +7,14 @@ import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_INSTALL_BUTTON_T
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.tools.SiteConnectionType.ApplicationPasswords
-import com.woocommerce.android.tools.SiteConnectionType.JetpackConnectionPackage
+import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,8 +24,13 @@ class JetpackBenefitsViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val fetchJetpackStatus: FetchJetpackStatus
 ) : ScopedViewModel(savedStateHandle) {
-    private val _isLoadingDialogShown = MutableStateFlow(false)
-    val isLoadingDialogShown = _isLoadingDialogShown.asLiveData()
+    private val _viewState = MutableStateFlow(
+        ViewState(
+            isUsingJetpackCP = selectedSite.connectionType == SiteConnectionType.JetpackConnectionPackage,
+            isLoadingDialogShown = false
+        )
+    )
+    val viewState = _viewState.asLiveData()
 
     fun onInstallClick() = launch {
         AnalyticsTracker.track(
@@ -34,15 +39,15 @@ class JetpackBenefitsViewModel @Inject constructor(
         )
 
         when (selectedSite.connectionType) {
-            JetpackConnectionPackage -> triggerEvent(StartJetpackCPInstallation)
-            ApplicationPasswords -> {
-                _isLoadingDialogShown.value = true
+            SiteConnectionType.JetpackConnectionPackage -> triggerEvent(StartJetpackCPInstallation)
+            SiteConnectionType.ApplicationPasswords -> {
+                _viewState.update { it.copy(isLoadingDialogShown = true) }
                 val jetpackStatusResult = fetchJetpackStatus()
                 jetpackStatusResult.fold(
                     onSuccess = { triggerEvent(StartApplicationPasswordsInstallation(it)) },
                     onFailure = { triggerEvent(ShowSnackbar(string.error_generic)) }
                 )
-                _isLoadingDialogShown.value = false
+                _viewState.update { it.copy(isLoadingDialogShown = false) }
             }
 
             else -> error("Non supported site type ${selectedSite.connectionType} in Jetpack Benefits screen")
@@ -50,6 +55,11 @@ class JetpackBenefitsViewModel @Inject constructor(
     }
 
     fun onDismiss() = triggerEvent(Exit)
+
+    data class ViewState(
+        val isUsingJetpackCP: Boolean,
+        val isLoadingDialogShown: Boolean
+    )
 
     object StartJetpackCPInstallation : Event()
     data class StartApplicationPasswordsInstallation(
