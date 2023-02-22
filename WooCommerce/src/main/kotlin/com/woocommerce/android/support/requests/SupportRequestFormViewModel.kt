@@ -6,6 +6,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.support.TicketType
+import com.woocommerce.android.support.TicketType.General
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.HelpOption.InPersonPayments
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.HelpOption.MobileApp
@@ -52,12 +53,10 @@ class SupportRequestFormViewModel @Inject constructor(
         viewState.update { it.copy(message = message) }
     }
 
-    fun onSubmitRequestButtonClicked(
-        context: Context,
-        ticketType: TicketType,
-        subject: String,
-        message: String
-    ) {
+    fun onSubmitRequestButtonClicked(context: Context) {
+        val ticketType = viewState.value.helpOption?.ticketType ?: return
+        val subject = viewState.value.subject
+        val message = viewState.value.message
         launch { zendeskHelper.createRequest(context, selectedSite.get(), ticketType, subject, message) }
     }
 
@@ -83,10 +82,10 @@ class SupportRequestFormViewModel @Inject constructor(
     }
 
     sealed class HelpOption(val ticketType: TicketType, val descriptionResource: Int) {
-        object MobileApp: HelpOption(TicketType.General, R.string.support_request_help_app)
+        object MobileApp: HelpOption(General, R.string.support_request_help_app)
         object InPersonPayments: HelpOption(TicketType.Payments, R.string.support_request_help_ipp)
         object Payments: HelpOption(TicketType.Payments, R.string.support_request_help_payments)
-        object WooPlugin: HelpOption(TicketType.General, R.string.support_request_help_plugins)
-        object OtherPlugins: HelpOption(TicketType.General, R.string.support_request_help_other)
+        object WooPlugin: HelpOption(General, R.string.support_request_help_plugins)
+        object OtherPlugins: HelpOption(General, R.string.support_request_help_other)
     }
 }

@@ -32,12 +32,7 @@ class SupportRequestFormActivity : AppCompatActivity() {
 
     private fun observeViewEvents(binding: ActivitySupportRequestFormBinding) {
         binding.submitRequestButton.setOnClickListener {
-            viewModel.onSubmitRequestButtonClicked(
-                this,
-                TicketType.General,
-                "This is a Test",
-                "Please Ignore"
-            )
+            viewModel.onSubmitRequestButtonClicked(this)
         }
     }
 
