@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.jetpack
+package com.woocommerce.android.ui.jetpack.benefits
 
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.model.JetpackStatus

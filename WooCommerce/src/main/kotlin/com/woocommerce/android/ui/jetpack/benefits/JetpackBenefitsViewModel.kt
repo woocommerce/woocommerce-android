@@ -1,13 +1,13 @@
-package com.woocommerce.android.ui.jetpack
+package com.woocommerce.android.ui.jetpack.benefits
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType.ApplicationPasswords
 import com.woocommerce.android.tools.SiteConnectionType.JetpackConnectionPackage
-import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,7 +32,7 @@ class JetpackBenefitsViewModel @Inject constructor(
                 val jetpackStatusResult = fetchJetpackStatus()
                 jetpackStatusResult.fold(
                     onSuccess = { triggerEvent(StartApplicationPasswordsInstallation(it)) },
-                    onFailure = { triggerEvent(ShowSnackbar(R.string.error_generic)) }
+                    onFailure = { triggerEvent(ShowSnackbar(string.error_generic)) }
                 )
                 _isLoadingDialogShown.value = false
             }
@@ -41,8 +41,8 @@ class JetpackBenefitsViewModel @Inject constructor(
         }
     }
 
-    object StartJetpackCPInstallation : MultiLiveEvent.Event()
+    object StartJetpackCPInstallation : Event()
     data class StartApplicationPasswordsInstallation(
         val jetpackStatus: JetpackStatus
-    ) : MultiLiveEvent.Event()
+    ) : Event()
 }
