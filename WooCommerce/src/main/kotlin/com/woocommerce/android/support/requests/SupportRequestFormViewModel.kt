@@ -28,7 +28,7 @@ class SupportRequestFormViewModel @Inject constructor(
     )
 
     val isSubmitButtonEnabled = viewState
-        .map { it.helpOption != HelpOption.None && it.subject.isNotBlank() && it.message.isNotBlank() }
+        .map { it.helpOption != null && it.subject.isNotBlank() && it.message.isNotBlank() }
         .distinctUntilChanged()
         .asLiveData()
 
@@ -46,22 +46,21 @@ class SupportRequestFormViewModel @Inject constructor(
     }
 
     data class ViewState(
-        val helpOption: HelpOption,
+        val helpOption: HelpOption?,
         val subject: String,
         val message: String
     ) {
         companion object {
-            val EMPTY = ViewState(HelpOption.None, "", "")
+            val EMPTY = ViewState(null, "", "")
         }
     }
 
-    sealed class HelpOption(val ticketType: TicketType?) {
+    sealed class HelpOption(val ticketType: TicketType) {
         object MobileApp: HelpOption(TicketType.General)
         object InPersonPayments: HelpOption(TicketType.Payments)
         object Payments: HelpOption(TicketType.Payments)
         object WooPlugin: HelpOption(TicketType.General)
         object OtherPlugins: HelpOption(TicketType.General)
-        object None: HelpOption(null)
 
         companion object {
             fun fromDescription(description: String): HelpOption {
@@ -71,7 +70,7 @@ class SupportRequestFormViewModel @Inject constructor(
                     "Payments" -> Payments
                     "WooCommerce Plugin" -> WooPlugin
                     "Other Plugins" -> OtherPlugins
-                    else -> None
+                    else -> throw IllegalArgumentException("Unknown help option: $description")
                 }
             }
         }
