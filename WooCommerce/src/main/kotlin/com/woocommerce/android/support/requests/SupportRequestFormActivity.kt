@@ -18,8 +18,7 @@ class SupportRequestFormActivity : AppCompatActivity() {
             setContentView(root)
             setupActionBar()
             observeViewEvents(this)
-            // Disabled to avoid triggering a support request while testing, it will be removed later
-            submitRequestButton.isEnabled = false
+            observeViewModelEvents(this)
         }
     }
 
@@ -32,6 +31,12 @@ class SupportRequestFormActivity : AppCompatActivity() {
     private fun observeViewEvents(binding: ActivitySupportRequestFormBinding) {
         binding.submitRequestButton.setOnClickListener {
             viewModel.onSubmitRequestButtonClicked(this)
+        }
+    }
+
+    private fun observeViewModelEvents(binding: ActivitySupportRequestFormBinding) {
+        viewModel.isSubmitButtonEnabled.observe(this) { isEnabled ->
+            binding.submitRequestButton.isEnabled = isEnabled
         }
     }
 
