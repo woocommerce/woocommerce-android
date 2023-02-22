@@ -491,6 +491,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 analyticsTrackerWrapper,
                 mock(),
                 unseenReviewsCountHandler,
+                mock()
             )
         )
     }

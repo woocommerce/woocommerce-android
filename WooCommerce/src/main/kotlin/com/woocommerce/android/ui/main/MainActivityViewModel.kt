@@ -17,6 +17,8 @@ import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
+import com.woocommerce.android.ui.plans.PlanType.ECOMMERCE_FREE_TRIAL
+import com.woocommerce.android.ui.plans.PlansRepository
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.WooLog
@@ -41,6 +43,7 @@ class MainActivityViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val resolveAppLink: ResolveAppLink,
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
+    private val plansRepository: PlansRepository,
 ) : ScopedViewModel(savedState) {
     init {
         launch {
@@ -52,6 +55,13 @@ class MainActivityViewModel @Inject constructor(
 
     val moreMenuBadgeState = unseenReviewsCountHandler.observeUnseenCount().map { reviewsCount ->
         determineMenuBadgeState(reviewsCount)
+    }.asLiveData()
+
+    val trialStatusBarState = plansRepository.observeCurrentPlan().map { planType ->
+        when (planType) {
+            ECOMMERCE_FREE_TRIAL -> @Suppress("MagicNumber") TrialStatusBarState.Visible(14)
+            else -> TrialStatusBarState.Hidden
+        }
     }.asLiveData()
 
     fun handleShortcutAction(action: String?) {
@@ -203,6 +213,11 @@ class MainActivityViewModel @Inject constructor(
     sealed class MoreMenuBadgeState {
         data class UnseenReviews(val count: Int) : MoreMenuBadgeState()
         object Hidden : MoreMenuBadgeState()
+    }
+
+    sealed class TrialStatusBarState {
+        data class Visible(val daysLeft: Int) : TrialStatusBarState()
+        object Hidden : TrialStatusBarState()
     }
 
     companion object {

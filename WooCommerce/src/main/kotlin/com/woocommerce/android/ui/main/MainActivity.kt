@@ -8,6 +8,7 @@ import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -79,6 +80,7 @@ import com.woocommerce.android.ui.mystore.MyStoreFragmentDirections
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.plans.trial.TrialStatusBarFormatter
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
@@ -133,6 +135,7 @@ class MainActivity :
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var crashLogging: CrashLogging
     @Inject lateinit var appWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
+    @Inject lateinit var trialStatusBarFormatter: TrialStatusBarFormatter
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -701,6 +704,7 @@ class MainActivity :
         }
 
         observeMoreMenuBadgeStateEvent()
+        observeTrialStatus()
     }
 
     private fun observeMoreMenuBadgeStateEvent() {
@@ -709,6 +713,19 @@ class MainActivity :
                 is UnseenReviews -> binding.bottomNav.showMoreMenuUnseenReviewsBadge(moreMenuBadgeState.count)
                 Hidden -> binding.bottomNav.hideMoreMenuBadge()
             }.exhaustive
+        }
+    }
+
+    private fun observeTrialStatus() {
+        viewModel.trialStatusBarState.observe(this) { trialStatusBarState ->
+            when (trialStatusBarState) {
+                MainActivityViewModel.TrialStatusBarState.Hidden -> binding.trialBar.visibility = View.GONE
+                is MainActivityViewModel.TrialStatusBarState.Visible -> {
+                    binding.trialBar.text = trialStatusBarFormatter.format(trialStatusBarState.daysLeft)
+                    binding.trialBar.movementMethod = LinkMovementMethod.getInstance()
+                    binding.trialBar.visibility = View.VISIBLE
+                }
+            }
         }
     }
 
