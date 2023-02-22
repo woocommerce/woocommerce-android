@@ -101,5 +101,5 @@ class JetpackBenefitsDialog : DialogFragment() {
     }
 
     private fun isTabletLandscape() = (DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)) &&
-            DisplayUtils.isLandscape(context)
+        DisplayUtils.isLandscape(context)
 }

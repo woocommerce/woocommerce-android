@@ -148,7 +148,9 @@ private fun BenefitEntry(
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
-        verticalAlignment = Alignment.CenterVertically, modifier = modifier.semantics(mergeDescendants = true) {}) {
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier.semantics(mergeDescendants = true) {}
+    ) {
         Image(
             painter = painterResource(id = icon),
             contentDescription = null,
