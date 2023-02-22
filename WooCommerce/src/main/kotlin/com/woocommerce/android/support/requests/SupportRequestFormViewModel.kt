@@ -1,6 +1,7 @@
 package com.woocommerce.android.support.requests
 
 import android.content.Context
+import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlinx.parcelize.Parcelize
 
 @HiltViewModel
 class SupportRequestFormViewModel @Inject constructor(
@@ -51,22 +53,22 @@ class SupportRequestFormViewModel @Inject constructor(
         val message = viewState.value.message
         launch { zendeskHelper.createRequest(context, selectedSite.get(), ticketType, subject, message) }
     }
-
+    @Parcelize
     data class ViewState(
         val helpOption: HelpOption?,
         val subject: String,
         val message: String
-    ) {
+    ) : Parcelable {
         companion object {
             val EMPTY = ViewState(null, "", "")
         }
     }
 
-    sealed class HelpOption(val ticketType: TicketType) {
-        object MobileApp : HelpOption(General)
-        object InPersonPayments : HelpOption(TicketType.Payments)
-        object Payments : HelpOption(TicketType.Payments)
-        object WooPlugin : HelpOption(General)
-        object OtherPlugins : HelpOption(General)
+    sealed class HelpOption(val ticketType: TicketType) : Parcelable {
+        @Parcelize object MobileApp : HelpOption(General)
+        @Parcelize object InPersonPayments : HelpOption(TicketType.Payments)
+        @Parcelize object Payments : HelpOption(TicketType.Payments)
+        @Parcelize object WooPlugin : HelpOption(General)
+        @Parcelize object OtherPlugins : HelpOption(General)
     }
 }

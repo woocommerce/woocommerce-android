@@ -2,6 +2,7 @@ package com.woocommerce.android.support
 
 import android.content.Context
 import android.net.ConnectivityManager
+import android.os.Parcelable
 import android.telephony.TelephonyManager
 import android.text.TextUtils
 import com.woocommerce.android.AppPrefs
@@ -45,6 +46,7 @@ import java.util.Timer
 import kotlin.concurrent.schedule
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
+import kotlinx.parcelize.Parcelize
 
 private const val zendeskNeedsToBeEnabledError = "Zendesk needs to be setup before this method can be called"
 private const val enablePushNotificationsDelayAfterIdentityChange: Long = 2500
@@ -602,12 +604,14 @@ sealed class TicketType(
     val form: Long,
     val subcategoryName: String,
     val tags: List<String> = emptyList(),
-) {
+) : Parcelable {
+    @Parcelize
     object General : TicketType(
         form = TicketFieldIds.formGeneral,
         subcategoryName = ZendeskConstants.subcategoryGeneralValue,
     )
 
+    @Parcelize
     object Payments : TicketType(
         form = TicketFieldIds.formPayments,
         subcategoryName = ZendeskConstants.subcategoryPaymentsValue,
