@@ -16,7 +16,6 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
@@ -32,7 +31,6 @@ class JetpackBenefitsDialog : DialogFragment() {
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
-    private var progressDialog: CustomProgressDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,11 +81,6 @@ class JetpackBenefitsDialog : DialogFragment() {
                 Exit -> findNavController().navigateUp()
             }
         }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        progressDialog?.dismiss()
     }
 
     override fun onStart() {
