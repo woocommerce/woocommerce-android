@@ -919,13 +919,15 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when learn more link clicked, then correct event is triggered`() {
-        // WHEN
+        // GIVEN
         val viewModel = initViewModel(Payment(1L, ORDER))
         whenever(
             learnMoreUrlProvider.provideLearnMoreUrlFor(LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS)
         ).thenReturn(
             AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
         )
+
+        // WHEN
         (viewModel.viewStateData.value as Success).learMoreIpp.onClick.invoke()
 
         // THEN
@@ -934,13 +936,15 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when learn more clicked, then trigger proper event with correct url`() {
-        // WHEN
+        // GIVEN
         val viewModel = initViewModel(Payment(1L, ORDER))
         whenever(
             learnMoreUrlProvider.provideLearnMoreUrlFor(LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS)
         ).thenReturn(
             AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
         )
+
+        // WHEN
         (viewModel.viewStateData.value as Success).learMoreIpp.onClick.invoke()
 
         // THEN
