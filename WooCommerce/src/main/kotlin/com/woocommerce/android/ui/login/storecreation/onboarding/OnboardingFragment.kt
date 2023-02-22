@@ -1,13 +1,18 @@
 package com.woocommerce.android.ui.login.storecreation.onboarding
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.transition.MaterialContainerTransform
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -17,12 +22,23 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class OnboardingFragment : BaseFragment() {
     private val viewModel: StoreOnboardingViewModel by activityViewModels()
+    private lateinit var rootView: ComposeView
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        sharedElementEnterTransition = MaterialContainerTransform().apply {
+            drawingViewId = R.id.nav_host_fragment_main
+            duration = resources.getInteger(R.integer.default_fragment_transition).toLong()
+            scrimColor = Color.TRANSPARENT
+            setAllContainerColors(ContextCompat.getColor(requireContext(), R.color.color_surface))
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return ComposeView(requireContext()).apply {
+        rootView = ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
@@ -30,10 +46,15 @@ class OnboardingFragment : BaseFragment() {
                 }
             }
         }
+        return rootView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        ViewCompat.setTransitionName(
+            rootView,
+            getString(R.string.store_onboarding_full_screen_transition_name)
+        )
         setupObservers()
     }
 

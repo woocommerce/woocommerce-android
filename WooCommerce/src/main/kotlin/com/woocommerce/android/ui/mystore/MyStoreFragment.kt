@@ -11,10 +11,12 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
+import com.google.android.material.transition.MaterialElevationScale
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.FeedbackPrefs
@@ -220,9 +222,20 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
         storeOnboardingViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is StoreOnboardingViewModel.NavigateToOnboardingFullScreen -> findNavController().navigateSafely(
-                    MyStoreFragmentDirections.actionMyStoreToOnboardingFragment()
-                )
+                is StoreOnboardingViewModel.NavigateToOnboardingFullScreen -> {
+                    exitTransition = MaterialElevationScale(false).apply {
+                        duration = resources.getInteger(R.integer.default_fragment_transition).toLong()
+                    }
+                    reenterTransition = MaterialElevationScale(true).apply {
+                        duration = resources.getInteger(R.integer.default_fragment_transition).toLong()
+                    }
+                    val transitionName = getString(R.string.store_onboarding_full_screen_transition_name)
+                    val extras = FragmentNavigatorExtras(binding.storeOnboardingView to transitionName)
+                    findNavController().navigateSafely(
+                        directions = MyStoreFragmentDirections.actionMyStoreToOnboardingFragment(),
+                        extras = extras
+                    )
+                }
             }
         }
     }
