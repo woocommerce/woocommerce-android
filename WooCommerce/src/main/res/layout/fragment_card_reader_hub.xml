@@ -3,7 +3,8 @@
 <ScrollView
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fillViewport="true">
 
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -71,6 +72,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/learn_more_ipp_tv"
         app:layout_constraintVertical_chainStyle="spread_inside"
+        app:layout_constraintVertical_bias="1"
         tools:text="@string/card_reader_onboarding_not_finished" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
