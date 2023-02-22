@@ -31,6 +31,8 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.OnboardingCompleted
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
+import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable
+import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.Available
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.CARD_READER
@@ -55,7 +57,8 @@ class CardReaderHubViewModel @Inject constructor(
     private val learnMoreUrlProvider: LearnMoreUrlProvider,
     cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
     private val cardReaderTracker: CardReaderTracker,
-    @Named("payment-menu") private val paymentMenuUtmProvider: UtmProvider
+    @Named("payment-menu") private val paymentMenuUtmProvider: UtmProvider,
+    private val isTapToPayAvailable: IsTapToPayAvailable,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderHubFragmentArgs by savedState.navArgs()
     private val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
@@ -154,18 +157,19 @@ class CardReaderHubViewModel @Inject constructor(
         NonToggleableListItem(
             icon = R.drawable.ic_shopping_cart,
             label = UiStringRes(R.string.card_reader_purchase_card_reader),
-            index = 5,
+            index = 6,
             onClick = ::onPurchaseCardReaderClicked
         ),
         NonToggleableListItem(
             icon = R.drawable.ic_manage_card_reader,
             label = UiStringRes(R.string.card_reader_manage_card_reader),
             isEnabled = isOnboardingComplete,
-            index = 6,
+            index = 7,
             onClick = ::onManageCardReaderClicked
         )
     ).apply {
         addCardReaderManuals()
+        addTapToPay()
     }
 
     private fun MutableList<ListItem>.addCardReaderManuals() {
@@ -174,8 +178,22 @@ class CardReaderHubViewModel @Inject constructor(
                 NonToggleableListItem(
                     icon = R.drawable.ic_card_reader_manual,
                     label = UiStringRes(R.string.settings_card_reader_manuals),
-                    index = 7,
+                    index = 8,
                     onClick = { onCardReaderManualsClicked(countryConfig) }
+                )
+            )
+        }
+    }
+
+    private fun MutableList<ListItem>.addTapToPay() {
+        if (storeCountryCode != null && isTapToPayAvailable(storeCountryCode) == Available) {
+            add(
+                NonToggleableListItem(
+                    icon = R.drawable.ic_baseline_contactless,
+                    label = UiStringRes(R.string.card_reader_tap_to_pay),
+                    description = UiStringRes(R.string.card_reader_tap_to_pay_description),
+                    index = 5,
+                    onClick = { }
                 )
             )
         }
@@ -358,6 +376,7 @@ class CardReaderHubViewModel @Inject constructor(
         data class NavigateToCardReaderManualsScreen(
             val countryConfig: CardReaderConfigForSupportedCountry
         ) : CardReaderHubEvents()
+
         data class NavigateToCardReaderOnboardingScreen(
             val onboardingState: CardReaderOnboardingState
         ) : CardReaderHubEvents()
@@ -381,6 +400,7 @@ class CardReaderHubViewModel @Inject constructor(
             data class NonToggleableListItem(
                 @DrawableRes override val icon: Int,
                 override val label: UiString,
+                val description: UiString? = null,
                 override var isEnabled: Boolean = true,
                 override val index: Int,
                 override val onClick: () -> Unit
