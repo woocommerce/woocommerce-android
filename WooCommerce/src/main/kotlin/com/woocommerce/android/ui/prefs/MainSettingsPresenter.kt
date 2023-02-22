@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.prefs
 
+import com.woocommerce.android.model.UserRole
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.FeatureFlag
@@ -20,6 +22,7 @@ class MainSettingsPresenter @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val featureAnnouncementRepository: FeatureAnnouncementRepository,
     private val buildConfigWrapper: BuildConfigWrapper,
+    private val userEligibilityFetcher: UserEligibilityFetcher
 ) : MainSettingsContract.Presenter {
     private var appSettingsFragmentView: MainSettingsContract.View? = null
 
@@ -75,6 +78,11 @@ class MainSettingsPresenter @Inject constructor(
         }
     }
 
-    override val isDomainOptionVisible: Boolean
-        get() = selectedSite.get().isWPComAtomic && FeatureFlag.DOMAIN_CHANGE.isEnabled()
+    override suspend fun isDomainOptionVisible(): Boolean =
+        selectedSite.get().isWPComAtomic && isUserAdmin() && FeatureFlag.DOMAIN_CHANGE.isEnabled()
+
+    private suspend fun isUserAdmin(): Boolean {
+        return userEligibilityFetcher.fetchUserInfo(selectedSite.get())
+            .getOrNull()?.roles?.contains(UserRole.Administrator) ?: false
+    }
 }
