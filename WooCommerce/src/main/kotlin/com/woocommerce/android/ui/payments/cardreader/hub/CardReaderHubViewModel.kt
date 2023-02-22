@@ -79,7 +79,7 @@ class CardReaderHubViewModel @Inject constructor(
         )
     )
 
-    private val learnMoreIppState = CardReaderHubViewState.LearMoreIpp(
+    private val learnMoreIppState = CardReaderHubViewState.LearnMoreIppState(
         label = UiStringRes(R.string.card_reader_connect_learn_more, containsHtml = true),
         onClick = ::onLearnMoreIppClicked
     )
@@ -105,7 +105,7 @@ class CardReaderHubViewModel @Inject constructor(
                 ).sortedBy { it.index },
             isLoading = true,
             onboardingErrorAction = null,
-            learMoreIpp = learnMoreIppState,
+            learnMoreIppState = learnMoreIppState,
         )
     )
 
@@ -218,7 +218,7 @@ class CardReaderHubViewModel @Inject constructor(
             },
             isLoading = false,
             onboardingErrorAction = null,
-            learMoreIpp = learnMoreIppState,
+            learnMoreIppState = learnMoreIppState,
         )
     }
 
@@ -240,7 +240,7 @@ class CardReaderHubViewModel @Inject constructor(
                 text = UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true),
                 onClick = { onOnboardingErrorClicked(state) }
             ),
-            learMoreIpp = learnMoreIppState,
+            learnMoreIppState = learnMoreIppState,
         )
     }
 
@@ -387,7 +387,7 @@ class CardReaderHubViewModel @Inject constructor(
         val rows: List<ListItem>,
         val isLoading: Boolean,
         val onboardingErrorAction: OnboardingErrorAction?,
-        val learMoreIpp: LearMoreIpp?,
+        val learnMoreIppState: LearnMoreIppState?,
     ) {
         sealed class ListItem {
             abstract val label: UiString
@@ -430,7 +430,7 @@ class CardReaderHubViewModel @Inject constructor(
             val onClick: () -> Unit,
         )
 
-        data class LearMoreIpp(
+        data class LearnMoreIppState(
             val label: UiString,
             val onClick: () -> Unit,
         )

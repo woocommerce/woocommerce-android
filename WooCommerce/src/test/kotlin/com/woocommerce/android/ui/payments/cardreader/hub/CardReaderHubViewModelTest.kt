@@ -1239,7 +1239,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         ).thenReturn(
             AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
         )
-        viewModel.viewStateData.value?.learMoreIpp?.onClick?.invoke()
+        viewModel.viewStateData.value?.learnMoreIppState?.onClick?.invoke()
 
         // THEN
         assertThat(viewModel.event.value).isEqualTo(
@@ -1255,7 +1255,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         ).thenReturn(
             AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
         )
-        viewModel.viewStateData.value?.learMoreIpp?.onClick?.invoke()
+        viewModel.viewStateData.value?.learnMoreIppState?.onClick?.invoke()
 
         // THEN
         assertThat(viewModel.event.value).isEqualTo(
