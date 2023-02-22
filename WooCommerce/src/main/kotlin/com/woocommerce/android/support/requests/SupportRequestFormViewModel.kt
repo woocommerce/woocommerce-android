@@ -41,8 +41,8 @@ class SupportRequestFormViewModel @Inject constructor(
         .distinctUntilChanged()
         .asLiveData()
 
-    fun onHelpOptionSelected(helpDescription: String) {
-        viewState.update { it.copy(helpOption = generateHelpOptionFromDescription(helpDescription)) }
+    fun onHelpOptionSelected(helpOption: HelpOption) {
+        viewState.update { it.copy(helpOption = helpOption) }
     }
 
     fun onSubjectChanged(subject: String) {

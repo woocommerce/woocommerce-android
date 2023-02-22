@@ -7,6 +7,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.doOnTextChanged
 import com.woocommerce.android.databinding.ActivitySupportRequestFormBinding
+import com.woocommerce.android.support.requests.SupportRequestFormViewModel.HelpOption.InPersonPayments
+import com.woocommerce.android.support.requests.SupportRequestFormViewModel.HelpOption.MobileApp
+import com.woocommerce.android.support.requests.SupportRequestFormViewModel.HelpOption.OtherPlugins
+import com.woocommerce.android.support.requests.SupportRequestFormViewModel.HelpOption.Payments
+import com.woocommerce.android.support.requests.SupportRequestFormViewModel.HelpOption.WooPlugin
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -32,6 +37,15 @@ class SupportRequestFormActivity : AppCompatActivity() {
     private fun observeViewEvents(binding: ActivitySupportRequestFormBinding) {
         binding.requestSubject.setOnTextChangedListener { viewModel.onSubjectChanged(it.toString()) }
         binding.requestMessage.doOnTextChanged { text, _, _, _ -> viewModel.onMessageChanged(text.toString()) }
+        binding.helpOptionsGroup.setOnCheckedChangeListener { _, selectionID ->
+            when (selectionID) {
+                binding.mobileAppOption.id -> viewModel.onHelpOptionSelected(MobileApp)
+                binding.ippOption.id -> viewModel.onHelpOptionSelected(InPersonPayments)
+                binding.paymentsOption.id -> viewModel.onHelpOptionSelected(Payments)
+                binding.wooPluginOption.id -> viewModel.onHelpOptionSelected(WooPlugin)
+                binding.otherOption.id -> viewModel.onHelpOptionSelected(OtherPlugins)
+            }
+        }
         binding.submitRequestButton.setOnClickListener {
             viewModel.onSubmitRequestButtonClicked(this)
         }
