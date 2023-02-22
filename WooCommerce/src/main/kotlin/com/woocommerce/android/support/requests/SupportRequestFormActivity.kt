@@ -5,6 +5,7 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.widget.doOnTextChanged
 import com.woocommerce.android.databinding.ActivitySupportRequestFormBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -29,6 +30,8 @@ class SupportRequestFormActivity : AppCompatActivity() {
     }
 
     private fun observeViewEvents(binding: ActivitySupportRequestFormBinding) {
+        binding.requestSubject.setOnTextChangedListener { viewModel.onSubjectChanged(it.toString()) }
+        binding.requestMessage.doOnTextChanged { text, _, _, _ -> viewModel.onMessageChanged(text.toString()) }
         binding.submitRequestButton.setOnClickListener {
             viewModel.onSubmitRequestButtonClicked(this)
         }
