@@ -56,10 +56,12 @@ class MainSettingsPresenter @Inject constructor(
     }
 
     override fun setupJetpackInstallOption() {
-        val isJetpackCPConnection = selectedSite.connectionType == SiteConnectionType.JetpackConnectionPackage
-        appSettingsFragmentView?.handleJetpackInstallOption(isJetpackCPSite = isJetpackCPConnection)
+        val supportsJetpackInstallation = selectedSite.connectionType.let {
+            it == SiteConnectionType.JetpackConnectionPackage || it == SiteConnectionType.ApplicationPasswords
+        }
+        appSettingsFragmentView?.handleJetpackInstallOption(supportsJetpackInstallation = supportsJetpackInstallation)
         jetpackMonitoringJob?.cancel()
-        if (isJetpackCPConnection) {
+        if (supportsJetpackInstallation) {
             jetpackMonitoringJob = coroutineScope.launch {
                 selectedSite.observe()
                     .filter { it?.isJetpackConnected == true }
