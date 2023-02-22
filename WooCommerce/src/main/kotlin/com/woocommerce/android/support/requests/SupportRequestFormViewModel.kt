@@ -36,6 +36,14 @@ class SupportRequestFormViewModel @Inject constructor(
         viewState.update { it.copy(helpOption = HelpOption.fromDescription(helpDescription)) }
     }
 
+    fun onSubjectChanged(subject: String) {
+        viewState.update { it.copy(subject = subject) }
+    }
+
+    fun onMessageChanged(message: String) {
+        viewState.update { it.copy(message = message) }
+    }
+
     fun onSubmitRequestButtonClicked(
         context: Context,
         ticketType: TicketType,
