@@ -21,7 +21,6 @@ import com.woocommerce.android.util.WooLog.T
 import com.zendesk.logger.Logger
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
-import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
@@ -45,8 +44,8 @@ import zendesk.support.requestlist.RequestListActivity
 import java.util.Locale
 import java.util.Timer
 import kotlin.concurrent.schedule
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flowOn
 
 private const val zendeskNeedsToBeEnabledError = "Zendesk needs to be setup before this method can be called"
 private const val enablePushNotificationsDelayAfterIdentityChange: Long = 2500
@@ -168,22 +167,20 @@ class ZendeskHelper(
         subject: String,
         description: String,
         ssr: String? = null
-    ) = withContext(dispatchers.io) {
-        suspendCoroutine<Result<Request?>> {
-            val requestCallback = object : ZendeskCallback<Request>() {
-                override fun onSuccess(result: Request?) { it.resume(Result.success(result)) }
-                override fun onError(error: ErrorResponse) { it.resume(Result.failure(Throwable(error.reason))) }
-            }
-
-            CreateRequest().apply {
-                this.ticketFormId = ticketType.form
-                this.subject = subject
-                this.description = description
-                this.tags = ticketType.tags
-                this.customFields = buildZendeskCustomFields(context, ticketType, siteStore.sites, selectedSite, ssr)
-            }.let { request -> requestProvider?.createRequest(request, requestCallback) }
+    ) = callbackFlow {
+        val requestCallback = object : ZendeskCallback<Request>() {
+            override fun onSuccess(result: Request?) { trySend(Result.success(result)) }
+            override fun onError(error: ErrorResponse) { trySend(Result.failure(Throwable(error.reason))) }
         }
-    }
+
+        CreateRequest().apply {
+            this.ticketFormId = ticketType.form
+            this.subject = subject
+            this.description = description
+            this.tags = ticketType.tags
+            this.customFields = buildZendeskCustomFields(context, ticketType, siteStore.sites, selectedSite, ssr)
+        }.let { request -> requestProvider?.createRequest(request, requestCallback) }
+    }.flowOn(dispatchers.io)
 
     /**
      * This function creates a new ticket. It'll force a valid identity, so if the user doesn't have one set, a dialog
