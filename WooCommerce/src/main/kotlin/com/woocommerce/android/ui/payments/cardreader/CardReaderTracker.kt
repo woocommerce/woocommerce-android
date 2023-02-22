@@ -442,14 +442,7 @@ class CardReaderTracker @Inject constructor(
         track(CARD_PRESENT_CONNECTION_LEARN_MORE_TAPPED)
     }
 
-    fun trackPaymentsMenuLearnMoreClicked(source: String) {
-        track(
-            stat = IN_PERSON_PAYMENTS_LEARN_MORE_TAPPED,
-            properties = mutableMapOf(AnalyticsTracker.IPP_LEARN_MORE_SOURCE to source)
-        )
-    }
-
-    fun trackPaymentMethodsLearnMoreClicked(source: String) {
+    fun trackIPPLearnMoreClicked(source: String) {
         track(
             stat = IN_PERSON_PAYMENTS_LEARN_MORE_TAPPED,
             properties = mutableMapOf(AnalyticsTracker.IPP_LEARN_MORE_SOURCE to source)

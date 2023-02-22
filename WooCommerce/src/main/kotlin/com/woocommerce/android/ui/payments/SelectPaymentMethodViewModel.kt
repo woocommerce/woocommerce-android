@@ -367,7 +367,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     private fun onLearnMoreIppClicked() {
-        cardReaderTracker.trackPaymentMethodsLearnMoreClicked(LEARN_MORE_SOURCE)
+        cardReaderTracker.trackIPPLearnMoreClicked(LEARN_MORE_SOURCE)
         triggerEvent(
             OpenGenericWebView(
                 learnMoreUrlProvider.provideLearnMoreUrlFor(
