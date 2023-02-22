@@ -107,7 +107,6 @@
             android:textColor="@color/color_on_surface_high"
             android:textColorHighlight="#00FFFFFF"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.781"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/container" />
 
