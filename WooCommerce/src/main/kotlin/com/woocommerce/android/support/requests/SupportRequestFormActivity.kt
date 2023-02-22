@@ -6,7 +6,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.woocommerce.android.databinding.ActivitySupportRequestFormBinding
-import com.woocommerce.android.support.TicketType
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

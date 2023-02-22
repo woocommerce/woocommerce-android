@@ -18,11 +18,11 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
-import javax.inject.Inject
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class SupportRequestFormViewModel @Inject constructor(
@@ -82,10 +82,10 @@ class SupportRequestFormViewModel @Inject constructor(
     }
 
     sealed class HelpOption(val ticketType: TicketType, val descriptionResource: Int) {
-        object MobileApp: HelpOption(General, R.string.support_request_help_app)
-        object InPersonPayments: HelpOption(TicketType.Payments, R.string.support_request_help_ipp)
-        object Payments: HelpOption(TicketType.Payments, R.string.support_request_help_payments)
-        object WooPlugin: HelpOption(General, R.string.support_request_help_plugins)
-        object OtherPlugins: HelpOption(General, R.string.support_request_help_other)
+        object MobileApp : HelpOption(General, R.string.support_request_help_app)
+        object InPersonPayments : HelpOption(TicketType.Payments, R.string.support_request_help_ipp)
+        object Payments : HelpOption(TicketType.Payments, R.string.support_request_help_payments)
+        object WooPlugin : HelpOption(General, R.string.support_request_help_plugins)
+        object OtherPlugins : HelpOption(General, R.string.support_request_help_other)
     }
 }
