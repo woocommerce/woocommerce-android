@@ -24,4 +24,12 @@ class SupportRequestFormViewModel @Inject constructor(
     ) {
         launch { zendeskHelper.createRequest(context, selectedSite.get(), ticketType, subject, message) }
     }
+
+    sealed class HelpOption(val ticketType: TicketType) {
+        object MobileApp: HelpOption(TicketType.General)
+        object InPersonPayments: HelpOption(TicketType.Payments)
+        object Payments: HelpOption(TicketType.Payments)
+        object WooPlugin: HelpOption(TicketType.General)
+        object OtherPlugins: HelpOption(TicketType.General)
+    }
 }
