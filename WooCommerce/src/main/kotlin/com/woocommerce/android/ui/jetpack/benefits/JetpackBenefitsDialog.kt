@@ -1,21 +1,20 @@
 package com.woocommerce.android.ui.jetpack.benefits
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.R.layout
-import com.woocommerce.android.R.string
 import com.woocommerce.android.R.style
-import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_INSTALL_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion
-import com.woocommerce.android.databinding.DialogJetpackBenefitsBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.jetpack.JetpackBenefitsDialogDirections
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,7 +22,7 @@ import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class JetpackBenefitsDialog : DialogFragment(layout.dialog_jetpack_benefits) {
+class JetpackBenefitsDialog : DialogFragment() {
     companion object {
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.35f
         private const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.8f
@@ -41,52 +40,35 @@ class JetpackBenefitsDialog : DialogFragment(layout.dialog_jetpack_benefits) {
         setStyle(STYLE_NO_TITLE, if (isTabletLandscape()) style.Theme_Woo_Dialog else style.Theme_Woo)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Specify transition animations
         dialog?.window?.attributes?.windowAnimations = style.Woo_Animations_Dialog
 
-        setupObservers()
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
-        val binding = DialogJetpackBenefitsBinding.bind(view)
-        binding.dismissButton.setOnClickListener {
-            dismiss()
-        }
-        binding.installJetpackButton.setOnClickListener {
-            viewModel.onInstallClick()
-            AnalyticsTracker.track(
-                stat = JETPACK_INSTALL_BUTTON_TAPPED,
-                properties = mapOf(AnalyticsTracker.KEY_JETPACK_INSTALLATION_SOURCE to "benefits_modal")
-            )
+            setContent {
+                WooThemeWithBackground {
+                    JetpackBenefitsScreen(viewModel = viewModel)
+                }
+            }
         }
     }
 
-    private fun setupObservers() {
-        viewModel.isLoadingDialogShown.observe(viewLifecycleOwner) { show ->
-            if (show) {
-                if (progressDialog?.isVisible == true) return@observe
-                progressDialog?.dismiss()
-                progressDialog = CustomProgressDialog.show(
-                    getString(string.jetpack_benefits_fetching_status),
-                    getString(string.please_wait)
-                ).also {
-                    it.isCancelable = false
-                    it.show(childFragmentManager, CustomProgressDialog.TAG)
-                }
-            } else {
-                progressDialog?.dismiss()
-                progressDialog = null
-            }
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        setupObservers()
+    }
 
+    private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is StartJetpackCPInstallation -> {
+                is JetpackBenefitsViewModel.StartJetpackCPInstallation -> {
                     findNavController().navigateSafely(
                         JetpackBenefitsDialogDirections.actionJetpackBenefitsDialogToJetpackInstallStartDialog()
                     )
                 }
 
-                is StartApplicationPasswordsInstallation -> {
+                is JetpackBenefitsViewModel.StartApplicationPasswordsInstallation -> {
                     // TODO
                     Toast.makeText(
                         requireContext(),
@@ -98,6 +80,7 @@ class JetpackBenefitsDialog : DialogFragment(layout.dialog_jetpack_benefits) {
                 }
 
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                Exit -> findNavController().navigateUp()
             }
         }
     }
