@@ -17,7 +17,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
@@ -41,7 +40,7 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
         on { getUserEmail() } doReturn testUser.email
     }
     private val userEligibilityFetcher: UserEligibilityFetcher = mock {
-        on { getUserByEmail(any()) } doReturn testUser
+        on { getUser() } doReturn testUser
     }
     private val accountRepository: AccountRepository = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
