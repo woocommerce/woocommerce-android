@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
+import zendesk.support.Request
 
 @HiltViewModel
 class SupportRequestFormViewModel @Inject constructor(
@@ -49,10 +50,28 @@ class SupportRequestFormViewModel @Inject constructor(
 
     fun onSubmitRequestButtonClicked(context: Context) {
         val ticketType = viewState.value.helpOption?.ticketType ?: return
-        val subject = viewState.value.subject
-        val message = viewState.value.message
-        launch { zendeskHelper.createRequest(context, selectedSite.get(), ticketType, subject, message) }
+        launch {
+            zendeskHelper.createRequest(
+                context,
+                selectedSite.get(),
+                ticketType,
+                viewState.value.subject,
+                viewState.value.message
+            ).collect { it.handleCreateRequestResult() }
+        }
     }
+
+    private fun Result<Request?>.handleCreateRequestResult() {
+        fold(
+            onSuccess = { request ->
+
+            },
+            onFailure = {
+
+            }
+        )
+    }
+
     @Parcelize
     data class ViewState(
         val helpOption: HelpOption?,
