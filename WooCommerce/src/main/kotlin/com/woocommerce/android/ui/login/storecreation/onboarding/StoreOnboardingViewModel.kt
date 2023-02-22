@@ -56,6 +56,10 @@ class StoreOnboardingViewModel @Inject constructor(
         triggerEvent(NavigateToOnboardingFullScreen)
     }
 
+    fun onBackPressed() {
+        triggerEvent(MultiLiveEvent.Event.Exit)
+    }
+
     private fun OnboardingTask.toOnboardingTaskUi() =
         OnboardingTaskUi(
             icon = getIconResource(),

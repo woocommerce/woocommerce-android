@@ -21,6 +21,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProgressIndicatorDefaults
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -39,25 +40,35 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.Companion.NUMBER_ITEMS_IN_COLLAPSED_MODE
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.OnboardingTaskUi
 
 @Composable
 fun StoreOnboardingScreen(viewModel: StoreOnboardingViewModel) {
     viewModel.viewState.observeAsState().value?.let { onboardingState ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colors.surface)
-                .padding(dimensionResource(id = R.dimen.major_100))
-                .verticalScroll(rememberScrollState())
-        ) {
-            OnboardingTaskList(
-                tasks = onboardingState.tasks,
+        Scaffold(topBar = {
+            Toolbar(onNavigationButtonClick = viewModel::onBackPressed)
+        }) { padding ->
+            Column(
                 modifier = Modifier
-                    .padding(top = dimensionResource(id = R.dimen.major_100))
-                    .fillMaxWidth()
-            )
+                    .fillMaxSize()
+                    .padding(padding)
+                    .background(MaterialTheme.colors.surface)
+                    .verticalScroll(rememberScrollState())
+                    .padding(dimensionResource(id = R.dimen.major_100))
+            ) {
+                OnboardingTaskProgressHeader(
+                    titleStringRes = onboardingState.title,
+                    tasks = onboardingState.tasks
+                )
+                OnboardingTaskList(
+                    tasks = onboardingState.tasks,
+                    modifier = Modifier
+                        .padding(top = dimensionResource(id = R.dimen.major_100))
+                        .fillMaxWidth()
+                )
+            }
         }
     }
 }
@@ -80,7 +91,7 @@ fun StoreOnboardingCollapsed(
             style = MaterialTheme.typography.h6,
         )
         @Suppress("MagicNumber")
-        OnboardingTaskLinearProgress(
+        OnboardingTaskCollapsedProgressHeader(
             tasks = onboardingState.tasks,
             modifier = Modifier
                 .padding(top = dimensionResource(id = R.dimen.major_100))
@@ -154,7 +165,7 @@ fun OnboardingTaskList(
 }
 
 @Composable
-fun OnboardingTaskLinearProgress(
+fun OnboardingTaskCollapsedProgressHeader(
     tasks: List<OnboardingTaskUi>,
     modifier: Modifier = Modifier
 ) {
@@ -178,6 +189,51 @@ fun OnboardingTaskLinearProgress(
             modifier = Modifier.padding(top = dimensionResource(id = R.dimen.minor_100)),
             text = stringResource(R.string.store_onboarding_completed_tasks_status, completedTasks, totalTasks),
             style = MaterialTheme.typography.body2,
+        )
+    }
+}
+
+@Composable
+fun OnboardingTaskProgressHeader(
+    titleStringRes: Int,
+    tasks: List<OnboardingTaskUi>,
+    modifier: Modifier = Modifier
+) {
+    val completedTasks = tasks.count { it.isCompleted }
+    val totalTasks = tasks.count()
+    val progress by remember { mutableStateOf(completedTasks / totalTasks.toFloat()) }
+    val animatedProgress = animateFloatAsState(
+        targetValue = progress,
+        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
+    ).value
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(bottom = dimensionResource(id = R.dimen.major_150)),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100)),
+            text = stringResource(id = titleStringRes),
+            style = MaterialTheme.typography.h4,
+            fontWeight = FontWeight.Bold,
+        )
+        LinearProgressIndicator(
+            progress = animatedProgress,
+            modifier = Modifier
+                .height(dimensionResource(id = R.dimen.minor_100))
+                .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))),
+            color = MaterialTheme.colors.primary,
+            backgroundColor = colorResource(id = R.color.divider_color),
+        )
+        Text(
+            modifier = Modifier.padding(top = dimensionResource(id = R.dimen.minor_100)),
+            text = stringResource(
+                R.string.store_onboarding_completed_tasks_full_screen_status,
+                completedTasks,
+                totalTasks
+            ),
+            style = MaterialTheme.typography.body1,
         )
     }
 }
