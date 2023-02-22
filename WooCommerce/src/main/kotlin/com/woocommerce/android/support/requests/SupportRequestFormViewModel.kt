@@ -2,6 +2,7 @@ package com.woocommerce.android.support.requests
 
 import android.content.Context
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.support.TicketType
 import com.woocommerce.android.support.ZendeskHelper
@@ -11,6 +12,7 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
 @HiltViewModel
@@ -19,10 +21,15 @@ class SupportRequestFormViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
-    val viewState = savedState.getStateFlow(
+    private val viewState = savedState.getStateFlow(
         scope = viewModelScope,
         initialValue = ViewState.EMPTY
     )
+
+    val isSubmitButtonEnabled = viewState
+        .map { it.helpOption != HelpOption.None && it.subject.isNotBlank() && it.message.isNotBlank() }
+        .distinctUntilChanged()
+        .asLiveData()
 
     fun onSubmitRequestButtonClicked(
         context: Context,
