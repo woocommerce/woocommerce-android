@@ -62,7 +62,6 @@ class CardReaderHubViewModel @Inject constructor(
     private val countryConfig = cardReaderCountryConfigProvider.provideCountryConfigFor(
         storeCountryCode
     )
-
     private val cashOnDeliveryState = MutableLiveData(
         ToggleableListItem(
             icon = R.drawable.ic_gridicons_credit_card,
@@ -78,17 +77,6 @@ class CardReaderHubViewModel @Inject constructor(
         )
     )
 
-    private fun onLearnMoreClicked() {
-        cardReaderTracker.trackCashOnDeliveryLearnMoreTapped()
-        triggerEvent(
-            CardReaderHubEvents.OpenGenericWebView(
-                learnMoreUrlProvider.provideLearnMoreUrlFor(
-                    CASH_ON_DELIVERY
-                )
-            )
-        )
-    }
-
     private val viewState = MutableLiveData(
         CardReaderHubViewState(
             rows = (
@@ -101,6 +89,19 @@ class CardReaderHubViewModel @Inject constructor(
             onboardingErrorAction = null
         )
     )
+
+    val viewStateData: LiveData<CardReaderHubViewState> = viewState
+
+    private fun onLearnMoreClicked() {
+        cardReaderTracker.trackCashOnDeliveryLearnMoreTapped()
+        triggerEvent(
+            CardReaderHubEvents.OpenGenericWebView(
+                learnMoreUrlProvider.provideLearnMoreUrlFor(
+                    CASH_ON_DELIVERY
+                )
+            )
+        )
+    }
 
     private suspend fun checkAndUpdateCashOnDeliveryOptionState() {
         val isCashOnDeliveryEnabled = cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()
@@ -164,6 +165,10 @@ class CardReaderHubViewModel @Inject constructor(
             onClick = ::onManageCardReaderClicked
         )
     ).apply {
+        addCardReaderManuals()
+    }
+
+    private fun MutableList<ListItem>.addCardReaderManuals() {
         if (countryConfig is CardReaderConfigForSupportedCountry) {
             add(
                 NonToggleableListItem(
@@ -234,8 +239,6 @@ class CardReaderHubViewModel @Inject constructor(
             )
         )
     }
-
-    val viewStateData: LiveData<CardReaderHubViewState> = viewState
 
     private fun onCollectPaymentClicked() {
         trackEvent(AnalyticsEvent.PAYMENTS_HUB_COLLECT_PAYMENT_TAPPED)
