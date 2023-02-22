@@ -117,5 +117,4 @@ class StoreOnboardingViewModel @Inject constructor(
     ) : Parcelable
 
     object NavigateToOnboardingFullScreen : MultiLiveEvent.Event()
-
 }
