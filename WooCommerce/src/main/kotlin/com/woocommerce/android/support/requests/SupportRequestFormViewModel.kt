@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class SupportRequestFormViewModel @Inject constructor(
@@ -30,6 +31,10 @@ class SupportRequestFormViewModel @Inject constructor(
         .map { it.helpOption != HelpOption.None && it.subject.isNotBlank() && it.message.isNotBlank() }
         .distinctUntilChanged()
         .asLiveData()
+
+    fun onHelpOptionSelected(helpDescription: String) {
+        viewState.update { it.copy(helpOption = HelpOption.fromDescription(helpDescription)) }
+    }
 
     fun onSubmitRequestButtonClicked(
         context: Context,
@@ -57,5 +62,18 @@ class SupportRequestFormViewModel @Inject constructor(
         object WooPlugin: HelpOption(TicketType.General)
         object OtherPlugins: HelpOption(TicketType.General)
         object None: HelpOption(null)
+
+        companion object {
+            fun fromDescription(description: String): HelpOption {
+                return when (description) {
+                    "Mobile App" -> MobileApp
+                    "In-Person Payments" -> InPersonPayments
+                    "Payments" -> Payments
+                    "WooCommerce Plugin" -> WooPlugin
+                    "Other Plugins" -> OtherPlugins
+                    else -> None
+                }
+            }
+        }
     }
 }
