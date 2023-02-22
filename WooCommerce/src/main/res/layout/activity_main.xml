@@ -78,13 +78,14 @@
         android:gravity="center_vertical"
         android:paddingHorizontal="@dimen/minor_100"
         android:paddingVertical="@dimen/major_75"
-        android:text="7 days left in your trial. Upgrade Now"
         android:textColor="@color/woo_black"
+        android:visibility="gone"
+        app:drawableStartCompat="@drawable/ic_tintable_info_outline_24dp"
+        app:drawableTint="@color/woo_black"
         app:layout_constraintBottom_toTopOf="@+id/offline_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:drawableStartCompat="@drawable/ic_tintable_info_outline_24dp"
-        app:drawableTint="@color/woo_black" />
+        tools:text="7 days left in your trial. Upgrade Now" />
 
     <com.woocommerce.android.ui.network.OfflineStatusBarView
         android:id="@+id/offline_bar"

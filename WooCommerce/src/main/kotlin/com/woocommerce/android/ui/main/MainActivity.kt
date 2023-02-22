@@ -84,6 +84,7 @@ import com.woocommerce.android.ui.plans.trial.TrialStatusBarFormatter
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -704,7 +705,9 @@ class MainActivity :
         }
 
         observeMoreMenuBadgeStateEvent()
-        observeTrialStatus()
+        if (FeatureFlag.FREE_TRIAL.isEnabled()) {
+            observeTrialStatus()
+        }
     }
 
     private fun observeMoreMenuBadgeStateEvent() {
