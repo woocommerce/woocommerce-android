@@ -22,11 +22,12 @@ class MainSettingsPresenter @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val featureAnnouncementRepository: FeatureAnnouncementRepository,
     private val buildConfigWrapper: BuildConfigWrapper,
-    private val userEligibilityFetcher: UserEligibilityFetcher
+    userEligibilityFetcher: UserEligibilityFetcher
 ) : MainSettingsContract.Presenter {
     private var appSettingsFragmentView: MainSettingsContract.View? = null
 
     private var jetpackMonitoringJob: Job? = null
+    private val isUserAdmin = userEligibilityFetcher.getUser()?.roles?.contains(UserRole.Administrator) ?: false
 
     override fun takeView(view: MainSettingsContract.View) {
         appSettingsFragmentView = view
@@ -78,11 +79,6 @@ class MainSettingsPresenter @Inject constructor(
         }
     }
 
-    override suspend fun isDomainOptionVisible(): Boolean =
-        selectedSite.get().isWPComAtomic && isUserAdmin() && FeatureFlag.DOMAIN_CHANGE.isEnabled()
-
-    private suspend fun isUserAdmin(): Boolean {
-        return userEligibilityFetcher.fetchUserInfo(selectedSite.get())
-            .getOrNull()?.roles?.contains(UserRole.Administrator) ?: false
-    }
+    override val isDomainOptionVisible: Boolean
+        get() = selectedSite.get().isWPComAtomic && isUserAdmin && FeatureFlag.DOMAIN_CHANGE.isEnabled()
 }

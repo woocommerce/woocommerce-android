@@ -13,7 +13,7 @@ interface MainSettingsContract {
         fun setupJetpackInstallOption()
         fun setupApplicationPasswordsSettings()
 
-        suspend fun isDomainOptionVisible(): Boolean
+        val isDomainOptionVisible: Boolean
     }
 
     interface View : BaseView<Presenter> {
