@@ -83,11 +83,26 @@ class SupportRequestFormViewModel @Inject constructor(
         }
     }
 
-    sealed class HelpOption(val ticketType: TicketType) : Parcelable {
-        @Parcelize object MobileApp : HelpOption(General)
-        @Parcelize object InPersonPayments : HelpOption(TicketType.Payments)
-        @Parcelize object Payments : HelpOption(TicketType.Payments)
-        @Parcelize object WooPlugin : HelpOption(General)
-        @Parcelize object OtherPlugins : HelpOption(General)
+    sealed class HelpOption(val ticketType: TicketType, tags: List<String>) : Parcelable {
+        @Parcelize object MobileApp : HelpOption(
+            ticketType = General,
+            tags = listOf("mobile-app")
+        )
+        @Parcelize object InPersonPayments : HelpOption(
+            ticketType = General,
+            tags = listOf("woocommerce_mobile_apps", "product_area_apps_in_person_payments")
+        )
+        @Parcelize object Payments : HelpOption(
+            ticketType = TicketType.Payments,
+            tags = emptyList()
+        )
+        @Parcelize object WooPlugin : HelpOption(
+            ticketType = General,
+            tags = listOf("woocommerce_core")
+        )
+        @Parcelize object OtherPlugins : HelpOption(
+            ticketType = General,
+            tags = listOf("product_area_woo_extensions")
+        )
     }
 }
