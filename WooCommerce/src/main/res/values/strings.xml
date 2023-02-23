@@ -1117,6 +1117,17 @@
     <string name="card_reader_tap_to_pay_description">Use your phone to accept card payments</string>
 
     <!--
+           Card Reader Tap To Pay Explanation
+        -->
+    <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
+    <string name="card_reader_tap_to_pay_explanation_title">Collect card payments with your phone</string>
+    <string name="card_reader_tap_to_pay_explanation_one">Your phone is ready for Tap to Pay payments</string>
+    <string name="card_reader_tap_to_pay_explanation_two">View an order, Collect Payment, and choose Tap to Pay</string>
+    <string name="card_reader_tap_to_pay_explanation_three">Your customer can tap their card on your phone to pay</string>
+    <string name="card_reader_tap_to_pay_explanation_try_payment">Try a payment</string>
+    <string name="card_reader_tap_to_pay_explanation_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about accepting payments with your mobile device and ordering card readers</string>
+
+    <!--
             Card Reader Type Selection
         -->
     <string name="card_reader_type_selection_title">Select reader type</string>
