@@ -10,6 +10,7 @@ import com.woocommerce.android.support.HelpOption
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -71,10 +72,13 @@ class SupportRequestFormViewModel @Inject constructor(
     private fun Result<Request?>.handleCreateRequestResult() {
         viewState.update { it.copy(isLoading = false) }
         fold(
-            onSuccess = { },
-            onFailure = { }
+            onSuccess = { triggerEvent(RequestCreationSucceeded) },
+            onFailure = { triggerEvent(RequestCreationFailed) }
         )
     }
+
+    object RequestCreationSucceeded: Event()
+    object RequestCreationFailed: Event()
 
     @Parcelize
     data class ViewState(
