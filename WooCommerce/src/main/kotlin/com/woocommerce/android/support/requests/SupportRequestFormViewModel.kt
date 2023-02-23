@@ -49,12 +49,13 @@ class SupportRequestFormViewModel @Inject constructor(
     }
 
     fun onSubmitRequestButtonClicked(context: Context) {
-        val ticketType = viewState.value.helpOption?.ticketType ?: return
+        val helpOption = viewState.value.helpOption ?: return
         launch {
             zendeskHelper.createRequest(
                 context,
                 selectedSite.get(),
-                ticketType,
+                helpOption.ticketType,
+                helpOption.extraTags,
                 viewState.value.subject,
                 viewState.value.message
             ).collect { it.handleCreateRequestResult() }
@@ -83,26 +84,26 @@ class SupportRequestFormViewModel @Inject constructor(
         }
     }
 
-    sealed class HelpOption(val ticketType: TicketType, tags: List<String>) : Parcelable {
+    sealed class HelpOption(val ticketType: TicketType, val extraTags: List<String>) : Parcelable {
         @Parcelize object MobileApp : HelpOption(
             ticketType = General,
-            tags = listOf("mobile-app")
+            extraTags = listOf("mobile-app")
         )
         @Parcelize object InPersonPayments : HelpOption(
             ticketType = General,
-            tags = listOf("woocommerce_mobile_apps", "product_area_apps_in_person_payments")
+            extraTags = listOf("woocommerce_mobile_apps", "product_area_apps_in_person_payments")
         )
         @Parcelize object Payments : HelpOption(
             ticketType = TicketType.Payments,
-            tags = emptyList()
+            extraTags = emptyList()
         )
         @Parcelize object WooPlugin : HelpOption(
             ticketType = General,
-            tags = listOf("woocommerce_core")
+            extraTags = listOf("woocommerce_core")
         )
         @Parcelize object OtherPlugins : HelpOption(
             ticketType = General,
-            tags = listOf("product_area_woo_extensions")
+            extraTags = listOf("product_area_woo_extensions")
         )
     }
 }
