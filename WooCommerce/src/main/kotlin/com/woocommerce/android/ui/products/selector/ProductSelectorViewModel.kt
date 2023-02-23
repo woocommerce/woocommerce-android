@@ -266,13 +266,20 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
 
-    private suspend fun fetchProducts(filters: FilterState = filterState.value, query: String = "", forceRefresh: Boolean = false) {
+    private suspend fun fetchProducts(
+        filters: FilterState = filterState.value,
+        query: String = "",
+        forceRefresh: Boolean = false
+    ) {
         loadMoreJob?.cancel()
         fetchProductsJob?.cancel()
         fetchProductsJob = viewModelScope.launch {
             loadingState.value = LOADING
-            listHandler.loadFromCacheAndFetch(filters = filters.filterOptions, searchQuery = query, forceRefresh = forceRefresh)
-                .onFailure {
+            listHandler.loadFromCacheAndFetch(
+                filters = filters.filterOptions,
+                searchQuery = query,
+                forceRefresh = forceRefresh
+            ).onFailure {
                     val message = if (query.isEmpty()) string.product_selector_loading_failed
                     else string.product_selector_search_failed
                     triggerEvent(ShowSnackbar(message))
