@@ -19,7 +19,8 @@ enum class FeatureFlag {
     DOMAIN_CHANGE,
     IPP_FEEDBACK_BANNER,
     STORE_CREATION_ONBOARDING,
-    NEW_SUPPORT_REQUESTS;
+    NEW_SUPPORT_REQUESTS,
+    FREE_TRIAL;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -40,7 +41,8 @@ enum class FeatureFlag {
             IPP_TAP_TO_PAY,
             DOMAIN_CHANGE,
             STORE_CREATION_ONBOARDING,
-            NEW_SUPPORT_REQUESTS -> PackageUtils.isDebugBuild()
+            NEW_SUPPORT_REQUESTS,
+            FREE_TRIAL -> PackageUtils.isDebugBuild()
         }
     }
 }
