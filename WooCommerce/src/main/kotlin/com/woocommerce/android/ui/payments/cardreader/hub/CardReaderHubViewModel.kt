@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.map
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
@@ -82,18 +83,19 @@ class CardReaderHubViewModel @Inject constructor(
 
     private val viewState = MutableLiveData(
         CardReaderHubViewState(
-            rows = (
-                createHubListWhenSinglePluginInstalled(
-                    isOnboardingComplete = false,
-                    cashOnDeliveryItem = cashOnDeliveryState.value!!
-                )
-                ).sortedBy { it.index },
+            rows = createHubListWhenSinglePluginInstalled(
+                isOnboardingComplete = false,
+                cashOnDeliveryItem = cashOnDeliveryState.value!!
+            ),
             isLoading = true,
             onboardingErrorAction = null
         )
     )
 
     val viewStateData: LiveData<CardReaderHubViewState> = viewState
+        .map { state ->
+            state.copy(rows = state.rows.sortedBy { it.index })
+        }
 
     private fun onLearnMoreClicked() {
         cardReaderTracker.trackCashOnDeliveryLearnMoreTapped()
@@ -207,12 +209,10 @@ class CardReaderHubViewModel @Inject constructor(
             onClick = ::onCardReaderPaymentProviderClicked
         )
 
-    private fun updateCashOnDeliveryOptionState(toggleableListItem: ToggleableListItem) {
-        cashOnDeliveryState.value = toggleableListItem
+    private fun updateCashOnDeliveryOptionState(cashOnDeliveryListItem: ToggleableListItem) {
+        cashOnDeliveryState.value = cashOnDeliveryListItem
         viewState.value = viewState.value?.copy(
-            rows = (getNonTogggleableItems()!! + toggleableListItem).sortedBy {
-                it.index
-            }
+            rows = (getNonTogggleableItems()!! + cashOnDeliveryListItem)
         )
     }
 
@@ -228,7 +228,7 @@ class CardReaderHubViewModel @Inject constructor(
                 (
                     createHubListWhenSinglePluginInstalled(true, cashOnDeliveryState.value!!) +
                         createAdditionalItemWhenMultiplePluginsInstalled()
-                    ).sortedBy { it.index }
+                    )
             } else {
                 createHubListWhenSinglePluginInstalled(true, cashOnDeliveryState.value!!)
             },
@@ -247,9 +247,7 @@ class CardReaderHubViewModel @Inject constructor(
 
     private fun createOnboardingFailedState(state: CardReaderOnboardingState): CardReaderHubViewState {
         return CardReaderHubViewState(
-            rows = (
-                createHubListWhenSinglePluginInstalled(false, cashOnDeliveryState.value!!)
-                ).sortedBy { it.index },
+            rows = createHubListWhenSinglePluginInstalled(false, cashOnDeliveryState.value!!),
             isLoading = false,
             onboardingErrorAction = OnboardingErrorAction(
                 text = UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true),
