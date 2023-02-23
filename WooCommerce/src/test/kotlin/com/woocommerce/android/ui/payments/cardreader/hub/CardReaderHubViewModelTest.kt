@@ -1370,7 +1370,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         )
 
         // WHEN
-        viewModel.viewStateData.value?.learnMoreIppState?.onClick?.invoke()
+        viewModel.viewStateData.getOrAwaitValue().learnMoreIppState?.onClick?.invoke()
 
         // THEN
         assertThat(viewModel.event.value).isEqualTo(
@@ -1388,7 +1388,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         )
 
         // WHEN
-        viewModel.viewStateData.value?.learnMoreIppState?.onClick?.invoke()
+        viewModel.viewStateData.getOrAwaitValue().learnMoreIppState?.onClick?.invoke()
 
         // THEN
         assertThat(viewModel.event.value).isEqualTo(
