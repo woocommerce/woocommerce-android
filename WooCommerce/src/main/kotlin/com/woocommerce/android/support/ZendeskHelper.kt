@@ -164,9 +164,8 @@ class ZendeskHelper(
     suspend fun createRequest(
         context: Context,
         origin: HelpOrigin,
+        option: HelpOption,
         selectedSite: SiteModel?,
-        ticketType: TicketType,
-        extraTags: List<String>,
         subject: String,
         description: String
     ) = callbackFlow {
@@ -182,11 +181,11 @@ class ZendeskHelper(
         }
 
         CreateRequest().apply {
-            this.ticketFormId = ticketType.form
+            this.ticketFormId = option.ticketType.form
             this.subject = subject
             this.description = description
-            this.tags =  buildZendeskTags(siteStore.sites, origin, ticketType.tags + extraTags)
-            this.customFields = buildZendeskCustomFields(context, ticketType, siteStore.sites, selectedSite)
+            this.tags =  buildZendeskTags(siteStore.sites, origin, option.allTags)
+            this.customFields = buildZendeskCustomFields(context, option.ticketType, siteStore.sites, selectedSite)
         }.let { request -> requestProvider?.createRequest(request, requestCallback) }
 
         awaitClose()
@@ -627,6 +626,8 @@ sealed class HelpOption(val ticketType: TicketType, val extraTags: List<String>)
         ticketType = TicketType.General,
         extraTags = listOf("product_area_woo_extensions")
     )
+
+    val allTags get() = ticketType.tags + extraTags
 }
 
 sealed class TicketType(
