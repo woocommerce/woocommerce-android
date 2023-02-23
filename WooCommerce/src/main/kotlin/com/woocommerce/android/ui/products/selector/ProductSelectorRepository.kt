@@ -15,7 +15,7 @@ class ProductSelectorRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
 ) {
-    fun searchProductsLocally(
+    fun searchProductsInCache(
         offset: Int,
         pageSize: Int,
         searchQuery: String,
