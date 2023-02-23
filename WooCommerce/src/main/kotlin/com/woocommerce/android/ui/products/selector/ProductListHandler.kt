@@ -50,7 +50,11 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
             searchInCache()
             remoteSearch()
         } else {
-            fetchProducts(forceRefresh)
+            if (forceRefresh) {
+                fetchProducts()
+            } else {
+                Result.success(Unit)
+            }
         }
     }
 
@@ -66,17 +70,11 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
         }
     }
 
-    private suspend fun fetchProducts(
-        forceRefresh: Boolean = false
-    ): Result<Unit> {
-        return if (forceRefresh) {
-            repository.fetchProducts(offset, PAGE_SIZE, productFilters.value).onSuccess {
-                canLoadMore = it
-                offset += PAGE_SIZE
-            }.map { }
-        } else {
-            Result.success(Unit)
-        }
+    private suspend fun fetchProducts(): Result<Unit> {
+        repository.fetchProducts(offset, PAGE_SIZE, productFilters.value).onSuccess {
+            canLoadMore = it
+            offset += PAGE_SIZE
+        }.map { }
     }
 
     private fun searchInCache() {
