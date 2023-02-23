@@ -37,6 +37,11 @@ class SupportRequestFormViewModel @Inject constructor(
         .distinctUntilChanged()
         .asLiveData()
 
+    val isRequestLoading = viewState
+        .map { it.isLoading }
+        .distinctUntilChanged()
+        .asLiveData()
+
     fun onHelpOptionSelected(helpOption: HelpOption) {
         viewState.update { it.copy(helpOption = helpOption) }
     }
