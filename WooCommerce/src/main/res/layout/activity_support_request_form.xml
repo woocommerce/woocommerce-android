@@ -12,8 +12,8 @@
         android:layout_height="wrap_content">
 
         <include
-            layout="@layout/view_toolbar"
-            android:id="@+id/toolbar"/>
+            android:id="@+id/toolbar"
+            layout="@layout/view_toolbar" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <ScrollView
@@ -37,6 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_100">
+
                 <RadioGroup
                     android:id="@+id/help_options_group"
                     android:layout_width="match_parent"
@@ -49,6 +50,7 @@
                         style="@style/Woo.RadioButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
                         android:text="@string/support_request_help_app"
                         android:textAppearance="?attr/textAppearanceHeadline6"
                         android:textSize="@dimen/text_minor_130" />
@@ -62,6 +64,7 @@
                         style="@style/Woo.RadioButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
                         android:text="@string/support_request_help_ipp"
                         android:textAppearance="?attr/textAppearanceHeadline6"
                         android:textSize="@dimen/text_minor_130" />
@@ -75,6 +78,7 @@
                         style="@style/Woo.RadioButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
                         android:text="@string/support_request_help_payments"
                         android:textAppearance="?attr/textAppearanceHeadline6"
                         android:textSize="@dimen/text_minor_130" />
@@ -88,6 +92,7 @@
                         style="@style/Woo.RadioButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
                         android:text="@string/support_request_help_plugins"
                         android:textAppearance="?attr/textAppearanceHeadline6"
                         android:textSize="@dimen/text_minor_130" />
@@ -101,6 +106,7 @@
                         style="@style/Woo.RadioButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
                         android:text="@string/support_request_help_other"
                         android:textAppearance="?attr/textAppearanceHeadline6"
                         android:textSize="@dimen/text_minor_130" />
@@ -191,11 +197,11 @@
             android:id="@+id/submit_request_button"
             style="@style/Woo.Button.Colored"
             android:layout_width="match_parent"
-            android:backgroundTint="@color/button_colored_bg_purple_selector"
             android:layout_height="50dp"
             android:layout_marginHorizontal="@dimen/major_100"
             android:layout_marginTop="@dimen/minor_100"
             android:layout_marginBottom="@dimen/major_200"
+            android:backgroundTint="@color/button_colored_bg_purple_selector"
             android:text="@string/support_request_submit" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
