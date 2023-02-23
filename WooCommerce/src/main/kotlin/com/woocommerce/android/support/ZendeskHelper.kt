@@ -163,7 +163,7 @@ class ZendeskHelper(
      */
     suspend fun createRequest(
         context: Context,
-        helpData: Pair<HelpOrigin, HelpOption>,
+        helpData: HelpData,
         selectedSite: SiteModel?,
         subject: String,
         description: String
@@ -605,6 +605,8 @@ private object TicketFieldIds {
     const val appLanguage = 360008583691L
     const val sourcePlatform = 360009311651L
 }
+
+data class HelpData(val origin: HelpOrigin, val option: HelpOption)
 
 sealed class HelpOption(val ticketType: TicketType, val extraTags: List<String>) : Parcelable {
     @Parcelize object MobileApp : HelpOption(

@@ -5,6 +5,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.support.HelpData
 import com.woocommerce.android.support.HelpOption
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.support.help.HelpOrigin
@@ -53,7 +54,7 @@ class SupportRequestFormViewModel @Inject constructor(
         launch {
             zendeskHelper.createRequest(
                 context,
-                Pair(helpOrigin, helpOption),
+                HelpData(helpOrigin, helpOption),
                 selectedSite.get(),
                 viewState.value.subject,
                 viewState.value.message
@@ -63,7 +64,7 @@ class SupportRequestFormViewModel @Inject constructor(
 
     private fun Result<Request?>.handleCreateRequestResult() {
         fold(
-            onSuccess = { request -> },
+            onSuccess = { },
             onFailure = { }
         )
     }
