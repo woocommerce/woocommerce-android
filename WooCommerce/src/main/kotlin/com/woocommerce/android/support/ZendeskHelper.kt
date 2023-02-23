@@ -44,6 +44,7 @@ import zendesk.support.requestlist.RequestListActivity
 import java.util.Locale
 import java.util.Timer
 import kotlin.concurrent.schedule
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
 
@@ -180,6 +181,8 @@ class ZendeskHelper(
             this.tags = ticketType.tags
             this.customFields = buildZendeskCustomFields(context, ticketType, siteStore.sites, selectedSite, ssr)
         }.let { request -> requestProvider?.createRequest(request, requestCallback) }
+
+        awaitClose()
     }.flowOn(dispatchers.io)
 
     /**
