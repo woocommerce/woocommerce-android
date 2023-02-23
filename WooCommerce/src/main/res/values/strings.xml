@@ -3083,5 +3083,6 @@
     <string name="store_onboarding_task_view_all">View all (%1$d)</string>
     <string name="store_onboarding_full_screen_transition_name">Onboarding full screen</string>
     <string name="store_onboarding_collapsed_transition_name">Onboarding collapsed list</string>
+    <string name="store_onboarding_menu_share_feedback">Share feedback</string>
 
 </resources>
