@@ -71,7 +71,7 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
     }
 
     private suspend fun fetchProducts(): Result<Unit> {
-        repository.fetchProducts(offset, PAGE_SIZE, productFilters.value).onSuccess {
+        return repository.fetchProducts(offset, PAGE_SIZE, productFilters.value).onSuccess {
             canLoadMore = it
             offset += PAGE_SIZE
         }.map { }
