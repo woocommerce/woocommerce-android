@@ -470,6 +470,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_IPP_BANNER_CAMPAIGN_NAME_BEGINNER = "ipp_new_user"
         const val VALUE_IPP_BANNER_CAMPAIGN_NAME_NINJA = "ipp_power_user"
 
+        // -- IPP Learn More Link
+        const val IPP_LEARN_MORE_SOURCE = "source"
+
         var sendUsageStats: Boolean = true
             set(value) {
                 if (value != field) {
