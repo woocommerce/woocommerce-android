@@ -236,7 +236,7 @@ private fun ProductList(
                     thickness = dimensionResource(id = dimen.minor_10)
                 )
             }
-            if (state.loadingState == APPENDING) {
+            if (state.loadingState == APPENDING || state.loadingState == LOADING) {
                 item {
                     CircularProgressIndicator(
                         modifier = Modifier
