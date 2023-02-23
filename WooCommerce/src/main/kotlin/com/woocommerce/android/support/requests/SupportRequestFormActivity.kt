@@ -10,6 +10,7 @@ import com.woocommerce.android.databinding.ActivitySupportRequestFormBinding
 import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.support.HelpOption
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -19,6 +20,8 @@ class SupportRequestFormActivity : AppCompatActivity() {
     private val helpOrigin by lazy {
         intent.extras?.serializable(ORIGIN_KEY) ?: HelpOrigin.UNKNOWN
     }
+
+    private var progressDialog: CustomProgressDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +60,9 @@ class SupportRequestFormActivity : AppCompatActivity() {
         viewModel.isSubmitButtonEnabled.observe(this) { isEnabled ->
             binding.submitRequestButton.isEnabled = isEnabled
         }
+        viewModel.isRequestLoading.observe(this) { isLoading ->
+            if (isLoading) showProgressDialog() else hideProgressDialog()
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -65,6 +71,20 @@ class SupportRequestFormActivity : AppCompatActivity() {
             return true
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun showProgressDialog() {
+        hideProgressDialog()
+        progressDialog = CustomProgressDialog.show(
+            "Sending your request",
+            "Please wait..."
+        ).also { it.show(supportFragmentManager, CustomProgressDialog.TAG) }
+        progressDialog?.isCancelable = false
+    }
+
+    private fun hideProgressDialog() {
+        progressDialog?.dismiss()
+        progressDialog = null
     }
 
     companion object {
