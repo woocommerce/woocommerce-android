@@ -33,7 +33,7 @@ class SupportRequestFormViewModel @Inject constructor(
     )
 
     val isSubmitButtonEnabled = viewState
-        .map { it.helpOption != null && it.subject.isNotBlank() && it.message.isNotBlank() }
+        .map { it.dataIsValid && it.isLoading.not() }
         .distinctUntilChanged()
         .asLiveData()
 
@@ -51,6 +51,7 @@ class SupportRequestFormViewModel @Inject constructor(
 
     fun onSubmitRequestButtonClicked(context: Context, helpOrigin: HelpOrigin) {
         val helpOption = viewState.value.helpOption ?: return
+        viewState.update { it.copy(isLoading = true) }
         launch {
             zendeskHelper.createRequest(
                 context,
@@ -63,6 +64,7 @@ class SupportRequestFormViewModel @Inject constructor(
     }
 
     private fun Result<Request?>.handleCreateRequestResult() {
+        viewState.update { it.copy(isLoading = false) }
         fold(
             onSuccess = { },
             onFailure = { }
@@ -73,10 +75,14 @@ class SupportRequestFormViewModel @Inject constructor(
     data class ViewState(
         val helpOption: HelpOption?,
         val subject: String,
-        val message: String
+        val message: String,
+        val isLoading: Boolean
     ) : Parcelable {
+        val dataIsValid
+            get() = helpOption != null && subject.isNotBlank() && message.isNotBlank()
+
         companion object {
-            val EMPTY = ViewState(null, "", "")
+            val EMPTY = ViewState(null, "", "", false)
         }
     }
 }
