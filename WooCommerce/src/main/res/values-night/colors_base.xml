@@ -71,6 +71,8 @@
         TagView colors
     -->
     <color name="tagView_text">@color/color_on_primary_high</color>
+    <color name="tag_bg_main">@color/color_primary_variant</color>
+    <color name="tag_text_main">@color/white</color>
 
     <!--
         Warning colors
