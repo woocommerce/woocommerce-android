@@ -55,7 +55,7 @@ private fun PurchaseSuccessful(viewState: ViewState, onDoneButtonClicked: () -> 
                     bottom = dimensionResource(id = dimen.major_100)
                 ),
             contentScale = ContentScale.FillHeight,
-            painter = painterResource(id = drawable.ic_domain),
+            painter = painterResource(id = drawable.img_domain_purchase),
             contentDescription = stringResource(string.domains_purchase_successful_heading)
         )
         Text(
