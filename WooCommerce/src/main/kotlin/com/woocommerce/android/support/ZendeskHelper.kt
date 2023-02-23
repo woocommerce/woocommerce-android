@@ -165,9 +165,9 @@ class ZendeskHelper(
         context: Context,
         selectedSite: SiteModel?,
         ticketType: TicketType,
+        extraTags: List<String>,
         subject: String,
-        description: String,
-        ssr: String? = null
+        description: String
     ) = callbackFlow {
         val requestCallback = object : ZendeskCallback<Request>() {
             override fun onSuccess(result: Request?) { trySend(Result.success(result)) }
@@ -178,8 +178,8 @@ class ZendeskHelper(
             this.ticketFormId = ticketType.form
             this.subject = subject
             this.description = description
-            this.tags = ticketType.tags
-            this.customFields = buildZendeskCustomFields(context, ticketType, siteStore.sites, selectedSite, ssr)
+            this.tags = ticketType.tags + extraTags
+            this.customFields = buildZendeskCustomFields(context, ticketType, siteStore.sites, selectedSite)
         }.let { request -> requestProvider?.createRequest(request, requestCallback) }
 
         awaitClose()
