@@ -49,10 +49,11 @@
                         android:id="@+id/mobile_app_option"
                         style="@style/Woo.RadioButton"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/major_325"
+                        android:layout_height="@dimen/major_350"
                         android:background="@android:color/transparent"
                         android:text="@string/support_request_help_app"
-                        android:textAppearance="?attr/textAppearanceListItem" />
+                        android:textAppearance="?attr/textAppearanceListItem"
+                        android:textSize="@dimen/text_minor_130" />
 
                     <View
                         style="@style/Woo.Divider"
@@ -62,10 +63,11 @@
                         android:id="@+id/ipp_option"
                         style="@style/Woo.RadioButton"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/major_325"
+                        android:layout_height="@dimen/major_350"
                         android:background="@android:color/transparent"
                         android:text="@string/support_request_help_ipp"
-                        android:textAppearance="?attr/textAppearanceListItem" />
+                        android:textAppearance="?attr/textAppearanceListItem"
+                        android:textSize="@dimen/text_minor_130" />
 
                     <View
                         style="@style/Woo.Divider"
@@ -75,10 +77,11 @@
                         android:id="@+id/payments_option"
                         style="@style/Woo.RadioButton"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/major_325"
+                        android:layout_height="@dimen/major_350"
                         android:background="@android:color/transparent"
                         android:text="@string/support_request_help_payments"
-                        android:textAppearance="?attr/textAppearanceListItem" />
+                        android:textAppearance="?attr/textAppearanceListItem"
+                        android:textSize="@dimen/text_minor_130" />
 
                     <View
                         style="@style/Woo.Divider"
@@ -88,10 +91,11 @@
                         android:id="@+id/woo_plugin_option"
                         style="@style/Woo.RadioButton"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/major_325"
+                        android:layout_height="@dimen/major_350"
                         android:background="@android:color/transparent"
                         android:text="@string/support_request_help_plugins"
-                        android:textAppearance="?attr/textAppearanceListItem" />
+                        android:textAppearance="?attr/textAppearanceListItem"
+                        android:textSize="@dimen/text_minor_130" />
 
                     <View
                         style="@style/Woo.Divider"
@@ -101,10 +105,11 @@
                         android:id="@+id/other_option"
                         style="@style/Woo.RadioButton"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/major_325"
+                        android:layout_height="@dimen/major_350"
                         android:background="@android:color/transparent"
                         android:text="@string/support_request_help_other"
-                        android:textAppearance="?attr/textAppearanceListItem"/>
+                        android:textAppearance="?attr/textAppearanceListItem"
+                        android:textSize="@dimen/text_minor_130" />
 
                 </RadioGroup>
 
