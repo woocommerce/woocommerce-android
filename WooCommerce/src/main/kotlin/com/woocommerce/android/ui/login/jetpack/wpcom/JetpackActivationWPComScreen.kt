@@ -18,7 +18,9 @@ import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -46,6 +48,7 @@ fun JetpackActivationWPComScreen(viewModel: JetpackActivationWPComEmailViewModel
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun JetpackActivationWPComScreen(
     viewState: JetpackActivationWPComEmailViewModel.ViewState,
@@ -53,6 +56,8 @@ fun JetpackActivationWPComScreen(
     onCloseClick: () -> Unit = {},
     onContinueClick: () -> Unit = {}
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     Scaffold(
         topBar = {
             Toolbar(
@@ -102,16 +107,23 @@ fun JetpackActivationWPComScreen(
                     onValueChange = onEmailChanged,
                     label = stringResource(id = R.string.email_address),
                     isError = viewState.errorMessage != null,
+                    helperText = viewState.errorMessage?.let { stringResource(id = it) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(
-                        onDone = { TODO() }
+                        onDone = {
+                            keyboardController?.hide()
+                            // TODO
+                        }
                     )
                 )
             }
 
             WCColoredButton(
-                onClick = onContinueClick,
+                onClick = {
+                    keyboardController?.hide()
+                    onContinueClick()
+                },
                 enabled = viewState.enableSubmit,
                 modifier = Modifier
                     .fillMaxWidth()
