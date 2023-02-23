@@ -97,8 +97,11 @@ fun StoreOnboardingCollapsed(
                 .padding(top = dimensionResource(id = R.dimen.major_100))
                 .fillMaxWidth(0.5f)
         )
+        val taskToDisplay = if (onboardingState.tasks.filter { !it.isCompleted }.size == 1)
+            onboardingState.tasks.filter { !it.isCompleted }
+        else onboardingState.tasks.take(numberOfItemsToShowInCollapsedMode)
         OnboardingTaskList(
-            tasks = onboardingState.tasks.take(numberOfItemsToShowInCollapsedMode),
+            tasks = taskToDisplay,
             modifier = Modifier
                 .padding(top = dimensionResource(id = R.dimen.major_100))
                 .fillMaxWidth()
