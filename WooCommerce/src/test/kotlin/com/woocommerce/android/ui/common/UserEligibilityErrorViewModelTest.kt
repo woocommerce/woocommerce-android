@@ -53,7 +53,6 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
     fun setup() {
         viewModel = UserEligibilityErrorViewModel(
             savedState = SavedStateHandle(),
-            appPrefs = appPrefsWrapper,
             accountRepository = accountRepository,
             userEligibilityFetcher = userEligibilityFetcher,
             analyticsTracker = analyticsTracker
