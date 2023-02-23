@@ -36,9 +36,6 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
         roles = listOf(UserRole.Editor, UserRole.Author)
     )
 
-    private val appPrefsWrapper: AppPrefs = mock {
-        on { getUserEmail() } doReturn testUser.email
-    }
     private val userEligibilityFetcher: UserEligibilityFetcher = mock {
         on { getUser() } doReturn testUser
     }
@@ -73,7 +70,6 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
     fun `Handles retry button correctly when user is not eligible`() =
         testBlocking {
             doReturn(testUser).whenever(userEligibilityFetcher).fetchUserInfo()
-            doReturn(false).whenever(appPrefsWrapper).isUserEligible()
 
             val isProgressDialogShown = ArrayList<Boolean>()
             viewModel.viewStateData.observeForever { old, new ->
@@ -91,7 +87,6 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
 
             verify(userEligibilityFetcher, times(1)).fetchUserInfo()
 
-            assertFalse(appPrefsWrapper.isUserEligible())
             assertThat(snackbar).isEqualTo(ShowSnackbar(string.user_role_access_error_retry))
             assertThat(isProgressDialogShown).containsExactly(true, false)
         }
@@ -100,7 +95,6 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
     fun `Handles retry button correctly when user is eligible`() = testBlocking {
         val user = testUser.copy(roles = listOf(UserRole.ShopManager))
         doReturn(user).whenever(userEligibilityFetcher).fetchUserInfo()
-        doReturn(true).whenever(appPrefsWrapper).isUserEligible()
 
         val isProgressDialogShown = ArrayList<Boolean>()
         viewModel.viewStateData.observeForever { old, new ->
@@ -120,7 +114,6 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
 
         verify(userEligibilityFetcher, times(1)).fetchUserInfo()
 
-        assertTrue(appPrefsWrapper.isUserEligible())
         assertThat(snackbar).isNull()
         assertThat(exit).isNotNull
         assertThat(isProgressDialogShown).containsExactly(true, false)
