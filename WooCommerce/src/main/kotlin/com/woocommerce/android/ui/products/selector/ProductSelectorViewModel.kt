@@ -34,6 +34,7 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -75,6 +76,9 @@ class ProductSelectorViewModel @Inject constructor(
     private val loadingState = MutableStateFlow(IDLE)
     private val selectedProductIds = savedState.getStateFlow(viewModelScope, navArgs.productIds.toSet())
     private val filterState = savedState.getStateFlow(viewModelScope, FilterState())
+
+    private var fetchProductsJob: Job? = null
+    private var loadMoreJob: Job? = null
 
     val viewState = combine(
         flow = listHandler.productsFlow,
@@ -211,7 +215,8 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     fun onLoadMore() {
-        viewModelScope.launch {
+        loadMoreJob?.cancel()
+        loadMoreJob = viewModelScope.launch {
             loadingState.value = APPENDING
             listHandler.loadMore()
             loadingState.value = IDLE
@@ -262,14 +267,18 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     private suspend fun fetchProducts(filters: FilterState = filterState.value, query: String = "", forceRefresh: Boolean = false) {
-        loadingState.value = LOADING
-        listHandler.fetchProducts(filters = filters.filterOptions, searchQuery = query, forceRefresh = forceRefresh)
-            .onFailure {
-                val message = if (query.isEmpty()) string.product_selector_loading_failed
-                else string.product_selector_search_failed
-                triggerEvent(ShowSnackbar(message))
-            }
-        loadingState.value = IDLE
+        loadMoreJob?.cancel()
+        fetchProductsJob?.cancel()
+        fetchProductsJob = viewModelScope.launch {
+            loadingState.value = LOADING
+            listHandler.loadFromCacheAndFetch(filters = filters.filterOptions, searchQuery = query, forceRefresh = forceRefresh)
+                .onFailure {
+                    val message = if (query.isEmpty()) string.product_selector_loading_failed
+                    else string.product_selector_search_failed
+                    triggerEvent(ShowSnackbar(message))
+                }
+            loadingState.value = IDLE
+        }
     }
 
     data class ViewState(
