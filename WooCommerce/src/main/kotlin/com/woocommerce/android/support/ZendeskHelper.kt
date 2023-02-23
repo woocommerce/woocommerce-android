@@ -21,6 +21,9 @@ import com.woocommerce.android.util.WooLog.T
 import com.zendesk.logger.Logger
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
@@ -44,9 +47,6 @@ import zendesk.support.requestlist.RequestListActivity
 import java.util.Locale
 import java.util.Timer
 import kotlin.concurrent.schedule
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flowOn
 
 private const val zendeskNeedsToBeEnabledError = "Zendesk needs to be setup before this method can be called"
 private const val enablePushNotificationsDelayAfterIdentityChange: Long = 2500
@@ -163,12 +163,12 @@ class ZendeskHelper(
      */
     suspend fun createRequest(
         context: Context,
-        origin: HelpOrigin,
-        option: HelpOption,
+        helpData: Pair<HelpOrigin, HelpOption>,
         selectedSite: SiteModel?,
         subject: String,
         description: String
     ) = callbackFlow {
+        val (origin, option) = helpData
         val requestCallback = object : ZendeskCallback<Request>() {
             override fun onSuccess(result: Request?) {
                 trySend(Result.success(result))
@@ -184,7 +184,7 @@ class ZendeskHelper(
             this.ticketFormId = option.ticketType.form
             this.subject = subject
             this.description = description
-            this.tags =  buildZendeskTags(siteStore.sites, origin, option.allTags)
+            this.tags = buildZendeskTags(siteStore.sites, origin, option.allTags)
             this.customFields = buildZendeskCustomFields(context, option.ticketType, siteStore.sites, selectedSite)
         }.let { request -> requestProvider?.createRequest(request, requestCallback) }
 
@@ -605,6 +605,7 @@ private object TicketFieldIds {
     const val appLanguage = 360008583691L
     const val sourcePlatform = 360009311651L
 }
+
 sealed class HelpOption(val ticketType: TicketType, val extraTags: List<String>) : Parcelable {
     @Parcelize object MobileApp : HelpOption(
         ticketType = TicketType.General,

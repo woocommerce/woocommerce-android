@@ -17,8 +17,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import javax.inject.Inject
 import zendesk.support.Request
+import javax.inject.Inject
 
 @HiltViewModel
 class SupportRequestFormViewModel @Inject constructor(
@@ -53,10 +53,8 @@ class SupportRequestFormViewModel @Inject constructor(
         launch {
             zendeskHelper.createRequest(
                 context,
-                helpOrigin,
+                Pair(helpOrigin, helpOption),
                 selectedSite.get(),
-                helpOption.ticketType,
-                helpOption.extraTags,
                 viewState.value.subject,
                 viewState.value.message
             ).collect { it.handleCreateRequestResult() }
@@ -65,12 +63,8 @@ class SupportRequestFormViewModel @Inject constructor(
 
     private fun Result<Request?>.handleCreateRequestResult() {
         fold(
-            onSuccess = { request ->
-
-            },
-            onFailure = {
-
-            }
+            onSuccess = { request -> },
+            onFailure = { }
         )
     }
 
