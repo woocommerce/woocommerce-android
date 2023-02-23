@@ -171,8 +171,14 @@ class ZendeskHelper(
         description: String
     ) = callbackFlow {
         val requestCallback = object : ZendeskCallback<Request>() {
-            override fun onSuccess(result: Request?) { trySend(Result.success(result)) }
-            override fun onError(error: ErrorResponse) { trySend(Result.failure(Throwable(error.reason))) }
+            override fun onSuccess(result: Request?) {
+                trySend(Result.success(result))
+                close()
+            }
+            override fun onError(error: ErrorResponse) {
+                trySend(Result.failure(Throwable(error.reason)))
+                close()
+            }
         }
 
         CreateRequest().apply {
