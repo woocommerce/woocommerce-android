@@ -53,7 +53,7 @@ class SupportRequestFormActivity : AppCompatActivity() {
             }
         }
         binding.submitRequestButton.setOnClickListener {
-            viewModel.onSubmitRequestButtonClicked(this)
+            viewModel.onSubmitRequestButtonClicked(this, helpOrigin)
         }
     }
 

@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.support.TicketType
 import com.woocommerce.android.support.TicketType.General
 import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -48,11 +49,12 @@ class SupportRequestFormViewModel @Inject constructor(
         viewState.update { it.copy(message = message) }
     }
 
-    fun onSubmitRequestButtonClicked(context: Context) {
+    fun onSubmitRequestButtonClicked(context: Context, helpOrigin: HelpOrigin) {
         val helpOption = viewState.value.helpOption ?: return
         launch {
             zendeskHelper.createRequest(
                 context,
+                helpOrigin,
                 selectedSite.get(),
                 helpOption.ticketType,
                 helpOption.extraTags,
