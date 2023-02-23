@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.CASH_ON_DELIVERY
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.NavigateToTapTooPaySummaryScreen
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.OpenGenericWebView
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToastString
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState
@@ -1394,6 +1395,22 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         assertThat(viewModel.event.value).isEqualTo(
             viewModel.event.value
         ).isEqualTo(OpenGenericWebView(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS))
+    }
+
+    @Test
+    fun `given tpp available when tap to pay clicked, then navigate to tap to pay summary screen event emitted`() {
+        // GIVEN
+        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+        whenever(isTapToPayAvailable("US")).thenReturn(Available)
+
+        // WHEN
+        initViewModel()
+        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
+            it.label == UiString.UiStringRes(R.string.card_reader_tap_to_pay)
+        }!!.onClick!!.invoke()
+
+        // THEN
+        assertThat(viewModel.event.value).isInstanceOf(NavigateToTapTooPaySummaryScreen::class.java)
     }
 
     private fun getSuccessWooResult() = WooResult(
