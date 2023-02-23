@@ -8,19 +8,19 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel.NavigateToNextStep
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerScreen
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.NavigateToDomainSearch
+import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ShowMoreAboutDomains
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class DomainSearchFragment : BaseFragment() {
-    private val viewModel: DomainSearchViewModel by viewModels()
+class DomainDashboardFragment : BaseFragment() {
+    private val viewModel: DomainDashboardViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -30,7 +30,7 @@ class DomainSearchFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    DomainPickerScreen(viewModel, viewModel::onDomainSuggestionSelected)
+                    DomainDashboardScreen(viewModel)
                 }
             }
         }
@@ -46,14 +46,15 @@ class DomainSearchFragment : BaseFragment() {
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
-                is NavigateToNextStep -> navigateToSuccessScreen(event.selectedDomain)
+                is ShowMoreAboutDomains -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                is NavigateToDomainSearch -> findNavController().navigate(
+                    DomainDashboardFragmentDirections.actionDomainDashboardFragmentToDomainSearchFragment(
+                        keyIsFreeCreditAvailable = event.hasFreeCredits,
+                        searchOnlyFreeDomains = false,
+                        initialQuery = ""
+                    )
+                )
             }
         }
-    }
-
-    private fun navigateToSuccessScreen(domain: String) {
-        findNavController().navigateSafely(
-            DomainSearchFragmentDirections.actionDomainSearchFragmentToPurchaseSuccessfulFragment(domain)
-        )
     }
 }

@@ -51,22 +51,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
+import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel
+import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel.DomainSearchState
+import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel.DomainSuggestionUi
+import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel.DomainSuggestionUi.Free
+import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel.DomainSuggestionUi.FreeWithCredit
+import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel.DomainSuggestionUi.OnSale
+import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel.DomainSuggestionUi.Paid
+import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel.LoadingState.Idle
+import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel.LoadingState.Loading
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.DomainPickerState
-import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.DomainSuggestionUi
-import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.DomainSuggestionUi.Free
-import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.DomainSuggestionUi.FreeWithCredit
-import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.DomainSuggestionUi.OnSale
-import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.DomainSuggestionUi.Paid
-import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.LoadingState.Idle
-import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.LoadingState.Loading
 
 @Composable
-fun DomainPickerScreen(viewModel: DomainPickerViewModel, onDomainSelected: (String) -> Unit) {
-    viewModel.viewState.observeAsState(DomainPickerState()).value.let { viewState ->
+fun DomainPickerScreen(viewModel: DomainSuggestionsViewModel, onDomainSelected: (String) -> Unit) {
+    viewModel.viewState.observeAsState(DomainSearchState()).value.let { viewState ->
         Scaffold(topBar = {
             ToolbarWithHelpButton(
                 onNavigationButtonClick = viewModel::onBackPressed,
@@ -74,8 +75,9 @@ fun DomainPickerScreen(viewModel: DomainPickerViewModel, onDomainSelected: (Stri
             )
         }) { padding ->
             DomainSearchForm(
+                viewModel.domainQuery,
                 state = viewState,
-                onDomainQueryChanged = viewModel::onDomainChanged,
+                onDomainQueryChanged = viewModel::onDomainQueryChanged,
                 onDomainSuggestionSelected = onDomainSelected,
                 onContinueClicked = viewModel::onContinueClicked,
                 modifier = Modifier
@@ -88,7 +90,8 @@ fun DomainPickerScreen(viewModel: DomainPickerViewModel, onDomainSelected: (Stri
 
 @Composable
 private fun DomainSearchForm(
-    state: DomainPickerState,
+    domainQuery: String,
+    state: DomainSearchState,
     onDomainQueryChanged: (String) -> Unit,
     onDomainSuggestionSelected: (String) -> Unit,
     onContinueClicked: () -> Unit,
@@ -106,11 +109,11 @@ private fun DomainSearchForm(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
     ) {
         Text(
-            text = stringResource(id = R.string.store_creation_domain_picker_title),
+            text = stringResource(id = string.store_creation_domain_picker_title),
             style = MaterialTheme.typography.h5,
         )
         if (state.freeUrl != null) {
-            val redirectNotice = stringResource(id = R.string.domains_redirect_notice)
+            val redirectNotice = stringResource(id = string.domains_redirect_notice)
             Text(
                 text = buildAnnotatedString {
                     withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {
@@ -135,7 +138,7 @@ private fun DomainSearchForm(
         }
 
         WCSearchField(
-            value = state.domainQuery,
+            value = domainQuery,
             onValueChange = onDomainQueryChanged,
             hint = stringResource(id = R.string.store_creation_domain_picker_hint),
             modifier = Modifier
@@ -160,7 +163,7 @@ private fun DomainSearchForm(
         ) {
             when {
                 state.loadingState == Loading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                state.domainSuggestionsUi.isEmpty() && state.domainQuery.isBlank() ->
+                state.domainSuggestionsUi.isEmpty() && domainQuery.isBlank() ->
                     ShowEmptyImage(modifier = Modifier.align(Alignment.Center))
                 state.domainSuggestionsUi.isEmpty() ->
                     Text(
@@ -177,7 +180,7 @@ private fun DomainSearchForm(
         WCColoredButton(
             modifier = Modifier.fillMaxWidth(),
             onClick = onContinueClicked,
-            enabled = state.loadingState == Idle
+            enabled = state.loadingState == Idle && state.selectedDomain.isNotEmpty(),
         ) {
             Text(text = stringResource(id = state.confirmButtonTitle))
         }
@@ -200,7 +203,9 @@ private fun DomainSuggestionList(
     modifier: Modifier = Modifier,
 ) {
     LaunchedEffect(Unit) {
-        onDomainSuggestionSelected(suggestions.first { it.isSelected }.domain)
+        suggestions.firstOrNull { it.isSelected }?.domain?.let { domain ->
+            onDomainSuggestionSelected(domain)
+        }
     }
 
     Column(
@@ -363,11 +368,11 @@ private fun DomainSuggestionItem(
 fun DomainPickerPreview() {
     WooThemeWithBackground {
         DomainSearchForm(
-            state = DomainPickerState(
+            domainQuery = "White Christmas Tress",
+            state = DomainSearchState(
                 confirmButtonTitle = R.string.domains_select_domain,
                 freeUrl = "www.cnn.com",
                 loadingState = Idle,
-                domainQuery = "White Christmas Tress",
                 domainSuggestionsUi = listOf(
                     Paid("whitechristmastrees.mywc.mysite", price = "$5.99 / year"),
                     Free("whitechristmastrees.business.mywc.mysite"),
