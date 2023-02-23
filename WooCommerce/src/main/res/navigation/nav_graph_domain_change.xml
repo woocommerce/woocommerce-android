@@ -26,8 +26,8 @@
             android:name="initial_query"
             app:argType="string" />
         <action
-            android:id="@+id/action_domainSearchFragment_to_purchaseSuccessfulFragment"
-            app:destination="@id/purchaseSuccessfulFragment" />
+            android:id="@+id/action_domainSearchFragment_to_domainRegistrationDetailsFragment"
+            app:destination="@id/domainRegistrationDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/purchaseSuccessfulFragment"
@@ -40,5 +40,19 @@
             android:id="@+id/action_purchaseSuccessfulFragment_to_domainDashboardFragment"
             app:destination="@id/domainDashboardFragment"
             app:popUpTo="@id/nav_graph_domain_change" />
+    </fragment>
+    <fragment
+        android:id="@+id/domainRegistrationDetailsFragment"
+        android:name="com.woocommerce.android.ui.prefs.domain.DomainRegistrationDetailsFragment"
+        android:label="DomainRegistrationDetailsFragment" >
+        <action
+            android:id="@+id/action_domainRegistrationDetailsFragment_to_purchaseSuccessfulFragment"
+            app:destination="@id/purchaseSuccessfulFragment" />
+        <argument
+            android:name="domainProductDetails"
+            app:argType="com.woocommerce.android.ui.prefs.domain.DomainProductDetails" />
+        <action
+            android:id="@+id/action_domainRegistrationDetailsFragment_to_domainDashboardFragment"
+            app:destination="@id/domainDashboardFragment" />
     </fragment>
 </navigation>
