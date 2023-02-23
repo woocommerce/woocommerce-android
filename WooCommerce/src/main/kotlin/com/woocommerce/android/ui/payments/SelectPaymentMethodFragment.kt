@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.Navigate
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderHubFlow
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderPaymentFlow
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderRefundFlow
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.OpenGenericWebView
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.OpenPurchaseCardReaderLink
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.SharePaymentUrl
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
@@ -41,6 +42,8 @@ import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.ui.payments.banner.PaymentsScreenBannerDismissDialog
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectDialogFragment
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
+import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -148,6 +151,12 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
                 viewModel.onSharePaymentUrlClicked()
             }
         }
+
+        with(binding.learnMoreIppPaymentMethodsTv) {
+            val learMoreIpp = state.learMoreIpp
+            setOnClickListener { learMoreIpp.onClick.invoke() }
+            UiHelpers.setTextOrHide(this, learMoreIpp.label)
+        }
         applyBannerComposeUI(state.bannerState)
     }
 
@@ -220,6 +229,9 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
                             title = resources.getString(event.titleRes)
                         )
                     )
+                }
+                is OpenGenericWebView -> {
+                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
             }
         }

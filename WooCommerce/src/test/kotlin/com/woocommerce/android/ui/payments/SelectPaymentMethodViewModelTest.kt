@@ -21,6 +21,8 @@ import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaym
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Success
 import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.payments.banner.BannerState
+import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment
@@ -93,6 +95,8 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker = mock()
     private val selectPaymentUtmProvider: UtmProvider = mock()
+    private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
+    private val cardReaderTracker: CardReaderTracker = mock()
 
     @Test
     fun `given hub flow, when view model init, then navigate to hub flow emitted`() = testBlocking {
@@ -913,6 +917,42 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         }
     //endregion
 
+    @Test
+    fun `when learn more link clicked, then correct event is triggered`() {
+        // GIVEN
+        val viewModel = initViewModel(Payment(1L, ORDER))
+        whenever(
+            learnMoreUrlProvider.provideLearnMoreUrlFor(LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS)
+        ).thenReturn(
+            AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
+        )
+
+        // WHEN
+        (viewModel.viewStateData.value as Success).learMoreIpp.onClick.invoke()
+
+        // THEN
+        assertThat(viewModel.event.value).isInstanceOf(SelectPaymentMethodViewModel.OpenGenericWebView::class.java)
+    }
+
+    @Test
+    fun `when learn more clicked, then trigger proper event with correct url`() {
+        // GIVEN
+        val viewModel = initViewModel(Payment(1L, ORDER))
+        whenever(
+            learnMoreUrlProvider.provideLearnMoreUrlFor(LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS)
+        ).thenReturn(
+            AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
+        )
+
+        // WHEN
+        (viewModel.viewStateData.value as Success).learMoreIpp.onClick.invoke()
+
+        // THEN
+        assertThat(viewModel.event.value).isEqualTo(
+            SelectPaymentMethodViewModel.OpenGenericWebView(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
+        )
+    }
+
     private fun initViewModel(cardReaderFlowParam: CardReaderFlowParam): SelectPaymentMethodViewModel {
         return SelectPaymentMethodViewModel(
             SelectPaymentMethodFragmentArgs(cardReaderFlowParam = cardReaderFlowParam).initSavedStateHandle(),
@@ -926,6 +966,8 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             analyticsTrackerWrapper,
             cardPaymentCollectibilityChecker,
             bannerDisplayEligibilityChecker,
+            learnMoreUrlProvider,
+            cardReaderTracker,
             selectPaymentUtmProvider,
         )
     }

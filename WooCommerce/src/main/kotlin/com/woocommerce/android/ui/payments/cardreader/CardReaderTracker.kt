@@ -35,6 +35,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.DISABLE_CASH_ON_DELIVERY
 import com.woocommerce.android.analytics.AnalyticsEvent.DISABLE_CASH_ON_DELIVERY_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.ENABLE_CASH_ON_DELIVERY_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.ENABLE_CASH_ON_DELIVERY_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.IN_PERSON_PAYMENTS_LEARN_MORE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.MANAGE_CARD_READERS_AUTOMATIC_DISCONNECT_BUILT_IN_READER
 import com.woocommerce.android.analytics.AnalyticsEvent.PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED
@@ -440,6 +441,13 @@ class CardReaderTracker @Inject constructor(
 
     fun trackLearnMoreConnectionClicked() {
         track(CARD_PRESENT_CONNECTION_LEARN_MORE_TAPPED)
+    }
+
+    fun trackIPPLearnMoreClicked(source: String) {
+        track(
+            stat = IN_PERSON_PAYMENTS_LEARN_MORE_TAPPED,
+            properties = mutableMapOf(AnalyticsTracker.IPP_LEARN_MORE_SOURCE to source)
+        )
     }
 
     fun trackSelectReaderTypeBuiltInTapped() {
