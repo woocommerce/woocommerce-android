@@ -2,8 +2,24 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph_jetpack_activation"
-    app:startDestination="@id/jetpackActivationStartFragment">
+    app:startDestination="@id/jetpackActivationDispatcherFragment">
 
+    <fragment
+        android:id="@+id/jetpackActivationDispatcherFragment"
+        android:name="com.woocommerce.android.ui.login.jetpack.dispatcher.JetpackActivationDispatcherFragment"
+        android:label="JetpackActivationDispatcherFragment">
+        <argument
+            android:name="jetpackStatus"
+            app:argType="com.woocommerce.android.model.JetpackStatus" />
+        <argument
+            android:name="siteUrl"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_jetpackActivationDispatcherFragment_to_jetpackActivationStartFragment"
+            app:destination="@id/jetpackActivationStartFragment"
+            app:popUpTo="@id/jetpackActivationDispatcherFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
     <fragment
         android:id="@+id/jetpackActivationStartFragment"
         android:name="com.woocommerce.android.ui.login.jetpack.start.JetpackActivationStartFragment"
@@ -17,8 +33,9 @@
         <action
             android:id="@+id/action_jetpackActivationStartFragment_to_jetpackActivationSiteCredentialsFragment"
             app:destination="@id/jetpackActivationSiteCredentialsFragment" />
-        <action android:id="@+id/action_jetpackActivationStartFragment_to_jetpackActivationMainFragment"
-                app:destination="@id/jetpackActivationMainFragment"/>
+        <action
+            android:id="@+id/action_jetpackActivationStartFragment_to_jetpackActivationMainFragment"
+            app:destination="@id/jetpackActivationMainFragment" />
     </fragment>
     <fragment
         android:id="@+id/jetpackActivationSiteCredentialsFragment"

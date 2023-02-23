@@ -48,8 +48,8 @@
                 android:name="siteUrl"
                 app:argType="string" />
             <argument
-                android:name="isJetpackInstalled"
-                app:argType="boolean" />
+                android:name="jetpackStatus"
+                app:argType="com.woocommerce.android.model.JetpackStatus" />
         </action>
     </fragment>
     <fragment
