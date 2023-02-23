@@ -5,6 +5,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.login.jetpack.dispatcher.JetpackActivationDispatcherViewModel.StartJetpackActivationForNewSite
+import com.woocommerce.android.ui.login.jetpack.dispatcher.JetpackActivationDispatcherViewModel.StartWPComLoginForJetpackActivation
 import com.woocommerce.android.ui.main.AppBarStatus
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -25,6 +26,7 @@ class JetpackActivationDispatcherFragment : BaseFragment() {
         viewModel.event.observe(this) { event ->
             when (event) {
                 is StartJetpackActivationForNewSite -> navigateToJetpackActivationStartScreen(event)
+                is StartWPComLoginForJetpackActivation -> navigateToWPComEmailScreen(event)
             }
         }
     }
@@ -35,6 +37,15 @@ class JetpackActivationDispatcherFragment : BaseFragment() {
                 .actionJetpackActivationDispatcherFragmentToJetpackActivationStartFragment(
                     siteUrl = event.siteUrl,
                     isJetpackInstalled = event.isJetpackInstalled
+                )
+        )
+    }
+
+    private fun navigateToWPComEmailScreen(event: StartWPComLoginForJetpackActivation) {
+        findNavController().navigate(
+            JetpackActivationDispatcherFragmentDirections
+                .actionJetpackActivationDispatcherFragmentToJetpackActivationWPComEmailFragment(
+                    jetpackStatus = event.jetpackStatus
                 )
         )
     }

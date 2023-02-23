@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login.jetpack.dispatcher
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -19,8 +20,13 @@ class JetpackActivationDispatcherViewModel @Inject constructor(
     init {
         when (selectedSite.connectionType) {
             SiteConnectionType.ApplicationPasswords -> {
-                // Handle Jetpack activation for "Application Passwords" users
-                TODO()
+                if (args.jetpackStatus.isJetpackConnected) {
+                    // Start authentication using the retrieved email
+                    TODO()
+                } else {
+                    // Start regular WordPress.com authentication
+                    triggerEvent(StartWPComLoginForJetpackActivation(args.jetpackStatus))
+                }
             }
 
             else -> {
@@ -38,5 +44,9 @@ class JetpackActivationDispatcherViewModel @Inject constructor(
     data class StartJetpackActivationForNewSite(
         val siteUrl: String,
         val isJetpackInstalled: Boolean
+    ) : MultiLiveEvent.Event()
+
+    data class StartWPComLoginForJetpackActivation(
+        val jetpackStatus: JetpackStatus
     ) : MultiLiveEvent.Event()
 }

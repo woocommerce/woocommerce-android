@@ -19,6 +19,11 @@
             app:destination="@id/jetpackActivationStartFragment"
             app:popUpTo="@id/jetpackActivationDispatcherFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_jetpackActivationDispatcherFragment_to_jetpackActivationWPComEmailFragment"
+            app:destination="@id/jetpackActivationWPComEmailFragment"
+            app:popUpTo="@id/jetpackActivationDispatcherFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/jetpackActivationStartFragment"
@@ -63,5 +68,13 @@
         <argument
             android:name="isJetpackInstalled"
             app:argType="boolean" />
+    </fragment>
+    <fragment
+        android:id="@+id/jetpackActivationWPComEmailFragment"
+        android:name="com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComEmailFragment"
+        android:label="JetpackActivationWPComEmailFragment" >
+        <argument
+            android:name="jetpackStatus"
+            app:argType="com.woocommerce.android.model.JetpackStatus" />
     </fragment>
 </navigation>
