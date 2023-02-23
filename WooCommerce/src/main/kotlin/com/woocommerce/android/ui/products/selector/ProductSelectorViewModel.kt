@@ -103,9 +103,7 @@ class ProductSelectorViewModel @Inject constructor(
         monitorSearchQuery()
         monitorProductFilters()
         viewModelScope.launch {
-            loadingState.value = LOADING
-            listHandler.fetchProducts(forceRefresh = true)
-            loadingState.value = IDLE
+            fetchProducts(forceRefresh = true)
         }
     }
 
@@ -243,15 +241,7 @@ class ProductSelectorViewModel @Inject constructor(
                     if (it.isEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
                 }
                 .collectLatest { query ->
-                    // Make sure the loading state is correctly set after debounce too
-                    loadingState.value = LOADING
-                    listHandler.fetchProducts(searchQuery = query)
-                        .onFailure {
-                            val message = if (query.isEmpty()) string.product_selector_loading_failed
-                            else string.product_selector_search_failed
-                            triggerEvent(ShowSnackbar(message))
-                        }
-                    loadingState.value = IDLE
+                    fetchProducts(query = query)
                 }
         }
     }
@@ -265,18 +255,21 @@ class ProductSelectorViewModel @Inject constructor(
                     it.index == 0 && it.value.filterOptions.isEmpty()
                 }
                 .map { it.value }
-                .onEach {
-                    loadingState.value = LOADING
-                }
                 .collectLatest { filters ->
-                    listHandler.fetchProducts(filters = filters.filterOptions)
-                        .onFailure {
-                            val message = string.product_selector_loading_failed
-                            triggerEvent(ShowSnackbar(message))
-                        }
-                    loadingState.value = IDLE
+                    fetchProducts(filters = filters)
                 }
         }
+    }
+
+    private suspend fun fetchProducts(filters: FilterState = filterState.value, query: String = "", forceRefresh: Boolean = false) {
+        loadingState.value = LOADING
+        listHandler.fetchProducts(filters = filters.filterOptions, searchQuery = query, forceRefresh = forceRefresh)
+            .onFailure {
+                val message = if (query.isEmpty()) string.product_selector_loading_failed
+                else string.product_selector_search_failed
+                triggerEvent(ShowSnackbar(message))
+            }
+        loadingState.value = IDLE
     }
 
     data class ViewState(
