@@ -19,8 +19,7 @@ class StoreOnboardingRepository @Inject constructor(
                 WooLog.i(WooLog.T.ONBOARDING, "TODO ERROR HANDLING fetchOnboardingTasks")
                 emptyList()
             }
-            else -> result.model
-                ?.map { it.toOnboardingTask() }
+            else -> result.model?.map { it.toOnboardingTask() }
                 ?.filter { it.type != MOBILE_UNSUPPORTED }
                 ?: emptyList()
         }
