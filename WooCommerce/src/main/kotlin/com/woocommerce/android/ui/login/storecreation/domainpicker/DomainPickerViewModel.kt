@@ -31,8 +31,8 @@ class DomainPickerViewModel @Inject constructor(
 
     override val helpOrigin = HelpOrigin.STORE_CREATION
 
-    override fun onDomainSuggestionSelected(clickedDomain: String) {
-        super.onDomainSuggestionSelected(clickedDomain)
-        newStore.update(domain = clickedDomain)
+    override fun onDomainSuggestionSelected(domain: String) {
+        super.onDomainSuggestionSelected(domain)
+        newStore.update(domain = domain)
     }
 }

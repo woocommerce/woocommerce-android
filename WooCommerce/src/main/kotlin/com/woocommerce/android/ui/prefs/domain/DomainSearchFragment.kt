@@ -7,23 +7,20 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerScreen
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.prefs.domain.DomainChangeViewModel.ShowMoreAboutDomains
+import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ShowMoreAboutDomains
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class DomainSearchFragment : BaseFragment() {
-    private val domainChangeViewModel: DomainChangeViewModel by hiltNavGraphViewModels(R.id.nav_graph_domain_change)
-    private val domainSearchViewModel: DomainSearchViewModel by viewModels()
+    private val viewModel: DomainSearchViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -33,15 +30,10 @@ class DomainSearchFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    DomainPickerScreen(domainSearchViewModel, ::onDomainSelected)
+                    DomainPickerScreen(viewModel, viewModel::onDomainSuggestionSelected)
                 }
             }
         }
-    }
-
-    private fun onDomainSelected(domain: String) {
-        domainSearchViewModel.onDomainSuggestionSelected(domain)
-        domainChangeViewModel.onDomainSelected(domain)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -50,7 +42,7 @@ class DomainSearchFragment : BaseFragment() {
     }
 
     private fun setupObservers() {
-        domainSearchViewModel.event.observe(viewLifecycleOwner) { event ->
+        viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
