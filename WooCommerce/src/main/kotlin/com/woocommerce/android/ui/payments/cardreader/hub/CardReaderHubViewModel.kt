@@ -202,7 +202,7 @@ class CardReaderHubViewModel @Inject constructor(
                     label = UiStringRes(R.string.card_reader_tap_to_pay),
                     description = UiStringRes(R.string.card_reader_tap_to_pay_description),
                     index = 5,
-                    onClick = { }
+                    onClick = ::onTapTooPayClicked
                 )
             )
         }
@@ -294,6 +294,10 @@ class CardReaderHubViewModel @Inject constructor(
                 titleRes = R.string.card_reader_purchase_card_reader
             )
         )
+    }
+
+    private fun onTapTooPayClicked() {
+        triggerEvent(CardReaderHubEvents.NavigateToTapTooPaySummaryScreen)
     }
 
     private fun onCardReaderManualsClicked(countryConfig: CardReaderConfigForSupportedCountry) {
@@ -391,6 +395,7 @@ class CardReaderHubViewModel @Inject constructor(
         ) : CardReaderHubEvents()
 
         object NavigateToPaymentCollectionScreen : CardReaderHubEvents()
+        object NavigateToTapTooPaySummaryScreen : CardReaderHubEvents()
         data class NavigateToCardReaderManualsScreen(
             val countryConfig: CardReaderConfigForSupportedCountry
         ) : CardReaderHubEvents()
