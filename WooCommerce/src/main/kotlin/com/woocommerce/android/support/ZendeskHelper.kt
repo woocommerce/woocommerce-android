@@ -163,6 +163,7 @@ class ZendeskHelper(
      */
     suspend fun createRequest(
         context: Context,
+        origin: HelpOrigin,
         selectedSite: SiteModel?,
         ticketType: TicketType,
         extraTags: List<String>,
@@ -178,7 +179,7 @@ class ZendeskHelper(
             this.ticketFormId = ticketType.form
             this.subject = subject
             this.description = description
-            this.tags = ticketType.tags + extraTags
+            this.tags =  buildZendeskTags(siteStore.sites, origin, ticketType.tags + extraTags)
             this.customFields = buildZendeskCustomFields(context, ticketType, siteStore.sites, selectedSite)
         }.let { request -> requestProvider?.createRequest(request, requestCallback) }
 
