@@ -5,8 +5,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.support.TicketType
-import com.woocommerce.android.support.TicketType.General
+import com.woocommerce.android.support.HelpOption
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
@@ -84,28 +83,5 @@ class SupportRequestFormViewModel @Inject constructor(
         companion object {
             val EMPTY = ViewState(null, "", "")
         }
-    }
-
-    sealed class HelpOption(val ticketType: TicketType, val extraTags: List<String>) : Parcelable {
-        @Parcelize object MobileApp : HelpOption(
-            ticketType = General,
-            extraTags = listOf("mobile-app")
-        )
-        @Parcelize object InPersonPayments : HelpOption(
-            ticketType = General,
-            extraTags = listOf("woocommerce_mobile_apps", "product_area_apps_in_person_payments")
-        )
-        @Parcelize object Payments : HelpOption(
-            ticketType = TicketType.Payments,
-            extraTags = emptyList()
-        )
-        @Parcelize object WooPlugin : HelpOption(
-            ticketType = General,
-            extraTags = listOf("woocommerce_core")
-        )
-        @Parcelize object OtherPlugins : HelpOption(
-            ticketType = General,
-            extraTags = listOf("product_area_woo_extensions")
-        )
     }
 }

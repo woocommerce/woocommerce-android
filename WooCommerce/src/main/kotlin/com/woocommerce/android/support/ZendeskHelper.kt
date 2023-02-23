@@ -606,6 +606,28 @@ private object TicketFieldIds {
     const val appLanguage = 360008583691L
     const val sourcePlatform = 360009311651L
 }
+sealed class HelpOption(val ticketType: TicketType, val extraTags: List<String>) : Parcelable {
+    @Parcelize object MobileApp : HelpOption(
+        ticketType = TicketType.General,
+        extraTags = listOf("mobile-app")
+    )
+    @Parcelize object InPersonPayments : HelpOption(
+        ticketType = TicketType.General,
+        extraTags = listOf("woocommerce_mobile_apps", "product_area_apps_in_person_payments")
+    )
+    @Parcelize object Payments : HelpOption(
+        ticketType = TicketType.Payments,
+        extraTags = emptyList()
+    )
+    @Parcelize object WooPlugin : HelpOption(
+        ticketType = TicketType.General,
+        extraTags = listOf("woocommerce_core")
+    )
+    @Parcelize object OtherPlugins : HelpOption(
+        ticketType = TicketType.General,
+        extraTags = listOf("product_area_woo_extensions")
+    )
+}
 
 sealed class TicketType(
     val form: Long,
