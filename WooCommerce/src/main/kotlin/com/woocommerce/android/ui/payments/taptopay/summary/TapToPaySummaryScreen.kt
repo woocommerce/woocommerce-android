@@ -30,7 +30,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -75,8 +74,9 @@ fun TapToPaySummaryScreen(
         ) {
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
             Text(
+                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
                 text = stringResource(id = state.titleText),
-                style = MaterialTheme.typography.subtitle1,
+                style = MaterialTheme.typography.h6,
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.weight(1.0f))
@@ -169,7 +169,7 @@ private fun LearnMore(@StringRes textId: Int, onLearnMoreClicked: () -> Unit) {
 
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(name = "Small device", device = Devices.PIXEL)
+@Preview(name = "Small device", heightDp = 600)
 @Composable
 fun TapToPaySummaryScreenPreview() {
     TapToPaySummaryScreen(
