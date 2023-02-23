@@ -25,5 +25,20 @@
         <argument
             android:name="initial_query"
             app:argType="string" />
+        <action
+            android:id="@+id/action_domainSearchFragment_to_purchaseSuccessfulFragment"
+            app:destination="@id/purchaseSuccessfulFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/purchaseSuccessfulFragment"
+        android:name="com.woocommerce.android.ui.prefs.domain.PurchaseSuccessfulFragment"
+        android:label="PurchaseSuccessfulFragment" >
+        <argument
+            android:name="domain"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_purchaseSuccessfulFragment_to_domainDashboardFragment"
+            app:destination="@id/domainDashboardFragment"
+            app:popUpTo="@id/nav_graph_domain_change" />
     </fragment>
 </navigation>
