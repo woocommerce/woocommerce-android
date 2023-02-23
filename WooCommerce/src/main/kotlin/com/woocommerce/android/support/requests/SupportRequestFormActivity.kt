@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.doOnTextChanged
 import com.woocommerce.android.databinding.ActivitySupportRequestFormBinding
+import com.woocommerce.android.extensions.serializable
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.HelpOption.InPersonPayments
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.HelpOption.MobileApp
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.HelpOption.OtherPlugins
@@ -17,6 +19,10 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class SupportRequestFormActivity : AppCompatActivity() {
     private val viewModel: SupportRequestFormViewModel by viewModels()
+
+    private val helpOrigin by lazy {
+        intent.extras?.serializable(ORIGIN_KEY) ?: HelpOrigin.UNKNOWN
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,5 +69,9 @@ class SupportRequestFormActivity : AppCompatActivity() {
             return true
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    companion object {
+        private const val ORIGIN_KEY = "ORIGIN_KEY"
     }
 }
