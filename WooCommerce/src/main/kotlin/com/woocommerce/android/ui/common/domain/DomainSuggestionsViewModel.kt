@@ -50,7 +50,7 @@ abstract class DomainSuggestionsViewModel constructor(
 
     private val loadingState = MutableStateFlow(Idle)
     private val domainSuggestionsUi = domainSuggestionsRepository.domainSuggestions
-    private val selectedDomain = MutableStateFlow("")
+    private val selectedDomain = MutableStateFlow<DomainSuggestion?>(null)
     private val products = domainSuggestionsRepository.products
     private val isFreeCreditAvailable: Boolean = savedStateHandle[KEY_IS_FREE_CREDIT_AVAILABLE] ?: false
     private val searchOnlyFreeDomains: Boolean = savedStateHandle[KEY_SEARCH_ONLY_FREE_DOMAINS] ?: true
@@ -68,7 +68,7 @@ abstract class DomainSuggestionsViewModel constructor(
                 selectedDomain,
                 products
             ),
-            selectedDomain = selectedDomain
+            selectedDomain = selectedDomain?.name.orEmpty()
         )
     }.asLiveData()
 
@@ -82,7 +82,7 @@ abstract class DomainSuggestionsViewModel constructor(
                 .onEach {
                     if (it.isBlank()) {
                         domainSuggestionsUi.value = emptyList()
-                        selectedDomain.value = ""
+                        selectedDomain.value = null
                     } else {
                         loadingState.value = Loading
                     }
@@ -112,11 +112,11 @@ abstract class DomainSuggestionsViewModel constructor(
     }
 
     fun onContinueClicked() {
-        triggerEvent(NavigateToNextStep(selectedDomain.value))
+        triggerEvent(NavigateToNextStep(selectedDomain.value!!))
     }
 
     open fun onDomainSuggestionSelected(domain: String) {
-        selectedDomain.value = domain
+        selectedDomain.value = domainSuggestionsUi.value.first { it.name == domain }
     }
 
     fun onDomainQueryChanged(query: String) {
@@ -125,18 +125,18 @@ abstract class DomainSuggestionsViewModel constructor(
 
     private suspend fun processFetchedDomainSuggestions(
         domainSuggestions: List<DomainSuggestion>,
-        currentSelection: String,
+        currentSelection: DomainSuggestion?,
         products: List<Product>
     ) = when {
         domainQuery.isBlank() || domainSuggestions.isEmpty() -> emptyList()
         else -> {
-            val preSelectDomain = currentSelection.ifBlank { domainSuggestions.first().name }
+            val preSelectDomain = currentSelection ?: domainSuggestions.first()
 
             domainSuggestions.mapNotNull { domain ->
                 when (domain) {
                     is Free -> {
                         DomainSuggestionUi.Free(
-                            isSelected = domain.name == preSelectDomain,
+                            isSelected = domain.name == preSelectDomain.name,
                             domain = domain.name
                         )
                     }
@@ -148,14 +148,14 @@ abstract class DomainSuggestionsViewModel constructor(
                             if (isFreeCreditAvailable && domain.cost != null) {
                                 // free credit can't be used for premium domains, which don't have cost
                                 DomainSuggestionUi.FreeWithCredit(
-                                    isSelected = domain.name == preSelectDomain,
+                                    isSelected = domain.name == preSelectDomain.name,
                                     domain = domain.name,
                                     price = domain.cost.format(product.currencyCode!!)
                                 )
                             } else if (product.isDomainOnSale()) {
                                 // if the domain is on sale, we need to show the sale price
                                 DomainSuggestionUi.OnSale(
-                                    isSelected = domain.name == preSelectDomain,
+                                    isSelected = domain.name == preSelectDomain.name,
                                     domain = domain.name,
                                     price = domain.cost!!.format(product.currencyCode!!),
                                     salePrice = product.saleCost!!.format(product.currencyCode!!)
@@ -163,7 +163,7 @@ abstract class DomainSuggestionsViewModel constructor(
                             } else {
                                 // otherwise, we show the regular price
                                 DomainSuggestionUi.Paid(
-                                    isSelected = domain.name == preSelectDomain,
+                                    isSelected = domain.name == preSelectDomain.name,
                                     domain = domain.name,
                                     price = domain.cost!!.format(product.currencyCode!!)
                                 )
@@ -175,7 +175,7 @@ abstract class DomainSuggestionsViewModel constructor(
                         val price = domainSuggestionsRepository.fetchDomainPrice(domain.name).getOrNull()
                         if (product != null && price != null) {
                             DomainSuggestionUi.Paid(
-                                isSelected = domain.name == preSelectDomain,
+                                isSelected = domain.name == preSelectDomain.name,
                                 domain = domain.name,
                                 price = price.format(product.currencyCode!!)
                             )
@@ -236,5 +236,5 @@ abstract class DomainSuggestionsViewModel constructor(
         Idle, Loading
     }
 
-    data class NavigateToNextStep(val selectedDomain: String) : MultiLiveEvent.Event()
+    data class NavigateToNextStep(val selectedSuggestion: DomainSuggestion) : MultiLiveEvent.Event()
 }

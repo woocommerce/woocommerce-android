@@ -11,6 +11,9 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository.DomainSuggestion
+import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository.DomainSuggestion.Paid
+import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository.DomainSuggestion.Premium
 import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel.NavigateToNextStep
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerScreen
@@ -46,14 +49,28 @@ class DomainSearchFragment : BaseFragment() {
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
-                is NavigateToNextStep -> navigateToSuccessScreen(event.selectedDomain)
+                is NavigateToNextStep -> navigateToContactForm(event.selectedSuggestion)
             }
         }
     }
 
-    private fun navigateToSuccessScreen(domain: String) {
+    private fun navigateToContactForm(domain: DomainSuggestion) {
+        when (domain) {
+            is Paid -> {
+                navigateToContactForm(domain.productId, domain.name)
+            }
+            is Premium -> {
+                navigateToContactForm(domain.productId, domain.name)
+            }
+            else -> {}
+        }
+    }
+
+    private fun navigateToContactForm(productId: Int, name: String) {
         findNavController().navigateSafely(
-            DomainSearchFragmentDirections.actionDomainSearchFragmentToPurchaseSuccessfulFragment(domain)
+            DomainSearchFragmentDirections.actionDomainSearchFragmentToDomainRegistrationDetailsFragment(
+                DomainProductDetails(productId, name)
+            )
         )
     }
 }
