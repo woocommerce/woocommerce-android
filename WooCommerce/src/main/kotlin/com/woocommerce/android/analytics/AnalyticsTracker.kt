@@ -256,6 +256,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val JITM_ID = "jitm_id"
         const val JITM_FEATURE_CLASS = "feature_class"
 
+        const val KEY_TIME_ELAPSED_SINCE_ADD_NEW_ORDER_IN_MILLIS = "milliseconds_since_order_add_new"
+        const val KEY_TIME_ELAPSED_SINCE_CARD_COLLECT_PAYMENT_IN_MILLIS = "milliseconds_since_card_collect_payment_flow"
+
         enum class OrderNoteType(val value: String) {
             CUSTOMER("customer"),
             PRIVATE("private"),
@@ -466,6 +469,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_IPP_BANNER_CAMPAIGN_NAME_NEWBIE = "ipp_not_user"
         const val VALUE_IPP_BANNER_CAMPAIGN_NAME_BEGINNER = "ipp_new_user"
         const val VALUE_IPP_BANNER_CAMPAIGN_NAME_NINJA = "ipp_power_user"
+
+        // -- IPP Learn More Link
+        const val IPP_LEARN_MORE_SOURCE = "source"
 
         var sendUsageStats: Boolean = true
             set(value) {

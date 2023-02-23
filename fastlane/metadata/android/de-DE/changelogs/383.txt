@@ -1,2 +1,0 @@
-12.2:
-Diese Version enthält einige Fehlerkorrekturen und Verbesserungen an der Funktion „Persönliche Zahlungen“. Probiere es aus und teile uns dein Feedback mit!

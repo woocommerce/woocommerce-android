@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.payments.simplepayments
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -18,6 +19,11 @@ class SimplePaymentsSharedViewModel @Inject constructor(
 
     val decimals: Int
         get() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber ?: DEFAULT_DECIMAL_PRECISION
+
+    init {
+        // Reset order duration recorder to ensure we don't track Simple Payments flow
+        OrderDurationRecorder.reset()
+    }
 
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2

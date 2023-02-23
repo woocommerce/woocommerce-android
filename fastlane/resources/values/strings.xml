@@ -544,6 +544,7 @@
     <string name="domains_add_domain_button_title">Add a domain</string>
     <string name="domains_select_domain">Select domain</string>
     <string name="domains_redirect_notice">The domain purchased will redirect users to</string>
+    <string name="domains_error_title">Unable to load site domains</string>
     <!--
         Order Editing
     -->
@@ -1820,6 +1821,7 @@
     <string name="settings_signout">Log out</string>
     <string name="settings_preferences">Preferences</string>
     <string name="settings_confirm_logout">Are you sure you want to logout from the account %s?</string>
+    <string name="settings_confirm_logout_site_credentials">Are you sure you want to log out of your account?</string>
     <string name="settings_send_stats">Collect information</string>
     <string name="settings_enable_v4_stats_title">Improved stats</string>
     <string name="settings_enable_beta_feature_failed_snackbar_text">Sorry, we couldn\'t change this feature setting right now</string>

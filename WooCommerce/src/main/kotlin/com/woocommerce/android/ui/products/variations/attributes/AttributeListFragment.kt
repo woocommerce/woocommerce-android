@@ -17,11 +17,9 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAttributeListBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.parcelable
-import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductAttributeList
-import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -33,7 +31,6 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
     }
 
     private var layoutManager: LayoutManager? = null
-    private var progressDialog: CustomProgressDialog? = null
     private var nextMenuItem: MenuItem? = null
 
     private val navArgs: AttributeListFragmentArgs by navArgs()
@@ -119,12 +116,6 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
             showAttributes(it)
         }
 
-        viewModel.attributeListViewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.isCreatingVariationDialogShown?.takeIfNotEqualTo(old?.isCreatingVariationDialogShown) {
-                showProgressDialog(it)
-            }
-        }
-
         viewModel.loadProductDraftAttributes()
     }
 
@@ -152,23 +143,5 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
         }
 
         adapter.refreshAttributeList(attributes)
-    }
-
-    private fun showProgressDialog(show: Boolean) {
-        if (show) {
-            hideProgressDialog()
-            progressDialog = CustomProgressDialog.show(
-                getString(R.string.variation_create_dialog_title),
-                getString(R.string.product_update_dialog_message)
-            ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
-            progressDialog?.isCancelable = false
-        } else {
-            hideProgressDialog()
-        }
-    }
-
-    private fun hideProgressDialog() {
-        progressDialog?.dismiss()
-        progressDialog = null
     }
 }

@@ -35,6 +35,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.DISABLE_CASH_ON_DELIVERY
 import com.woocommerce.android.analytics.AnalyticsEvent.DISABLE_CASH_ON_DELIVERY_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.ENABLE_CASH_ON_DELIVERY_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.ENABLE_CASH_ON_DELIVERY_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.IN_PERSON_PAYMENTS_LEARN_MORE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.MANAGE_CARD_READERS_AUTOMATIC_DISCONNECT_BUILT_IN_READER
 import com.woocommerce.android.analytics.AnalyticsEvent.PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED
@@ -55,6 +56,7 @@ import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.Refun
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
@@ -356,11 +358,11 @@ class CardReaderTracker @Inject constructor(
     }
 
     fun trackPaymentSucceeded() {
-        track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS)
+        track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS, getAndResetFlowsDuration())
     }
 
     fun trackInteracPaymentSucceeded() {
-        track(CARD_PRESENT_COLLECT_INTERAC_PAYMENT_SUCCESS)
+        track(CARD_PRESENT_COLLECT_INTERAC_PAYMENT_SUCCESS, getAndResetFlowsDuration())
     }
 
     fun trackInteracPaymentFailed(
@@ -441,6 +443,13 @@ class CardReaderTracker @Inject constructor(
         track(CARD_PRESENT_CONNECTION_LEARN_MORE_TAPPED)
     }
 
+    fun trackIPPLearnMoreClicked(source: String) {
+        track(
+            stat = IN_PERSON_PAYMENTS_LEARN_MORE_TAPPED,
+            properties = mutableMapOf(AnalyticsTracker.IPP_LEARN_MORE_SOURCE to source)
+        )
+    }
+
     fun trackSelectReaderTypeBuiltInTapped() {
         track(CARD_PRESENT_SELECT_READER_TYPE_BUILT_IN_TAPPED)
     }
@@ -458,6 +467,21 @@ class CardReaderTracker @Inject constructor(
             CARD_PRESENT_TAP_TO_PAY_NOT_AVAILABLE,
             properties = mutableMapOf(AnalyticsTracker.KEY_REASON to reason::class.java.simpleName)
         )
+    }
+
+    private fun getAndResetFlowsDuration(): MutableMap<String, Any> {
+        val result = mutableMapOf<String, Any>()
+            .also { mutableMap ->
+                OrderDurationRecorder.millisecondsSinceOrderAddNew().getOrNull()?.let { timeElapsed ->
+                    mutableMap[AnalyticsTracker.KEY_TIME_ELAPSED_SINCE_ADD_NEW_ORDER_IN_MILLIS] = timeElapsed.toString()
+                }
+                OrderDurationRecorder.millisecondsSinceCardPaymentStarted().getOrNull()?.let { timeElapsed ->
+                    mutableMap[AnalyticsTracker.KEY_TIME_ELAPSED_SINCE_CARD_COLLECT_PAYMENT_IN_MILLIS] =
+                        timeElapsed.toString()
+                }
+            }
+        OrderDurationRecorder.reset()
+        return result
     }
 
     companion object {

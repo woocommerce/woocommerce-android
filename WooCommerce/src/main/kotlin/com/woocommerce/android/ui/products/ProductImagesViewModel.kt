@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_IMAGE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.areSameImagesAs
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.toAppModel
@@ -22,7 +23,10 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewMediaUplo
 import com.woocommerce.android.util.swap
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -39,6 +43,7 @@ class ProductImagesViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val mediaFileUploadHandler: MediaFileUploadHandler,
     private val resourceProvider: ResourceProvider,
+    private val analyticsTracker: AnalyticsTrackerWrapper,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val navArgs: ProductImagesFragmentArgs by savedState.navArgs()
@@ -155,10 +160,15 @@ class ProductImagesViewModel @Inject constructor(
                 )
             }
             Browsing -> {
-                if (images.areSameImagesAs(originalImages)) {
-                    triggerEvent(Exit)
-                } else {
+                val hasChange = !images.areSameImagesAs(originalImages)
+                analyticsTracker.track(
+                    AnalyticsEvent.PRODUCT_IMAGE_SETTINGS_DONE_BUTTON_TAPPED,
+                    mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChange)
+                )
+                if (hasChange) {
                     triggerEvent(ExitWithResult(images))
+                } else {
+                    triggerEvent(Exit)
                 }
             }
         }

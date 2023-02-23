@@ -7,5 +7,20 @@
     <fragment
         android:id="@+id/currentDomainFragment"
         android:name="com.woocommerce.android.ui.prefs.domain.CurrentDomainsFragment"
-        android:label="CurrentDomainFragment" />
+        android:label="CurrentDomainFragment" >
+        <action
+            android:id="@+id/action_currentDomainFragment_to_domainSearchFragment"
+            app:destination="@id/domainSearchFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/domainSearchFragment"
+        android:name="com.woocommerce.android.ui.prefs.domain.DomainSearchFragment"
+        android:label="DomainSearchFragment" >
+        <argument
+            android:name="key_is_free_credit_available"
+            app:argType="boolean" />
+        <argument
+            android:name="search_only_free_domains"
+            app:argType="boolean" />
+    </fragment>
 </navigation>

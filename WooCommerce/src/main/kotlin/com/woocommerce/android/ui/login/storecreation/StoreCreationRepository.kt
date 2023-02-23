@@ -74,6 +74,7 @@ class StoreCreationRepository @Inject constructor(
         val result = withContext(Dispatchers.Default) {
             val site = SiteModel().apply {
                 this.siteId = siteId
+                this.origin = SiteModel.ORIGIN_WPCOM_REST
                 this.setIsWPCom(true)
             }
             siteStore.fetchSite(site)

@@ -40,7 +40,7 @@ class DomainPickerFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    DomainPickerScreen(viewModel = viewModel)
+                    DomainPickerScreen(viewModel = viewModel, onDomainSelected = viewModel::onDomainSuggestionSelected)
                 }
             }
         }

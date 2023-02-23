@@ -1,23 +1,30 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.RequestCodes
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
+import org.mockito.kotlin.verify
 
 @ExperimentalCoroutinesApi
 class ProductShippingViewModelTest : BaseUnitTest() {
     private val parameterRepository: ParameterRepository = mock()
     private val productDetailRepository: ProductDetailRepository = mock()
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
 
     private val initialData = ShippingData(
         10f, 9f, 8f, 7f, "Class 1", 1
@@ -40,7 +47,8 @@ class ProductShippingViewModelTest : BaseUnitTest() {
             ProductShippingViewModel(
                 savedState,
                 parameterRepository,
-                productDetailRepository
+                productDetailRepository,
+                analyticsTracker,
             )
         )
     }
@@ -141,4 +149,29 @@ class ProductShippingViewModelTest : BaseUnitTest() {
 
             assertThat(viewState?.isShippingClassSectionVisible).isFalse()
         }
+
+    @Test
+    fun `Send tracks event upon exit if there was no changes`() {
+        // when
+        viewModel.onExit()
+
+        // then
+        verify(analyticsTracker).track(
+            AnalyticsEvent.PRODUCT_SHIPPING_SETTINGS_DONE_BUTTON_TAPPED,
+            mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to false)
+        )
+    }
+
+    @Test
+    fun `Send tracks event upon exit if there was a change`() {
+        // when
+        viewModel.onDataChanged(weight = 31415f)
+        viewModel.onExit()
+
+        // then
+        verify(analyticsTracker).track(
+            AnalyticsEvent.PRODUCT_SHIPPING_SETTINGS_DONE_BUTTON_TAPPED,
+            mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to true)
+        )
+    }
 }

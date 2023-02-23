@@ -4,6 +4,9 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.greaterThan
 import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.extensions.isNotSet
@@ -32,7 +35,8 @@ class ProductPricingViewModel @Inject constructor(
     private val productRepository: ProductDetailRepository,
     wooCommerceStore: WooCommerceStore,
     selectedSite: SelectedSite,
-    parameterRepository: ParameterRepository
+    parameterRepository: ParameterRepository,
+    private val analyticsTracker: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DEFAULT_DECIMAL_PRECISION = 2
@@ -146,6 +150,10 @@ class ProductPricingViewModel @Inject constructor(
     }
 
     fun onExit() {
+        analyticsTracker.track(
+            AnalyticsEvent.PRODUCT_PRICE_SETTINGS_DONE_BUTTON_TAPPED,
+            mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)
+        )
         if (hasChanges && viewState.canSaveChanges) {
             val isSaleScheduled = pricingData.isSaleScheduled == true &&
                 (pricingData.saleStartDate != null || pricingData.saleEndDate != null)

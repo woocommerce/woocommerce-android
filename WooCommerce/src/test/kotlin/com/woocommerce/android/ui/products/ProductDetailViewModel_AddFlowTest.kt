@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
@@ -21,6 +22,7 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.ui.products.variations.VariationRepository
+import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCandidates
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.ProductUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -91,6 +93,8 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     private val parameterRepository: ParameterRepository = mock {
         on(it.getParameters(any(), any<SavedStateHandle>())).thenReturn(siteParams)
     }
+    private val generateVariationCandidates: GenerateVariationCandidates = mock()
+    private val tracker: AnalyticsTrackerWrapper = mock()
 
     private val prefs: AppPrefsWrapper = mock {
         on(it.getSelectedProductType()).then { "simple" }
@@ -169,8 +173,9 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 mediaFileUploadHandler,
                 prefs,
                 addonRepository,
+                generateVariationCandidates,
                 mock(),
-                mock(),
+                tracker,
                 selectedSite
             )
         )
