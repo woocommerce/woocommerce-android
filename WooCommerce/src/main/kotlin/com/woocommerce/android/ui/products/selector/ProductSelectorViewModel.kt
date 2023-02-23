@@ -280,10 +280,10 @@ class ProductSelectorViewModel @Inject constructor(
                 searchQuery = query,
                 forceRefresh = forceRefresh
             ).onFailure {
-                    val message = if (query.isEmpty()) string.product_selector_loading_failed
-                    else string.product_selector_search_failed
-                    triggerEvent(ShowSnackbar(message))
-                }
+                val message = if (query.isEmpty()) string.product_selector_loading_failed
+                else string.product_selector_search_failed
+                triggerEvent(ShowSnackbar(message))
+            }
             loadingState.value = IDLE
         }
     }
