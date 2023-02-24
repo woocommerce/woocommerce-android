@@ -166,7 +166,8 @@ class ZendeskHelper(
         helpData: HelpData,
         selectedSite: SiteModel?,
         subject: String,
-        description: String
+        description: String,
+        extraTags: List<String>
     ) = callbackFlow {
         val (origin, option) = helpData
         val requestCallback = object : ZendeskCallback<Request>() {
@@ -184,7 +185,7 @@ class ZendeskHelper(
             this.ticketFormId = option.ticketType.form
             this.subject = subject
             this.description = description
-            this.tags = buildZendeskTags(siteStore.sites, origin, option.allTags)
+            this.tags = buildZendeskTags(siteStore.sites, origin, option.allTags + extraTags)
             this.customFields = buildZendeskCustomFields(context, option.ticketType, siteStore.sites, selectedSite)
         }.let { request -> requestProvider?.createRequest(request, requestCallback) }
 

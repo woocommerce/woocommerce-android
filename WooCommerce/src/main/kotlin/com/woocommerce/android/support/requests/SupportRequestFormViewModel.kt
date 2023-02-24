@@ -64,7 +64,8 @@ class SupportRequestFormViewModel @Inject constructor(
                 HelpData(helpOrigin, helpOption),
                 selectedSite.get(),
                 viewState.value.subject,
-                viewState.value.message
+                viewState.value.message,
+                extraTags
             ).collect { it.handleCreateRequestResult() }
         }
     }
