@@ -211,7 +211,8 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                             WooThemeWithBackground {
                                 StoreOnboardingCollapsed(
                                     onboardingState = state,
-                                    onViewAllClicked = storeOnboardingViewModel::viewAllClicked
+                                    onViewAllClicked = storeOnboardingViewModel::viewAllClicked,
+                                    onShareFeedbackClicked = storeOnboardingViewModel::onShareFeedbackClicked
                                 )
                             }
                         }
@@ -222,22 +223,25 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
         storeOnboardingViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is StoreOnboardingViewModel.NavigateToOnboardingFullScreen -> {
-                    exitTransition = MaterialElevationScale(false).apply {
-                        duration = resources.getInteger(R.integer.default_fragment_transition).toLong()
-                    }
-                    reenterTransition = MaterialElevationScale(true).apply {
-                        duration = resources.getInteger(R.integer.default_fragment_transition).toLong()
-                    }
-                    val transitionName = getString(R.string.store_onboarding_full_screen_transition_name)
-                    val extras = FragmentNavigatorExtras(binding.storeOnboardingView to transitionName)
-                    findNavController().navigateSafely(
-                        directions = MyStoreFragmentDirections.actionMyStoreToOnboardingFragment(),
-                        extras = extras
-                    )
-                }
+                is StoreOnboardingViewModel.NavigateToOnboardingFullScreen -> openOnboardingInFullScreen()
+                is StoreOnboardingViewModel.NavigateToSurvey -> mainNavigationRouter?.showFeedbackSurvey()
             }
         }
+    }
+
+    private fun openOnboardingInFullScreen() {
+        exitTransition = MaterialElevationScale(false).apply {
+            duration = resources.getInteger(R.integer.default_fragment_transition).toLong()
+        }
+        reenterTransition = MaterialElevationScale(true).apply {
+            duration = resources.getInteger(R.integer.default_fragment_transition).toLong()
+        }
+        val transitionName = getString(R.string.store_onboarding_full_screen_transition_name)
+        val extras = FragmentNavigatorExtras(binding.storeOnboardingView to transitionName)
+        findNavController().navigateSafely(
+            directions = MyStoreFragmentDirections.actionMyStoreToOnboardingFragment(),
+            extras = extras
+        )
     }
 
     @Suppress("ComplexMethod", "MagicNumber", "LongMethod")

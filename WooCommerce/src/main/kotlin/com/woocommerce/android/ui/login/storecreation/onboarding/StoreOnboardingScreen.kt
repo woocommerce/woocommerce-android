@@ -87,6 +87,7 @@ fun StoreOnboardingScreen(viewModel: StoreOnboardingViewModel) {
 fun StoreOnboardingCollapsed(
     onboardingState: StoreOnboardingViewModel.OnboardingState,
     onViewAllClicked: () -> Unit,
+    onShareFeedbackClicked: () -> Unit,
     modifier: Modifier = Modifier,
     numberOfItemsToShowInCollapsedMode: Int = NUMBER_ITEMS_IN_COLLAPSED_MODE,
 ) {
@@ -134,7 +135,7 @@ fun StoreOnboardingCollapsed(
                 DropdownMenuItem(
                     modifier = Modifier
                         .height(dimensionResource(id = R.dimen.major_175)),
-                    onClick = { /*TODO*/ }) {
+                    onClick = { onShareFeedbackClicked() }) {
                     Text(stringResource(id = R.string.store_onboarding_menu_share_feedback))
                 }
             }
@@ -322,6 +323,7 @@ private fun OnboardingPreview() {
                 )
             )
         ),
-        onViewAllClicked = {}
+        onViewAllClicked = {},
+        onShareFeedbackClicked = {}
     )
 }
