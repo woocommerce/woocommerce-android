@@ -88,12 +88,17 @@ class SupportRequestFormActivity : AppCompatActivity() {
             activity = this,
             titleId = R.string.support_request_success_title,
             messageId = R.string.support_request_success_message,
-            positiveButtonId = R.string.support_request_success_action
+            positiveButtonId = R.string.support_request_dialog_action
         )
     }
 
     private fun showRequestCreationFailureDialog() {
-
+        WooDialog.showDialog(
+            activity = this,
+            titleId = R.string.support_request_error_title,
+            messageId = R.string.support_request_error_message,
+            positiveButtonId = R.string.support_request_dialog_action
+        )
     }
 
     private fun showProgressDialog() {

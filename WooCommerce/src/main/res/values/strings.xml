@@ -3090,7 +3090,7 @@
     <string name="support_request_loading_message">Please wait…</string>
     <string name="support_request_success_title">Request sent!</string>
     <string name="support_request_success_message">Your support request has landed safely in our inbox. We will reply via email as quickly as we can.</string>
-    <string name="support_request_success_action">Got It!</string>
+    <string name="support_request_dialog_action">Got It!</string>
     <string name="support_request_error_title">Something went wrong</string>
     <string name="support_request_error_message">Sorry, we cannot create support requests right now, please try again later.</string>
 
