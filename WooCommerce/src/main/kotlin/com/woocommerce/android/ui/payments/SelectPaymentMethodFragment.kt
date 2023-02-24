@@ -154,8 +154,9 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
 
         with(binding.learnMoreIppPaymentMethodsTv) {
             learnMore.setOnClickListener { state.learMoreIpp.onClick.invoke() }
+            UiHelpers.setTextOrHide(binding.learnMoreIppPaymentMethodsTv.learnMore, state.learMoreIpp.label)
         }
-        UiHelpers.setTextOrHide(binding.learnMoreIppPaymentMethodsTv.learnMore, state.learMoreIpp.label)
+
         applyBannerComposeUI(state.bannerState)
     }
 
