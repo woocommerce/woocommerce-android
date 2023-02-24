@@ -146,7 +146,7 @@ fun JetpackActivationWPComEmailScreen(
     }
 
     if (viewState.isLoadingDialogShown) {
-        ProgressDialog(title = "", subtitle = stringResource(id = R.string.logging_in))
+        ProgressDialog(title = "", subtitle = stringResource(id = R.string.checking_email))
     }
 }
 
