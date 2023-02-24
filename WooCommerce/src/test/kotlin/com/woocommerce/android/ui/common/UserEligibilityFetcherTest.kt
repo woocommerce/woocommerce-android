@@ -63,8 +63,9 @@ class UserEligibilityFetcherTest : BaseUnitTest() {
     @Test
     fun `Get user info from db correctly`() {
         doReturn(expectedUser).whenever(userStore).getUserByEmail(any(), any())
+        doReturn(expectedUser.email).whenever(appPrefsWrapper).getUserEmail()
 
-        val user = fetcher.getUserByEmail(expectedUser.email)
+        val user = fetcher.getUser()
 
         assertThat(user).isEqualTo(expectedUser.toAppModel())
         assertThat(user?.isEligible).isEqualTo(expectedUser.isUserEligible())
