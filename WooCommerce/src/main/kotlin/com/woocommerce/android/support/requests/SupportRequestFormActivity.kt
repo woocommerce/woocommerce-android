@@ -10,6 +10,8 @@ import com.woocommerce.android.databinding.ActivitySupportRequestFormBinding
 import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.support.HelpOption
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationFailed
+import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationSucceeded
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -63,6 +65,12 @@ class SupportRequestFormActivity : AppCompatActivity() {
         viewModel.isRequestLoading.observe(this) { isLoading ->
             if (isLoading) showProgressDialog() else hideProgressDialog()
         }
+        viewModel.event.observe(this) {
+            when (it) {
+                is RequestCreationSucceeded -> showRequestCreationSuccessDialog()
+                is RequestCreationFailed -> showRequestCreationFailureDialog()
+            }
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -71,6 +79,13 @@ class SupportRequestFormActivity : AppCompatActivity() {
             return true
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun showRequestCreationSuccessDialog() {
+    }
+
+    private fun showRequestCreationFailureDialog() {
+
     }
 
     private fun showProgressDialog() {
