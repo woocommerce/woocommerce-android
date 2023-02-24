@@ -22,7 +22,6 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.Loa
 import com.woocommerce.android.ui.products.selector.SelectionState.PARTIALLY_SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.UNSELECTED
-import com.woocommerce.android.ui.products.variations.selector.VariationSelectorRepository
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.VariationSelectionResult
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
@@ -58,7 +57,6 @@ class ProductSelectorViewModel @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
     private val listHandler: ProductListHandler,
-    private val variationSelectorRepository: VariationSelectorRepository,
     private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -73,7 +71,7 @@ class ProductSelectorViewModel @Inject constructor(
 
     private val searchQuery = savedState.getStateFlow(this, "")
     private val loadingState = MutableStateFlow(IDLE)
-    private val selectedProductIds = savedState.getStateFlow(viewModelScope, navArgs.productIds.toSet())
+    private val selectedItems = savedState.getStateFlow(viewModelScope, navArgs.selectedItems.orEmpty().toSet())
     private val filterState = savedState.getStateFlow(viewModelScope, FilterState())
 
     val viewState = combine(
@@ -86,14 +84,14 @@ class ProductSelectorViewModel @Inject constructor(
                 } else 0L
             }
             .map { it.value },
-        flow3 = selectedProductIds,
+        flow3 = selectedItems,
         flow4 = filterState,
         flow5 = searchQuery
-    ) { products, loadingState, selectedIds, filterState, searchQuery ->
+    ) { products, loadingState, selectedItems, filterState, searchQuery ->
         ViewState(
             loadingState = loadingState,
-            products = products.map { it.toUiModel(selectedIds) },
-            selectedItemsCount = selectedIds.size,
+            products = products.map { it.toUiModel(selectedItems.productAndVariationIds()) },
+            selectedItemsCount = selectedItems.size,
             filterState = filterState,
             searchQuery = searchQuery
         )
@@ -156,7 +154,7 @@ class ProductSelectorViewModel @Inject constructor(
     fun onClearButtonClick() {
         launch {
             delay(STATE_UPDATE_DELAY) // let the animation play out before hiding the button
-            selectedProductIds.value = emptySet()
+            selectedItems.value = emptySet()
         }
     }
 
@@ -176,16 +174,18 @@ class ProductSelectorViewModel @Inject constructor(
         if (item.type == VARIABLE && item.numVariations > 0) {
             triggerEvent(NavigateToVariationSelector(item.id, item.selectedVariationIds))
         } else {
-            if (selectedProductIds.value.contains(item.id)) {
-                selectedProductIds.value = selectedProductIds.value - item.id
+            if (selectedItems.value.productIds().contains(item.id)) {
+                val itemToRemove = selectedItems.value.first { it.remoteProductId == item.id }
+                selectedItems.value = selectedItems.value - itemToRemove
             } else {
-                selectedProductIds.value = selectedProductIds.value + item.id
+                val itemToAdd = SelectedItem(item.id)
+                selectedItems.value = selectedItems.value + itemToAdd
             }
         }
     }
 
     fun onDoneButtonClick() {
-        triggerEvent(ExitWithResult(selectedProductIds.value))
+        triggerEvent(ExitWithResult(selectedItems.value))
     }
 
     fun onSearchQueryChanged(query: String) {
@@ -222,8 +222,10 @@ class ProductSelectorViewModel @Inject constructor(
 
     fun onSelectedVariationsUpdated(result: VariationSelectionResult) {
         viewModelScope.launch {
-            val oldIds = variationSelectorRepository.getProduct(result.productId)?.variationIds ?: emptyList()
-            selectedProductIds.update { selectedProductIds.value - oldIds.toSet() + result.selectedVariationIds }
+            val oldItems = selectedItems.value.filter { it.remoteProductId == result.productId }.toSet()
+            selectedItems.update {
+                selectedItems.value - oldItems + result.selectedVariationIds.map { SelectedItem(result.productId, it) }
+            }
         }
     }
 
@@ -308,4 +310,15 @@ class ProductSelectorViewModel @Inject constructor(
     enum class LoadingState {
         IDLE, LOADING, APPENDING
     }
+
+    @Parcelize
+    data class SelectedItem(
+        val remoteProductId: Long,
+        val remoteVariationId: Long? = null,
+    ) : Parcelable
+
+    private fun Collection<SelectedItem>.productAndVariationIds(): Set<Long> =
+        (this.map { it.remoteProductId } + mapNotNull { it.remoteVariationId }).toSet()
+
+    private fun Collection<SelectedItem>.productIds(): Set<Long> = this.map { it.remoteProductId }.toSet()
 }
