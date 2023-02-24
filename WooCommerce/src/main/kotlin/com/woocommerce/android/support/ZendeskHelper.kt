@@ -47,6 +47,8 @@ import zendesk.support.requestlist.RequestListActivity
 import java.util.Locale
 import java.util.Timer
 import kotlin.concurrent.schedule
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private const val zendeskNeedsToBeEnabledError = "Zendesk needs to be setup before this method can be called"
 private const val enablePushNotificationsDelayAfterIdentityChange: Long = 2500
@@ -188,6 +190,12 @@ class ZendeskHelper(
             this.tags = buildZendeskTags(siteStore.sites, origin, option.allTags + extraTags)
             this.customFields = buildZendeskCustomFields(context, option.ticketType, siteStore.sites, selectedSite)
         }.let { request -> requestProvider?.createRequest(request, requestCallback) }
+
+        launch {
+            delay(RequestConstants.requestCreationTimeout)
+            trySend(Result.failure(Throwable(RequestConstants.requestCreationTimeoutErrorMessage)))
+            close()
+        }
 
         awaitClose()
     }.flowOn(dispatchers.io)
@@ -665,4 +673,9 @@ object ZendeskExtraTags {
     const val paymentsSubcategory = "payment"
     const val paymentsProduct = "woocommerce_payments"
     const val paymentsProductArea = "product_area_woo_payment_gateway"
+}
+
+private object RequestConstants {
+    const val requestCreationTimeout = 10000L
+    const val requestCreationTimeoutErrorMessage = "Request creation timed out"
 }
