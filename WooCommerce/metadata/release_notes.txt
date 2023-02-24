@@ -1,1 +1,2 @@
-You’ve asked for it, and now it’s here! It's now possible to use the app without Jetpack the plugin. This is based upon your direct feedback over the years, and we know you’ll like the change!
+
+
