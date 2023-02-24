@@ -1,2 +1,0 @@
-12.3:
-Bu sürümde ekibimizin bulduğu küçük hataları gidermeye odaklandık. Merak etmeyin, hepiniz için çok güzel şeyler üzerinde çalışıyoruz! Geri bildirimleriniz devam etsin; üzerinde çalışacağımız bir sonraki özelliği bulmamıza yardımcı oluyor.
