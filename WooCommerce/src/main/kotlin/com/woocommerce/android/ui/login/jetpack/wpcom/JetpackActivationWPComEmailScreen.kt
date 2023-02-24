@@ -37,9 +37,9 @@ import com.woocommerce.android.ui.login.jetpack.components.JetpackConsent
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
 
 @Composable
-fun JetpackActivationWPComScreen(viewModel: JetpackActivationWPComEmailViewModel) {
+fun JetpackActivationWPComEmailScreen(viewModel: JetpackActivationWPComEmailViewModel) {
     viewModel.viewState.observeAsState().value?.let {
-        JetpackActivationWPComScreen(
+        JetpackActivationWPComEmailScreen(
             viewState = it,
             onEmailChanged = viewModel::onEmailChanged,
             onCloseClick = viewModel::onCloseClick,
@@ -50,7 +50,7 @@ fun JetpackActivationWPComScreen(viewModel: JetpackActivationWPComEmailViewModel
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun JetpackActivationWPComScreen(
+fun JetpackActivationWPComEmailScreen(
     viewState: JetpackActivationWPComEmailViewModel.ViewState,
     onEmailChanged: (String) -> Unit = {},
     onCloseClick: () -> Unit = {},
@@ -154,7 +154,7 @@ fun JetpackActivationWPComScreen(
 @Composable
 private fun JetpackActivationWPComScreenPreview() {
     WooThemeWithBackground {
-        JetpackActivationWPComScreen(
+        JetpackActivationWPComEmailScreen(
             viewState = JetpackActivationWPComEmailViewModel.ViewState(
                 email = "",
                 isJetpackInstalled = false

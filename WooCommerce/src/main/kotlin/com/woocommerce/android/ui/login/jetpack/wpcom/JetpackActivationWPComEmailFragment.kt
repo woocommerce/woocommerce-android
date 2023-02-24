@@ -36,7 +36,7 @@ class JetpackActivationWPComEmailFragment : BaseFragment() {
 
             setContent {
                 WooThemeWithBackground {
-                    JetpackActivationWPComScreen(viewModel = viewModel)
+                    JetpackActivationWPComEmailScreen(viewModel = viewModel)
                 }
             }
         }
