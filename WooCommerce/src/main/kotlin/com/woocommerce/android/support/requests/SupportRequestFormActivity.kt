@@ -104,8 +104,8 @@ class SupportRequestFormActivity : AppCompatActivity() {
     private fun showProgressDialog() {
         hideProgressDialog()
         progressDialog = CustomProgressDialog.show(
-            "Sending your request",
-            "Please wait..."
+            getString(R.string.support_request_loading_title),
+            getString(R.string.support_request_loading_message)
         ).also { it.show(supportFragmentManager, CustomProgressDialog.TAG) }
         progressDialog?.isCancelable = false
     }
