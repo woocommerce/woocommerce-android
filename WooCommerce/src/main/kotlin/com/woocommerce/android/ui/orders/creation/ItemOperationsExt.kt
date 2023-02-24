@@ -17,6 +17,20 @@ fun Order.adjustProductQuantity(itemId: Long, quantityToAdd: Int): Order {
     return updateItems(items)
 }
 
+fun Order.updateProductQuantity(itemId: Long, newQuantity: Float): Order {
+    val items = items.toMutableList()
+    val index = items.indexOfFirst { it.itemId == itemId }
+    if (index == -1) error("Couldn't find the product with id $itemId")
+    items[index] = with(items[index]) {
+        copy(
+            quantity = newQuantity,
+            subtotal = pricePreDiscount.multiply(newQuantity.toBigDecimal()),
+            total = price.multiply(newQuantity.toBigDecimal())
+        )
+    }
+    return updateItems(items)
+}
+
 fun Order.updateItems(items: List<Order.Item>): Order = copy(
     items = items,
     productsTotal = productsTotal,

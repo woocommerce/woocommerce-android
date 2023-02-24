@@ -14,13 +14,14 @@ import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateS
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.Creation
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.ViewState
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddProduct
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddProducts
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomerNote
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditFee
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditShipping
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -155,7 +156,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         sut.onAddProductClicked()
 
         assertThat(lastReceivedEvent).isNotNull
-        assertThat(lastReceivedEvent).isInstanceOf(AddProduct::class.java)
+        assertThat(lastReceivedEvent).isInstanceOf(AddProducts::class.java)
     }
 
     @Test
@@ -190,7 +191,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             addedProductItem = order.items.find { it.productId == 123L }
         }
 
-        sut.onProductSelected(123)
+        sut.onSelectedProductsUpdated(setOf(ProductSelectorViewModel.ProductItemData(123L)))
 
         assertThat(addedProductItem).isNotNull
         val addedProductItemId = addedProductItem!!.itemId
@@ -225,7 +226,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             addedProductItem = order.items.find { it.variationId == 123L }
         }
 
-        sut.onProductSelected(123)
+        sut.onSelectedProductsUpdated(setOf(ProductSelectorViewModel.ProductItemData(123L)))
 
         assertThat(addedProductItem).isNotNull
         val addedProductItemId = addedProductItem!!.itemId
@@ -251,7 +252,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             addedProductItem = order.items.find { it.productId == 123L }
         }
 
-        sut.onProductSelected(123)
+        sut.onSelectedProductsUpdated(setOf(ProductSelectorViewModel.ProductItemData(123L)))
 
         assertThat(addedProductItem).isNotNull
         val addedProductItemId = addedProductItem!!.itemId
@@ -279,7 +280,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             addedProductItem = order.items.find { it.productId == 123L }
         }
 
-        sut.onProductSelected(123)
+        sut.onSelectedProductsUpdated(setOf(ProductSelectorViewModel.ProductItemData(123L)))
 
         assertThat(addedProductItem).isNotNull
         val addedProductItemId = addedProductItem!!.itemId
@@ -302,7 +303,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             addedProductItem = order.items.find { it.productId == 123L }
         }
 
-        sut.onProductSelected(123)
+        sut.onSelectedProductsUpdated(setOf(ProductSelectorViewModel.ProductItemData(123L)))
 
         assertThat(addedProductItem).isNotNull
         val addedProductItemId = addedProductItem!!.itemId
@@ -315,25 +316,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             ?.find { it.productId == 123L && it.itemId == addedProductItemId }
             ?.let { assertThat(it.quantity).isEqualTo(0f) }
             ?: fail("Expected an item with productId 123 with quantity set as 0")
-    }
-
-    @Test
-    fun `when adding the very same product, then add a clone of the same product to the list`() {
-        var orderDraft: Order? = null
-        sut.orderDraft.observeForever {
-            orderDraft = it
-        }
-
-        sut.onProductSelected(123)
-        sut.onProductSelected(123)
-
-        orderDraft?.items
-            ?.takeIf { it.isNotEmpty() }
-            ?.filter { it.productId == 123L }
-            ?.let { addedItemsList ->
-                assertThat(addedItemsList.size).isEqualTo(2)
-            }
-            ?: fail("Expected two product items with productId 123")
     }
 
     @Test
@@ -395,7 +377,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             addedProductItem = order.items.find { it.productId == 123L }
         }
 
-        sut.onProductSelected(123)
+        sut.onSelectedProductsUpdated(setOf(ProductSelectorViewModel.ProductItemData(123L)))
 
         assertThat(addedProductItem).isNotNull
         val addedProductItemId = addedProductItem!!.itemId

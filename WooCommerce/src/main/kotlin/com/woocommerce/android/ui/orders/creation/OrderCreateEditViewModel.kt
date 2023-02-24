@@ -49,7 +49,7 @@ import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddProduct
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddProducts
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomerNote
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditFee
@@ -59,6 +59,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -236,19 +237,6 @@ class OrderCreateEditViewModel @Inject constructor(
         it.adjustProductQuantity(item.itemId, -item.quantity.toInt())
     }
 
-    fun onProductSelected(remoteProductId: Long, variationId: Long? = null) {
-        tracker.track(
-            ORDER_PRODUCT_ADD,
-            mapOf(KEY_FLOW to flow)
-        )
-
-        viewModelScope.launch {
-            _orderDraft.value.items.toMutableList().apply {
-                add(createOrderItem(remoteProductId, variationId))
-            }.let { items -> _orderDraft.update { it.updateItems(items) } }
-        }
-    }
-
     fun onCustomerAddressEdited(customerId: Long?, billingAddress: Address, shippingAddress: Address) {
         val hasDifferentShippingDetails = _orderDraft.value.shippingAddress != _orderDraft.value.billingAddress
         tracker.track(
@@ -292,7 +280,12 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onAddProductClicked() {
-        triggerEvent(AddProduct)
+        val selectedItems = orderDraft.value?.items.orEmpty()
+        val selectedVariationItems = selectedItems.filter { it.isVariation }.toSet()
+        val selectedProductItems = selectedItems - selectedVariationItems
+        val productIds = selectedProductItems.map { it.productId }
+        val variationIds = selectedVariationItems.map { it.variationId }
+        triggerEvent(AddProducts(productIds + variationIds))
     }
 
     fun onProductClicked(item: Order.Item) {
@@ -543,6 +536,37 @@ class OrderCreateEditViewModel @Inject constructor(
                     }
                 }
             )
+        }
+    }
+
+    fun onSelectedProductsUpdated(selectedItems: Set<ProductSelectorViewModel.ProductItemData>) {
+        tracker.track(
+            ORDER_PRODUCT_ADD,
+            mapOf(KEY_FLOW to flow)
+        )
+
+        viewModelScope.launch {
+            _orderDraft.value.items.toMutableList().apply {
+                val productItemsToRemove =
+                    filter { orderItem -> selectedItems.none { it.remoteProductId == orderItem.productId } }
+                productItemsToRemove.forEach { itemToRemove ->
+                    _orderDraft.update { it.updateProductQuantity(itemToRemove.itemId, 0F) }
+                }
+
+                val variationItemsToRemove = filter { orderItem ->
+                    orderItem.isVariation && selectedItems.none { it.remoteVariationId == orderItem.variationId }
+                }
+                variationItemsToRemove.forEach { itemToRemove ->
+                    _orderDraft.update { it.updateProductQuantity(itemToRemove.itemId, 0F) }
+                }
+
+                val itemsToAdd = selectedItems.filter { item -> none { it.productId == item.remoteProductId } }
+                    .map { (productId, variationId) ->
+                        createOrderItem(productId, variationId)
+                    }
+
+                _orderDraft.update { it.updateItems(it.items + itemsToAdd) }
+            }
         }
     }
 
