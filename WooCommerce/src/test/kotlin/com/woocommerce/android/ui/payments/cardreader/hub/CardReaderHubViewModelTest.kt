@@ -1254,7 +1254,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
                 it.icon == R.drawable.ic_baseline_contactless &&
                 it.label == UiString.UiStringRes(R.string.card_reader_tap_to_pay) &&
                 it.description == UiString.UiStringRes(R.string.card_reader_tap_to_pay_description) &&
-                it.index == 5
+                it.index == 2
         }
     }
 
