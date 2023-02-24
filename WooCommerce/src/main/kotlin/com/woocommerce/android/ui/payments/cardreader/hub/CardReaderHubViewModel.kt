@@ -75,7 +75,7 @@ class CardReaderHubViewModel @Inject constructor(
                 R.string.card_reader_enable_pay_in_person_description,
                 containsHtml = true
             ),
-            index = 2,
+            index = 3,
             isChecked = false,
             onToggled = { (::onCashOnDeliveryToggled)(it) },
             onLearnMoreClicked = ::onLearnMoreClicked
@@ -149,7 +149,7 @@ class CardReaderHubViewModel @Inject constructor(
         cashOnDeliveryItem: ToggleableListItem
     ): List<ListItem> = mutableListOf(
         HeaderItem(
-            label = UiStringRes(R.string.card_reader_payment_options_header),
+            label = UiStringRes(R.string.card_reader_hub_actions_category_header),
             index = 0
         ),
         NonToggleableListItem(
@@ -161,7 +161,7 @@ class CardReaderHubViewModel @Inject constructor(
         cashOnDeliveryItem,
         HeaderItem(
             label = UiStringRes(R.string.card_reader_card_readers_header),
-            index = 4,
+            index = 5,
         ),
         NonToggleableListItem(
             icon = R.drawable.ic_shopping_cart,
@@ -201,7 +201,7 @@ class CardReaderHubViewModel @Inject constructor(
                     icon = R.drawable.ic_baseline_contactless,
                     label = UiStringRes(R.string.card_reader_tap_to_pay),
                     description = UiStringRes(R.string.card_reader_tap_to_pay_description),
-                    index = 5,
+                    index = 2,
                     onClick = ::onTapTooPayClicked
                 )
             )
@@ -212,7 +212,7 @@ class CardReaderHubViewModel @Inject constructor(
         NonToggleableListItem(
             icon = R.drawable.ic_payment_provider,
             label = UiStringRes(R.string.card_reader_manage_payment_provider),
-            index = 3,
+            index = 4,
             onClick = ::onCardReaderPaymentProviderClicked
         )
 
