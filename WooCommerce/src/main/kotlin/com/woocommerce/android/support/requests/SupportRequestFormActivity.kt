@@ -1,5 +1,7 @@
 package com.woocommerce.android.support.requests
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.activity.viewModels
@@ -116,6 +118,17 @@ class SupportRequestFormActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val ORIGIN_KEY = "ORIGIN_KEY"
+        private const val ORIGIN_KEY = "ORIGIN_KEY"
+        private const val EXTRA_TAGS_KEY = "EXTRA_TAGS_KEY"
+
+        @JvmStatic
+        fun createIntent(
+            context: Context,
+            origin: HelpOrigin,
+            extraTags: java.util.ArrayList<String>
+        ) = Intent(context, SupportRequestFormActivity::class.java).apply {
+            putExtra(ORIGIN_KEY, origin)
+            putStringArrayListExtra(EXTRA_TAGS_KEY, ArrayList(extraTags))
+        }
     }
 }
