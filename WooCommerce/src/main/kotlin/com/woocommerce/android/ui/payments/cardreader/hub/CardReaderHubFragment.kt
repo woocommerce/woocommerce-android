@@ -117,6 +117,10 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                 }
                 UiHelpers.setTextOrHide(this, onboardingErrorAction?.text)
             }
+            with(binding.learnMoreIppTv) {
+                learnMore.setOnClickListener { state.learnMoreIppState?.onClick?.invoke() }
+                UiHelpers.setTextOrHide(binding.learnMoreIppTv.learnMore, state.learnMoreIppState?.label)
+            }
         }
     }
 

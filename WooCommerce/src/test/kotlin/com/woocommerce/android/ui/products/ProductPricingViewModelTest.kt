@@ -1,8 +1,10 @@
 package com.woocommerce.android.ui.products
 
-import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.SelectedSite
@@ -23,6 +25,7 @@ import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCSettingsModel
@@ -49,8 +52,10 @@ class ProductPricingViewModelTest : BaseUnitTest() {
         gmtOffset = 0f
     )
     private val parameterRepository: ParameterRepository = mock {
-        on(it.getParameters(any(), any<SavedStateHandle>())).thenReturn(siteParams)
+        on(it.getParameters(any(), any())).thenReturn(siteParams)
     }
+
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
 
     private val pricingData = PricingData(
         taxClass = "standard",
@@ -95,7 +100,8 @@ class ProductPricingViewModelTest : BaseUnitTest() {
             productRepository,
             wooCommerceStore,
             selectedSite,
-            parameterRepository
+            parameterRepository,
+            analyticsTracker,
         )
 
         clearInvocations(
@@ -170,7 +176,8 @@ class ProductPricingViewModelTest : BaseUnitTest() {
                 productRepository,
                 wooCommerceStore,
                 selectedSite,
-                parameterRepository
+                parameterRepository,
+                analyticsTracker
             )
         )
 
@@ -319,6 +326,31 @@ class ProductPricingViewModelTest : BaseUnitTest() {
 
             assertThat(state?.salePriceErrorMessage).isEqualTo(0)
         }
+
+    @Test
+    fun `Send tracks event upon exit if there was no changes`() {
+        // when
+        viewModel.onExit()
+
+        // then
+        verify(analyticsTracker).track(
+            AnalyticsEvent.PRODUCT_PRICE_SETTINGS_DONE_BUTTON_TAPPED,
+            mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to false)
+        )
+    }
+
+    @Test
+    fun `Send tracks event upon exit if there was a change`() {
+        // when
+        viewModel.onRegularPriceEntered(BigDecimal(31415))
+        viewModel.onExit()
+
+        // then
+        verify(analyticsTracker).track(
+            AnalyticsEvent.PRODUCT_PRICE_SETTINGS_DONE_BUTTON_TAPPED,
+            mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to true)
+        )
+    }
 
     private fun givenScheduleDateIsDisabled() {
         viewModel.onScheduledSaleChanged(false)

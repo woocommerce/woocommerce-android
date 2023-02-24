@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fillViewport="true">
+
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
@@ -20,8 +26,6 @@
         android:id="@+id/cardReaderHubRv"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="@dimen/minor_100"
-        app:layout_constraintBottom_toTopOf="@id/cardReaderHubOnboardingFailedTv"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cardReaderHubLoading"
@@ -30,13 +34,20 @@
         tools:listitem="@layout/card_reader_hub_list_item" />
 
     <!-- android:textColorHighlight="#00FFFFFF": Workaround for a bug https://stackoverflow.com/a/70394538/632516 -->
+    <include
+        android:id="@+id/learn_more_ipp_tv"
+        layout="@layout/card_reader_learn_more_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardReaderHubRv" />
+
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/cardReaderHubOnboardingFailedTv"
         style="@style/Woo.TextView.Caption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="0dp"
-        android:layout_marginEnd="0dp"
         android:layout_marginBottom="@dimen/minor_100"
         android:background="@color/color_surface"
         android:drawableStart="@drawable/ic_info_outline_20dp"
@@ -51,7 +62,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cardReaderHubRv"
+        app:layout_constraintTop_toBottomOf="@+id/learn_more_ipp_tv"
         app:layout_constraintVertical_chainStyle="spread_inside"
+        app:layout_constraintVertical_bias="1"
         tools:text="@string/card_reader_onboarding_not_finished" />
 </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
