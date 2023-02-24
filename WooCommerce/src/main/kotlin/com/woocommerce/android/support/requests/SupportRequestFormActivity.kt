@@ -27,6 +27,10 @@ class SupportRequestFormActivity : AppCompatActivity() {
         intent.extras?.serializable(ORIGIN_KEY) ?: HelpOrigin.UNKNOWN
     }
 
+    private val extraTags by lazy {
+        intent.extras?.getStringArrayList(EXTRA_TAGS_KEY) ?: emptyList()
+    }
+
     private var progressDialog: CustomProgressDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,7 +62,7 @@ class SupportRequestFormActivity : AppCompatActivity() {
             }
         }
         binding.submitRequestButton.setOnClickListener {
-            viewModel.onSubmitRequestButtonClicked(this, helpOrigin)
+            viewModel.onSubmitRequestButtonClicked(this, helpOrigin, extraTags)
         }
     }
 

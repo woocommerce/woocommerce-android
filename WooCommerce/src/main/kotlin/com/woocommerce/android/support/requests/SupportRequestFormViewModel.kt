@@ -55,7 +55,7 @@ class SupportRequestFormViewModel @Inject constructor(
         viewState.update { it.copy(message = message) }
     }
 
-    fun onSubmitRequestButtonClicked(context: Context, helpOrigin: HelpOrigin) {
+    fun onSubmitRequestButtonClicked(context: Context, helpOrigin: HelpOrigin, extraTags: List<String>) {
         val helpOption = viewState.value.helpOption ?: return
         viewState.update { it.copy(isLoading = true) }
         launch {
