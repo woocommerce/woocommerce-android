@@ -135,7 +135,8 @@ fun StoreOnboardingCollapsed(
                 DropdownMenuItem(
                     modifier = Modifier
                         .height(dimensionResource(id = R.dimen.major_175)),
-                    onClick = { onShareFeedbackClicked() }) {
+                    onClick = { onShareFeedbackClicked() }
+                ) {
                     Text(stringResource(id = R.string.store_onboarding_menu_share_feedback))
                 }
             }
