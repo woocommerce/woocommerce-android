@@ -63,6 +63,7 @@ class UserEligibilityFetcherTest : BaseUnitTest() {
     @Test
     fun `Get user info from db correctly`() {
         doReturn(expectedUser).whenever(userStore).getUserByEmail(any(), any())
+        doReturn(expectedUser.email).whenever(appPrefsWrapper).getUserEmail()
 
         val user = fetcher.getUser()
 
