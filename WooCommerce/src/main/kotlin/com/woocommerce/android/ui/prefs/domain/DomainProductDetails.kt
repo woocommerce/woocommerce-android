@@ -7,6 +7,6 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 @SuppressLint("ParcelCreator")
 data class DomainProductDetails(
-    val productId: Int,
-    val domainName: String
+    val domainName: String,
+    val productId: Int
 ) : Parcelable

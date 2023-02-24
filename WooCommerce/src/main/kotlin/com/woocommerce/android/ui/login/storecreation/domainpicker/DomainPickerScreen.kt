@@ -203,8 +203,8 @@ private fun DomainSuggestionList(
     modifier: Modifier = Modifier,
 ) {
     LaunchedEffect(Unit) {
-        suggestions.firstOrNull { it.isSelected }?.domain?.let { domain ->
-            onDomainSuggestionSelected(domain)
+        suggestions.firstOrNull { it.isSelected }?.let { suggestion ->
+            onDomainSuggestionSelected(suggestion.domain)
         }
     }
 

@@ -11,15 +11,16 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository.DomainSuggestion
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository.DomainSuggestion.Paid
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository.DomainSuggestion.Premium
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel.NavigateToNextStep
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerScreen
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.prefs.domain.DomainSearchViewModel.NavigateToDomainRegistration
+import com.woocommerce.android.ui.prefs.domain.DomainSearchViewModel.ShowCheckoutWebView
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class DomainSearchFragment : BaseFragment() {
@@ -27,6 +28,8 @@ class DomainSearchFragment : BaseFragment() {
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
+
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
@@ -49,27 +52,24 @@ class DomainSearchFragment : BaseFragment() {
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
-                is NavigateToNextStep -> navigateToContactForm(event.selectedSuggestion)
+                is ShowUiStringSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ShowCheckoutWebView -> showCheckoutWebView(event.domain, event.wpComDomain)
+                is NavigateToDomainRegistration -> navigateToDomainRegistration(event.domain, event.productId)
             }
         }
     }
 
-    private fun navigateToContactForm(domain: DomainSuggestion) {
-        when (domain) {
-            is Paid -> {
-                navigateToContactForm(domain.productId, domain.name)
-            }
-            is Premium -> {
-                navigateToContactForm(domain.productId, domain.name)
-            }
-            else -> {}
-        }
+    private fun showCheckoutWebView(domain: String, wpComDomain: String) {
+        findNavController().navigateSafely(
+            DomainSearchFragmentDirections
+                .actionDomainSearchFragmentToDomainRegistrationCheckoutFragment(domain, wpComDomain)
+        )
     }
 
-    private fun navigateToContactForm(productId: Int, name: String) {
+    private fun navigateToDomainRegistration(domain: String, productId: Int) {
         findNavController().navigateSafely(
             DomainSearchFragmentDirections.actionDomainSearchFragmentToDomainRegistrationDetailsFragment(
-                DomainProductDetails(productId, name)
+                DomainProductDetails(domain, productId)
             )
         )
     }

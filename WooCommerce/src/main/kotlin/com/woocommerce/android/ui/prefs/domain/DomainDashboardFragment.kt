@@ -49,9 +49,8 @@ class DomainDashboardFragment : BaseFragment() {
                 is ShowMoreAboutDomains -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 is NavigateToDomainSearch -> findNavController().navigate(
                     DomainDashboardFragmentDirections.actionDomainDashboardFragmentToDomainSearchFragment(
-                        keyIsFreeCreditAvailable = event.hasFreeCredits,
-                        searchOnlyFreeDomains = false,
-                        initialQuery = ""
+                        isFreeCreditAvailable = event.hasFreeCredits,
+                        wpComDomain = event.wpComDomain
                     )
                 )
             }

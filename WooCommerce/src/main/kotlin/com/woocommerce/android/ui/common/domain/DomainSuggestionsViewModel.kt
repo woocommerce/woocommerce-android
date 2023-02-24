@@ -35,28 +35,27 @@ import org.wordpress.android.fluxc.model.products.Product
 abstract class DomainSuggestionsViewModel constructor(
     savedStateHandle: SavedStateHandle,
     private val domainSuggestionsRepository: DomainSuggestionsRepository,
-    private val currencyFormatter: CurrencyFormatter
+    private val currencyFormatter: CurrencyFormatter,
+    initialQuery: String,
+    private val searchOnlyFreeDomains: Boolean,
+    private val isFreeCreditAvailable: Boolean
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
-        const val KEY_IS_FREE_CREDIT_AVAILABLE = "key_is_free_credit_available"
-        const val KEY_SEARCH_ONLY_FREE_DOMAINS = "search_only_free_domains"
-        const val KEY_INITIAL_QUERY = "initial_query"
+        const val KEY_IS_FREE_CREDIT_AVAILABLE = "isFreeCreditAvailable"
+        const val KEY_INITIAL_QUERY = "initialQuery"
     }
-
     protected abstract val helpOrigin: HelpOrigin
 
-    var domainQuery by mutableStateOf(savedStateHandle[KEY_INITIAL_QUERY] ?: "")
+    var domainQuery by mutableStateOf(initialQuery)
         private set
 
     private val loadingState = MutableStateFlow(Idle)
-    private val domainSuggestionsUi = domainSuggestionsRepository.domainSuggestions
+    private val domainSuggestions = domainSuggestionsRepository.domainSuggestions
     private val selectedDomain = MutableStateFlow<DomainSuggestion?>(null)
     private val products = domainSuggestionsRepository.products
-    private val isFreeCreditAvailable: Boolean = savedStateHandle[KEY_IS_FREE_CREDIT_AVAILABLE] ?: false
-    private val searchOnlyFreeDomains: Boolean = savedStateHandle[KEY_SEARCH_ONLY_FREE_DOMAINS] ?: true
 
     val viewState = combine(
-        domainSuggestionsUi,
+        domainSuggestions,
         loadingState,
         selectedDomain,
         products
@@ -81,7 +80,7 @@ abstract class DomainSuggestionsViewModel constructor(
             snapshotFlow { domainQuery }
                 .onEach {
                     if (it.isBlank()) {
-                        domainSuggestionsUi.value = emptyList()
+                        domainSuggestions.value = emptyList()
                         selectedDomain.value = null
                     } else {
                         loadingState.value = Loading
@@ -112,11 +111,13 @@ abstract class DomainSuggestionsViewModel constructor(
     }
 
     fun onContinueClicked() {
-        triggerEvent(NavigateToNextStep(selectedDomain.value!!))
+        navigateToNextStep(selectedDomain.value!!)
     }
 
+    abstract fun navigateToNextStep(selectedDomain: DomainSuggestion)
+
     open fun onDomainSuggestionSelected(domain: String) {
-        selectedDomain.value = domainSuggestionsUi.value.first { it.name == domain }
+        selectedDomain.value = domainSuggestions.value.first { it.name == domain }
     }
 
     fun onDomainQueryChanged(query: String) {
@@ -235,6 +236,4 @@ abstract class DomainSuggestionsViewModel constructor(
     enum class LoadingState {
         Idle, Loading
     }
-
-    data class NavigateToNextStep(val selectedSuggestion: DomainSuggestion) : MultiLiveEvent.Event()
 }

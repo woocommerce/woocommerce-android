@@ -10,15 +10,21 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.prefs.domain.PurchaseSuccessfulViewModel.NavigateToDashboard
+import com.woocommerce.android.ui.prefs.domain.DomainRegistrationCheckoutViewModel.NavigateToSuccessScreen
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.fluxc.network.UserAgent
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class PurchaseSuccessfulFragment : BaseFragment() {
-    private val viewModel: PurchaseSuccessfulViewModel by viewModels()
+class DomainRegistrationCheckoutFragment : BaseFragment() {
+    private val viewModel: DomainRegistrationCheckoutViewModel by viewModels()
+
+    @Inject internal lateinit var authenticator: WPComWebViewAuthenticator
+    @Inject internal lateinit var userAgent: UserAgent
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -28,7 +34,7 @@ class PurchaseSuccessfulFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    PurchaseSuccessfulScreen(viewModel)
+                    DomainRegistrationCheckoutScreen(viewModel, authenticator, userAgent)
                 }
             }
         }
@@ -43,14 +49,15 @@ class PurchaseSuccessfulFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                NavigateToDashboard -> navigateToDashboard()
+                is NavigateToSuccessScreen -> navigateToPurchaseSuccessScreen(event.domain)
             }
         }
     }
 
-    private fun navigateToDashboard() {
+    private fun navigateToPurchaseSuccessScreen(domain: String) {
         findNavController().navigateSafely(
-            PurchaseSuccessfulFragmentDirections.actionPurchaseSuccessfulFragmentToDomainDashboardFragment()
+            DomainRegistrationCheckoutFragmentDirections
+                .actionDomainRegistrationCheckoutFragmentToPurchaseSuccessfulFragment(domain)
         )
     }
 }

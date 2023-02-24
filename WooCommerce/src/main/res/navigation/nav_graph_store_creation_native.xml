@@ -81,7 +81,7 @@
             android:id="@+id/action_domainPickerFragment_to_myStoreSummaryFragment"
             app:destination="@id/myStoreSummaryFragment" />
         <argument
-            android:name="initial_query"
+            android:name="initialQuery"
             app:argType="string" />
     </fragment>
 

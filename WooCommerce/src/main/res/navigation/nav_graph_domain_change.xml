@@ -17,17 +17,17 @@
         android:name="com.woocommerce.android.ui.prefs.domain.DomainSearchFragment"
         android:label="DomainSearchFragment" >
         <argument
-            android:name="key_is_free_credit_available"
+            android:name="isFreeCreditAvailable"
             app:argType="boolean" />
         <argument
-            android:name="search_only_free_domains"
-            app:argType="boolean" />
-        <argument
-            android:name="initial_query"
+            android:name="wpComDomain"
             app:argType="string" />
         <action
             android:id="@+id/action_domainSearchFragment_to_domainRegistrationDetailsFragment"
             app:destination="@id/domainRegistrationDetailsFragment" />
+        <action
+            android:id="@+id/action_domainSearchFragment_to_domainRegistrationCheckoutFragment"
+            app:destination="@id/domainRegistrationCheckoutFragment" />
     </fragment>
     <fragment
         android:id="@+id/purchaseSuccessfulFragment"
@@ -53,6 +53,21 @@
             app:argType="com.woocommerce.android.ui.prefs.domain.DomainProductDetails" />
         <action
             android:id="@+id/action_domainRegistrationDetailsFragment_to_domainDashboardFragment"
-            app:destination="@id/domainDashboardFragment" />
+            app:destination="@id/domainDashboardFragment"
+            app:popUpTo="@id/nav_graph_domain_change" />
+    </fragment>
+    <fragment
+        android:id="@+id/domainRegistrationCheckoutFragment"
+        android:name="com.woocommerce.android.ui.prefs.domain.DomainRegistrationCheckoutFragment"
+        android:label="DomainRegistrationCheckoutFragment" >
+        <argument
+            android:name="domain"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_domainRegistrationCheckoutFragment_to_purchaseSuccessfulFragment"
+            app:destination="@id/purchaseSuccessfulFragment" />
+        <argument
+            android:name="wpComDomain"
+            app:argType="string" />
     </fragment>
 </navigation>

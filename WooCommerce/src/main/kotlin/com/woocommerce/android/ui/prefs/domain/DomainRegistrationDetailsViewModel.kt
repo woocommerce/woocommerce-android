@@ -5,8 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.prefs.domain.DomainRegistrationDetailsViewModel.DomainContactFormModel.Companion
-import com.woocommerce.android.ui.prefs.domain.DomainPhoneNumberUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -26,7 +24,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.transactions.SupportedDoma
 import org.wordpress.android.fluxc.store.AccountStore.OnDomainContactFetched
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.OnDomainSupportedStatesFetched
-import org.wordpress.android.fluxc.store.SiteStore.OnPrimaryDomainDesignated
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.store.TransactionsStore
 import org.wordpress.android.fluxc.store.TransactionsStore.CreateShoppingCartPayload
@@ -48,7 +45,8 @@ class DomainRegistrationDetailsViewModel @Inject constructor(
     private val dispatcher: Dispatcher,
     @Suppress("unused") private val transactionsStore: TransactionsStore, // needed for events to work
     private val siteStore: SiteStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val domainChangeRepository: DomainChangeRepository
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: DomainRegistrationDetailsFragmentArgs by savedStateHandle.navArgs()
 
@@ -57,9 +55,9 @@ class DomainRegistrationDetailsViewModel @Inject constructor(
     private var supportedCountries: List<SupportedDomainCountry>? = null
     private var supportedStates: List<SupportedStateResponse>? = null
 
-    private val _uiState = MutableLiveData(ViewState())
-    val uiState: LiveData<ViewState>
-        get() = _uiState
+    private val _viewState = MutableLiveData(ViewState())
+    val viewState: LiveData<ViewState>
+        get() = _viewState
 
     private val _domainContactForm = MutableLiveData<DomainContactFormModel>()
     val domainContactForm: LiveData<DomainContactFormModel>
@@ -76,12 +74,12 @@ class DomainRegistrationDetailsViewModel @Inject constructor(
     }
 
     private fun fetchSupportedCountries() {
-        _uiState.value = _uiState.value?.copy(isFormProgressIndicatorVisible = true)
+        _viewState.value = _viewState.value?.copy(isFormProgressIndicatorVisible = true)
         dispatcher.dispatch(TransactionActionBuilder.generateNoPayloadAction(FETCH_SUPPORTED_COUNTRIES))
     }
 
     private fun finishRegistration(isSuccess: Boolean) {
-        _uiState.value = uiState.value?.copy(isRegistrationProgressIndicatorVisible = false)
+        _viewState.value = viewState.value?.copy(isRegistrationProgressIndicatorVisible = false)
 
         if (isSuccess) {
             triggerEvent(NavigateToPurchaseSuccessScreen(navArgs.domainProductDetails.domainName))
@@ -99,28 +97,29 @@ class DomainRegistrationDetailsViewModel @Inject constructor(
     }
 
     fun onRegisterDomainButtonClicked() {
-        _uiState.value = uiState.value?.copy(isRegistrationProgressIndicatorVisible = true)
+        _viewState.value = viewState.value?.copy(isRegistrationProgressIndicatorVisible = true)
         _domainContactForm.value = _domainContactForm.value?.copy(
-            countryCode = uiState.value?.selectedCountry?.code,
-            state = uiState.value?.selectedState?.code
+            countryCode = viewState.value?.selectedCountry?.code,
+            state = viewState.value?.selectedState?.code
         )
+
         dispatcher.dispatch(
             TransactionActionBuilder.newCreateShoppingCartAction(
                 CreateShoppingCartPayload(
                     selectedSite.get(),
                     navArgs.domainProductDetails.productId,
                     navArgs.domainProductDetails.domainName,
-                    uiState.value?.isPrivacyProtectionEnabled!!
+                    viewState.value?.isPrivacyProtectionEnabled!!
                 )
             )
         )
     }
 
     fun onCountrySelected(country: SupportedDomainCountry) {
-        if (country != uiState.value?.selectedCountry) {
+        if (country != viewState.value?.selectedCountry) {
             supportedStates = null
-            _uiState.value =
-                uiState.value?.copy(
+            _viewState.value =
+                viewState.value?.copy(
                     selectedCountry = country,
                     selectedState = null,
                     isStateProgressIndicatorVisible = true,
@@ -138,7 +137,7 @@ class DomainRegistrationDetailsViewModel @Inject constructor(
     }
 
     fun onStateSelected(state: SupportedStateResponse) {
-        _uiState.value = uiState.value?.copy(selectedState = state)
+        _viewState.value = viewState.value?.copy(selectedState = state)
     }
 
     fun onTosLinkClicked() {
@@ -146,8 +145,8 @@ class DomainRegistrationDetailsViewModel @Inject constructor(
     }
 
     fun onDomainContactDetailsChanged(form: DomainContactFormModel) {
-        val isFormBusy = uiState.value?.isFormProgressIndicatorVisible == true ||
-                uiState.value?.isRegistrationProgressIndicatorVisible == true
+        val isFormBusy = viewState.value?.isFormProgressIndicatorVisible == true ||
+                viewState.value?.isRegistrationProgressIndicatorVisible == true
 
         if (!isFormBusy) {
             _domainContactForm.value = form
@@ -155,13 +154,13 @@ class DomainRegistrationDetailsViewModel @Inject constructor(
     }
 
     fun togglePrivacyProtection(isEnabled: Boolean) {
-        _uiState.value = uiState.value?.copy(isPrivacyProtectionEnabled = isEnabled)
+        _viewState.value = viewState.value?.copy(isPrivacyProtectionEnabled = isEnabled)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onSupportedCountriesFetched(event: OnSupportedCountriesFetched) {
         if (event.isError) {
-            _uiState.value = _uiState.value?.copy(isFormProgressIndicatorVisible = false)
+            _viewState.value = _viewState.value?.copy(isFormProgressIndicatorVisible = false)
             event.error?.message?.let { triggerEvent(ShowErrorMessage(it)) }
             AppLog.e(T.DOMAIN_REGISTRATION, "An error occurred while fetching supported countries")
         } else {
@@ -173,18 +172,18 @@ class DomainRegistrationDetailsViewModel @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onDomainContactFetched(event: OnDomainContactFetched) {
         if (event.isError) {
-            _uiState.value = _uiState.value?.copy(isFormProgressIndicatorVisible = false)
+            _viewState.value = _viewState.value?.copy(isFormProgressIndicatorVisible = false)
             event.error?.message?.let { triggerEvent(ShowErrorMessage(it)) }
             AppLog.e(T.DOMAIN_REGISTRATION, "An error occurred while fetching domain contact details")
         } else {
-            _domainContactForm.value = Companion.fromDomainContactModel(event.contactModel)
-            _uiState.value = _uiState.value?.copy(isFormProgressIndicatorVisible = false)
+            _domainContactForm.value = DomainContactFormModel.fromDomainContactModel(event.contactModel)
+            _viewState.value = _viewState.value?.copy(isFormProgressIndicatorVisible = false)
 
             val countryCode = event.contactModel?.countryCode
 
             if (event.contactModel != null && !TextUtils.isEmpty(countryCode)) {
-                _uiState.value =
-                    uiState.value?.copy(
+                _viewState.value =
+                    viewState.value?.copy(
                         selectedCountry = supportedCountries?.firstOrNull {
                             it.code == event.contactModel?.countryCode
                         },
@@ -210,15 +209,15 @@ class DomainRegistrationDetailsViewModel @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onDomainSupportedStatesFetched(event: OnDomainSupportedStatesFetched) {
         if (event.isError) {
-            _uiState.value =
-                uiState.value?.copy(
+            _viewState.value =
+                viewState.value?.copy(
                     isStateProgressIndicatorVisible = false,
                     isDomainRegistrationButtonEnabled = true
                 )
             event.error?.message?.let { triggerEvent(ShowErrorMessage(it)) }
             AppLog.e(T.DOMAIN_REGISTRATION, "An error occurred while fetching supported countries")
         } else {
-            _uiState.value = uiState.value?.copy(
+            _viewState.value = viewState.value?.copy(
                 selectedState = event.supportedStates?.firstOrNull { it.code == domainContactForm.value?.state },
                 isStateProgressIndicatorVisible = false,
                 isDomainRegistrationButtonEnabled = true,
@@ -231,7 +230,7 @@ class DomainRegistrationDetailsViewModel @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onShoppingCartCreated(event: OnShoppingCartCreated) {
         if (event.isError) {
-            _uiState.value = uiState.value?.copy(isRegistrationProgressIndicatorVisible = false)
+            _viewState.value = viewState.value?.copy(isRegistrationProgressIndicatorVisible = false)
             AppLog.e(
                 T.DOMAIN_REGISTRATION,
                 "An error occurred while creating a shopping cart : " + event.error.message
@@ -244,7 +243,7 @@ class DomainRegistrationDetailsViewModel @Inject constructor(
             TransactionActionBuilder.newRedeemCartWithCreditsAction(
                 RedeemShoppingCartPayload(
                     event.cartDetails!!,
-                    Companion.toDomainContactModel(domainContactForm.value)!!
+                    DomainContactFormModel.toDomainContactModel(domainContactForm.value)!!
                 )
             )
         )
@@ -253,7 +252,7 @@ class DomainRegistrationDetailsViewModel @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onCartRedeemed(event: OnShoppingCartRedeemed) {
         if (event.isError) {
-            _uiState.value = uiState.value?.copy(isRegistrationProgressIndicatorVisible = false)
+            _viewState.value = viewState.value?.copy(isRegistrationProgressIndicatorVisible = false)
             triggerEvent(ShowFormValidationError(event.error))
             triggerEvent(ShowErrorMessage(event.error.message))
             AppLog.e(
@@ -263,20 +262,6 @@ class DomainRegistrationDetailsViewModel @Inject constructor(
             )
             return
         }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onPrimaryDomainDesignated(event: OnPrimaryDomainDesignated) {
-        if (event.isError) { // in case of error we notify used and proceed to next step
-            event.error?.message?.let { triggerEvent(ShowErrorMessage(it)) }
-            AppLog.e(
-                T.DOMAIN_REGISTRATION,
-                "An error occurred while redeeming a shopping cart : " + event.error.type +
-                    " " + event.error.message
-            )
-        }
-
-        dispatcher.dispatch(SiteActionBuilder.newFetchSiteAction(selectedSite.get()))
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

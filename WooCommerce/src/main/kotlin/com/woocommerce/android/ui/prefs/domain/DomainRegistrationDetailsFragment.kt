@@ -204,7 +204,7 @@ class DomainRegistrationDetailsFragment : BaseFragment() {
     }
 
     private fun DomainRegistrationDetailsFragmentBinding.setupObservers() {
-        viewModel.uiState.observe(viewLifecycleOwner) {
+        viewModel.viewState.observe(viewLifecycleOwner) {
             it?.let { uiState -> loadState(uiState) }
         }
 

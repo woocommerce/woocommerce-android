@@ -33,6 +33,7 @@ class DomainDashboardViewModel @Inject constructor(
     }
 
     private var hasFreeCredits = false
+    private lateinit var wpComDomain: String
 
     private val _viewState = savedStateHandle.getStateFlow<ViewState>(this, LoadingState)
     val viewState = _viewState.asLiveData()
@@ -60,27 +61,26 @@ class DomainDashboardViewModel @Inject constructor(
             if (domainsResult.isFailure) {
                 _viewState.update { ErrorState }
             } else {
-                val freeDomain = domainsResult.getOrNull()?.firstOrNull { it.wpcomDomain }
+                val freeDomain = domainsResult.getOrThrow().first { it.wpcomDomain }
                 val paidDomains = domainsResult.getOrNull()
                     ?.filter { !it.wpcomDomain && it.domain != null } ?: emptyList()
-                if (freeDomain != null) {
-                    _viewState.update {
-                        DashboardState(
-                            wpComDomain = DashboardState.Domain(
-                                url = freeDomain.domain ?: NO_DOMAIN,
-                                isPrimary = freeDomain.primaryDomain
-                            ),
-                            paidDomains = paidDomains.map { domain ->
-                                DashboardState.Domain(
-                                    url = domain.domain!!,
-                                    renewalDate = domain.expiry,
-                                    isPrimary = domain.primaryDomain
-                                )
-                            },
-                            isDomainClaimBannerVisible = hasFreeCredits
-                        )
-                    }
+                _viewState.update {
+                    DashboardState(
+                        wpComDomain = DashboardState.Domain(
+                            url = freeDomain.domain ?: NO_DOMAIN,
+                            isPrimary = freeDomain.primaryDomain
+                        ),
+                        paidDomains = paidDomains.map { domain ->
+                            DashboardState.Domain(
+                                url = domain.domain!!,
+                                renewalDate = domain.expiry,
+                                isPrimary = domain.primaryDomain
+                            )
+                        },
+                        isDomainClaimBannerVisible = hasFreeCredits
+                    )
                 }
+                wpComDomain = requireNotNull(freeDomain.domain)
             }
         }
     }
@@ -96,7 +96,7 @@ class DomainDashboardViewModel @Inject constructor(
 
     fun onFindDomainButtonTapped() {
         analyticsTrackerWrapper.track(AnalyticsEvent.DOMAIN_CHANGE_SEARCH_FOR_DOMAIN_BUTTON_TAPPED)
-        triggerEvent(NavigateToDomainSearch(hasFreeCredits))
+        triggerEvent(NavigateToDomainSearch(hasFreeCredits, wpComDomain))
     }
 
     fun onLearnMoreButtonTapped() {
@@ -125,6 +125,6 @@ class DomainDashboardViewModel @Inject constructor(
         }
     }
 
-    data class NavigateToDomainSearch(val hasFreeCredits: Boolean) : MultiLiveEvent.Event()
+    data class NavigateToDomainSearch(val hasFreeCredits: Boolean, val wpComDomain: String) : MultiLiveEvent.Event()
     data class ShowMoreAboutDomains(val url: String) : MultiLiveEvent.Event()
 }
