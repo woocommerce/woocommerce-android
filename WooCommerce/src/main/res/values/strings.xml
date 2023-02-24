@@ -3086,5 +3086,12 @@
     <string name="support_request_help_payments">WooCommerce Payments</string>
     <string name="support_request_help_plugins">WooCommerce Plugin</string>
     <string name="support_request_help_other">Other Extension / Plugin</string>
+    <string name="support_request_loading_title">Sending your request</string>
+    <string name="support_request_loading_message">Please wait…</string>
+    <string name="support_request_success_title">Request sent!</string>
+    <string name="support_request_success_message">Your support request has landed safely in our inbox. We will reply via email as quickly as we can.</string>
+    <string name="support_request_success_action">Got It!</string>
+    <string name="support_request_error_title">Something went wrong</string>
+    <string name="support_request_error_message">Sorry, we cannot create support requests right now, please try again later.</string>
 
 </resources>
