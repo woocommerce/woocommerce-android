@@ -116,6 +116,6 @@ class SupportRequestFormActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val ORIGIN_KEY = "ORIGIN_KEY"
+        const val ORIGIN_KEY = "ORIGIN_KEY"
     }
 }

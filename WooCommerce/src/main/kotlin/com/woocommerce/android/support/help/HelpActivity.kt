@@ -259,7 +259,10 @@ class HelpActivity : AppCompatActivity() {
     }
 
     private fun openSupportRequestForm() {
-        startActivity(Intent(this, SupportRequestFormActivity::class.java))
+        Intent(this, SupportRequestFormActivity::class.java).apply {
+            putExtra(SupportRequestFormActivity.ORIGIN_KEY, originFromExtras)
+            startActivity(this)
+        }
     }
 
     companion object {
