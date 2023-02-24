@@ -185,7 +185,18 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     fun onDoneButtonClick() {
-        triggerEvent(ExitWithResult(selectedProductIds.value))
+        val selectedItems = viewState.value?.products?.filter {
+            it.selectionState in listOf(SELECTED, PARTIALLY_SELECTED)
+        }
+        val selectedVariableItems = selectedItems?.filter { it.type == VARIABLE }
+        val selectedNonVariableItems = selectedItems?.filter { it.type != VARIABLE }
+
+        val selectedVariables = selectedVariableItems?.flatMap { item ->
+            item.selectedVariationIds.map { variationId -> ProductItemData(item.id, variationId) }
+        }.orEmpty()
+        val selectedProducts = selectedNonVariableItems?.map { ProductItemData(it.id) }.orEmpty()
+
+        triggerEvent(ExitWithResult((selectedVariables + selectedProducts).toSet()))
     }
 
     fun onSearchQueryChanged(query: String) {
@@ -308,4 +319,10 @@ class ProductSelectorViewModel @Inject constructor(
     enum class LoadingState {
         IDLE, LOADING, APPENDING
     }
+
+    @Parcelize
+    data class ProductItemData(
+        val remoteProductId: Long,
+        val remoteVariationId: Long? = null,
+    ) : Parcelable
 }
