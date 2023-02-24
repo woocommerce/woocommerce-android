@@ -113,7 +113,7 @@ fun JetpackActivationWPComScreen(
                     keyboardActions = KeyboardActions(
                         onDone = {
                             keyboardController?.hide()
-                            // TODO
+                            onContinueClick()
                         }
                     )
                 )
