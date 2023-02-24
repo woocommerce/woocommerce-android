@@ -6,12 +6,14 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.doOnTextChanged
+import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ActivitySupportRequestFormBinding
 import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.support.HelpOption
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationFailed
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationSucceeded
+import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -82,6 +84,12 @@ class SupportRequestFormActivity : AppCompatActivity() {
     }
 
     private fun showRequestCreationSuccessDialog() {
+        WooDialog.showDialog(
+            activity = this,
+            titleId = R.string.support_request_success_title,
+            messageId = R.string.support_request_success_message,
+            positiveButtonId = R.string.support_request_success_action
+        )
     }
 
     private fun showRequestCreationFailureDialog() {
