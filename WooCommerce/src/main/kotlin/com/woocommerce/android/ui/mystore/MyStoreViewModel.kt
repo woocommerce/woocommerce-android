@@ -343,7 +343,6 @@ class MyStoreViewModel @Inject constructor(
         val daysSinceDismissal = TimeUnit.MILLISECONDS.toDays(
             System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()
         )
-        // For now, the banner is shown only when the site is a Jetpack CP site
         val supportsJetpackInstallation = connectionType == SiteConnectionType.JetpackConnectionPackage ||
             (connectionType == SiteConnectionType.ApplicationPasswords && FeatureFlag.REST_API_I2.isEnabled())
         val showBanner = supportsJetpackInstallation && daysSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER
