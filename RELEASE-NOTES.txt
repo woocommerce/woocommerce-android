@@ -3,6 +3,7 @@
 -----
 - [*] Search in local database when searching for products in the edit coupons flow. [https://github.com/woocommerce/woocommerce-android/pull/8391]
 
+
 12.5
 -----
 

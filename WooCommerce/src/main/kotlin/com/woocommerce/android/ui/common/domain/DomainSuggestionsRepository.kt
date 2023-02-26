@@ -1,6 +1,9 @@
-package com.woocommerce.android.ui.login.storecreation.domainpicker
+package com.woocommerce.android.ui.common.domain
 
 import com.woocommerce.android.WooException
+import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository.DomainSuggestion.Free
+import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository.DomainSuggestion.Paid
+import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository.DomainSuggestion.Premium
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.dispatchAndAwait
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,7 +41,7 @@ class DomainSuggestionsRepository @Inject constructor(
             includeWordpressCom = false,
             includeDotBlogSubdomain = false,
             SUGGESTIONS_REQUEST_COUNT,
-            includeVendorDot = false
+            vendor = "variation8_front"
         )
         dispatcher.dispatchAndAwait<SiteStore.SuggestDomainsPayload, SiteStore.OnSuggestedDomains>(
             SiteActionBuilder.newSuggestDomainsAction(domainSuggestionsPayload)
@@ -64,13 +67,18 @@ class DomainSuggestionsRepository @Inject constructor(
                         domainSuggestionsEvent.suggestions
                             .filter { it.is_free == freeOnly }
                             .map { suggestion ->
-                                if (suggestion.is_free) {
-                                    DomainSuggestion.Free(
+                                when {
+                                    suggestion.is_free -> Free(
                                         suggestion.domain_name,
                                         suggestion.relevance
                                     )
-                                } else {
-                                    DomainSuggestion.Paid(
+                                    suggestion.is_premium -> Premium(
+                                        suggestion.domain_name,
+                                        suggestion.relevance,
+                                        suggestion.product_id,
+                                        suggestion.supports_privacy
+                                    )
+                                    else -> Paid(
                                         suggestion.domain_name,
                                         suggestion.relevance,
                                         suggestion.cost,
@@ -120,7 +128,12 @@ class DomainSuggestionsRepository @Inject constructor(
     sealed interface DomainSuggestion {
         val name: String
         val relevance: Float
-
+        data class Premium(
+            override val name: String,
+            override val relevance: Float,
+            val productId: Int,
+            val supportsPrivacy: Boolean
+        ) : DomainSuggestion
         data class Free(
             override val name: String,
             override val relevance: Float

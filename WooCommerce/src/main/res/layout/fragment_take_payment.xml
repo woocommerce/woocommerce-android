@@ -93,19 +93,11 @@
         </LinearLayout>
 
         <!-- android:textColorHighlight="#00FFFFFF": Workaround for a bug https://stackoverflow.com/a/70394538/632516 -->
-        <com.google.android.material.textview.MaterialTextView
+        <include
             android:id="@+id/learn_more_ipp_payment_methods_tv"
-            style="@style/Woo.TextView.Caption"
+            layout="@layout/card_reader_learn_more_section"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:drawableStart="@drawable/ic_info_outline_20dp"
-            android:drawablePadding="@dimen/major_100"
-            android:paddingVertical="@dimen/minor_50"
-            android:maxLines="2"
-            android:text="@string/card_reader_connect_learn_more"
-            android:textColor="@color/color_on_surface_high"
-            android:textColorHighlight="#00FFFFFF"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/container" />
