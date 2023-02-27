@@ -55,7 +55,8 @@ fun JetpackActivationWPComPasswordScreen(viewModel: JetpackActivationWPComPasswo
             viewState = it,
             onPasswordChanged = viewModel::onPasswordChanged,
             onCloseClick = viewModel::onCloseClick,
-            onContinueClick = viewModel::onContinueClick
+            onContinueClick = viewModel::onContinueClick,
+            onMagicLinkClick = viewModel::onMagicLinkClick
         )
     }
 }
@@ -66,7 +67,8 @@ fun JetpackActivationWPComPasswordScreen(
     viewState: JetpackActivationWPComPasswordViewModel.ViewState,
     onPasswordChanged: (String) -> Unit = {},
     onCloseClick: () -> Unit = {},
-    onContinueClick: () -> Unit = {}
+    onContinueClick: () -> Unit = {},
+    onMagicLinkClick: () -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -150,7 +152,7 @@ fun JetpackActivationWPComPasswordScreen(
                 )
             }
             WCOutlinedButton(
-                onClick = { /*TODO*/ },
+                onClick = onMagicLinkClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100))

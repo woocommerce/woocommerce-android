@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComPasswordViewModel.Show2FAScreen
+import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComPasswordViewModel.ShowMagicLinkScreen
 import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComPostLoginViewModel.ShowJetpackActivationScreen
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -51,6 +52,11 @@ class JetpackActivationWPComPasswordFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is Show2FAScreen -> {
+                    // TODO
+                    Toast.makeText(requireContext(), "$event", Toast.LENGTH_SHORT).show()
+                }
+
+                is ShowMagicLinkScreen -> {
                     // TODO
                     Toast.makeText(requireContext(), "$event", Toast.LENGTH_SHORT).show()
                 }

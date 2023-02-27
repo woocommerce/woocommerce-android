@@ -65,6 +65,21 @@ class JetpackActivationWPComPasswordViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
+    fun onMagicLinkClick() {
+        triggerEvent(
+            ShowMagicLinkScreen(
+                emailOrUsername = navArgs.emailOrUsername,
+                jetpackStatus = navArgs.jetpackStatus
+            )
+        )
+    }
+
+    fun onResetPasswordClick() {
+        triggerEvent(
+            ShowPasswordReset()
+        )
+    }
+
     fun onContinueClick() = launch {
         isLoadingDialogShown.value = true
         wpComLoginRepository.login(navArgs.emailOrUsername, password.value).fold(
@@ -121,4 +136,8 @@ class JetpackActivationWPComPasswordViewModel @Inject constructor(
     }
 
     data class Show2FAScreen(val emailOrUsername: String, val jetpackStatus: JetpackStatus) : MultiLiveEvent.Event()
+    data class ShowMagicLinkScreen(
+        val emailOrUsername: String,
+        val jetpackStatus: JetpackStatus
+    ) : MultiLiveEvent.Event()
 }
