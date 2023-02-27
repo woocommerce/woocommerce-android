@@ -44,7 +44,7 @@ class DomainRegistrationCheckoutViewModel @Inject constructor(
         _viewState.update {
             val siteHost = Uri.parse(selectedSite.get().url).host
             ViewState.CheckoutState(
-                startUrl = "${CART_URL}/$siteHost",
+                startUrl = "$CART_URL/$siteHost",
                 successTriggerKeyword = WEBVIEW_SUCCESS_TRIGGER_KEYWORD,
                 exitTriggerKeyword = WEBVIEW_EXIT_TRIGGER_KEYWORD
             )

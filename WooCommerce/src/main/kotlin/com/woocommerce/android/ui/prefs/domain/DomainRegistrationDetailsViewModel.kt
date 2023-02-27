@@ -45,8 +45,7 @@ class DomainRegistrationDetailsViewModel @Inject constructor(
     private val dispatcher: Dispatcher,
     @Suppress("unused") private val transactionsStore: TransactionsStore, // needed for events to work
     private val siteStore: SiteStore,
-    private val selectedSite: SelectedSite,
-    private val domainChangeRepository: DomainChangeRepository
+    private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: DomainRegistrationDetailsFragmentArgs by savedStateHandle.navArgs()
 
@@ -146,7 +145,7 @@ class DomainRegistrationDetailsViewModel @Inject constructor(
 
     fun onDomainContactDetailsChanged(form: DomainContactFormModel) {
         val isFormBusy = viewState.value?.isFormProgressIndicatorVisible == true ||
-                viewState.value?.isRegistrationProgressIndicatorVisible == true
+            viewState.value?.isRegistrationProgressIndicatorVisible == true
 
         if (!isFormBusy) {
             _domainContactForm.value = form

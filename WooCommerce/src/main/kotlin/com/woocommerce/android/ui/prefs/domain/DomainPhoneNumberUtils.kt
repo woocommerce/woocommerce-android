@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.prefs.domain
 
 import android.text.TextUtils
 
-class DomainPhoneNumberUtils {
+class DomainPhoneNumberUtils private constructor() {
     companion object {
         private const val PHONE_NUMBER_PREFIX = "+"
         private const val PHONE_NUMBER_CONNECTING_CHARACTER = "."
@@ -264,33 +264,35 @@ class DomainPhoneNumberUtils {
         }
 
         fun getPhoneNumberPrefixFromFullPhoneNumber(phoneNumber: String?): String? {
-            if (TextUtils.isEmpty(phoneNumber)) {
-                return null
-            }
             val phoneParts = phoneNumber!!.split(PHONE_NUMBER_CONNECTING_CHARACTER)
-            if (phoneParts.size == 2) {
+            return if (TextUtils.isEmpty(phoneNumber)) {
+                null
+            } else if (phoneParts.size == 2) {
                 var countryCode = phoneParts[0]
                 if (countryCode.startsWith(PHONE_NUMBER_PREFIX)) {
                     countryCode = countryCode.drop(1)
                 }
 
-                return countryCode
+                countryCode
+            } else {
+                null
             }
-            return null
         }
 
         fun getPhoneNumberWithoutPrefix(phoneNumber: String?): String? {
-            if (TextUtils.isEmpty(phoneNumber)) {
-                return null
-            }
             val phoneParts = phoneNumber!!.split(PHONE_NUMBER_CONNECTING_CHARACTER)
-            if (phoneParts.size == 2) {
+            return if (TextUtils.isEmpty(phoneNumber)) {
+                null
+            } else if (phoneParts.size == 2) {
                 val phoneNumberWithoutPrefix = phoneParts[1]
                 if (!TextUtils.isEmpty(phoneNumberWithoutPrefix)) {
-                    return phoneNumberWithoutPrefix
+                    phoneNumberWithoutPrefix
+                } else {
+                    null
                 }
+            } else {
+                null
             }
-            return null
         }
 
         fun formatPhoneNumberandPrefix(phoneNumberPrefix: String?, phoneNumber: String?): String? {

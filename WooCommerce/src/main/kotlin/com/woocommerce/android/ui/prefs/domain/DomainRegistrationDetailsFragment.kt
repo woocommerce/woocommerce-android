@@ -29,12 +29,12 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.prefs.domain.DomainRegistrationDetailsViewModel.DomainContactFormModel
 import com.woocommerce.android.ui.prefs.domain.DomainRegistrationDetailsViewModel.NavigateToDomainDashboard
 import com.woocommerce.android.ui.prefs.domain.DomainRegistrationDetailsViewModel.NavigateToPurchaseSuccessScreen
-import com.woocommerce.android.ui.prefs.domain.DomainRegistrationDetailsViewModel.ViewState
 import com.woocommerce.android.ui.prefs.domain.DomainRegistrationDetailsViewModel.ShowCountryPickerDialog
 import com.woocommerce.android.ui.prefs.domain.DomainRegistrationDetailsViewModel.ShowErrorMessage
 import com.woocommerce.android.ui.prefs.domain.DomainRegistrationDetailsViewModel.ShowFormValidationError
 import com.woocommerce.android.ui.prefs.domain.DomainRegistrationDetailsViewModel.ShowStatePickerDialog
 import com.woocommerce.android.ui.prefs.domain.DomainRegistrationDetailsViewModel.ShowTermsOfService
+import com.woocommerce.android.ui.prefs.domain.DomainRegistrationDetailsViewModel.ViewState
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -130,7 +130,6 @@ class DomainRegistrationDetailsFragment : BaseFragment() {
         binding = null
     }
 
-
     private fun setupEventObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
@@ -160,6 +159,7 @@ class DomainRegistrationDetailsFragment : BaseFragment() {
         )
     }
 
+    @Suppress("EmptyFunctionBlock")
     private fun DomainRegistrationDetailsFragmentBinding.setupInputFieldTextWatchers() {
         arrayOf(
             firstNameInput,
@@ -452,7 +452,7 @@ class DomainRegistrationDetailsFragment : BaseFragment() {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             states = requireArguments().getParcelableArrayList<SupportedStateResponse>(EXTRA_STATES)
-                    as ArrayList<SupportedStateResponse>
+                as ArrayList<SupportedStateResponse>
         }
 
         @Suppress("DEPRECATION", "UseCheckOrError")
@@ -501,7 +501,7 @@ class DomainRegistrationDetailsFragment : BaseFragment() {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             countries = arguments?.getParcelableArrayList<SupportedDomainCountry>(EXTRA_COUNTRIES)
-                    as ArrayList<SupportedDomainCountry>
+                as ArrayList<SupportedDomainCountry>
         }
 
         @Suppress("DEPRECATION", "UseCheckOrError")
