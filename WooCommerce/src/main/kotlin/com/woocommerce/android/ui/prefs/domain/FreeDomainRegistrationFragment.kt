@@ -26,15 +26,15 @@ import com.woocommerce.android.R.style
 import com.woocommerce.android.databinding.FreeDomainRegistrationFragmentBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.prefs.domain.DomainRegistrationDetailsViewModel.DomainContactFormModel
-import com.woocommerce.android.ui.prefs.domain.DomainRegistrationDetailsViewModel.NavigateToDomainDashboard
-import com.woocommerce.android.ui.prefs.domain.DomainRegistrationDetailsViewModel.NavigateToPurchaseSuccessScreen
-import com.woocommerce.android.ui.prefs.domain.DomainRegistrationDetailsViewModel.ShowCountryPickerDialog
-import com.woocommerce.android.ui.prefs.domain.DomainRegistrationDetailsViewModel.ShowErrorMessage
-import com.woocommerce.android.ui.prefs.domain.DomainRegistrationDetailsViewModel.ShowFormValidationError
-import com.woocommerce.android.ui.prefs.domain.DomainRegistrationDetailsViewModel.ShowStatePickerDialog
-import com.woocommerce.android.ui.prefs.domain.DomainRegistrationDetailsViewModel.ShowTermsOfService
-import com.woocommerce.android.ui.prefs.domain.DomainRegistrationDetailsViewModel.ViewState
+import com.woocommerce.android.ui.prefs.domain.FreeDomainRegistrationViewModel.DomainContactFormModel
+import com.woocommerce.android.ui.prefs.domain.FreeDomainRegistrationViewModel.NavigateToDomainDashboard
+import com.woocommerce.android.ui.prefs.domain.FreeDomainRegistrationViewModel.NavigateToPurchaseSuccessScreen
+import com.woocommerce.android.ui.prefs.domain.FreeDomainRegistrationViewModel.ShowCountryPickerDialog
+import com.woocommerce.android.ui.prefs.domain.FreeDomainRegistrationViewModel.ShowErrorMessage
+import com.woocommerce.android.ui.prefs.domain.FreeDomainRegistrationViewModel.ShowFormValidationError
+import com.woocommerce.android.ui.prefs.domain.FreeDomainRegistrationViewModel.ShowStatePickerDialog
+import com.woocommerce.android.ui.prefs.domain.FreeDomainRegistrationViewModel.ShowTermsOfService
+import com.woocommerce.android.ui.prefs.domain.FreeDomainRegistrationViewModel.ViewState
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -73,7 +73,7 @@ class FreeDomainRegistrationFragment : BaseFragment() {
         }
     }
 
-    private val viewModel: DomainRegistrationDetailsViewModel by viewModels()
+    private val viewModel: FreeDomainRegistrationViewModel by viewModels()
 
     @Suppress("DEPRECATION")
     private var loadingProgressDialog: ProgressDialog? = null
@@ -430,7 +430,7 @@ class FreeDomainRegistrationFragment : BaseFragment() {
     internal class StatePickerDialogFragment : DialogFragment() {
         private lateinit var states: List<SupportedStateResponse>
 
-        private lateinit var viewModel: DomainRegistrationDetailsViewModel
+        private lateinit var viewModel: FreeDomainRegistrationViewModel
 
         companion object {
             private const val EXTRA_STATES = "EXTRA_STATES"
@@ -438,7 +438,7 @@ class FreeDomainRegistrationFragment : BaseFragment() {
 
             fun newInstance(
                 states: ArrayList<SupportedStateResponse>,
-                viewModel: DomainRegistrationDetailsViewModel
+                viewModel: FreeDomainRegistrationViewModel
             ): StatePickerDialogFragment {
                 val fragment = StatePickerDialogFragment()
                 val bundle = Bundle()
@@ -479,7 +479,7 @@ class FreeDomainRegistrationFragment : BaseFragment() {
     internal class CountryPickerDialogFragment : DialogFragment() {
         private lateinit var countries: List<SupportedDomainCountry>
 
-        private lateinit var viewModel: DomainRegistrationDetailsViewModel
+        private lateinit var viewModel: FreeDomainRegistrationViewModel
 
         companion object {
             private const val EXTRA_COUNTRIES = "EXTRA_COUNTRIES"
@@ -487,7 +487,7 @@ class FreeDomainRegistrationFragment : BaseFragment() {
 
             fun newInstance(
                 countries: ArrayList<SupportedDomainCountry>,
-                viewModel: DomainRegistrationDetailsViewModel
+                viewModel: FreeDomainRegistrationViewModel
             ): CountryPickerDialogFragment {
                 val fragment = CountryPickerDialogFragment()
                 val bundle = Bundle()

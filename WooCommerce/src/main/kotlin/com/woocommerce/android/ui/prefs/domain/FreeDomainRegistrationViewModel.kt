@@ -23,7 +23,9 @@ import org.wordpress.android.fluxc.network.rest.wpcom.site.SupportedStateRespons
 import org.wordpress.android.fluxc.network.rest.wpcom.transactions.SupportedDomainCountry
 import org.wordpress.android.fluxc.store.AccountStore.OnDomainContactFetched
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.SiteStore.DesignatePrimaryDomainPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnDomainSupportedStatesFetched
+import org.wordpress.android.fluxc.store.SiteStore.OnPrimaryDomainDesignated
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.store.TransactionsStore
 import org.wordpress.android.fluxc.store.TransactionsStore.CreateShoppingCartPayload
@@ -40,7 +42,7 @@ const val SITE_CHECK_DELAY_MS = 5000L
 const val MAX_SITE_CHECK_TRIES = 10
 
 @HiltViewModel
-class DomainRegistrationDetailsViewModel @Inject constructor(
+class FreeDomainRegistrationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val dispatcher: Dispatcher,
     @Suppress("unused") private val transactionsStore: TransactionsStore, // needed for events to work
@@ -261,6 +263,33 @@ class DomainRegistrationDetailsViewModel @Inject constructor(
             )
             return
         }
+
+        // after cart is redeemed, wait for a bit before manually setting domain as primary
+        launch {
+            delay(SITE_CHECK_DELAY_MS)
+            dispatcher.dispatch(
+                SiteActionBuilder.newDesignatePrimaryDomainAction(
+                    DesignatePrimaryDomainPayload(
+                        selectedSite.get(),
+                        navArgs.domainProductDetails.domainName
+                    )
+                )
+            )
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onPrimaryDomainDesignated(event: OnPrimaryDomainDesignated) {
+        if (event.isError) { // in case of error we notify used and proceed to next step
+            event.error?.message?.let { triggerEvent(ShowErrorMessage(it)) }
+            AppLog.e(
+                T.DOMAIN_REGISTRATION,
+                "An error occurred while redeeming a shopping cart : " + event.error.type +
+                    " " + event.error.message
+            )
+        }
+
+        dispatcher.dispatch(SiteActionBuilder.newFetchSiteAction(selectedSite.get()))
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
