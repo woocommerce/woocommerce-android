@@ -25,13 +25,14 @@ class TapToPaySummaryViewModel @Inject constructor(
         launch {
             _viewState.value = UiState(isProgressVisible = true)
             val result = orderCreateEditRepository.createSimplePaymentOrder(TEST_ORDER_AMOUNT)
-            _viewState.value = UiState(isProgressVisible = false)
             result.fold(
-                onSuccess = {},
+                onSuccess = {
+                },
                 onFailure = {
-                    triggerEvent(ShowSnackbar(R.string.simple_payments_creation_error))
+                    triggerEvent(ShowSnackbar(R.string.card_reader_tap_to_pay_explanation_test_payment_error))
                 }
             )
+            _viewState.value = UiState(isProgressVisible = false)
         }
     }
 

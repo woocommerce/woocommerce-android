@@ -1126,6 +1126,7 @@
     <string name="card_reader_tap_to_pay_explanation_two">Try a payment using your card and\nrefund it when you’re done.</string>
     <string name="card_reader_tap_to_pay_explanation_three"> You can find Tap to Pay on Phone in\nMenu > Payments, or Collect Payment and\nchoose Tap to Pay.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Try a payment</string>
+    <string name="card_reader_tap_to_pay_explanation_test_payment_error">Something went wrong. Please try again later.</string>
 
     <!--
             Card Reader Type Selection
