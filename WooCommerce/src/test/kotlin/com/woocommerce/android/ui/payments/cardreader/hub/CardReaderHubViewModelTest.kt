@@ -1399,7 +1399,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given tpp available when tap to pay clicked, then navigate to tap to pay summary screen event emitted`() {
+    fun `given tpp available, when tap to pay clicked, then navigate to tap to pay summary screen event emitted`() {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
         whenever(isTapToPayAvailable("US")).thenReturn(Available)
