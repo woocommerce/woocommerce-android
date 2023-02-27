@@ -20,7 +20,7 @@ class ProductSelectorRepository @Inject constructor(
         pageSize: Int,
         searchQuery: String,
     ): List<Product> {
-        return productStore.getProductsByFilterOptions(
+        return productStore.getProducts(
             selectedSite.get(),
             emptyMap(),
             searchQuery = searchQuery
