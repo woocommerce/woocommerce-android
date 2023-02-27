@@ -10,9 +10,9 @@ open class JetpackActivationWPComPostLoginViewModel(
     savedStateHandle: SavedStateHandle,
     private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
-    protected suspend fun onLoginSuccess(jetpackStatus: JetpackStatus) {
+    protected fun onLoginSuccess(jetpackStatus: JetpackStatus) {
         if (jetpackStatus.isJetpackConnected) {
-            // TODO fetch sites then show main activity
+            TODO("fetch sites then show main activity")
         } else {
             triggerEvent(
                 ShowJetpackActivationScreen(
