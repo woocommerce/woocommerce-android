@@ -3,6 +3,7 @@ package com.woocommerce.android.support.requests
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.tools.SelectedSite
+import kotlinx.coroutines.flow.flowOf
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -24,7 +25,7 @@ internal class SupportRequestFormViewModelTest {
             on { get() }.then { testSite }
         }
         zendeskHelper = mock {
-            onBlocking { createRequest(any(), testSite, any(), any(), any()) } doReturn Result.success(Request())
+            onBlocking { createRequest(any(), any(), testSite, any(), any(), any()) } doReturn flowOf(Result.success(Request()))
         }
 
         sut = SupportRequestFormViewModel(
