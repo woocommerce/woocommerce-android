@@ -94,7 +94,8 @@ class SupportRequestFormActivity : AppCompatActivity() {
             activity = this,
             titleId = R.string.support_request_success_title,
             messageId = R.string.support_request_success_message,
-            positiveButtonId = R.string.support_request_dialog_action
+            positiveButtonId = R.string.support_request_dialog_action,
+            posBtnAction = { _, _ -> finish() }
         )
     }
 
