@@ -11,6 +11,7 @@ import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUnsupportedCountry
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
@@ -1241,7 +1242,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given tpp available, when view model started, then show tpp row`() = testBlocking {
+    fun `given ttp available, when view model started, then show ttp row`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
         whenever(isTapToPayAvailable("US")).thenReturn(Available)
@@ -1260,7 +1261,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given tpp available and multiple plugin, when view model started, then rows shows sorted by index`() =
+    fun `given ttp available and multiple plugin, when view model started, then rows shows sorted by index`() =
         testBlocking {
             // GIVEN
             whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
@@ -1286,7 +1287,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given tpp is disabled, when view model started, then do not show tpp row`() = testBlocking {
+    fun `given ttp is disabled, when view model started, then do not show ttp row`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
         whenever(isTapToPayAvailable("US")).thenReturn(TapToPayDisabled)
@@ -1301,7 +1302,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given tpp system not supported, when view model started, then do not show tpp row`() = testBlocking {
+    fun `given ttp system not supported, when view model started, then do not show ttp row`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
         whenever(isTapToPayAvailable("US")).thenReturn(SystemVersionNotSupported)
@@ -1316,7 +1317,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given tpp gps not available, when view model started, then do not show tpp row`() = testBlocking {
+    fun `given ttp gps not available, when view model started, then do not show ttp row`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
         whenever(isTapToPayAvailable("US")).thenReturn(GooglePlayServicesNotAvailable)
@@ -1331,7 +1332,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given tpp nfc not available, when view model started, then do not show tpp row`() = testBlocking {
+    fun `given ttp nfc not available, when view model started, then do not show ttp row`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
         whenever(isTapToPayAvailable("US")).thenReturn(NfcNotAvailable)
@@ -1346,7 +1347,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given tpp country not supported, when view model started, then do not show tpp row`() = testBlocking {
+    fun `given ttp country not supported, when view model started, then do not show ttp row`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("CA")
         whenever(isTapToPayAvailable("CA")).thenReturn(CountryNotSupported)
@@ -1411,6 +1412,20 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(viewModel.event.value).isInstanceOf(NavigateToTapTooPaySummaryScreen::class.java)
+    }
+
+    @Test
+    fun `when view model initiated, then only ttp non toggleable item has description`() {
+        // WHEN
+        initViewModel()
+
+        // THEN
+        val rows = (viewModel.viewStateData.getOrAwaitValue()).rows
+        assertThat(
+            rows.filterIsInstance<NonToggleableListItem>()
+                .filter { it.label != UiStringRes(R.string.card_reader_tap_to_pay) }
+                .map { it.description }
+        ).allMatch { it == null }
     }
 
     private fun getSuccessWooResult() = WooResult(
