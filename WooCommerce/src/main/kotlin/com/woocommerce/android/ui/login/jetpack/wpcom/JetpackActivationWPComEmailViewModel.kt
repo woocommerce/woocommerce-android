@@ -52,7 +52,7 @@ class JetpackActivationWPComEmailViewModel @Inject constructor(
     }
 
     fun onContinueClick() = launch {
-        val email = email.value
+        val email = email.value.trim()
         if (!PatternsCompat.EMAIL_ADDRESS.matcher(email).matches()) {
             errorMessage.value = R.string.email_invalid
             return@launch
