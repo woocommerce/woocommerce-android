@@ -103,13 +103,13 @@ fun JetpackActivationWPComPasswordScreen(
                     style = MaterialTheme.typography.h4,
                     fontWeight = FontWeight.Bold
                 )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
                 UserInfo(
                     emailOrUsername = viewState.emailOrUsername,
                     avatarUrl = viewState.avatarUrl,
                     modifier = Modifier.fillMaxWidth()
                 )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
                 Text(
                     text = stringResource(id = R.string.enter_wpcom_password)
                 )
