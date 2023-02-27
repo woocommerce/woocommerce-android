@@ -21,8 +21,13 @@ class JetpackActivationDispatcherViewModel @Inject constructor(
         when (selectedSite.connectionType) {
             SiteConnectionType.ApplicationPasswords -> {
                 if (args.jetpackStatus.isJetpackConnected) {
-                    // Start authentication using the retrieved email
-                    TODO()
+                    // Jetpack is already connected and we know the address email, handle the authentication
+                    triggerEvent(
+                        StartWPComAuthenticationForEmail(
+                            wpComEmail = requireNotNull(args.jetpackStatus.wpComEmail),
+                            jetpackStatus = args.jetpackStatus
+                        )
+                    )
                 } else {
                     // Start regular WordPress.com authentication
                     triggerEvent(StartWPComLoginForJetpackActivation(args.jetpackStatus))
@@ -47,6 +52,11 @@ class JetpackActivationDispatcherViewModel @Inject constructor(
     ) : MultiLiveEvent.Event()
 
     data class StartWPComLoginForJetpackActivation(
+        val jetpackStatus: JetpackStatus
+    ) : MultiLiveEvent.Event()
+
+    data class StartWPComAuthenticationForEmail(
+        val wpComEmail: String,
         val jetpackStatus: JetpackStatus
     ) : MultiLiveEvent.Event()
 }
