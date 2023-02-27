@@ -234,8 +234,10 @@ class OrderCreateEditViewModel @Inject constructor(
             ORDER_PRODUCT_REMOVE,
             mapOf(KEY_FLOW to flow)
         )
-        it.adjustProductQuantity(item.itemId, -item.quantity.toInt())
+        it.removeItem(item)
     }
+
+    private fun Order.removeItem(item: Order.Item) = adjustProductQuantity(item.itemId, -item.quantity.toInt())
 
     fun onCustomerAddressEdited(customerId: Long?, billingAddress: Address, shippingAddress: Address) {
         val hasDifferentShippingDetails = _orderDraft.value.shippingAddress != _orderDraft.value.billingAddress
@@ -550,14 +552,14 @@ class OrderCreateEditViewModel @Inject constructor(
                 val productItemsToRemove =
                     filter { orderItem -> selectedItems.none { it.remoteProductId == orderItem.productId } }
                 productItemsToRemove.forEach { itemToRemove ->
-                    _orderDraft.update { it.updateProductQuantity(itemToRemove.itemId, 0F) }
+                    _orderDraft.update { it.removeItem(itemToRemove) }
                 }
 
                 val variationItemsToRemove = filter { orderItem ->
                     orderItem.isVariation && selectedItems.none { it.remoteVariationId == orderItem.variationId }
                 }
                 variationItemsToRemove.forEach { itemToRemove ->
-                    _orderDraft.update { it.updateProductQuantity(itemToRemove.itemId, 0F) }
+                    _orderDraft.update { it.removeItem(itemToRemove) }
                 }
 
                 val itemsToAdd = selectedItems.filter { item -> none { it.productId == item.remoteProductId } }
