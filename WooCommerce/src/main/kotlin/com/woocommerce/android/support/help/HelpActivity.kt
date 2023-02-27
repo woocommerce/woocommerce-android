@@ -197,7 +197,7 @@ class HelpActivity : AppCompatActivity() {
                 .getSupportEmailAndNameSuggestion(accountStore.account, selectedSiteOrNull()).first
         }
 
-        supportHelper.showSupportIdentityInputDialog(this, emailSuggestion, isNameInputHidden = true) { email, _ ->
+        supportHelper.showSupportIdentityInputDialog(this, emailSuggestion) { email, _ ->
             zendeskHelper.setSupportEmail(email)
             AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
             if (createNewTicket) createNewZendeskTicket(ticketType, extraTags)
