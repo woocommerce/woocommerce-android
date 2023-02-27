@@ -9,6 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTask
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,12 +23,16 @@ class StoreOnboardingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val onboardingRepository: StoreOnboardingRepository
 ) : ScopedViewModel(savedStateHandle) {
+    companion object {
+        const val NUMBER_ITEMS_IN_COLLAPSED_MODE = 3
+    }
+
     private val _viewState = savedState.getStateFlow(
         this,
         OnboardingState(
             show = false,
             title = R.string.store_onboarding_title,
-            tasks = emptyList()
+            tasks = emptyList(),
         )
     )
     val viewState = _viewState.asLiveData()
@@ -47,13 +52,20 @@ class StoreOnboardingViewModel @Inject constructor(
         }
     }
 
+    fun viewAllClicked() {
+        triggerEvent(NavigateToOnboardingFullScreen)
+    }
+
+    fun onBackPressed() {
+        triggerEvent(MultiLiveEvent.Event.Exit)
+    }
+
     private fun OnboardingTask.toOnboardingTaskUi() =
         OnboardingTaskUi(
             icon = getIconResource(),
             title = getTitleStringResource(),
             description = getDescriptionStringResource(),
             isCompleted = isComplete,
-            isVisible = isVisible
         )
 
     @DrawableRes
@@ -93,7 +105,7 @@ class StoreOnboardingViewModel @Inject constructor(
     data class OnboardingState(
         val show: Boolean,
         @StringRes val title: Int,
-        val tasks: List<OnboardingTaskUi>
+        val tasks: List<OnboardingTaskUi>,
     ) : Parcelable
 
     @Parcelize
@@ -102,6 +114,7 @@ class StoreOnboardingViewModel @Inject constructor(
         @StringRes val title: Int,
         @StringRes val description: Int,
         val isCompleted: Boolean,
-        val isVisible: Boolean,
     ) : Parcelable
+
+    object NavigateToOnboardingFullScreen : MultiLiveEvent.Event()
 }
