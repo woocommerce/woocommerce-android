@@ -6,6 +6,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
@@ -49,7 +50,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     private val loginAnalyticsListener: LoginAnalyticsListener,
     private val resourceProvider: ResourceProvider,
     applicationPasswordsNotifier: ApplicationPasswordsNotifier,
-    private val analyticsTracker: AnalyticsTrackerWrapper
+    private val analyticsTracker: AnalyticsTrackerWrapper,
+    private val appPrefs: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val SITE_ADDRESS_KEY = "site-address"
@@ -172,6 +174,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     // handle the flow
                     loginAnalyticsListener.trackAnalyticsSignIn(false)
                 }
+                appPrefs.removeLoginSiteAddress()
                 selectedSite.set(site)
                 triggerEvent(LoggedIn(selectedSite.getSelectedSiteId()))
             },
