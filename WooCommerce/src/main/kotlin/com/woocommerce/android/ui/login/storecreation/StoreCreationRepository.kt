@@ -53,8 +53,8 @@ class StoreCreationRepository @Inject constructor(
 
     suspend fun selectSite(siteId: Long) {
         siteStore.getSiteBySiteId(siteId)?.let {
-            selectedSite.set(it)
             userEligibilityFetcher.fetchUserInfo(it) // prefetch user info so it's available when the store is loaded
+            selectedSite.set(it)
         }
     }
 
