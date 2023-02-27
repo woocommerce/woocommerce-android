@@ -202,12 +202,6 @@ private fun DomainSuggestionList(
     keyboardController: SoftwareKeyboardController?,
     modifier: Modifier = Modifier,
 ) {
-    LaunchedEffect(Unit) {
-        suggestions.firstOrNull { it.isSelected }?.let { suggestion ->
-            onDomainSuggestionSelected(suggestion.domain)
-        }
-    }
-
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
