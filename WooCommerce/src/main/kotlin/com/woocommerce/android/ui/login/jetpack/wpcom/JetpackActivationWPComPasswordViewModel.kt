@@ -6,13 +6,13 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
 import com.woocommerce.android.model.JetpackStatus
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.WPComLoginRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,10 +28,11 @@ import javax.inject.Inject
 @HiltViewModel
 class JetpackActivationWPComPasswordViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    selectedSite: SelectedSite,
     private val wpComLoginRepository: WPComLoginRepository,
     private val accountRepository: AccountRepository,
     private val resourceProvider: ResourceProvider
-) : ScopedViewModel(savedStateHandle) {
+) : JetpackActivationWPComPostLoginViewModel(savedStateHandle, selectedSite) {
     private val navArgs: JetpackActivationWPComPasswordFragmentArgs by savedStateHandle.navArgs()
 
     private val password = savedStateHandle.getStateFlow(scope = viewModelScope, initialValue = "", key = "password")
@@ -78,6 +79,7 @@ class JetpackActivationWPComPasswordViewModel @Inject constructor(
                         triggerEvent(Show2FAScreen(navArgs.emailOrUsername, navArgs.jetpackStatus))
                     }
 
+                    AuthenticationErrorType.INCORRECT_USERNAME_OR_PASSWORD,
                     AuthenticationErrorType.NOT_AUTHENTICATED -> {
                         errorMessage.value = R.string.password_incorrect
                     }
@@ -94,7 +96,7 @@ class JetpackActivationWPComPasswordViewModel @Inject constructor(
     private suspend fun fetchAccount() {
         accountRepository.fetchUserAccount().fold(
             onSuccess = {
-                TODO()
+                onLoginSuccess(navArgs.jetpackStatus)
             },
             onFailure = {
                 triggerEvent(ShowSnackbar(R.string.error_fetch_my_profile))
