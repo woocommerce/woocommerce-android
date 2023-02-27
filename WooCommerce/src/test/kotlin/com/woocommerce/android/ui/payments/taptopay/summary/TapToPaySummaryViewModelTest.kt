@@ -31,7 +31,9 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
         viewModel.onTryPaymentClicked()
 
         // THEN
-        assertThat(viewModel.event.value).isEqualTo(ShowSnackbar(R.string.card_reader_tap_to_pay_explanation_test_payment_error))
+        assertThat(viewModel.event.value).isEqualTo(
+            ShowSnackbar(R.string.card_reader_tap_to_pay_explanation_test_payment_error)
+        )
     }
 
     @Test
