@@ -4,10 +4,13 @@ import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.JetpackStore
 import org.wordpress.android.fluxc.store.JetpackStore.JetpackConnectionUrlError
@@ -19,9 +22,11 @@ import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
 class JetpackActivationRepository @Inject constructor(
+    private val dispatcher: Dispatcher,
     private val siteStore: SiteStore,
     private val jetpackStore: JetpackStore,
     private val wooCommerceStore: WooCommerceStore,
+    private val selectedSite: SelectedSite,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) {
     companion object {
@@ -91,6 +96,19 @@ class JetpackActivationRepository @Inject constructor(
                 Result.failure(IllegalStateException("Site missing"))
             } else Result.success(site)
         }
+    }
+
+    fun setSelectedSiteAndCleanOldSites(jetpackSite: SiteModel) {
+        val baseUrl = UrlUtils.removeScheme(jetpackSite.url).trim('/')
+
+        // Remove all previous entries that don't use WPCom REST API
+        siteStore.getSitesByNameOrUrlMatching(baseUrl).forEach {
+            if (it.origin != SiteModel.ORIGIN_WPCOM_REST) {
+                dispatcher.dispatch(SiteActionBuilder.newRemoveSiteAction(it))
+            }
+        }
+
+        selectedSite.set(jetpackSite)
     }
 
     @Suppress("ReturnCount", "MagicNumber")

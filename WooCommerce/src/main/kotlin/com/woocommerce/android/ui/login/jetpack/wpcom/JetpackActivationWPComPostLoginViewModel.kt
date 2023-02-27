@@ -20,7 +20,7 @@ open class JetpackActivationWPComPostLoginViewModel(
             jetpackActivationRepository.fetchJetpackSite(selectedSite.get().url)
                 .fold(
                     onSuccess = {
-                        selectedSite.set(it)
+                        jetpackActivationRepository.setSelectedSiteAndCleanOldSites(it)
                         triggerEvent(GoToStore)
                     },
                     onFailure = {
