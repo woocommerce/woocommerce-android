@@ -17,7 +17,9 @@ import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComPass
 import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComPasswordViewModel.ShowMagicLinkScreen
 import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComPostLoginViewModel.ShowJetpackActivationScreen
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -65,6 +67,7 @@ class JetpackActivationWPComPasswordFragment : BaseFragment() {
                     navigateToJetpackActivationScreen(event)
                 }
 
+                is LaunchUrlInChromeTab -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 Exit -> findNavController().navigateUp()
             }

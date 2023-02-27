@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.WPComLoginRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -33,6 +34,10 @@ class JetpackActivationWPComPasswordViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
     private val resourceProvider: ResourceProvider
 ) : JetpackActivationWPComPostLoginViewModel(savedStateHandle, selectedSite) {
+    companion object {
+        private const val RESET_PASSWORD_URL = "https://wordpress.com/wp-login.php?action=lostpassword"
+    }
+
     private val navArgs: JetpackActivationWPComPasswordFragmentArgs by savedStateHandle.navArgs()
 
     private val password = savedStateHandle.getStateFlow(scope = viewModelScope, initialValue = "", key = "password")
@@ -76,7 +81,7 @@ class JetpackActivationWPComPasswordViewModel @Inject constructor(
 
     fun onResetPasswordClick() {
         triggerEvent(
-            ShowPasswordReset()
+            LaunchUrlInChromeTab(RESET_PASSWORD_URL)
         )
     }
 

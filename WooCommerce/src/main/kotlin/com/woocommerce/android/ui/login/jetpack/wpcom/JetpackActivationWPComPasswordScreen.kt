@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCPasswordField
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
 
@@ -56,7 +57,8 @@ fun JetpackActivationWPComPasswordScreen(viewModel: JetpackActivationWPComPasswo
             onPasswordChanged = viewModel::onPasswordChanged,
             onCloseClick = viewModel::onCloseClick,
             onContinueClick = viewModel::onContinueClick,
-            onMagicLinkClick = viewModel::onMagicLinkClick
+            onMagicLinkClick = viewModel::onMagicLinkClick,
+            onResetPasswordClick = viewModel::onResetPasswordClick
         )
     }
 }
@@ -68,7 +70,8 @@ fun JetpackActivationWPComPasswordScreen(
     onPasswordChanged: (String) -> Unit = {},
     onCloseClick: () -> Unit = {},
     onContinueClick: () -> Unit = {},
-    onMagicLinkClick: () -> Unit = {}
+    onMagicLinkClick: () -> Unit = {},
+    onResetPasswordClick: () -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -132,6 +135,9 @@ fun JetpackActivationWPComPasswordScreen(
                         }
                     )
                 )
+                WCTextButton(onClick = onResetPasswordClick) {
+                    Text(text = stringResource(id = R.string.reset_your_password))
+                }
             }
 
             WCColoredButton(
