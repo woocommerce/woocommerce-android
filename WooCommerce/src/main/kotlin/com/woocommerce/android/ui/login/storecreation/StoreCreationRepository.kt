@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login.storecreation
 import android.annotation.SuppressLint
 import android.os.Parcelable
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.PLAN_PURCHASE_FAILED
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_ADDRESS_ALREADY_EXISTS
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_CREATION_FAILED
@@ -43,15 +44,17 @@ class StoreCreationRepository @Inject constructor(
     private val siteStore: SiteStore,
     private val shoppingCartStore: ShoppingCartStore,
     private val dispatcher: Dispatcher,
-    private val plansStore: PlansStore
+    private val plansStore: PlansStore,
+    private val userEligibilityFetcher: UserEligibilityFetcher
 ) {
     fun selectSite(site: SiteModel) {
         selectedSite.set(site)
     }
 
-    fun selectSite(siteId: Long) {
+    suspend fun selectSite(siteId: Long) {
         siteStore.getSiteBySiteId(siteId)?.let {
             selectedSite.set(it)
+            userEligibilityFetcher.fetchUserInfo(it) // prefetch user info so it's available when the store is loaded
         }
     }
 
