@@ -21,6 +21,7 @@ abstract class CardReaderHubViewHolder(val parent: ViewGroup, @LayoutRes layout:
         override fun onBind(uiState: CardReaderHubViewModel.CardReaderHubViewState.ListItem) {
             uiState as CardReaderHubViewModel.CardReaderHubViewState.ListItem.NonToggleableListItem
             binding.cardReaderHubListItemLabelTv.text = UiHelpers.getTextOfUiString(itemView.context, uiState.label)
+            UiHelpers.setTextOrHide(binding.cardReaderHubListItemDescriptionTv, uiState.description)
             binding.cardReaderMenuIcon.setImageResource(uiState.icon)
 
             if (uiState.isEnabled) {

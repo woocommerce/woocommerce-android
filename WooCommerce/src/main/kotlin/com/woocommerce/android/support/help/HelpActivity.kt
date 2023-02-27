@@ -25,9 +25,11 @@ import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.support.TicketType
 import com.woocommerce.android.support.WooLogViewerActivity
 import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PackageUtils
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.model.SiteModel
@@ -66,7 +68,12 @@ class HelpActivity : AppCompatActivity() {
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        binding.contactContainer.setOnClickListener { viewModel.contactSupport(TicketType.General) }
+        if (FeatureFlag.NEW_SUPPORT_REQUESTS.isEnabled()) {
+            binding.contactContainer.setOnClickListener { openSupportRequestForm() }
+        } else {
+            binding.contactContainer.setOnClickListener { viewModel.contactSupport(TicketType.General) }
+        }
+
         binding.identityContainer.setOnClickListener { showIdentityDialog(TicketType.General) }
         binding.myTicketsContainer.setOnClickListener { showZendeskTickets() }
         binding.faqContainer.setOnClickListener {
@@ -249,6 +256,10 @@ class HelpActivity : AppCompatActivity() {
 
     private fun showSSR() {
         startActivity(Intent(this, SSRActivity::class.java))
+    }
+
+    private fun openSupportRequestForm() {
+        startActivity(Intent(this, SupportRequestFormActivity::class.java))
     }
 
     companion object {

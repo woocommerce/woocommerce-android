@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.AppPrefs
@@ -45,6 +46,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -205,10 +207,11 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             showThemeChooser()
         }
 
-        binding.categoryStoreSettings.isVisible = presenter.isDomainOptionVisible
-        binding.optionDomain.isVisible = presenter.isDomainOptionVisible
-        binding.optionDomain.setOnClickListener {
-            showDomainChooser()
+        lifecycleScope.launch {
+            binding.domainGroup.isVisible = presenter.isDomainOptionVisible
+            binding.optionDomain.setOnClickListener {
+                showDomainChooser()
+            }
         }
 
         presenter.setupAnnouncementOption()
@@ -247,8 +250,8 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         }
     }
 
-    override fun handleJetpackInstallOption(isJetpackCPSite: Boolean) {
-        if (isJetpackCPSite) {
+    override fun handleJetpackInstallOption(supportsJetpackInstallation: Boolean) {
+        if (supportsJetpackInstallation) {
             binding.storeSettingsContainer.visibility = View.VISIBLE
             binding.optionInstallJetpack.visibility = View.VISIBLE
             binding.optionInstallJetpack.setOnClickListener {

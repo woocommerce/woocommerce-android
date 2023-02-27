@@ -176,19 +176,27 @@
         <!--
             Store settings
         -->
-        <com.woocommerce.android.ui.prefs.WCSettingsCategoryHeaderView
-            android:id="@+id/category_store_settings"
+        <LinearLayout
+            android:id="@+id/domain_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/settings_store" />
+            android:orientation="vertical">
 
-        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-            android:id="@+id/option_domain"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:optionTitle="@string/domain" />
+            <com.woocommerce.android.ui.prefs.WCSettingsCategoryHeaderView
+                android:id="@+id/category_store_settings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_store" />
 
-        <View style="@style/Woo.Divider" />
+            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                android:id="@+id/option_domain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:optionTitle="@string/domain" />
+
+            <View android:id="@+id/domain_divider" style="@style/Woo.Divider" />
+
+        </LinearLayout>
 
         <!--
             About
