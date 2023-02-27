@@ -15,6 +15,7 @@ import org.wordpress.android.fluxc.store.JetpackStore.JetpackUserError
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.login.util.SiteUtils
+import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
 class JetpackActivationRepository @Inject constructor(
@@ -69,7 +70,7 @@ class JetpackActivationRepository @Inject constructor(
         }
     }
 
-    suspend fun checkSiteConnection(siteUrl: String): Result<Unit> = runWithRetry {
+    suspend fun fetchJetpackSite(siteUrl: String): Result<SiteModel> = runWithRetry {
         WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: Fetch WooCommerce Stores to confirm Jetpack Connection")
         wooCommerceStore.fetchWooCommerceSites().let { result ->
             if (result.isError) {
@@ -80,14 +81,15 @@ class JetpackActivationRepository @Inject constructor(
                 return@runWithRetry Result.failure(WooException(result.error))
             }
 
+            val baseUrl = UrlUtils.removeScheme(siteUrl).trim('/')
             val site = withContext(Dispatchers.IO) {
-                SiteUtils.getSiteByMatchingUrl(siteStore, siteUrl)
-            }?.takeIf { it.siteId != 0L }
+                siteStore.getSitesAccessedViaWPComRestByNameOrUrlMatching(baseUrl)
+            }.firstOrNull()
 
             return@runWithRetry if (site == null) {
                 WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: Site $siteUrl is missing from account sites")
                 Result.failure(IllegalStateException("Site missing"))
-            } else Result.success(Unit)
+            } else Result.success(site)
         }
     }
 

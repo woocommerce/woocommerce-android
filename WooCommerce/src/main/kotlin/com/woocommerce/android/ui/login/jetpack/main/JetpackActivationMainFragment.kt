@@ -23,8 +23,8 @@ import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel.DisplayMode
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.LoginActivity
+import com.woocommerce.android.ui.login.jetpack.GoToStore
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.GoToPasswordScreen
-import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.GoToStore
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ShowJetpackConnectionWebView
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ShowWooNotInstalledScreen
 import com.woocommerce.android.ui.main.AppBarStatus
