@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -49,6 +50,7 @@ fun PurchaseSuccessfulScreen(viewModel: PurchaseSuccessfulViewModel) {
 private fun PurchaseSuccessful(viewState: ViewState, onDoneButtonClicked: () -> Unit) {
     Column(
         modifier = Modifier
+            .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .background(MaterialTheme.colors.surface)
     ) {
