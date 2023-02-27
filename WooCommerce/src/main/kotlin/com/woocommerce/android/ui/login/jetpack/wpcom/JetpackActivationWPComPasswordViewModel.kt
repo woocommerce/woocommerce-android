@@ -3,9 +3,14 @@ package com.woocommerce.android.ui.login.jetpack.wpcom
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
+import com.woocommerce.android.model.JetpackStatus
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.WPComLoginRepository
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -14,6 +19,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.store.AccountStore.AuthenticationError
+import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType
 import org.wordpress.android.util.GravatarUtils
 import javax.inject.Inject
 
@@ -21,6 +29,7 @@ import javax.inject.Inject
 class JetpackActivationWPComPasswordViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val wpComLoginRepository: WPComLoginRepository,
+    private val accountRepository: AccountRepository,
     private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: JetpackActivationWPComPasswordFragmentArgs by savedStateHandle.navArgs()
@@ -55,8 +64,42 @@ class JetpackActivationWPComPasswordViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
-    fun onContinueClick() {
-        TODO()
+    fun onContinueClick() = launch {
+        isLoadingDialogShown.value = true
+        wpComLoginRepository.login(navArgs.emailOrUsername, password.value).fold(
+            onSuccess = {
+                fetchAccount()
+            },
+            onFailure = {
+                val failure = (it as? OnChangedException)?.error as? AuthenticationError
+
+                when (failure?.type) {
+                    AuthenticationErrorType.NEEDS_2FA -> {
+                        triggerEvent(Show2FAScreen(navArgs.emailOrUsername, navArgs.jetpackStatus))
+                    }
+
+                    AuthenticationErrorType.NOT_AUTHENTICATED -> {
+                        errorMessage.value = R.string.password_incorrect
+                    }
+
+                    else -> {
+                        triggerEvent(ShowSnackbar(R.string.error_generic))
+                    }
+                }
+            }
+        )
+        isLoadingDialogShown.value = false
+    }
+
+    private suspend fun fetchAccount() {
+        accountRepository.fetchUserAccount().fold(
+            onSuccess = {
+                TODO()
+            },
+            onFailure = {
+                triggerEvent(ShowSnackbar(R.string.error_fetch_my_profile))
+            }
+        )
     }
 
     private fun avatarUrlFromEmail(email: String): String {
@@ -74,4 +117,6 @@ class JetpackActivationWPComPasswordViewModel @Inject constructor(
     ) {
         val enableSubmit = password.isNotBlank()
     }
+
+    data class Show2FAScreen(val emailOrUsername: String, val jetpackStatus: JetpackStatus) : MultiLiveEvent.Event()
 }
