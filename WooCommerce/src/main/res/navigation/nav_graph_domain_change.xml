@@ -19,9 +19,6 @@
         <argument
             android:name="isFreeCreditAvailable"
             app:argType="boolean" />
-        <argument
-            android:name="wpComDomain"
-            app:argType="string" />
         <action
             android:id="@+id/action_domainSearchFragment_to_domainRegistrationDetailsFragment"
             app:destination="@id/domainRegistrationDetailsFragment" />
@@ -66,8 +63,5 @@
         <action
             android:id="@+id/action_domainRegistrationCheckoutFragment_to_purchaseSuccessfulFragment"
             app:destination="@id/purchaseSuccessfulFragment" />
-        <argument
-            android:name="wpComDomain"
-            app:argType="string" />
     </fragment>
 </navigation>

@@ -53,16 +53,16 @@ class DomainSearchFragment : BaseFragment() {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
                 is ShowUiStringSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ShowCheckoutWebView -> showCheckoutWebView(event.domain, event.wpComDomain)
+                is ShowCheckoutWebView -> showCheckoutWebView(event.domain)
                 is NavigateToDomainRegistration -> navigateToDomainRegistration(event.domain, event.productId)
             }
         }
     }
 
-    private fun showCheckoutWebView(domain: String, wpComDomain: String) {
+    private fun showCheckoutWebView(domain: String) {
         findNavController().navigateSafely(
             DomainSearchFragmentDirections
-                .actionDomainSearchFragmentToDomainRegistrationCheckoutFragment(domain, wpComDomain)
+                .actionDomainSearchFragmentToDomainRegistrationCheckoutFragment(domain)
         )
     }
 

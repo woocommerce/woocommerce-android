@@ -1,8 +1,10 @@
 package com.woocommerce.android.ui.prefs.domain
 
+import android.net.Uri
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.domain.DomainRegistrationCheckoutViewModel.ViewState.LoadingState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -16,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DomainRegistrationCheckoutViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val CART_URL = "https://wordpress.com/checkout"
@@ -39,8 +42,9 @@ class DomainRegistrationCheckoutViewModel @Inject constructor(
 
     init {
         _viewState.update {
+            val siteHost = Uri.parse(selectedSite.get().url).host
             ViewState.CheckoutState(
-                startUrl = "${CART_URL}/${navArgs.wpComDomain}",
+                startUrl = "${CART_URL}/$siteHost",
                 successTriggerKeyword = WEBVIEW_SUCCESS_TRIGGER_KEYWORD,
                 exitTriggerKeyword = WEBVIEW_EXIT_TRIGGER_KEYWORD
             )

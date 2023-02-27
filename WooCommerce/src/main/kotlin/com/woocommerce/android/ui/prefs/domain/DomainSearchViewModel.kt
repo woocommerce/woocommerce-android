@@ -38,25 +38,25 @@ class DomainSearchViewModel @Inject constructor(
     override fun navigateToNextStep(selectedDomain: DomainSuggestion) {
         when (selectedDomain) {
             is Premium -> {
-                createShoppingCart(selectedDomain.name, selectedDomain.productId)
+                createShoppingCart(selectedDomain.name, selectedDomain.productId, selectedDomain.supportsPrivacy)
             }
             is Paid -> {
                 if (navArgs.isFreeCreditAvailable) {
                     triggerEvent(NavigateToDomainRegistration(selectedDomain.name, selectedDomain.productId))
                 } else {
-                    createShoppingCart(selectedDomain.name, selectedDomain.productId)
+                    createShoppingCart(selectedDomain.name, selectedDomain.productId, selectedDomain.supportsPrivacy)
                 }
             }
             else -> throw UnsupportedOperationException("This domain search is only for paid domains")
         }
     }
 
-    private fun createShoppingCart(domain: String, productId: Int) {
+    private fun createShoppingCart(domain: String, productId: Int, supportsPrivacy: Boolean) {
         launch {
-            val result = domainChangeRepository.addDomainToCart(productId, domain, true)
+            val result = domainChangeRepository.addDomainToCart(productId, domain, supportsPrivacy)
 
             if (!result.isError) {
-                triggerEvent(ShowCheckoutWebView(domain, navArgs.wpComDomain))
+                triggerEvent(ShowCheckoutWebView(domain))
             } else {
                 triggerEvent(
                     ShowUiStringSnackbar(UiStringText(result.error.message ?: "Unable to create a shopping cart"))
@@ -67,5 +67,5 @@ class DomainSearchViewModel @Inject constructor(
     }
 
     data class NavigateToDomainRegistration(val domain: String, val productId: Int) : MultiLiveEvent.Event()
-    data class ShowCheckoutWebView(val domain: String, val wpComDomain: String) : MultiLiveEvent.Event()
+    data class ShowCheckoutWebView(val domain: String) : MultiLiveEvent.Event()
 }
