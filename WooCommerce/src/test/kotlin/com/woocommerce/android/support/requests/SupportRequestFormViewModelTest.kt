@@ -60,4 +60,44 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         assertThat(isSubmitButtonEnabled[0]).isFalse
         assertThat(isSubmitButtonEnabled[1]).isTrue
     }
+
+    @Test
+    fun `when text fields are empty, then submit button is disabled`() = testBlocking {
+        // Given
+        val isSubmitButtonEnabled = mutableListOf<Boolean>()
+        sut.isSubmitButtonEnabled.observeForever {
+            isSubmitButtonEnabled.add(it)
+        }
+
+        // When
+        sut.onSubjectChanged("")
+        sut.onMessageChanged("")
+        sut.onHelpOptionSelected(HelpOption.MobileApp)
+
+        // Then
+        assertThat(isSubmitButtonEnabled).hasSize(1)
+        assertThat(isSubmitButtonEnabled[0]).isFalse
+    }
+
+    @Test
+    fun `when view is loading, then submit button is disabled`() = testBlocking {
+        // Given
+        val isSubmitButtonEnabled = mutableListOf<Boolean>()
+        sut.isSubmitButtonEnabled.observeForever {
+            isSubmitButtonEnabled.add(it)
+        }
+
+        // When
+        sut.onSubjectChanged("subject")
+        sut.onMessageChanged("message")
+        sut.onHelpOptionSelected(HelpOption.MobileApp)
+        sut.onSubmitRequestButtonClicked(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
+
+        // Then
+        assertThat(isSubmitButtonEnabled).hasSize(4)
+        assertThat(isSubmitButtonEnabled[0]).isFalse
+        assertThat(isSubmitButtonEnabled[1]).isTrue
+        assertThat(isSubmitButtonEnabled[2]).isFalse
+        assertThat(isSubmitButtonEnabled[3]).isTrue
+    }
 }
