@@ -182,14 +182,14 @@ private fun UserInfo(
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(
-            dimensionResource(id =  R.dimen.major_100),
+            dimensionResource(id = R.dimen.major_100),
             Alignment.Start
         ),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .border(1.dp, color = colorResource(id = R.color.divider_color), shape = MaterialTheme.shapes.medium)
             .semantics(mergeDescendants = true) {}
-            .padding(dimensionResource(id =  R.dimen.major_100))
+            .padding(dimensionResource(id = R.dimen.major_100))
     ) {
         AsyncImage(
             model = Builder(LocalContext.current)
@@ -199,7 +199,9 @@ private fun UserInfo(
                 .error(R.drawable.img_gravatar_placeholder)
                 .build(),
             contentDescription = null,
-            modifier = Modifier.size(dimensionResource(id =  R.dimen.image_minor_100)).clip(CircleShape)
+            modifier = Modifier
+                .size(dimensionResource(id = R.dimen.image_minor_100))
+                .clip(CircleShape)
         )
         Text(
             text = emailOrUsername,
@@ -207,7 +209,6 @@ private fun UserInfo(
         )
     }
 }
-
 
 @Preview
 @Composable
