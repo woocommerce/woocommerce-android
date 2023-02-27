@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -342,9 +343,9 @@ class MyStoreViewModel @Inject constructor(
         val daysSinceDismissal = TimeUnit.MILLISECONDS.toDays(
             System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()
         )
-        // For now, the banner is shown only when the site is a Jetpack CP site
-        val showBanner = connectionType == SiteConnectionType.JetpackConnectionPackage &&
-            daysSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER
+        val supportsJetpackInstallation = connectionType == SiteConnectionType.JetpackConnectionPackage ||
+            (connectionType == SiteConnectionType.ApplicationPasswords && FeatureFlag.REST_API_I2.isEnabled())
+        val showBanner = supportsJetpackInstallation && daysSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER
         val benefitsBanner = JetpackBenefitsBannerUiModel(
             show = showBanner,
             onDismiss = {

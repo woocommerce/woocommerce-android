@@ -19,6 +19,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentCardReaderHubBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.NavigateToTapTooPaySummaryScreen
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -98,6 +99,11 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                 }
                 is CardReaderHubViewModel.CardReaderHubEvents.ShowToastString -> {
                     ToastUtils.showToast(context, event.message)
+                }
+                is NavigateToTapTooPaySummaryScreen -> {
+                    findNavController().navigate(
+                        CardReaderHubFragmentDirections.actionCardReaderHubFragmentToTapToPaySummaryFragment()
+                    )
                 }
                 else -> event.isHandled = false
             }

@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 12.5
+This release includes several bug fixes and improvements to make your experience smoother and more enjoyable. We're committed to continuously improving the WooCommerce app, and we have some exciting updates coming in the next few weeks. Stay tuned for more information!
+
 ## 12.4
 You’ve asked for it, and now it’s here! It's now possible to use the app without Jetpack the plugin. This is based upon your direct feedback over the years, and we know you’ll like the change!
 

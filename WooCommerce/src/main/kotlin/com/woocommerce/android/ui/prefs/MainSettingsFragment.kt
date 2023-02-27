@@ -250,8 +250,8 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         }
     }
 
-    override fun handleJetpackInstallOption(isJetpackCPSite: Boolean) {
-        if (isJetpackCPSite) {
+    override fun handleJetpackInstallOption(supportsJetpackInstallation: Boolean) {
+        if (supportsJetpackInstallation) {
             binding.storeSettingsContainer.visibility = View.VISIBLE
             binding.optionInstallJetpack.visibility = View.VISIBLE
             binding.optionInstallJetpack.setOnClickListener {

@@ -21,7 +21,7 @@
     </dialog>
     <dialog
         android:id="@+id/jetpackBenefitsDialog"
-        android:name="com.woocommerce.android.ui.jetpack.JetpackBenefitsDialog"
+        android:name="com.woocommerce.android.ui.jetpack.benefits.JetpackBenefitsDialog"
         android:label="JetpackBenefitsDialog">
         <action
             android:id="@+id/action_jetpackBenefitsDialog_to_jetpackInstallStartDialog"

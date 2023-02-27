@@ -128,6 +128,9 @@
             android:id="@+id/action_cardReaderHubFragment_to_cardReaderOnboardingFragment"
             app:destination="@id/cardReaderOnboardingFragment" />
         <action
+            android:id="@+id/action_cardReaderHubFragment_to_tapToPaySummaryFragment"
+            app:destination="@id/tapToPaySummaryFragment" />
+        <action
             android:id="@+id/action_cardReaderHubFragment_to_simplePayments"
             app:destination="@id/simplePaymentsDialog"
             app:enterAnim="@anim/activity_fade_in"
@@ -304,4 +307,10 @@
             android:defaultValue='""'
             app:argType="string" />
     </fragment>
+
+    <fragment
+        android:id="@+id/tapToPaySummaryFragment"
+        android:name="com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryFragment"
+        android:label="TapToPaySummaryFragment"/>
+
 </navigation>

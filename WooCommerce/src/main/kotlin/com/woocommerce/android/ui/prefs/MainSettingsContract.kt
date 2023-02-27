@@ -19,7 +19,7 @@ interface MainSettingsContract {
     interface View : BaseView<Presenter> {
         fun showDeviceAppNotificationSettings()
         fun showLatestAnnouncementOption(announcement: FeatureAnnouncement)
-        fun handleJetpackInstallOption(isJetpackCPSite: Boolean)
+        fun handleJetpackInstallOption(supportsJetpackInstallation: Boolean)
         fun handleApplicationPasswordsSettings()
     }
 }

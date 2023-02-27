@@ -11,12 +11,14 @@ import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUnsupportedCountry
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.CASH_ON_DELIVERY
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.NavigateToTapTooPaySummaryScreen
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.OpenGenericWebView
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToastString
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState
@@ -27,7 +29,15 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
+import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable
+import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.Available
+import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.NotAvailable.CountryNotSupported
+import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.NotAvailable.GooglePlayServicesNotAvailable
+import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.NotAvailable.NfcNotAvailable
+import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.NotAvailable.SystemVersionNotSupported
+import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.NotAvailable.TapToPayDisabled
 import com.woocommerce.android.util.UtmProvider
+import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -69,6 +79,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
     private val cardReaderTracker: CardReaderTracker = mock()
     private val paymentMenuUtmProvider: UtmProvider = mock()
+    private val isTapToPayAvailable: IsTapToPayAvailable = mock()
 
     private val savedState = CardReaderHubFragmentArgs(
         cardReaderFlowParam = CardReaderFlowParam.CardReadersHub,
@@ -81,7 +92,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when screen shown, then collect payments row present`() {
-        assertThat((viewModel.viewStateData.value)?.rows)
+        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
             .anyMatch {
                 it.label == UiString.UiStringRes(R.string.card_reader_collect_payment)
             }
@@ -89,7 +100,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when screen shown, then manage card reader row present`() {
-        assertThat((viewModel.viewStateData.value)?.rows)
+        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
             .anyMatch {
                 it.label == UiString.UiStringRes(R.string.card_reader_manage_card_reader)
             }
@@ -97,7 +108,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when screen shown, then manage card reader row icon is present`() {
-        assertThat((viewModel.viewStateData.value)?.rows)
+        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
             .anyMatch {
                 it.icon == R.drawable.ic_manage_card_reader
             }
@@ -105,7 +116,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when screen shown, then purchase card reader row present`() {
-        assertThat((viewModel.viewStateData.value)?.rows)
+        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
             .anyMatch {
                 it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
             }
@@ -113,7 +124,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when screen shown, then collect payment row icon is present`() {
-        assertThat((viewModel.viewStateData.value)?.rows)
+        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
             .anyMatch {
                 it.icon == R.drawable.ic_gridicons_money_on_surface
             }
@@ -121,7 +132,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when screen shown, then purchase card reader row icon is present`() {
-        assertThat((viewModel.viewStateData.value)?.rows)
+        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
             .anyMatch {
                 it.icon == R.drawable.ic_shopping_cart
             }
@@ -136,7 +147,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
         initViewModel()
 
-        assertThat((viewModel.viewStateData.value)?.rows)
+        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
             .anyMatch {
                 it.icon == R.drawable.ic_card_reader_manual &&
                     it.label == UiString.UiStringRes(R.string.settings_card_reader_manuals)
@@ -151,7 +162,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
         initViewModel()
 
-        assertThat((viewModel.viewStateData.value)?.rows)
+        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
             .noneMatch() {
                 it.icon == R.drawable.ic_card_reader_manual &&
                     it.label == UiString.UiStringRes(R.string.settings_card_reader_manuals)
@@ -160,11 +171,11 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when user clicks on collect payment, then app navigates to payment collection screen`() {
-        (viewModel.viewStateData.value)?.rows?.find {
+        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
             it.label == UiString.UiStringRes(R.string.card_reader_collect_payment)
         }!!.onClick!!.invoke()
 
-        assertThat(viewModel.event.value)
+        assertThat(viewModel.event.getOrAwaitValue())
             .isEqualTo(
                 CardReaderHubViewModel.CardReaderHubEvents.NavigateToPaymentCollectionScreen
             )
@@ -172,7 +183,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when user clicks on collect payment, then collect payment event tracked`() {
-        (viewModel.viewStateData.value)?.rows?.find {
+        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
             it.label == UiString.UiStringRes(R.string.card_reader_collect_payment)
         }!!.onClick!!.invoke()
 
@@ -181,11 +192,11 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when user clicks on manage card reader, then app navigates to card reader detail screen`() {
-        (viewModel.viewStateData.value)?.rows?.find {
+        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
             it.label == UiString.UiStringRes(R.string.card_reader_manage_card_reader)
         }!!.onClick!!.invoke()
 
-        assertThat(viewModel.event.value)
+        assertThat(viewModel.event.getOrAwaitValue())
             .isEqualTo(
                 CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderDetail(
                     CardReaderFlowParam.CardReadersHub
@@ -195,7 +206,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when user clicks on manage card reader, then manage card readers event tracked`() {
-        (viewModel.viewStateData.value)?.rows?.find {
+        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
             it.label == UiString.UiStringRes(R.string.card_reader_manage_card_reader)
         }!!.onClick!!.invoke()
 
@@ -209,7 +220,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             "${WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
         )
 
-        (viewModel.viewStateData.value)?.rows?.find {
+        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
             it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
         }!!.onClick!!.invoke()
 
@@ -228,7 +239,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         whenever(paymentMenuUtmProvider.getUrlWithUtmParams(any())).thenReturn(
             "${WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
         )
-        (viewModel.viewStateData.value)?.rows?.find {
+        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
             it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
         }!!.onClick!!.invoke()
 
@@ -241,7 +252,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         whenever(paymentMenuUtmProvider.getUrlWithUtmParams(any())).thenReturn(
             "$WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY$storeCountryCode"
         )
-        (viewModel.viewStateData.value)?.rows?.find {
+        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
             it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
         }!!.onClick!!.invoke()
 
@@ -259,9 +270,9 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
         initViewModel()
 
-        viewModel.viewStateData.value?.onboardingErrorAction!!.onClick.invoke()
+        viewModel.viewStateData.getOrAwaitValue().onboardingErrorAction!!.onClick.invoke()
 
-        assertThat(viewModel.event.value)
+        assertThat(viewModel.event.getOrAwaitValue())
             .isEqualTo(
                 CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderOnboardingScreen(
                     genericError
@@ -277,7 +288,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
         initViewModel()
 
-        viewModel.viewStateData.value?.onboardingErrorAction!!.onClick.invoke()
+        viewModel.viewStateData.getOrAwaitValue().onboardingErrorAction!!.onClick.invoke()
 
         verify(analyticsTrackerWrapper).track(AnalyticsEvent.PAYMENTS_HUB_ONBOARDING_ERROR_TAPPED)
     }
@@ -290,11 +301,11 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
         initViewModel()
 
-        (viewModel.viewStateData.value)?.rows?.find {
+        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
             it.label == UiString.UiStringRes(R.string.settings_card_reader_manuals)
         }!!.onClick!!.invoke()
 
-        assertThat(viewModel.event.value)
+        assertThat(viewModel.event.getOrAwaitValue())
             .isInstanceOf(
                 CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderManualsScreen::class.java
             )
@@ -307,7 +318,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
 
         initViewModel()
-        (viewModel.viewStateData.value)?.rows?.find {
+        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
             it.label == UiString.UiStringRes(R.string.settings_card_reader_manuals)
         }!!.onClick!!.invoke()
 
@@ -327,7 +338,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
         initViewModel()
 
-        assertThat((viewModel.viewStateData.value)?.rows)
+        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
             .anyMatch {
                 it.label == UiString.UiStringRes(R.string.card_reader_manage_payment_provider)
             }
@@ -346,7 +357,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
         initViewModel()
 
-        assertThat((viewModel.viewStateData.value)?.rows)
+        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
             .anyMatch {
                 it.icon == R.drawable.ic_payment_provider
             }
@@ -364,11 +375,11 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         ).thenReturn(true)
 
         initViewModel()
-        (viewModel.viewStateData.value)?.rows?.find {
+        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
             it.label == UiString.UiStringRes(R.string.card_reader_manage_payment_provider)
         }!!.onClick!!.invoke()
 
-        assertThat(viewModel.event.value).isEqualTo(
+        assertThat(viewModel.event.getOrAwaitValue()).isEqualTo(
             CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderOnboardingScreen(
                 CardReaderOnboardingState.ChoosePaymentGatewayProvider
             )
@@ -387,7 +398,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         ).thenReturn(true)
 
         initViewModel()
-        (viewModel.viewStateData.value)?.rows?.find {
+        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
             it.label == UiString.UiStringRes(R.string.card_reader_manage_payment_provider)
         }!!.onClick!!.invoke()
 
@@ -411,7 +422,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         ).thenReturn(true)
 
         initViewModel()
-        (viewModel.viewStateData.value)?.rows?.find {
+        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
             it.label == UiString.UiStringRes(R.string.card_reader_manage_payment_provider)
         }!!.onClick!!.invoke()
 
@@ -431,7 +442,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
         initViewModel()
 
-        assertThat((viewModel.viewStateData.value)?.rows)
+        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
             .noneMatch {
                 it.label == UiString.UiStringRes(R.string.card_reader_manage_payment_provider)
             }
@@ -446,7 +457,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             initViewModel()
 
-            assertThat(viewModel.viewStateData.value?.onboardingErrorAction?.text).isEqualTo(
+            assertThat(viewModel.viewStateData.getOrAwaitValue().onboardingErrorAction?.text).isEqualTo(
                 UiString.UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true)
             )
         }
@@ -460,7 +471,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             initViewModel()
 
-            assertThat(viewModel.viewStateData.value?.onboardingErrorAction?.text).isEqualTo(
+            assertThat(viewModel.viewStateData.getOrAwaitValue().onboardingErrorAction?.text).isEqualTo(
                 UiString.UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true)
             )
         }
@@ -474,7 +485,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             initViewModel()
 
-            assertThat(viewModel.viewStateData.value?.onboardingErrorAction).isNull()
+            assertThat(viewModel.viewStateData.getOrAwaitValue().onboardingErrorAction).isNull()
         }
 
     @Test
@@ -488,7 +499,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             assertThat(
                 (
-                    viewModel.viewStateData.value?.rows?.find {
+                    viewModel.viewStateData.getOrAwaitValue().rows.find {
                         it.label == UiString.UiStringRes(R.string.card_reader_manage_card_reader)
                     }
                         as NonToggleableListItem
@@ -507,7 +518,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             assertThat(
                 (
-                    viewModel.viewStateData.value?.rows?.find {
+                    viewModel.viewStateData.getOrAwaitValue().rows.find {
                         it.label == UiString.UiStringRes(R.string.card_reader_manage_card_reader)
                     }
                         as NonToggleableListItem
@@ -526,7 +537,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             assertThat(
                 (
-                    viewModel.viewStateData.value?.rows?.find {
+                    viewModel.viewStateData.getOrAwaitValue().rows.find {
                         it.label == UiString.UiStringRes(R.string.card_reader_collect_payment)
                     }
                         as NonToggleableListItem
@@ -549,7 +560,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             assertThat(
                 (
-                    viewModel.viewStateData.value?.rows?.find {
+                    viewModel.viewStateData.getOrAwaitValue().rows.find {
                         it.label == UiString.UiStringRes(R.string.settings_card_reader_manuals)
                     }
                         as NonToggleableListItem
@@ -566,7 +577,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             initViewModel()
 
-            assertThat(viewModel.viewStateData.value?.onboardingErrorAction?.text).isEqualTo(
+            assertThat(viewModel.viewStateData.getOrAwaitValue().onboardingErrorAction?.text).isEqualTo(
                 UiString.UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true)
             )
 
@@ -576,7 +587,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             viewModel.onViewVisible()
 
-            assertThat(viewModel.viewStateData.value?.onboardingErrorAction?.text).isNull()
+            assertThat(viewModel.viewStateData.getOrAwaitValue().onboardingErrorAction?.text).isNull()
         }
 
     @Test
@@ -588,7 +599,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             initViewModel()
 
-            assertThat(viewModel.viewStateData.value?.onboardingErrorAction?.text).isEqualTo(
+            assertThat(viewModel.viewStateData.getOrAwaitValue().onboardingErrorAction?.text).isEqualTo(
                 UiString.UiStringRes(R.string.card_reader_onboarding_with_pending_requirements, containsHtml = true)
             )
         }
@@ -604,7 +615,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             assertThat(
                 (
-                    viewModel.viewStateData.value?.rows?.find {
+                    viewModel.viewStateData.getOrAwaitValue().rows.find {
                         it.label == UiString.UiStringRes(R.string.card_reader_collect_payment)
                     }
                         as NonToggleableListItem
@@ -623,7 +634,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             assertThat(
                 (
-                    viewModel.viewStateData.value?.rows?.find {
+                    viewModel.viewStateData.getOrAwaitValue().rows.find {
                         it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
                     }
                         as NonToggleableListItem
@@ -646,7 +657,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             assertThat(
                 (
-                    viewModel.viewStateData.value?.rows?.find {
+                    viewModel.viewStateData.getOrAwaitValue().rows.find {
                         it.label == UiString.UiStringRes(R.string.settings_card_reader_manuals)
                     }
                         as NonToggleableListItem
@@ -665,7 +676,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             assertThat(
                 (
-                    viewModel.viewStateData.value?.rows?.find {
+                    viewModel.viewStateData.getOrAwaitValue().rows.find {
                         it.label == UiString.UiStringRes(R.string.card_reader_manage_card_reader)
                     }
                         as NonToggleableListItem
@@ -676,7 +687,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     // region cash on delivery
     @Test
     fun `when screen shown, then cash on delivery row present`() {
-        assertThat((viewModel.viewStateData.value)?.rows)
+        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
             .anyMatch {
                 it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
             }
@@ -685,7 +696,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     @Test
     fun `when screen shown, then cod row present with correct icon`() =
         testBlocking {
-            assertThat((viewModel.viewStateData.value)?.rows)
+            assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
                 .anyMatch {
                     it.icon == R.drawable.ic_gridicons_credit_card
                 }
@@ -695,7 +706,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     fun `when screen shown, then cash on delivery row present with correct description`() {
         assertThat(
             (
-                viewModel.viewStateData.value?.rows?.find {
+                viewModel.viewStateData.getOrAwaitValue().rows.find {
                     it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
                 }
                     as ToggleableListItem
@@ -712,7 +723,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     fun `when screen shown, then cash on delivery is disabled`() {
         assertThat(
             (
-                viewModel.viewStateData.value?.rows?.find {
+                viewModel.viewStateData.getOrAwaitValue().rows.find {
                     it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
                 }
                     as ToggleableListItem
@@ -724,7 +735,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     fun `when screen shown, then cash on delivery is allowed to toggle`() {
         assertThat(
             (
-                viewModel.viewStateData.value?.rows?.find {
+                viewModel.viewStateData.getOrAwaitValue().rows.find {
                     it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
                 }
                     as ToggleableListItem
@@ -741,7 +752,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             assertThat(
                 (
-                    viewModel.viewStateData.value?.rows?.find {
+                    viewModel.viewStateData.getOrAwaitValue().rows.find {
                         it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
                     }
                         as ToggleableListItem
@@ -758,7 +769,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             assertThat(
                 (
-                    viewModel.viewStateData.value?.rows?.find {
+                    viewModel.viewStateData.getOrAwaitValue().rows.find {
                         it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
                     }
                         as ToggleableListItem
@@ -782,7 +793,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             // WHEN
             (
-                viewModel.viewStateData.value?.rows?.find {
+                viewModel.viewStateData.getOrAwaitValue().rows.find {
                     it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
                 }
                     as ToggleableListItem
@@ -815,7 +826,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             // WHEN
             (
-                viewModel.viewStateData.value?.rows?.find {
+                viewModel.viewStateData.getOrAwaitValue().rows.find {
                     it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
                 }
                     as ToggleableListItem
@@ -848,7 +859,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             // WHEN
             (
-                viewModel.viewStateData.value?.rows?.find {
+                viewModel.viewStateData.getOrAwaitValue().rows.find {
                     it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
                 }
                     as ToggleableListItem
@@ -881,7 +892,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             // WHEN
             (
-                viewModel.viewStateData.value?.rows?.find {
+                viewModel.viewStateData.getOrAwaitValue().rows.find {
                     it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
                 }
                     as ToggleableListItem
@@ -914,7 +925,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             // WHEN
             (
-                viewModel.viewStateData.value?.rows?.find {
+                viewModel.viewStateData.getOrAwaitValue().rows.find {
                     it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
                 }
                     as ToggleableListItem
@@ -943,7 +954,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             // WHEN
             (
-                viewModel.viewStateData.value?.rows?.find {
+                viewModel.viewStateData.getOrAwaitValue().rows.find {
                     it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
                 }
                     as ToggleableListItem
@@ -965,7 +976,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             // WHEN
             (
-                viewModel.viewStateData.value?.rows?.find {
+                viewModel.viewStateData.getOrAwaitValue().rows.find {
                     it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
                 }
                     as ToggleableListItem
@@ -990,7 +1001,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             // WHEN
             (
-                viewModel.viewStateData.value?.rows?.find {
+                viewModel.viewStateData.getOrAwaitValue().rows.find {
                     it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
                 }
                     as ToggleableListItem
@@ -1012,7 +1023,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             // WHEN
             (
-                viewModel.viewStateData.value?.rows?.find {
+                viewModel.viewStateData.getOrAwaitValue().rows.find {
                     it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
                 }
                     as ToggleableListItem
@@ -1037,7 +1048,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             // WHEN
             (
-                viewModel.viewStateData.value?.rows?.find {
+                viewModel.viewStateData.getOrAwaitValue().rows.find {
                     it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
                 }
                     as ToggleableListItem
@@ -1062,7 +1073,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             // WHEN
             (
-                viewModel.viewStateData.value?.rows?.find {
+                viewModel.viewStateData.getOrAwaitValue().rows.find {
                     it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
                 }
                     as ToggleableListItem
@@ -1086,14 +1097,14 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             // WHEN
             (
-                viewModel.viewStateData.value?.rows?.find {
+                viewModel.viewStateData.getOrAwaitValue().rows.find {
                     it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
                 }
                     as ToggleableListItem
                 ).onToggled.invoke(true)
 
             // THEN
-            assertThat(viewModel.event.value).isInstanceOf(ShowToastString::class.java)
+            assertThat(viewModel.event.getOrAwaitValue()).isInstanceOf(ShowToastString::class.java)
         }
 
     @Test
@@ -1108,14 +1119,14 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             // WHEN
             (
-                viewModel.viewStateData.value?.rows?.find {
+                viewModel.viewStateData.getOrAwaitValue().rows.find {
                     it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
                 }
                     as ToggleableListItem
                 ).onToggled.invoke(true)
 
             // THEN
-            assertThat(viewModel.event.value).isEqualTo(
+            assertThat(viewModel.event.getOrAwaitValue()).isEqualTo(
                 ShowToastString(
                     "Toggling COD failed. Please try again later"
                 )
@@ -1134,14 +1145,14 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             // WHEN
             (
-                viewModel.viewStateData.value?.rows?.find {
+                viewModel.viewStateData.getOrAwaitValue().rows.find {
                     it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
                 }
                     as ToggleableListItem
                 ).onToggled.invoke(true)
 
             // THEN
-            assertThat(viewModel.event.value).isEqualTo(
+            assertThat(viewModel.event.getOrAwaitValue()).isEqualTo(
                 ShowToastString(
                     "Something went wrong, Please try again later."
                 )
@@ -1160,14 +1171,14 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             // WHEN
             (
-                viewModel.viewStateData.value?.rows?.find {
+                viewModel.viewStateData.getOrAwaitValue().rows.find {
                     it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
                 }
                     as ToggleableListItem
                 ).onToggled.invoke(true)
 
             // THEN
-            assertThat(viewModel.event.value).isEqualTo(
+            assertThat(viewModel.event.getOrAwaitValue()).isEqualTo(
                 ShowToastString(
                     "Something went wrong, Please try again later."
                 )
@@ -1182,14 +1193,14 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
                 AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY
             )
             (
-                viewModel.viewStateData.value?.rows?.find {
+                viewModel.viewStateData.getOrAwaitValue().rows.find {
                     it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
                 }
                     as ToggleableListItem
                 ).onLearnMoreClicked.invoke()
 
             // THEN
-            assertThat(viewModel.event.value).isInstanceOf(OpenGenericWebView::class.java)
+            assertThat(viewModel.event.getOrAwaitValue()).isInstanceOf(OpenGenericWebView::class.java)
         }
 
     @Test
@@ -1200,14 +1211,14 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
                 AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY
             )
             (
-                viewModel.viewStateData.value?.rows?.find {
+                viewModel.viewStateData.getOrAwaitValue().rows.find {
                     it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
                 }
                     as ToggleableListItem
                 ).onLearnMoreClicked.invoke()
 
             // THEN
-            assertThat(viewModel.event.value).isEqualTo(
+            assertThat(viewModel.event.getOrAwaitValue()).isEqualTo(
                 OpenGenericWebView(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY)
             )
         }
@@ -1220,7 +1231,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
                 AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY
             )
             (
-                viewModel.viewStateData.value?.rows?.find {
+                viewModel.viewStateData.getOrAwaitValue().rows.find {
                     it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
                 }
                     as ToggleableListItem
@@ -1229,6 +1240,126 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             // THEN
             verify(cardReaderTracker).trackCashOnDeliveryLearnMoreTapped()
         }
+
+    @Test
+    fun `given ttp available, when view model started, then show ttp row`() = testBlocking {
+        // GIVEN
+        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+        whenever(isTapToPayAvailable("US")).thenReturn(Available)
+
+        // WHEN
+        initViewModel()
+
+        // THEN
+        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).anyMatch {
+            it is NonToggleableListItem &&
+                it.icon == R.drawable.ic_baseline_contactless &&
+                it.label == UiString.UiStringRes(R.string.card_reader_tap_to_pay) &&
+                it.description == UiString.UiStringRes(R.string.card_reader_tap_to_pay_description) &&
+                it.index == 2
+        }
+    }
+
+    @Test
+    fun `given ttp available and multiple plugin, when view model started, then rows shows sorted by index`() =
+        testBlocking {
+            // GIVEN
+            whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+            whenever(isTapToPayAvailable("US")).thenReturn(Available)
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+                mock<CardReaderOnboardingState.OnboardingCompleted>()
+            )
+            val site = selectedSite.get()
+            whenever(
+                appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+                    localSiteId = site.id,
+                    remoteSiteId = site.siteId,
+                    selfHostedSiteId = site.selfHostedSiteId
+                )
+            ).thenReturn(true)
+
+            // WHEN
+            initViewModel()
+
+            // THEN
+            val rows = (viewModel.viewStateData.getOrAwaitValue()).rows
+            assertThat(rows.map { it.index }).containsExactly(0, 1, 2, 3, 4, 5, 6, 7)
+        }
+
+    @Test
+    fun `given ttp is disabled, when view model started, then do not show ttp row`() = testBlocking {
+        // GIVEN
+        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+        whenever(isTapToPayAvailable("US")).thenReturn(TapToPayDisabled)
+
+        // WHEN
+        initViewModel()
+
+        // THEN
+        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).noneMatch {
+            it.label == UiString.UiStringRes(R.string.card_reader_tap_to_pay)
+        }
+    }
+
+    @Test
+    fun `given ttp system not supported, when view model started, then do not show ttp row`() = testBlocking {
+        // GIVEN
+        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+        whenever(isTapToPayAvailable("US")).thenReturn(SystemVersionNotSupported)
+
+        // WHEN
+        initViewModel()
+
+        // THEN
+        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).noneMatch {
+            it.label == UiString.UiStringRes(R.string.card_reader_tap_to_pay)
+        }
+    }
+
+    @Test
+    fun `given ttp gps not available, when view model started, then do not show ttp row`() = testBlocking {
+        // GIVEN
+        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+        whenever(isTapToPayAvailable("US")).thenReturn(GooglePlayServicesNotAvailable)
+
+        // WHEN
+        initViewModel()
+
+        // THEN
+        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).noneMatch {
+            it.label == UiString.UiStringRes(R.string.card_reader_tap_to_pay)
+        }
+    }
+
+    @Test
+    fun `given ttp nfc not available, when view model started, then do not show ttp row`() = testBlocking {
+        // GIVEN
+        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+        whenever(isTapToPayAvailable("US")).thenReturn(NfcNotAvailable)
+
+        // WHEN
+        initViewModel()
+
+        // THEN
+        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).noneMatch {
+            it.label == UiString.UiStringRes(R.string.card_reader_tap_to_pay)
+        }
+    }
+
+    @Test
+    fun `given ttp country not supported, when view model started, then do not show ttp row`() = testBlocking {
+        // GIVEN
+        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("CA")
+        whenever(isTapToPayAvailable("CA")).thenReturn(CountryNotSupported)
+
+        // WHEN
+        initViewModel()
+
+        // THEN
+        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).noneMatch {
+            it.label == UiString.UiStringRes(R.string.card_reader_tap_to_pay)
+        }
+    }
     // endregion
 
     @Test
@@ -1241,7 +1372,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         )
 
         // WHEN
-        viewModel.viewStateData.value?.learnMoreIppState?.onClick?.invoke()
+        viewModel.viewStateData.getOrAwaitValue().learnMoreIppState?.onClick?.invoke()
 
         // THEN
         assertThat(viewModel.event.value).isEqualTo(
@@ -1259,12 +1390,42 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         )
 
         // WHEN
-        viewModel.viewStateData.value?.learnMoreIppState?.onClick?.invoke()
+        viewModel.viewStateData.getOrAwaitValue().learnMoreIppState?.onClick?.invoke()
 
         // THEN
         assertThat(viewModel.event.value).isEqualTo(
             viewModel.event.value
         ).isEqualTo(OpenGenericWebView(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS))
+    }
+
+    @Test
+    fun `given tpp available, when tap to pay clicked, then navigate to tap to pay summary screen event emitted`() {
+        // GIVEN
+        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+        whenever(isTapToPayAvailable("US")).thenReturn(Available)
+
+        // WHEN
+        initViewModel()
+        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
+            it.label == UiString.UiStringRes(R.string.card_reader_tap_to_pay)
+        }!!.onClick!!.invoke()
+
+        // THEN
+        assertThat(viewModel.event.value).isInstanceOf(NavigateToTapTooPaySummaryScreen::class.java)
+    }
+
+    @Test
+    fun `when view model initiated, then only ttp non toggleable item has description`() {
+        // WHEN
+        initViewModel()
+
+        // THEN
+        val rows = (viewModel.viewStateData.getOrAwaitValue()).rows
+        assertThat(
+            rows.filterIsInstance<NonToggleableListItem>()
+                .filter { it.label != UiStringRes(R.string.card_reader_tap_to_pay) }
+                .map { it.description }
+        ).allMatch { it == null }
     }
 
     private fun getSuccessWooResult() = WooResult(
@@ -1302,7 +1463,8 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             learnMoreUrlProvider,
             cardReaderCountryConfigProvider,
             cardReaderTracker,
-            paymentMenuUtmProvider
+            paymentMenuUtmProvider,
+            isTapToPayAvailable,
         )
         viewModel.onViewVisible()
     }
