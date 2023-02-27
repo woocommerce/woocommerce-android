@@ -111,13 +111,7 @@ fun JetpackActivationWPComPasswordScreen(
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
                 Text(
-                    text = stringResource(
-                        id = if (viewState.isJetpackInstalled) {
-                            R.string.login_jetpack_connection_enter_wpcom_email
-                        } else {
-                            R.string.login_jetpack_installation_enter_wpcom_email
-                        }
-                    )
+                    text = stringResource(id = R.string.enter_wpcom_password)
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
                 WCPasswordField(
