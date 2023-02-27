@@ -1,18 +1,25 @@
 package com.woocommerce.android.support.requests
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.support.HelpOption
 import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.wordpress.android.fluxc.model.SiteModel
 import zendesk.support.Request
 
-internal class SupportRequestFormViewModelTest {
+@ExperimentalCoroutinesApi
+internal class SupportRequestFormViewModelTest : BaseUnitTest() {
     private lateinit var sut: SupportRequestFormViewModel
     private lateinit var zendeskHelper: ZendeskHelper
     private lateinit var selectedSite: SelectedSite
@@ -25,7 +32,7 @@ internal class SupportRequestFormViewModelTest {
             on { get() }.then { testSite }
         }
         zendeskHelper = mock {
-            onBlocking { createRequest(any(), any(), testSite, any(), any(), any()) } doReturn flowOf(Result.success(Request()))
+            onBlocking { createRequest(any(), any(), eq(testSite), any(), any(), any()) } doReturn flowOf(Result.success(Request()))
         }
 
         sut = SupportRequestFormViewModel(
@@ -36,7 +43,21 @@ internal class SupportRequestFormViewModelTest {
     }
 
     @Test
-    fun `when all fields are filled, then submit button is enabled`() {
-        assert(true)
+    fun `when all fields are filled, then submit button is enabled`() = testBlocking {
+        // Given
+        val isSubmitButtonEnabled = mutableListOf<Boolean>()
+        sut.isSubmitButtonEnabled.observeForever {
+            isSubmitButtonEnabled.add(it)
+        }
+
+        // When
+        sut.onSubjectChanged("subject")
+        sut.onMessageChanged("message")
+        sut.onHelpOptionSelected(HelpOption.MobileApp)
+
+        // Then
+        assertThat(isSubmitButtonEnabled).hasSize(2)
+        assertThat(isSubmitButtonEnabled[0]).isFalse
+        assertThat(isSubmitButtonEnabled[1]).isTrue
     }
 }
