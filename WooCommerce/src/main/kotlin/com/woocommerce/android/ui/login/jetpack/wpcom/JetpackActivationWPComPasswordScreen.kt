@@ -1,13 +1,18 @@
 package com.woocommerce.android.ui.login.jetpack.wpcom
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -18,22 +23,29 @@ import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest.Builder
 import com.woocommerce.android.R
-import com.woocommerce.android.R.dimen
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
+import com.woocommerce.android.ui.compose.component.WCOutlinedButton
+import com.woocommerce.android.ui.compose.component.WCPasswordField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.jetpack.components.JetpackConsent
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
 
 @Composable
@@ -92,6 +104,12 @@ fun JetpackActivationWPComPasswordScreen(
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+                UserInfo(
+                    emailOrUsername = viewState.emailOrUsername,
+                    avatarUrl = viewState.avatarUrl,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
                 Text(
                     text = stringResource(
                         id = if (viewState.isJetpackInstalled) {
@@ -102,18 +120,19 @@ fun JetpackActivationWPComPasswordScreen(
                     )
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-                WCOutlinedTextField(
-                    value = viewState.email,
+                WCPasswordField(
+                    value = viewState.password,
                     onValueChange = onPasswordChanged,
-                    label = stringResource(id = R.string.email_address),
+                    label = stringResource(id = R.string.password),
                     isError = viewState.errorMessage != null,
                     helperText = viewState.errorMessage?.let { stringResource(id = it) },
-                    singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(
                         onDone = {
-                            keyboardController?.hide()
-                            onContinueClick()
+                            if (viewState.enableSubmit) {
+                                keyboardController?.hide()
+                                onContinueClick()
+                            }
                         }
                     )
                 )
@@ -136,11 +155,16 @@ fun JetpackActivationWPComPasswordScreen(
                     )
                 )
             }
-            JetpackConsent(
+            WCOutlinedButton(
+                onClick = { /*TODO*/ },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = dimensionResource(id = dimen.major_100))
-            )
+                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+            ) {
+                Text(
+                    text = stringResource(id = R.string.login_jetpack_installation_continue_magic_link)
+                )
+            }
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         }
     }
@@ -150,14 +174,50 @@ fun JetpackActivationWPComPasswordScreen(
     }
 }
 
+@Composable
+private fun UserInfo(
+    emailOrUsername: String,
+    avatarUrl: String,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(
+            dimensionResource(id =  R.dimen.major_100),
+            Alignment.Start
+        ),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .border(1.dp, color = colorResource(id = R.color.divider_color), shape = MaterialTheme.shapes.medium)
+            .semantics(mergeDescendants = true) {}
+            .padding(dimensionResource(id =  R.dimen.major_100))
+    ) {
+        AsyncImage(
+            model = Builder(LocalContext.current)
+                .data(avatarUrl)
+                .crossfade(true)
+                .placeholder(R.drawable.img_gravatar_placeholder)
+                .error(R.drawable.img_gravatar_placeholder)
+                .build(),
+            contentDescription = null,
+            modifier = Modifier.size(dimensionResource(id =  R.dimen.image_minor_100)).clip(CircleShape)
+        )
+        Text(
+            text = emailOrUsername,
+            style = MaterialTheme.typography.subtitle1
+        )
+    }
+}
+
+
 @Preview
 @Composable
 private fun JetpackActivationWPComScreenPreview() {
     WooThemeWithBackground {
         JetpackActivationWPComPasswordScreen(
             viewState = JetpackActivationWPComPasswordViewModel.ViewState(
-                email = "",
+                emailOrUsername = "test@email.com",
                 password = "",
+                avatarUrl = "",
                 isJetpackInstalled = false
             )
         )
