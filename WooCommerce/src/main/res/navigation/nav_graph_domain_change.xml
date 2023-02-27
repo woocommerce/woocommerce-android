@@ -40,7 +40,7 @@
     </fragment>
     <fragment
         android:id="@+id/domainRegistrationDetailsFragment"
-        android:name="com.woocommerce.android.ui.prefs.domain.DomainRegistrationDetailsFragment"
+        android:name="com.woocommerce.android.ui.prefs.domain.FreeDomainRegistrationFragment"
         android:label="DomainRegistrationDetailsFragment" >
         <action
             android:id="@+id/action_domainRegistrationDetailsFragment_to_purchaseSuccessfulFragment"
@@ -55,7 +55,7 @@
     </fragment>
     <fragment
         android:id="@+id/domainRegistrationCheckoutFragment"
-        android:name="com.woocommerce.android.ui.prefs.domain.DomainRegistrationCheckoutFragment"
+        android:name="com.woocommerce.android.ui.prefs.domain.DomainPurchaseFragment"
         android:label="DomainRegistrationCheckoutFragment" >
         <argument
             android:name="domain"

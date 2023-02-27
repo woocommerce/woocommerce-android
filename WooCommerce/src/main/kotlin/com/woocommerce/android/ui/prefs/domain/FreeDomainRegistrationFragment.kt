@@ -23,7 +23,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.R.style
-import com.woocommerce.android.databinding.DomainRegistrationDetailsFragmentBinding
+import com.woocommerce.android.databinding.FreeDomainRegistrationFragmentBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.prefs.domain.DomainRegistrationDetailsViewModel.DomainContactFormModel
@@ -58,14 +58,14 @@ import org.wordpress.android.util.StringUtils
 import org.wordpress.android.util.ToastUtils
 
 @AndroidEntryPoint
-class DomainRegistrationDetailsFragment : BaseFragment() {
+class FreeDomainRegistrationFragment : BaseFragment() {
     companion object {
         private const val EXTRA_DOMAIN_PRODUCT_DETAILS = "EXTRA_DOMAIN_PRODUCT_DETAILS"
         private const val URL_TOS = "https://wordpress.com/tos"
         const val TAG = "DOMAIN_REGISTRATION_DETAILS"
 
-        fun newInstance(domainProductDetails: DomainProductDetails): DomainRegistrationDetailsFragment {
-            val fragment = DomainRegistrationDetailsFragment()
+        fun newInstance(domainProductDetails: DomainProductDetails): FreeDomainRegistrationFragment {
+            val fragment = FreeDomainRegistrationFragment()
             val bundle = Bundle()
             bundle.putParcelable(EXTRA_DOMAIN_PRODUCT_DETAILS, domainProductDetails)
             fragment.arguments = bundle
@@ -77,20 +77,20 @@ class DomainRegistrationDetailsFragment : BaseFragment() {
 
     @Suppress("DEPRECATION")
     private var loadingProgressDialog: ProgressDialog? = null
-    private var binding: DomainRegistrationDetailsFragmentBinding? = null
+    private var binding: FreeDomainRegistrationFragmentBinding? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.domain_registration_details_fragment, container, false)
+        return inflater.inflate(R.layout.free_domain_registration_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        with(DomainRegistrationDetailsFragmentBinding.bind(view)) {
+        with(FreeDomainRegistrationFragmentBinding.bind(view)) {
             binding = this
             setupObservers()
 
@@ -147,20 +147,20 @@ class DomainRegistrationDetailsFragment : BaseFragment() {
 
     private fun navigateToPurchaseSuccessScreen(domain: String) {
         findNavController().navigateSafely(
-            DomainRegistrationDetailsFragmentDirections
+            FreeDomainRegistrationFragmentDirections
                 .actionDomainRegistrationDetailsFragmentToPurchaseSuccessfulFragment(domain)
         )
     }
 
     private fun navigateToDomainDashboard() {
         findNavController().navigateSafely(
-            DomainRegistrationDetailsFragmentDirections
+            FreeDomainRegistrationFragmentDirections
                 .actionDomainRegistrationDetailsFragmentToDomainDashboardFragment()
         )
     }
 
     @Suppress("EmptyFunctionBlock")
-    private fun DomainRegistrationDetailsFragmentBinding.setupInputFieldTextWatchers() {
+    private fun FreeDomainRegistrationFragmentBinding.setupInputFieldTextWatchers() {
         arrayOf(
             firstNameInput,
             lastNameInput,
@@ -188,7 +188,7 @@ class DomainRegistrationDetailsFragment : BaseFragment() {
     }
 
     // make link to ToS clickable
-    private fun DomainRegistrationDetailsFragmentBinding.setupTosLink() {
+    private fun FreeDomainRegistrationFragmentBinding.setupTosLink() {
         tosExplanation.text = HtmlCompat.fromHtml(
             String.format(
                 resources.getString(R.string.domain_registration_privacy_protection_tos),
@@ -203,7 +203,7 @@ class DomainRegistrationDetailsFragment : BaseFragment() {
         }
     }
 
-    private fun DomainRegistrationDetailsFragmentBinding.setupObservers() {
+    private fun FreeDomainRegistrationFragmentBinding.setupObservers() {
         viewModel.viewState.observe(viewLifecycleOwner) {
             it?.let { uiState -> loadState(uiState) }
         }
@@ -223,7 +223,7 @@ class DomainRegistrationDetailsFragment : BaseFragment() {
         )
     }
 
-    private fun DomainRegistrationDetailsFragmentBinding.loadState(uiState: ViewState) {
+    private fun FreeDomainRegistrationFragmentBinding.loadState(uiState: ViewState) {
         toggleFormProgressIndicator(uiState.isFormProgressIndicatorVisible)
         toggleStateProgressIndicator(uiState.isStateProgressIndicatorVisible)
         toggleStateInputEnabledState(uiState.isStateInputEnabled)
@@ -247,7 +247,7 @@ class DomainRegistrationDetailsFragment : BaseFragment() {
         stateInput.setText(uiState.selectedState?.name)
     }
 
-    private fun DomainRegistrationDetailsFragmentBinding.handleFormValidationError(error: RedeemShoppingCartError) {
+    private fun FreeDomainRegistrationFragmentBinding.handleFormValidationError(error: RedeemShoppingCartError) {
         var affectedInputFields: Array<TextInputEditText>? = null
 
         when (error.type) {
@@ -275,7 +275,7 @@ class DomainRegistrationDetailsFragment : BaseFragment() {
         affectedInputFields?.firstOrNull { it.requestFocus() }
     }
 
-    private fun DomainRegistrationDetailsFragmentBinding.populateContactForm(formModel: DomainContactFormModel) {
+    private fun FreeDomainRegistrationFragmentBinding.populateContactForm(formModel: DomainContactFormModel) {
         firstNameInput.setText(formModel.firstName)
         lastNameInput.setText(formModel.lastName)
         organizationInput.setText(formModel.organization)
@@ -289,7 +289,7 @@ class DomainRegistrationDetailsFragment : BaseFragment() {
     }
 
     // local validation
-    private fun DomainRegistrationDetailsFragmentBinding.validateForm(): Boolean {
+    private fun FreeDomainRegistrationFragmentBinding.validateForm(): Boolean {
         var formIsCompleted = true
 
         val requiredFields = arrayOf(
@@ -378,7 +378,7 @@ class DomainRegistrationDetailsFragment : BaseFragment() {
         dialogFragment.show(requireFragmentManager(), CountryPickerDialogFragment.TAG)
     }
 
-    private fun DomainRegistrationDetailsFragmentBinding.toggleFormProgressIndicator(visible: Boolean) {
+    private fun FreeDomainRegistrationFragmentBinding.toggleFormProgressIndicator(visible: Boolean) {
         if (visible) {
             formProgressIndicator.visibility = View.VISIBLE
         } else {
@@ -386,7 +386,7 @@ class DomainRegistrationDetailsFragment : BaseFragment() {
         }
     }
 
-    private fun DomainRegistrationDetailsFragmentBinding.toggleStateProgressIndicator(visible: Boolean) {
+    private fun FreeDomainRegistrationFragmentBinding.toggleStateProgressIndicator(visible: Boolean) {
         if (visible) {
             statesLoadingProgressIndicator.visibility = View.VISIBLE
         } else {
@@ -396,7 +396,7 @@ class DomainRegistrationDetailsFragment : BaseFragment() {
         stateInputContainer.isEnabled = !visible
     }
 
-    private fun DomainRegistrationDetailsFragmentBinding.toggleStateInputEnabledState(enabled: Boolean) {
+    private fun FreeDomainRegistrationFragmentBinding.toggleStateInputEnabledState(enabled: Boolean) {
         stateInputContainer.isEnabled = enabled
         if (enabled) {
             stateInputContainer.hint = getString(R.string.domain_contact_information_state_hint)

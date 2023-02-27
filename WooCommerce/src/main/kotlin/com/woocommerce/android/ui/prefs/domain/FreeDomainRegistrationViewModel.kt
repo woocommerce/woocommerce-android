@@ -47,7 +47,7 @@ class DomainRegistrationDetailsViewModel @Inject constructor(
     private val siteStore: SiteStore,
     private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
-    private val navArgs: DomainRegistrationDetailsFragmentArgs by savedStateHandle.navArgs()
+    private val navArgs: FreeDomainRegistrationFragmentArgs by savedStateHandle.navArgs()
 
     private var siteCheckTries = 0
 

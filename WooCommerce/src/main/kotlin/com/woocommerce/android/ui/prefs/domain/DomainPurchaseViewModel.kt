@@ -5,7 +5,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.prefs.domain.DomainRegistrationCheckoutViewModel.ViewState.LoadingState
+import com.woocommerce.android.ui.prefs.domain.DomainPurchaseViewModel.ViewState.LoadingState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -17,7 +17,7 @@ import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
-class DomainRegistrationCheckoutViewModel @Inject constructor(
+class DomainPurchaseViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
@@ -27,7 +27,7 @@ class DomainRegistrationCheckoutViewModel @Inject constructor(
         const val WEBVIEW_EXIT_TRIGGER_KEYWORD = "https://woocommerce.com/"
     }
 
-    private val navArgs: DomainRegistrationCheckoutFragmentArgs by savedStateHandle.navArgs()
+    private val navArgs: DomainPurchaseFragmentArgs by savedStateHandle.navArgs()
 
     private val _viewState = savedStateHandle.getStateFlow<ViewState>(this, LoadingState)
     val viewState = _viewState.asLiveData()

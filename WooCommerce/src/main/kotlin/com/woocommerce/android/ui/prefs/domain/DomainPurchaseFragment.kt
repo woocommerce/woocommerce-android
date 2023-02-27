@@ -13,15 +13,15 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.prefs.domain.DomainRegistrationCheckoutViewModel.NavigateToSuccessScreen
+import com.woocommerce.android.ui.prefs.domain.DomainPurchaseViewModel.NavigateToSuccessScreen
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.network.UserAgent
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DomainRegistrationCheckoutFragment : BaseFragment() {
-    private val viewModel: DomainRegistrationCheckoutViewModel by viewModels()
+class DomainPurchaseFragment : BaseFragment() {
+    private val viewModel: DomainPurchaseViewModel by viewModels()
 
     @Inject internal lateinit var authenticator: WPComWebViewAuthenticator
     @Inject internal lateinit var userAgent: UserAgent
@@ -56,7 +56,7 @@ class DomainRegistrationCheckoutFragment : BaseFragment() {
 
     private fun navigateToPurchaseSuccessScreen(domain: String) {
         findNavController().navigateSafely(
-            DomainRegistrationCheckoutFragmentDirections
+            DomainPurchaseFragmentDirections
                 .actionDomainRegistrationCheckoutFragmentToPurchaseSuccessfulFragment(domain)
         )
     }

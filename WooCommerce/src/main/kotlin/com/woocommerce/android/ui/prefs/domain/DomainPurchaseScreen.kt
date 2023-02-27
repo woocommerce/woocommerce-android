@@ -12,15 +12,15 @@ import androidx.compose.ui.Modifier
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.component.WCWebView
-import com.woocommerce.android.ui.prefs.domain.DomainRegistrationCheckoutViewModel.ViewState.CheckoutState
-import com.woocommerce.android.ui.prefs.domain.DomainRegistrationCheckoutViewModel.ViewState.LoadingState
+import com.woocommerce.android.ui.prefs.domain.DomainPurchaseViewModel.ViewState.CheckoutState
+import com.woocommerce.android.ui.prefs.domain.DomainPurchaseViewModel.ViewState.LoadingState
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable
 fun DomainRegistrationCheckoutScreen(
-    viewModel: DomainRegistrationCheckoutViewModel,
+    viewModel: DomainPurchaseViewModel,
     authenticator: WPComWebViewAuthenticator,
     userAgent: UserAgent
 ) {
