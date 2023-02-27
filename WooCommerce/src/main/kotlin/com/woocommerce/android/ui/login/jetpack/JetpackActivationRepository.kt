@@ -94,7 +94,15 @@ class JetpackActivationRepository @Inject constructor(
             return@runWithRetry if (site == null) {
                 WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: Site $siteUrl is missing from account sites")
                 Result.failure(IllegalStateException("Site missing"))
-            } else Result.success(site)
+            } else {
+                if (!site.hasWooCommerce) {
+                    // If the site doesn't have WooCommerce, let's do one additional fetch using `fetchSite`,
+                    // this function will make sure to fetch data from the remote site, which might result in more
+                    // accurate result
+                    siteStore.fetchSite(site)
+                }
+                Result.success(site)
+            }
         }
     }
 
