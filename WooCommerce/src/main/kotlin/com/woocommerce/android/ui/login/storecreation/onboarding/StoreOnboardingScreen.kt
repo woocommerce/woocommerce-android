@@ -34,7 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.OnboardingTask
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.OnboardingTaskUi
 
 @Composable
 @Suppress("MagicNumber")
@@ -68,58 +68,60 @@ fun StoreOnboardingScreen(
 
 @Composable
 fun OnboardingTaskList(
-    tasks: List<OnboardingTask>,
+    tasks: List<OnboardingTaskUi>,
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
-        tasks.forEachIndexed { index, task ->
-            Row(
-                modifier = modifier.padding(bottom = dimensionResource(id = R.dimen.major_100)),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
-            ) {
-                Image(
-                    modifier = Modifier.fillMaxHeight(),
-                    painter = painterResource(
-                        id = if (task.isCompleted)
-                            R.drawable.ic_onboarding_task_completed
-                        else task.icon
-                    ),
-                    contentDescription = "",
-                    colorFilter =
-                    if (!task.isCompleted)
-                        ColorFilter.tint(color = colorResource(id = R.color.color_icon))
-                    else null
-                )
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = stringResource(id = task.title),
-                        style = MaterialTheme.typography.subtitle1,
-                        fontWeight = FontWeight.Bold
+        tasks
+            .filter { it.isVisible }
+            .forEachIndexed { index, task ->
+                Row(
+                    modifier = modifier.padding(bottom = dimensionResource(id = R.dimen.major_100)),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
+                ) {
+                    Image(
+                        modifier = Modifier.fillMaxHeight(),
+                        painter = painterResource(
+                            id = if (task.isCompleted)
+                                R.drawable.ic_onboarding_task_completed
+                            else task.icon
+                        ),
+                        contentDescription = "",
+                        colorFilter =
+                        if (!task.isCompleted)
+                            ColorFilter.tint(color = colorResource(id = R.color.color_icon))
+                        else null
                     )
-                    Text(
-                        modifier = Modifier.padding(top = dimensionResource(id = R.dimen.minor_75)),
-                        text = stringResource(id = task.description),
-                        style = MaterialTheme.typography.body1,
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(id = task.title),
+                            style = MaterialTheme.typography.subtitle1,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            modifier = Modifier.padding(top = dimensionResource(id = R.dimen.minor_75)),
+                            text = stringResource(id = task.description),
+                            style = MaterialTheme.typography.body1,
+                        )
+                    }
+                    Image(
+                        painter = painterResource(R.drawable.ic_arrow_right),
+                        contentDescription = ""
                     )
                 }
-                Image(
-                    painter = painterResource(R.drawable.ic_arrow_right),
-                    contentDescription = ""
-                )
+                if (index < tasks.lastIndex)
+                    Divider(
+                        color = colorResource(id = R.color.divider_color),
+                        thickness = dimensionResource(id = R.dimen.minor_10)
+                    )
             }
-            if (index < tasks.lastIndex)
-                Divider(
-                    color = colorResource(id = R.color.divider_color),
-                    thickness = dimensionResource(id = R.dimen.minor_10)
-                )
-        }
     }
 }
 
 @Composable
 fun OnboardingTaskLinearProgress(
-    tasks: List<OnboardingTask>,
+    tasks: List<OnboardingTaskUi>,
     modifier: Modifier = Modifier
 ) {
     val completedTasks = tasks.count { it.isCompleted }
@@ -160,23 +162,26 @@ private fun OnboardingPreview() {
             show = true,
             title = R.string.store_onboarding_title,
             tasks = listOf(
-                OnboardingTask(
+                OnboardingTaskUi(
                     icon = R.drawable.ic_product,
                     title = R.string.store_onboarding_task_add_product_title,
                     description = R.string.store_onboarding_task_add_product_description,
-                    isCompleted = false
+                    isCompleted = false,
+                    isVisible = true,
                 ),
-                OnboardingTask(
+                OnboardingTaskUi(
                     icon = R.drawable.ic_product,
                     title = R.string.store_onboarding_task_launch_store_title,
                     description = R.string.store_onboarding_task_launch_store_description,
-                    isCompleted = true
+                    isCompleted = true,
+                    isVisible = true,
                 ),
-                OnboardingTask(
+                OnboardingTaskUi(
                     icon = R.drawable.ic_product,
                     title = R.string.store_onboarding_task_change_domain_title,
                     description = R.string.store_onboarding_task_change_domain_description,
-                    isCompleted = false
+                    isCompleted = false,
+                    isVisible = true,
                 )
             )
         )
