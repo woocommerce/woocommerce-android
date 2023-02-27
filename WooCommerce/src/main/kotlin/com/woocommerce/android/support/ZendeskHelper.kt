@@ -171,6 +171,10 @@ class ZendeskHelper(
         description: String,
         extraTags: List<String>
     ) = callbackFlow {
+        require(isZendeskEnabled) {
+            zendeskNeedsToBeEnabledError
+        }
+
         val (origin, option) = helpData
         val requestCallback = object : ZendeskCallback<Request>() {
             override fun onSuccess(result: Request?) {
@@ -191,6 +195,7 @@ class ZendeskHelper(
             this.customFields = buildZendeskCustomFields(context, option.ticketType, siteStore.sites, selectedSite)
         }.let { request -> requestProvider?.createRequest(request, requestCallback) }
 
+        // Sets a timeout since the callback might not be called from Zendesk API
         launch {
             delay(RequestConstants.requestCreationTimeout)
             trySend(Result.failure(Throwable(RequestConstants.requestCreationTimeoutErrorMessage)))
