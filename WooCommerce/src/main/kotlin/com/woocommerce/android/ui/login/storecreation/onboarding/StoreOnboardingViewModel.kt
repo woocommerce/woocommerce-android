@@ -60,6 +60,10 @@ class StoreOnboardingViewModel @Inject constructor(
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
+    fun onShareFeedbackClicked() {
+        triggerEvent(NavigateToSurvey)
+    }
+
     private fun OnboardingTask.toOnboardingTaskUi() =
         OnboardingTaskUi(
             icon = getIconResource(),
@@ -117,4 +121,5 @@ class StoreOnboardingViewModel @Inject constructor(
     ) : Parcelable
 
     object NavigateToOnboardingFullScreen : MultiLiveEvent.Event()
+    object NavigateToSurvey : MultiLiveEvent.Event()
 }

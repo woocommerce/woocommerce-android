@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -18,16 +19,23 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,6 +47,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.Companion.NUMBER_ITEMS_IN_COLLAPSED_MODE
@@ -77,42 +87,81 @@ fun StoreOnboardingScreen(viewModel: StoreOnboardingViewModel) {
 fun StoreOnboardingCollapsed(
     onboardingState: StoreOnboardingViewModel.OnboardingState,
     onViewAllClicked: () -> Unit,
+    onShareFeedbackClicked: () -> Unit,
     modifier: Modifier = Modifier,
     numberOfItemsToShowInCollapsedMode: Int = NUMBER_ITEMS_IN_COLLAPSED_MODE,
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colors.surface)
-            .padding(dimensionResource(id = R.dimen.major_100))
-    ) {
-        Text(
-            text = stringResource(id = onboardingState.title),
-            style = MaterialTheme.typography.h6,
-        )
-        @Suppress("MagicNumber")
-        OnboardingTaskCollapsedProgressHeader(
-            tasks = onboardingState.tasks,
+    Box(modifier = modifier.fillMaxWidth()) {
+        Column(
             modifier = Modifier
-                .padding(top = dimensionResource(id = R.dimen.major_100))
-                .fillMaxWidth(0.5f)
-        )
-        val taskToDisplay = if (onboardingState.tasks.filter { !it.isCompleted }.size == 1)
-            onboardingState.tasks.filter { !it.isCompleted }
-        else onboardingState.tasks.take(numberOfItemsToShowInCollapsedMode)
-        OnboardingTaskList(
-            tasks = taskToDisplay,
-            modifier = Modifier
-                .padding(top = dimensionResource(id = R.dimen.major_100))
                 .fillMaxWidth()
+                .background(MaterialTheme.colors.surface)
+                .padding(dimensionResource(id = R.dimen.major_100))
+        ) {
+            Text(
+                text = stringResource(id = onboardingState.title),
+                style = MaterialTheme.typography.h6,
+            )
+            @Suppress("MagicNumber")
+            OnboardingTaskCollapsedProgressHeader(
+                tasks = onboardingState.tasks,
+                modifier = Modifier
+                    .padding(top = dimensionResource(id = R.dimen.major_100))
+                    .fillMaxWidth(0.5f)
+            )
+            val taskToDisplay = if (onboardingState.tasks.filter { !it.isCompleted }.size == 1)
+                onboardingState.tasks.filter { !it.isCompleted }
+            else onboardingState.tasks.take(numberOfItemsToShowInCollapsedMode)
+            OnboardingTaskList(
+                tasks = taskToDisplay,
+                modifier = Modifier
+                    .padding(top = dimensionResource(id = R.dimen.major_100))
+                    .fillMaxWidth()
+            )
+            Text(
+                modifier = Modifier.clickable { onViewAllClicked() },
+                text = stringResource(R.string.store_onboarding_task_view_all, onboardingState.tasks.size),
+                style = MaterialTheme.typography.subtitle1,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colors.primary,
+            )
+        }
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(top = dimensionResource(id = R.dimen.minor_100))
+        ) {
+            OverflowMenu {
+                DropdownMenuItem(
+                    modifier = Modifier
+                        .height(dimensionResource(id = R.dimen.major_175)),
+                    onClick = { onShareFeedbackClicked() }
+                ) {
+                    Text(stringResource(id = R.string.store_onboarding_menu_share_feedback))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun OverflowMenu(content: @Composable () -> Unit) {
+    var showMenu by remember { mutableStateOf(false) }
+    IconButton(onClick = { showMenu = !showMenu }) {
+        Icon(
+            imageVector = Icons.Outlined.MoreVert,
+            contentDescription = stringResource(R.string.more_menu),
         )
-        Text(
-            modifier = Modifier.clickable { onViewAllClicked() },
-            text = stringResource(R.string.store_onboarding_task_view_all, onboardingState.tasks.size),
-            style = MaterialTheme.typography.subtitle1,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colors.primary,
-        )
+    }
+    DropdownMenu(
+        offset = DpOffset(
+            x = dimensionResource(id = R.dimen.major_100),
+            y = 0.dp
+        ),
+        expanded = showMenu,
+        onDismissRequest = { showMenu = false }
+    ) {
+        content()
     }
 }
 
@@ -275,6 +324,7 @@ private fun OnboardingPreview() {
                 )
             )
         ),
-        onViewAllClicked = {}
+        onViewAllClicked = {},
+        onShareFeedbackClicked = {}
     )
 }
