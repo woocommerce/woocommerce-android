@@ -39,12 +39,19 @@ class JetpackBenefitsViewModel @Inject constructor(
         )
 
         when (selectedSite.connectionType) {
-            SiteConnectionType.JetpackConnectionPackage -> triggerEvent(StartJetpackCPInstallation)
+            SiteConnectionType.JetpackConnectionPackage -> triggerEvent(StartJetpackActivationForJetpackCP)
             SiteConnectionType.ApplicationPasswords -> {
                 _viewState.update { it.copy(isLoadingDialogShown = true) }
                 val jetpackStatusResult = fetchJetpackStatus()
                 jetpackStatusResult.fold(
-                    onSuccess = { triggerEvent(StartApplicationPasswordsInstallation(it)) },
+                    onSuccess = {
+                        triggerEvent(
+                            StartJetpackActivationForApplicationPasswords(
+                                siteUrl = selectedSite.get().url,
+                                jetpackStatus = it
+                            )
+                        )
+                    },
                     onFailure = { triggerEvent(ShowSnackbar(string.error_generic)) }
                 )
                 _viewState.update { it.copy(isLoadingDialogShown = false) }
@@ -61,8 +68,9 @@ class JetpackBenefitsViewModel @Inject constructor(
         val isLoadingDialogShown: Boolean
     )
 
-    object StartJetpackCPInstallation : Event()
-    data class StartApplicationPasswordsInstallation(
+    object StartJetpackActivationForJetpackCP : Event()
+    data class StartJetpackActivationForApplicationPasswords(
+        val siteUrl: String,
         val jetpackStatus: JetpackStatus
     ) : Event()
 }

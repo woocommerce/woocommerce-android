@@ -26,5 +26,16 @@
         <action
             android:id="@+id/action_jetpackBenefitsDialog_to_jetpackInstallStartDialog"
             app:destination="@id/jetpackInstallStartDialog" />
+        <action
+            android:id="@+id/action_jetpackBenefitsDialog_to_jetpack_activation"
+            app:destination="@id/nav_graph_jetpack_activation" >
+            <argument
+                android:name="siteUrl"
+                app:argType="string" />
+            <argument
+                android:name="jetpackStatus"
+                app:argType="com.woocommerce.android.model.JetpackStatus" />
+        </action>
     </dialog>
+    <include app:graph="@navigation/nav_graph_jetpack_activation" />
 </navigation>
