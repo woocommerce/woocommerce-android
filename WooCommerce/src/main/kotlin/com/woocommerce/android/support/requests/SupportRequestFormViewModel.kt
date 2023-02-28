@@ -5,8 +5,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.support.HelpData
-import com.woocommerce.android.support.HelpOption
+import com.woocommerce.android.support.TicketType
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
@@ -43,8 +42,8 @@ class SupportRequestFormViewModel @Inject constructor(
         .distinctUntilChanged()
         .asLiveData()
 
-    fun onHelpOptionSelected(helpOption: HelpOption) {
-        viewState.update { it.copy(helpOption = helpOption) }
+    fun onHelpOptionSelected(ticketType: TicketType) {
+        viewState.update { it.copy(ticketType = ticketType) }
     }
 
     fun onSubjectChanged(subject: String) {
@@ -56,12 +55,13 @@ class SupportRequestFormViewModel @Inject constructor(
     }
 
     fun onSubmitRequestButtonClicked(context: Context, helpOrigin: HelpOrigin, extraTags: List<String>) {
-        val helpOption = viewState.value.helpOption ?: return
+        val ticketType = viewState.value.ticketType ?: return
         viewState.update { it.copy(isLoading = true) }
         launch {
             zendeskHelper.createRequest(
                 context,
-                HelpData(helpOrigin, helpOption),
+                helpOrigin,
+                ticketType,
                 selectedSite.get(),
                 viewState.value.subject,
                 viewState.value.message,
@@ -83,13 +83,13 @@ class SupportRequestFormViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
-        val helpOption: HelpOption?,
+        val ticketType: TicketType?,
         val subject: String,
         val message: String,
         val isLoading: Boolean
     ) : Parcelable {
         val dataIsValid
-            get() = helpOption != null && subject.isNotBlank() && message.isNotBlank()
+            get() = ticketType != null && subject.isNotBlank() && message.isNotBlank()
 
         companion object {
             val EMPTY = ViewState(null, "", "", false)

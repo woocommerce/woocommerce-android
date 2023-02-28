@@ -189,7 +189,7 @@ class ZendeskHelper(
         }
 
         CreateRequest().apply {
-            this.ticketFormId = 189946L
+            this.ticketFormId = ticketType.form
             this.subject = subject
             this.description = description
             this.tags = buildZendeskTags(siteStore.sites, origin, ticketType.tags + extraTags)
