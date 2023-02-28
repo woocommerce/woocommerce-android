@@ -175,7 +175,7 @@ class ProductSelectorViewModel @Inject constructor(
     fun onProductClick(item: ProductListItem) {
         if (item.type == VARIABLE && item.numVariations > 0) {
             triggerEvent(NavigateToVariationSelector(item.id, item.selectedVariationIds))
-        } else {
+        } else if (item.type != VARIABLE) {
             if (selectedProductIds.value.contains(item.id)) {
                 selectedProductIds.value = selectedProductIds.value - item.id
             } else {
