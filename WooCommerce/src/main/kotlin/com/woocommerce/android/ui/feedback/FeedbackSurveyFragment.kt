@@ -19,9 +19,9 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_GENERAL_CONTEXT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_OPENED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_PRODUCT_M3_CONTEXT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_STORE_SETUP_CONTEXT
 import com.woocommerce.android.databinding.FragmentFeedbackSurveyBinding
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.ui.feedback.SurveyType.MAIN
 import com.woocommerce.android.widgets.CustomProgressDialog
 
 class FeedbackSurveyFragment : androidx.fragment.app.Fragment(R.layout.fragment_feedback_survey) {
@@ -36,8 +36,15 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment(R.layout.fragment_
     private val surveyWebViewClient = SurveyWebViewClient()
     private val arguments: FeedbackSurveyFragmentArgs by navArgs()
     private val feedbackContext by lazy {
-        if (arguments.surveyType == MAIN) VALUE_FEEDBACK_GENERAL_CONTEXT
-        else VALUE_FEEDBACK_PRODUCT_M3_CONTEXT
+        when (arguments.surveyType) {
+            SurveyType.MAIN -> VALUE_FEEDBACK_GENERAL_CONTEXT
+            SurveyType.PRODUCT -> VALUE_FEEDBACK_PRODUCT_M3_CONTEXT
+            SurveyType.STORE_ONBOARDING -> VALUE_FEEDBACK_STORE_SETUP_CONTEXT
+            SurveyType.ORDER_CREATION -> VALUE_FEEDBACK_GENERAL_CONTEXT
+            SurveyType.SHIPPING_LABELS -> VALUE_FEEDBACK_GENERAL_CONTEXT
+            SurveyType.COUPONS -> VALUE_FEEDBACK_GENERAL_CONTEXT
+            SurveyType.ADDONS -> VALUE_FEEDBACK_GENERAL_CONTEXT
+        }
     }
 
     private var _binding: FragmentFeedbackSurveyBinding? = null
