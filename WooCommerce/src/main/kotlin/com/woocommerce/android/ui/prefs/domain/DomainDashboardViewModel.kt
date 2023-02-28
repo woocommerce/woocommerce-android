@@ -7,9 +7,13 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.DOMAIN_CHANGE_CURRENT_DOMAIN
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.UserRole
 import com.woocommerce.android.support.help.HelpOrigin.DOMAIN_CHANGE
+import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ViewState.DashboardState
 import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ViewState.ErrorState
+import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ViewState.ErrorState.ErrorType.ACCESS_ERROR
+import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ViewState.ErrorState.ErrorType.GENERIC_ERROR
 import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ViewState.LoadingState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -25,7 +29,8 @@ import javax.inject.Inject
 class DomainDashboardViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val repository: DomainChangeRepository
+    private val repository: DomainChangeRepository,
+    private val userEligibilityFetcher: UserEligibilityFetcher
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val LEARN_MORE_URL = "https://wordpress.com/go/tutorials/what-is-a-domain-name/"
@@ -45,41 +50,52 @@ class DomainDashboardViewModel @Inject constructor(
             )
         )
 
-        loadData()
+        launch {
+            if (hasAccess()) {
+                loadData()
+            } else {
+                _viewState.update { ErrorState(ACCESS_ERROR) }
+            }
+        }
     }
 
-    private fun loadData() {
-        launch {
-            val domainsAsync = async { repository.fetchSiteDomains() }
-            val planAsync = async { repository.fetchActiveSitePlan() }
-            val domainsResult = domainsAsync.await()
-            val planResult = planAsync.await()
+    private suspend fun hasAccess(): Boolean {
+        return async {
+            val userInfo = userEligibilityFetcher.fetchUserInfo()
+            return@async (userInfo.isSuccess && userInfo.getOrNull()?.roles?.contains(UserRole.Administrator) == true)
+        }.await()
+    }
 
-            hasFreeCredits = planResult.getOrNull()?.hasDomainCredit == true
+    private suspend fun loadData() {
+        val domainsAsync = async { repository.fetchSiteDomains() }
+        val planAsync = async { repository.fetchActiveSitePlan() }
+        val domainsResult = domainsAsync.await()
+        val planResult = planAsync.await()
 
-            if (domainsResult.isFailure) {
-                _viewState.update { ErrorState }
-            } else {
-                val freeDomain = domainsResult.getOrNull()?.firstOrNull { it.wpcomDomain }
-                val paidDomains = domainsResult.getOrNull()
-                    ?.filter { !it.wpcomDomain && it.domain != null } ?: emptyList()
-                if (freeDomain != null) {
-                    _viewState.update {
-                        DashboardState(
-                            wpComDomain = DashboardState.Domain(
-                                url = freeDomain.domain ?: NO_DOMAIN,
-                                isPrimary = freeDomain.primaryDomain
-                            ),
-                            paidDomains = paidDomains.map { domain ->
-                                DashboardState.Domain(
-                                    url = domain.domain!!,
-                                    renewalDate = domain.expiry,
-                                    isPrimary = domain.primaryDomain
-                                )
-                            },
-                            isDomainClaimBannerVisible = hasFreeCredits
-                        )
-                    }
+        hasFreeCredits = planResult.getOrNull()?.hasDomainCredit == true
+
+        if (domainsResult.isFailure) {
+            _viewState.update { ErrorState() }
+        } else {
+            val freeDomain = domainsResult.getOrNull()?.firstOrNull { it.wpcomDomain }
+            val paidDomains = domainsResult.getOrNull()
+                ?.filter { !it.wpcomDomain && it.domain != null } ?: emptyList()
+            if (freeDomain != null) {
+                _viewState.update {
+                    DashboardState(
+                        wpComDomain = DashboardState.Domain(
+                            url = freeDomain.domain ?: NO_DOMAIN,
+                            isPrimary = freeDomain.primaryDomain
+                        ),
+                        paidDomains = paidDomains.map { domain ->
+                            DashboardState.Domain(
+                                url = domain.domain!!,
+                                renewalDate = domain.expiry,
+                                isPrimary = domain.primaryDomain
+                            )
+                        },
+                        isDomainClaimBannerVisible = hasFreeCredits
+                    )
                 }
             }
         }
@@ -108,7 +124,12 @@ class DomainDashboardViewModel @Inject constructor(
         object LoadingState : ViewState
 
         @Parcelize
-        object ErrorState : ViewState
+        data class ErrorState(val errorType: ErrorType = GENERIC_ERROR) : ViewState {
+            enum class ErrorType {
+                GENERIC_ERROR,
+                ACCESS_ERROR
+            }
+        }
 
         @Parcelize
         data class DashboardState(
