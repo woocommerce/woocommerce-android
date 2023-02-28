@@ -71,8 +71,8 @@ class HelpActivity : AppCompatActivity() {
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        binding.contactContainer.setOnClickListener { viewModel.contactSupport(TicketType.General) }
-        binding.identityContainer.setOnClickListener { showIdentityDialog(TicketType.General) }
+        binding.contactContainer.setOnClickListener { viewModel.contactSupport(TicketType.Mobile) }
+        binding.identityContainer.setOnClickListener { showIdentityDialog(TicketType.Mobile) }
         binding.myTicketsContainer.setOnClickListener { showZendeskTickets() }
         binding.faqContainer.setOnClickListener {
             val loginFlow = intent.extras?.getString(LOGIN_FLOW_KEY)
@@ -113,7 +113,7 @@ class HelpActivity : AppCompatActivity() {
         }
 
         if (originFromExtras == HelpOrigin.SITE_PICKER_JETPACK_TIMEOUT) {
-            viewModel.contactSupport(TicketType.General)
+            viewModel.contactSupport(TicketType.Mobile)
         }
 
         initObservers(binding)

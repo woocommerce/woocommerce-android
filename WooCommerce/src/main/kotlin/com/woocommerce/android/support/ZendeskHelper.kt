@@ -130,7 +130,7 @@ class ZendeskHelper(
         origin: HelpOrigin?,
         selectedSite: SiteModel?,
         extraTags: List<String>? = null,
-        ticketType: TicketType = TicketType.General,
+        ticketType: TicketType = TicketType.Mobile,
     ) {
         require(isZendeskEnabled) {
             zendeskNeedsToBeEnabledError
@@ -189,7 +189,7 @@ class ZendeskHelper(
         }
 
         CreateRequest().apply {
-            this.ticketFormId = option.ticketType.form
+            this.ticketFormId = 189946L
             this.subject = subject
             this.description = description
             this.tags = buildZendeskTags(siteStore.sites, origin, option.allTags + extraTags)
@@ -217,7 +217,7 @@ class ZendeskHelper(
         origin: HelpOrigin?,
         selectedSite: SiteModel?,
         extraTags: List<String>? = null,
-        ticketType: TicketType = TicketType.General,
+        ticketType: TicketType = TicketType.Mobile,
         ssr: String? = null
     ) {
         require(isZendeskEnabled) {
@@ -254,7 +254,7 @@ class ZendeskHelper(
         origin: HelpOrigin?,
         selectedSite: SiteModel? = null,
         extraTags: List<String>? = null,
-        ticketType: TicketType = TicketType.General,
+        ticketType: TicketType = TicketType.Mobile,
     ) {
         require(isZendeskEnabled) {
             zendeskNeedsToBeEnabledError
@@ -587,8 +587,8 @@ private object ZendeskConstants {
     const val jetpackTag = "jetpack"
     const val mobileHelpCategoryId = 360000041586
     const val categoryValue = "Support"
-    const val subcategoryGeneralValue = "WooCommerce Mobile Apps"
-    const val subcategoryPaymentsValue = "payment"
+    const val mobileSubcategoryValue = "WooCommerce Mobile Apps"
+    const val paymentsSubcategoryValue = "payment"
     const val networkWifi = "WiFi"
     const val networkWWAN = "Mobile"
     const val networkTypeLabel = "Network Type:"
@@ -608,8 +608,8 @@ private object TicketFieldIds {
     const val appVersion = 360000086866L
     const val blogList = 360000087183L
     const val deviceFreeSpace = 360000089123L
-    const val formGeneral = 360000010286L
-    const val formPayments = 189946L
+    const val wooMobileFormID = 360000010286L
+    const val wooFormID = 189946L
     const val categoryId = 25176003L
     const val subcategoryId = 25176023L
     const val logs = 10901699622036L
@@ -625,11 +625,11 @@ data class HelpData(val origin: HelpOrigin, val option: HelpOption)
 
 sealed class HelpOption(val ticketType: TicketType, val extraTags: List<String>) : Parcelable {
     @Parcelize object MobileApp : HelpOption(
-        ticketType = TicketType.General,
+        ticketType = TicketType.Mobile,
         extraTags = listOf("mobile-app")
     )
     @Parcelize object InPersonPayments : HelpOption(
-        ticketType = TicketType.General,
+        ticketType = TicketType.Mobile,
         extraTags = listOf("woocommerce_mobile_apps", "product_area_apps_in_person_payments")
     )
     @Parcelize object Payments : HelpOption(
@@ -637,11 +637,11 @@ sealed class HelpOption(val ticketType: TicketType, val extraTags: List<String>)
         extraTags = emptyList()
     )
     @Parcelize object WooPlugin : HelpOption(
-        ticketType = TicketType.General,
+        ticketType = TicketType.Mobile,
         extraTags = listOf("woocommerce_core")
     )
     @Parcelize object OtherPlugins : HelpOption(
-        ticketType = TicketType.General,
+        ticketType = TicketType.Mobile,
         extraTags = listOf("product_area_woo_extensions")
     )
 
@@ -654,15 +654,15 @@ sealed class TicketType(
     val tags: List<String> = emptyList(),
 ) : Parcelable {
     @Parcelize
-    object General : TicketType(
-        form = TicketFieldIds.formGeneral,
-        subcategoryName = ZendeskConstants.subcategoryGeneralValue,
+    object Mobile : TicketType(
+        form = TicketFieldIds.wooMobileFormID,
+        subcategoryName = ZendeskConstants.mobileSubcategoryValue,
     )
 
     @Parcelize
     object Payments : TicketType(
-        form = TicketFieldIds.formPayments,
-        subcategoryName = ZendeskConstants.subcategoryPaymentsValue,
+        form = TicketFieldIds.wooFormID,
+        subcategoryName = ZendeskConstants.paymentsSubcategoryValue,
         tags = arrayListOf(
             ZendeskExtraTags.paymentsProduct,
             ZendeskExtraTags.paymentsCategory,
