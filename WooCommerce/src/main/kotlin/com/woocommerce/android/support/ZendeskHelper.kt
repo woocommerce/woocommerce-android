@@ -130,7 +130,7 @@ class ZendeskHelper(
         origin: HelpOrigin?,
         selectedSite: SiteModel?,
         extraTags: List<String>? = null,
-        ticketType: TicketType = TicketType.Mobile,
+        ticketType: TicketType = TicketType.MobileApp,
     ) {
         require(isZendeskEnabled) {
             zendeskNeedsToBeEnabledError
@@ -166,7 +166,8 @@ class ZendeskHelper(
     @Suppress("LongParameterList")
     suspend fun createRequest(
         context: Context,
-        helpData: HelpData,
+        origin: HelpOrigin,
+        ticketType: TicketType,
         selectedSite: SiteModel?,
         subject: String,
         description: String,
@@ -176,7 +177,6 @@ class ZendeskHelper(
             zendeskNeedsToBeEnabledError
         }
 
-        val (origin, option) = helpData
         val requestCallback = object : ZendeskCallback<Request>() {
             override fun onSuccess(result: Request?) {
                 trySend(Result.success(result))
@@ -192,8 +192,8 @@ class ZendeskHelper(
             this.ticketFormId = 189946L
             this.subject = subject
             this.description = description
-            this.tags = buildZendeskTags(siteStore.sites, origin, option.allTags + extraTags)
-            this.customFields = buildZendeskCustomFields(context, option.ticketType, siteStore.sites, selectedSite)
+            this.tags = buildZendeskTags(siteStore.sites, origin, ticketType.tags + extraTags)
+            this.customFields = buildZendeskCustomFields(context, ticketType, siteStore.sites, selectedSite)
         }.let { request -> requestProvider?.createRequest(request, requestCallback) }
 
         // Sets a timeout since the callback might not be called from Zendesk API
@@ -217,7 +217,7 @@ class ZendeskHelper(
         origin: HelpOrigin?,
         selectedSite: SiteModel?,
         extraTags: List<String>? = null,
-        ticketType: TicketType = TicketType.Mobile,
+        ticketType: TicketType = TicketType.MobileApp,
         ssr: String? = null
     ) {
         require(isZendeskEnabled) {
@@ -254,7 +254,7 @@ class ZendeskHelper(
         origin: HelpOrigin?,
         selectedSite: SiteModel? = null,
         extraTags: List<String>? = null,
-        ticketType: TicketType = TicketType.Mobile,
+        ticketType: TicketType = TicketType.MobileApp,
     ) {
         require(isZendeskEnabled) {
             zendeskNeedsToBeEnabledError
@@ -581,6 +581,41 @@ private fun getNetworkInformation(context: Context): String {
     ).joinToString(separator = "\n")
 }
 
+sealed class TicketType(
+    val form: Long,
+    val subcategoryName: String,
+    val tags: List<String> = emptyList(),
+) : Parcelable {
+    @Parcelize object MobileApp : TicketType(
+        form = TicketFieldIds.wooMobileFormID,
+        subcategoryName = ZendeskConstants.mobileSubcategoryValue,
+        tags = listOf("mobile_app")
+    )
+    @Parcelize object InPersonPayments : TicketType(
+        form = TicketFieldIds.wooMobileFormID,
+        subcategoryName = ZendeskConstants.mobileSubcategoryValue,
+        tags = listOf("woocommerce_mobile_apps", "product_area_apps_in_person_payments")
+    )
+    @Parcelize object Payments : TicketType(
+        form = TicketFieldIds.wooFormID,
+        subcategoryName = ZendeskConstants.paymentsSubcategoryValue,
+        tags = listOf(
+            ZendeskExtraTags.paymentsProduct,
+            ZendeskExtraTags.paymentsProductArea
+        )
+    )
+    @Parcelize object WooPlugin : TicketType(
+        form = TicketFieldIds.wooFormID,
+        subcategoryName = "",
+        tags = listOf("woocommerce_core")
+    )
+    @Parcelize object OtherPlugins : TicketType(
+        form = TicketFieldIds.wooFormID,
+        subcategoryName = ZendeskConstants.storeSubcategoryValue,
+        tags = listOf("product_area_woo_extensions")
+    )
+}
+
 private object ZendeskConstants {
     const val articleLabel = "Android"
     const val blogSeparator = "\n----------\n"
@@ -588,7 +623,8 @@ private object ZendeskConstants {
     const val mobileHelpCategoryId = 360000041586
     const val categoryValue = "Support"
     const val mobileSubcategoryValue = "WooCommerce Mobile Apps"
-    const val paymentsSubcategoryValue = "payment"
+    const val paymentsSubcategoryValue = "Payment"
+    const val storeSubcategoryValue = "Store"
     const val networkWifi = "WiFi"
     const val networkWWAN = "Mobile"
     const val networkTypeLabel = "Network Type:"
@@ -621,62 +657,9 @@ private object TicketFieldIds {
     const val sourcePlatform = 360009311651L
 }
 
-data class HelpData(val origin: HelpOrigin, val option: HelpOption)
-
-sealed class HelpOption(val ticketType: TicketType, val extraTags: List<String>) : Parcelable {
-    @Parcelize object MobileApp : HelpOption(
-        ticketType = TicketType.Mobile,
-        extraTags = listOf("mobile-app")
-    )
-    @Parcelize object InPersonPayments : HelpOption(
-        ticketType = TicketType.Mobile,
-        extraTags = listOf("woocommerce_mobile_apps", "product_area_apps_in_person_payments")
-    )
-    @Parcelize object Payments : HelpOption(
-        ticketType = TicketType.Payments,
-        extraTags = emptyList()
-    )
-    @Parcelize object WooPlugin : HelpOption(
-        ticketType = TicketType.Mobile,
-        extraTags = listOf("woocommerce_core")
-    )
-    @Parcelize object OtherPlugins : HelpOption(
-        ticketType = TicketType.Mobile,
-        extraTags = listOf("product_area_woo_extensions")
-    )
-
-    val allTags get() = ticketType.tags + extraTags
-}
-
-sealed class TicketType(
-    val form: Long,
-    val subcategoryName: String,
-    val tags: List<String> = emptyList(),
-) : Parcelable {
-    @Parcelize
-    object Mobile : TicketType(
-        form = TicketFieldIds.wooMobileFormID,
-        subcategoryName = ZendeskConstants.mobileSubcategoryValue,
-    )
-
-    @Parcelize
-    object Payments : TicketType(
-        form = TicketFieldIds.wooFormID,
-        subcategoryName = ZendeskConstants.paymentsSubcategoryValue,
-        tags = arrayListOf(
-            ZendeskExtraTags.paymentsProduct,
-            ZendeskExtraTags.paymentsCategory,
-            ZendeskExtraTags.paymentsSubcategory,
-            ZendeskExtraTags.paymentsProductArea
-        )
-    )
-}
-
 object ZendeskExtraTags {
     const val applicationPasswordAuthenticated = "application_password_authenticated"
 
-    const val paymentsCategory = "support"
-    const val paymentsSubcategory = "payment"
     const val paymentsProduct = "woocommerce_payments"
     const val paymentsProductArea = "product_area_woo_payment_gateway"
 }
