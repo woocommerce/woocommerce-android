@@ -27,7 +27,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
-import com.woocommerce.android.R.dimen
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -70,13 +69,12 @@ fun JetpackActivationWPComEmailScreen(
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
                 .padding(paddingValues)
-                .fillMaxSize(),
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
         ) {
             Column(
                 modifier = Modifier
-                    .weight(1f)
                     .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
                     .padding(dimensionResource(id = R.dimen.major_100)),
             ) {
                 JetpackToWooHeader()
@@ -119,6 +117,8 @@ fun JetpackActivationWPComEmailScreen(
                 )
             }
 
+            Spacer(modifier = Modifier.weight(1f))
+
             WCColoredButton(
                 onClick = {
                     keyboardController?.hide()
@@ -139,7 +139,7 @@ fun JetpackActivationWPComEmailScreen(
             JetpackConsent(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = dimensionResource(id = dimen.major_100))
+                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         }
@@ -150,7 +150,7 @@ fun JetpackActivationWPComEmailScreen(
     }
 }
 
-@Preview
+@Preview(heightDp = 130)
 @Composable
 private fun JetpackActivationWPComScreenPreview() {
     WooThemeWithBackground {
