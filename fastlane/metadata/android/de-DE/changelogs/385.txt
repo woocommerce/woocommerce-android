@@ -1,2 +1,0 @@
-12.3:
-In dieser Version haben wir kleinere Bugs behoben, die unser Team gefunden hat. Aber das ist noch lange nicht alles – wir arbeiten an ein paar tollen Neuerungen! Sende uns weiterhin Feedback! So finden wir heraus, was wir als Nächstes verbessern können.

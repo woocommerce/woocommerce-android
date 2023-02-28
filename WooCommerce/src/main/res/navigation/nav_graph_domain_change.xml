@@ -2,14 +2,14 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph_domain_change"
-    app:startDestination="@id/currentDomainFragment">
+    app:startDestination="@id/domainDashboardFragment">
 
     <fragment
-        android:id="@+id/currentDomainFragment"
-        android:name="com.woocommerce.android.ui.prefs.domain.CurrentDomainsFragment"
+        android:id="@+id/domainDashboardFragment"
+        android:name="com.woocommerce.android.ui.prefs.domain.DomainDashboardFragment"
         android:label="CurrentDomainFragment" >
         <action
-            android:id="@+id/action_currentDomainFragment_to_domainSearchFragment"
+            android:id="@+id/action_domainDashboardFragment_to_domainSearchFragment"
             app:destination="@id/domainSearchFragment" />
     </fragment>
     <fragment
@@ -22,5 +22,23 @@
         <argument
             android:name="search_only_free_domains"
             app:argType="boolean" />
+        <argument
+            android:name="initial_query"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_domainSearchFragment_to_purchaseSuccessfulFragment"
+            app:destination="@id/purchaseSuccessfulFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/purchaseSuccessfulFragment"
+        android:name="com.woocommerce.android.ui.prefs.domain.PurchaseSuccessfulFragment"
+        android:label="PurchaseSuccessfulFragment" >
+        <argument
+            android:name="domain"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_purchaseSuccessfulFragment_to_domainDashboardFragment"
+            app:destination="@id/domainDashboardFragment"
+            app:popUpTo="@id/nav_graph_domain_change" />
     </fragment>
 </navigation>

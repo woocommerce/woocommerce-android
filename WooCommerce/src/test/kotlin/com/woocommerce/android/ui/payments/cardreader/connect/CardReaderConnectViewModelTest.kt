@@ -1154,7 +1154,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when app in scanning state, then correct labels and illustrations shown`() =
+    fun `given external reader, when app in scanning state, then correct labels and illustrations shown`() =
         testBlocking {
             init(scanState = SCANNING)
 
@@ -1178,6 +1178,32 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .describedAs("Check illustration vertical margin")
                 .isEqualTo(R.dimen.major_200)
         }
+
+    @Test
+    fun `given built in reader, when app in scanning state, then correct labels and illustrations shown`() = testBlocking {
+        init(scanState = SCANNING)
+        viewModel = initVM(cardReaderType = BUILT_IN)
+
+        assertThat(viewModel.viewStateData.value).isInstanceOf(BuiltInReaderScanningState::class.java)
+        assertThat(viewModel.viewStateData.value!!.headerLabel)
+            .describedAs("Check header")
+            .isEqualTo(UiStringRes(R.string.card_reader_connect_scanning_built_in_header))
+        assertThat(viewModel.viewStateData.value!!.hintLabel)
+            .describedAs("Check hint")
+            .isEqualTo(R.string.card_reader_connect_scanning_built_in_hint)
+        assertThat(viewModel.viewStateData.value!!.primaryActionLabel)
+            .describedAs("Check primaryActionLabel")
+            .isNull()
+        assertThat(viewModel.viewStateData.value!!.secondaryActionLabel)
+            .describedAs("Check secondaryActionLabel")
+            .isEqualTo(R.string.cancel)
+        assertThat(viewModel.viewStateData.value!!.illustration)
+            .describedAs("Check illustration")
+            .isEqualTo(R.drawable.img_card_reader_tpp_connecting)
+        assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
+            .describedAs("Check illustration vertical margin")
+            .isEqualTo(R.dimen.major_200)
+    }
 
     @Test
     fun `when app in readers found state, then correct labels and illustrations shown`() =
@@ -1215,7 +1241,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when app in connecting state, then correct labels and illustrations shown`() =
+    fun `given external reader, when app in connecting state, then correct labels and illustrations shown`() =
         testBlocking {
             init(scanState = READER_FOUND)
 
@@ -1238,6 +1264,36 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_card_reader_connecting)
+            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
+                .describedAs("Check illustration vertical margin")
+                .isEqualTo(R.dimen.major_275)
+        }
+
+    @Test
+    fun `given built in reader, when app in connecting state, then correct labels and illustrations shown`() =
+        testBlocking {
+            init()
+            viewModel = initVM(cardReaderType = BUILT_IN)
+            init(scanState = READER_FOUND)
+
+            readerStatusFlow.emit(CardReaderStatus.Connecting)
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(BuiltInReaderConnectingState::class.java)
+            assertThat(viewModel.viewStateData.value!!.headerLabel)
+                .describedAs("Check header")
+                .isEqualTo(UiStringRes(R.string.card_reader_connect_connecting_built_in_header))
+            assertThat(viewModel.viewStateData.value!!.hintLabel)
+                .describedAs("Check hint")
+                .isEqualTo(R.string.card_reader_connect_connecting_hint)
+            assertThat(viewModel.viewStateData.value!!.primaryActionLabel)
+                .describedAs("Check primaryActionLabel")
+                .isNull()
+            assertThat(viewModel.viewStateData.value!!.secondaryActionLabel)
+                .describedAs("Check secondaryActionLabel")
+                .isEqualTo(R.string.cancel)
+            assertThat(viewModel.viewStateData.value!!.illustration)
+                .describedAs("Check illustration")
+                .isEqualTo(R.drawable.img_card_reader_tpp_connecting)
             assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
                 .describedAs("Check illustration vertical margin")
                 .isEqualTo(R.dimen.major_275)
