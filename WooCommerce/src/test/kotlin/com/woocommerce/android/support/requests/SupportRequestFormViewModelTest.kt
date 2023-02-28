@@ -15,6 +15,9 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.model.SiteModel
 import zendesk.support.Request
 
@@ -99,5 +102,42 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         assertThat(isSubmitButtonEnabled[1]).isTrue
         assertThat(isSubmitButtonEnabled[2]).isFalse
         assertThat(isSubmitButtonEnabled[3]).isTrue
+    }
+
+    @Test
+    fun `when view is loading, then request is triggered and isRequestLoading is updated`() = testBlocking {
+        // Given
+        val isRequestLoading = mutableListOf<Boolean>()
+        sut.isRequestLoading.observeForever {
+            isRequestLoading.add(it)
+        }
+
+        // When
+        sut.onHelpOptionSelected(HelpOption.MobileApp)
+        sut.onSubmitRequestButtonClicked(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
+
+        // Then
+        assertThat(isRequestLoading).hasSize(3)
+        assertThat(isRequestLoading[0]).isFalse
+        assertThat(isRequestLoading[1]).isTrue
+        assertThat(isRequestLoading[2]).isFalse
+        verify(zendeskHelper, times(1)).createRequest(any(), any(), any(), any(), any(), any())
+    }
+
+    @Test
+    fun `when submit request is triggered without a help option selected, then ignore the request`() = testBlocking {
+        // Given
+        val isRequestLoading = mutableListOf<Boolean>()
+        sut.isRequestLoading.observeForever {
+            isRequestLoading.add(it)
+        }
+
+        // When
+        sut.onSubmitRequestButtonClicked(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
+
+        // Then
+        assertThat(isRequestLoading).hasSize(1)
+        assertThat(isRequestLoading[0]).isFalse
+        verify(zendeskHelper, never()).createRequest(any(), any(), any(), any(), any(), any())
     }
 }
