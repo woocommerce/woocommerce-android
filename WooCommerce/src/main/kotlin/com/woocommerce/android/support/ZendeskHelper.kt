@@ -610,8 +610,8 @@ sealed class TicketType(
             ZendeskTags.paymentsProduct,
             ZendeskTags.paymentsProductArea,
             ZendeskTags.mobileAppWooTransfer,
-            ZendeskConstants.supportCategory,
-            ZendeskConstants.paymentsSubcategoryValue
+            ZendeskTags.supportCategoryTag,
+            ZendeskTags.paymentSubcategoryTag
         )
     )
     @Parcelize object WooPlugin : TicketType(
@@ -621,7 +621,7 @@ sealed class TicketType(
         tags = listOf(
             ZendeskTags.woocommerceCore,
             ZendeskTags.mobileAppWooTransfer,
-            ZendeskConstants.supportCategory
+            ZendeskTags.supportCategoryTag
         )
     )
     @Parcelize object OtherPlugins : TicketType(
@@ -631,8 +631,8 @@ sealed class TicketType(
         tags = listOf(
             ZendeskTags.productAreaWooExtensions,
             ZendeskTags.mobileAppWooTransfer,
-            ZendeskConstants.supportCategory,
-            ZendeskConstants.storeSubcategoryValue
+            ZendeskTags.supportCategoryTag,
+            ZendeskTags.storeSubcategoryTag
         )
     )
 }
@@ -690,6 +690,9 @@ object ZendeskTags {
     const val woocommerceMobileApps = "woocommerce_mobile_apps"
     const val productAreaWooExtensions = "product_area_woo_extensions"
     const val productAreaAppsInPersonPayments = "product_area_apps_in_person_payments"
+    const val storeSubcategoryTag = "store"
+    const val supportCategoryTag = "support"
+    const val paymentSubcategoryTag = "payment"
 }
 
 private object RequestConstants {
