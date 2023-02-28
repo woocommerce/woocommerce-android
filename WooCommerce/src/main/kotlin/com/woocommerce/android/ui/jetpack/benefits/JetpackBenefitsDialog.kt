@@ -59,13 +59,13 @@ class JetpackBenefitsDialog : DialogFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is JetpackBenefitsViewModel.StartJetpackCPInstallation -> {
+                is JetpackBenefitsViewModel.StartJetpackActivationForJetpackCP -> {
                     findNavController().navigateSafely(
                         JetpackBenefitsDialogDirections.actionJetpackBenefitsDialogToJetpackInstallStartDialog()
                     )
                 }
 
-                is JetpackBenefitsViewModel.StartApplicationPasswordsInstallation -> {
+                is JetpackBenefitsViewModel.StartJetpackActivationForApplicationPasswords -> {
                     findNavController().navigateSafely(
                         JetpackBenefitsDialogDirections.actionJetpackBenefitsDialogToJetpackActivation(
                             siteUrl = event.siteUrl,
