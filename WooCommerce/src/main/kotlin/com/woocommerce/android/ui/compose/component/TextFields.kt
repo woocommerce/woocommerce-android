@@ -35,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -206,6 +207,8 @@ fun WCSearchField(
                 backgroundColor,
                 RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
             ),
+        singleLine = true,
+        cursorBrush = SolidColor(colorResource(id = R.color.color_on_surface)),
         decorationBox = { innerTextField ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
