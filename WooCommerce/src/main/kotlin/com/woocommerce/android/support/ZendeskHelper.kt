@@ -601,18 +601,23 @@ sealed class TicketType(
         subcategoryName = ZendeskConstants.paymentsSubcategoryValue,
         tags = listOf(
             ZendeskExtraTags.paymentsProduct,
-            ZendeskExtraTags.paymentsProductArea
+            ZendeskExtraTags.paymentsProductArea,
+            "mobile_app_woo_transfer",
+            ZendeskConstants.categoryValue,
+            ZendeskConstants.paymentsSubcategoryValue
         )
     )
     @Parcelize object WooPlugin : TicketType(
         form = TicketFieldIds.wooFormID,
         subcategoryName = "",
-        tags = listOf("woocommerce_core")
+        tags = listOf("woocommerce_core", "mobile_app_woo_transfer",
+            ZendeskConstants.categoryValue)
     )
     @Parcelize object OtherPlugins : TicketType(
         form = TicketFieldIds.wooFormID,
         subcategoryName = ZendeskConstants.storeSubcategoryValue,
-        tags = listOf("product_area_woo_extensions")
+        tags = listOf("product_area_woo_extensions", "mobile_app_woo_transfer",
+            ZendeskConstants.categoryValue, ZendeskConstants.storeSubcategoryValue)
     )
 }
 
