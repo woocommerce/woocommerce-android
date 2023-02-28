@@ -62,7 +62,7 @@ class SupportRequestFormViewModel @Inject constructor(
                 context,
                 helpOrigin,
                 ticketType,
-                selectedSite.get(),
+                selectedSite.getIfExists(),
                 viewState.value.subject,
                 viewState.value.message,
                 extraTags
