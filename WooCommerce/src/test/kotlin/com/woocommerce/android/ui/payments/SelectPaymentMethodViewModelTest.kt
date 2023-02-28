@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.Navigate
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateBackToOrderList
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderHubFlow
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderRefundFlow
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToOrderDetails
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.OpenPurchaseCardReaderLink
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Success
@@ -28,6 +29,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.SIMPLE
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.TRY_TAP_TO_PAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Refund
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.util.CurrencyFormatter
@@ -435,6 +437,21 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(viewModel.event.value).isEqualTo(NavigateBackToHub(CardReadersHub))
+        }
+
+    @Test
+    fun `given try ttp payment flow, when on reader payment complete, then exit to order details`() =
+        testBlocking {
+            // GIVEN
+            whenever(orderEntity.status).thenReturn(CoreOrderStatus.COMPLETED.value)
+            val viewModel = initViewModel(Payment(1L, TRY_TAP_TO_PAY))
+
+            // WHEN
+            viewModel.onCardReaderPaymentCompleted()
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(NavigateToOrderDetails(1))
         }
 
     @Test
