@@ -1,7 +1,7 @@
 package com.woocommerce.android.support.requests
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.support.HelpOption
+import com.woocommerce.android.support.TicketType
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationFailed
@@ -47,7 +47,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // When
         sut.onSubjectChanged("subject")
         sut.onMessageChanged("message")
-        sut.onHelpOptionSelected(HelpOption.MobileApp)
+        sut.onHelpOptionSelected(TicketType.MobileApp)
 
         // Then
         assertThat(isSubmitButtonEnabled).hasSize(2)
@@ -66,7 +66,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // When
         sut.onSubjectChanged("")
         sut.onMessageChanged("")
-        sut.onHelpOptionSelected(HelpOption.MobileApp)
+        sut.onHelpOptionSelected(TicketType.MobileApp)
 
         // Then
         assertThat(isSubmitButtonEnabled).hasSize(1)
@@ -84,7 +84,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // When
         sut.onSubjectChanged("subject")
         sut.onMessageChanged("message")
-        sut.onHelpOptionSelected(HelpOption.MobileApp)
+        sut.onHelpOptionSelected(TicketType.MobileApp)
         sut.onSubmitRequestButtonClicked(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
 
         // Then
@@ -104,7 +104,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         }
 
         // When
-        sut.onHelpOptionSelected(HelpOption.MobileApp)
+        sut.onHelpOptionSelected(TicketType.MobileApp)
         sut.onSubmitRequestButtonClicked(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
 
         // Then
@@ -112,7 +112,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         assertThat(isRequestLoading[0]).isFalse
         assertThat(isRequestLoading[1]).isTrue
         assertThat(isRequestLoading[2]).isFalse
-        verify(zendeskHelper, times(1)).createRequest(any(), any(), any(), any(), any(), any())
+        verify(zendeskHelper, times(1)).createRequest(any(), any(), any(), any(), any(), any(), any())
     }
 
     @Test
@@ -129,7 +129,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // Then
         assertThat(isRequestLoading).hasSize(1)
         assertThat(isRequestLoading[0]).isFalse
-        verify(zendeskHelper, never()).createRequest(any(), any(), any(), any(), any(), any())
+        verify(zendeskHelper, never()).createRequest(any(), any(), any(), any(), any(), any(), any())
     }
 
     @Test
@@ -141,7 +141,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         }
 
         // When
-        sut.onHelpOptionSelected(HelpOption.MobileApp)
+        sut.onHelpOptionSelected(TicketType.MobileApp)
         sut.onSubmitRequestButtonClicked(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
 
         // Then
@@ -159,7 +159,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         }
 
         // When
-        sut.onHelpOptionSelected(HelpOption.MobileApp)
+        sut.onHelpOptionSelected(TicketType.MobileApp)
         sut.onSubmitRequestButtonClicked(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
 
         // Then
@@ -175,6 +175,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         zendeskHelper = mock {
             onBlocking {
                 createRequest(
+                    any(),
                     any(),
                     any(),
                     eq(testSite),
