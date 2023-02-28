@@ -53,7 +53,11 @@ class WPComLoginRepository @Inject constructor(
         WooLog.i(WooLog.T.LOGIN, "Sumbitting 2FA verification code")
 
         return submitAuthRequest(emailOrUsername, password, null, true)
-            .map { SMSRequestResult.UserSignedIn }
+            .map {
+                // If we get a successful response, then this means the user was successfully signed in
+                // This can happen only if 2FA was disabled in the account before sending the request
+                SMSRequestResult.UserSignedIn
+            }
             .recoverCatching {
                 if (((it as? OnChangedException)?.error as? AuthenticationError)?.type == NEEDS_2FA) {
                     SMSRequestResult.SMSRequested
