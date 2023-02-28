@@ -4,8 +4,11 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.support.HelpOption
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationFailed
+import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationSucceeded
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
@@ -30,19 +33,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
 
     @Before
     fun setUp() {
-        val testSite = SiteModel().apply { id = 123 }
-        selectedSite = mock {
-            on { get() }.then { testSite }
-        }
-        zendeskHelper = mock {
-            onBlocking { createRequest(any(), any(), eq(testSite), any(), any(), any()) } doReturn flowOf(Result.success(Request()))
-        }
-
-        sut = SupportRequestFormViewModel(
-            zendeskHelper = zendeskHelper,
-            selectedSite = selectedSite,
-            savedState = savedState
-        )
+        configureMocks(requestResult = Result.success(Request()))
     }
 
     @Test
@@ -139,5 +130,65 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         assertThat(isRequestLoading).hasSize(1)
         assertThat(isRequestLoading[0]).isFalse
         verify(zendeskHelper, never()).createRequest(any(), any(), any(), any(), any(), any())
+    }
+
+    @Test
+    fun `when submit request succeed, then trigger the expected event`() = testBlocking {
+        // Given
+        val event = mutableListOf<MultiLiveEvent.Event>()
+        sut.event.observeForever {
+            event.add(it)
+        }
+
+        // When
+        sut.onHelpOptionSelected(HelpOption.MobileApp)
+        sut.onSubmitRequestButtonClicked(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
+
+        // Then
+        assertThat(event).hasSize(1)
+        assertThat(event[0]).isEqualTo(RequestCreationSucceeded)
+    }
+
+    @Test
+    fun `when submit request fails, then trigger the expected event`() = testBlocking {
+        // Given
+        configureMocks(requestResult = Result.failure(Exception()))
+        val event = mutableListOf<MultiLiveEvent.Event>()
+        sut.event.observeForever {
+            event.add(it)
+        }
+
+        // When
+        sut.onHelpOptionSelected(HelpOption.MobileApp)
+        sut.onSubmitRequestButtonClicked(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
+
+        // Then
+        assertThat(event).hasSize(1)
+        assertThat(event[0]).isEqualTo(RequestCreationFailed)
+    }
+
+    private fun configureMocks(requestResult: Result<Request?>) {
+        val testSite = SiteModel().apply { id = 123 }
+        selectedSite = mock {
+            on { get() }.then { testSite }
+        }
+        zendeskHelper = mock {
+            onBlocking {
+                createRequest(
+                    any(),
+                    any(),
+                    eq(testSite),
+                    any(),
+                    any(),
+                    any()
+                )
+            } doReturn flowOf(requestResult)
+        }
+
+        sut = SupportRequestFormViewModel(
+            zendeskHelper = zendeskHelper,
+            selectedSite = selectedSite,
+            savedState = savedState
+        )
     }
 }
