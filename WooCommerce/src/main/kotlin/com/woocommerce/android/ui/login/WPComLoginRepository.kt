@@ -76,15 +76,15 @@ class WPComLoginRepository @Inject constructor(
         val event: OnAuthenticationChanged =
             dispatcher.dispatchAndAwait(AuthenticationActionBuilder.newAuthenticateAction(payload))
 
-        if (event.isError) {
+        return if (event.isError) {
             WooLog.w(
                 WooLog.T.LOGIN,
                 "Authentication request failed: " + event.error.type + " - " + event.error.message
             )
-            return Result.failure(OnChangedException(event.error))
+            Result.failure(OnChangedException(event.error))
         } else {
             WooLog.i(WooLog.T.LOGIN, "Authentication Succeeded for user ${event.userName}")
-            return Result.success(Unit)
+            Result.success(Unit)
         }
     }
 
