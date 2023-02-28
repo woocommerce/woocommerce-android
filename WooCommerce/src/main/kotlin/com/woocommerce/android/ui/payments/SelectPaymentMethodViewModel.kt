@@ -333,7 +333,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     private fun Payment.toAnalyticsFlowParams() =
         AnalyticsTracker.KEY_FLOW to when (paymentType) {
-            // TODO: do we want to track try tpp flow separately?
             SIMPLE, TRY_TAP_TO_PAY -> AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW
             ORDER -> AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW
         }

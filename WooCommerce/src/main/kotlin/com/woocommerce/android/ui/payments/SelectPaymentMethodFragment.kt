@@ -161,7 +161,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
         applyBannerComposeUI(state.bannerState)
     }
 
-    @Suppress("LongMethod")
+    @Suppress("LongMethod", "ComplexMethod")
     private fun handleEvents(binding: FragmentTakePaymentBinding) {
         viewModel.event.observe(
             viewLifecycleOwner
