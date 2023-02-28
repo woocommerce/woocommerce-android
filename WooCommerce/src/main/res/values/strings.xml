@@ -339,6 +339,8 @@
     <string name="login_jetpack_installation_continue_connection">Continue connection</string>
     <string name="login_jetpack_installation_exit_without_connection">Exit Without Connecting</string>
     <string name="login_application_passwords_unavailable">It looks like Application Passwords feature is disabled in your site %1$s.\n Please enable it to use the WooCommerce app.</string>
+    <string name="login_jetpack_connection_enter_wpcom_email">Log in with your WordPress.com account to connect Jetpack</string>
+    <string name="login_jetpack_installation_enter_wpcom_email">Log in with your WordPress.com account to install Jetpack</string>
 
     <!--
         My Store View
@@ -546,6 +548,10 @@
     <string name="domains_redirect_notice">The domain purchased will redirect users to</string>
     <string name="domains_error_title">Unable to load site domains</string>
     <string name="domains_free_with_credits">Free for the first year</string>
+    <string name="domains_purchase_successful_heading">Congratulations on your purchase</string>
+    <string name="domains_purchase_successful_delay_notice">Your site address is being set up. It may take up 30 minutes for your domain to start working.</string>
+    <string name="domains_purchase_successful_settings_notice">You can find the domain settings in Settings -> Domains</string>Y
+
     <!--
         Order Editing
     -->
@@ -2212,6 +2218,10 @@
     <string name="jetpack_benefits_modal_user_profiles_subtitle">Allow multiple users to access WooCommerce Mobile.</string>
     <string name="jetpack_benefits_modal_install_jetpack">Install Jetpack</string>
     <string name="jetpack_benefits_modal_dismiss">Not Now</string>
+    <string name="jetpack_benefits_fetching_status">Fetching Jetpack Status</string>
+    <string name="jetpack_benefits_modal_multiple_stores_title">Multiple stores</string>
+    <string name="jetpack_benefits_modal_multiple_stores_subtitle">Get access to all of your WooCommerce stores.</string>
+    <string name="jetpack_benefits_modal_login">Log In to Continue</string>
 
     <string name="jetpack_install_start_title">Install Jetpack</string>
     <string name="jetpack_install_start_subtitle">Install the free Jetpack plugin to &lt;strong&gt;%s&lt;/strong&gt; to experience the best mobile experience.</string>
@@ -3078,12 +3088,38 @@
     Store onboarding
     -->
     <string name="store_onboarding_title">Store setup</string>
+    <string name="store_onboarding_task_about_your_store_title">Tell us more about your store</string>
+    <string name="store_onboarding_task_about_your_store_description">We’ll use the info to get a head start on your shipping, tax, and payments settings.</string>
     <string name="store_onboarding_task_add_product_title">Add your first product </string>
     <string name="store_onboarding_task_add_product_description">Start selling by adding products or services to your store.</string>
     <string name="store_onboarding_task_launch_store_title">Launch your store</string>
     <string name="store_onboarding_task_launch_store_description">Publish your site to the world anytime you want!</string>
     <string name="store_onboarding_task_change_domain_title">Customize your domain</string>
     <string name="store_onboarding_task_change_domain_description">Have a custom URL to host your store.</string>
+    <string name="store_onboarding_task_payments_setup_title">Get paid</string>
+    <string name="store_onboarding_task_payments_setup_description">Give your customers an easy and convenient way to pay!</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d completed</string>
+    <string name="store_onboarding_completed_tasks_full_screen_status">%1$d of %2$d tasks completed</string>
+    <string name="store_onboarding_task_view_all">View all (%1$d)</string>
+    <string name="store_onboarding_full_screen_transition_name">Onboarding full screen</string>
+    <string name="store_onboarding_collapsed_transition_name">Onboarding collapsed list</string>
+    <string name="store_onboarding_menu_share_feedback">Share feedback</string>
+
+    <!--
+    Support Request
+    -->
+    <string name="support_request">Support Request</string>
+    <string name="support_request_help_title">I need help with</string>
+    <string name="support_request_title">Let\'s get this sorted</string>
+    <string name="support_request_description">Tell us much as you can about the problem, and we will be in touch soon.</string>
+    <string name="support_request_subject">Subject</string>
+    <string name="support_request_submit">Submit Support Request</string>
+    <string name="support_request_message">Message</string>
+    <string name="support_request_message_hint">Write something</string>
+    <string name="support_request_help_app">Mobile App</string>
+    <string name="support_request_help_ipp">Card Reader / In-Person Payments</string>
+    <string name="support_request_help_payments">WooCommerce Payments</string>
+    <string name="support_request_help_plugins">WooCommerce Plugin</string>
+    <string name="support_request_help_other">Other Extension / Plugin</string>
 
 </resources>

@@ -15,6 +15,24 @@ class ProductSelectorRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
 ) {
+    fun searchProductsInCache(
+        offset: Int,
+        pageSize: Int,
+        searchQuery: String,
+    ): List<Product> {
+        return productStore.getProducts(
+            selectedSite.get(),
+            emptyMap(),
+            searchQuery = searchQuery
+        ).let {
+            val productList = it.map { product -> product.toAppModel() }
+            if (offset >= productList.size) {
+                emptyList()
+            } else {
+                productList.subList(offset, (offset + pageSize).coerceAtMost(productList.size))
+            }
+        }
+    }
     suspend fun searchProducts(
         searchQuery: String,
         offset: Int,

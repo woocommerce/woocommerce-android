@@ -15,6 +15,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateToHelpScreen
+import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.base.BaseFragment
@@ -115,7 +116,11 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
             SitePickerSiteDiscoveryFragmentDirections
                 .actionSitePickerSiteDiscoveryFragmentToJetpackActivation(
                     siteUrl = event.siteAddress,
-                    isJetpackInstalled = event.isJetpackInstalled
+                    jetpackStatus = JetpackStatus(
+                        isJetpackInstalled = event.isJetpackInstalled,
+                        isJetpackConnected = false,
+                        wpComEmail = null
+                    )
                 )
         )
     }

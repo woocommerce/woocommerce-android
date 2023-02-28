@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.common
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -17,14 +16,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class UserEligibilityErrorViewModelTest : BaseUnitTest() {
@@ -37,11 +33,8 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
         roles = listOf(UserRole.Editor, UserRole.Author)
     )
 
-    private val appPrefsWrapper: AppPrefs = mock {
-        on { getUserEmail() } doReturn testUser.email
-    }
     private val userEligibilityFetcher: UserEligibilityFetcher = mock {
-        on { getUserByEmail(any()) } doReturn testUser
+        on { getUser() } doReturn testUser
     }
     private val accountRepository: AccountRepository = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
@@ -54,7 +47,6 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
     fun setup() {
         viewModel = UserEligibilityErrorViewModel(
             savedState = SavedStateHandle(),
-            appPrefs = appPrefsWrapper,
             accountRepository = accountRepository,
             userEligibilityFetcher = userEligibilityFetcher,
             analyticsTracker = analyticsTracker
@@ -75,7 +67,6 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
     fun `Handles retry button correctly when user is not eligible`() =
         testBlocking {
             doReturn(testUser).whenever(userEligibilityFetcher).fetchUserInfo()
-            doReturn(false).whenever(appPrefsWrapper).isUserEligible()
 
             val isProgressDialogShown = ArrayList<Boolean>()
             viewModel.viewStateData.observeForever { old, new ->
@@ -93,7 +84,6 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
 
             verify(userEligibilityFetcher, times(1)).fetchUserInfo()
 
-            assertFalse(appPrefsWrapper.isUserEligible())
             assertThat(snackbar).isEqualTo(ShowSnackbar(string.user_role_access_error_retry))
             assertThat(isProgressDialogShown).containsExactly(true, false)
         }
@@ -102,7 +92,6 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
     fun `Handles retry button correctly when user is eligible`() = testBlocking {
         val user = testUser.copy(roles = listOf(UserRole.ShopManager))
         doReturn(user).whenever(userEligibilityFetcher).fetchUserInfo()
-        doReturn(true).whenever(appPrefsWrapper).isUserEligible()
 
         val isProgressDialogShown = ArrayList<Boolean>()
         viewModel.viewStateData.observeForever { old, new ->
@@ -122,7 +111,6 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
 
         verify(userEligibilityFetcher, times(1)).fetchUserInfo()
 
-        assertTrue(appPrefsWrapper.isUserEligible())
         assertThat(snackbar).isNull()
         assertThat(exit).isNotNull
         assertThat(isProgressDialogShown).containsExactly(true, false)

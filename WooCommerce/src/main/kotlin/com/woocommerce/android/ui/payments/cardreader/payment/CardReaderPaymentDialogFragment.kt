@@ -23,6 +23,10 @@ import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentViewModel.ShowSnackbarInDialog
+import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderPaymentSuccessfulReceiptSentAutomaticallyState
+import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderPaymentSuccessfulState
+import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderPaymentSuccessfulReceiptSentAutomaticallyState
+import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderPaymentSuccessfulState
 import com.woocommerce.android.ui.payments.cardreader.receipt.ReceiptEvent.PrintReceipt
 import com.woocommerce.android.ui.payments.cardreader.receipt.ReceiptEvent.SendReceipt
 import com.woocommerce.android.ui.payments.refunds.RefundSummaryFragment.Companion.KEY_INTERAC_SUCCESS
@@ -38,9 +42,11 @@ import javax.inject.Inject
 class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_payment_dialog) {
     val viewModel: CardReaderPaymentViewModel by viewModels()
 
-    @Inject lateinit var printHtmlHelper: PrintHtmlHelper
+    @Inject
+    lateinit var printHtmlHelper: PrintHtmlHelper
 
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         dialog?.let {
@@ -129,9 +135,12 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
 
     private fun announceForAccessibility(binding: CardReaderPaymentDialogBinding, viewState: ViewState) {
         with(binding) {
-            if (viewState is ViewState.PaymentSuccessfulState ||
-                viewState is ViewState.PaymentSuccessfulReceiptSentAutomaticallyState
-            ) {
+            val isPaymentSuccessful = viewState is BuiltInReaderPaymentSuccessfulState ||
+                viewState is ExternalReaderPaymentSuccessfulState
+            val isPaymentSuccessfulReceiptSentAutomatically =
+                viewState is BuiltInReaderPaymentSuccessfulReceiptSentAutomaticallyState ||
+                    viewState is ExternalReaderPaymentSuccessfulReceiptSentAutomaticallyState
+            if (isPaymentSuccessful || isPaymentSuccessfulReceiptSentAutomatically) {
                 viewState.headerLabel?.let {
                     headerLabel.announceForAccessibility(getString(it) + viewState.amountWithCurrencyLabel)
                 }

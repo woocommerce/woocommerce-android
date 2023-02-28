@@ -12,14 +12,17 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerViewModel.NavigateToDomainPickerStep
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CountryPickerFragment : BaseFragment() {
     private val viewModel: CountryPickerViewModel by viewModels()
+    @Inject lateinit var newStore: NewStore
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -52,7 +55,9 @@ class CountryPickerFragment : BaseFragment() {
 
     private fun navigateToDomainPickerStep() {
         findNavController().navigateSafely(
-            CountryPickerFragmentDirections.actionCountryPickerFragmentToDomainPickerFragment()
+            CountryPickerFragmentDirections.actionCountryPickerFragmentToDomainPickerFragment(
+                initialQuery = newStore.data.name ?: ""
+            )
         )
     }
 }

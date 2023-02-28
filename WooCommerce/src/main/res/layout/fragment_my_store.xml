@@ -22,7 +22,8 @@
             <androidx.core.widget.NestedScrollView
                 android:id="@+id/stats_scroll_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:transitionGroup="true">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -41,8 +42,9 @@
                         android:id="@+id/store_onboarding_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/major_100"
                         android:layout_marginTop="@dimen/major_100"
+                        android:layout_marginBottom="@dimen/major_100"
+                        android:transitionName="@string/store_onboarding_collapsed_transition_name"
                         android:visibility="gone" />
 
                     <com.woocommerce.android.widgets.WCEmptyView

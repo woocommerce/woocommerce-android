@@ -34,6 +34,7 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -76,6 +77,9 @@ class ProductSelectorViewModel @Inject constructor(
     private val selectedProductIds = savedState.getStateFlow(viewModelScope, navArgs.productIds.toSet())
     private val filterState = savedState.getStateFlow(viewModelScope, FilterState())
 
+    private var fetchProductsJob: Job? = null
+    private var loadMoreJob: Job? = null
+
     val viewState = combine(
         flow = listHandler.productsFlow,
         flow2 = loadingState.withIndex()
@@ -103,9 +107,7 @@ class ProductSelectorViewModel @Inject constructor(
         monitorSearchQuery()
         monitorProductFilters()
         viewModelScope.launch {
-            loadingState.value = LOADING
-            listHandler.fetchProducts(forceRefresh = true)
-            loadingState.value = IDLE
+            fetchProducts(forceRefresh = true)
         }
     }
 
@@ -213,7 +215,8 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     fun onLoadMore() {
-        viewModelScope.launch {
+        loadMoreJob?.cancel()
+        loadMoreJob = viewModelScope.launch {
             loadingState.value = APPENDING
             listHandler.loadMore()
             loadingState.value = IDLE
@@ -243,15 +246,7 @@ class ProductSelectorViewModel @Inject constructor(
                     if (it.isEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
                 }
                 .collectLatest { query ->
-                    // Make sure the loading state is correctly set after debounce too
-                    loadingState.value = LOADING
-                    listHandler.fetchProducts(searchQuery = query)
-                        .onFailure {
-                            val message = if (query.isEmpty()) string.product_selector_loading_failed
-                            else string.product_selector_search_failed
-                            triggerEvent(ShowSnackbar(message))
-                        }
-                    loadingState.value = IDLE
+                    fetchProducts(query = query)
                 }
         }
     }
@@ -265,17 +260,31 @@ class ProductSelectorViewModel @Inject constructor(
                     it.index == 0 && it.value.filterOptions.isEmpty()
                 }
                 .map { it.value }
-                .onEach {
-                    loadingState.value = LOADING
-                }
                 .collectLatest { filters ->
-                    listHandler.fetchProducts(filters = filters.filterOptions)
-                        .onFailure {
-                            val message = string.product_selector_loading_failed
-                            triggerEvent(ShowSnackbar(message))
-                        }
-                    loadingState.value = IDLE
+                    fetchProducts(filters = filters)
                 }
+        }
+    }
+
+    private suspend fun fetchProducts(
+        filters: FilterState = filterState.value,
+        query: String = "",
+        forceRefresh: Boolean = false
+    ) {
+        loadMoreJob?.cancel()
+        fetchProductsJob?.cancel()
+        fetchProductsJob = viewModelScope.launch {
+            loadingState.value = LOADING
+            listHandler.loadFromCacheAndFetch(
+                filters = filters.filterOptions,
+                searchQuery = query,
+                forceRefresh = forceRefresh
+            ).onFailure {
+                val message = if (query.isEmpty()) string.product_selector_loading_failed
+                else string.product_selector_search_failed
+                triggerEvent(ShowSnackbar(message))
+            }
+            loadingState.value = IDLE
         }
     }
 
