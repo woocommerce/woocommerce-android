@@ -491,7 +491,7 @@ private fun buildZendeskCustomFields(
         CustomField(TicketFieldIds.currentSite, currentSiteInformation),
         CustomField(TicketFieldIds.sourcePlatform, ZendeskConstants.sourcePlatform),
         CustomField(TicketFieldIds.appLanguage, Locale.getDefault().language),
-        CustomField(TicketFieldIds.categoryId, ZendeskConstants.categoryValue),
+        CustomField(TicketFieldIds.categoryId, ticketType.categoryName),
         CustomField(TicketFieldIds.subcategoryId, ticketType.subcategoryName),
         CustomField(TicketFieldIds.blogList, getCombinedLogInformationOfSites(allSites))
     )
@@ -583,16 +583,19 @@ private fun getNetworkInformation(context: Context): String {
 
 sealed class TicketType(
     val form: Long,
+    val categoryName: String,
     val subcategoryName: String,
     val tags: List<String> = emptyList(),
 ) : Parcelable {
     @Parcelize object MobileApp : TicketType(
         form = TicketFieldIds.wooMobileFormID,
+        categoryName = ZendeskConstants.mobileAppCategory,
         subcategoryName = ZendeskConstants.mobileSubcategoryValue,
         tags = listOf(ZendeskTags.mobileApp)
     )
     @Parcelize object InPersonPayments : TicketType(
         form = TicketFieldIds.wooMobileFormID,
+        categoryName = ZendeskConstants.mobileAppCategory,
         subcategoryName = ZendeskConstants.mobileSubcategoryValue,
         tags = listOf(
             ZendeskTags.woocommerceMobileApps,
@@ -601,31 +604,34 @@ sealed class TicketType(
     )
     @Parcelize object Payments : TicketType(
         form = TicketFieldIds.wooFormID,
+        categoryName = ZendeskConstants.supportCategory,
         subcategoryName = ZendeskConstants.paymentsSubcategoryValue,
         tags = listOf(
             ZendeskTags.paymentsProduct,
             ZendeskTags.paymentsProductArea,
             ZendeskTags.mobileAppWooTransfer,
-            ZendeskConstants.categoryValue,
+            ZendeskConstants.supportCategory,
             ZendeskConstants.paymentsSubcategoryValue
         )
     )
     @Parcelize object WooPlugin : TicketType(
         form = TicketFieldIds.wooFormID,
+        categoryName = ZendeskConstants.supportCategory,
         subcategoryName = "",
         tags = listOf(
             ZendeskTags.woocommerceCore,
             ZendeskTags.mobileAppWooTransfer,
-            ZendeskConstants.categoryValue
+            ZendeskConstants.supportCategory
         )
     )
     @Parcelize object OtherPlugins : TicketType(
         form = TicketFieldIds.wooFormID,
+        categoryName = ZendeskConstants.supportCategory,
         subcategoryName = ZendeskConstants.storeSubcategoryValue,
         tags = listOf(
             ZendeskTags.productAreaWooExtensions,
             ZendeskTags.mobileAppWooTransfer,
-            ZendeskConstants.categoryValue,
+            ZendeskConstants.supportCategory,
             ZendeskConstants.storeSubcategoryValue
         )
     )
@@ -636,7 +642,8 @@ private object ZendeskConstants {
     const val blogSeparator = "\n----------\n"
     const val jetpackTag = "jetpack"
     const val mobileHelpCategoryId = 360000041586
-    const val categoryValue = "Support"
+    const val supportCategory = "Support"
+    const val mobileAppCategory = "Mobile App"
     const val mobileSubcategoryValue = "WooCommerce Mobile Apps"
     const val paymentsSubcategoryValue = "Payment"
     const val storeSubcategoryValue = "Store"
