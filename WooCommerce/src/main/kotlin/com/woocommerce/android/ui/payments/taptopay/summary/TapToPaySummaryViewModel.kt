@@ -27,6 +27,7 @@ class TapToPaySummaryViewModel @Inject constructor(
             val result = orderCreateEditRepository.createSimplePaymentOrder(TEST_ORDER_AMOUNT)
             result.fold(
                 onSuccess = {
+                    triggerEvent(StartTryPaymentFlow(orderId = it.id))
                 },
                 onFailure = {
                     triggerEvent(ShowSnackbar(R.string.card_reader_tap_to_pay_explanation_test_payment_error))
@@ -43,6 +44,8 @@ class TapToPaySummaryViewModel @Inject constructor(
     data class UiState(
         val isProgressVisible: Boolean = false
     )
+
+    data class StartTryPaymentFlow(val orderId: Long) : Event()
 
     companion object {
         private val TEST_ORDER_AMOUNT = BigDecimal.valueOf(0.5)

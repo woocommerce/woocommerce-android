@@ -311,6 +311,15 @@
     <fragment
         android:id="@+id/tapToPaySummaryFragment"
         android:name="com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryFragment"
-        android:label="TapToPaySummaryFragment"/>
+        android:label="TapToPaySummaryFragment">
+        <action
+            android:id="@+id/action_tapToPaySummaryFragment_to_orderDetailFragment"
+            app:destination="@id/nav_graph_orders">
+            <argument
+                android:name="orderId"
+                app:argType="long" />
+        </action>
+
+    </fragment>
 
 </navigation>
