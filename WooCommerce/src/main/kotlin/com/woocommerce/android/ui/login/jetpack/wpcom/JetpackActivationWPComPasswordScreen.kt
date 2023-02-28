@@ -87,13 +87,12 @@ fun JetpackActivationWPComPasswordScreen(
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
                 .padding(paddingValues)
-                .fillMaxSize(),
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
         ) {
             Column(
                 modifier = Modifier
-                    .weight(1f)
                     .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
                     .padding(dimensionResource(id = R.dimen.major_100)),
             ) {
                 JetpackToWooHeader()
@@ -142,6 +141,8 @@ fun JetpackActivationWPComPasswordScreen(
                     Text(text = stringResource(id = R.string.reset_your_password))
                 }
             }
+
+            Spacer(modifier = Modifier.weight(1f))
 
             WCColoredButton(
                 onClick = {
