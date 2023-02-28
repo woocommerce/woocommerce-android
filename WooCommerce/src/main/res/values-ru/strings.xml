@@ -7,7 +7,7 @@ Language: ru
 -->
 <resources>
     <string name="settings_confirm_logout_site_credentials">Вы уверены, что хотите выйти из учётной записи?</string>
-    <string name="domains_error_title">Не удаётся загрузить домены сайта</string>
+    <string name="domains_generic_error_title">Не удаётся загрузить домены сайта</string>
     <string name="store_onboarding_completed_tasks_status">Готово: %1$d из %2$d</string>
     <string name="store_onboarding_task_change_domain_description">Настройте URL-адрес для своего магазина.</string>
     <string name="store_onboarding_task_change_domain_title">Настроить домен</string>

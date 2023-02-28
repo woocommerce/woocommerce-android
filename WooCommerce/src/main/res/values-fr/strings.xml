@@ -7,7 +7,7 @@ Language: fr
 -->
 <resources>
     <string name="settings_confirm_logout_site_credentials">Voulez-vous vraiment vous déconnecter de votre compte ?</string>
-    <string name="domains_error_title">Impossible de charger les domaines de site</string>
+    <string name="domains_generic_error_title">Impossible de charger les domaines de site</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d terminé</string>
     <string name="store_onboarding_task_change_domain_description">Choisissez une URL personnalisée pour héberger votre boutique.</string>
     <string name="store_onboarding_task_change_domain_title">Personnalisez votre domaine</string>
