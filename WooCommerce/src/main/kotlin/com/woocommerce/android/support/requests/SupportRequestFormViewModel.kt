@@ -78,8 +78,8 @@ class SupportRequestFormViewModel @Inject constructor(
         )
     }
 
-    object RequestCreationSucceeded: Event()
-    object RequestCreationFailed: Event()
+    object RequestCreationSucceeded : Event()
+    object RequestCreationFailed : Event()
 
     @Parcelize
     data class ViewState(
