@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -27,7 +28,7 @@ class TapToPaySummaryViewModel @Inject constructor(
             val result = orderCreateEditRepository.createSimplePaymentOrder(TEST_ORDER_AMOUNT)
             result.fold(
                 onSuccess = {
-                    triggerEvent(StartTryPaymentFlow(orderId = it.id))
+                    triggerEvent(StartTryPaymentFlow(it))
                 },
                 onFailure = {
                     triggerEvent(ShowSnackbar(R.string.card_reader_tap_to_pay_explanation_test_payment_error))
@@ -45,7 +46,7 @@ class TapToPaySummaryViewModel @Inject constructor(
         val isProgressVisible: Boolean = false
     )
 
-    data class StartTryPaymentFlow(val orderId: Long) : Event()
+    data class StartTryPaymentFlow(val order: Order) : Event()
 
     companion object {
         private val TEST_ORDER_AMOUNT = BigDecimal.valueOf(0.5)

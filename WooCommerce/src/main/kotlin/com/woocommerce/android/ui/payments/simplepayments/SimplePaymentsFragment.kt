@@ -8,6 +8,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
@@ -22,7 +23,6 @@ import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
 import com.woocommerce.android.ui.orders.taxes.OrderTaxesAdapter
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.SIMPLE
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,6 +30,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments), BackPressListener {
+    private val args: SimplePaymentsFragmentArgs by navArgs()
     private val viewModel: SimplePaymentsFragmentViewModel by viewModels()
     private val sharedViewModel by hiltNavGraphViewModels<SimplePaymentsSharedViewModel>(R.id.nav_graph_main)
 
@@ -176,10 +177,9 @@ class SimplePaymentsFragment : BaseFragment(R.layout.fragment_simple_payments), 
         SimplePaymentsFragmentDirections.actionSimplePaymentsFragmentToPaymentFlow(
             CardReaderFlowParam.PaymentOrRefund.Payment(
                 viewModel.orderDraft.id,
-                SIMPLE
+                args.paymentType
             )
-        )
-            .let { findNavController().navigateSafely(it) }
+        ).let { findNavController().navigateSafely(it) }
     }
 
     override fun getFragmentTitle() = getString(R.string.simple_payments_title)

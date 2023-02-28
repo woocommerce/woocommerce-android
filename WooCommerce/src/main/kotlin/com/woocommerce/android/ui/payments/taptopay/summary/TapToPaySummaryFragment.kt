@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType
 import com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryViewModel.StartTryPaymentFlow
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -53,7 +54,10 @@ class TapToPaySummaryFragment : BaseFragment() {
                 is StartTryPaymentFlow -> {
                     findNavController().navigate(
                         TapToPaySummaryFragmentDirections
-                            .actionTapToPaySummaryFragmentToOrderDetailFragment(event.orderId)
+                            .actionTapToPaySummaryFragmentToSimplePaymentFragment(
+                                event.order,
+                                PaymentType.TRY_TAP_TO_PAY,
+                            )
                     )
                 }
                 else -> event.isHandled = false
