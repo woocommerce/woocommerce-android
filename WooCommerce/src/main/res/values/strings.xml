@@ -339,6 +339,8 @@
     <string name="login_jetpack_installation_continue_connection">Continue connection</string>
     <string name="login_jetpack_installation_exit_without_connection">Exit Without Connecting</string>
     <string name="login_application_passwords_unavailable">It looks like Application Passwords feature is disabled in your site %1$s.\n Please enable it to use the WooCommerce app.</string>
+    <string name="login_jetpack_connection_enter_wpcom_email">Log in with your WordPress.com account to connect Jetpack</string>
+    <string name="login_jetpack_installation_enter_wpcom_email">Log in with your WordPress.com account to install Jetpack</string>
 
     <!--
         My Store View

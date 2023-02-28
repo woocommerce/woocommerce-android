@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.jetpack.benefits
 
 import com.woocommerce.android.OnChangedException
+import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.tools.SelectedSite
 import org.wordpress.android.fluxc.store.JetpackStore
@@ -19,7 +20,8 @@ class FetchJetpackStatus @Inject constructor(
                     Result.success(
                         JetpackStatus(
                             isJetpackInstalled = false,
-                            isJetpackConnected = false
+                            isJetpackConnected = false,
+                            wpComEmail = null
                         )
                     )
                 }
@@ -32,7 +34,8 @@ class FetchJetpackStatus @Inject constructor(
                     Result.success(
                         JetpackStatus(
                             isJetpackInstalled = true,
-                            isJetpackConnected = result.user!!.isConnected
+                            isJetpackConnected = result.user!!.isConnected,
+                            wpComEmail = result.user!!.wpcomEmail.orNullIfEmpty()
                         )
                     )
                 }
