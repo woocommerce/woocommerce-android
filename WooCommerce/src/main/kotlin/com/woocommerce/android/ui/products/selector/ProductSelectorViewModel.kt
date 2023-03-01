@@ -178,7 +178,7 @@ class ProductSelectorViewModel @Inject constructor(
     fun onProductClick(item: ProductListItem) {
         if (item.type == VARIABLE && item.numVariations > 0) {
             triggerEvent(NavigateToVariationSelector(item.id, item.selectedVariationIds))
-        } else {
+        } else if (item.type != VARIABLE) {
             selectedItems.update { items ->
                 val selectedProductItems = items.filter {
                     it is SelectedItem.ProductOrVariation || it is SelectedItem.Product
