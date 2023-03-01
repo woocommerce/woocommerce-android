@@ -23,8 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class DomainPurchaseViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     appPrefsWrapper: AppPrefsWrapper,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
@@ -43,6 +43,12 @@ class DomainPurchaseViewModel @Inject constructor(
     }
 
     fun onPurchaseSuccess() {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.CUSTOM_DOMAIN_PURCHASE_SUCCESS,
+            mapOf(
+                AnalyticsTracker.KEY_USE_DOMAIN_CREDIT to false // the WebView is only used for non-credits purchases
+            )
+        )
         triggerEvent(NavigateToSuccessScreen(navArgs.domain))
     }
 
