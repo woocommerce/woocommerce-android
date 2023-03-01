@@ -16,6 +16,8 @@ import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.ShippingLabelMapper
+import com.woocommerce.android.model.Subscription
+import com.woocommerce.android.model.SubscriptionMapper
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toOrderStatus
@@ -34,6 +36,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WCShippingLabelStore
+import org.wordpress.android.fluxc.store.WCSubscriptionStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
@@ -47,6 +50,8 @@ class OrderDetailRepository @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val orderMapper: OrderMapper,
     private val shippingLabelMapper: ShippingLabelMapper,
+    private val subscriptionStore: WCSubscriptionStore,
+    private val subscriptionMapper: SubscriptionMapper
 ) {
     suspend fun fetchOrderById(orderId: Long): Order? {
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
@@ -238,7 +243,8 @@ class OrderDetailRepository @Inject constructor(
         val plugins = listOf(
             WooCommerceStore.WooPlugin.WOO_CORE,
             WooCommerceStore.WooPlugin.WOO_SERVICES,
-            WooCommerceStore.WooPlugin.WOO_SHIPMENT_TRACKING
+            WooCommerceStore.WooPlugin.WOO_SHIPMENT_TRACKING,
+            WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS
         )
 
         val result = HashMap<String, WooPlugin>()
@@ -296,6 +302,21 @@ class OrderDetailRepository @Inject constructor(
             canCreatePaymentMethod = true,
             canCreateCustomsForm = true
         )?.isEligible ?: false
+    }
+
+    suspend fun getOrderSubscriptions(orderId: Long): Result<List<Subscription>> {
+        val result = subscriptionStore.fetchSubscriptionsByOrderId(
+            site = selectedSite.get(),
+            orderId = orderId
+        )
+        return when {
+            result.isError -> Result.failure(WooException(result.error))
+            result.model != null -> {
+                val subscriptions = result.model!!.map { model -> subscriptionMapper.toAppModel(model) }
+                Result.success(subscriptions)
+            }
+            else -> Result.failure(Exception("Error fetching subscriptions"))
+        }
     }
 
     suspend fun orderHasMetadata(orderId: Long) = orderStore.hasOrderMetadata(orderId, selectedSite.get())
