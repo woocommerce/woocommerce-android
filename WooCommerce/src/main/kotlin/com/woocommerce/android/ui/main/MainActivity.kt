@@ -140,7 +140,6 @@ class MainActivity :
 
     private val viewModel: MainActivityViewModel by viewModels()
 
-    private var isBottomNavShowing = true
     private var unfilledOrderCount: Int = 0
     private var restoreToolbarHeight = 0
     private var menu: Menu? = null
@@ -708,6 +707,18 @@ class MainActivity :
         if (FeatureFlag.FREE_TRIAL.isEnabled()) {
             observeTrialStatus()
         }
+        observeBottomBarState()
+    }
+
+    private fun observeBottomBarState() {
+        viewModel.bottomBarState.observe(this) { bottomBarState ->
+            val show = when (bottomBarState) {
+                BottomBarState.Hidden -> false
+                BottomBarState.Visible -> true
+            }
+
+            WooAnimUtils.animateBottomBar(binding.bottomNav, show, Duration.MEDIUM)
+        }
     }
 
     private fun observeMoreMenuBadgeStateEvent() {
@@ -948,17 +959,11 @@ class MainActivity :
     }
 
     override fun hideBottomNav() {
-        if (isBottomNavShowing) {
-            isBottomNavShowing = false
-            WooAnimUtils.animateBottomBar(binding.bottomNav, false, Duration.MEDIUM)
-        }
+        viewModel.hideBottomNav()
     }
 
     override fun showBottomNav() {
-        if (!isBottomNavShowing) {
-            isBottomNavShowing = true
-            WooAnimUtils.animateBottomBar(binding.bottomNav, true, Duration.SHORT)
-        }
+        viewModel.showBottomNav()
     }
 
     /**

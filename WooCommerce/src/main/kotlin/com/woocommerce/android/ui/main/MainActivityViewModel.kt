@@ -57,12 +57,21 @@ class MainActivityViewModel @Inject constructor(
         determineMenuBadgeState(reviewsCount)
     }.asLiveData()
 
-    val trialStatusBarState = plansRepository.observeCurrentPlan().map { planType ->
-        when (planType) {
-            ECOMMERCE_FREE_TRIAL -> @Suppress("MagicNumber") TrialStatusBarState.Visible(14)
-            else -> TrialStatusBarState.Hidden
-        }
-    }.asLiveData()
+    private val _bottomBarState: MutableStateFlow<BottomBarState> = MutableStateFlow(BottomBarState.Visible)
+    val bottomBarState = _bottomBarState.asLiveData()
+
+    val trialStatusBarState = selectedSite.observe()
+        .combine(_bottomBarState) { selectedSite, bottomBarState: BottomBarState ->
+            if (bottomBarState == BottomBarState.Hidden) {
+                TrialStatusBarState.Hidden
+            } else {
+                if (selectedSite?.planId == SitePlanRepository.FREE_TRIAL_PLAN_ID) {
+                    fetchFreeTrialDetails()
+                } else {
+                    TrialStatusBarState.Hidden
+                }
+            }
+        }.asLiveData()
 
     fun handleShortcutAction(action: String?) {
         when (action) {
@@ -197,6 +206,14 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
+    fun hideBottomNav() {
+        _bottomBarState.value = BottomBarState.Hidden
+    }
+
+    fun showBottomNav() {
+        _bottomBarState.value = BottomBarState.Visible
+    }
+
     object ViewOrderList : Event()
     object ViewReviewList : Event()
     object ViewMyStoreStats : Event()
@@ -218,6 +235,11 @@ class MainActivityViewModel @Inject constructor(
     sealed class TrialStatusBarState {
         data class Visible(val daysLeft: Int) : TrialStatusBarState()
         object Hidden : TrialStatusBarState()
+    }
+
+    sealed class BottomBarState : Event() {
+        object Visible : BottomBarState()
+        object Hidden : BottomBarState()
     }
 
     companion object {
