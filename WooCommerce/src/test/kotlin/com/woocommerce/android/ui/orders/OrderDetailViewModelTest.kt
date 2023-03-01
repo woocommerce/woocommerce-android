@@ -1656,7 +1656,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             version = "1.0.0"
         )
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-        doReturn(emptyList<Subscription>()).whenever(orderDetailRepository).getOrderSubscriptions(any())
         createViewModel()
 
         viewModel.start()
