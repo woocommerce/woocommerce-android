@@ -26,8 +26,8 @@ class DomainSearchViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     domainSuggestionsRepository: DomainSuggestionsRepository,
     currencyFormatter: CurrencyFormatter,
-    analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    appPrefsWrapper: AppPrefsWrapper,
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val domainChangeRepository: DomainChangeRepository
 ) : DomainSuggestionsViewModel(
     savedStateHandle = savedStateHandle,
@@ -78,6 +78,17 @@ class DomainSearchViewModel @Inject constructor(
                     ShowUiStringSnackbar(UiStringText(result.error.message ?: "Unable to create a shopping cart"))
                 )
                 triggerEvent(Exit)
+
+                analyticsTrackerWrapper.track(
+                    AnalyticsEvent.CUSTOM_DOMAIN_PURCHASE_FAILED,
+                    mapOf(
+                        AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSource(),
+                        AnalyticsTracker.KEY_USE_DOMAIN_CREDIT to false,
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to result.error::javaClass.name,
+                        AnalyticsTracker.KEY_ERROR_TYPE to result.error.type.name,
+                        AnalyticsTracker.KEY_ERROR_DESC to result.error.message
+                    )
+                )
             }
         }
     }
