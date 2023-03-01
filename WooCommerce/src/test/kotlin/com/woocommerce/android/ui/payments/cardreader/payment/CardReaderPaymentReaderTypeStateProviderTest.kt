@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInR
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderProcessingPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderCapturingPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderCollectPaymentState
+import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderFailedPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderPaymentSuccessfulReceiptSentAutomaticallyState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderPaymentSuccessfulState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderProcessingPaymentState
@@ -179,6 +180,27 @@ class CardReaderPaymentReaderTypeStateProviderTest {
 
         // THEN
         assertThat(result).isInstanceOf(BuiltInReaderFailedPaymentState::class.java)
+        assertThat(result.amountWithCurrencyLabel).isEqualTo("amountLabel")
+        assertThat(result.primaryActionLabel).isEqualTo(R.string.ok)
+        assertThat(result.paymentStateLabel).isEqualTo(PaymentFlowError.AmountTooSmall.message)
+    }
+
+    @Test
+    fun `given external card reader type, when provideFailedPaymentState, then return ExternalReaderPaymentFailedState`() {
+        // GIVEN
+        val cardReaderType = CardReaderType.EXTERNAL
+
+        // WHEN
+        val result = provider.provideFailedPaymentState(
+            cardReaderType,
+            errorType = PaymentFlowError.AmountTooSmall,
+            amountLabel = "amountLabel",
+            primaryLabel = R.string.ok,
+            {},
+        )
+
+        // THEN
+        assertThat(result).isInstanceOf(ExternalReaderFailedPaymentState::class.java)
         assertThat(result.amountWithCurrencyLabel).isEqualTo("amountLabel")
         assertThat(result.primaryActionLabel).isEqualTo(R.string.ok)
         assertThat(result.paymentStateLabel).isEqualTo(PaymentFlowError.AmountTooSmall.message)
