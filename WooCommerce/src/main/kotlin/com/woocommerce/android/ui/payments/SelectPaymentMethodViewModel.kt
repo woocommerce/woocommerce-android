@@ -19,7 +19,7 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.OrderDurationRecorder
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.ViewState.Loading
 import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
@@ -68,8 +68,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
     val shouldShowUpsellCardReaderDismissDialog: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    private val viewState = MutableLiveData<TakePaymentViewState>(Loading)
-    val viewStateData: LiveData<TakePaymentViewState> = viewState
+    private val viewState = MutableLiveData<ViewState>(Loading)
+    val viewStateData: LiveData<ViewState> = viewState
 
     private lateinit var order: Order
     private lateinit var orderTotal: String
@@ -95,7 +95,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
                         val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
                         orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode)
                         val isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order)
-                        viewState.value = TakePaymentViewState.Success(
+                        viewState.value = ViewState.Success(
                             paymentUrl = order.paymentUrl,
                             orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode),
                             isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader,
@@ -139,7 +139,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     private fun trackBannerShownIfDisplayed() {
-        if ((viewState.value as? TakePaymentViewState.Success)?.bannerState is BannerState.DisplayBannerState) {
+        if ((viewState.value as? ViewState.Success)?.bannerState is BannerState.DisplayBannerState) {
             analyticsTrackerWrapper.track(
                 AnalyticsEvent.FEATURE_CARD_SHOWN,
                 mapOf(
@@ -384,15 +384,15 @@ class SelectPaymentMethodViewModel @Inject constructor(
         )
     }
 
-    sealed class TakePaymentViewState {
-        object Loading : TakePaymentViewState()
+    sealed class ViewState {
+        object Loading : ViewState()
         data class Success(
             val paymentUrl: String,
             val orderTotal: String,
             val isPaymentCollectableWithCardReader: Boolean,
             val bannerState: BannerState,
             val learMoreIpp: LearMoreIpp,
-        ) : TakePaymentViewState()
+        ) : ViewState()
     }
 
     object DismissCardReaderUpsellBanner : MultiLiveEvent.Event()

@@ -7,7 +7,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:animateLayoutChanges="true">
 
         <LinearLayout
@@ -44,7 +44,8 @@
                 android:drawableEnd="@drawable/ic_arrow_right"
                 android:drawablePadding="@dimen/major_100"
                 android:padding="@dimen/major_100"
-                android:text="@string/cash" />
+                android:text="@string/cash"
+                app:drawableTint="@color/color_on_surface" />
 
             <View
                 android:id="@+id/divider2"
@@ -53,7 +54,20 @@
                 android:background="@color/divider_color" />
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/textCard"
+                android:id="@+id/tvTapToPay"
+                style="@style/Woo.Card.Body.Bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="0dp"
+                android:background="?attr/selectableItemBackground"
+                android:drawableStart="@drawable/ic_baseline_contactless"
+                android:drawableEnd="@drawable/ic_arrow_right"
+                android:drawablePadding="@dimen/major_100"
+                android:padding="@dimen/major_100"
+                android:text="@string/card_reader_type_selection_tap_to_pay" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tvBtReader"
                 style="@style/Woo.Card.Body.Bold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -63,7 +77,7 @@
                 android:drawableEnd="@drawable/ic_arrow_right"
                 android:drawablePadding="@dimen/major_100"
                 android:padding="@dimen/major_100"
-                android:text="@string/card" />
+                android:text="@string/card_reader_type_selection_bluetooth_reader" />
 
             <View
                 android:id="@+id/divider3"
@@ -82,7 +96,8 @@
                 android:drawableEnd="@drawable/ic_arrow_right"
                 android:drawablePadding="@dimen/major_100"
                 android:padding="@dimen/major_100"
-                android:text="@string/simple_payments_share_payment_link" />
+                android:text="@string/simple_payments_share_payment_link"
+                app:drawableTint="@color/color_on_surface" />
 
             <View
                 android:id="@+id/divider4"
