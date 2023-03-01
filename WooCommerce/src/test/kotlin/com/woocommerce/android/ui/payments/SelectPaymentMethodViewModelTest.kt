@@ -158,7 +158,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             val viewModel = initViewModel(Payment(orderId, ORDER))
 
             // THEN
-            assertTrue((viewModel.viewStateData.value as Success).isPaymentCollectableWithCardReader)
+            assertTrue((viewModel.viewStateData.value as Success).isPaymentCollectableWithExternalCardReader)
         }
 
     @Test
@@ -256,7 +256,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             val viewModel = initViewModel(Payment(1L, ORDER))
 
             // WHEN
-            viewModel.onCardPaymentClicked()
+            viewModel.onBtReaderClicked()
 
             // THEN
             verify(analyticsTrackerWrapper).track(
@@ -275,7 +275,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             val viewModel = initViewModel(Payment(1L, SIMPLE))
 
             // WHEN
-            viewModel.onCardPaymentClicked()
+            viewModel.onBtReaderClicked()
 
             // THEN
             verify(analyticsTrackerWrapper).track(

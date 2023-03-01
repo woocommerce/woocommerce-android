@@ -37,7 +37,8 @@ class CardReaderStatusCheckerDialogFragment : DialogFragment(R.layout.card_reade
                         .navigate(
                             CardReaderStatusCheckerDialogFragmentDirections
                                 .actionCardReaderStatusCheckerDialogFragmentToCardReaderOnboardingFragment(
-                                    event.cardReaderOnboardingParams
+                                    event.cardReaderOnboardingParams,
+                                    event.cardReaderType
                                 )
                         )
                 }
@@ -57,7 +58,7 @@ class CardReaderStatusCheckerDialogFragment : DialogFragment(R.layout.card_reade
                             CardReaderStatusCheckerDialogFragmentDirections
                                 .actionCardReaderStatusCheckerDialogFragmentToCardReaderWelcomeDialogFragment(
                                     event.cardReaderFlowParam,
-                                    event.countryCode
+                                    event.cardReaderType
                                 )
                         )
                 }
@@ -68,16 +69,6 @@ class CardReaderStatusCheckerDialogFragment : DialogFragment(R.layout.card_reade
                                 .actionCardReaderStatusCheckerDialogFragmentToCardReaderConnectDialogFragment(
                                     event.cardReaderFlowParam,
                                     EXTERNAL,
-                                )
-                        )
-                }
-                is CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToIPPReaderTypeSelection -> {
-                    findNavController()
-                        .navigate(
-                            CardReaderStatusCheckerDialogFragmentDirections
-                                .actionCardReaderStatusCheckerDialogFragmentToCardReaderTypeSelectionDialogFragment(
-                                    event.cardReaderFlowParam,
-                                    event.countryCode
                                 )
                         )
                 }

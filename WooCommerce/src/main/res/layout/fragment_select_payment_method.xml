@@ -44,8 +44,7 @@
                 android:drawableEnd="@drawable/ic_arrow_right"
                 android:drawablePadding="@dimen/major_100"
                 android:padding="@dimen/major_100"
-                android:text="@string/cash"
-                app:drawableTint="@color/color_on_surface" />
+                android:text="@string/cash" />
 
             <View
                 android:id="@+id/divider2"
@@ -96,8 +95,7 @@
                 android:drawableEnd="@drawable/ic_arrow_right"
                 android:drawablePadding="@dimen/major_100"
                 android:padding="@dimen/major_100"
-                android:text="@string/simple_payments_share_payment_link"
-                app:drawableTint="@color/color_on_surface" />
+                android:text="@string/simple_payments_share_payment_link" />
 
             <View
                 android:id="@+id/divider4"

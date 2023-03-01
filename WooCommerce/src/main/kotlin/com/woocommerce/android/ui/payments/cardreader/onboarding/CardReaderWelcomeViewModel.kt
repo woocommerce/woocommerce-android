@@ -30,7 +30,7 @@ class CardReaderWelcomeViewModel @Inject constructor(
         triggerEvent(
             CardReaderWelcomeDialogEvent.NavigateToOnboardingFlow(
                 arguments.cardReaderFlowParam,
-                arguments.countryCode
+                arguments.cardReaderType
             )
         )
     }
@@ -38,7 +38,7 @@ class CardReaderWelcomeViewModel @Inject constructor(
     sealed class CardReaderWelcomeDialogEvent : Event() {
         data class NavigateToOnboardingFlow(
             val cardReaderFlowParam: CardReaderFlowParam,
-            val countryCode: String,
+            val cardReaderType: CardReaderType
         ) : Event()
     }
 
