@@ -33,8 +33,6 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.OnboardingCompleted
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable
 import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.Available
 import com.woocommerce.android.util.UtmProvider
@@ -312,8 +310,7 @@ class CardReaderHubViewModel @Inject constructor(
         clearPluginExplicitlySelectedFlag()
         triggerEvent(
             CardReaderHubEvents.NavigateToCardReaderOnboardingScreen(
-                CardReaderOnboardingState.ChoosePaymentGatewayProvider,
-                EXTERNAL
+                CardReaderOnboardingState.ChoosePaymentGatewayProvider
             )
         )
     }
@@ -366,7 +363,7 @@ class CardReaderHubViewModel @Inject constructor(
 
     private fun onOnboardingErrorClicked(state: CardReaderOnboardingState) {
         trackEvent(AnalyticsEvent.PAYMENTS_HUB_ONBOARDING_ERROR_TAPPED)
-        triggerEvent(CardReaderHubEvents.NavigateToCardReaderOnboardingScreen(state, EXTERNAL))
+        triggerEvent(CardReaderHubEvents.NavigateToCardReaderOnboardingScreen(state))
     }
 
     private fun trackEvent(event: AnalyticsEvent) {
@@ -403,10 +400,8 @@ class CardReaderHubViewModel @Inject constructor(
             val countryConfig: CardReaderConfigForSupportedCountry
         ) : CardReaderHubEvents()
 
-        data class NavigateToCardReaderOnboardingScreen(
-            val onboardingState: CardReaderOnboardingState,
-            val cardReaderType: CardReaderType
-        ) : CardReaderHubEvents()
+        data class NavigateToCardReaderOnboardingScreen(val onboardingState: CardReaderOnboardingState) :
+            CardReaderHubEvents()
 
         data class OpenGenericWebView(val url: String) : CardReaderHubEvents()
         data class ShowToastString(val message: String) : CardReaderHubEvents()

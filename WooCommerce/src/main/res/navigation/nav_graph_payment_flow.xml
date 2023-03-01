@@ -82,7 +82,7 @@
         <argument
             android:name="cardReaderType"
             app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType"
-            app:nullable="false" />
+            app:nullable="true" />
         <action
             android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderHubFragment"
             app:destination="@id/cardReaderHubFragment"

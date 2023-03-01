@@ -40,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="0dp"
                 android:background="?attr/selectableItemBackground"
-                android:drawableStart="@drawable/ic_gridicons_money"
+                android:drawableStart="@drawable/ic_gridicons_money_on_surface"
                 android:drawableEnd="@drawable/ic_arrow_right"
                 android:drawablePadding="@dimen/major_100"
                 android:padding="@dimen/major_100"
@@ -65,6 +65,12 @@
                 android:padding="@dimen/major_100"
                 android:text="@string/card_reader_type_selection_tap_to_pay" />
 
+            <View
+                android:id="@+id/divider3"
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+                android:background="@color/divider_color" />
+
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tvBtReader"
                 style="@style/Woo.Card.Body.Bold"
@@ -79,7 +85,7 @@
                 android:text="@string/card_reader_type_selection_bluetooth_reader" />
 
             <View
-                android:id="@+id/divider3"
+                android:id="@+id/divider4"
                 android:layout_width="wrap_content"
                 android:layout_height="1dp"
                 android:background="@color/divider_color" />
@@ -91,14 +97,14 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="0dp"
                 android:background="?attr/selectableItemBackground"
-                android:drawableStart="@drawable/ic_gridicons_link"
+                android:drawableStart="@drawable/ic_gridicons_link_on_surface"
                 android:drawableEnd="@drawable/ic_arrow_right"
                 android:drawablePadding="@dimen/major_100"
                 android:padding="@dimen/major_100"
                 android:text="@string/simple_payments_share_payment_link" />
 
             <View
-                android:id="@+id/divider4"
+                android:id="@+id/divider5"
                 android:layout_width="wrap_content"
                 android:layout_height="1dp"
                 android:background="@color/divider_color" />

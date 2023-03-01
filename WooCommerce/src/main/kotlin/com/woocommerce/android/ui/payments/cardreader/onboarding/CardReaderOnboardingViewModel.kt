@@ -403,7 +403,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 triggerEvent(OnboardingEvent.ContinueToHub(params))
             }
             is CardReaderFlowParam.PaymentOrRefund -> {
-                triggerEvent(OnboardingEvent.ContinueToConnection(params, arguments.cardReaderType))
+                triggerEvent(OnboardingEvent.ContinueToConnection(params, requireNotNull(arguments.cardReaderType)))
             }
         }.exhaustive
     }

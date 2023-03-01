@@ -144,6 +144,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                 viewModel.onBtReaderClicked()
             }
         }
+        binding.tvBtReader.isVisible = state.isPaymentCollectableWithTapToPay
 
         with (binding.tvTapToPay) {
             isVisible = state.isPaymentCollectableWithTapToPay
@@ -151,6 +152,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                 viewModel.onTapToPayClicked()
             }
         }
+        binding.divider3.isVisible = state.isPaymentCollectableWithTapToPay
 
         with(binding.textShare) {
             isVisible = state.paymentUrl.isNotEmpty()
