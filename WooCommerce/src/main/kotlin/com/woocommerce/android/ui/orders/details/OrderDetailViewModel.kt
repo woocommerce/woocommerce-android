@@ -35,6 +35,7 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.model.loadProducts
@@ -142,6 +143,9 @@ class OrderDetailViewModel @Inject constructor(
     private val _shippingLabels = MutableLiveData<List<ShippingLabel>>()
     val shippingLabels: LiveData<List<ShippingLabel>> = _shippingLabels
 
+    private val _subscriptions = MutableLiveData<List<Subscription>>()
+    val subscriptions: LiveData<List<Subscription>> = _subscriptions
+
     private var isFetchingData = false
 
     override fun onCleared() {
@@ -198,7 +202,10 @@ class OrderDetailViewModel @Inject constructor(
             )
             isFetchingData = false
 
-            if (hasOrder()) displayOrderDetails()
+            if (hasOrder()) {
+                displayOrderDetails()
+                fetchOrderSubscriptions()
+            }
 
             viewState = viewState.copy(
                 isOrderDetailSkeletonShown = false,
@@ -648,6 +655,14 @@ class OrderDetailViewModel @Inject constructor(
             orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId)
         }
         orderDetailsTransactionLauncher.onShippingLabelFetchingCompleted()
+    }
+    private suspend fun fetchOrderSubscriptions() {
+        val plugin = pluginsInformation[WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName]
+        if (plugin == null || plugin.isOperational) {
+            orderDetailRepository.getOrderSubscriptions(navArgs.orderId).getOrNull()?.let {
+                _subscriptions.value = it
+            }
+        }
     }
 
     private fun loadOrderShippingLabels(): ListInfo<ShippingLabel> {
