@@ -61,6 +61,7 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.MORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.MY_STORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
+import com.woocommerce.android.ui.main.MainActivityViewModel.BottomBarState
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForAppLink
@@ -80,7 +81,7 @@ import com.woocommerce.android.ui.mystore.MyStoreFragmentDirections
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
-import com.woocommerce.android.ui.plans.trial.TrialStatusBarFormatter
+import com.woocommerce.android.ui.plans.trial.TrialStatusBarFormatterFactory
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
@@ -136,7 +137,7 @@ class MainActivity :
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var crashLogging: CrashLogging
     @Inject lateinit var appWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
-    @Inject lateinit var trialStatusBarFormatter: TrialStatusBarFormatter
+    @Inject lateinit var serviceFactory: TrialStatusBarFormatterFactory
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -733,9 +734,11 @@ class MainActivity :
     private fun observeTrialStatus() {
         viewModel.trialStatusBarState.observe(this) { trialStatusBarState ->
             when (trialStatusBarState) {
-                MainActivityViewModel.TrialStatusBarState.Hidden -> binding.trialBar.visibility = View.GONE
+                MainActivityViewModel.TrialStatusBarState.Hidden ->
+                    binding.trialBar.visibility =
+                        View.GONE
                 is MainActivityViewModel.TrialStatusBarState.Visible -> {
-                    binding.trialBar.text = trialStatusBarFormatter.format(trialStatusBarState.daysLeft)
+                    binding.trialBar.text = serviceFactory.create(navController).format(trialStatusBarState.daysLeft)
                     binding.trialBar.movementMethod = LinkMovementMethod.getInstance()
                     binding.trialBar.visibility = View.VISIBLE
                 }

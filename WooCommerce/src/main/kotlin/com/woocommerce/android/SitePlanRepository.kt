@@ -7,6 +7,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder
+import org.wordpress.android.util.AppLog
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
 import javax.inject.Inject
@@ -32,7 +33,10 @@ class SitePlanRepository @Inject constructor(
                         ExpiryAt(LocalDate.parse(freeTrialPlan.expirationDate, ISO_OFFSET_DATE_TIME))
                     }
                 }
-                is WPComGsonRequestBuilder.Response.Error -> Error(result.error.message)
+                is WPComGsonRequestBuilder.Response.Error -> {
+                    AppLog.e(AppLog.T.API, result.error.toString())
+                    Error(result.error.message)
+                }
             }
         }
     }
