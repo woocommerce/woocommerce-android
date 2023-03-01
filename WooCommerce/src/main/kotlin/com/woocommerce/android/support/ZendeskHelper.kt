@@ -193,6 +193,7 @@ class ZendeskHelper(
             this.subject = subject
             this.description = description
             this.tags = buildZendeskTags(siteStore.sites, origin, ticketType.tags + extraTags)
+                .filter { ticketType.excludedTags.contains(it).not() }
             this.customFields = buildZendeskCustomFields(context, ticketType, siteStore.sites, selectedSite)
         }.let { request -> requestProvider?.createRequest(request, requestCallback) }
 
@@ -586,6 +587,7 @@ sealed class TicketType(
     val categoryName: String,
     val subcategoryName: String,
     val tags: List<String> = emptyList(),
+    val excludedTags: List<String> = emptyList()
 ) : Parcelable {
     @Parcelize object MobileApp : TicketType(
         form = TicketFieldIds.wooMobileFormID,
@@ -612,7 +614,8 @@ sealed class TicketType(
             ZendeskTags.mobileAppWooTransfer,
             ZendeskTags.supportCategoryTag,
             ZendeskTags.paymentSubcategoryTag
-        )
+        ),
+        excludedTags = listOf(ZendeskTags.jetpackTag)
     )
     @Parcelize object WooPlugin : TicketType(
         form = TicketFieldIds.wooFormID,
@@ -622,7 +625,8 @@ sealed class TicketType(
             ZendeskTags.woocommerceCore,
             ZendeskTags.mobileAppWooTransfer,
             ZendeskTags.supportCategoryTag
-        )
+        ),
+        excludedTags = listOf(ZendeskTags.jetpackTag)
     )
     @Parcelize object OtherPlugins : TicketType(
         form = TicketFieldIds.wooFormID,
@@ -633,7 +637,8 @@ sealed class TicketType(
             ZendeskTags.mobileAppWooTransfer,
             ZendeskTags.supportCategoryTag,
             ZendeskTags.storeSubcategoryTag
-        )
+        ),
+        excludedTags = listOf(ZendeskTags.jetpackTag)
     )
 }
 
@@ -693,6 +698,7 @@ object ZendeskTags {
     const val storeSubcategoryTag = "store"
     const val supportCategoryTag = "support"
     const val paymentSubcategoryTag = "payment"
+    const val jetpackTag = "jetpack"
 }
 
 private object RequestConstants {
