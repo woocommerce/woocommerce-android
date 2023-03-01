@@ -19,6 +19,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.REFUND_CREATE_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.REFUND_CREATE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.extensions.calculateTotals
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.isCashPayment
@@ -335,7 +336,7 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     fun onOpenStoreAdminLinkClicked() {
-        triggerEvent(OpenUrl(selectedSite.get().adminUrl))
+        triggerEvent(OpenUrl(selectedSite.get().adminUrlOrDefault))
     }
 
     private fun showRefundSummary() {
