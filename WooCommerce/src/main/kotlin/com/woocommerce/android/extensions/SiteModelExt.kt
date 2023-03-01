@@ -37,5 +37,5 @@ fun SiteModel?.getTitle(default: String): String {
 val SiteModel.isSimpleWPComSite
     get() = isWPCom
 
-val SiteModel.safeAdminUrl
+val SiteModel.adminUrlOrDefault
     get() = adminUrl ?: url.slashJoin("wp-admin")

@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.analytics.hub.sync
 
+import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
-import com.woocommerce.android.extensions.safeAdminUrl
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
@@ -312,7 +312,7 @@ class AnalyticsRepository @Inject constructor(
         ).flowOn(dispatchers.io).single().mapCatching { it }
 
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
-    private fun getAdminPanelUrl() = selectedSite.getIfExists()?.safeAdminUrl
+    private fun getAdminPanelUrl() = selectedSite.getIfExists()?.adminUrlOrDefault
 
     companion object {
         const val ANALYTICS_REVENUE_PATH = "admin.php?page=wc-admin&path=%2Fanalytics%2Frevenue"

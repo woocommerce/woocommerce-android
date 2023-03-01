@@ -19,12 +19,12 @@ import com.woocommerce.android.analytics.AnalyticsEvent.REFUND_CREATE_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.REFUND_CREATE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.extensions.calculateTotals
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.isCashPayment
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.joinToString
-import com.woocommerce.android.extensions.safeAdminUrl
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.model.OrderNote
@@ -336,7 +336,7 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     fun onOpenStoreAdminLinkClicked() {
-        triggerEvent(OpenUrl(selectedSite.get().safeAdminUrl))
+        triggerEvent(OpenUrl(selectedSite.get().adminUrlOrDefault))
     }
 
     private fun showRefundSummary() {
