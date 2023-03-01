@@ -62,8 +62,7 @@ class JetpackActivationWPComPasswordFragment : BaseFragment() {
                 }
 
                 is ShowMagicLinkScreen -> {
-                    // TODO
-                    Toast.makeText(requireContext(), "$event", Toast.LENGTH_SHORT).show()
+                    navigateToMagicLinkScreen(event)
                 }
 
                 is ShowJetpackActivationScreen -> {
@@ -84,6 +83,16 @@ class JetpackActivationWPComPasswordFragment : BaseFragment() {
                 .actionJetpackActivationWPComPasswordFragmentToJetpackActivationMainFragment(
                     isJetpackInstalled = event.isJetpackInstalled,
                     siteUrl = event.siteUrl
+                )
+        )
+    }
+
+    private fun navigateToMagicLinkScreen(event: ShowMagicLinkScreen) {
+        findNavController().navigateSafely(
+            JetpackActivationWPComPasswordFragmentDirections
+                .actionJetpackActivationWPComPasswordFragmentToJetpackActivationMagicLinkRequestFragment(
+                    emailOrUsername = event.emailOrUsername,
+                    jetpackStatus = event.jetpackStatus
                 )
         )
     }
