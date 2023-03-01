@@ -5,7 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
-import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
@@ -14,6 +14,8 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import com.woocommerce.android.ui.payments.cardreader.statuschecker.CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToConnection
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -53,13 +55,18 @@ class CardReaderStatusCheckerViewModel
             )
             is CardReaderFlowParam.PaymentOrRefund -> {
                 val cardReaderStatus = cardReaderManager.readerStatus.value
-                if (cardReaderStatus is CardReaderStatus.Connected) {
-                    triggerEvent(
-                        StatusCheckerEvent.NavigateToPayment(
-                            param,
-                            cardReaderStatus.cardReader.toCardReaderType()
+                if (cardReaderStatus is Connected) {
+                    if (cardReaderStatus.cardReader.toCardReaderType() != arguments.cardReaderType) {
+                        cardReaderManager.disconnectReader()
+                        handleOnboardingStatus(param)
+                    } else {
+                        triggerEvent(
+                            StatusCheckerEvent.NavigateToPayment(
+                                param,
+                                cardReaderStatus.cardReader.toCardReaderType()
+                            )
                         )
-                    )
+                    }
                 } else {
                     handleOnboardingStatus(param)
                 }
@@ -88,9 +95,11 @@ class CardReaderStatusCheckerViewModel
 
     private fun CardReader.toCardReaderType() =
         if (ReaderType.isExternalReaderType(type)) {
-            CardReaderType.EXTERNAL
+            EXTERNAL
+        } else if (ReaderType.isBuiltInReaderType(type)) {
+            BUILT_IN
         } else {
-            CardReaderType.BUILT_IN
+            error("Unknown reader type: $type")
         }
 
     sealed class StatusCheckerEvent : MultiLiveEvent.Event() {
