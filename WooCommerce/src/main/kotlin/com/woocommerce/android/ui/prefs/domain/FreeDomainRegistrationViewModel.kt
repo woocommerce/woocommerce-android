@@ -7,6 +7,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -31,6 +32,7 @@ import org.wordpress.android.fluxc.store.SiteStore.DesignatePrimaryDomainPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnDomainSupportedStatesFetched
 import org.wordpress.android.fluxc.store.SiteStore.OnPrimaryDomainDesignated
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
+import org.wordpress.android.fluxc.store.Store.OnChangedError
 import org.wordpress.android.fluxc.store.TransactionsStore
 import org.wordpress.android.fluxc.store.TransactionsStore.CreateShoppingCartPayload
 import org.wordpress.android.fluxc.store.TransactionsStore.OnShoppingCartCreated
@@ -38,6 +40,7 @@ import org.wordpress.android.fluxc.store.TransactionsStore.OnShoppingCartRedeeme
 import org.wordpress.android.fluxc.store.TransactionsStore.OnSupportedCountriesFetched
 import org.wordpress.android.fluxc.store.TransactionsStore.RedeemShoppingCartError
 import org.wordpress.android.fluxc.store.TransactionsStore.RedeemShoppingCartPayload
+import org.wordpress.android.fluxc.store.TransactionsStore.TransactionErrorType.OTHER
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T
 import javax.inject.Inject
@@ -48,8 +51,8 @@ const val MAX_SITE_CHECK_TRIES = 10
 @HiltViewModel
 class FreeDomainRegistrationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    appPrefsWrapper: AppPrefsWrapper,
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val dispatcher: Dispatcher,
     @Suppress("unused") private val transactionsStore: TransactionsStore, // needed for events to work
     private val siteStore: SiteStore,
@@ -251,6 +254,7 @@ class FreeDomainRegistrationViewModel @Inject constructor(
                 "An error occurred while creating a shopping cart : " + event.error.message
             )
             triggerEvent(ShowErrorMessage(event.error.message))
+            trackFailedPurchase(event.error::javaClass.name, event.error.type.name, event.error.message)
             return
         }
 
@@ -275,6 +279,12 @@ class FreeDomainRegistrationViewModel @Inject constructor(
                 "An error occurred while redeeming a shopping cart : " + event.error.type +
                     " " + event.error.message
             )
+
+            if (event.error.type == OTHER) {
+                trackFailedPurchase(event.error::javaClass.name, event.error.type.name, event.error.message)
+            } else {
+                trackValidationError(event.error::javaClass.name, event.error.type.name, event.error.message)
+            }
             return
         }
 
@@ -337,8 +347,44 @@ class FreeDomainRegistrationViewModel @Inject constructor(
                 AppLog.v(T.DOMAIN_REGISTRATION, "Finishing registration...")
                 delay(SITE_CHECK_DELAY_MS)
                 finishRegistration(isSuccess = true)
+                trackSuccessfulPurchase()
             }
         }
+    }
+
+    private fun trackSuccessfulPurchase() {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.CUSTOM_DOMAIN_PURCHASE_SUCCESS,
+            mapOf(
+                AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSource(),
+                AnalyticsTracker.KEY_USE_DOMAIN_CREDIT to true // the contact form is only used for credit purchases
+            )
+        )
+    }
+
+    private fun trackFailedPurchase(context: String, type: String, message: String?) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.CUSTOM_DOMAIN_PURCHASE_FAILED,
+            mapOf(
+                AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSource(),
+                AnalyticsTracker.KEY_USE_DOMAIN_CREDIT to true, // the contact form is only used for credit purchases
+                AnalyticsTracker.KEY_ERROR_CONTEXT to context,
+                AnalyticsTracker.KEY_ERROR_TYPE to type,
+                AnalyticsTracker.KEY_ERROR_DESC to message
+            )
+        )
+    }
+
+    private fun trackValidationError(context: String, type: String, message: String?) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.DOMAIN_CONTACT_INFO_VALIDATION_FAILED,
+            mapOf(
+                AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSource(),
+                AnalyticsTracker.KEY_ERROR_CONTEXT to context,
+                AnalyticsTracker.KEY_ERROR_TYPE to type,
+                AnalyticsTracker.KEY_ERROR_DESC to message
+            )
+        )
     }
 
     data class DomainContactFormModel(
