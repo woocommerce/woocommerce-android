@@ -1638,6 +1638,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         )
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(emptyList<Subscription>()).whenever(orderDetailRepository).getOrderSubscriptions(any())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         createViewModel()
 
         viewModel.start()
