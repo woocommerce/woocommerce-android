@@ -579,6 +579,7 @@
     <string name="domain_registration_registering_domain_name_progress_dialog_message">Registering domain name…</string>
     <string name="domain_registration_country_picker_dialog_title">Select Country</string>
     <string name="domain_registration_state_picker_dialog_title">Select State</string>
+    <string name="domain_registration_generic_error">An error occurred during domain registration</string>
 
     <!--
         Order Editing

@@ -5,11 +5,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -54,7 +56,8 @@ class FreeDomainRegistrationViewModel @Inject constructor(
     private val dispatcher: Dispatcher,
     @Suppress("unused") private val transactionsStore: TransactionsStore, // needed for events to work
     private val siteStore: SiteStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: FreeDomainRegistrationFragmentArgs by savedStateHandle.navArgs()
 
@@ -249,10 +252,14 @@ class FreeDomainRegistrationViewModel @Inject constructor(
             _viewState.value = viewState.value?.copy(isRegistrationProgressIndicatorVisible = false)
             AppLog.e(
                 T.DOMAIN_REGISTRATION,
-                "An error occurred while creating a shopping cart : " + event.error.message
+                "An error occurred while creating a shopping cart: ${event.error}"
             )
-            triggerEvent(ShowErrorMessage(event.error.message))
-            trackFailedPurchase(event.error::javaClass.name, event.error.type.name, event.error.message)
+            if (event.error.message.isNotEmpty()) {
+                triggerEvent(ShowErrorMessage(event.error.message))
+            } else {
+                triggerEvent(ShowErrorMessage(resourceProvider.getString(R.string.domain_registration_generic_error)))
+            }
+            trackFailedPurchase(event.error.type.name, event.error.message)
             return
         }
 
@@ -271,17 +278,15 @@ class FreeDomainRegistrationViewModel @Inject constructor(
         if (event.isError) {
             _viewState.value = viewState.value?.copy(isRegistrationProgressIndicatorVisible = false)
             triggerEvent(ShowFormValidationError(event.error))
-            triggerEvent(ShowErrorMessage(event.error.message))
             AppLog.e(
                 T.DOMAIN_REGISTRATION,
-                "An error occurred while redeeming a shopping cart : " + event.error.type +
-                    " " + event.error.message
+                "An error occurred while redeeming a shopping cart: ${event.error}"
             )
 
             if (event.error.type == OTHER) {
-                trackFailedPurchase(event.error::javaClass.name, event.error.type.name, event.error.message)
+                trackFailedPurchase(event.error.type.name, event.error.message)
             } else {
-                trackValidationError(event.error::javaClass.name, event.error.type.name, event.error.message)
+                trackValidationError(event.error.type.name, event.error.message)
             }
             return
         }
@@ -303,11 +308,14 @@ class FreeDomainRegistrationViewModel @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onPrimaryDomainDesignated(event: OnPrimaryDomainDesignated) {
         if (event.isError) { // in case of error we notify used and proceed to next step
-            event.error?.message?.let { triggerEvent(ShowErrorMessage(it)) }
+            if (!event.error.message.isNullOrEmpty()) {
+                triggerEvent(ShowErrorMessage(event.error.message!!))
+            } else {
+                triggerEvent(ShowErrorMessage(resourceProvider.getString(R.string.domain_registration_generic_error)))
+            }
             AppLog.e(
                 T.DOMAIN_REGISTRATION,
-                "An error occurred while redeeming a shopping cart : " + event.error.type +
-                    " " + event.error.message
+                "An error occurred while redeeming a shopping cart: ${event.error}"
             )
         }
 
@@ -319,9 +327,13 @@ class FreeDomainRegistrationViewModel @Inject constructor(
         if (event.isError) {
             AppLog.e(
                 T.DOMAIN_REGISTRATION,
-                "An error occurred while updating site details : " + event.error.message
+                "An error occurred while updating site details: ${event.error}"
             )
-            event.error?.message?.let { triggerEvent(ShowErrorMessage(it)) }
+            if (!event.error.message.isNullOrEmpty()) {
+                triggerEvent(ShowErrorMessage(event.error.message!!))
+            } else {
+                triggerEvent(ShowErrorMessage(resourceProvider.getString(R.string.domain_registration_generic_error)))
+            }
             finishRegistration(isSuccess = false)
             return
         }
@@ -360,25 +372,25 @@ class FreeDomainRegistrationViewModel @Inject constructor(
         )
     }
 
-    private fun trackFailedPurchase(context: String, type: String, message: String?) {
+    private fun trackFailedPurchase(type: String, message: String?) {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.CUSTOM_DOMAIN_PURCHASE_FAILED,
             mapOf(
                 AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSource(),
                 AnalyticsTracker.KEY_USE_DOMAIN_CREDIT to true, // the contact form is only used for credit purchases
-                AnalyticsTracker.KEY_ERROR_CONTEXT to context,
+                AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                 AnalyticsTracker.KEY_ERROR_TYPE to type,
                 AnalyticsTracker.KEY_ERROR_DESC to message
             )
         )
     }
 
-    private fun trackValidationError(context: String, type: String, message: String?) {
+    private fun trackValidationError(type: String, message: String?) {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.DOMAIN_CONTACT_INFO_VALIDATION_FAILED,
             mapOf(
                 AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSource(),
-                AnalyticsTracker.KEY_ERROR_CONTEXT to context,
+                AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                 AnalyticsTracker.KEY_ERROR_TYPE to type,
                 AnalyticsTracker.KEY_ERROR_DESC to message
             )

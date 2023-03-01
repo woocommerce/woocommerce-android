@@ -84,7 +84,7 @@ class DomainSearchViewModel @Inject constructor(
                     mapOf(
                         AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSource(),
                         AnalyticsTracker.KEY_USE_DOMAIN_CREDIT to false,
-                        AnalyticsTracker.KEY_ERROR_CONTEXT to result.error::javaClass.name,
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                         AnalyticsTracker.KEY_ERROR_TYPE to result.error.type.name,
                         AnalyticsTracker.KEY_ERROR_DESC to result.error.message
                     )
