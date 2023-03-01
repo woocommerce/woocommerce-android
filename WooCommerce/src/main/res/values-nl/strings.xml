@@ -7,7 +7,7 @@ Language: nl
 -->
 <resources>
     <string name="settings_confirm_logout_site_credentials">Weet je zeker dat je wilt uitloggen bij je account?</string>
-    <string name="domains_error_title">Kan sitedomeinen niet laden</string>
+    <string name="domains_generic_error_title">Kan sitedomeinen niet laden</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d voltooid</string>
     <string name="store_onboarding_task_change_domain_description">Host je winkel met een aangepaste URL.</string>
     <string name="store_onboarding_task_change_domain_title">Je domein aanpassen</string>

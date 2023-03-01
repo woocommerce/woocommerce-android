@@ -7,7 +7,7 @@ Language: id
 -->
 <resources>
     <string name="settings_confirm_logout_site_credentials">Apakah Anda yakin ingin keluar dari akun Anda?</string>
-    <string name="domains_error_title">Tidak dapat memuat domain situs</string>
+    <string name="domains_generic_error_title">Tidak dapat memuat domain situs</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d selesai</string>
     <string name="store_onboarding_task_change_domain_description">Miliki URL khusus untuk menjadi host toko Anda sendiri.</string>
     <string name="store_onboarding_task_change_domain_title">Sesuaikan domain Anda</string>
