@@ -64,7 +64,7 @@
             app:destination="@id/productCategorySelectorFragment" />
         <action
             android:id="@+id/action_couponRestrictionsFragment_to_productSelectorFragment"
-            app:destination="@id/productSelectorFragment" >
+            app:destination="@id/nav_graph_product_selector" >
             <argument
                 android:name="selectedItems"
                 app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectedItem[]" />
