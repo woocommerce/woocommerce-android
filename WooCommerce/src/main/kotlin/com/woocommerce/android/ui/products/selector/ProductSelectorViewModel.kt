@@ -340,8 +340,11 @@ class ProductSelectorViewModel @Inject constructor(
 
     @Parcelize
     sealed class SelectedItem(open val productId: Long) : Parcelable {
+        @Parcelize
         data class ProductOrVariation(override val productId: Long) : SelectedItem(productId)
+        @Parcelize
         data class Product(override val productId: Long) : SelectedItem(productId)
+        @Parcelize
         data class ProductVariation(override val productId: Long, val variationId: Long) : SelectedItem(productId)
     }
 
