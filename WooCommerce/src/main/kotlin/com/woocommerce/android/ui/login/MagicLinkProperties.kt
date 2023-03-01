@@ -1,11 +1,18 @@
 package com.woocommerce.android.ui.login
 
-enum class MagicLinkSource(val value: String) {
+import org.wordpress.android.fluxc.store.AccountStore.AuthEmailFlow
+import org.wordpress.android.fluxc.store.AccountStore.AuthEmailSource
+
+enum class MagicLinkSource(private val value: String): AuthEmailSource {
     JetpackInstallation("jetpack-installation"),
     JetpackConnection("jetpack-connection"),
-    WPComAuthentication("wpcom-authentication\n")
+    WPComAuthentication("wpcom-authentication\n");
+
+    override fun getName(): String = value
 }
 
-enum class MagicLinkFlow(val value: String) {
-    SiteCredentialsToWPCom("sitecredentials-to-wpcom")
+enum class MagicLinkFlow(private val value: String): AuthEmailFlow {
+    SiteCredentialsToWPCom("sitecredentials-to-wpcom");
+
+    override fun getName(): String = value
 }
