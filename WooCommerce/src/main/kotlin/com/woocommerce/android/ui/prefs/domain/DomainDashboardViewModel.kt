@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.prefs.domain
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.DOMAIN_CHANGE_CURRENT_DOMAIN
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -26,6 +27,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DomainDashboardViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    appPrefsWrapper: AppPrefsWrapper,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val repository: DomainChangeRepository,
     private val userEligibilityFetcher: UserEligibilityFetcher
@@ -42,9 +44,10 @@ class DomainDashboardViewModel @Inject constructor(
 
     init {
         analyticsTrackerWrapper.track(
-            AnalyticsEvent.DOMAIN_CHANGE_STEP,
+            AnalyticsEvent.CUSTOM_DOMAINS_STEP,
             mapOf(
-                AnalyticsTracker.KEY_STEP to DOMAIN_CHANGE_CURRENT_DOMAIN
+                AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSource(),
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_DASHBOARD
             )
         )
 
