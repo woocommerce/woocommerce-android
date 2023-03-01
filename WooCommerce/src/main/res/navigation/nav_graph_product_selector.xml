@@ -20,8 +20,8 @@
         android:name="com.woocommerce.android.ui.products.selector.ProductSelectorFragment"
         android:label="ProductSelectorFragment">
         <argument
-            android:name="productIds"
-            app:argType="long[]" />
+            android:name="selectedItems"
+            app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectedItem[]" />
         <action
             android:id="@+id/action_productSelectorFragment_to_variationSelectorFragment"
             app:destination="@id/variationSelectorFragment" />

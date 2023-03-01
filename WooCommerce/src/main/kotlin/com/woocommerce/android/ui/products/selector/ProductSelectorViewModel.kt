@@ -74,7 +74,7 @@ class ProductSelectorViewModel @Inject constructor(
 
     private val searchQuery = savedState.getStateFlow(this, "")
     private val loadingState = MutableStateFlow(IDLE)
-    private val selectedProductIds = savedState.getStateFlow(viewModelScope, navArgs.productIds.toSet())
+    private val selectedItems = savedState.getStateFlow(viewModelScope, navArgs.selectedItems.toSet())
     private val filterState = savedState.getStateFlow(viewModelScope, FilterState())
 
     private var fetchProductsJob: Job? = null
@@ -90,7 +90,7 @@ class ProductSelectorViewModel @Inject constructor(
                 } else 0L
             }
             .map { it.value },
-        flow3 = selectedProductIds,
+        flow3 = selectedItems,
         flow4 = filterState,
         flow5 = searchQuery
     ) { products, loadingState, selectedIds, filterState, searchQuery ->
@@ -111,17 +111,18 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
 
-    private fun Product.toUiModel(selectedIds: Set<Long>): ProductListItem {
+    private fun Product.toUiModel(selectedItems: Set<SelectedItem>): ProductListItem {
         fun getProductSelection(): SelectionState {
             return if (productType == VARIABLE && numVariations > 0) {
-                val intersection = variationIds.intersect(selectedIds.toSet())
+                val intersection = variationIds.intersect(selectedItems.variationIds.toSet())
                 when {
                     intersection.isEmpty() -> UNSELECTED
                     intersection.size < variationIds.size -> PARTIALLY_SELECTED
                     else -> SELECTED
                 }
             } else {
-                if (selectedIds.contains(remoteId)) SELECTED else UNSELECTED
+                val selectedProductsIds = selectedItems.productIds.toSet()
+                if (selectedProductsIds.contains(remoteId)) SELECTED else UNSELECTED
             }
         }
 
@@ -150,7 +151,7 @@ class ProductSelectorViewModel @Inject constructor(
             sku = sku.takeIf { it.isNotBlank() },
             stockAndPrice = stockAndPrice,
             numVariations = numVariations,
-            selectedVariationIds = variationIds.intersect(selectedIds),
+            selectedVariationIds = variationIds.intersect(selectedItems.variationIds.toSet()),
             selectionState = getProductSelection()
         )
     }
@@ -158,7 +159,7 @@ class ProductSelectorViewModel @Inject constructor(
     fun onClearButtonClick() {
         launch {
             delay(STATE_UPDATE_DELAY) // let the animation play out before hiding the button
-            selectedProductIds.value = emptySet()
+            selectedItems.value = emptySet()
         }
     }
 
@@ -178,16 +179,22 @@ class ProductSelectorViewModel @Inject constructor(
         if (item.type == VARIABLE && item.numVariations > 0) {
             triggerEvent(NavigateToVariationSelector(item.id, item.selectedVariationIds))
         } else {
-            if (selectedProductIds.value.contains(item.id)) {
-                selectedProductIds.value = selectedProductIds.value - item.id
-            } else {
-                selectedProductIds.value = selectedProductIds.value + item.id
+            selectedItems.update { items ->
+                val selectedProductItems = items.filter {
+                    it is SelectedItem.ProductOrVariation || it is SelectedItem.Product
+                }
+                if (selectedProductItems.map { it.productId }.contains(item.id)) {
+                    val productItemToUnselect = selectedProductItems.filter { it.productId == item.id }.toSet()
+                    selectedItems.value - productItemToUnselect
+                } else {
+                    selectedItems.value + SelectedItem.Product(item.id)
+                }
             }
         }
     }
 
     fun onDoneButtonClick() {
-        triggerEvent(ExitWithResult(selectedProductIds.value))
+        triggerEvent(ExitWithResult(selectedItems.value))
     }
 
     fun onSearchQueryChanged(query: String) {
@@ -225,8 +232,21 @@ class ProductSelectorViewModel @Inject constructor(
 
     fun onSelectedVariationsUpdated(result: VariationSelectionResult) {
         viewModelScope.launch {
-            val oldIds = variationSelectorRepository.getProduct(result.productId)?.variationIds ?: emptyList()
-            selectedProductIds.update { selectedProductIds.value - oldIds.toSet() + result.selectedVariationIds }
+            selectedItems.update { items ->
+                val oldIds = variationSelectorRepository.getProduct(result.productId)?.variationIds ?: emptyList()
+
+                val oldItems = items.filter {
+                    it is SelectedItem.ProductOrVariation && oldIds.contains(it.productId)
+                } + items.filter {
+                    it is SelectedItem.ProductVariation && it.productId == result.productId
+                }
+
+                val newItems = result.selectedVariationIds.map { variationId ->
+                    SelectedItem.ProductVariation(productId = result.productId, variationId = variationId)
+                }
+
+                selectedItems.value - oldItems.toSet() + newItems
+            }
         }
     }
 
@@ -317,4 +337,36 @@ class ProductSelectorViewModel @Inject constructor(
     enum class LoadingState {
         IDLE, LOADING, APPENDING
     }
+
+    @Parcelize
+    sealed class SelectedItem(open val productId: Long) : Parcelable {
+        data class ProductOrVariation(override val productId: Long) : SelectedItem(productId)
+        data class Product(override val productId: Long) : SelectedItem(productId)
+        data class ProductVariation(override val productId: Long, val variationId: Long) : SelectedItem(productId)
+    }
+
+    private val Set<SelectedItem>.variationIds: List<Long>
+        get() {
+            return filterIsInstance<SelectedItem.ProductOrVariation>().map { it.productId } +
+                filterIsInstance<SelectedItem.ProductVariation>().map { it.variationId }
+        }
+
+    private val Set<SelectedItem>.productIds: List<Long>
+        get() {
+            return filter {
+                it is SelectedItem.ProductOrVariation || it is SelectedItem.Product
+            }.map { it.productId }
+        }
 }
+
+val Set<ProductSelectorViewModel.SelectedItem>.productAndVariationIds: List<Long>
+    get() {
+        val productIds =
+            filterIsInstance<ProductSelectorViewModel.SelectedItem.Product>().map { it.productId }
+        val variationIds =
+            filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductVariation>().map { it.variationId }
+        val variationOrProductIds =
+            filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductOrVariation>().map { it.productId }
+
+        return (productIds + variationIds + variationOrProductIds).distinct()
+    }
