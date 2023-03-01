@@ -105,7 +105,7 @@ class CardReaderPaymentReaderTypeStateProviderTest {
     }
 
     @Test
-    fun `given external card reader type, when providePaymentSuccessState, then return BuiltInReaderPaymentSuccessfulState`() {
+    fun `given external card reader type, when providePaymentSuccessState, then return ExternalReaderPaymentSuccessfulState`() {
         // GIVEN
         val cardReaderType = CardReaderType.EXTERNAL
 
@@ -144,7 +144,7 @@ class CardReaderPaymentReaderTypeStateProviderTest {
     }
 
     @Test
-    fun `given external card reader type, when providePaymentSuccessfulReceiptSentAutomaticallyState, then return BuiltInReaderPaymentSuccessfulState`() {
+    fun `given external card reader type, when providePaymentSuccessfulReceiptSentAutomaticallyState, then return ExternalReaderPaymentSuccessfulReceiptSentAutomaticallyState`() {
         // GIVEN
         val cardReaderType = CardReaderType.EXTERNAL
 
