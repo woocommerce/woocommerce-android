@@ -5,8 +5,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
-import com.woocommerce.android.SitePlanRepository
-import com.woocommerce.android.SitePlanRepository.FreeTrialExpiryDateResult
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.REVIEW_OPEN
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -19,6 +17,7 @@ import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
+import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.WooLog
@@ -27,12 +26,9 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.SiteStore
-import java.time.LocalDate
-import java.time.Period
 import javax.inject.Inject
 
 @HiltViewModel
@@ -47,7 +43,7 @@ class MainActivityViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val resolveAppLink: ResolveAppLink,
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
-    private val sitePlanRepository: SitePlanRepository
+    private val determineTrialStatusBarState: DetermineTrialStatusBarState,
 ) : ScopedViewModel(savedState) {
     init {
         launch {
@@ -64,29 +60,7 @@ class MainActivityViewModel @Inject constructor(
     private val _bottomBarState: MutableStateFlow<BottomBarState> = MutableStateFlow(BottomBarState.Visible)
     val bottomBarState = _bottomBarState.asLiveData()
 
-    val trialStatusBarState = selectedSite.observe()
-        .combine(_bottomBarState) { selectedSite, bottomBarState: BottomBarState ->
-            if (bottomBarState == BottomBarState.Hidden) {
-                TrialStatusBarState.Hidden
-            } else {
-                if (selectedSite?.planId == SitePlanRepository.FREE_TRIAL_PLAN_ID) {
-                    fetchFreeTrialDetails()
-                } else {
-                    TrialStatusBarState.Hidden
-                }
-            }
-        }.asLiveData()
-
-    private suspend fun fetchFreeTrialDetails(): TrialStatusBarState {
-        return when (val result = sitePlanRepository.fetchFreeTrialExpiryDate(selectedSite.get())) {
-            is FreeTrialExpiryDateResult.ExpiryAt -> {
-                val expireIn = Period.between(LocalDate.now(), result.date)
-                val days = expireIn.days
-                TrialStatusBarState.Visible(days)
-            }
-            is FreeTrialExpiryDateResult.Error, FreeTrialExpiryDateResult.NotTrial -> TrialStatusBarState.Hidden
-        }
-    }
+    val trialStatusBarState = determineTrialStatusBarState(_bottomBarState).asLiveData()
 
     fun handleShortcutAction(action: String?) {
         when (action) {
@@ -245,11 +219,6 @@ class MainActivityViewModel @Inject constructor(
     sealed class MoreMenuBadgeState {
         data class UnseenReviews(val count: Int) : MoreMenuBadgeState()
         object Hidden : MoreMenuBadgeState()
-    }
-
-    sealed class TrialStatusBarState {
-        data class Visible(val daysLeft: Int) : TrialStatusBarState()
-        object Hidden : TrialStatusBarState()
     }
 
     sealed class BottomBarState : Event() {

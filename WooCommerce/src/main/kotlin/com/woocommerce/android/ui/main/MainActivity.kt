@@ -81,6 +81,7 @@ import com.woocommerce.android.ui.mystore.MyStoreFragmentDirections
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState.TrialStatusBarState
 import com.woocommerce.android.ui.plans.trial.TrialStatusBarFormatterFactory
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
@@ -734,10 +735,9 @@ class MainActivity :
     private fun observeTrialStatus() {
         viewModel.trialStatusBarState.observe(this) { trialStatusBarState ->
             when (trialStatusBarState) {
-                MainActivityViewModel.TrialStatusBarState.Hidden ->
-                    binding.trialBar.visibility =
-                        View.GONE
-                is MainActivityViewModel.TrialStatusBarState.Visible -> {
+                TrialStatusBarState.Hidden ->
+                    binding.trialBar.visibility = View.GONE
+                is TrialStatusBarState.Visible -> {
                     binding.trialBar.text = serviceFactory.create(navController).format(trialStatusBarState.daysLeft)
                     binding.trialBar.movementMethod = LinkMovementMethod.getInstance()
                     binding.trialBar.visibility = View.VISIBLE
