@@ -1,2 +1,0 @@
-12.4:
-Jullie vroegen ernaar en nu is de mogelijkheid er! Het is nu mogelijk om de app te gebruiken zonder de Jetpack-plugin. We hebben dit op basis van jullie feedback van de afgelopen jaren gedaan, dus we verwachten dat deze update met open armen wordt onthaald!

@@ -1,0 +1,2 @@
+12,5:
+Diese Version enthält einige Fehlerkorrekturen und Verbesserungen für ein optimiertes Nutzererlebnis. Wir sind ständig bemüht, die WooCommerce-App zu verbessern, und in den nächsten Wochen stehen einige spannende Updates an. Also bleib dran, es folgen weitere Information!
