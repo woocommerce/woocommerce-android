@@ -17,6 +17,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
@@ -1625,5 +1626,39 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         verify(orderDetailRepository, times(1)).fetchOrderShippingLabels(any())
         verify(orderDetailRepository, times(1)).fetchOrderShipmentTrackingList(any())
+    }
+
+    @Test
+    fun `when subscriptions plugin is installed and active, then fetch plugin data`() = testBlocking {
+        val subscriptions = WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName
+        pluginsInfo[subscriptions] = WooPlugin(
+            isInstalled = true,
+            isActive = true,
+            version = "1.0.0"
+        )
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(emptyList<Subscription>()).whenever(orderDetailRepository).getOrderSubscriptions(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(orderDetailRepository).getOrderSubscriptions(any())
+    }
+
+    @Test
+    fun `when subscriptions plugin is NOT active, then DON'T fetch plugin data`() = testBlocking {
+        val subscriptions = WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName
+        pluginsInfo[subscriptions] = WooPlugin(
+            isInstalled = true,
+            isActive = true,
+            version = "1.0.0"
+        )
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(emptyList<Subscription>()).whenever(orderDetailRepository).getOrderSubscriptions(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(orderDetailRepository, never()).getOrderSubscriptions(any())
     }
 }
