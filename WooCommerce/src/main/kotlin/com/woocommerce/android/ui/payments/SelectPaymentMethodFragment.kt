@@ -144,9 +144,9 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                 viewModel.onBtReaderClicked()
             }
         }
-        binding.tvBtReader.isVisible = state.isPaymentCollectableWithTapToPay
+        binding.divider2.isVisible = state.isPaymentCollectableWithTapToPay
 
-        with (binding.tvTapToPay) {
+        with(binding.tvTapToPay) {
             isVisible = state.isPaymentCollectableWithTapToPay
             setOnClickListener {
                 viewModel.onTapToPayClicked()
