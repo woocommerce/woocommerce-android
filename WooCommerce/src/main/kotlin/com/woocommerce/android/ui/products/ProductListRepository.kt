@@ -166,7 +166,7 @@ class ProductListRepository @Inject constructor(
     ): List<Product> {
         val excludedIds = excludedProductIds?.takeIf { it.isNotEmpty() }
         return if (selectedSite.exists()) {
-            val wcProducts = productStore.getProductsByFilterOptions(
+            val wcProducts = productStore.getProducts(
                 selectedSite.get(),
                 filterOptions = productFilterOptions,
                 sortType = productSortingChoice,

@@ -269,6 +269,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_FEEDBACK_CONTEXT = "context"
         const val VALUE_FEEDBACK_GENERAL_CONTEXT = "general"
         const val VALUE_FEEDBACK_PRODUCT_M3_CONTEXT = "products_m3"
+        const val VALUE_FEEDBACK_STORE_SETUP_CONTEXT = "store_setup"
         const val VALUE_FEEDBACK_SHOWN = "shown"
         const val VALUE_FEEDBACK_LIKED = "liked"
         const val VALUE_FEEDBACK_NOT_LIKED = "didnt_like"
@@ -469,6 +470,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_IPP_BANNER_CAMPAIGN_NAME_NEWBIE = "ipp_not_user"
         const val VALUE_IPP_BANNER_CAMPAIGN_NAME_BEGINNER = "ipp_new_user"
         const val VALUE_IPP_BANNER_CAMPAIGN_NAME_NINJA = "ipp_power_user"
+
+        // -- IPP Learn More Link
+        const val IPP_LEARN_MORE_SOURCE = "source"
 
         var sendUsageStats: Boolean = true
             set(value) {

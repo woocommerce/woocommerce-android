@@ -2,6 +2,7 @@ package com.woocommerce.android.support
 
 import android.content.Context
 import android.net.ConnectivityManager
+import android.os.Parcelable
 import android.telephony.TelephonyManager
 import android.text.TextUtils
 import com.woocommerce.android.AppPrefs
@@ -20,7 +21,12 @@ import com.woocommerce.android.util.WooLog.T
 import com.zendesk.logger.Logger
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
@@ -43,8 +49,6 @@ import zendesk.support.requestlist.RequestListActivity
 import java.util.Locale
 import java.util.Timer
 import kotlin.concurrent.schedule
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 private const val zendeskNeedsToBeEnabledError = "Zendesk needs to be setup before this method can be called"
 private const val enablePushNotificationsDelayAfterIdentityChange: Long = 2500
@@ -159,29 +163,48 @@ class ZendeskHelper(
      *
      * As it is, no identity is required so far. This should be revised in the near future.
      */
+    @Suppress("LongParameterList")
     suspend fun createRequest(
         context: Context,
+        helpData: HelpData,
         selectedSite: SiteModel?,
-        ticketType: TicketType,
         subject: String,
         description: String,
-        ssr: String? = null
-    ) = withContext(dispatchers.io) {
-        suspendCoroutine<Result<Request?>> {
-            val requestCallback = object : ZendeskCallback<Request>() {
-                override fun onSuccess(result: Request?) { it.resume(Result.success(result)) }
-                override fun onError(error: ErrorResponse) { it.resume(Result.failure(Throwable(error.reason))) }
-            }
-
-            CreateRequest().apply {
-                this.ticketFormId = ticketType.form
-                this.subject = subject
-                this.description = description
-                this.tags = ticketType.tags
-                this.customFields = buildZendeskCustomFields(context, ticketType, siteStore.sites, selectedSite, ssr)
-            }.let { request -> requestProvider?.createRequest(request, requestCallback) }
+        extraTags: List<String>
+    ) = callbackFlow {
+        require(isZendeskEnabled) {
+            zendeskNeedsToBeEnabledError
         }
-    }
+
+        val (origin, option) = helpData
+        val requestCallback = object : ZendeskCallback<Request>() {
+            override fun onSuccess(result: Request?) {
+                trySend(Result.success(result))
+                close()
+            }
+            override fun onError(error: ErrorResponse) {
+                trySend(Result.failure(Throwable(error.reason)))
+                close()
+            }
+        }
+
+        CreateRequest().apply {
+            this.ticketFormId = option.ticketType.form
+            this.subject = subject
+            this.description = description
+            this.tags = buildZendeskTags(siteStore.sites, origin, option.allTags + extraTags)
+            this.customFields = buildZendeskCustomFields(context, option.ticketType, siteStore.sites, selectedSite)
+        }.let { request -> requestProvider?.createRequest(request, requestCallback) }
+
+        // Sets a timeout since the callback might not be called from Zendesk API
+        launch {
+            delay(RequestConstants.requestCreationTimeout)
+            trySend(Result.failure(Throwable(RequestConstants.requestCreationTimeoutErrorMessage)))
+            close()
+        }
+
+        awaitClose()
+    }.flowOn(dispatchers.io)
 
     /**
      * This function creates a new ticket. It'll force a valid identity, so if the user doesn't have one set, a dialog
@@ -598,16 +621,45 @@ private object TicketFieldIds {
     const val sourcePlatform = 360009311651L
 }
 
+data class HelpData(val origin: HelpOrigin, val option: HelpOption)
+
+sealed class HelpOption(val ticketType: TicketType, val extraTags: List<String>) : Parcelable {
+    @Parcelize object MobileApp : HelpOption(
+        ticketType = TicketType.General,
+        extraTags = listOf("mobile-app")
+    )
+    @Parcelize object InPersonPayments : HelpOption(
+        ticketType = TicketType.General,
+        extraTags = listOf("woocommerce_mobile_apps", "product_area_apps_in_person_payments")
+    )
+    @Parcelize object Payments : HelpOption(
+        ticketType = TicketType.Payments,
+        extraTags = emptyList()
+    )
+    @Parcelize object WooPlugin : HelpOption(
+        ticketType = TicketType.General,
+        extraTags = listOf("woocommerce_core")
+    )
+    @Parcelize object OtherPlugins : HelpOption(
+        ticketType = TicketType.General,
+        extraTags = listOf("product_area_woo_extensions")
+    )
+
+    val allTags get() = ticketType.tags + extraTags
+}
+
 sealed class TicketType(
     val form: Long,
     val subcategoryName: String,
     val tags: List<String> = emptyList(),
-) {
+) : Parcelable {
+    @Parcelize
     object General : TicketType(
         form = TicketFieldIds.formGeneral,
         subcategoryName = ZendeskConstants.subcategoryGeneralValue,
     )
 
+    @Parcelize
     object Payments : TicketType(
         form = TicketFieldIds.formPayments,
         subcategoryName = ZendeskConstants.subcategoryPaymentsValue,
@@ -627,4 +679,9 @@ object ZendeskExtraTags {
     const val paymentsSubcategory = "payment"
     const val paymentsProduct = "woocommerce_payments"
     const val paymentsProductArea = "product_area_woo_payment_gateway"
+}
+
+private object RequestConstants {
+    const val requestCreationTimeout = 10000L
+    const val requestCreationTimeoutErrorMessage = "Request creation timed out"
 }

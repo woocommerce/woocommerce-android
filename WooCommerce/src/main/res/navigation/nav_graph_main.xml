@@ -33,6 +33,9 @@
                 android:name="targetGranularity"
                 app:argType="com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection$SelectionType" />
         </action>
+        <action
+            android:id="@+id/action_myStore_to_onboardingFragment"
+            app:destination="@id/onboardingFragment" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -197,8 +200,8 @@
             app:argType="com.woocommerce.android.ui.feedback.SurveyType" />
         <argument
             android:name="customUrl"
-            app:argType="string"
             android:defaultValue="@null"
+            app:argType="string"
             app:nullable="true" />
         <action
             android:id="@+id/action_feedbackSurveyFragment_to_feedbackCompletedFragment"
@@ -420,4 +423,8 @@
     <action
         android:id="@+id/action_global_simpleTextEditorFragment"
         app:destination="@id/simpleTextEditorFragment" />
+    <fragment
+        android:id="@+id/onboardingFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.OnboardingFragment"
+        android:label="OnboardingFragment" />
 </navigation>

@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-02-08 17:54:03+0000
+Translation-Revision-Date: 2023-02-22 22:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="settings_confirm_logout_site_credentials">Tem certeza de que deseja fazer logout da sua conta?</string>
+    <string name="domains_generic_error_title">Não foi possível carregar os domínios do site</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d tarefas concluídas</string>
     <string name="store_onboarding_task_change_domain_description">Tenha uma URL personalizada para hospedar sua loja.</string>
     <string name="store_onboarding_task_change_domain_title">Personalize seu domínio</string>

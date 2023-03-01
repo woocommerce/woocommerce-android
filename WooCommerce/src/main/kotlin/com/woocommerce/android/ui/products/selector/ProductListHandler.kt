@@ -34,46 +34,60 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
         }
     }.flatMapLatest { it }
 
-    suspend fun fetchProducts(
+    suspend fun loadFromCacheAndFetch(
         searchQuery: String = "",
         forceRefresh: Boolean = false,
         filters: Map<ProductFilterOption, String> = emptyMap()
     ): Result<Unit> = mutex.withLock {
-        // Reset the offset
         offset = 0
         canLoadMore = true
+        searchResults.value = emptyList()
 
         this.searchQuery.value = searchQuery
         this.productFilters.value = filters
-        return if (searchQuery.isEmpty()) {
+
+        return if (searchQuery.isNotEmpty()) {
+            searchInCache()
+            remoteSearch()
+        } else {
             if (forceRefresh) {
-                loadProducts()
+                fetchProducts()
             } else {
                 Result.success(Unit)
             }
-        } else {
-            searchResults.value = emptyList()
-            searchProducts()
         }
     }
 
-    suspend fun loadMore(): Result<Unit> = mutex.withLock {
+    // The implementation of loadMore has limited functionality. Essentially, more items from local cache are loaded
+    // only after the remote request to fetch the previous page finishes successfully.
+    suspend fun loadMore() = mutex.withLock {
         if (!canLoadMore) return@withLock Result.success(Unit)
-        return if (searchQuery.value.isEmpty()) {
-            loadProducts()
+        if (searchQuery.value.isEmpty()) {
+            fetchProducts()
         } else {
-            searchProducts()
+            searchInCache()
+            remoteSearch()
         }
     }
 
-    private suspend fun loadProducts(): Result<Unit> {
+    private suspend fun fetchProducts(): Result<Unit> {
         return repository.fetchProducts(offset, PAGE_SIZE, productFilters.value).onSuccess {
             canLoadMore = it
             offset += PAGE_SIZE
         }.map { }
     }
 
-    private suspend fun searchProducts(): Result<Unit> {
+    private fun searchInCache() {
+        repository.searchProductsInCache(
+            offset = offset,
+            pageSize = PAGE_SIZE,
+            searchQuery = searchQuery.value,
+        ).let { loadedProducts ->
+            searchResults.update { list -> updateSearchResult(list, loadedProducts) }
+        }
+    }
+
+    private suspend fun remoteSearch(): Result<Unit> {
         return repository.searchProducts(
             offset = offset,
             pageSize = PAGE_SIZE,
@@ -81,7 +95,10 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
         ).onSuccess { result ->
             canLoadMore = result.canLoadMore
             offset += PAGE_SIZE
-            searchResults.update { it + result.products }
+            searchResults.update { list -> updateSearchResult(list, result.products) }
         }.map { }
     }
+
+    private fun updateSearchResult(list: List<Product>, loadedProducts: List<Product>) =
+        (list + loadedProducts).distinctBy { it.remoteId }
 }

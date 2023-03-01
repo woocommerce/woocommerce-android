@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -37,19 +36,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
-import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.jetpack.components.JetpackConsent
 import com.woocommerce.android.ui.login.jetpack.start.JetpackActivationStartViewModel.JetpackActivationState
-import com.woocommerce.android.util.ChromeCustomTabUtils
 
 @Composable
 fun JetpackActivationStartScreen(viewModel: JetpackActivationStartViewModel) {
@@ -142,7 +138,9 @@ fun JetpackActivationStartScreen(
                 }
             } else {
                 JetpackConsent(
-                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                 )
             }
         }
@@ -248,29 +246,6 @@ private fun SiteUrlAndIcon(
             style = MaterialTheme.typography.subtitle1,
             fontWeight = FontWeight.SemiBold
         )
-    }
-}
-
-@Composable
-private fun JetpackConsent(modifier: Modifier = Modifier) {
-    val consent = annotatedStringRes(stringResId = R.string.login_jetpack_connection_consent)
-    val context = LocalContext.current
-    ClickableText(
-        text = consent,
-        style = MaterialTheme.typography.caption.copy(
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colors.onSurface
-        ),
-        modifier = modifier
-    ) {
-        consent.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
-            .firstOrNull()
-            ?.let { annotation ->
-                when (annotation.item) {
-                    "terms" -> ChromeCustomTabUtils.launchUrl(context, AppUrls.WORPRESS_COM_TERMS)
-                    "sync" -> ChromeCustomTabUtils.launchUrl(context, AppUrls.JETPACK_SYNC_POLICY)
-                }
-            }
     }
 }
 
