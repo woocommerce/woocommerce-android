@@ -549,7 +549,8 @@
     <string name="domains_add_domain_button_title">Add a domain</string>
     <string name="domains_select_domain">Select domain</string>
     <string name="domains_redirect_notice">The domain purchased will redirect users to</string>
-    <string name="domains_error_title">Unable to load site domains</string>
+    <string name="domains_generic_error_title">Unable to load site domains</string>
+    <string name="domains_access_error_title">Only store administrators can access domain settings</string>
     <string name="domains_free_with_credits">Free for the first year</string>
     <string name="domains_purchase_successful_heading">Congratulations on your purchase</string>
     <string name="domains_purchase_successful_delay_notice">Your site address is being set up. It may take up 30 minutes for your domain to start working.</string>

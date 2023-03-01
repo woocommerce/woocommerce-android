@@ -7,7 +7,7 @@ Language: sv_SE
 -->
 <resources>
     <string name="settings_confirm_logout_site_credentials">Är du säker på att du vill logga ut från ditt konto?</string>
-    <string name="domains_error_title">Kan inte ladda webbplatsdomäner</string>
+    <string name="domains_generic_error_title">Kan inte ladda webbplatsdomäner</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d har slutförts</string>
     <string name="store_onboarding_task_change_domain_description">Få en anpassad URL för din butik.</string>
     <string name="store_onboarding_task_change_domain_title">Anpassa din domän</string>
