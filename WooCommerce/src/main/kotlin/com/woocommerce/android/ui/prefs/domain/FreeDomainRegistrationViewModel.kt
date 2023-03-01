@@ -4,6 +4,10 @@ import android.text.TextUtils
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -44,6 +48,8 @@ const val MAX_SITE_CHECK_TRIES = 10
 @HiltViewModel
 class FreeDomainRegistrationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    appPrefsWrapper: AppPrefsWrapper,
     private val dispatcher: Dispatcher,
     @Suppress("unused") private val transactionsStore: TransactionsStore, // needed for events to work
     private val siteStore: SiteStore,
@@ -65,6 +71,14 @@ class FreeDomainRegistrationViewModel @Inject constructor(
         get() = _domainContactForm
 
     init {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.CUSTOM_DOMAINS_STEP,
+            mapOf(
+                AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSource(),
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_CONTACT_INFO
+            )
+        )
+
         dispatcher.register(this)
         fetchSupportedCountries()
     }
