@@ -44,6 +44,7 @@ import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -254,6 +255,9 @@ class OrderDetailFragment :
         viewModel.shippingLabels.observe(viewLifecycleOwner) {
             showShippingLabels(it, viewModel.order.currency)
         }
+        viewModel.subscriptions.observe(viewLifecycleOwner) {
+            showSubscriptions(it)
+        }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
@@ -273,6 +277,16 @@ class OrderDetailFragment :
             }
         }
         viewModel.start()
+    }
+
+    private fun showSubscriptions(subscriptions: List<Subscription>) {
+        binding.orderDetailSubscriptionList.run {
+            updateSubscriptionList(
+                subscriptions = subscriptions,
+                currencyFormatter = currencyFormatter
+            )
+            visibility = if (subscriptions.isNotEmpty()) View.VISIBLE else View.GONE
+        }
     }
 
     private fun navigateToInstallWcShippingFlow() {
