@@ -170,7 +170,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
     private fun configureMocks(requestResult: Result<Request?>) {
         val testSite = SiteModel().apply { id = 123 }
         selectedSite = mock {
-            on { get() }.then { testSite }
+            on { getIfExists() }.then { testSite }
         }
         zendeskHelper = mock {
             onBlocking {
