@@ -29,7 +29,8 @@ fun JetpackActivationMagicLinkRequestScreen(viewModel: JetpackActivationMagicLin
     viewModel.viewState.observeAsState().value?.let {
         JetpackActivationMagicLinkRequestScreen(
             viewState = it,
-            onCloseClick = viewModel::onCloseClick
+            onCloseClick = viewModel::onCloseClick,
+            onRequestMagicLinkClick = viewModel::onRequestMagicLinkClick
         )
     }
 }
@@ -37,7 +38,8 @@ fun JetpackActivationMagicLinkRequestScreen(viewModel: JetpackActivationMagicLin
 @Composable
 fun JetpackActivationMagicLinkRequestScreen(
     viewState: JetpackActivationMagicLinkRequestViewModel.ViewState,
-    onCloseClick: () -> Unit = {}
+    onCloseClick: () -> Unit = {},
+    onRequestMagicLinkClick: () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -54,7 +56,7 @@ fun JetpackActivationMagicLinkRequestScreen(
 
         when (viewState) {
             is JetpackActivationMagicLinkRequestViewModel.ViewState.MagicLinkRequestState -> {
-                MagicLinkRequestContent(viewState, contentModifier)
+                MagicLinkRequestContent(viewState, onRequestMagicLinkClick, contentModifier)
             }
 
             is JetpackActivationMagicLinkRequestViewModel.ViewState.MagicLinkSentState -> {
@@ -67,6 +69,7 @@ fun JetpackActivationMagicLinkRequestScreen(
 @Composable
 private fun MagicLinkRequestContent(
     viewState: JetpackActivationMagicLinkRequestViewModel.ViewState.MagicLinkRequestState,
+    onRequestMagicLinkClick: () -> Unit,
     modifier: Modifier
 ) {
     Column(
@@ -74,7 +77,7 @@ private fun MagicLinkRequestContent(
         modifier = modifier.padding(dimensionResource(id = R.dimen.major_100))
     ) {
         UserInfo(
-            emailOrUsername = viewState.email,
+            emailOrUsername = viewState.emailOrUsername,
             avatarUrl = viewState.avatarUrl,
             modifier = Modifier.fillMaxWidth()
         )
@@ -83,7 +86,7 @@ private fun MagicLinkRequestContent(
         Spacer(modifier = Modifier.weight(1f))
 
         WCColoredButton(
-            onClick = { TODO() },
+            onClick = onRequestMagicLinkClick,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(text = stringResource(id = R.string.send_link_by_email))
@@ -101,7 +104,7 @@ private fun MagicLinkRequestPreview() {
     WooThemeWithBackground {
         JetpackActivationMagicLinkRequestScreen(
             viewState = JetpackActivationMagicLinkRequestViewModel.ViewState.MagicLinkRequestState(
-                email = "test@email.com",
+                emailOrUsername = "test@email.com",
                 avatarUrl = "avatar",
                 isLoadingDialogShown = false
             )
