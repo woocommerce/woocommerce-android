@@ -9,6 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.login.MagicLinkFlow
 import com.woocommerce.android.ui.login.MagicLinkSource
 import com.woocommerce.android.ui.login.WPComLoginRepository
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -36,6 +37,7 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
         initialValue = ViewState.MagicLinkRequestState(
             emailOrUsername = navArgs.emailOrUsername,
             avatarUrl = avatarUrlFromEmail(navArgs.emailOrUsername),
+            isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
             isLoadingDialogShown = false
         )
     )
@@ -47,6 +49,10 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
 
     fun onRequestMagicLinkClick() = requestMagicLink()
 
+    fun onOpenEmailClientClick() {
+        triggerEvent(OpenEmailClient)
+    }
+
     fun onCloseClick() {
         triggerEvent(Exit)
     }
@@ -55,6 +61,7 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
         _viewState.value = ViewState.MagicLinkRequestState(
             emailOrUsername = navArgs.emailOrUsername,
             avatarUrl = avatarUrlFromEmail(navArgs.emailOrUsername),
+            isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
             isLoadingDialogShown = true
         )
         val source = when {
@@ -69,7 +76,8 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
         ).fold(
             onSuccess = {
                 _viewState.value = ViewState.MagicLinkSentState(
-                    email = navArgs.emailOrUsername.takeIf { it.isAnEmail() }
+                    email = navArgs.emailOrUsername.takeIf { it.isAnEmail() },
+                    isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
                 )
             },
             onFailure = {
@@ -87,16 +95,22 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
     private fun String.isAnEmail() = PatternsCompat.EMAIL_ADDRESS.matcher(this).matches()
 
     sealed interface ViewState : Parcelable {
+        val isJetpackInstalled: Boolean
+
         @Parcelize
         data class MagicLinkRequestState(
             val emailOrUsername: String,
             val avatarUrl: String,
+            override val isJetpackInstalled: Boolean,
             val isLoadingDialogShown: Boolean
         ) : ViewState
 
         @Parcelize
         data class MagicLinkSentState(
-            val email: String?
+            val email: String?,
+            override val isJetpackInstalled: Boolean
         ) : ViewState
     }
+
+    object OpenEmailClient : MultiLiveEvent.Event()
 }
