@@ -100,7 +100,6 @@ class DomainDashboardViewModel @Inject constructor(
     }
 
     fun onCancelPressed() {
-        analyticsTrackerWrapper.track(AnalyticsEvent.DOMAIN_CHANGE_DISMISSED)
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
@@ -109,7 +108,6 @@ class DomainDashboardViewModel @Inject constructor(
     }
 
     fun onFindDomainButtonTapped() {
-        analyticsTrackerWrapper.track(AnalyticsEvent.DOMAIN_CHANGE_SEARCH_FOR_DOMAIN_BUTTON_TAPPED)
         triggerEvent(NavigateToDomainSearch(hasFreeCredits))
     }
 
