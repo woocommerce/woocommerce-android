@@ -33,7 +33,9 @@ class CardReaderWelcomeViewModelTest : BaseUnitTest() {
         viewModel.viewState.value!!.buttonAction.invoke()
 
         assertThat(viewModel.event.value).isInstanceOf(NavigateToOnboardingFlow::class.java)
-        assertThat((viewModel.event.value as NavigateToOnboardingFlow).cardReaderType).isEqualTo(CardReaderType.EXTERNAL)
+        assertThat((viewModel.event.value as NavigateToOnboardingFlow).cardReaderType).isEqualTo(
+            CardReaderType.EXTERNAL
+        )
     }
 
     @Test
@@ -43,7 +45,9 @@ class CardReaderWelcomeViewModelTest : BaseUnitTest() {
         viewModel.viewState.value!!.buttonAction.invoke()
 
         assertThat(viewModel.event.value).isInstanceOf(NavigateToOnboardingFlow::class.java)
-        assertThat((viewModel.event.value as NavigateToOnboardingFlow).cardReaderType).isEqualTo(CardReaderType.BUILT_IN)
+        assertThat((viewModel.event.value as NavigateToOnboardingFlow).cardReaderType).isEqualTo(
+            CardReaderType.BUILT_IN
+        )
     }
 
     private fun initVM(cardReaderType: CardReaderType) {

@@ -2296,13 +2296,13 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             cardReaderType = CardReaderType.EXTERNAL
         ).initSavedStateHandle()
     ) = CardReaderOnboardingViewModel(
-            savedState,
-            onboardingChecker,
-            tracker,
-            learnMoreUrlProvider,
-            selectedSite,
-            appPrefsWrapper,
-            cardReaderManager,
-            gatewayStore
-        )
+        savedState,
+        onboardingChecker,
+        tracker,
+        learnMoreUrlProvider,
+        selectedSite,
+        appPrefsWrapper,
+        cardReaderManager,
+        gatewayStore
+    )
 }
