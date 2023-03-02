@@ -170,7 +170,7 @@ class GetIPPFeedbackBannerData @Inject constructor(
         private const val BANNER_MESSAGE_BEGINNER = R.string.feedback_banner_ipp_message_beginner
         private const val BANNER_MESSAGE_NINJA = R.string.feedback_banner_ipp_message_ninja
 
-        private val IPP_BEGINNER_TRANSACTIONS_RANGE = 1..10
+        private val IPP_BEGINNER_TRANSACTIONS_RANGE = 1..9
         private val IPP_NINJA_TRANSACTIONS_THRESHOLD = 10
     }
 }
