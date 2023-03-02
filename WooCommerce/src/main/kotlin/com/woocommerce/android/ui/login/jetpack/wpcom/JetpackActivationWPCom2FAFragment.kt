@@ -31,7 +31,7 @@ class JetpackActivationWPCom2FAFragment : BaseFragment() {
 
             setContent {
                 WooThemeWithBackground {
-                    TODO()
+                    JetpackActivationWPComPasswordScreen(viewModel = viewModel)
                 }
             }
         }
