@@ -31,6 +31,7 @@ import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.login.LoginPrologueCarouselFragment.PrologueCarouselListener
 import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
@@ -607,7 +608,13 @@ class LoginActivity :
 
     override fun helpFindingSiteAddress(username: String?, siteStore: SiteStore?) {
         unifiedLoginTracker.trackClick(Click.HELP_FINDING_SITE_ADDRESS)
-        zendeskHelper.createNewTicket(this, HelpOrigin.LOGIN_SITE_ADDRESS, null)
+        startActivity(
+            SupportRequestFormActivity.createIntent(
+                context = this,
+                origin = HelpOrigin.LOGIN_SITE_ADDRESS,
+                extraTags = ArrayList()
+            )
+        )
     }
 
     // TODO This can be modified to also receive the URL the user entered, so we can make that the primary store
