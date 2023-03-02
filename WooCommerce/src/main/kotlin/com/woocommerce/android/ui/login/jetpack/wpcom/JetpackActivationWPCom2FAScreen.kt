@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCPasswordField
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
 
 @Composable
@@ -116,5 +117,7 @@ fun JetpackActivationWPCom2FAScreen(
 @Preview
 @Composable
 private fun JetpackActivationWPCom2FAScreenPreview() {
-    JetpackActivationWPCom2FAScreen()
+    WooThemeWithBackground {
+        JetpackActivationWPCom2FAScreen()
+    }
 }
