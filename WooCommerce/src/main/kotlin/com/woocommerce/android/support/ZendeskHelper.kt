@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.util.DeviceUtils
 import org.wordpress.android.util.NetworkUtils
@@ -47,9 +46,7 @@ private const val enablePushNotificationsDelayAfterIdentityChange: Long = 2500
 private const val maxLogfileLength: Int = 63000 // Max characters allowed in the system status report field
 
 class ZendeskHelper(
-    private val accountStore: AccountStore,
     private val siteStore: SiteStore,
-    private val supportHelper: SupportHelper,
     private val dispatchers: CoroutineDispatchers
 ) {
     private val zendeskInstance: Zendesk
@@ -242,41 +239,6 @@ class ZendeskHelper(
     fun setSupportEmail(email: String?) {
         AppPrefs.setSupportEmail(email)
         refreshIdentity()
-    }
-
-    /**
-     * This is a helper function which provides an easy way to make sure a Zendesk identity is set before running a
-     * piece of code. It'll check the existence of the identity and call the callback if it's already available.
-     * Otherwise, it'll show a dialog for the user to enter an email and name through a helper function which then
-     * will be used to set the identity and call the callback. It'll also try to enable the push notifications.
-     */
-    private fun requireIdentity(
-        context: Context,
-        selectedSite: SiteModel?,
-        onIdentitySet: () -> Unit
-    ) {
-        if (isIdentitySet) {
-            // identity already available
-            onIdentitySet()
-            return
-        }
-        if (!AppPrefs.getSupportEmail().isEmpty()) {
-            /**
-             * Zendesk SDK reset the identity, but we already know the email of the user, we can simply refresh
-             * the identity. Check out the documentation for [isIdentitySet] for more details.
-             */
-            refreshIdentity()
-            onIdentitySet()
-            return
-        }
-        val (emailSuggestion, nameSuggestion) = supportHelper
-            .getSupportEmailAndNameSuggestion(accountStore.account, selectedSite)
-        supportHelper.showSupportIdentityInputDialog(context, emailSuggestion, nameSuggestion) { email, name ->
-            AppPrefs.setSupportEmail(email)
-            AppPrefs.setSupportName(name)
-            refreshIdentity()
-            onIdentitySet()
-        }
     }
 
     /**
