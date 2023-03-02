@@ -82,6 +82,7 @@ fun JetpackActivationWPCom2FAScreen(
                         id = R.string.enter_verification_code
                     )
                 )
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
                 WCPasswordField(
                     value = "",
                     onValueChange = { },
@@ -109,7 +110,6 @@ fun JetpackActivationWPCom2FAScreen(
                     text = stringResource(id = R.string.login_jetpack_connect)
                 )
             }
-
         }
     }
 }
