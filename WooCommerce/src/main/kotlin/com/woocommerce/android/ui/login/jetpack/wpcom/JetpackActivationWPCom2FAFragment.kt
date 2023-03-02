@@ -27,7 +27,7 @@ class JetpackActivationWPCom2FAFragment : BaseFragment() {
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
