@@ -10,8 +10,6 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.extensions.logInformation
 import com.woocommerce.android.extensions.stateLogInformation
 import com.woocommerce.android.support.help.HelpOrigin
-import com.woocommerce.android.tools.SiteConnectionType
-import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
@@ -32,7 +30,6 @@ import org.wordpress.android.util.DeviceUtils
 import org.wordpress.android.util.NetworkUtils
 import org.wordpress.android.util.StringUtils
 import org.wordpress.android.util.UrlUtils
-import zendesk.configurations.Configuration
 import zendesk.core.AnonymousIdentity
 import zendesk.core.Identity
 import zendesk.core.PushRegistrationProvider
@@ -41,7 +38,6 @@ import zendesk.support.CreateRequest
 import zendesk.support.CustomField
 import zendesk.support.Request
 import zendesk.support.Support
-import zendesk.support.request.RequestActivity
 import java.util.Locale
 import java.util.Timer
 import kotlin.concurrent.schedule
@@ -161,44 +157,6 @@ class ZendeskHelper(
 
         awaitClose()
     }.flowOn(dispatchers.io)
-
-    /**
-     * This function creates a new ticket. It'll force a valid identity, so if the user doesn't have one set, a dialog
-     * will be shown where the user will need to enter an email and a name. If they cancel the dialog, the ticket
-     * creation will be canceled as well. A Zendesk configuration is passed in as it's required for ticket creation.
-     */
-    @JvmOverloads
-    fun createNewTicket(
-        context: Context,
-        origin: HelpOrigin?,
-        selectedSite: SiteModel?,
-        extraTags: List<String>? = null,
-        ticketType: TicketType = TicketType.MobileApp,
-        ssr: String? = null
-    ) {
-        require(isZendeskEnabled) {
-            zendeskNeedsToBeEnabledError
-        }
-
-        val siteConnectionTag = if (selectedSite?.connectionType == SiteConnectionType.ApplicationPasswords) {
-            ZendeskTags.applicationPasswordAuthenticated
-        } else null
-
-        val tags = (extraTags.orEmpty() + siteConnectionTag).filterNotNull()
-
-        requireIdentity(context, selectedSite) {
-            val config = buildZendeskConfig(
-                context = context,
-                ticketType = ticketType,
-                allSites = siteStore.sites,
-                origin = origin,
-                selectedSite = selectedSite,
-                extraTags = tags,
-                ssr = ssr,
-            )
-            RequestActivity.builder().show(context, config)
-        }
-    }
 
     /**
      * This function refreshes the Zendesk's request activity if it's currently being displayed. It'll return true if
@@ -364,30 +322,6 @@ class ZendeskHelper(
         AppPrefs.removeSupportName()
         refreshIdentity()
     }
-}
-
-// Helpers
-
-/**
- * This is a helper function which builds a `zendesk.configurations.Configuration` through helpers
- * to be used during ticket creation.
- */
-private fun buildZendeskConfig(
-    context: Context,
-    ticketType: TicketType,
-    allSites: List<SiteModel>?,
-    origin: HelpOrigin?,
-    selectedSite: SiteModel? = null,
-    extraTags: List<String>? = null,
-    ssr: String? = null
-): Configuration {
-    val customFields = buildZendeskCustomFields(context, ticketType, allSites, selectedSite, ssr)
-    val extraTagsWithTicketTypeTags = (extraTags ?: emptyList()) + ticketType.tags
-    return RequestActivity.builder()
-        .withTicketForm(ticketType.form, customFields)
-        .withRequestSubject(ZendeskConstants.ticketSubject)
-        .withTags(buildZendeskTags(allSites, origin ?: HelpOrigin.UNKNOWN, extraTagsWithTicketTypeTags))
-        .config()
 }
 
 private fun getHomeURLOrHostName(site: SiteModel): String {
@@ -574,10 +508,8 @@ sealed class TicketType(
 }
 
 private object ZendeskConstants {
-    const val articleLabel = "Android"
     const val blogSeparator = "\n----------\n"
     const val jetpackTag = "jetpack"
-    const val mobileHelpCategoryId = 360000041586
     const val supportCategory = "Support"
     const val mobileAppCategory = "Mobile App"
     const val mobileSubcategoryValue = "WooCommerce Mobile Apps"
@@ -593,7 +525,6 @@ private object ZendeskConstants {
     // We rely on this platform tag to filter tickets in Zendesk, so should be kept separate from the `articleLabel`
     const val platformTag = "Android"
     const val sourcePlatform = "Mobile_-_Woo_Android"
-    const val ticketSubject = "WooCommerce for Android Support"
     const val wpComTag = "wpcom"
     const val unknownValue = "unknown"
 }
@@ -616,8 +547,6 @@ private object TicketFieldIds {
 }
 
 object ZendeskTags {
-    const val applicationPasswordAuthenticated = "application_password_authenticated"
-
     const val mobileApp = "mobile_app"
     const val woocommerceCore = "woocommerce_core"
     const val paymentsProduct = "woocommerce_payments"
