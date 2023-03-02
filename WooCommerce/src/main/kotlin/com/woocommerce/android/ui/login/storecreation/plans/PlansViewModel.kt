@@ -114,7 +114,7 @@ class PlansViewModel @Inject constructor(
         iapManager.purchaseWPComPlan(activityWrapper, siteId)
     }
 
-    fun onIapPurchaseSuccess() {
+    fun onPurchaseSuccess() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_IAP_PURCHASE_SUCCESS)
         triggerEvent(NavigateToNextStep)
     }
@@ -219,7 +219,7 @@ class PlansViewModel @Inject constructor(
             viewModelScope.launch {
                 iapPurchaseFlow?.collectLatest { result ->
                     when (result) {
-                        is WPComPurchaseResult.Success -> onIapPurchaseSuccess()
+                        is WPComPurchaseResult.Success -> onPurchaseSuccess()
                         is WPComPurchaseResult.Error -> onInAppPurchaseError(result)
                     }.exhaustive
                 }

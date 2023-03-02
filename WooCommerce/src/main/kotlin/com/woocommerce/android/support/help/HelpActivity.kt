@@ -71,9 +71,8 @@ class HelpActivity : AppCompatActivity() {
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        binding.contactContainer.setOnClickListener { viewModel.contactSupport(TicketType.General) }
-        binding.identityContainer.setOnClickListener { showIdentityDialog(TicketType.General) }
-        binding.myTicketsContainer.setOnClickListener { showZendeskTickets() }
+        binding.contactContainer.setOnClickListener { viewModel.contactSupport(TicketType.MobileApp) }
+        binding.identityContainer.setOnClickListener { showIdentityDialog(TicketType.MobileApp) }
         binding.faqContainer.setOnClickListener {
             val loginFlow = intent.extras?.getString(LOGIN_FLOW_KEY)
             val loginStep = intent.extras?.getString(LOGIN_STEP_KEY)
@@ -90,30 +89,14 @@ class HelpActivity : AppCompatActivity() {
             binding.ssrContainer.setOnClickListener { showSSR() }
         }
 
-        with(binding.contactPaymentsContainer) {
-            setOnClickListener {
-                viewModel.contactSupport(TicketType.Payments)
-            }
-        }
-
         binding.textVersion.text = getString(R.string.version_with_name_param, PackageUtils.getVersionName(this))
-
-        /**
-         * If the user taps on a Zendesk notification, we want to show them the `My Tickets` page. However, this
-         * should only be triggered when the activity is first created, otherwise if the user comes back from
-         * `My Tickets` and rotates the screen (or triggers the activity re-creation in any other way) it'll navigate
-         * them to `My Tickets` again since the `originFromExtras` will still be [Origin.ZENDESK_NOTIFICATION].
-         */
-        if (savedInstanceState == null && originFromExtras == HelpOrigin.ZENDESK_NOTIFICATION) {
-            showZendeskTickets()
-        }
 
         if (originFromExtras == HelpOrigin.LOGIN_HELP_NOTIFICATION) {
             loginNotificationScheduler.onNotificationTapped(extraTagsFromExtras?.first())
         }
 
         if (originFromExtras == HelpOrigin.SITE_PICKER_JETPACK_TIMEOUT) {
-            viewModel.contactSupport(TicketType.General)
+            viewModel.contactSupport(TicketType.MobileApp)
         }
 
         initObservers(binding)
@@ -221,11 +204,6 @@ class HelpActivity : AppCompatActivity() {
         } else {
             null
         }
-    }
-
-    private fun showZendeskTickets() {
-        AnalyticsTracker.track(AnalyticsEvent.SUPPORT_TICKETS_VIEWED)
-        zendeskHelper.showAllTickets(this, originFromExtras, selectedSiteOrNull(), extraTagsFromExtras)
     }
 
     private fun showLoginHelpCenter(origin: HelpOrigin, loginFlow: String, loginStep: String) {

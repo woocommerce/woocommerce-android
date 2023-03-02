@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.jetpack.wpcom
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,10 +14,12 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.jetpack.GoToStore
 import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComPasswordViewModel.Show2FAScreen
 import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComPasswordViewModel.ShowMagicLinkScreen
 import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComPostLoginViewModel.ShowJetpackActivationScreen
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
@@ -54,8 +57,7 @@ class JetpackActivationWPComPasswordFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is Show2FAScreen -> {
-                    // TODO
-                    Toast.makeText(requireContext(), "$event", Toast.LENGTH_SHORT).show()
+                    navigateTo2FAScreen(event)
                 }
 
                 is ShowMagicLinkScreen -> {
@@ -67,11 +69,23 @@ class JetpackActivationWPComPasswordFragment : BaseFragment() {
                     navigateToJetpackActivationScreen(event)
                 }
 
+                is GoToStore -> goToStore()
                 is LaunchUrlInChromeTab -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 Exit -> findNavController().navigateUp()
             }
         }
+    }
+
+    private fun navigateTo2FAScreen(event: Show2FAScreen) {
+        findNavController().navigateSafely(
+            JetpackActivationWPComPasswordFragmentDirections
+                .actionJetpackActivationWPComPasswordFragmentToJetpackActivationWPCom2FAFragment(
+                    jetpackStatus = event.jetpackStatus,
+                    emailOrUsername = event.emailOrUsername,
+                    password = event.password
+                )
+        )
     }
 
     private fun navigateToJetpackActivationScreen(event: ShowJetpackActivationScreen) {
@@ -82,5 +96,14 @@ class JetpackActivationWPComPasswordFragment : BaseFragment() {
                     siteUrl = event.siteUrl
                 )
         )
+    }
+
+    private fun goToStore() {
+        (requireActivity() as? MainActivity)?.handleSitePickerResult() ?: run {
+            val intent = Intent(requireActivity(), MainActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            }
+            startActivity(intent)
+        }
     }
 }

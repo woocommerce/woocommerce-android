@@ -9,6 +9,7 @@ import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.WPComLoginRepository
+import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
@@ -30,10 +31,11 @@ import javax.inject.Inject
 class JetpackActivationWPComPasswordViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     selectedSite: SelectedSite,
+    jetpackAccountRepository: JetpackActivationRepository,
     private val wpComLoginRepository: WPComLoginRepository,
     private val accountRepository: AccountRepository,
     private val resourceProvider: ResourceProvider
-) : JetpackActivationWPComPostLoginViewModel(savedStateHandle, selectedSite) {
+) : JetpackActivationWPComPostLoginViewModel(savedStateHandle, selectedSite, jetpackAccountRepository) {
     companion object {
         private const val RESET_PASSWORD_URL = "https://wordpress.com/wp-login.php?action=lostpassword"
     }
@@ -96,7 +98,7 @@ class JetpackActivationWPComPasswordViewModel @Inject constructor(
 
                 when (failure?.type) {
                     AuthenticationErrorType.NEEDS_2FA -> {
-                        triggerEvent(Show2FAScreen(navArgs.emailOrUsername, navArgs.jetpackStatus))
+                        triggerEvent(Show2FAScreen(navArgs.emailOrUsername, password.value, navArgs.jetpackStatus))
                     }
 
                     AuthenticationErrorType.INCORRECT_USERNAME_OR_PASSWORD,
@@ -140,7 +142,12 @@ class JetpackActivationWPComPasswordViewModel @Inject constructor(
         val enableSubmit = password.isNotBlank()
     }
 
-    data class Show2FAScreen(val emailOrUsername: String, val jetpackStatus: JetpackStatus) : MultiLiveEvent.Event()
+    data class Show2FAScreen(
+        val emailOrUsername: String,
+        val password: String,
+        val jetpackStatus: JetpackStatus
+    ) : MultiLiveEvent.Event()
+
     data class ShowMagicLinkScreen(
         val emailOrUsername: String,
         val jetpackStatus: JetpackStatus

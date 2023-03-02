@@ -62,7 +62,7 @@ class InstallationViewModel @Inject constructor(
     }
 
     private fun loadNewStore() {
-        fun processStoreCreationResult(result: StoreCreationResult<Unit>) {
+        suspend fun processStoreCreationResult(result: StoreCreationResult<Unit>) {
             if (result is Success) {
                 repository.selectSite(newStore.data.siteId!!)
 
