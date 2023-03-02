@@ -212,7 +212,8 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                                 StoreOnboardingCollapsed(
                                     onboardingState = state,
                                     onViewAllClicked = storeOnboardingViewModel::viewAllClicked,
-                                    onShareFeedbackClicked = storeOnboardingViewModel::onShareFeedbackClicked
+                                    onShareFeedbackClicked = storeOnboardingViewModel::onShareFeedbackClicked,
+                                    onTaskClicked = storeOnboardingViewModel::onTaskClicked
                                 )
                             }
                         }
@@ -225,6 +226,10 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
             when (event) {
                 is StoreOnboardingViewModel.NavigateToOnboardingFullScreen -> openOnboardingInFullScreen()
                 is StoreOnboardingViewModel.NavigateToSurvey -> mainNavigationRouter?.showFeedbackSurvey()
+                is StoreOnboardingViewModel.NavigateToLaunchStore ->
+                    findNavController().navigateSafely(
+                        directions = MyStoreFragmentDirections.actionMyStoreToLaunchStoreFragment()
+                    )
             }
         }
     }
