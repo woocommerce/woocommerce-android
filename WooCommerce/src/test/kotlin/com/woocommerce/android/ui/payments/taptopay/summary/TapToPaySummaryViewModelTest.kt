@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.payments.taptopay.summary
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
+import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -34,6 +35,24 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
         assertThat(viewModel.event.value).isEqualTo(
             ShowSnackbar(R.string.card_reader_tap_to_pay_explanation_test_payment_error)
         )
+    }
+
+    @Test
+    fun `when onTryPaymentClicked, then progress is shown and then hidden`() = testBlocking {
+        // GIVEN
+        whenever(orderCreateEditRepository.createSimplePaymentOrder(BigDecimal.valueOf(0.5))).thenReturn(
+            Result.failure(Exception())
+        )
+
+        val states = viewModel.viewState.captureValues()
+
+        // WHEN
+        viewModel.onTryPaymentClicked()
+
+        // THEN
+        assertThat(states[0].isProgressVisible).isFalse()
+        assertThat(states[1].isProgressVisible).isTrue()
+        assertThat(states[2].isProgressVisible).isFalse()
     }
 
     @Test
