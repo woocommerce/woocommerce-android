@@ -32,7 +32,6 @@ import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PackageUtils
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.model.SiteModel
@@ -153,19 +152,8 @@ class HelpActivity : AppCompatActivity() {
             return
         }
 
-        if (FeatureFlag.NEW_SUPPORT_REQUESTS.isEnabled()) {
-            val tags = extraTags + (extraTagsFromExtras ?: emptyList())
-            openSupportRequestForm(tags)
-        } else {
-            zendeskHelper.createNewTicket(
-                context = this,
-                origin = originFromExtras,
-                selectedSite = selectedSiteOrNull(),
-                extraTags = extraTags + extraTagsFromExtras.orEmpty(),
-                ticketType = ticketType,
-                ssr = viewModel.ssr
-            )
-        }
+        val tags = extraTags + (extraTagsFromExtras ?: emptyList())
+        openSupportRequestForm(tags)
     }
 
     private fun showIdentityDialog(
