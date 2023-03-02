@@ -9,18 +9,27 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.doOnTextChanged
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivitySupportRequestFormBinding
 import com.woocommerce.android.extensions.serializable
+import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.support.TicketType
+import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationFailed
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationSucceeded
+import com.woocommerce.android.support.requests.SupportRequestFormViewModel.ShowSupportIdentityInputDialog
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SupportRequestFormActivity : AppCompatActivity() {
+    @Inject lateinit var supportHelper: SupportHelper
+    @Inject lateinit var zendeskHelper: ZendeskHelper
+
     private val viewModel: SupportRequestFormViewModel by viewModels()
 
     private val helpOrigin by lazy {
@@ -77,6 +86,7 @@ class SupportRequestFormActivity : AppCompatActivity() {
             when (it) {
                 is RequestCreationSucceeded -> showRequestCreationSuccessDialog()
                 is RequestCreationFailed -> showRequestCreationFailureDialog()
+                is ShowSupportIdentityInputDialog -> showSupportIdentityInputDialog(it.emailSuggestion)
             }
         }
     }
@@ -120,6 +130,19 @@ class SupportRequestFormActivity : AppCompatActivity() {
     private fun hideProgressDialog() {
         progressDialog?.dismiss()
         progressDialog = null
+    }
+
+    private fun showSupportIdentityInputDialog(emailSuggestion: String) {
+        supportHelper.showSupportIdentityInputDialog(this, emailSuggestion) { email, _ ->
+            zendeskHelper.setSupportEmail(email)
+            AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
+            viewModel.onSubmitRequestButtonClicked(
+                context = this,
+                helpOrigin = helpOrigin,
+                extraTags = extraTags
+            )
+        }
+        AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_FORM_VIEWED)
     }
 
     companion object {
