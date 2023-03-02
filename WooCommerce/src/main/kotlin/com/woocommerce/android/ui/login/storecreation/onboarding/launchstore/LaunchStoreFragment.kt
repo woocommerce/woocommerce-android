@@ -7,20 +7,17 @@ import android.view.ViewGroup
 import androidx.compose.material.Text
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.core.view.ViewCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class LaunchStoreFragment : BaseFragment() {
-    private val viewModel: StoreOnboardingViewModel by viewModels()
+    private val viewModel: LaunchStoreViewModel by viewModels()
     private lateinit var rootView: ComposeView
 
     override val activityAppBarStatus: AppBarStatus
@@ -40,10 +37,6 @@ class LaunchStoreFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        ViewCompat.setTransitionName(
-            rootView,
-            getString(R.string.store_onboarding_full_screen_transition_name)
-        )
         setupObservers()
     }
 
