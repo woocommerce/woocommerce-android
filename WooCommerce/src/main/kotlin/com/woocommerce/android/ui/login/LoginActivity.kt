@@ -28,7 +28,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_LOGIN_
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
 import com.woocommerce.android.extensions.parcelable
-import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
@@ -150,7 +149,6 @@ class LoginActivity :
     @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
     @Inject internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
-    @Inject internal lateinit var zendeskHelper: ZendeskHelper
     @Inject internal lateinit var urlUtils: UrlUtils
     @Inject internal lateinit var experimentTracker: ExperimentTracker
     @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
