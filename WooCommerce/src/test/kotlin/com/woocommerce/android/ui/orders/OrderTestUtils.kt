@@ -23,7 +23,7 @@ object OrderTestUtils {
     const val ORDER_ID = 1L
     private const val TEST_ORDER_STATUS_COUNT = 20
 
-    fun generateOrder(): OrderEntity {
+    fun generateOrder(metadata: String = ""): OrderEntity {
         return OrderEntity(
             billingFirstName = "Carissa",
             billingLastName = "King",
@@ -34,6 +34,7 @@ object OrderTestUtils {
             status = "pending, Custom 1,Custom 2,Custom 3",
             total = "106.00",
             localSiteId = LocalOrRemoteId.LocalId(1),
+            metaData = metadata,
         )
     }
 
