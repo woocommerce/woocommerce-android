@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.fragment.app.viewModels
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -18,6 +19,8 @@ import javax.inject.Inject
 class JetpackActivationWPCom2FAFragment : BaseFragment() {
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
+
+    private val viewModel: JetpackActivationWPCom2FAViewModel by viewModels()
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
