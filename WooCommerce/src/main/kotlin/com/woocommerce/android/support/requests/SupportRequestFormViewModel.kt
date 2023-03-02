@@ -5,6 +5,8 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.support.TicketType
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.support.help.HelpOrigin
@@ -20,10 +22,13 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import zendesk.support.Request
 import javax.inject.Inject
+import org.wordpress.android.fluxc.store.AccountStore
 
 @HiltViewModel
 class SupportRequestFormViewModel @Inject constructor(
+    private val accountStore: AccountStore,
     private val zendeskHelper: ZendeskHelper,
+    private val supportHelper: SupportHelper,
     private val selectedSite: SelectedSite,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
@@ -56,6 +61,11 @@ class SupportRequestFormViewModel @Inject constructor(
 
     fun onSubmitRequestButtonClicked(context: Context, helpOrigin: HelpOrigin, extraTags: List<String>) {
         val ticketType = viewState.value.ticketType ?: return
+        if (AppPrefs.hasSupportEmail().not()) {
+            handleEmptyCredentials()
+            return
+        }
+
         viewState.update { it.copy(isLoading = true) }
         launch {
             zendeskHelper.createRequest(
@@ -70,6 +80,17 @@ class SupportRequestFormViewModel @Inject constructor(
         }
     }
 
+    private fun handleEmptyCredentials() {
+        if (AppPrefs.hasSupportEmail()) {
+            AppPrefs.getSupportEmail()
+        } else {
+            supportHelper.getSupportEmailAndNameSuggestion(
+                accountStore.account,
+                selectedSite.getIfExists()
+            ).first
+        }.let { triggerEvent(ShowSupportIdentityInputDialog(it.orEmpty())) }
+    }
+
     private fun Result<Request?>.handleCreateRequestResult() {
         viewState.update { it.copy(isLoading = false) }
         fold(
@@ -80,6 +101,7 @@ class SupportRequestFormViewModel @Inject constructor(
 
     object RequestCreationSucceeded : Event()
     object RequestCreationFailed : Event()
+    data class ShowSupportIdentityInputDialog(val emailSuggestion: String) : Event()
 
     @Parcelize
     data class ViewState(
