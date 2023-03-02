@@ -1,6 +1,10 @@
 package com.woocommerce.android.ui.prefs.domain
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository
@@ -22,6 +26,8 @@ class DomainSearchViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     domainSuggestionsRepository: DomainSuggestionsRepository,
     currencyFormatter: CurrencyFormatter,
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val domainChangeRepository: DomainChangeRepository
 ) : DomainSuggestionsViewModel(
     savedStateHandle = savedStateHandle,
@@ -34,6 +40,16 @@ class DomainSearchViewModel @Inject constructor(
     override val helpOrigin = HelpOrigin.DOMAIN_CHANGE
 
     private val navArgs: DomainSearchFragmentArgs by savedStateHandle.navArgs()
+
+    init {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.CUSTOM_DOMAINS_STEP,
+            mapOf(
+                AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSource(),
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_PICKER
+            )
+        )
+    }
 
     override fun navigateToNextStep(selectedDomain: DomainSuggestion) {
         when (selectedDomain) {
@@ -62,6 +78,17 @@ class DomainSearchViewModel @Inject constructor(
                     ShowUiStringSnackbar(UiStringText(result.error.message ?: "Unable to create a shopping cart"))
                 )
                 triggerEvent(Exit)
+
+                analyticsTrackerWrapper.track(
+                    AnalyticsEvent.CUSTOM_DOMAIN_PURCHASE_FAILED,
+                    mapOf(
+                        AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSource(),
+                        AnalyticsTracker.KEY_USE_DOMAIN_CREDIT to false,
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to result.error.type.name,
+                        AnalyticsTracker.KEY_ERROR_DESC to result.error.message
+                    )
+                )
             }
         }
     }

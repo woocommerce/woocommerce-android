@@ -4,6 +4,10 @@ import android.net.Uri
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.prefs.domain.DomainPurchaseViewModel.ViewState.LoadingState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -19,6 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class DomainPurchaseViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
@@ -37,10 +43,25 @@ class DomainPurchaseViewModel @Inject constructor(
     }
 
     fun onPurchaseSuccess() {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.CUSTOM_DOMAIN_PURCHASE_SUCCESS,
+            mapOf(
+                AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSource(),
+                AnalyticsTracker.KEY_USE_DOMAIN_CREDIT to false // the WebView is only used for non-credits purchases
+            )
+        )
         triggerEvent(NavigateToSuccessScreen(navArgs.domain))
     }
 
     init {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.CUSTOM_DOMAINS_STEP,
+            mapOf(
+                AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSource(),
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_WEB_CHECKOUT
+            )
+        )
+
         _viewState.update {
             val siteHost = Uri.parse(selectedSite.get().url).host
             ViewState.CheckoutState(
