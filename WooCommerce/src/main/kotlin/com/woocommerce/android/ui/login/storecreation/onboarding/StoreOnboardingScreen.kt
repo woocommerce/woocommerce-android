@@ -131,15 +131,17 @@ fun StoreOnboardingCollapsed(
                     .padding(top = dimensionResource(id = R.dimen.major_100))
                     .fillMaxWidth()
             )
-            Text(
-                modifier = Modifier
-                    .clickable { onViewAllClicked() }
-                    .padding(dimensionResource(id = R.dimen.major_100)),
-                text = stringResource(R.string.store_onboarding_task_view_all, onboardingState.tasks.size),
-                style = MaterialTheme.typography.subtitle1,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colors.primary,
-            )
+            if (onboardingState.tasks.size > NUMBER_ITEMS_IN_COLLAPSED_MODE) {
+                Text(
+                    modifier = Modifier
+                        .clickable { onViewAllClicked() }
+                        .padding(dimensionResource(id = R.dimen.major_100)),
+                    text = stringResource(R.string.store_onboarding_task_view_all, onboardingState.tasks.size),
+                    style = MaterialTheme.typography.subtitle1,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colors.primary,
+                )
+            }
         }
         Box(
             modifier = Modifier
