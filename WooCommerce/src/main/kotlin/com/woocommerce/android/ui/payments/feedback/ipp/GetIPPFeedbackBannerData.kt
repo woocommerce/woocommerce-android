@@ -61,7 +61,7 @@ class GetIPPFeedbackBannerData @Inject constructor(
             hasIPPOrdersInLast30Days && ippOrdersInLast30Days in IPP_BEGINNER_TRANSACTIONS_RANGE -> {
                 IPP_BEGINNER_BANNER
             }
-            wcPayIPPOrdersCount > IPP_NINJA_TRANSACTIONS_THRESHOLD -> {
+            wcPayIPPOrdersCount >= IPP_NINJA_TRANSACTIONS_THRESHOLD -> {
                 IPP_NINJA_BANNER
             }
             else -> {
