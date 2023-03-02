@@ -23,7 +23,10 @@ object OrderTestUtils {
     const val ORDER_ID = 1L
     private const val TEST_ORDER_STATUS_COUNT = 20
 
-    fun generateOrder(metadata: String = ""): OrderEntity {
+    fun generateOrder(
+        metadata: String = "",
+        paymentMethod: String = "",
+        datePaid: String = "2018-02-02T16:11:13Z"): OrderEntity {
         return OrderEntity(
             billingFirstName = "Carissa",
             billingLastName = "King",
@@ -35,6 +38,8 @@ object OrderTestUtils {
             total = "106.00",
             localSiteId = LocalOrRemoteId.LocalId(1),
             metaData = metadata,
+            paymentMethod = paymentMethod,
+            datePaid = datePaid
         )
     }
 
