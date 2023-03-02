@@ -22,9 +22,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.store.AccountStore
 import zendesk.support.Request
 import javax.inject.Inject
-import org.wordpress.android.fluxc.store.AccountStore
 
 @HiltViewModel
 class SupportRequestFormViewModel @Inject constructor(
