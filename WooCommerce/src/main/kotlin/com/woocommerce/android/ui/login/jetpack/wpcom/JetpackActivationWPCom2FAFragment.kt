@@ -39,14 +39,6 @@ class JetpackActivationWPCom2FAFragment : BaseFragment() {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        setupObservers()
-    }
-
-    private fun setupObservers() {
-        TODO()
-    }
-
     private fun navigateToJetpackActivationScreen(event: ShowJetpackActivationScreen) {
         findNavController().navigateSafely(
             JetpackActivationWPCom2FAFragmentDirections
