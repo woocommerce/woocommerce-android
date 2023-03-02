@@ -6,6 +6,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.support.TicketType
 import com.woocommerce.android.support.ZendeskHelper
@@ -59,9 +61,29 @@ class SupportRequestFormViewModel @Inject constructor(
         viewState.update { it.copy(message = message) }
     }
 
-    fun onSubmitRequestButtonClicked(context: Context, helpOrigin: HelpOrigin, extraTags: List<String>) {
+    fun onUserIdentitySet(
+        context: Context,
+        helpOrigin: HelpOrigin,
+        extraTags: List<String>,
+        selectedEmail: String
+    ) {
+        zendeskHelper.setSupportEmail(selectedEmail)
+        AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
+        onSubmitRequestButtonClicked(
+            context = context,
+            helpOrigin = helpOrigin,
+            extraTags = extraTags
+        )
+    }
+
+    fun onSubmitRequestButtonClicked(
+        context: Context,
+        helpOrigin: HelpOrigin,
+        extraTags: List<String>,
+        verifyIdentity: Boolean = false
+    ) {
         val ticketType = viewState.value.ticketType ?: return
-        if (AppPrefs.hasSupportEmail().not()) {
+        if (verifyIdentity && AppPrefs.hasSupportEmail().not()) {
             handleEmptyCredentials()
             return
         }

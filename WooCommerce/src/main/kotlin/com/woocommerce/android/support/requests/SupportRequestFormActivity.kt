@@ -71,7 +71,12 @@ class SupportRequestFormActivity : AppCompatActivity() {
             }
         }
         binding.submitRequestButton.setOnClickListener {
-            viewModel.onSubmitRequestButtonClicked(this, helpOrigin, extraTags)
+            viewModel.onSubmitRequestButtonClicked(
+                context = this,
+                helpOrigin = helpOrigin,
+                extraTags = extraTags,
+                verifyIdentity = true
+            )
         }
     }
 
@@ -134,12 +139,11 @@ class SupportRequestFormActivity : AppCompatActivity() {
 
     private fun showSupportIdentityInputDialog(emailSuggestion: String) {
         supportHelper.showSupportIdentityInputDialog(this, emailSuggestion) { email, _ ->
-            zendeskHelper.setSupportEmail(email)
-            AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
-            viewModel.onSubmitRequestButtonClicked(
+            viewModel.onUserIdentitySet(
                 context = this,
                 helpOrigin = helpOrigin,
-                extraTags = extraTags
+                extraTags = extraTags,
+                selectedEmail = email
             )
         }
         AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_FORM_VIEWED)
