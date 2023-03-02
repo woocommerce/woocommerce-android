@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.payments.feedback.ipp
 
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.WOOCOMMERCE_PAYMENTS_PAYMENT_TYPE
 import com.woocommerce.android.extensions.daysAgo
 import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.ui.orders.OrderTestUtils
@@ -19,6 +20,7 @@ import org.mockito.kotlin.firstValue
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentTransactionsSummaryResult
 import org.wordpress.android.fluxc.network.BaseRequest
@@ -151,6 +153,35 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
 
         // then
         assertNull(result)
+    }
+
+    @Test
+    fun `given IPP transactions in last 30 days and the transaction count is in beginners range (1 to 9), then newbie user should be detected`() = testBlocking {
+        // given
+        whenever(shouldShowFeedbackBanner()).thenReturn(true)
+        whenever(getActivePaymentsPlugin())
+            .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
+        whenever(cashOnDeliverySettings.isCashOnDeliveryEnabled()).thenReturn(true)
+        val orderList = mutableListOf<OrderEntity>()
+        repeat(9) {
+            orderList.add(
+                OrderTestUtils.generateOrder(
+                    metadata = "[{\"id\":22346,\"key\":\"receipt_url\",\"value\":\"\"}]",
+                    paymentMethod = WOOCOMMERCE_PAYMENTS_PAYMENT_TYPE,
+                    datePaid = Date().formatToYYYYmmDD()
+                )
+            )
+        }
+        whenever(orderStore.getOrdersForSite(siteModel)).thenReturn(orderList)
+
+        // when
+        val result = sut()
+
+        // then
+        assertEquals("https://automattic.survey.fm/woo-app-–-ipp-first-transaction-survey", result?.url)
+        assertEquals(R.string.feedback_banner_ipp_message_beginner, result?.message)
+        assertEquals(R.string.feedback_banner_ipp_title_beginner, result?.title)
+        assertEquals("ipp_new_user", result?.campaignName)
     }
     @Test
     fun `given COD enabled and zero IPP transactions ever, then newbie user should be detected`() = testBlocking {
