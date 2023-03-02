@@ -134,6 +134,24 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         assertEquals(R.string.feedback_banner_ipp_message_newbie, result?.message)
         assertEquals("ipp_not_user", result?.campaignName)
     }
+
+    @Test
+    fun `given COD disabled and has 0 IPP transactions, then return null`() = testBlocking {
+        // given
+        whenever(shouldShowFeedbackBanner()).thenReturn(true)
+        whenever(getActivePaymentsPlugin())
+            .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
+        whenever(cashOnDeliverySettings.isCashOnDeliveryEnabled()).thenReturn(false)
+        whenever(orderStore.getOrdersForSite(siteModel)).thenReturn(
+            listOf(OrderTestUtils.generateOrder(), OrderTestUtils.generateOrder())
+        )
+
+        // when
+        val result = sut()
+
+        // then
+        assertNull(result)
+    }
     @Test
     fun `given COD enabled and zero IPP transactions ever, then newbie user should be detected`() = testBlocking {
         // given
