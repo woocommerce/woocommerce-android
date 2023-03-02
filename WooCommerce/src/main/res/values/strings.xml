@@ -1964,10 +1964,6 @@
     <string name="support_faq_detail">Get answers to questions you have</string>
     <string name="support_contact">Contact support</string>
     <string name="support_contact_detail">Reach our happiness engineers who can help answer tough questions</string>
-    <string name="support_my_tickets">My tickets</string>
-    <string name="support_my_tickets_detail">View previously submitted support tickets</string>
-    <string name="support_contact_payments">Contact Payments Support</string>
-    <string name="support_contact_payments_detail">Reach our happiness engineers who can help answer payments related questions</string>
     <string name="support_application_log">Application log</string>
     <string name="support_application_log_detail">Advanced tool to review the app status</string>
     <string name="support_system_status_report">System status report</string>

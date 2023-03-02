@@ -7,8 +7,6 @@ import android.telephony.TelephonyManager
 import android.text.TextUtils
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
-import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.logInformation
 import com.woocommerce.android.extensions.stateLogInformation
 import com.woocommerce.android.support.help.HelpOrigin
@@ -43,9 +41,7 @@ import zendesk.support.CreateRequest
 import zendesk.support.CustomField
 import zendesk.support.Request
 import zendesk.support.Support
-import zendesk.support.guide.HelpCenterActivity
 import zendesk.support.request.RequestActivity
-import zendesk.support.requestlist.RequestListActivity
 import java.util.Locale
 import java.util.Timer
 import kotlin.concurrent.schedule
@@ -120,48 +116,7 @@ class ZendeskHelper(
     }
 
     /**
-     * This function shows the Zendesk Help Center. It doesn't require a valid identity. If the support identity is
-     * available it'll be used and the "New Ticket" button will be available, if not, it'll work with an anonymous
-     * identity. The configuration will only be passed in if the identity is available, as it's only required if
-     * the user contacts us through it.
-     */
-    fun showZendeskHelpCenter(
-        context: Context,
-        origin: HelpOrigin?,
-        selectedSite: SiteModel?,
-        extraTags: List<String>? = null,
-        ticketType: TicketType = TicketType.MobileApp,
-    ) {
-        require(isZendeskEnabled) {
-            zendeskNeedsToBeEnabledError
-        }
-        val builder = HelpCenterActivity.builder()
-            .withArticlesForCategoryIds(ZendeskConstants.mobileHelpCategoryId)
-            .withContactUsButtonVisible(isIdentitySet)
-            .withLabelNames(ZendeskConstants.articleLabel)
-            .withShowConversationsMenuButton(isIdentitySet)
-        AnalyticsTracker.track(AnalyticsEvent.SUPPORT_HELP_CENTER_VIEWED)
-        if (isIdentitySet) {
-            builder.show(
-                context,
-                buildZendeskConfig(
-                    context,
-                    ticketType,
-                    siteStore.sites,
-                    origin,
-                    selectedSite,
-                    extraTags
-                )
-            )
-        } else {
-            builder.show(context)
-        }
-    }
-
-    /**
      * This function creates a new customer Support Request through the Zendesk API Providers.
-     *
-     * As it is, no identity is required so far. This should be revised in the near future.
      */
     @Suppress("LongParameterList")
     suspend fun createRequest(
@@ -242,30 +197,6 @@ class ZendeskHelper(
                 ssr = ssr,
             )
             RequestActivity.builder().show(context, config)
-        }
-    }
-
-    /**
-     * This function shows the user's ticket list. It'll force a valid identity, so if the user doesn't have one set,
-     * a dialog will be shown where the user will need to enter an email and a name. If they cancel the dialog,
-     * ticket list will not be shown. A Zendesk configuration is passed in as it's required for ticket creation.
-     */
-    fun showAllTickets(
-        context: Context,
-        origin: HelpOrigin?,
-        selectedSite: SiteModel? = null,
-        extraTags: List<String>? = null,
-        ticketType: TicketType = TicketType.MobileApp,
-    ) {
-        require(isZendeskEnabled) {
-            zendeskNeedsToBeEnabledError
-        }
-        requireIdentity(context, selectedSite) {
-            RequestListActivity.builder()
-                .show(
-                    context,
-                    buildZendeskConfig(context, ticketType, siteStore.sites, origin, selectedSite, extraTags)
-                )
         }
     }
 
