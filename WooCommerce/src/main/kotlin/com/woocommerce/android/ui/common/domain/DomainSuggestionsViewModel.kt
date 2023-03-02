@@ -44,6 +44,7 @@ abstract class DomainSuggestionsViewModel constructor(
         const val KEY_IS_FREE_CREDIT_AVAILABLE = "isFreeCreditAvailable"
         const val KEY_INITIAL_QUERY = "initialQuery"
     }
+
     protected abstract val helpOrigin: HelpOrigin
 
     var domainQuery by mutableStateOf(initialQuery)
@@ -100,6 +101,14 @@ abstract class DomainSuggestionsViewModel constructor(
                     loadingState.value = Idle
                 }
         }
+
+        viewModelScope.launch {
+            domainSuggestions.collectLatest {
+                if (selectedDomain.value == null && it.isNotEmpty()) {
+                    selectedDomain.value = it.first()
+                }
+            }
+        }
     }
 
     open fun onBackPressed() {
@@ -131,13 +140,11 @@ abstract class DomainSuggestionsViewModel constructor(
     ) = when {
         domainQuery.isBlank() || domainSuggestions.isEmpty() -> emptyList()
         else -> {
-            val preSelectDomain = currentSelection ?: domainSuggestions.first()
-
             domainSuggestions.mapNotNull { domain ->
                 when (domain) {
                     is Free -> {
                         DomainSuggestionUi.Free(
-                            isSelected = domain.name == preSelectDomain.name,
+                            isSelected = domain.name == currentSelection?.name,
                             domain = domain.name
                         )
                     }
@@ -149,14 +156,14 @@ abstract class DomainSuggestionsViewModel constructor(
                             if (isFreeCreditAvailable && domain.cost != null) {
                                 // free credit can't be used for premium domains, which don't have cost
                                 DomainSuggestionUi.FreeWithCredit(
-                                    isSelected = domain.name == preSelectDomain.name,
+                                    isSelected = domain.name == currentSelection?.name,
                                     domain = domain.name,
                                     price = domain.cost.format(product.currencyCode!!)
                                 )
                             } else if (product.isDomainOnSale()) {
                                 // if the domain is on sale, we need to show the sale price
                                 DomainSuggestionUi.OnSale(
-                                    isSelected = domain.name == preSelectDomain.name,
+                                    isSelected = domain.name == currentSelection?.name,
                                     domain = domain.name,
                                     price = domain.cost!!.format(product.currencyCode!!),
                                     salePrice = product.saleCost!!.format(product.currencyCode!!)
@@ -164,7 +171,7 @@ abstract class DomainSuggestionsViewModel constructor(
                             } else {
                                 // otherwise, we show the regular price
                                 DomainSuggestionUi.Paid(
-                                    isSelected = domain.name == preSelectDomain.name,
+                                    isSelected = domain.name == currentSelection?.name,
                                     domain = domain.name,
                                     price = domain.cost!!.format(product.currencyCode!!)
                                 )
@@ -176,7 +183,7 @@ abstract class DomainSuggestionsViewModel constructor(
                         val price = domainSuggestionsRepository.fetchDomainPrice(domain.name).getOrNull()
                         if (product != null && price != null) {
                             DomainSuggestionUi.Paid(
-                                isSelected = domain.name == preSelectDomain.name,
+                                isSelected = domain.name == currentSelection?.name,
                                 domain = domain.name,
                                 price = price.format(product.currencyCode!!)
                             )
