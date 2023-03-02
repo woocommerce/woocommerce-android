@@ -83,6 +83,18 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given banner should not be shown, then log the error with proper message`() = testBlocking {
+        // given
+        whenever(shouldShowFeedbackBanner()).thenReturn(false)
+
+        // when
+        sut()
+
+        // then
+        verify(logger).e(AppLog.T.API, "GetIPPFeedbackBannerData should not be shown.")
+    }
+
+    @Test
     fun `given banner should be shown and no active payments plugin found, then newbie should be detected`() =
         testBlocking {
             // given
