@@ -21,6 +21,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_ABOUT_OPEN_SOURCE_LICENSES_LINK_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_ABOUT_WOOCOMMERCE_LINK_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_BETA_FEATURES_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_DOMAINS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_FEATURE_REQUEST_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_IMAGE_OPTIMIZATION_TOGGLED
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTINGS_LOGOUT_BUTTON_TAPPED
@@ -210,6 +211,8 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         lifecycleScope.launch {
             binding.domainGroup.isVisible = presenter.isDomainOptionVisible
             binding.optionDomain.setOnClickListener {
+                AnalyticsTracker.track(SETTINGS_DOMAINS_TAPPED)
+                AppPrefs.setCustomDomainsSource(AnalyticsTracker.VALUE_SETTINGS)
                 showDomainChooser()
             }
         }

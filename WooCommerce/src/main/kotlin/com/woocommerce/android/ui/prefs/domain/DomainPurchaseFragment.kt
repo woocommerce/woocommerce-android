@@ -8,19 +8,23 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.extensions.navigateToHelpScreen
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.NavigateToDomainSearch
-import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ShowMoreAboutDomains
-import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.ui.prefs.domain.DomainPurchaseViewModel.NavigateToSuccessScreen
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.fluxc.network.UserAgent
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class DomainDashboardFragment : BaseFragment() {
-    private val viewModel: DomainDashboardViewModel by viewModels()
+class DomainPurchaseFragment : BaseFragment() {
+    private val viewModel: DomainPurchaseViewModel by viewModels()
+
+    @Inject internal lateinit var authenticator: WPComWebViewAuthenticator
+    @Inject internal lateinit var userAgent: UserAgent
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -30,7 +34,7 @@ class DomainDashboardFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    DomainDashboardScreen(viewModel)
+                    DomainRegistrationCheckoutScreen(viewModel, authenticator, userAgent)
                 }
             }
         }
@@ -45,14 +49,15 @@ class DomainDashboardFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
-                is ShowMoreAboutDomains -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
-                is NavigateToDomainSearch -> findNavController().navigate(
-                    DomainDashboardFragmentDirections.actionDomainDashboardFragmentToDomainSearchFragment(
-                        isFreeCreditAvailable = event.hasFreeCredits
-                    )
-                )
+                is NavigateToSuccessScreen -> navigateToPurchaseSuccessScreen(event.domain)
             }
         }
+    }
+
+    private fun navigateToPurchaseSuccessScreen(domain: String) {
+        findNavController().navigateSafely(
+            DomainPurchaseFragmentDirections
+                .actionDomainRegistrationCheckoutFragmentToPurchaseSuccessfulFragment(domain)
+        )
     }
 }
