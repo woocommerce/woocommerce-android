@@ -87,13 +87,13 @@ fun TapToPaySummaryScreen(
                 horizontalAlignment = CenterHorizontally,
             ) {
                 Text(
-                    text = stringResource(id = R.string.card_reader_tap_to_pay_explanation_one),
+                    text = stringResource(id = R.string.card_reader_tap_to_pay_explanation_ready),
                     style = MaterialTheme.typography.subtitle1,
                     textAlign = Center,
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_150)))
                 Text(
-                    text = stringResource(id = R.string.card_reader_tap_to_pay_explanation_two),
+                    text = stringResource(id = R.string.card_reader_tap_to_pay_explanation_try_and_refund),
                     style = MaterialTheme.typography.subtitle1,
                     textAlign = Center,
                 )
@@ -104,7 +104,7 @@ fun TapToPaySummaryScreen(
             Column(horizontalAlignment = CenterHorizontally) {
                 Text(
                     modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_300)),
-                    text = stringResource(id = R.string.card_reader_tap_to_pay_explanation_three),
+                    text = stringResource(id = R.string.card_reader_tap_to_pay_explanation_where_to_find),
                     style = MaterialTheme.typography.caption,
                     textAlign = Center,
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.4f)
