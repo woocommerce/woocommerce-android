@@ -341,6 +341,9 @@
     <string name="login_application_passwords_unavailable">It looks like Application Passwords feature is disabled in your site %1$s.\n Please enable it to use the WooCommerce app.</string>
     <string name="login_jetpack_connection_enter_wpcom_email">Log in with your WordPress.com account to connect Jetpack</string>
     <string name="login_jetpack_installation_enter_wpcom_email">Log in with your WordPress.com account to install Jetpack</string>
+    <string name="login_jetpack_connection_enter_wpcom_password">Enter the password of your WordPress.com account to connect to Jetpack</string>
+    <string name="login_jetpack_installation_enter_wpcom_password">Enter the password of your WordPress.com account to install Jetpack</string>
+    <string name="login_jetpack_installation_continue_magic_link">Or continue using Magic Link</string>
 
     <!--
         My Store View
@@ -546,7 +549,8 @@
     <string name="domains_add_domain_button_title">Add a domain</string>
     <string name="domains_select_domain">Select domain</string>
     <string name="domains_redirect_notice">The domain purchased will redirect users to</string>
-    <string name="domains_error_title">Unable to load site domains</string>
+    <string name="domains_generic_error_title">Unable to load site domains</string>
+    <string name="domains_access_error_title">Only store administrators can access domain settings</string>
     <string name="domains_free_with_credits">Free for the first year</string>
     <string name="domains_purchase_successful_heading">Congratulations on your purchase</string>
     <string name="domains_purchase_successful_delay_notice">Your site address is being set up. It may take up 30 minutes for your domain to start working.</string>
@@ -1128,9 +1132,9 @@
         -->
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
     <string name="card_reader_tap_to_pay_explanation_title">Collect card payments\nwith your phone</string>
-    <string name="card_reader_tap_to_pay_explanation_one">Your phone is ready for Tap to Pay.\nYour customer can tap their card\non your phone to pay.</string>
-    <string name="card_reader_tap_to_pay_explanation_two">Try a payment using your card and\nrefund it when you’re done.</string>
-    <string name="card_reader_tap_to_pay_explanation_three"> You can find Tap to Pay on Android in\nMenu > Payments, or Collect Payment and\nchoose Tap to Pay.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">Your phone is ready for Tap to Pay.\nYour customer can tap their card\non your phone to pay.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Try a payment using your card and\nrefund it when you’re done.</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find"> You can find Tap to Pay on Android in\nMenu > Payments, or Collect Payment and\nchoose Tap to Pay.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Try a payment</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Something went wrong. Please try again later.</string>
 
@@ -3121,5 +3125,12 @@
     <string name="support_request_help_payments">WooCommerce Payments</string>
     <string name="support_request_help_plugins">WooCommerce Plugin</string>
     <string name="support_request_help_other">Other Extension / Plugin</string>
+    <string name="support_request_loading_title">Sending your request</string>
+    <string name="support_request_loading_message">Please wait…</string>
+    <string name="support_request_success_title">Request sent!</string>
+    <string name="support_request_success_message">Your support request has landed safely in our inbox. We will reply via email as quickly as we can.</string>
+    <string name="support_request_dialog_action">Got It!</string>
+    <string name="support_request_error_title">Something went wrong</string>
+    <string name="support_request_error_message">Sorry, we cannot create support requests right now, please try again later.</string>
 
 </resources>

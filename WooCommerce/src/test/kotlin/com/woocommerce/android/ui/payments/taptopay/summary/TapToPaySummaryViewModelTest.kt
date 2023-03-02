@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
+import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -52,6 +53,24 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
             // THEN
             assertThat((viewModel.event.value as TapToPaySummaryViewModel.StartTryPaymentFlow).order).isEqualTo(order)
         }
+
+    @Test
+    fun `when onTryPaymentClicked, then progress is shown and then hidden`() = testBlocking {
+        // GIVEN
+        whenever(orderCreateEditRepository.createSimplePaymentOrder(BigDecimal.valueOf(0.5))).thenReturn(
+            Result.failure(Exception())
+        )
+
+        val states = viewModel.viewState.captureValues()
+
+        // WHEN
+        viewModel.onTryPaymentClicked()
+
+        // THEN
+        assertThat(states[0].isProgressVisible).isFalse()
+        assertThat(states[1].isProgressVisible).isTrue()
+        assertThat(states[2].isProgressVisible).isFalse()
+    }
 
     @Test
     fun `when onBackClicked, then exit emited`() {

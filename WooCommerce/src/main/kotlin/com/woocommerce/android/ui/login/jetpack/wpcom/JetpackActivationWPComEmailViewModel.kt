@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.OnChangedException
+import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.ui.login.WPComLoginRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -64,7 +65,7 @@ class JetpackActivationWPComEmailViewModel @Inject constructor(
                 if (it.isPasswordless) {
                     triggerEvent(ShowMagicLinkScreen(email))
                 } else {
-                    triggerEvent(ShowPasswordScreen(email))
+                    triggerEvent(ShowPasswordScreen(email, navArgs.jetpackStatus))
                 }
             },
             onFailure = {
@@ -97,6 +98,10 @@ class JetpackActivationWPComEmailViewModel @Inject constructor(
         val enableSubmit = email.isNotBlank()
     }
 
-    data class ShowPasswordScreen(val emailOrUsername: String) : MultiLiveEvent.Event()
+    data class ShowPasswordScreen(
+        val emailOrUsername: String,
+        val jetpackStatus: JetpackStatus
+    ) : MultiLiveEvent.Event()
+
     data class ShowMagicLinkScreen(val emailOrUsername: String) : MultiLiveEvent.Event()
 }

@@ -58,6 +58,9 @@ import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ViewState.DashboardState
 import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ViewState.ErrorState
+import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ViewState.ErrorState.ErrorType
+import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ViewState.ErrorState.ErrorType.ACCESS_ERROR
+import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ViewState.ErrorState.ErrorType.GENERIC_ERROR
 import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ViewState.LoadingState
 
 @Composable
@@ -83,8 +86,8 @@ fun DomainDashboardScreen(viewModel: DomainDashboardViewModel) {
                                 .padding(padding)
                         )
                     }
+                    is ErrorState -> ErrorScreen(viewState.errorType)
                     LoadingState -> ProgressIndicator()
-                    ErrorState -> ErrorScreen()
                 }
             }
         }
@@ -328,7 +331,7 @@ private fun PrimaryDomainTag() {
 }
 
 @Composable
-fun ErrorScreen() {
+fun ErrorScreen(errorType: ErrorType) {
     Column(
         modifier = Modifier
             .background(MaterialTheme.colors.surface)
@@ -341,8 +344,12 @@ fun ErrorScreen() {
         ) {
             Image(painter = painterResource(id = drawable.img_woo_generic_error), contentDescription = null)
 
+            val message = when (errorType) {
+                ErrorType.GENERIC_ERROR -> stringResource(id = string.domains_generic_error_title)
+                ErrorType.ACCESS_ERROR -> stringResource(id = string.domains_access_error_title)
+            }
             Text(
-                text = stringResource(id = string.domains_error_title),
+                text = message,
                 style = MaterialTheme.typography.h6,
                 modifier = Modifier
                     .padding(
@@ -410,5 +417,5 @@ fun NoDomainsPickerPreview() {
 @Preview()
 @Composable
 fun ErrorScreenPreview() {
-    ErrorScreen()
+    ErrorScreen(ACCESS_ERROR)
 }

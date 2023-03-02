@@ -1,17 +1,37 @@
 package com.woocommerce.android.support.requests
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.widget.doOnTextChanged
+import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ActivitySupportRequestFormBinding
-import com.woocommerce.android.support.TicketType
+import com.woocommerce.android.extensions.serializable
+import com.woocommerce.android.support.HelpOption
+import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationFailed
+import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationSucceeded
+import com.woocommerce.android.ui.dialog.WooDialog
+import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class SupportRequestFormActivity : AppCompatActivity() {
     private val viewModel: SupportRequestFormViewModel by viewModels()
+
+    private val helpOrigin by lazy {
+        intent.extras?.serializable(ORIGIN_KEY) ?: HelpOrigin.UNKNOWN
+    }
+
+    private val extraTags by lazy {
+        intent.extras?.getStringArrayList(EXTRA_TAGS_KEY) ?: emptyList()
+    }
+
+    private var progressDialog: CustomProgressDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,8 +39,7 @@ class SupportRequestFormActivity : AppCompatActivity() {
             setContentView(root)
             setupActionBar()
             observeViewEvents(this)
-            // Disabled to avoid triggering a support request while testing, it will be removed later
-            submitRequestButton.isEnabled = false
+            observeViewModelEvents(this)
         }
     }
 
@@ -31,13 +50,34 @@ class SupportRequestFormActivity : AppCompatActivity() {
     }
 
     private fun observeViewEvents(binding: ActivitySupportRequestFormBinding) {
+        binding.requestSubject.setOnTextChangedListener { viewModel.onSubjectChanged(it.toString()) }
+        binding.requestMessage.doOnTextChanged { text, _, _, _ -> viewModel.onMessageChanged(text.toString()) }
+        binding.helpOptionsGroup.setOnCheckedChangeListener { _, selectionID ->
+            when (selectionID) {
+                binding.mobileAppOption.id -> viewModel.onHelpOptionSelected(HelpOption.MobileApp)
+                binding.ippOption.id -> viewModel.onHelpOptionSelected(HelpOption.InPersonPayments)
+                binding.paymentsOption.id -> viewModel.onHelpOptionSelected(HelpOption.Payments)
+                binding.wooPluginOption.id -> viewModel.onHelpOptionSelected(HelpOption.WooPlugin)
+                binding.otherOption.id -> viewModel.onHelpOptionSelected(HelpOption.OtherPlugins)
+            }
+        }
         binding.submitRequestButton.setOnClickListener {
-            viewModel.onSubmitRequestButtonClicked(
-                this,
-                TicketType.General,
-                "This is a Test",
-                "Please Ignore"
-            )
+            viewModel.onSubmitRequestButtonClicked(this, helpOrigin, extraTags)
+        }
+    }
+
+    private fun observeViewModelEvents(binding: ActivitySupportRequestFormBinding) {
+        viewModel.isSubmitButtonEnabled.observe(this) { isEnabled ->
+            binding.submitRequestButton.isEnabled = isEnabled
+        }
+        viewModel.isRequestLoading.observe(this) { isLoading ->
+            if (isLoading) showProgressDialog() else hideProgressDialog()
+        }
+        viewModel.event.observe(this) {
+            when (it) {
+                is RequestCreationSucceeded -> showRequestCreationSuccessDialog()
+                is RequestCreationFailed -> showRequestCreationFailureDialog()
+            }
         }
     }
 
@@ -47,5 +87,53 @@ class SupportRequestFormActivity : AppCompatActivity() {
             return true
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun showRequestCreationSuccessDialog() {
+        WooDialog.showDialog(
+            activity = this,
+            titleId = R.string.support_request_success_title,
+            messageId = R.string.support_request_success_message,
+            positiveButtonId = R.string.support_request_dialog_action,
+            posBtnAction = { _, _ -> finish() }
+        )
+    }
+
+    private fun showRequestCreationFailureDialog() {
+        WooDialog.showDialog(
+            activity = this,
+            titleId = R.string.support_request_error_title,
+            messageId = R.string.support_request_error_message,
+            positiveButtonId = R.string.support_request_dialog_action
+        )
+    }
+
+    private fun showProgressDialog() {
+        hideProgressDialog()
+        progressDialog = CustomProgressDialog.show(
+            getString(R.string.support_request_loading_title),
+            getString(R.string.support_request_loading_message)
+        ).also { it.show(supportFragmentManager, CustomProgressDialog.TAG) }
+        progressDialog?.isCancelable = false
+    }
+
+    private fun hideProgressDialog() {
+        progressDialog?.dismiss()
+        progressDialog = null
+    }
+
+    companion object {
+        private const val ORIGIN_KEY = "ORIGIN_KEY"
+        private const val EXTRA_TAGS_KEY = "EXTRA_TAGS_KEY"
+
+        @JvmStatic
+        fun createIntent(
+            context: Context,
+            origin: HelpOrigin,
+            extraTags: java.util.ArrayList<String>
+        ) = Intent(context, SupportRequestFormActivity::class.java).apply {
+            putExtra(ORIGIN_KEY, origin)
+            putStringArrayListExtra(EXTRA_TAGS_KEY, ArrayList(extraTags))
+        }
     }
 }

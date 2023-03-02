@@ -25,6 +25,9 @@ import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.support.TicketType
 import com.woocommerce.android.support.WooLogViewerActivity
 import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.support.help.HelpViewModel.ContactSupportEvent
+import com.woocommerce.android.support.help.HelpViewModel.ContactSupportEvent.CreateTicket
+import com.woocommerce.android.support.help.HelpViewModel.ContactSupportEvent.ShowLoading
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
@@ -68,12 +71,7 @@ class HelpActivity : AppCompatActivity() {
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        if (FeatureFlag.NEW_SUPPORT_REQUESTS.isEnabled()) {
-            binding.contactContainer.setOnClickListener { openSupportRequestForm() }
-        } else {
-            binding.contactContainer.setOnClickListener { viewModel.contactSupport(TicketType.General) }
-        }
-
+        binding.contactContainer.setOnClickListener { viewModel.contactSupport(TicketType.General) }
         binding.identityContainer.setOnClickListener { showIdentityDialog(TicketType.General) }
         binding.myTicketsContainer.setOnClickListener { showZendeskTickets() }
         binding.faqContainer.setOnClickListener {
@@ -124,13 +122,13 @@ class HelpActivity : AppCompatActivity() {
     private fun initObservers(binding: ActivityHelpBinding) {
         viewModel.event.observe(this) { event ->
             when (event) {
-                is HelpViewModel.ContactSupportEvent -> {
+                is ContactSupportEvent -> {
                     when (event) {
-                        is HelpViewModel.ContactSupportEvent.CreateTicket -> {
+                        is CreateTicket -> {
                             binding.helpLoading.visibility = View.GONE
                             createNewZendeskTicket(event.ticketType, extraTags = event.supportTags)
                         }
-                        HelpViewModel.ContactSupportEvent.ShowLoading -> {
+                        is ShowLoading -> {
                             binding.helpLoading.visibility = View.VISIBLE
                         }
                     }.exhaustive
@@ -172,14 +170,19 @@ class HelpActivity : AppCompatActivity() {
             return
         }
 
-        zendeskHelper.createNewTicket(
-            context = this,
-            origin = originFromExtras,
-            selectedSite = selectedSiteOrNull(),
-            extraTags = extraTags + extraTagsFromExtras.orEmpty(),
-            ticketType = ticketType,
-            ssr = viewModel.ssr
-        )
+        if (FeatureFlag.NEW_SUPPORT_REQUESTS.isEnabled()) {
+            val tags = extraTags + (extraTagsFromExtras ?: emptyList())
+            openSupportRequestForm(tags)
+        } else {
+            zendeskHelper.createNewTicket(
+                context = this,
+                origin = originFromExtras,
+                selectedSite = selectedSiteOrNull(),
+                extraTags = extraTags + extraTagsFromExtras.orEmpty(),
+                ticketType = ticketType,
+                ssr = viewModel.ssr
+            )
+        }
     }
 
     private fun showIdentityDialog(
@@ -194,7 +197,7 @@ class HelpActivity : AppCompatActivity() {
                 .getSupportEmailAndNameSuggestion(accountStore.account, selectedSiteOrNull()).first
         }
 
-        supportHelper.showSupportIdentityInputDialog(this, emailSuggestion, isNameInputHidden = true) { email, _ ->
+        supportHelper.showSupportIdentityInputDialog(this, emailSuggestion) { email, _ ->
             zendeskHelper.setSupportEmail(email)
             AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
             if (createNewTicket) createNewZendeskTicket(ticketType, extraTags)
@@ -258,8 +261,14 @@ class HelpActivity : AppCompatActivity() {
         startActivity(Intent(this, SSRActivity::class.java))
     }
 
-    private fun openSupportRequestForm() {
-        startActivity(Intent(this, SupportRequestFormActivity::class.java))
+    private fun openSupportRequestForm(extraTags: List<String>) {
+        startActivity(
+            SupportRequestFormActivity.createIntent(
+                this,
+                originFromExtras,
+                ArrayList(extraTags)
+            )
+        )
     }
 
     companion object {

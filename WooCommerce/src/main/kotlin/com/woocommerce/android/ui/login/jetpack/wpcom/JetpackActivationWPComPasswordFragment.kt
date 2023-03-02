@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.jetpack.wpcom
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,20 +14,25 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComEmailViewModel.ShowMagicLinkScreen
-import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComEmailViewModel.ShowPasswordScreen
+import com.woocommerce.android.ui.login.jetpack.GoToStore
+import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComPasswordViewModel.Show2FAScreen
+import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComPasswordViewModel.ShowMagicLinkScreen
+import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComPostLoginViewModel.ShowJetpackActivationScreen
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class JetpackActivationWPComEmailFragment : BaseFragment() {
+class JetpackActivationWPComPasswordFragment : BaseFragment() {
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
-    private val viewModel: JetpackActivationWPComEmailViewModel by viewModels()
+    private val viewModel: JetpackActivationWPComPasswordViewModel by viewModels()
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
@@ -37,7 +43,7 @@ class JetpackActivationWPComEmailFragment : BaseFragment() {
 
             setContent {
                 WooThemeWithBackground {
-                    JetpackActivationWPComEmailScreen(viewModel = viewModel)
+                    JetpackActivationWPComPasswordScreen(viewModel = viewModel)
                 }
             }
         }
@@ -50,8 +56,9 @@ class JetpackActivationWPComEmailFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is ShowPasswordScreen -> {
-                    navigateToPasswordScreen(event)
+                is Show2FAScreen -> {
+                    // TODO
+                    Toast.makeText(requireContext(), "$event", Toast.LENGTH_SHORT).show()
                 }
 
                 is ShowMagicLinkScreen -> {
@@ -59,19 +66,34 @@ class JetpackActivationWPComEmailFragment : BaseFragment() {
                     Toast.makeText(requireContext(), "$event", Toast.LENGTH_SHORT).show()
                 }
 
+                is ShowJetpackActivationScreen -> {
+                    navigateToJetpackActivationScreen(event)
+                }
+
+                is GoToStore -> goToStore()
+                is LaunchUrlInChromeTab -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 Exit -> findNavController().navigateUp()
             }
         }
     }
 
-    private fun navigateToPasswordScreen(event: ShowPasswordScreen) {
+    private fun navigateToJetpackActivationScreen(event: ShowJetpackActivationScreen) {
         findNavController().navigateSafely(
-            JetpackActivationWPComEmailFragmentDirections
-                .actionJetpackActivationWPComEmailFragmentToJetpackActivationWPComPasswordFragment(
-                    jetpackStatus = event.jetpackStatus,
-                    emailOrUsername = event.emailOrUsername
+            JetpackActivationWPComPasswordFragmentDirections
+                .actionJetpackActivationWPComPasswordFragmentToJetpackActivationMainFragment(
+                    isJetpackInstalled = event.isJetpackInstalled,
+                    siteUrl = event.siteUrl
                 )
         )
+    }
+
+    private fun goToStore() {
+        (requireActivity() as? MainActivity)?.handleSitePickerResult() ?: run {
+            val intent = Intent(requireActivity(), MainActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            }
+            startActivity(intent)
+        }
     }
 }
