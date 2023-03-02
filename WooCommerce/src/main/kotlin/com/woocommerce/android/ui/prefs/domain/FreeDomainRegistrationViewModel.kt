@@ -310,8 +310,6 @@ class FreeDomainRegistrationViewModel @Inject constructor(
         if (event.isError) { // in case of error we notify used and proceed to next step
             if (!event.error.message.isNullOrEmpty()) {
                 triggerEvent(ShowErrorMessage(event.error.message!!))
-            } else {
-                triggerEvent(ShowErrorMessage(resourceProvider.getString(R.string.domain_registration_generic_error)))
             }
             AppLog.e(
                 T.DOMAIN_REGISTRATION,
