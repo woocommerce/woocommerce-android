@@ -115,5 +115,8 @@
         <argument
             android:name="password"
             app:argType="string" />
+        <action
+            android:id="@+id/action_jetpackActivationWPCom2FAFragment_to_jetpackActivationMainFragment"
+            app:destination="@id/jetpackActivationMainFragment" />
     </fragment>
 </navigation>
