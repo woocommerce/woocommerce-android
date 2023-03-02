@@ -4,6 +4,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.daysAgo
 import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.ui.payments.GetActivePaymentsPlugin
+import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
@@ -22,6 +23,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
+import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.util.AppLog
 import java.util.Date
@@ -32,6 +34,8 @@ import kotlin.test.assertNull
 class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
     private val shouldShowFeedbackBanner: ShouldShowFeedbackBanner = mock()
     private val ippStore: WCInPersonPaymentsStore = mock()
+    private val orderStore: WCOrderStore = mock()
+    private val cashOnDeliverySettings: CashOnDeliverySettingsRepository = mock()
     private val siteModel: SiteModel = mock()
     private val getActivePaymentsPlugin: GetActivePaymentsPlugin = mock()
     private val logger: AppLogWrapper = mock()
@@ -39,6 +43,8 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
     private val sut = GetIPPFeedbackBannerData(
         shouldShowFeedbackBanner = shouldShowFeedbackBanner,
         ippStore = ippStore,
+        orderStore = orderStore,
+        cashOnDeliverySettings = cashOnDeliverySettings,
         siteModel = siteModel,
         getActivePaymentsPlugin = getActivePaymentsPlugin,
         logger = logger,
@@ -62,6 +68,18 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
 
         // then
         assertNull(result)
+    }
+
+    @Test
+    fun `given banner should not be shown, then log the error`() = testBlocking {
+        // given
+        whenever(shouldShowFeedbackBanner()).thenReturn(false)
+
+        // when
+        sut()
+
+        // then
+        verify(logger).e(any(), any())
     }
 
     @Test
