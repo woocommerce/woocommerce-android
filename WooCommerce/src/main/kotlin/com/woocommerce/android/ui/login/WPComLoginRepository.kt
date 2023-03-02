@@ -97,7 +97,6 @@ class WPComLoginRepository @Inject constructor(
                 Result.success(Unit)
             }
         }
-
     }
 
     private suspend fun submitAuthRequest(
