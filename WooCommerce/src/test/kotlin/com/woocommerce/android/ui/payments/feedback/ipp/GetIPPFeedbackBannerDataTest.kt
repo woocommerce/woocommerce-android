@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.payments.feedback.ipp
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.daysAgo
 import com.woocommerce.android.extensions.formatToYYYYmmDD
+import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.payments.GetActivePaymentsPlugin
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -10,6 +11,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentCaptor
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.ArgumentMatchers.eq
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.firstValue
@@ -111,6 +114,26 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
             assertEquals("ipp_not_user", result?.campaignName)
         }
 
+    @Test
+    fun `given COD enabled and has 0 IPP transactions, then newbie user should be detected`() = testBlocking {
+        // given
+        whenever(shouldShowFeedbackBanner()).thenReturn(true)
+        whenever(getActivePaymentsPlugin())
+            .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
+        whenever(cashOnDeliverySettings.isCashOnDeliveryEnabled()).thenReturn(true)
+        whenever(orderStore.getOrdersForSite(siteModel)).thenReturn(
+            listOf(OrderTestUtils.generateOrder(), OrderTestUtils.generateOrder())
+        )
+
+        // when
+        val result = sut()
+
+        // then
+        assertEquals("https://automattic.survey.fm/woo-app-–-cod-survey", result?.url)
+        assertEquals(R.string.feedback_banner_ipp_title_newbie, result?.title)
+        assertEquals(R.string.feedback_banner_ipp_message_newbie, result?.message)
+        assertEquals("ipp_not_user", result?.campaignName)
+    }
     @Test
     fun `given COD enabled and zero IPP transactions ever, then newbie user should be detected`() = testBlocking {
         // given
