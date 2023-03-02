@@ -6,10 +6,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_IPP_BANNER_CAMPAIGN_NAME_BEGINNER
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_IPP_BANNER_CAMPAIGN_NAME_NEWBIE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_IPP_BANNER_CAMPAIGN_NAME_NINJA
+import com.woocommerce.android.extensions.WOOCOMMERCE_PAYMENTS_PAYMENT_TYPE
 import com.woocommerce.android.extensions.daysAgo
 import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.ui.payments.GetActivePaymentsPlugin
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentTransactionsSummaryResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
@@ -17,7 +19,9 @@ import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.util.AppLog
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 class GetIPPFeedbackBannerData @Inject constructor(
@@ -69,6 +73,25 @@ class GetIPPFeedbackBannerData @Inject constructor(
             else -> IPP_NINJA_BANNER
         }
     }
+
+    private suspend fun getIppOrdersforLast(days: Int): List<OrderEntity> {
+        val timeWindowStartDate = Date().daysAgo(days)
+        return orderStore.getOrdersForSite(siteModel).filter { orderEntity ->
+            isIPPOrders(orderEntity) && isIPPOrderDateAfter(orderEntity, timeWindowStartDate)
+        }
+    }
+
+    private fun isIPPOrderDateAfter(
+        it: OrderEntity,
+        timeWindowStartDate: Date?
+    ) = SimpleDateFormat(
+        "yyyy-MM-dd",
+        Locale.getDefault()
+    ).parse(it.datePaid)?.after(timeWindowStartDate) == true
+
+    private fun isIPPOrders(it: OrderEntity) = it.getMetaDataList().any { wcMetaData ->
+        wcMetaData.key == "receipt_url"
+    } && it.paymentMethod == WOOCOMMERCE_PAYMENTS_PAYMENT_TYPE
 
     private fun WooPayload<WCPaymentTransactionsSummaryResult>.isSuccessful(): Boolean {
         return !isError && result != null
