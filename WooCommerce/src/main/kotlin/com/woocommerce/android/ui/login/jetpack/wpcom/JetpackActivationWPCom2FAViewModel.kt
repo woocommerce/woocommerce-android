@@ -6,7 +6,6 @@ import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import org.wordpress.android.login.R
 import javax.inject.Inject
 
@@ -16,8 +15,6 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
     selectedSite: SelectedSite,
     jetpackAccountRepository: JetpackActivationRepository,
 ) : JetpackActivationWPComPostLoginViewModel(savedStateHandle, selectedSite, jetpackAccountRepository) {
-    private val isSMSLoadingDialogShown = MutableStateFlow(false)
-
     fun onCloseClick() {
         triggerEvent(Exit)
     }
