@@ -11,7 +11,7 @@ import androidx.core.widget.doOnTextChanged
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ActivitySupportRequestFormBinding
 import com.woocommerce.android.extensions.serializable
-import com.woocommerce.android.support.HelpOption
+import com.woocommerce.android.support.TicketType
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationFailed
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationSucceeded
@@ -54,11 +54,11 @@ class SupportRequestFormActivity : AppCompatActivity() {
         binding.requestMessage.doOnTextChanged { text, _, _, _ -> viewModel.onMessageChanged(text.toString()) }
         binding.helpOptionsGroup.setOnCheckedChangeListener { _, selectionID ->
             when (selectionID) {
-                binding.mobileAppOption.id -> viewModel.onHelpOptionSelected(HelpOption.MobileApp)
-                binding.ippOption.id -> viewModel.onHelpOptionSelected(HelpOption.InPersonPayments)
-                binding.paymentsOption.id -> viewModel.onHelpOptionSelected(HelpOption.Payments)
-                binding.wooPluginOption.id -> viewModel.onHelpOptionSelected(HelpOption.WooPlugin)
-                binding.otherOption.id -> viewModel.onHelpOptionSelected(HelpOption.OtherPlugins)
+                binding.mobileAppOption.id -> viewModel.onHelpOptionSelected(TicketType.MobileApp)
+                binding.ippOption.id -> viewModel.onHelpOptionSelected(TicketType.InPersonPayments)
+                binding.paymentsOption.id -> viewModel.onHelpOptionSelected(TicketType.Payments)
+                binding.wooPluginOption.id -> viewModel.onHelpOptionSelected(TicketType.WooPlugin)
+                binding.otherOption.id -> viewModel.onHelpOptionSelected(TicketType.OtherPlugins)
             }
         }
         binding.submitRequestButton.setOnClickListener {
