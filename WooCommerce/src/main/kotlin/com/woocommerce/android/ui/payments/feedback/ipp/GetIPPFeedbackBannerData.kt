@@ -8,8 +8,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_IPP_BA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_IPP_BANNER_CAMPAIGN_NAME_NINJA
 import com.woocommerce.android.extensions.WOOCOMMERCE_PAYMENTS_PAYMENT_TYPE
 import com.woocommerce.android.extensions.daysAgo
-import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.ui.payments.GetActivePaymentsPlugin
+import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
@@ -28,6 +28,7 @@ class GetIPPFeedbackBannerData @Inject constructor(
     private val shouldShowFeedbackBanner: ShouldShowFeedbackBanner,
     private val ippStore: WCInPersonPaymentsStore,
     private val orderStore: WCOrderStore,
+    private val cashOnDeliverySettings: CashOnDeliverySettingsRepository,
     private val siteModel: SiteModel,
     private val getActivePaymentsPlugin: GetActivePaymentsPlugin,
     private val logger: AppLogWrapper,
@@ -45,33 +46,32 @@ class GetIPPFeedbackBannerData @Inject constructor(
             return IPP_NEWBIE_BANNER
         }
 
-        val timeWindowStartDate = Date().daysAgo(STATS_TIME_WINDOW_LENGTH_DAYS)
-        val response = ippStore.fetchTransactionsSummary(
-            activePaymentsPlugin,
-            siteModel,
-            timeWindowStartDate.formatToYYYYmmDD()
-        )
+        val wcPayIPPOrders = getIppOrders()
+        val hasWCPayIPPOrders = wcPayIPPOrders.isNotEmpty()
+        val wcPayIPPOrdersCount = wcPayIPPOrders.size
 
-        if (!response.isSuccessful()) {
-            logger.e(AppLog.T.API, "Error fetching transactions summary: ${response.error}")
-            return IPP_NEWBIE_BANNER
-        }
+        val wcPayIPPOrdersInLast30Days = getIppOrdersforLast(STATS_TIME_WINDOW_LENGTH_DAYS)
+        val hasIPPOrdersInLast30Days = wcPayIPPOrdersInLast30Days.isNotEmpty()
+        val ippOrdersInLast30Days = wcPayIPPOrdersInLast30Days.size
 
-        val numberOfTransactionsInLast30Days = response.result?.transactionsCount
-        if (numberOfTransactionsInLast30Days == null || numberOfTransactionsInLast30Days < 0) {
-            logger.e(AppLog.T.API, "Transactions count data is malformed.")
-            return null
-        }
-
-        return when (numberOfTransactionsInLast30Days) {
-            0 -> if (hasUserEverMadeIppTransaction()) {
-                IPP_BEGINNER_BANNER
-            } else {
+        return when {
+            !hasWCPayIPPOrders && cashOnDeliverySettings.isCashOnDeliveryEnabled() -> {
                 IPP_NEWBIE_BANNER
             }
-            in IPP_BEGINNER_TRANSACTIONS_RANGE -> IPP_BEGINNER_BANNER
-            else -> IPP_NINJA_BANNER
+            hasIPPOrdersInLast30Days && ippOrdersInLast30Days in IPP_BEGINNER_TRANSACTIONS_RANGE -> {
+                IPP_BEGINNER_BANNER
+            }
+            wcPayIPPOrdersCount > IPP_NINJA_TRANSACTIONS_THRESHOLD -> {
+                IPP_NINJA_BANNER
+            }
+            else -> {
+                null
+            }
         }
+    }
+
+    private suspend fun getIppOrders(): List<OrderEntity> {
+        return orderStore.getOrdersForSite(siteModel).filter { isIPPOrders(it) }
     }
 
     private suspend fun getIppOrdersforLast(days: Int): List<OrderEntity> {
@@ -171,5 +171,6 @@ class GetIPPFeedbackBannerData @Inject constructor(
         private const val BANNER_MESSAGE_NINJA = R.string.feedback_banner_ipp_message_ninja
 
         private val IPP_BEGINNER_TRANSACTIONS_RANGE = 1..10
+        private val IPP_NINJA_TRANSACTIONS_THRESHOLD = 10
     }
 }
