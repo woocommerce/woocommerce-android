@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -46,6 +48,12 @@ class JetpackActivationWPCom2FAFragment : BaseFragment() {
     }
 
     private fun navigateToJetpackActivationScreen(event: ShowJetpackActivationScreen) {
-        TODO()
+        findNavController().navigateSafely(
+            JetpackActivationWPCom2FAFragmentDirections
+                .actionJetpackActivationWPCom2FAFragmentToJetpackActivationMainFragment(
+                    isJetpackInstalled = event.isJetpackInstalled,
+                    siteUrl = event.siteUrl
+                )
+        )
     }
 }
