@@ -191,9 +191,10 @@ fun OnboardingTaskList(
     Column(modifier) {
         tasks.forEachIndexed { index, task ->
             Row(
-                modifier = Modifier
-                    .clickable { onTaskClicked(task) }
-                    .padding(dimensionResource(id = R.dimen.major_100)),
+                modifier = when {
+                    !task.isCompleted -> Modifier.clickable { onTaskClicked(task) }
+                    else -> Modifier
+                }.padding(dimensionResource(id = R.dimen.major_100)),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
             ) {
