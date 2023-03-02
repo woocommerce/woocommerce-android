@@ -58,7 +58,6 @@ class JetpackActivationWPComPasswordFragment : BaseFragment() {
             when (event) {
                 is Show2FAScreen -> {
                     navigateTo2FAScreen(event)
-                    Toast.makeText(requireContext(), "$event", Toast.LENGTH_SHORT).show()
                 }
 
                 is ShowMagicLinkScreen -> {
@@ -79,7 +78,14 @@ class JetpackActivationWPComPasswordFragment : BaseFragment() {
     }
 
     private fun navigateTo2FAScreen(event: Show2FAScreen) {
-        TODO()
+        findNavController().navigateSafely(
+            JetpackActivationWPComPasswordFragmentDirections
+                .actionJetpackActivationWPComPasswordFragmentToJetpackActivationWPCom2FAFragment(
+                    jetpackStatus = event.jetpackStatus,
+                    emailOrUsername = event.emailOrUsername,
+                    password = event.password
+                )
+        )
     }
 
     private fun navigateToJetpackActivationScreen(event: ShowJetpackActivationScreen) {

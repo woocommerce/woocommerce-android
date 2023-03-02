@@ -145,7 +145,8 @@ class JetpackActivationWPComPasswordViewModel @Inject constructor(
     data class Show2FAScreen(
         val emailOrUsername: String,
         val password: String,
-        val jetpackStatus: JetpackStatus) : MultiLiveEvent.Event()
+        val jetpackStatus: JetpackStatus
+    ) : MultiLiveEvent.Event()
 
     data class ShowMagicLinkScreen(
         val emailOrUsername: String,
