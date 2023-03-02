@@ -38,6 +38,7 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
             emailOrUsername = navArgs.emailOrUsername,
             avatarUrl = avatarUrlFromEmail(navArgs.emailOrUsername),
             isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
+            allowPasswordLogin = !navArgs.isAccountPasswordless,
             isLoadingDialogShown = false
         )
     )
@@ -53,6 +54,10 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
         triggerEvent(OpenEmailClient)
     }
 
+    fun onUsePasswordClick() {
+        triggerEvent(Exit)
+    }
+
     fun onCloseClick() {
         triggerEvent(Exit)
     }
@@ -62,6 +67,7 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
             emailOrUsername = navArgs.emailOrUsername,
             avatarUrl = avatarUrlFromEmail(navArgs.emailOrUsername),
             isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
+            allowPasswordLogin = !navArgs.isAccountPasswordless,
             isLoadingDialogShown = true
         )
         val source = when {
@@ -78,6 +84,7 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
                 _viewState.value = ViewState.MagicLinkSentState(
                     email = navArgs.emailOrUsername.takeIf { it.isAnEmail() },
                     isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
+                    allowPasswordLogin = !navArgs.isAccountPasswordless,
                 )
             },
             onFailure = {
@@ -96,19 +103,22 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
 
     sealed interface ViewState : Parcelable {
         val isJetpackInstalled: Boolean
+        val allowPasswordLogin: Boolean
 
         @Parcelize
         data class MagicLinkRequestState(
             val emailOrUsername: String,
             val avatarUrl: String,
             override val isJetpackInstalled: Boolean,
+            override val allowPasswordLogin: Boolean,
             val isLoadingDialogShown: Boolean
         ) : ViewState
 
         @Parcelize
         data class MagicLinkSentState(
             val email: String?,
-            override val isJetpackInstalled: Boolean
+            override val isJetpackInstalled: Boolean,
+            override val allowPasswordLogin: Boolean
         ) : ViewState
     }
 

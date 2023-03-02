@@ -115,5 +115,8 @@
         <argument
             android:name="emailOrUsername"
             app:argType="string" />
+        <argument
+            android:name="isAccountPasswordless"
+            app:argType="boolean" />
     </fragment>
 </navigation>

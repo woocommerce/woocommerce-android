@@ -27,6 +27,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
 import com.woocommerce.android.ui.login.jetpack.components.UserInfo
@@ -38,7 +39,8 @@ fun JetpackActivationMagicLinkRequestScreen(viewModel: JetpackActivationMagicLin
             viewState = it,
             onCloseClick = viewModel::onCloseClick,
             onRequestMagicLinkClick = viewModel::onRequestMagicLinkClick,
-            onOpenEmailClientClick = viewModel::onOpenEmailClientClick
+            onOpenEmailClientClick = viewModel::onOpenEmailClientClick,
+            onUsePasswordClick = viewModel::onUsePasswordClick
         )
     }
 }
@@ -48,7 +50,8 @@ fun JetpackActivationMagicLinkRequestScreen(
     viewState: JetpackActivationMagicLinkRequestViewModel.ViewState,
     onCloseClick: () -> Unit = {},
     onRequestMagicLinkClick: () -> Unit = {},
-    onOpenEmailClientClick: () -> Unit = {}
+    onOpenEmailClientClick: () -> Unit = {},
+    onUsePasswordClick: () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -86,6 +89,14 @@ fun JetpackActivationMagicLinkRequestScreen(
 
                 is JetpackActivationMagicLinkRequestViewModel.ViewState.MagicLinkSentState -> {
                     MagicLinkSentContent(viewState, onOpenEmailClientClick, Modifier.weight(1f))
+                }
+            }
+            if (viewState.allowPasswordLogin) {
+                WCOutlinedButton(
+                    onClick = onUsePasswordClick,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = stringResource(id = R.string.enter_your_password_instead))
                 }
             }
         }
@@ -191,6 +202,7 @@ private fun MagicLinkRequestPreview() {
                 emailOrUsername = "test@email.com",
                 avatarUrl = "avatar",
                 isJetpackInstalled = false,
+                allowPasswordLogin = true,
                 isLoadingDialogShown = false
             )
         )
@@ -204,7 +216,8 @@ private fun MagicLinkSentPreview() {
         JetpackActivationMagicLinkRequestScreen(
             viewState = JetpackActivationMagicLinkRequestViewModel.ViewState.MagicLinkSentState(
                 email = null,
-                isJetpackInstalled = false
+                isJetpackInstalled = false,
+                allowPasswordLogin = true,
             )
         )
     }
