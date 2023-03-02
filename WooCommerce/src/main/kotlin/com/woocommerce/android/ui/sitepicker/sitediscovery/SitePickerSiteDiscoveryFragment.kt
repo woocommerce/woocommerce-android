@@ -18,6 +18,7 @@ import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel
@@ -73,9 +74,7 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                CreateZendeskTicket -> {
-                    zendeskHelper.createNewTicket(requireActivity(), HelpOrigin.LOGIN_SITE_ADDRESS, null)
-                }
+                is CreateZendeskTicket -> startSupportRequestForm()
                 is NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
                 is StartWebBasedJetpackInstallation -> startWebBasedJetpackInstallation(event.siteAddress)
                 is StartNativeJetpackActivation -> startNativeJetpackActivation(event)
@@ -122,6 +121,16 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
                         wpComEmail = null
                     )
                 )
+        )
+    }
+
+    private fun startSupportRequestForm() {
+        startActivity(
+            SupportRequestFormActivity.createIntent(
+                context = requireActivity(),
+                origin = HelpOrigin.LOGIN_SITE_ADDRESS,
+                extraTags = ArrayList()
+            )
         )
     }
 
