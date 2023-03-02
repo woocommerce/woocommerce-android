@@ -436,7 +436,7 @@
     </fragment>
     <fragment
         android:id="@+id/launchStoreFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.LaunchStoreFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.launchstore.LaunchStoreFragment"
         android:label="LaunchStoreFragment" />
 
 </navigation>
