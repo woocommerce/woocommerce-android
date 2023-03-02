@@ -32,7 +32,7 @@ import org.wordpress.android.fluxc.store.SiteStore.NewSitePayload
 import org.wordpress.android.fluxc.store.SiteStore.OnNewSiteCreated
 import org.wordpress.android.fluxc.store.SiteStore.SiteFilter.WPCOM
 import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility
-import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility.PUBLIC
+import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility.PRIVATE
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.login.util.SiteUtils
 import org.wordpress.android.util.UrlUtils
@@ -145,7 +145,7 @@ class StoreCreationRepository @Inject constructor(
         siteData: SiteCreationData,
         languageWordPressId: String,
         timeZoneId: String,
-        siteVisibility: SiteVisibility = PUBLIC,
+        siteVisibility: SiteVisibility = PRIVATE,
         dryRun: Boolean = false
     ): StoreCreationResult<Long> {
         fun isWordPressComSubDomain(url: String) = url.endsWith(".wordpress.com")
