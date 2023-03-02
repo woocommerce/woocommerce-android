@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.details.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -53,6 +54,15 @@ class OrderDetailSubscriptionListAdapter(private val currencyFormatter: Currency
             with(viewBinding.subscriptionStartDate) {
                 text = subscription.startDate.getMediumDate(context)
             }
+            subscription.endDate?.let { endDate ->
+                viewBinding.subscriptionEndDate.visibility = View.VISIBLE
+                with(viewBinding.subscriptionEndDate) {
+                    text = context.getString(R.string.subscription_end_date, endDate.getMediumDate(context))
+                }
+            } ?: run {
+                viewBinding.subscriptionEndDate.visibility = View.GONE
+            }
+
             viewBinding.subscriptionStatusTag.tag = SubscriptionStatusTag(subscription.status)
             with(viewBinding.subscriptionTotal) {
                 val period = when (subscription.billingPeriod) {

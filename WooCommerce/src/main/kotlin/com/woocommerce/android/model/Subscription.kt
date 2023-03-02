@@ -13,6 +13,7 @@ data class Subscription(
     val billingInterval: Int,
     val total: BigDecimal,
     val startDate: Date,
+    val endDate: Date?,
     val currency: String
 ) : Parcelable {
     @Parcelize

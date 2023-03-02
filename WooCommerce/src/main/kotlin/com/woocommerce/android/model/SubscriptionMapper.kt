@@ -15,6 +15,7 @@ class SubscriptionMapper @Inject constructor() {
             billingInterval = model.billingInterval,
             total = model.total.toBigDecimalOrNull() ?: BigDecimal.ZERO,
             startDate = DateTimeUtils.dateUTCFromIso8601(model.startDate) ?: Date(),
+            endDate = DateTimeUtils.dateUTCFromIso8601(model.endDate),
             currency = model.currency
         )
     }

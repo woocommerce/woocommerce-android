@@ -3134,6 +3134,7 @@
     <string name="order_subscription">Subscription</string>
     <string name="subscription_id">Subscription #%1$d</string>
     <string name="subscription_total_period">%1$s / %2$s</string>
+    <string name="subscription_end_date">&#160;- %1$s</string>
     <!--
     Subscription status
     -->
