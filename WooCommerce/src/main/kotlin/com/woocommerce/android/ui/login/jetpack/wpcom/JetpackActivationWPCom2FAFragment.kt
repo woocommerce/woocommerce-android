@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComPostLoginViewModel.ShowJetpackActivationScreen
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -35,6 +36,21 @@ class JetpackActivationWPCom2FAFragment : BaseFragment() {
                 WooThemeWithBackground {
                     JetpackActivationWPCom2FAScreen(viewModel = viewModel)
                 }
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        setupObservers()
+    }
+
+    private fun setupObservers() {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowJetpackActivationScreen -> {
+                    navigateToJetpackActivationScreen(event)
+                }
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
             }
         }
     }

@@ -4,8 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.wordpress.android.login.R
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,7 +23,7 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
     }
 
     fun onSMSLinkClick() {
-        TODO()
+        triggerEvent(ShowSnackbar(R.string.requesting_otp))
     }
 
     fun onContinueClick() {
