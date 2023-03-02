@@ -29,7 +29,9 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.SIMPLE
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Refund
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
+import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.captureValues
@@ -40,6 +42,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyLong
@@ -60,6 +63,7 @@ import java.math.BigDecimal
 
 private const val PAYMENT_URL = "paymentUrl"
 private const val ORDER_TOTAL = "100$"
+private const val COUNTRY_CODE = "US"
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SelectPaymentMethodViewModelTest : BaseUnitTest() {
@@ -97,6 +101,10 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val selectPaymentUtmProvider: UtmProvider = mock()
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
     private val cardReaderTracker: CardReaderTracker = mock()
+    private val wooStore: WooCommerceStore = mock {
+        on { getStoreCountryCode(site) }.thenReturn(COUNTRY_CODE)
+    }
+    private val isTapToPayAvailable: IsTapToPayAvailable = mock()
 
     @Test
     fun `given hub flow, when view model init, then navigate to hub flow emitted`() = testBlocking {
@@ -162,6 +170,53 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given payment flow and ipp and ttp collectable, when view model init, then success emitted with ttp collectable true`() =
+        testBlocking {
+            // GIVEN
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
+            whenever(isTapToPayAvailable(COUNTRY_CODE)).thenReturn(IsTapToPayAvailable.Result.Available)
+            val orderId = 1L
+
+            // WHEN
+            val viewModel = initViewModel(Payment(orderId, ORDER))
+
+            // THEN
+            assertTrue((viewModel.viewStateData.value as Success).isPaymentCollectableWithTapToPay)
+        }
+
+    @Test
+    fun `given payment flow and ipp not collectable and ttp collectable, when view model init, then success emitted with ttp collectable false`() =
+        testBlocking {
+            // GIVEN
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(false)
+            whenever(isTapToPayAvailable(COUNTRY_CODE)).thenReturn(IsTapToPayAvailable.Result.Available)
+            val orderId = 1L
+
+            // WHEN
+            val viewModel = initViewModel(Payment(orderId, ORDER))
+
+            // THEN
+            assertFalse((viewModel.viewStateData.value as Success).isPaymentCollectableWithTapToPay)
+        }
+
+    @Test
+    fun `given payment flow and ipp collectable and ttp not collectable, when view model init, then success emitted with ttp collectable true`() =
+        testBlocking {
+            // GIVEN
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
+            whenever(isTapToPayAvailable(COUNTRY_CODE)).thenReturn(
+                IsTapToPayAvailable.Result.NotAvailable.NfcNotAvailable
+            )
+            val orderId = 1L
+
+            // WHEN
+            val viewModel = initViewModel(Payment(orderId, ORDER))
+
+            // THEN
+            assertFalse((viewModel.viewStateData.value as Success).isPaymentCollectableWithTapToPay)
+        }
+
+    @Test
     fun `given refund flow, when view model init, then navigate to refund flow emitted`() = testBlocking {
         // GIVEN & WHEN
         val orderId = 1L
@@ -169,7 +224,12 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         val viewModel = initViewModel(Refund(orderId, refundAmount))
 
         // THEN
-        assertThat(viewModel.event.value).isEqualTo(NavigateToCardReaderRefundFlow(Refund(orderId, refundAmount)))
+        assertThat(viewModel.event.value).isEqualTo(
+            NavigateToCardReaderRefundFlow(
+                Refund(orderId, refundAmount),
+                CardReaderType.EXTERNAL
+            )
+        )
     }
 
     @Test
@@ -250,7 +310,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given order payment flow, when on card payment clicked, then collect tracked with order payment flow`() =
+    fun `given order payment flow, when on bt reader clicked, then collect tracked with order payment flow`() =
         testBlocking {
             // GIVEN
             val viewModel = initViewModel(Payment(1L, ORDER))
@@ -269,7 +329,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given simple payment flow, when on card payment clicked, then collect tracked with simple payment flow`() =
+    fun `given simple payment flow, when on bt reader clicked, then collect tracked with simple payment flow`() =
         testBlocking {
             // GIVEN
             val viewModel = initViewModel(Payment(1L, SIMPLE))
@@ -283,6 +343,44 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 mapOf(
                     AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
+                )
+            )
+        }
+
+    @Test
+    fun `when on bt reader clicked, then navigate to card reader payment flow`() =
+        testBlocking {
+            // GIVEN
+            val cardReaderFlowParam = Payment(1L, SIMPLE)
+            val viewModel = initViewModel(cardReaderFlowParam)
+
+            // WHEN
+            viewModel.onBtReaderClicked()
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(
+                SelectPaymentMethodViewModel.NavigateToCardReaderPaymentFlow(
+                    cardReaderFlowParam,
+                    CardReaderType.EXTERNAL
+                )
+            )
+        }
+
+    @Test
+    fun `when on tap too pay clicked, then navigate to card reader payment flow`() =
+        testBlocking {
+            // GIVEN
+            val cardReaderFlowParam = Payment(1L, SIMPLE)
+            val viewModel = initViewModel(cardReaderFlowParam)
+
+            // WHEN
+            viewModel.onTapToPayClicked()
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(
+                SelectPaymentMethodViewModel.NavigateToCardReaderPaymentFlow(
+                    cardReaderFlowParam,
+                    CardReaderType.BUILT_IN
                 )
             )
         }
@@ -953,6 +1051,86 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `given payment flow and not connected and tpp disabled, when vm init, then tracks tap to pay not available`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = Payment(orderId = orderId, paymentType = ORDER)
+            val tapToPayDisabled = IsTapToPayAvailable.Result.NotAvailable.TapToPayDisabled
+            whenever(isTapToPayAvailable(COUNTRY_CODE)).thenReturn(tapToPayDisabled)
+
+            // WHEN
+            initViewModel(param)
+
+            // THEN
+            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayDisabled)
+        }
+
+    @Test
+    fun `given payment flow and not connected and tpp system not supported, when vm init, then tracks tpp system`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = Payment(orderId = orderId, paymentType = ORDER)
+            val tapToPaySystemNotSupported = IsTapToPayAvailable.Result.NotAvailable.SystemVersionNotSupported
+            whenever(isTapToPayAvailable(COUNTRY_CODE)).thenReturn(tapToPaySystemNotSupported)
+
+            // WHEN
+            initViewModel(param)
+
+            // THEN
+            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPaySystemNotSupported)
+        }
+
+    @Test
+    fun `given payment flow and not connected and tpp country not supported, when vm init, then tracks tpp country`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = Payment(orderId = orderId, paymentType = ORDER)
+            val tapToPayCountryNotSupported = IsTapToPayAvailable.Result.NotAvailable.CountryNotSupported
+            whenever(isTapToPayAvailable(COUNTRY_CODE)).thenReturn(tapToPayCountryNotSupported)
+
+            // WHEN
+            initViewModel(param)
+
+            // THEN
+            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayCountryNotSupported)
+        }
+
+    @Test
+    fun `given payment flow tpp gps not available, when vm init, then tracks tpp gps`() =
+        testBlocking {
+            // GIVEN
+            val tapToPayGpsNotAvailable = IsTapToPayAvailable.Result.NotAvailable.GooglePlayServicesNotAvailable
+            whenever(isTapToPayAvailable(COUNTRY_CODE)).thenReturn(tapToPayGpsNotAvailable)
+            val orderId = 1L
+            val param = Payment(orderId = orderId, paymentType = ORDER)
+
+            // WHEN
+            initViewModel(param)
+
+            // THEN
+            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayGpsNotAvailable)
+        }
+
+    @Test
+    fun `given payment flow and not connected and tpp nfc not available, when vm init, then tracks tpp nfc`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = Payment(orderId = orderId, paymentType = ORDER)
+            val tapToPayNfcNotAvailable = IsTapToPayAvailable.Result.NotAvailable.NfcNotAvailable
+            whenever(isTapToPayAvailable(COUNTRY_CODE)).thenReturn(tapToPayNfcNotAvailable)
+
+            // WHEN
+            initViewModel(param)
+
+            // THEN
+            verify(cardReaderTracker).trackTapToPayNotAvailableReason(tapToPayNfcNotAvailable)
+        }
+
     private fun initViewModel(cardReaderFlowParam: CardReaderFlowParam): SelectPaymentMethodViewModel {
         return SelectPaymentMethodViewModel(
             SelectPaymentMethodFragmentArgs(cardReaderFlowParam = cardReaderFlowParam).initSavedStateHandle(),
@@ -968,6 +1146,8 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             bannerDisplayEligibilityChecker,
             learnMoreUrlProvider,
             cardReaderTracker,
+            wooStore,
+            isTapToPayAvailable,
             selectPaymentUtmProvider,
         )
     }

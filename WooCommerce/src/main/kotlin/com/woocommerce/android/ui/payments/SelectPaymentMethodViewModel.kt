@@ -105,7 +105,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
                         }
                         val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
                         orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode)
-                        viewState.value = builtSuccessState(
+                        viewState.value = buildSuccessState(
                             currencyCode = currencyCode,
                             isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order),
                             isPaymentCollectableWithTapToPay = isTapToPayAvailable()
@@ -118,7 +118,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         }.exhaustive
     }
 
-    private fun builtSuccessState(
+    private fun buildSuccessState(
         currencyCode: String,
         isPaymentCollectableWithCardReader: Boolean,
         isPaymentCollectableWithTapToPay: Boolean,
