@@ -75,7 +75,11 @@ fun JetpackActivationWPCom2FAScreen(
             ) {
                 JetpackToWooHeader()
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
-                val title = R.string.login_jetpack_connect
+                val title = if (viewState.isJetpackInstalled) {
+                    R.string.login_jetpack_connect
+                } else {
+                    R.string.login_jetpack_install
+                }
                 Text(
                     text = stringResource(id = title),
                     style = MaterialTheme.typography.h4,
@@ -112,7 +116,10 @@ fun JetpackActivationWPCom2FAScreen(
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100))
             ) {
                 Text(
-                    text = stringResource(id = R.string.login_jetpack_connect)
+                    text = stringResource(
+                        id = if (viewState.isJetpackInstalled) R.string.login_jetpack_connect
+                        else R.string.login_jetpack_install
+                    )
                 )
             }
         }
