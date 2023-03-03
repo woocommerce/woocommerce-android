@@ -41,17 +41,18 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
 
     val viewState = combine(
         flowOf(Pair(navArgs.emailOrUsername, navArgs.password)),
-        flowOf(Pair(isLoadingDialogShown, isSMSRequestDialogShown)),
         otp,
         errorMessage,
-    ) { (emailOrUsername, password), (isLoadingDialogShown, isSMSRequestDialogShown), otp, errorMessage ->
+        isLoadingDialogShown,
+        isSMSRequestDialogShown
+    ) { (emailOrUsername, password), otp, errorMessage, isLoadingDialogShown, isSMSRequestDialogShown ->
         ViewState(
             emailOrUsername = emailOrUsername,
             password = password,
             otp = otp,
             isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
-            isLoadingDialogShown = isLoadingDialogShown.value,
-            isSMSRequestDialogShown = isSMSRequestDialogShown.value,
+            isLoadingDialogShown = isLoadingDialogShown,
+            isSMSRequestDialogShown = isSMSRequestDialogShown,
             errorMessage = errorMessage.takeIf { it != 0 }
         )
     }.asLiveData()

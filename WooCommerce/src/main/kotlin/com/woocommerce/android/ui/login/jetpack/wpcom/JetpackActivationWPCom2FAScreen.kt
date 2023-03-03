@@ -140,12 +140,16 @@ fun JetpackActivationWPCom2FAScreen(
         }
     }
 
-    if (viewState.isLoadingDialogShown) {
-        ProgressDialog(title = "", subtitle = stringResource(id = R.string.logging_in))
-    }
-
-    if (viewState.isSMSRequestDialogShown) {
-        ProgressDialog(title = "", subtitle = stringResource(id = R.string.requesting_otp))
+    if (viewState.isLoadingDialogShown || viewState.isSMSRequestDialogShown) {
+        ProgressDialog(
+            title = "",
+            subtitle = stringResource(
+                id = if (viewState.isLoadingDialogShown)
+                    R.string.logging_in
+                else
+                    R.string.requesting_otp
+            )
+        )
     }
 }
 
