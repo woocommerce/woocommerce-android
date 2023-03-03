@@ -15,6 +15,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -32,16 +33,20 @@ import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
 
 @Composable
 fun JetpackActivationWPCom2FAScreen(viewModel: JetpackActivationWPCom2FAViewModel) {
-    JetpackActivationWPCom2FAScreen(
-        onCloseClick = viewModel::onCloseClick,
-        onSMSLinkClick = viewModel::onSMSLinkClick,
-        onContinueClick = viewModel::onContinueClick
-    )
+    viewModel.viewState.observeAsState().value?.let {
+        JetpackActivationWPCom2FAScreen(
+            viewState = it,
+            onCloseClick = viewModel::onCloseClick,
+            onSMSLinkClick = viewModel::onSMSLinkClick,
+            onContinueClick = viewModel::onContinueClick
+        )
+    }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun JetpackActivationWPCom2FAScreen(
+    viewState: JetpackActivationWPCom2FAViewModel.ViewState,
     onCloseClick: () -> Unit = {},
     onSMSLinkClick: () -> Unit = {},
     onContinueClick: () -> Unit = {}
@@ -118,6 +123,12 @@ fun JetpackActivationWPCom2FAScreen(
 @Composable
 private fun JetpackActivationWPCom2FAScreenPreview() {
     WooThemeWithBackground {
-        JetpackActivationWPCom2FAScreen()
+        JetpackActivationWPCom2FAScreen(
+            viewState = JetpackActivationWPCom2FAViewModel.ViewState(
+                emailOrUsername = "test@email.com",
+                password = "",
+                isJetpackInstalled = false
+            )
+        )
     }
 }
