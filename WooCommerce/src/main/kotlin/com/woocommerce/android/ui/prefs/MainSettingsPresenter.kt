@@ -78,5 +78,5 @@ class MainSettingsPresenter @Inject constructor(
     }
 
     override val isDomainOptionVisible: Boolean
-        get() = selectedSite.get().isWPComAtomic && FeatureFlag.DOMAIN_CHANGE.isEnabled()
+        get() = selectedSite.get().isWPComAtomic
 }
