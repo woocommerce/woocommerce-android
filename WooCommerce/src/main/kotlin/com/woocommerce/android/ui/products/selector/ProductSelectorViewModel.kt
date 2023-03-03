@@ -121,7 +121,7 @@ class ProductSelectorViewModel @Inject constructor(
                     else -> SELECTED
                 }
             } else {
-                val selectedProductsIds = selectedItems.productIds.toSet()
+                val selectedProductsIds = selectedItems.map { it.id }.toSet()
                 if (selectedProductsIds.contains(remoteId)) SELECTED else UNSELECTED
             }
         }
@@ -183,8 +183,8 @@ class ProductSelectorViewModel @Inject constructor(
                 val selectedProductItems = items.filter {
                     it is SelectedItem.ProductOrVariation || it is SelectedItem.Product
                 }
-                if (selectedProductItems.map { it.productId }.contains(item.id)) {
-                    val productItemToUnselect = selectedProductItems.filter { it.productId == item.id }.toSet()
+                if (selectedProductItems.map { it.id }.contains(item.id)) {
+                    val productItemToUnselect = selectedProductItems.filter { it.id == item.id }.toSet()
                     selectedItems.value - productItemToUnselect
                 } else {
                     selectedItems.value + SelectedItem.Product(item.id)
@@ -236,7 +236,7 @@ class ProductSelectorViewModel @Inject constructor(
                 val oldIds = variationSelectorRepository.getProduct(result.productId)?.variationIds ?: emptyList()
 
                 val oldItems = items.filter {
-                    it is SelectedItem.ProductOrVariation && oldIds.contains(it.productId)
+                    it is SelectedItem.ProductOrVariation && oldIds.contains(it.id)
                 } + items.filter {
                     it is SelectedItem.ProductVariation && it.productId == result.productId
                 }
@@ -339,37 +339,20 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     @Parcelize
-    sealed class SelectedItem(open val productId: Long) : Parcelable {
+    sealed class SelectedItem(val id: Long) : Parcelable {
         @Parcelize
-        data class ProductOrVariation(override val productId: Long) : SelectedItem(productId)
+        data class ProductOrVariation(val productOrVariationId: Long) : SelectedItem(productOrVariationId)
+
         @Parcelize
-        data class Product(override val productId: Long) : SelectedItem(productId)
+        data class Product(val productId: Long) : SelectedItem(productId)
+
         @Parcelize
-        data class ProductVariation(override val productId: Long, val variationId: Long) : SelectedItem(productId)
+        data class ProductVariation(val productId: Long, val variationId: Long) : SelectedItem(variationId)
     }
 
     private val Set<SelectedItem>.variationIds: List<Long>
         get() {
-            return filterIsInstance<SelectedItem.ProductOrVariation>().map { it.productId } +
+            return filterIsInstance<SelectedItem.ProductOrVariation>().map { it.id } +
                 filterIsInstance<SelectedItem.ProductVariation>().map { it.variationId }
         }
-
-    private val Set<SelectedItem>.productIds: List<Long>
-        get() {
-            return filter {
-                it is SelectedItem.ProductOrVariation || it is SelectedItem.Product
-            }.map { it.productId }
-        }
 }
-
-val Set<ProductSelectorViewModel.SelectedItem>.productAndVariationIds: List<Long>
-    get() {
-        val productIds =
-            filterIsInstance<ProductSelectorViewModel.SelectedItem.Product>().map { it.productId }
-        val variationIds =
-            filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductVariation>().map { it.variationId }
-        val variationOrProductIds =
-            filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductOrVariation>().map { it.productId }
-
-        return (productIds + variationIds + variationOrProductIds).distinct()
-    }
