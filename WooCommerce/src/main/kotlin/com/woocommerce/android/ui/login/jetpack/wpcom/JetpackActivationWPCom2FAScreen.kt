@@ -98,7 +98,7 @@ fun JetpackActivationWPCom2FAScreen(
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
                 WCPasswordField(
-                    value = "",
+                    value = viewState.otp,
                     onValueChange = onOTPChanged,
                     label = stringResource(id = R.string.verification_code),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -146,6 +146,7 @@ private fun JetpackActivationWPCom2FAScreenPreview() {
             viewState = JetpackActivationWPCom2FAViewModel.ViewState(
                 emailOrUsername = "test@email.com",
                 password = "",
+                otp = "123456",
                 isJetpackInstalled = false
             )
         )

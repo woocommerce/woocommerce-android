@@ -27,11 +27,13 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
     private val otp = savedStateHandle.getStateFlow(scope = viewModelScope, initialValue = "", key = "otp")
     val viewState = combine(
         flowOf(navArgs.emailOrUsername),
-        flowOf(navArgs.password)
-    ) { emailOrUsername, password ->
+        flowOf(navArgs.password),
+        otp,
+    ) { emailOrUsername, password, otp ->
         ViewState(
             emailOrUsername = emailOrUsername,
             password = password,
+            otp = otp,
             isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled
         )
     }.asLiveData()
@@ -55,6 +57,7 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
     data class ViewState(
         val emailOrUsername: String,
         val password: String,
+        val otp: String,
         val isJetpackInstalled: Boolean
     )
 }
