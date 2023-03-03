@@ -26,7 +26,6 @@ import kotlin.test.assertNull
 @OptIn(ExperimentalCoroutinesApi::class)
 class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
     private val shouldShowFeedbackBanner: ShouldShowFeedbackBanner = mock()
-    private val ippStore: WCInPersonPaymentsStore = mock()
     private val orderStore: WCOrderStore = mock()
     private val cashOnDeliverySettings: CashOnDeliverySettingsRepository = mock()
     private val siteModel: SiteModel = mock()
@@ -35,7 +34,6 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
 
     private val sut = GetIPPFeedbackBannerData(
         shouldShowFeedbackBanner = shouldShowFeedbackBanner,
-        ippStore = ippStore,
         orderStore = orderStore,
         cashOnDeliverySettings = cashOnDeliverySettings,
         siteModel = siteModel,

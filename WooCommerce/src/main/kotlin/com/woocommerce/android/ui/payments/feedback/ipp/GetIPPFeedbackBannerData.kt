@@ -13,8 +13,6 @@ import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepo
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentTransactionsSummaryResult
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.utils.AppLogWrapper
@@ -26,7 +24,6 @@ import javax.inject.Inject
 
 class GetIPPFeedbackBannerData @Inject constructor(
     private val shouldShowFeedbackBanner: ShouldShowFeedbackBanner,
-    private val ippStore: WCInPersonPaymentsStore,
     private val orderStore: WCOrderStore,
     private val cashOnDeliverySettings: CashOnDeliverySettingsRepository,
     private val siteModel: SiteModel,
@@ -92,10 +89,6 @@ class GetIPPFeedbackBannerData @Inject constructor(
     private fun isIPPOrders(it: OrderEntity) = it.getMetaDataList().any { wcMetaData ->
         wcMetaData.key == "receipt_url"
     } && it.paymentMethod == WOOCOMMERCE_PAYMENTS_PAYMENT_TYPE
-
-    private fun WooPayload<WCPaymentTransactionsSummaryResult>.isSuccessful(): Boolean {
-        return !isError && result != null
-    }
 
     @Parcelize
     data class IPPFeedbackBanner(
