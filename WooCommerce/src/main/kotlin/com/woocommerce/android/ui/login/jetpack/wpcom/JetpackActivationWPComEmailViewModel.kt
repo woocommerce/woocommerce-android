@@ -63,7 +63,7 @@ class JetpackActivationWPComEmailViewModel @Inject constructor(
         wpComLoginRepository.fetchAuthOptions(email).fold(
             onSuccess = {
                 if (it.isPasswordless) {
-                    triggerEvent(ShowMagicLinkScreen(email))
+                    triggerEvent(ShowMagicLinkScreen(email, navArgs.jetpackStatus))
                 } else {
                     triggerEvent(ShowPasswordScreen(email, navArgs.jetpackStatus))
                 }
@@ -103,5 +103,8 @@ class JetpackActivationWPComEmailViewModel @Inject constructor(
         val jetpackStatus: JetpackStatus
     ) : MultiLiveEvent.Event()
 
-    data class ShowMagicLinkScreen(val emailOrUsername: String) : MultiLiveEvent.Event()
+    data class ShowMagicLinkScreen(
+        val emailOrUsername: String,
+        val jetpackStatus: JetpackStatus
+    ) : MultiLiveEvent.Event()
 }

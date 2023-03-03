@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
@@ -55,8 +54,7 @@ class JetpackActivationWPComEmailFragment : BaseFragment() {
                 }
 
                 is ShowMagicLinkScreen -> {
-                    // TODO
-                    Toast.makeText(requireContext(), "$event", Toast.LENGTH_SHORT).show()
+                    navigateToMagicLinkScreen(event)
                 }
 
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
@@ -71,6 +69,17 @@ class JetpackActivationWPComEmailFragment : BaseFragment() {
                 .actionJetpackActivationWPComEmailFragmentToJetpackActivationWPComPasswordFragment(
                     jetpackStatus = event.jetpackStatus,
                     emailOrUsername = event.emailOrUsername
+                )
+        )
+    }
+
+    private fun navigateToMagicLinkScreen(event: ShowMagicLinkScreen) {
+        findNavController().navigateSafely(
+            JetpackActivationWPComEmailFragmentDirections
+                .actionJetpackActivationWPComEmailFragmentToJetpackActivationMagicLinkRequestFragment(
+                    emailOrUsername = event.emailOrUsername,
+                    jetpackStatus = event.jetpackStatus,
+                    isAccountPasswordless = true
                 )
         )
     }
