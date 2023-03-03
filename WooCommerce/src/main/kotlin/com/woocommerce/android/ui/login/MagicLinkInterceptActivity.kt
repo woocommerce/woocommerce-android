@@ -18,6 +18,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.ContinueJetpackActivation
 import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.OpenLogin
 import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.OpenSitePicker
 import com.woocommerce.android.ui.main.MainActivity
@@ -31,6 +32,8 @@ import javax.inject.Inject
 class MagicLinkInterceptActivity : AppCompatActivity() {
     companion object {
         private const val TOKEN_PARAMETER = "token"
+        private const val SOURCE_PARAMETER = "source"
+        private const val FLOW_PARAMETER = "flow"
     }
 
     @Inject
@@ -42,11 +45,6 @@ class MagicLinkInterceptActivity : AppCompatActivity() {
 
     private var retryButton: Button? = null
     private var retryContainer: ScrollView? = null
-
-    private val authToken by lazy {
-        val uri = intent.data
-        uri?.getQueryParameter(TOKEN_PARAMETER)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,7 +68,17 @@ class MagicLinkInterceptActivity : AppCompatActivity() {
 
     private fun initializeViewModel() {
         setupObservers()
-        authToken?.let { viewModel.updateMagicLinkAuthToken(it) }
+
+        val uri = requireNotNull(intent.data)
+        val authToken = uri.getQueryParameter(TOKEN_PARAMETER)
+        val source = uri.getQueryParameter(SOURCE_PARAMETER)?.let {
+            MagicLinkSource.fromString(it)
+        }
+        val flow = uri.getQueryParameter(FLOW_PARAMETER)?.let {
+            MagicLinkFlow.fromString(it)
+        }
+
+        authToken?.let { viewModel.handleMagicLink(it, flow, source) }
     }
 
     private fun setupObservers() {
@@ -82,6 +90,7 @@ class MagicLinkInterceptActivity : AppCompatActivity() {
             when (event) {
                 OpenSitePicker -> showSitePickerScreen()
                 OpenLogin -> showLoginScreen()
+                is ContinueJetpackActivation -> continueJetpackActivation(event)
                 is ShowSnackbar -> showSnackBar(event.message)
             }
         }
@@ -99,6 +108,7 @@ class MagicLinkInterceptActivity : AppCompatActivity() {
         ).show()
     }
 
+    @Suppress("DEPRECATION")
     private fun showProgressDialog(show: Boolean) {
         if (show) {
             hideProgressDialog()
@@ -138,5 +148,9 @@ class MagicLinkInterceptActivity : AppCompatActivity() {
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
+    }
+
+    private fun continueJetpackActivation(event: ContinueJetpackActivation) {
+        TODO()
     }
 }

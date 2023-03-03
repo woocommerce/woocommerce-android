@@ -9,10 +9,22 @@ enum class MagicLinkSource(private val value: String) : AuthEmailSource {
     WPComAuthentication("wpcom-authentication");
 
     override fun getName(): String = value
+
+    companion object {
+        fun fromString(value: String): MagicLinkSource? {
+            return MagicLinkSource.values().firstOrNull { it.value == value }
+        }
+    }
 }
 
 enum class MagicLinkFlow(private val value: String) : AuthEmailFlow {
     SiteCredentialsToWPCom("sitecredentials-to-wpcom");
 
     override fun getName(): String = value
+
+    companion object {
+        fun fromString(value: String): MagicLinkFlow? {
+            return MagicLinkFlow.values().firstOrNull { it.value == value }
+        }
+    }
 }

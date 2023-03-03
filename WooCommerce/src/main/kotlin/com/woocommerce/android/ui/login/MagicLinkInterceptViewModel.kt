@@ -4,7 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.R.string
+import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -16,7 +20,9 @@ import javax.inject.Inject
 @HiltViewModel
 class MagicLinkInterceptViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val magicLinkInterceptRepository: MagicLinkInterceptRepository
+    private val magicLinkInterceptRepository: MagicLinkInterceptRepository,
+    private val selectedSite: SelectedSite,
+    private val accountRepository: AccountRepository
 ) : ScopedViewModel(savedState) {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -24,7 +30,12 @@ class MagicLinkInterceptViewModel @Inject constructor(
     private val _showRetryOption = SingleLiveEvent<Boolean>()
     val showRetryOption: LiveData<Boolean> = _showRetryOption
 
-    fun updateMagicLinkAuthToken(authToken: String) {
+    private var flow: MagicLinkFlow? = null
+    private var source: MagicLinkSource? = null
+
+    fun handleMagicLink(authToken: String, flow: MagicLinkFlow?, source: MagicLinkSource?) {
+        this.flow = flow
+        this.source = source
         launch {
             _isLoading.value = true
             handleRequestResultResponse(requestResult = magicLinkInterceptRepository.updateMagicLinkAuthToken(authToken))
@@ -41,16 +52,24 @@ class MagicLinkInterceptViewModel @Inject constructor(
 
     private fun handleRequestResultResponse(requestResult: RequestResult) {
         _isLoading.value = false
+        val source = this.source
         when (requestResult) {
             RequestResult.SUCCESS -> {
-                triggerEvent(OpenSitePicker)
+                if (flow == MagicLinkFlow.SiteCredentialsToWPCom &&
+                    source != null &&
+                    selectedSite.connectionType == SiteConnectionType.ApplicationPasswords
+                ) {
+                    triggerEvent(ContinueJetpackActivation(source.inferJetpackStatus()))
+                } else {
+                    triggerEvent(OpenSitePicker)
+                }
             }
 
             // Errors can occur if the auth token was not updated to the FluxC cache
             // or if the user is not logged in
             // Either way, display error message and redirect user to login screen
             RequestResult.ERROR -> {
-                triggerEvent(ShowSnackbar(R.string.magic_link_update_error))
+                triggerEvent(ShowSnackbar(string.magic_link_update_error))
                 triggerEvent(OpenLogin)
             }
 
@@ -71,6 +90,24 @@ class MagicLinkInterceptViewModel @Inject constructor(
         magicLinkInterceptRepository.onCleanup()
     }
 
+    private fun MagicLinkSource.inferJetpackStatus(): JetpackStatus {
+        val isJetpackInstalled = this == MagicLinkSource.JetpackConnection ||
+            this == MagicLinkSource.WPComAuthentication
+        val isJetpackConnected = this == MagicLinkSource.WPComAuthentication
+        val wpComEmail = if (isJetpackConnected) {
+            accountRepository.getUserAccount()?.email
+        } else null
+
+        return JetpackStatus(
+            isJetpackInstalled = isJetpackInstalled,
+            isJetpackConnected = isJetpackConnected,
+            wpComEmail = wpComEmail
+        )
+    }
+
     object OpenSitePicker : MultiLiveEvent.Event()
     object OpenLogin : MultiLiveEvent.Event()
+    data class ContinueJetpackActivation(
+        val jetpackStatus: JetpackStatus
+    ) : MultiLiveEvent.Event()
 }
