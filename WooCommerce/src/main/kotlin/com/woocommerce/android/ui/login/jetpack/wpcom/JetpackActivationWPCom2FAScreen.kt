@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -22,6 +24,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -38,7 +41,8 @@ fun JetpackActivationWPCom2FAScreen(viewModel: JetpackActivationWPCom2FAViewMode
             viewState = it,
             onCloseClick = viewModel::onCloseClick,
             onSMSLinkClick = viewModel::onSMSLinkClick,
-            onContinueClick = viewModel::onContinueClick
+            onContinueClick = viewModel::onContinueClick,
+            onOTPChanged = viewModel::onOTPChanged
         )
     }
 }
@@ -49,7 +53,8 @@ fun JetpackActivationWPCom2FAScreen(
     viewState: JetpackActivationWPCom2FAViewModel.ViewState,
     onCloseClick: () -> Unit = {},
     onSMSLinkClick: () -> Unit = {},
-    onContinueClick: () -> Unit = {}
+    onContinueClick: () -> Unit = {},
+    onOTPChanged: (String) -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -94,8 +99,15 @@ fun JetpackActivationWPCom2FAScreen(
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
                 WCPasswordField(
                     value = "",
-                    onValueChange = { },
-                    label = stringResource(id = R.string.verification_code)
+                    onValueChange = onOTPChanged,
+                    label = stringResource(id = R.string.verification_code),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            keyboardController?.hide()
+                            onContinueClick()
+                        }
+                    )
                 )
                 WCTextButton(onClick = onSMSLinkClick) {
                     Text(text = stringResource(id = R.string.login_text_otp))
