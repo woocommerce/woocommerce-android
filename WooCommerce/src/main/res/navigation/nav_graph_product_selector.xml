@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph_product_selector"
+    app:startDestination="@id/productSelectorFragment">
+    <fragment
+        android:id="@+id/variationSelectorFragment"
+        android:name="com.woocommerce.android.ui.products.variations.selector.VariationSelectorFragment"
+        android:label="VariationSelectorFragment">
+        <argument
+            android:name="productId"
+            app:argType="long" />
+        <argument
+            android:name="variationIds"
+            app:argType="long[]" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/productSelectorFragment"
+        android:name="com.woocommerce.android.ui.products.selector.ProductSelectorFragment"
+        android:label="ProductSelectorFragment">
+        <argument
+            android:name="selectedItems"
+            app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectedItem[]" />
+        <action
+            android:id="@+id/action_productSelectorFragment_to_variationSelectorFragment"
+            app:destination="@id/variationSelectorFragment" />
+        <action
+            android:id="@+id/action_productSelectorFragment_to_nav_graph_product_filters"
+            app:destination="@id/nav_graph_product_filters">
+            <argument
+                android:name="selectedStockStatus"
+                app:argType="string"
+                app:nullable="true" />
+            <argument
+                android:name="selectedProductType"
+                app:argType="string"
+                app:nullable="true" />
+            <argument
+                android:name="selectedProductStatus"
+                app:argType="string"
+                app:nullable="true" />
+            <argument
+                android:name="selectedProductCategoryId"
+                app:argType="string"
+                app:nullable="true" />
+            <argument
+                android:name="selectedProductCategoryName"
+                app:argType="string"
+                app:nullable="true" />
+        </action>
+    </fragment>
+    <include app:graph="@navigation/nav_graph_product_filters" />
+</navigation>

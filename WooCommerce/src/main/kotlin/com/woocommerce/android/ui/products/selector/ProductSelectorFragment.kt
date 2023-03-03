@@ -63,7 +63,10 @@ class ProductSelectorFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ExitWithResult<*> -> {
-                    navigateBackWithResult(PRODUCT_SELECTOR_RESULT, event.data as Set<Long>)
+                    navigateBackWithResult(
+                        PRODUCT_SELECTOR_RESULT,
+                        event.data as Set<ProductSelectorViewModel.SelectedItem>
+                    )
                 }
                 is ProductNavigationTarget -> navigator.navigate(this, event)
             }
