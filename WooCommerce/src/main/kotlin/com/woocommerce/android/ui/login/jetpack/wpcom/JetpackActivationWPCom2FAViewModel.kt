@@ -106,5 +106,7 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
         val isJetpackInstalled: Boolean,
         val isLoadingDialogShown: Boolean = false,
         val isSMSRequestDialogShown: Boolean = false
-    )
+    ) {
+        val enableSubmit = otp.isNotBlank()
+    }
 }

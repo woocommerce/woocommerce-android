@@ -123,7 +123,7 @@ fun JetpackActivationWPCom2FAScreen(
                     keyboardController?.hide()
                     onContinueClick()
                 },
-                enabled = true,
+                enabled = viewState.enableSubmit,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100))
