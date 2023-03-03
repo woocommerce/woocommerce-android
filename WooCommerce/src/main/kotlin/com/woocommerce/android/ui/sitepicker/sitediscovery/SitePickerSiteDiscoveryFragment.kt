@@ -16,8 +16,8 @@ import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.model.JetpackStatus
-import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel
@@ -34,7 +34,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.NavigateToHelpScreen
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginMode
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class SitePickerSiteDiscoveryFragment : BaseFragment() {
@@ -45,9 +44,6 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
     }
 
     private val viewModel: SitePickerSiteDiscoveryViewModel by viewModels()
-
-    @Inject
-    lateinit var zendeskHelper: ZendeskHelper
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -73,9 +69,7 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                CreateZendeskTicket -> {
-                    zendeskHelper.createNewTicket(requireActivity(), HelpOrigin.LOGIN_SITE_ADDRESS, null)
-                }
+                is CreateZendeskTicket -> startSupportRequestForm()
                 is NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
                 is StartWebBasedJetpackInstallation -> startWebBasedJetpackInstallation(event.siteAddress)
                 is StartNativeJetpackActivation -> startNativeJetpackActivation(event)
@@ -122,6 +116,16 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
                         wpComEmail = null
                     )
                 )
+        )
+    }
+
+    private fun startSupportRequestForm() {
+        startActivity(
+            SupportRequestFormActivity.createIntent(
+                context = requireActivity(),
+                origin = HelpOrigin.LOGIN_SITE_ADDRESS,
+                extraTags = ArrayList()
+            )
         )
     }
 

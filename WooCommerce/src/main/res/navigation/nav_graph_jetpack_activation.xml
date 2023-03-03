@@ -102,8 +102,28 @@
             android:id="@+id/action_jetpackActivationWPComPasswordFragment_to_jetpackActivationMainFragment"
             app:destination="@id/jetpackActivationMainFragment" />
         <action
+            android:id="@+id/action_jetpackActivationWPComPasswordFragment_to_jetpackActivationWPCom2FAFragment"
+            app:destination="@id/jetpackActivationWPCom2FAFragment" />
+        <action
             android:id="@+id/action_jetpackActivationWPComPasswordFragment_to_jetpackActivationMagicLinkRequestFragment"
             app:destination="@id/jetpackActivationMagicLinkRequestFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/jetpackActivationWPCom2FAFragment"
+        android:name="com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPCom2FAFragment"
+        android:label="JetpackActivationWPCom2FAFragment">
+        <argument
+            android:name="jetpackStatus"
+            app:argType="com.woocommerce.android.model.JetpackStatus" />
+        <argument
+            android:name="emailOrUsername"
+            app:argType="string" />
+        <argument
+            android:name="password"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_jetpackActivationWPCom2FAFragment_to_jetpackActivationMainFragment"
+            app:destination="@id/jetpackActivationMainFragment" />
     </fragment>
     <fragment
         android:id="@+id/jetpackActivationMagicLinkRequestFragment"

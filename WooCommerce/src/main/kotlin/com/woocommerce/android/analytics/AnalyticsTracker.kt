@@ -474,6 +474,15 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- IPP Learn More Link
         const val IPP_LEARN_MORE_SOURCE = "source"
 
+        // -- Domain change
+        const val VALUE_SETTINGS = "settings"
+        const val VALUE_ONBOARDING = "onboarding"
+        const val VALUE_STEP_DASHBOARD = "dashboard"
+        const val VALUE_STEP_PICKER = "picker"
+        const val VALUE_STEP_CONTACT_INFO = "contact_info"
+        const val VALUE_STEP_PURCHASE_SUCCESS = "purchase_success"
+        const val KEY_USE_DOMAIN_CREDIT = "use_domain_credit"
+
         var sendUsageStats: Boolean = true
             set(value) {
                 if (value != field) {

@@ -2,8 +2,8 @@ package com.woocommerce.android.ui.prefs.domain
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsEvent.DOMAIN_CHANGE_CURRENT_DOMAIN
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UserRole
@@ -26,6 +26,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DomainDashboardViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    appPrefsWrapper: AppPrefsWrapper,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val repository: DomainChangeRepository,
     private val userEligibilityFetcher: UserEligibilityFetcher
@@ -42,9 +43,10 @@ class DomainDashboardViewModel @Inject constructor(
 
     init {
         analyticsTrackerWrapper.track(
-            AnalyticsEvent.DOMAIN_CHANGE_STEP,
+            AnalyticsEvent.CUSTOM_DOMAINS_STEP,
             mapOf(
-                AnalyticsTracker.KEY_STEP to DOMAIN_CHANGE_CURRENT_DOMAIN
+                AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSource(),
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_DASHBOARD
             )
         )
 
@@ -75,32 +77,29 @@ class DomainDashboardViewModel @Inject constructor(
         if (domainsResult.isFailure) {
             _viewState.update { ErrorState() }
         } else {
-            val freeDomain = domainsResult.getOrNull()?.firstOrNull { it.wpcomDomain }
+            val freeDomain = domainsResult.getOrThrow().first { it.wpcomDomain }
             val paidDomains = domainsResult.getOrNull()
                 ?.filter { !it.wpcomDomain && it.domain != null } ?: emptyList()
-            if (freeDomain != null) {
-                _viewState.update {
-                    DashboardState(
-                        wpComDomain = DashboardState.Domain(
-                            url = freeDomain.domain ?: NO_DOMAIN,
-                            isPrimary = freeDomain.primaryDomain
-                        ),
-                        paidDomains = paidDomains.map { domain ->
-                            DashboardState.Domain(
-                                url = domain.domain!!,
-                                renewalDate = domain.expiry,
-                                isPrimary = domain.primaryDomain
-                            )
-                        },
-                        isDomainClaimBannerVisible = hasFreeCredits
-                    )
-                }
+            _viewState.update {
+                DashboardState(
+                    wpComDomain = DashboardState.Domain(
+                        url = freeDomain.domain ?: NO_DOMAIN,
+                        isPrimary = freeDomain.primaryDomain
+                    ),
+                    paidDomains = paidDomains.map { domain ->
+                        DashboardState.Domain(
+                            url = domain.domain!!,
+                            renewalDate = domain.expiry,
+                            isPrimary = domain.primaryDomain
+                        )
+                    },
+                    isDomainClaimBannerVisible = hasFreeCredits
+                )
             }
         }
     }
 
     fun onCancelPressed() {
-        analyticsTrackerWrapper.track(AnalyticsEvent.DOMAIN_CHANGE_DISMISSED)
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
@@ -109,7 +108,6 @@ class DomainDashboardViewModel @Inject constructor(
     }
 
     fun onFindDomainButtonTapped() {
-        analyticsTrackerWrapper.track(AnalyticsEvent.DOMAIN_CHANGE_SEARCH_FOR_DOMAIN_BUTTON_TAPPED)
         triggerEvent(NavigateToDomainSearch(hasFreeCredits))
     }
 
