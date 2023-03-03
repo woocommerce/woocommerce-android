@@ -241,6 +241,32 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         assertEquals(R.string.feedback_banner_ipp_title_ninja, result?.title)
         assertEquals("ipp_power_user", result?.campaignName)
     }
+
+    @Test
+    fun `given has IPP transactions older than 30 days and the transaction count is lesser than 10, then return null`() = testBlocking {
+        // given
+        whenever(shouldShowFeedbackBanner()).thenReturn(true)
+        whenever(getActivePaymentsPlugin())
+            .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
+        whenever(cashOnDeliverySettings.isCashOnDeliveryEnabled()).thenReturn(true)
+        val orderList = mutableListOf<OrderEntity>()
+        repeat(9) {
+            orderList.add(
+                OrderTestUtils.generateOrder(
+                    metadata = "[{\"id\":22346,\"key\":\"receipt_url\",\"value\":\"\"}]",
+                    paymentMethod = WOOCOMMERCE_PAYMENTS_PAYMENT_TYPE,
+                    datePaid = "2018-02-02T16:11:13Z"
+                )
+            )
+        }
+        whenever(orderStore.getOrdersForSite(siteModel)).thenReturn(orderList)
+
+        // when
+        val result = sut()
+
+        // then
+        assertNull(result)
+    }
     @Test
     fun `given COD enabled and zero IPP transactions ever, then newbie user should be detected`() = testBlocking {
         // given
