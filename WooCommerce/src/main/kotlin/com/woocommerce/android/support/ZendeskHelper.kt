@@ -429,7 +429,8 @@ sealed class TicketType(
         tags = listOf(
             ZendeskTags.woocommerceMobileApps,
             ZendeskTags.productAreaAppsInPersonPayments
-        )
+        ),
+        excludedTags = listOf(ZendeskTags.jetpackTag)
     )
     @Parcelize object Payments : TicketType(
         form = TicketFieldIds.wooFormID,
