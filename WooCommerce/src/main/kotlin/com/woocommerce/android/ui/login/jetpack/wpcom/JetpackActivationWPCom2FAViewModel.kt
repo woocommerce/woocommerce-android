@@ -96,8 +96,6 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
                         triggerEvent(ShowSnackbar(R.string.error_generic))
                     }
                 }
-
-                triggerEvent(ShowSnackbar(R.string.error_generic))
             }
         )
         isLoadingDialogShown.value = false
