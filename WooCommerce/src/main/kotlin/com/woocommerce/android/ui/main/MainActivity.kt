@@ -128,23 +128,12 @@ class MainActivity :
         }
     }
 
-    @Inject
-    lateinit var presenter: MainContract.Presenter
-
-    @Inject
-    lateinit var loginAnalyticsListener: LoginAnalyticsListener
-
-    @Inject
-    lateinit var selectedSite: SelectedSite
-
-    @Inject
-    lateinit var uiMessageResolver: UIMessageResolver
-
-    @Inject
-    lateinit var crashLogging: CrashLogging
-
-    @Inject
-    lateinit var appWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
+    @Inject lateinit var presenter: MainContract.Presenter
+    @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
+    @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var crashLogging: CrashLogging
+    @Inject lateinit var appWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -184,8 +173,7 @@ class MainActivity :
     }
 
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
-    @Suppress("DEPRECATION")
-    private var progressDialog: ProgressDialog? = null
+    @Suppress("DEPRECATION") private var progressDialog: ProgressDialog? = null
 
     private val fragmentLifecycleObserver: FragmentLifecycleCallbacks = object : FragmentLifecycleCallbacks() {
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
