@@ -8,6 +8,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -17,15 +18,30 @@ class LaunchStoreViewModel @Inject constructor(
     private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
 
-    fun onBackPressed() {
-        triggerEvent(MultiLiveEvent.Event.Exit)
-    }
-
-    val viewState = MutableStateFlow(
+    val _viewState = MutableStateFlow(
         LaunchStoreState(
             siteUrl = selectedSite.get().url
         )
-    ).asLiveData()
+    )
+    val viewState = _viewState.asLiveData()
+
+    fun launchStore() {
+        _viewState.value = _viewState.value.copy(isLoading = true)
+        launch {
+            val result = launchStoreOnboardingRepository.launchStore()
+            when {
+                result.isFailure -> TODO()
+                result.isSuccess -> _viewState.value = _viewState.value.copy(isStoreLaunched = true)
+
+            }
+        }
+        _viewState.value = _viewState.value.copy(isLoading = true)
+    }
+
+
+    fun onBackPressed() {
+        triggerEvent(MultiLiveEvent.Event.Exit)
+    }
 
     data class LaunchStoreState(
         val isTrialPlan: Boolean = false,

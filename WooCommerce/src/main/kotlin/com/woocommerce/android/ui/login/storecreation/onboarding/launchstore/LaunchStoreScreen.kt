@@ -15,9 +15,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -57,6 +59,7 @@ fun LaunchStoreScreen(viewModel: LaunchStoreViewModel) {
         }) { padding ->
             LaunchStoreScreen(
                 state = state,
+                onLaunchStoreClicked = viewModel::launchStore,
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colors.surface)
@@ -69,6 +72,7 @@ fun LaunchStoreScreen(viewModel: LaunchStoreViewModel) {
 @Composable
 fun LaunchStoreScreen(
     state: LaunchStoreState,
+    onLaunchStoreClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -91,10 +95,17 @@ fun LaunchStoreScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(dimensionResource(id = R.dimen.major_100)),
-                onClick = { },
+                onClick = onLaunchStoreClicked,
                 enabled = !state.isTrialPlan
             ) {
-                Text(text = stringResource(id = R.string.store_onboarding_launch_store_button))
+                if (state.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(size = dimensionResource(id = R.dimen.major_150)),
+                        color = colorResource(id = R.color.color_on_primary_surface),
+                    )
+                } else {
+                    Text(text = stringResource(id = R.string.store_onboarding_launch_store_button))
+                }
             }
         } else {
             WCColoredButton(
