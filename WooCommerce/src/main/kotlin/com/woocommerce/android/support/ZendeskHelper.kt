@@ -427,6 +427,7 @@ sealed class TicketType(
         categoryName = ZendeskConstants.mobileAppCategory,
         subcategoryName = ZendeskConstants.mobileSubcategoryValue,
         tags = listOf(
+            ZendeskTags.paymentsProduct,
             ZendeskTags.woocommerceMobileApps,
             ZendeskTags.productAreaAppsInPersonPayments
         ),
