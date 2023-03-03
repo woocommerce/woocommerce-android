@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.REVIEW_OPEN
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.push.NotificationChannelType
@@ -110,10 +111,11 @@ class MainActivityViewModel @Inject constructor(
             ResolveAppLink.Action.ViewPayments -> {
                 triggerEvent(ViewPayments)
             }
+            ResolveAppLink.Action.ViewTapToPay -> TODO()
             ResolveAppLink.Action.DoNothing -> {
                 // no-op
             }
-        }
+        }.exhaustive
     }
 
     private fun changeSiteAndRestart(remoteSiteId: Long, restartEvent: Event) {
