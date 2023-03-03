@@ -9,7 +9,9 @@ import android.webkit.WebViewClient
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,6 +32,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
@@ -38,6 +41,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
@@ -46,6 +50,7 @@ import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
+import com.woocommerce.android.ui.compose.drawShadow
 import com.woocommerce.android.ui.login.storecreation.onboarding.launchstore.LaunchStoreViewModel.LaunchStoreState
 
 @Composable
@@ -53,7 +58,7 @@ fun LaunchStoreScreen(viewModel: LaunchStoreViewModel) {
     viewModel.viewState.observeAsState().value?.let { state ->
         Scaffold(topBar = {
             Toolbar(
-                title = stringResource(id = R.string.store_onboarding_launch_preview_title),
+                title = if (!state.isStoreLaunched) stringResource(id = R.string.store_onboarding_launch_preview_title) else "",
                 onNavigationButtonClick = viewModel::onBackPressed,
             )
         }) { padding ->
@@ -82,9 +87,54 @@ fun LaunchStoreScreen(
                 .weight(1f)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            EcommerceTrialBanner(modifier = Modifier.fillMaxWidth())
-            SitePreview(url = state.siteUrl)
+            if (state.isTrialPlan) EcommerceTrialBanner(modifier = Modifier.fillMaxWidth())
+            if (state.isStoreLaunched) {
+                Text(
+                    text = stringResource(id = R.string.store_onboarding_launched_title),
+                    style = MaterialTheme.typography.h5,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = state.siteUrl,
+                    style = MaterialTheme.typography.caption
+                )
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .background(color = colorResource(id = R.color.color_surface))
+                        .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
+                        .padding(
+                            horizontal = dimensionResource(id = R.dimen.major_350),
+                            vertical = dimensionResource(id = R.dimen.major_200)
+                        )
+                ) {
+                    SitePreview(
+                        url = state.siteUrl,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .align(Alignment.Center)
+                            .drawShadow(
+                                color = colorResource(id = R.color.color_on_surface),
+                                backgroundColor = colorResource(id = R.color.color_surface),
+                                borderRadius = dimensionResource(id = R.dimen.major_100)
+                            )
+                            .padding(dimensionResource(id = R.dimen.minor_100))
+                            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
+                            .border(
+                                dimensionResource(id = R.dimen.minor_10),
+                                colorResource(id = R.color.gray_0),
+                                shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)),
+                            )
+                    )
+                }
+            } else {
+                SitePreview(
+                    url = state.siteUrl,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         }
         Divider(
             color = colorResource(id = R.color.divider_color),
@@ -111,12 +161,24 @@ fun LaunchStoreScreen(
             WCColoredButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(dimensionResource(id = R.dimen.major_100)),
+                    .padding(
+                        start = dimensionResource(id = R.dimen.major_100),
+                        end = dimensionResource(id = R.dimen.major_100),
+                        bottom = dimensionResource(id = R.dimen.minor_100)
+                    ),
                 onClick = { },
             ) {
                 Text(text = stringResource(id = R.string.store_onboarding_launch_store_share_url_button))
             }
-            WCOutlinedButton(onClick = {}) {
+            WCOutlinedButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        start = dimensionResource(id = R.dimen.major_100),
+                        end = dimensionResource(id = R.dimen.major_100),
+                        bottom = dimensionResource(id = R.dimen.major_100)
+                    ),
+                onClick = {}) {
                 Text(text = stringResource(id = R.string.store_onboarding_launch_store_back_to_store_button))
             }
         }
@@ -125,39 +187,50 @@ fun LaunchStoreScreen(
 
 @Composable
 @SuppressLint("SetJavaScriptEnabled", "ClickableViewAccessibility")
-fun SitePreview(url: String) {
-    var progress by remember { mutableStateOf(0) }
-    AndroidView(
-        factory = { context ->
-            WebView(context).apply {
-                layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
-                )
+fun SitePreview(
+    url: String,
+    modifier: Modifier = Modifier
+) {
+    Box(modifier = modifier) {
+        var progress by remember { mutableStateOf(0) }
+        CircularProgressIndicator(
+            progress = (progress / 100f),
+            modifier = Modifier
+                .align(Alignment.Center)
+                .alpha(if (progress == 100) 0f else 1f)
+        )
+        AndroidView(
+            factory = { context ->
+                WebView(context).apply {
+                    layoutParams = ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                    )
 
-                this.settings.javaScriptEnabled = true
-                this.settings.loadWithOverviewMode = true
-                this.setInitialScale(140)
+                    this.settings.javaScriptEnabled = true
+                    this.settings.loadWithOverviewMode = true
+                    this.setInitialScale(140)
 
-                this.webViewClient = WebViewClient()
-                this.webChromeClient = object : WebChromeClient() {
-                    override fun onProgressChanged(view: WebView?, newProgress: Int) {
-                        progress = newProgress
-                        if (progress == 100) {
-                            view?.settings?.javaScriptEnabled = false
+                    this.webViewClient = WebViewClient()
+                    this.webChromeClient = object : WebChromeClient() {
+                        override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                            progress = newProgress
+                            if (progress == 100) {
+                                view?.settings?.javaScriptEnabled = false
+                            }
                         }
                     }
-                }
 
-                this.setOnTouchListener { _, _ -> true }
-            }.also {
-                it.loadUrl(url)
-            }
-        },
-        modifier = Modifier
-            .alpha(if (progress == 100) 1f else 0f)
-            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_75)))
-    )
+                    this.setOnTouchListener { _, _ -> true }
+                }.also {
+                    it.loadUrl(url)
+                }
+            },
+            modifier = Modifier
+                .alpha(if (progress == 100) 1f else 0f)
+                .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_75)))
+        )
+    }
 }
 
 @Composable

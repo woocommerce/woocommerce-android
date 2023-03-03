@@ -3109,6 +3109,7 @@
     <string name="store_onboarding_launch_store_share_url_button">Publish my store</string>
     <string name="store_onboarding_launch_store_back_to_store_button">Back to My Store</string>
     <string name="store_onboarding_launch_preview_title">Preview</string>
+    <string name="store_onboarding_launched_title">Your store is live!</string>
 
     <!--
     Support Request
