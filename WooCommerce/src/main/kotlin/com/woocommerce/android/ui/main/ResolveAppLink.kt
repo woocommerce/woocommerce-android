@@ -57,7 +57,7 @@ class ResolveAppLink @Inject constructor(
         }
     }
 
-    private fun handleUriWithOptionalBlogId(data: Uri, actionToReturn: Action): Action {
+    private fun handleUriWithOptionalBlogId(data: Uri, actionToReturnOnSuccess: Action): Action {
         val blogId = try {
             data.getParamOrNull("blog_id")
         } catch (e: NumberFormatException) {
@@ -68,7 +68,7 @@ class ResolveAppLink @Inject constructor(
 
         fun handleSuccess(): Action {
             trackLinkSuccess(data)
-            return actionToReturn
+            return actionToReturnOnSuccess
         }
 
         return when {

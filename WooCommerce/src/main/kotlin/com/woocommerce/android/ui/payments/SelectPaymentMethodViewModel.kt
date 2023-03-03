@@ -323,7 +323,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private fun exitFlow() {
         triggerEvent(
             when (cardReaderPaymentFlowParam.paymentType) {
-                SIMPLE -> NavigateBackToHub(CardReadersHub)
+                SIMPLE -> NavigateBackToHub(CardReadersHub())
                 ORDER -> NavigateBackToOrderList
             }
         )

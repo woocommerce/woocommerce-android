@@ -111,7 +111,9 @@ class MainActivityViewModel @Inject constructor(
             ResolveAppLink.Action.ViewPayments -> {
                 triggerEvent(ViewPayments)
             }
-            ResolveAppLink.Action.ViewTapToPay -> TODO()
+            ResolveAppLink.Action.ViewTapToPay -> {
+                triggerEvent(ViewTapToPay)
+            }
             ResolveAppLink.Action.DoNothing -> {
                 // no-op
             }
@@ -194,6 +196,7 @@ class MainActivityViewModel @Inject constructor(
     object ViewMyStoreStats : Event()
     object ViewZendeskTickets : Event()
     object ViewPayments : Event()
+    object ViewTapToPay : Event()
     object ShortcutOpenPayments : Event()
     object ShortcutOpenOrderCreation : Event()
     data class RestartActivityForNotification(val pushId: Int, val notification: Notification) : Event()

@@ -73,6 +73,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewTapToPay
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
 import com.woocommerce.android.ui.moremenu.MoreMenuFragmentDirections
 import com.woocommerce.android.ui.mystore.MyStoreFragmentDirections
@@ -127,12 +128,23 @@ class MainActivity :
         }
     }
 
-    @Inject lateinit var presenter: MainContract.Presenter
-    @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
-    @Inject lateinit var selectedSite: SelectedSite
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var crashLogging: CrashLogging
-    @Inject lateinit var appWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
+    @Inject
+    lateinit var presenter: MainContract.Presenter
+
+    @Inject
+    lateinit var loginAnalyticsListener: LoginAnalyticsListener
+
+    @Inject
+    lateinit var selectedSite: SelectedSite
+
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
+
+    @Inject
+    lateinit var crashLogging: CrashLogging
+
+    @Inject
+    lateinit var appWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -172,7 +184,8 @@ class MainActivity :
     }
 
     // TODO: Using deprecated ProgressDialog temporarily - a proper post-login experience will replace this
-    @Suppress("DEPRECATION") private var progressDialog: ProgressDialog? = null
+    @Suppress("DEPRECATION")
+    private var progressDialog: ProgressDialog? = null
 
     private val fragmentLifecycleObserver: FragmentLifecycleCallbacks = object : FragmentLifecycleCallbacks() {
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
@@ -695,6 +708,7 @@ class MainActivity :
                 is RestartActivityForAppLink -> restartActivityForAppLink(event)
                 is ShowFeatureAnnouncement -> navigateToFeratureAnnouncement(event)
                 ViewPayments -> showPayments()
+                ViewTapToPay -> showTapToPaySummary()
                 ShortcutOpenPayments -> shortcutShowPayments()
                 ShortcutOpenOrderCreation -> shortcutOpenOrderCreation()
             }
@@ -844,12 +858,20 @@ class MainActivity :
         showPayments()
     }
 
-    private fun showPayments() {
+    private fun showPayments(
+        openInHub: CardReaderFlowParam.CardReadersHub.OpenInHub = CardReaderFlowParam.CardReadersHub.OpenInHub.NONE
+    ) {
         showBottomNav()
         binding.bottomNav.currentPosition = MORE
         binding.bottomNav.active(MORE.position)
-        val action = MoreMenuFragmentDirections.actionMoreMenuToPaymentFlow(CardReaderFlowParam.CardReadersHub)
+        val action = MoreMenuFragmentDirections.actionMoreMenuToPaymentFlow(
+            CardReaderFlowParam.CardReadersHub(openInHub)
+        )
         navController.navigateSafely(action)
+    }
+
+    private fun showTapToPaySummary() {
+        showPayments(CardReaderFlowParam.CardReadersHub.OpenInHub.TAP_TO_PAY_SUMMARY)
     }
 
     override fun showReviewDetailWithSharedTransition(

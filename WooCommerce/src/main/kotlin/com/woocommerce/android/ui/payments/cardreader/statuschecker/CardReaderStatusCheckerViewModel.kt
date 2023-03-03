@@ -50,7 +50,7 @@ class CardReaderStatusCheckerViewModel
 
     private suspend fun checkStatus() {
         when (val param = arguments.cardReaderFlowParam) {
-            CardReaderFlowParam.CardReadersHub -> triggerEvent(
+            is CardReaderFlowParam.CardReadersHub -> triggerEvent(
                 StatusCheckerEvent.NavigateToOnboarding(
                     CardReaderOnboardingParams.Check(param)
                 )

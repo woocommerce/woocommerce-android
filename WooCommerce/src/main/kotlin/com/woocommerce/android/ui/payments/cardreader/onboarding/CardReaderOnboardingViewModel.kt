@@ -399,7 +399,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
     private fun continueFlow(storeCountryCode: String) {
         when (val params = arguments.cardReaderOnboardingParam.cardReaderFlowParam) {
-            CardReaderFlowParam.CardReadersHub -> {
+            is CardReaderFlowParam.CardReadersHub -> {
                 triggerEvent(OnboardingEvent.ContinueToHub(params))
             }
             is CardReaderFlowParam.PaymentOrRefund -> {
