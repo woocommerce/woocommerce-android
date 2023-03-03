@@ -38,7 +38,9 @@ class MagicLinkInterceptViewModel @Inject constructor(
         this.source = source
         launch {
             _isLoading.value = true
-            handleRequestResultResponse(requestResult = magicLinkInterceptRepository.updateMagicLinkAuthToken(authToken))
+            handleRequestResultResponse(
+                requestResult = magicLinkInterceptRepository.updateMagicLinkAuthToken(authToken)
+            )
         }
     }
 

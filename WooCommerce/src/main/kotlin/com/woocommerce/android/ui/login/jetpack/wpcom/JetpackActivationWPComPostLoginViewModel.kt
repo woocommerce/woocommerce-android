@@ -15,6 +15,7 @@ open class JetpackActivationWPComPostLoginViewModel(
     private val selectedSite: SelectedSite,
     private val jetpackActivationRepository: JetpackActivationRepository
 ) : ScopedViewModel(savedStateHandle) {
+    @Suppress("ReturnCount")
     protected suspend fun onLoginSuccess(jetpackStatus: JetpackStatus): Result<Unit> {
         val siteUrl = selectedSite.get().url
         if (jetpackStatus.isJetpackConnected) {

@@ -90,7 +90,9 @@ fun JetpackActivationMagicLinkHandlerScreen(
 @Composable
 private fun ErrorPreview() {
     WooThemeWithBackground {
-        JetpackActivationMagicLinkHandlerScreen(viewState = JetpackActivationMagicLinkHandlerViewModel.ViewState.Error)
+        JetpackActivationMagicLinkHandlerScreen(
+            viewState = JetpackActivationMagicLinkHandlerViewModel.ViewState.Error
+        )
     }
 }
 
@@ -98,6 +100,8 @@ private fun ErrorPreview() {
 @Composable
 private fun LoadingPreview() {
     WooThemeWithBackground {
-        JetpackActivationMagicLinkHandlerScreen(viewState = JetpackActivationMagicLinkHandlerViewModel.ViewState.Loading)
+        JetpackActivationMagicLinkHandlerScreen(
+            viewState = JetpackActivationMagicLinkHandlerViewModel.ViewState.Loading
+        )
     }
 }
