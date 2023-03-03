@@ -6,7 +6,7 @@ import org.wordpress.android.fluxc.store.AccountStore.AuthEmailSource
 enum class MagicLinkSource(private val value: String) : AuthEmailSource {
     JetpackInstallation("jetpack-installation"),
     JetpackConnection("jetpack-connection"),
-    WPComAuthentication("wpcom-authentication\n");
+    WPComAuthentication("wpcom-authentication");
 
     override fun getName(): String = value
 }
