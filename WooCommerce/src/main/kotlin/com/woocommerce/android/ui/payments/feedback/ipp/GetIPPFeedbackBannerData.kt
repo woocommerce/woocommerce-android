@@ -30,7 +30,7 @@ class GetIPPFeedbackBannerData @Inject constructor(
     private val getActivePaymentsPlugin: GetActivePaymentsPlugin,
     private val logger: AppLogWrapper,
 ) {
-    @Suppress("ReturnCount", "MaxLineLength")
+    @Suppress("ReturnCount")
     suspend operator fun invoke(): IPPFeedbackBanner? {
         if (!shouldShowFeedbackBanner()) {
             logger.e(AppLog.T.API, "GetIPPFeedbackBannerData should not be shown.")
