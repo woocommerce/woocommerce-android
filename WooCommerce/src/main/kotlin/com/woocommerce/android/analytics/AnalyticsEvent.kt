@@ -646,7 +646,6 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     SUPPORT_NEW_REQUEST_CREATED,
     SUPPORT_NEW_REQUEST_FAILED,
 
-
     // -- Push notifications
     PUSH_NOTIFICATION_RECEIVED,
     PUSH_NOTIFICATION_TAPPED,
