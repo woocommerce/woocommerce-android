@@ -550,7 +550,8 @@
     <string name="domains_free_with_credits">Free for the first year</string>
     <string name="domains_purchase_successful_heading">Congratulations on your purchase</string>
     <string name="domains_purchase_successful_delay_notice">Your site address is being set up. It may take up 30 minutes for your domain to start working.</string>
-    <string name="domains_purchase_successful_settings_notice">You can find the domain settings in Settings -> Domains</string>Y
+    <string name="domains_purchase_successful_settings_notice">You can find the domain settings in Settings -> Domains</string>
+    Y
 
     <!--
         Order Editing
@@ -3103,6 +3104,11 @@
     <string name="store_onboarding_full_screen_transition_name">Onboarding full screen</string>
     <string name="store_onboarding_collapsed_transition_name">Onboarding collapsed list</string>
     <string name="store_onboarding_menu_share_feedback">Share feedback</string>
+    <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">To launch your store, you need to upgrade to our plan. &lt;u&gt;Upgrade&lt;/u&gt;</string>
+    <string name="store_onboarding_launch_store_button">Publish my store</string>
+    <string name="store_onboarding_launch_store_share_url_button">Publish my store</string>
+    <string name="store_onboarding_launch_store_back_to_store_button">Back to My Store</string>
+    <string name="store_onboarding_launch_preview_title">Preview</string>
 
     <!--
     Support Request
