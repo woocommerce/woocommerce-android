@@ -55,8 +55,20 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
-    fun onSMSLinkClick() {
-        triggerEvent(ShowSnackbar(R.string.requesting_otp))
+    fun onSMSLinkClick() = launch {
+        isSMSRequestDialogShown.value = true
+        wpComLoginRepository.requestTwoStepSMS(
+            emailOrUsername = navArgs.emailOrUsername,
+            password = navArgs.password
+        ).fold(
+            onSuccess = {
+                triggerEvent(ShowSnackbar(R.string.requesting_sms_otp_success))
+            },
+            onFailure = {
+                triggerEvent(ShowSnackbar(R.string.requesting_sms_otp_failure))
+            }
+        )
+        isSMSRequestDialogShown.value = false
     }
 
     fun onContinueClick() = launch {

@@ -2012,6 +2012,9 @@
 
 
     <string name="requesting_otp">Requesting a verification code via SMS.</string>
+    <string name="requesting_sms_otp_success">SMS requested, please check your messages for the code.</string>
+    <string name="requesting_sms_otp_failure">SMS request failed. Please try again.</string>
+
 
     <string name="password_incorrect">It looks like this password is incorrect. Please double check your information and try again.</string>
 
