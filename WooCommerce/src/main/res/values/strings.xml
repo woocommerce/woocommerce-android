@@ -2017,6 +2017,7 @@
 
 
     <string name="password_incorrect">It looks like this password is incorrect. Please double check your information and try again.</string>
+    <string name="otp_incorrect">The OTP code is incorrect. Please double check your information and try again.</string>
 
 
     <string name="login_magic_link_email_requesting">Requesting log-in email</string>

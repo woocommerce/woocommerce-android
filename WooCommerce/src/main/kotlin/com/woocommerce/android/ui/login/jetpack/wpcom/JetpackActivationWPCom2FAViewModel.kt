@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login.jetpack.wpcom
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
@@ -17,6 +18,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.AccountStore.AuthenticationError
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,21 +36,24 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
     private val otp = savedStateHandle.getStateFlow(scope = viewModelScope, initialValue = "", key = "otp")
     private val isLoadingDialogShown = MutableStateFlow(false)
     private val isSMSRequestDialogShown = MutableStateFlow(false)
+    private val errorMessage =
+        savedStateHandle.getStateFlow(scope = viewModelScope, initialValue = 0, key = "error-message")
+
 
     val viewState = combine(
-        flowOf(navArgs.emailOrUsername),
-        flowOf(navArgs.password),
+        flowOf(Pair(navArgs.emailOrUsername, navArgs.password)),
+        flowOf(Pair(isLoadingDialogShown, isSMSRequestDialogShown)),
         otp,
-        isLoadingDialogShown,
-        isSMSRequestDialogShown
-    ) { emailOrUsername, password, otp, isLoadingDialogShown, isSMSRequestDialogShown ->
+        errorMessage,
+    ) { (emailOrUsername, password), (isLoadingDialogShown, isSMSRequestDialogShown), otp, errorMessage ->
         ViewState(
             emailOrUsername = emailOrUsername,
             password = password,
             otp = otp,
             isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
-            isLoadingDialogShown = isLoadingDialogShown,
-            isSMSRequestDialogShown = isSMSRequestDialogShown
+            isLoadingDialogShown = isLoadingDialogShown.value,
+            isSMSRequestDialogShown = isSMSRequestDialogShown.value,
+            errorMessage = errorMessage.takeIf { it != 0 }
         )
     }.asLiveData()
 
@@ -79,7 +85,20 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
             twoStepCode = otp.value
         ).fold(
             onSuccess = { fetchAccount() },
-            onFailure = { triggerEvent(ShowSnackbar(R.string.error_generic)) }
+            onFailure = {
+                val failure = (it as? OnChangedException)?.error as? AuthenticationError
+
+                when(failure?.type) {
+                    AccountStore.AuthenticationErrorType.INVALID_OTP ->
+                        errorMessage.value = R.string.otp_incorrect
+
+                    else -> {
+                        triggerEvent(ShowSnackbar(R.string.error_generic))
+                    }
+                }
+
+                triggerEvent(ShowSnackbar(R.string.error_generic))
+            }
         )
         isLoadingDialogShown.value = false
     }
@@ -96,6 +115,7 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
     }
 
     fun onOTPChanged(enteredOTP: String) {
+        errorMessage.value = 0
         this.otp.value = enteredOTP
     }
 
@@ -105,7 +125,8 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
         val otp: String,
         val isJetpackInstalled: Boolean,
         val isLoadingDialogShown: Boolean = false,
-        val isSMSRequestDialogShown: Boolean = false
+        val isSMSRequestDialogShown: Boolean = false,
+        val errorMessage: Int? = null
     ) {
         val enableSubmit = otp.isNotBlank()
     }

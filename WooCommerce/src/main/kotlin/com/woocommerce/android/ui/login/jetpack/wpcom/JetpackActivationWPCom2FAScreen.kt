@@ -102,6 +102,8 @@ fun JetpackActivationWPCom2FAScreen(
                     value = viewState.otp,
                     onValueChange = onOTPChanged,
                     label = stringResource(id = R.string.verification_code),
+                    isError = viewState.errorMessage != null,
+                    helperText = viewState.errorMessage?.let { stringResource(id = it) },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(
                         onDone = {
