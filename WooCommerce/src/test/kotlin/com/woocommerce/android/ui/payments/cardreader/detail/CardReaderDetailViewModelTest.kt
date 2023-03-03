@@ -694,7 +694,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         tracker,
         appPrefsWrapper,
         selectedSite,
-        CardReaderDetailFragmentArgs(cardReaderFlowParam = CardReaderFlowParam.CardReadersHub).initSavedStateHandle(),
+        CardReaderDetailFragmentArgs(cardReaderFlowParam = CardReaderFlowParam.CardReadersHub()).initSavedStateHandle(),
     )
 
     private companion object {

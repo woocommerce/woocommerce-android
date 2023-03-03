@@ -49,7 +49,7 @@ class CardReaderWelcomeViewModelTest : BaseUnitTest() {
     private fun initVM(countryCode: String = "US") {
         viewModel = CardReaderWelcomeViewModel(
             CardReaderWelcomeDialogFragmentArgs(
-                cardReaderFlowParam = CardReaderFlowParam.CardReadersHub,
+                cardReaderFlowParam = CardReaderFlowParam.CardReadersHub(),
                 countryCode = countryCode
             ).initSavedStateHandle(),
             appPrefsWrapper

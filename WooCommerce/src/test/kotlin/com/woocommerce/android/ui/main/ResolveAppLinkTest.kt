@@ -17,7 +17,6 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
 class ResolveAppLinkTest {
-
     private lateinit var sut: ResolveAppLink
     private val selectedSite = mock<SelectedSite>()
     private val tracker = mock<AnalyticsTrackerWrapper>()
@@ -146,6 +145,48 @@ class ResolveAppLinkTest {
         verify(tracker).track(AnalyticsEvent.UNIVERSAL_LINK_OPENED, mapOf(KEY_PATH to uri.path))
     }
 
+    @Test
+    fun `given ttp link without blog id, when resolve app link, then ViewTapToPay returned`() {
+        // GIVEN
+        mockSiteSelected()
+        val uri = mockTapToPayUri()
+
+        // WHEN
+        val result = sut(uri)
+
+        // THEN
+        assertThat(result).isEqualTo(ResolveAppLink.Action.ViewTapToPay)
+        verify(tracker).track(AnalyticsEvent.UNIVERSAL_LINK_OPENED, mapOf(KEY_PATH to uri.path))
+    }
+
+    @Test
+    fun `given ttp link with blog id same as selected, when resolve app link, then ViewTapToPay returned`() {
+        // GIVEN
+        mockSiteSelected()
+        val uri = mockTapToPayUri(blogId = TEST_BLOG_ID.toString())
+
+        // WHEN
+        val result = sut(uri)
+
+        // THEN
+        assertThat(result).isEqualTo(ResolveAppLink.Action.ViewTapToPay)
+        verify(tracker).track(AnalyticsEvent.UNIVERSAL_LINK_OPENED, mapOf(KEY_PATH to uri.path))
+    }
+
+    @Test
+    fun `given ttp link with blog id not same as selected, when resolve app link, then ChangeSiteAndRestart returned`() {
+        // GIVEN
+        mockSiteSelected(mockedSiteId = 987)
+        val uri = mockTapToPayUri(blogId = TEST_BLOG_ID.toString())
+
+        // WHEN
+        val result = sut(uri)
+
+        // THEN
+        assertThat(result).isEqualTo(ResolveAppLink.Action.ChangeSiteAndRestart(TEST_BLOG_ID, uri))
+        verifyNoInteractions(tracker)
+    }
+
     private fun mockSiteSelected(mockedSiteId: Long = TEST_BLOG_ID) {
         whenever(selectedSite.exists()).thenReturn(true)
         whenever(selectedSite.getIfExists()).thenReturn(
@@ -172,6 +213,16 @@ class ResolveAppLinkTest {
     ): Uri {
         val uri = mock<Uri> {
             on { path } doReturn "payments"
+            on { getQueryParameter("blog_id") } doReturn blogId
+        }
+        return uri
+    }
+
+    private fun mockTapToPayUri(
+        blogId: String? = TEST_BLOG_ID.toString()
+    ): Uri {
+        val uri = mock<Uri> {
+            on { path } doReturn "payments/tap-to-pay"
             on { getQueryParameter("blog_id") } doReturn blogId
         }
         return uri
