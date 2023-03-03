@@ -349,10 +349,10 @@ class ProductSelectorViewModel @Inject constructor(
         @Parcelize
         data class ProductVariation(val productId: Long, val variationId: Long) : SelectedItem(variationId)
     }
-
-    private val Set<SelectedItem>.variationIds: List<Long>
-        get() {
-            return filterIsInstance<SelectedItem.ProductOrVariation>().map { it.id } +
-                filterIsInstance<SelectedItem.ProductVariation>().map { it.variationId }
-        }
 }
+
+val Set<ProductSelectorViewModel.SelectedItem>.variationIds: List<Long>
+    get() {
+        return filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductOrVariation>().map { it.id } +
+            filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductVariation>().map { it.variationId }
+    }

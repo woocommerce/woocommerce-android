@@ -49,16 +49,18 @@ import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddProduct
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomerNote
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditFee
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditShipping
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
+import com.woocommerce.android.ui.products.selector.variationIds
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -236,18 +238,48 @@ class OrderCreateEditViewModel @Inject constructor(
         it.adjustProductQuantity(item.itemId, -item.quantity.toInt())
     }
 
-    fun onProductSelected(remoteProductId: Long, variationId: Long? = null) {
+    fun onProductsSelected(selectedItems: Set<ProductSelectorViewModel.SelectedItem>) {
         tracker.track(
             ORDER_PRODUCT_ADD,
             mapOf(KEY_FLOW to flow)
         )
 
         viewModelScope.launch {
-            _orderDraft.value.items.toMutableList().apply {
-                add(createOrderItem(remoteProductId, variationId))
-            }.let { items -> _orderDraft.update { it.updateItems(items) } }
+            _orderDraft.value.items.apply {
+                val productsToRemove = filter { item ->
+                    !item.isVariation && selectedItems.none { item.productId == it.id }
+                }
+                productsToRemove.forEach { itemToRemove ->
+                    _orderDraft.update { order -> order.removeItem(itemToRemove) }
+                }
+
+                val variationsToRemove = filter { item ->
+                    item.isVariation && selectedItems.variationIds.none { item.variationId == it }
+                }
+                variationsToRemove.forEach { itemToRemove ->
+                    _orderDraft.update { order -> order.removeItem(itemToRemove) }
+                }
+
+                val itemsToAdd = selectedItems.filter { selectedItem ->
+                    if (selectedItem is ProductSelectorViewModel.SelectedItem.ProductVariation) {
+                        none { it.variationId == selectedItem.variationId }
+                    } else {
+                        none { it.productId == selectedItem.id }
+                    }
+                }.map {
+                    if (it is ProductSelectorViewModel.SelectedItem.ProductVariation) {
+                        createOrderItem(it.productId, it.variationId)
+                    } else {
+                        createOrderItem(it.id)
+                    }
+                }
+
+                _orderDraft.update { order -> order.updateItems(order.items + itemsToAdd) }
+            }
         }
     }
+
+    private fun Order.removeItem(item: Order.Item) = adjustProductQuantity(item.itemId, -item.quantity.toInt())
 
     fun onCustomerAddressEdited(customerId: Long?, billingAddress: Address, shippingAddress: Address) {
         val hasDifferentShippingDetails = _orderDraft.value.shippingAddress != _orderDraft.value.billingAddress
@@ -292,7 +324,14 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onAddProductClicked() {
-        triggerEvent(AddProduct)
+        val selectedItems = orderDraft.value?.items?.map { item ->
+            if (item.isVariation) {
+                ProductSelectorViewModel.SelectedItem.ProductVariation(item.productId, item.variationId)
+            } else {
+                ProductSelectorViewModel.SelectedItem.Product(item.productId)
+            }
+        }.orEmpty()
+        triggerEvent(SelectItems(selectedItems))
     }
 
     fun onProductClicked(item: Order.Item) {

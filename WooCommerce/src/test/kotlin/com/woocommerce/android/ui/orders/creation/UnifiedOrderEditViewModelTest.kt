@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -110,7 +111,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when product selected, send tracks event`() {
-        sut.onProductSelected(123)
+        sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_PRODUCT_ADD,
