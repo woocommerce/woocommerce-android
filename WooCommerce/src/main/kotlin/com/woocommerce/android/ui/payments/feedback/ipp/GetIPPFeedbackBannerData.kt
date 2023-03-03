@@ -97,26 +97,6 @@ class GetIPPFeedbackBannerData @Inject constructor(
         return !isError && result != null
     }
 
-    @Suppress("ReturnCount")
-    private suspend fun hasUserEverMadeIppTransaction(): Boolean {
-        val activePaymentsPlugin = checkNotNull(getActivePaymentsPlugin())
-
-        if (activePaymentsPlugin != WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS) {
-            return false
-        }
-
-        val response = ippStore.fetchTransactionsSummary(activePaymentsPlugin, siteModel)
-
-        if (!response.isSuccessful()) {
-            logger.e(AppLog.T.API, "Error fetching transactions summary: ${response.error.message}")
-            return false
-        }
-
-        val numberOfTransactions = response.result?.transactionsCount ?: return false
-
-        return numberOfTransactions > 0
-    }
-
     @Parcelize
     data class IPPFeedbackBanner(
         @StringRes val title: Int,
