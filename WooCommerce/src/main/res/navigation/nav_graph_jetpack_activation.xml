@@ -147,12 +147,14 @@
     <fragment
         android:id="@+id/jetpackActivationMagicLinkHandlerFragment"
         android:name="com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationMagicLinkHandlerFragment"
-        android:label="JetpackActivationMagicLinkHandlerFragment" >
+        android:label="JetpackActivationMagicLinkHandlerFragment">
         <argument
             android:name="jetpackStatus"
             app:argType="com.woocommerce.android.model.JetpackStatus" />
         <action
             android:id="@+id/action_jetpackActivationMagicLinkHandlerFragment_to_jetpackActivationMainFragment"
-            app:destination="@id/jetpackActivationMainFragment" />
+            app:destination="@id/jetpackActivationMainFragment"
+            app:popUpTo="@id/jetpackActivationDispatcherFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 </navigation>

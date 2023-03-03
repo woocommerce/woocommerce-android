@@ -46,6 +46,7 @@ class JetpackActivationRepository @Inject constructor(
                 WooLog.w(WooLog.T.LOGIN, "Fetching Jetpack Connection URL failed: ${result.error.message}")
                 Result.failure(OnChangedException(result.error, result.error.message))
             }
+
             else -> {
                 WooLog.d(WooLog.T.LOGIN, "Jetpack connection URL fetched successfully")
                 Result.success(result.url)
@@ -61,6 +62,7 @@ class JetpackActivationRepository @Inject constructor(
                 WooLog.w(WooLog.T.LOGIN, "Fetching Jetpack User failed error: $result.error.message")
                 Result.failure(OnChangedException(result.error, result.error.message))
             }
+
             result.user?.wpcomEmail.isNullOrEmpty() -> {
                 analyticsTrackerWrapper.track(
                     stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_CANNOT_FIND_WPCOM_USER
@@ -68,6 +70,7 @@ class JetpackActivationRepository @Inject constructor(
                 WooLog.w(WooLog.T.LOGIN, "Cannot find Jetpack Email in response")
                 Result.failure(Exception("Email missing from response"))
             }
+
             else -> {
                 WooLog.d(WooLog.T.LOGIN, "Jetpack User fetched successfully")
                 Result.success(result.user!!.wpcomEmail)
@@ -86,10 +89,7 @@ class JetpackActivationRepository @Inject constructor(
                 return@runWithRetry Result.failure(WooException(result.error))
             }
 
-            val baseUrl = UrlUtils.removeScheme(siteUrl).trim('/')
-            val site = withContext(Dispatchers.IO) {
-                siteStore.getSitesAccessedViaWPComRestByNameOrUrlMatching(baseUrl)
-            }.firstOrNull()
+            val site = getJetpackSiteByUrl(siteUrl)
 
             return@runWithRetry if (site == null) {
                 WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: Site $siteUrl is missing from account sites")
@@ -104,6 +104,14 @@ class JetpackActivationRepository @Inject constructor(
                 Result.success(site)
             }
         }
+    }
+
+    suspend fun getJetpackSiteByUrl(siteUrl: String): SiteModel? {
+        val baseUrl = UrlUtils.removeScheme(siteUrl).trim('/')
+
+        return withContext(Dispatchers.IO) {
+            siteStore.getSitesAccessedViaWPComRestByNameOrUrlMatching(baseUrl)
+        }.firstOrNull()
     }
 
     fun setSelectedSiteAndCleanOldSites(jetpackSite: SiteModel) {
