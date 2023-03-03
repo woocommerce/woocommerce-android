@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.payments.feedback.ipp
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
-import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.Calendar

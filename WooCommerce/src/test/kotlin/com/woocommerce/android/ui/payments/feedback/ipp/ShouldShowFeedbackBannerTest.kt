@@ -13,7 +13,7 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.util.*
+import java.util.Calendar
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
