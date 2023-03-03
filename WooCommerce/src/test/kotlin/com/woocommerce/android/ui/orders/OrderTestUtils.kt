@@ -26,7 +26,8 @@ object OrderTestUtils {
     fun generateOrder(
         metadata: String = "",
         paymentMethod: String = "",
-        datePaid: String = "2018-02-02T16:11:13Z"): OrderEntity {
+        datePaid: String = "2018-02-02T16:11:13Z"
+    ): OrderEntity {
         return OrderEntity(
             billingFirstName = "Carissa",
             billingLastName = "King",
