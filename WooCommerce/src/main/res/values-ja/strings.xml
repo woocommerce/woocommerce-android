@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-02-22 09:54:03+0000
+Translation-Revision-Date: 2023-03-02 08:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="domains_purchase_successful_settings_notice">「設定」-&gt;「ドメイン」にドメイン設定があります。</string>
+    <string name="domains_purchase_successful_delay_notice">サイトアドレスをセットアップしています。 ドメインが使用可能になるまでに最大で30分かかる場合があります。</string>
+    <string name="domains_purchase_successful_heading">購入完了です</string>
+    <string name="domains_free_with_credits">1年目は無料</string>
     <string name="settings_confirm_logout_site_credentials">アカウントからログアウトしてもよろしいですか ?</string>
     <string name="domains_generic_error_title">サイトドメインを読み込めません</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d 完了</string>
