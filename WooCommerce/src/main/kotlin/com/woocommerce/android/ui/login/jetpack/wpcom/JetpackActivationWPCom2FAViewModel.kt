@@ -39,7 +39,6 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
     private val errorMessage =
         savedStateHandle.getStateFlow(scope = viewModelScope, initialValue = 0, key = "error-message")
 
-
     val viewState = combine(
         flowOf(Pair(navArgs.emailOrUsername, navArgs.password)),
         flowOf(Pair(isLoadingDialogShown, isSMSRequestDialogShown)),
@@ -88,7 +87,7 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
             onFailure = {
                 val failure = (it as? OnChangedException)?.error as? AuthenticationError
 
-                when(failure?.type) {
+                when (failure?.type) {
                     AccountStore.AuthenticationErrorType.INVALID_OTP ->
                         errorMessage.value = R.string.otp_incorrect
 
