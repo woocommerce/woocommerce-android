@@ -27,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCPasswordField
@@ -135,6 +136,10 @@ fun JetpackActivationWPCom2FAScreen(
                 )
             }
         }
+    }
+
+    if (viewState.isLoadingDialogShown) {
+        ProgressDialog(title = "", subtitle = stringResource(id = R.string.logging_in))
     }
 }
 

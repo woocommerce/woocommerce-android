@@ -13,6 +13,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
@@ -30,16 +31,20 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
     private val navArgs: JetpackActivationWPCom2FAFragmentArgs by savedStateHandle.navArgs()
 
     private val otp = savedStateHandle.getStateFlow(scope = viewModelScope, initialValue = "", key = "otp")
+    private val isLoadingDialogShown = MutableStateFlow(false)
+
     val viewState = combine(
         flowOf(navArgs.emailOrUsername),
         flowOf(navArgs.password),
         otp,
-    ) { emailOrUsername, password, otp ->
+        isLoadingDialogShown
+    ) { emailOrUsername, password, otp, isLoadingDialogShown ->
         ViewState(
             emailOrUsername = emailOrUsername,
             password = password,
             otp = otp,
-            isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled
+            isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
+            isLoadingDialogShown = isLoadingDialogShown
         )
     }.asLiveData()
 
@@ -52,6 +57,7 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
     }
 
     fun onContinueClick() = launch {
+        isLoadingDialogShown.value = true
         wpComLoginRepository.submitTwoStepCode(
             emailOrUsername = navArgs.emailOrUsername,
             password = navArgs.password,
@@ -60,6 +66,7 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
             onSuccess = { fetchAccount() },
             onFailure = { triggerEvent(ShowSnackbar(R.string.error_generic)) }
         )
+        isLoadingDialogShown.value = false
     }
 
     private suspend fun fetchAccount() {
@@ -81,6 +88,7 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
         val emailOrUsername: String,
         val password: String,
         val otp: String,
-        val isJetpackInstalled: Boolean
+        val isJetpackInstalled: Boolean,
+        val isLoadingDialogShown: Boolean = false
     )
 }
