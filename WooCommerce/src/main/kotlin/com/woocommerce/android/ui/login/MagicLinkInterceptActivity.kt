@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.ScrollView
 import android.widget.TextView
 import androidx.activity.viewModels
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.google.android.material.snackbar.BaseTransientBottomBar
@@ -17,7 +18,10 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.OpenLogin
+import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.OpenSitePicker
 import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
@@ -74,18 +78,12 @@ class MagicLinkInterceptActivity : AppCompatActivity() {
             showProgressDialog(it)
         }
 
-        viewModel.isAuthTokenUpdated.observe(this) { authTokenUpdated ->
-            if (authTokenUpdated) {
-                showSitePickerScreen()
-            } else showLoginScreen()
-        }
-
-        viewModel.showSnackbarMessage.observe(this) { messageId ->
-            Snackbar.make(
-                findViewById(android.R.id.content),
-                getString(messageId),
-                BaseTransientBottomBar.LENGTH_LONG
-            ).show()
+        viewModel.event.observe(this) { event ->
+            when (event) {
+                OpenSitePicker -> showSitePickerScreen()
+                OpenLogin -> showLoginScreen()
+                is ShowSnackbar -> showSnackBar(event.message)
+            }
         }
 
         viewModel.showRetryOption.observe(this) {
@@ -93,7 +91,14 @@ class MagicLinkInterceptActivity : AppCompatActivity() {
         }
     }
 
-    @Suppress("DEPRECATION")
+    private fun showSnackBar(@StringRes messageId: Int) {
+        Snackbar.make(
+            findViewById(android.R.id.content),
+            getString(messageId),
+            BaseTransientBottomBar.LENGTH_LONG
+        ).show()
+    }
+
     private fun showProgressDialog(show: Boolean) {
         if (show) {
             hideProgressDialog()
@@ -115,6 +120,11 @@ class MagicLinkInterceptActivity : AppCompatActivity() {
         }
     }
 
+    private fun showRetryScreen(show: Boolean) {
+        retryButton?.isVisible = show
+        retryContainer?.isVisible = show
+    }
+
     private fun showSitePickerScreen() {
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -128,10 +138,5 @@ class MagicLinkInterceptActivity : AppCompatActivity() {
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
-    }
-
-    private fun showRetryScreen(show: Boolean) {
-        retryButton?.isVisible = show
-        retryContainer?.isVisible = show
     }
 }
