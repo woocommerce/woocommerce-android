@@ -156,7 +156,7 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given IPP transactions in last 30 days and the transaction count is in beginners range (1 to 9), then newbie user should be detected`() = testBlocking {
+    fun `given IPP transactions in last 30 days and the transaction count is in beginners range (1 to 9), then beginner user should be detected`() = testBlocking {
         // given
         whenever(shouldShowFeedbackBanner()).thenReturn(true)
         whenever(getActivePaymentsPlugin())
