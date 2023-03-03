@@ -1,2 +1,0 @@
-12.4:
-Lo avevi chiesto, ora eccolo qua! Ora è possibile utilizzare l'app senza il plug-in Jetpack. Alla base di ciò c'è il feedback diretto che ci hai inviato nel corso degli anni e sappiamo che ti piacerà la modifica.
