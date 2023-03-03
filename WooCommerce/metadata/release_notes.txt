@@ -1,1 +1,3 @@
-This release includes several bug fixes and improvements to make your experience smoother and more enjoyable. We're committed to continuously improving the WooCommerce app, and we have some exciting updates coming in the next few weeks. Stay tuned for more information!
+- [*] Search in local database when searching for products in the edit coupons flow. [https://github.com/woocommerce/woocommerce-android/pull/8391]
+
+
