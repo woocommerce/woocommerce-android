@@ -59,7 +59,12 @@ class MagicLinkInterceptViewModel @Inject constructor(
                     source != null &&
                     selectedSite.connectionType == SiteConnectionType.ApplicationPasswords
                 ) {
-                    triggerEvent(ContinueJetpackActivation(source.inferJetpackStatus()))
+                    triggerEvent(
+                        ContinueJetpackActivation(
+                            jetpackStatus = source.inferJetpackStatus(),
+                            siteUrl = selectedSite.get().url
+                        )
+                    )
                 } else {
                     triggerEvent(OpenSitePicker)
                 }
@@ -108,6 +113,7 @@ class MagicLinkInterceptViewModel @Inject constructor(
     object OpenSitePicker : MultiLiveEvent.Event()
     object OpenLogin : MultiLiveEvent.Event()
     data class ContinueJetpackActivation(
-        val jetpackStatus: JetpackStatus
+        val jetpackStatus: JetpackStatus,
+        val siteUrl: String
     ) : MultiLiveEvent.Event()
 }

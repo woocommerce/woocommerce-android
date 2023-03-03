@@ -151,5 +151,8 @@
         <argument
             android:name="jetpackStatus"
             app:argType="com.woocommerce.android.model.JetpackStatus" />
+        <action
+            android:id="@+id/action_jetpackActivationMagicLinkHandlerFragment_to_jetpackActivationMainFragment"
+            app:destination="@id/jetpackActivationMainFragment" />
     </fragment>
 </navigation>

@@ -13,6 +13,7 @@ import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.navigation.NavDeepLinkBuilder
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
@@ -21,6 +22,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.ContinueJetpackActivation
 import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.OpenLogin
 import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.OpenSitePicker
+import com.woocommerce.android.ui.login.jetpack.dispatcher.JetpackActivationDispatcherFragmentArgs
+import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationMagicLinkHandlerFragmentArgs
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -151,6 +154,25 @@ class MagicLinkInterceptActivity : AppCompatActivity() {
     }
 
     private fun continueJetpackActivation(event: ContinueJetpackActivation) {
-        TODO()
+        NavDeepLinkBuilder(this)
+            .setComponentName(MainActivity::class.java)
+            .setGraph(R.navigation.nav_graph_main)
+            .addDestination(
+                R.id.jetpackActivationDispatcherFragment,
+                JetpackActivationDispatcherFragmentArgs(
+                    jetpackStatus = event.jetpackStatus,
+                    siteUrl = event.siteUrl
+                ).toBundle()
+            )
+            .addDestination(
+                R.id.jetpackActivationMagicLinkHandlerFragment,
+                JetpackActivationMagicLinkHandlerFragmentArgs(
+                    jetpackStatus = event.jetpackStatus
+                ).toBundle()
+            )
+            .createPendingIntent()
+            .send()
+
+        finish()
     }
 }
