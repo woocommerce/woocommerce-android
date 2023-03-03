@@ -125,7 +125,7 @@ abstract class DomainSuggestionsViewModel constructor(
 
     abstract fun navigateToNextStep(selectedDomain: DomainSuggestion)
 
-    open fun onDomainSuggestionSelected(domain: String) {
+    fun onDomainSuggestionSelected(domain: String) {
         selectedDomain.value = domainSuggestions.value.first { it.name == domain }
     }
 
