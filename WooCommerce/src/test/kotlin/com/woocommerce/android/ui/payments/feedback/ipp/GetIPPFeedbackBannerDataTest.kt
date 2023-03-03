@@ -47,14 +47,6 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         logger = logger,
     )
 
-    @Before
-    fun setup() {
-        val fakeSummary = WCPaymentTransactionsSummaryResult(99, "", 0, 0, 0, null, null)
-        testBlocking {
-            whenever(ippStore.fetchTransactionsSummary(any(), any(), any())).thenReturn(WooPayload(fakeSummary))
-        }
-    }
-
     @Test
     fun `given banner should not be displayed, then should return null`() = testBlocking {
         // given
@@ -153,7 +145,6 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         whenever(shouldShowFeedbackBanner()).thenReturn(true)
         whenever(getActivePaymentsPlugin())
             .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
-        whenever(cashOnDeliverySettings.isCashOnDeliveryEnabled()).thenReturn(true)
         val orderList = mutableListOf<OrderEntity>()
         repeat(9) {
             orderList.add(
@@ -182,7 +173,6 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         whenever(shouldShowFeedbackBanner()).thenReturn(true)
         whenever(getActivePaymentsPlugin())
             .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
-        whenever(cashOnDeliverySettings.isCashOnDeliveryEnabled()).thenReturn(true)
         val orderList = mutableListOf<OrderEntity>()
         repeat(10) {
             orderList.add(
@@ -211,7 +201,6 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         whenever(shouldShowFeedbackBanner()).thenReturn(true)
         whenever(getActivePaymentsPlugin())
             .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
-        whenever(cashOnDeliverySettings.isCashOnDeliveryEnabled()).thenReturn(true)
         val orderList = mutableListOf<OrderEntity>()
         repeat(10) {
             orderList.add(
@@ -240,7 +229,6 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         whenever(shouldShowFeedbackBanner()).thenReturn(true)
         whenever(getActivePaymentsPlugin())
             .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
-        whenever(cashOnDeliverySettings.isCashOnDeliveryEnabled()).thenReturn(true)
         val orderList = mutableListOf<OrderEntity>()
         repeat(9) {
             orderList.add(
