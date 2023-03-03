@@ -1,3 +1,1 @@
-- [*] Search in local database when searching for products in the edit coupons flow. [https://github.com/woocommerce/woocommerce-android/pull/8391]
-
-
+Did you know you can create an order from the app? We made a few improvements to order creation to make your experience smoother. Please keep sending your feedback! We read every one of them!
