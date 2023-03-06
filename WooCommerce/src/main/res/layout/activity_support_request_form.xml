@@ -190,9 +190,7 @@
         android:background="@color/color_surface"
         android:orientation="vertical">
 
-        <View
-            style="@style/Woo.Divider"
-            android:layout_marginStart="@dimen/minor_50" />
+        <View style="@style/Woo.Divider" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/submit_request_button"
