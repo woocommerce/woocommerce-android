@@ -50,7 +50,7 @@ class SupportRequestFormActivity : AppCompatActivity() {
             observeViewEvents(this)
             observeViewModelEvents(this)
         }
-        AnalyticsTracker.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_VIEWED)
+        viewModel.onViewCreated()
     }
 
     private fun ActivitySupportRequestFormBinding.setupActionBar() {
@@ -106,7 +106,6 @@ class SupportRequestFormActivity : AppCompatActivity() {
     }
 
     private fun showRequestCreationSuccessDialog() {
-        AnalyticsTracker.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_CREATED)
         WooDialog.showDialog(
             activity = this,
             titleId = R.string.support_request_success_title,
@@ -117,7 +116,6 @@ class SupportRequestFormActivity : AppCompatActivity() {
     }
 
     private fun showRequestCreationFailureDialog() {
-        AnalyticsTracker.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_FAILED)
         WooDialog.showDialog(
             activity = this,
             titleId = R.string.support_request_error_title,
