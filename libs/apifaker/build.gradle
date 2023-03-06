@@ -78,6 +78,9 @@ dependencies {
         exclude group: "org.wordpress", module: "utils"
     }
 
+    implementation "com.google.dagger:dagger:$gradle.ext.daggerVersion"
+    kapt "com.google.dagger:dagger-compiler:$gradle.ext.daggerVersion"
+
     def room_version = "2.4.2"
     implementation "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"

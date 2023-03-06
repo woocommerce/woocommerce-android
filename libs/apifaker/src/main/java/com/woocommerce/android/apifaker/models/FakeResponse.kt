@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 internal data class FakeResponse(
-    @PrimaryKey(autoGenerate = true) val id: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val statusCode: Int,
     val body: String?,
     val endpointId: Int
