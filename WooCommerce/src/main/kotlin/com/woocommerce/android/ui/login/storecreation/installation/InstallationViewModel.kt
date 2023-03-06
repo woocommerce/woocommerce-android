@@ -7,6 +7,8 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STORE_LOADING_FAILED
@@ -28,11 +30,15 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.network.UserAgent
+import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import javax.inject.Inject
 
 @HiltViewModel
 class InstallationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
+    val userAgent: UserAgent,
     private val repository: StoreCreationRepository,
     private val newStore: NewStore,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
@@ -113,6 +119,9 @@ class InstallationViewModel @Inject constructor(
 
     fun onBackPressed() {
         triggerEvent(Exit)
+    }
+
+    fun onUrlLoaded(url: String) {
     }
 
     fun onShowPreviewButtonClicked() {

@@ -36,6 +36,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
@@ -45,16 +46,23 @@ import com.woocommerce.android.ui.login.storecreation.installation.InstallationV
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.InitialState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.LoadingState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.SuccessState
+import com.woocommerce.android.util.WooLog
+import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable
-fun InstallationScreen(viewModel: InstallationViewModel) {
+fun InstallationScreen(
+    viewModel: InstallationViewModel
+) {
     viewModel.viewState.observeAsState(InitialState).value.let { state ->
         Crossfade(targetState = state) { viewState ->
             when (viewState) {
                 is SuccessState -> InstallationSummary(
                     viewState.url,
                     viewModel::onManageStoreButtonClicked,
-                    viewModel::onShowPreviewButtonClicked
+                    viewModel::onShowPreviewButtonClicked,
+                    viewModel.wpComWebViewAuthenticator,
+                    viewModel.userAgent,
+                    viewModel::onUrlLoaded
                 )
                 is ErrorState -> StoreCreationErrorScreen(
                     viewState.errorType,
@@ -74,7 +82,10 @@ fun InstallationScreen(viewModel: InstallationViewModel) {
 private fun InstallationSummary(
     url: String,
     onManageStoreButtonClicked: () -> Unit,
-    onShowPreviewButtonClicked: () -> Unit
+    onShowPreviewButtonClicked: () -> Unit,
+    authenticator: WPComWebViewAuthenticator,
+    userAgent: UserAgent,
+    onUrlLoaded: (String) -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -112,7 +123,10 @@ private fun InstallationSummary(
                         color = colorResource(id = color.color_on_surface),
                         backgroundColor = colorResource(id = color.color_surface),
                         borderRadius = dimensionResource(id = dimen.major_100)
-                    )
+                    ),
+                authenticator = authenticator,
+                userAgent = userAgent,
+                onUrlLoaded = onUrlLoaded
             )
         }
 
@@ -152,7 +166,16 @@ private fun InstallationSummary(
 
 @Composable
 @SuppressLint("SetJavaScriptEnabled", "ClickableViewAccessibility")
-private fun PreviewWebView(url: String, modifier: Modifier = Modifier) {
+private fun PreviewWebView(
+    url: String,
+    modifier: Modifier = Modifier,
+    authenticator: WPComWebViewAuthenticator,
+    userAgent: UserAgent,
+    onUrlLoaded: (String) -> Unit
+) {
+    var progress by remember { mutableStateOf(0) }
+    var lastLoadedUrl by remember { mutableStateOf("") }
+
     Box(
         modifier = modifier
             .padding(dimensionResource(id = dimen.minor_100))
@@ -164,7 +187,6 @@ private fun PreviewWebView(url: String, modifier: Modifier = Modifier) {
                 shape = RoundedCornerShape(dimensionResource(id = dimen.minor_100)),
             )
     ) {
-        var progress by remember { mutableStateOf(0) }
 
         CircularProgressIndicator(
             progress = (progress / 100f),
@@ -179,12 +201,6 @@ private fun PreviewWebView(url: String, modifier: Modifier = Modifier) {
                         LayoutParams.MATCH_PARENT,
                         LayoutParams.MATCH_PARENT
                     )
-
-                    this.settings.javaScriptEnabled = true
-                    this.settings.loadWithOverviewMode = true
-                    this.setInitialScale(140)
-
-                    this.webViewClient = WebViewClient()
                     this.webChromeClient = object : WebChromeClient() {
                         override fun onProgressChanged(view: WebView?, newProgress: Int) {
                             progress = newProgress
@@ -193,15 +209,27 @@ private fun PreviewWebView(url: String, modifier: Modifier = Modifier) {
                             }
                         }
                     }
+                    this.webViewClient = object : WebViewClient() {
+                        override fun doUpdateVisitedHistory(view: WebView?, url: String?, isReload: Boolean) {
+                            url?.let { onUrlLoaded(it) }
+                        }
+                    }
 
+                    this.setInitialScale(140)
                     this.setOnTouchListener { _, _ -> true }
-                }.also {
-                    it.loadUrl(url)
+                    this.settings.javaScriptEnabled = true
+                    this.settings.loadWithOverviewMode = true
+                    this.settings.userAgentString = userAgent.userAgent
                 }
             },
             modifier = Modifier
                 .alpha(if (progress == 100) 1f else 0f)
                 .clip(RoundedCornerShape(dimensionResource(id = dimen.minor_75)))
-        )
+        ) { webView ->
+            if (lastLoadedUrl == url) return@AndroidView
+            lastLoadedUrl = url
+            WooLog.d(WooLog.T.ONBOARDING, url)
+            authenticator.authenticateAndLoadUrl(webView, url)
+        }
     }
 }
