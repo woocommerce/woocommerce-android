@@ -98,7 +98,7 @@ class JetpackActivationWPComPasswordViewModel @Inject constructor(
 
                 when (failure?.type) {
                     AuthenticationErrorType.NEEDS_2FA -> {
-                        triggerEvent(Show2FAScreen(navArgs.emailOrUsername, navArgs.jetpackStatus))
+                        triggerEvent(Show2FAScreen(navArgs.emailOrUsername, password.value, navArgs.jetpackStatus))
                     }
 
                     AuthenticationErrorType.INCORRECT_USERNAME_OR_PASSWORD,
@@ -142,7 +142,12 @@ class JetpackActivationWPComPasswordViewModel @Inject constructor(
         val enableSubmit = password.isNotBlank()
     }
 
-    data class Show2FAScreen(val emailOrUsername: String, val jetpackStatus: JetpackStatus) : MultiLiveEvent.Event()
+    data class Show2FAScreen(
+        val emailOrUsername: String,
+        val password: String,
+        val jetpackStatus: JetpackStatus
+    ) : MultiLiveEvent.Event()
+
     data class ShowMagicLinkScreen(
         val emailOrUsername: String,
         val jetpackStatus: JetpackStatus

@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
@@ -57,13 +56,11 @@ class JetpackActivationWPComPasswordFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is Show2FAScreen -> {
-                    // TODO
-                    Toast.makeText(requireContext(), "$event", Toast.LENGTH_SHORT).show()
+                    navigateTo2FAScreen(event)
                 }
 
                 is ShowMagicLinkScreen -> {
-                    // TODO
-                    Toast.makeText(requireContext(), "$event", Toast.LENGTH_SHORT).show()
+                    navigateToMagicLinkScreen(event)
                 }
 
                 is ShowJetpackActivationScreen -> {
@@ -78,12 +75,34 @@ class JetpackActivationWPComPasswordFragment : BaseFragment() {
         }
     }
 
+    private fun navigateTo2FAScreen(event: Show2FAScreen) {
+        findNavController().navigateSafely(
+            JetpackActivationWPComPasswordFragmentDirections
+                .actionJetpackActivationWPComPasswordFragmentToJetpackActivationWPCom2FAFragment(
+                    jetpackStatus = event.jetpackStatus,
+                    emailOrUsername = event.emailOrUsername,
+                    password = event.password
+                )
+        )
+    }
+
     private fun navigateToJetpackActivationScreen(event: ShowJetpackActivationScreen) {
         findNavController().navigateSafely(
             JetpackActivationWPComPasswordFragmentDirections
                 .actionJetpackActivationWPComPasswordFragmentToJetpackActivationMainFragment(
                     isJetpackInstalled = event.isJetpackInstalled,
                     siteUrl = event.siteUrl
+                )
+        )
+    }
+
+    private fun navigateToMagicLinkScreen(event: ShowMagicLinkScreen) {
+        findNavController().navigateSafely(
+            JetpackActivationWPComPasswordFragmentDirections
+                .actionJetpackActivationWPComPasswordFragmentToJetpackActivationMagicLinkRequestFragment(
+                    emailOrUsername = event.emailOrUsername,
+                    jetpackStatus = event.jetpackStatus,
+                    isAccountPasswordless = false
                 )
         )
     }

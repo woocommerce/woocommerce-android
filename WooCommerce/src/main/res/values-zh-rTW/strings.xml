@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-02-21 09:54:04+0000
+Translation-Revision-Date: 2023-03-01 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="domains_purchase_successful_settings_notice">你可以在「設定」&gt;「網域」中查看網域設定</string>
+    <string name="domains_purchase_successful_delay_notice">你的網站位址正在設定中。 你的網域最多可能需要 30 分鐘才能開始運作。</string>
+    <string name="domains_purchase_successful_heading">恭喜你購買完成</string>
+    <string name="domains_free_with_credits">第一年免費</string>
     <string name="settings_confirm_logout_site_credentials">確定要登出帳號嗎？</string>
     <string name="domains_generic_error_title">無法載入網站網域</string>
     <string name="store_onboarding_completed_tasks_status">已完成 %1$d/%2$d</string>

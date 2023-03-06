@@ -1,2 +1,0 @@
-12.4:
-Du hast es dir gewünscht und wir haben diesen Wunsch erfüllt! Du kannst die App jetzt ohne das Jetpack-Plugin nutzen. Diese Änderung basiert auf jahrelangem Feedback der Benutzer. Deshalb wissen wir, dass sie dir gefallen wird!
