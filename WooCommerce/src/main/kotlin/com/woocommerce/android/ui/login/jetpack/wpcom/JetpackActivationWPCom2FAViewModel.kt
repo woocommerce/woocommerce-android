@@ -14,7 +14,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
@@ -34,8 +33,9 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
     private val navArgs: JetpackActivationWPCom2FAFragmentArgs by savedStateHandle.navArgs()
 
     private val otp = savedStateHandle.getStateFlow(scope = viewModelScope, initialValue = "", key = "otp")
-    private val isLoadingDialogShown = MutableStateFlow(false)
-    private val isSMSRequestDialogShown = MutableStateFlow(false)
+    private val loadingMessage =
+        savedStateHandle.getStateFlow(scope = viewModelScope, initialValue = 0, key = "loading-message")
+
     private val errorMessage =
         savedStateHandle.getStateFlow(scope = viewModelScope, initialValue = 0, key = "error-message")
 
@@ -43,17 +43,15 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
         flowOf(Pair(navArgs.emailOrUsername, navArgs.password)),
         otp,
         errorMessage,
-        isLoadingDialogShown,
-        isSMSRequestDialogShown
-    ) { (emailOrUsername, password), otp, errorMessage, isLoadingDialogShown, isSMSRequestDialogShown ->
+        loadingMessage,
+    ) { (emailOrUsername, password), otp, errorMessage, loadingMessage, ->
         ViewState(
             emailOrUsername = emailOrUsername,
             password = password,
             otp = otp,
             isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
-            isLoadingDialogShown = isLoadingDialogShown,
-            isSMSRequestDialogShown = isSMSRequestDialogShown,
-            errorMessage = errorMessage.takeIf { it != 0 }
+            errorMessage = errorMessage.takeIf { it != 0 },
+            loadingMessage = loadingMessage.takeIf { it != 0 }
         )
     }.asLiveData()
 
@@ -62,7 +60,7 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
     }
 
     fun onSMSLinkClick() = launch {
-        isSMSRequestDialogShown.value = true
+        loadingMessage.value = R.string.requesting_otp
         wpComLoginRepository.requestTwoStepSMS(
             emailOrUsername = navArgs.emailOrUsername,
             password = navArgs.password
@@ -74,11 +72,11 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
                 triggerEvent(ShowSnackbar(R.string.requesting_sms_otp_failure))
             }
         )
-        isSMSRequestDialogShown.value = false
+        loadingMessage.value = 0
     }
 
     fun onContinueClick() = launch {
-        isLoadingDialogShown.value = true
+        loadingMessage.value = R.string.logging_in
         wpComLoginRepository.submitTwoStepCode(
             emailOrUsername = navArgs.emailOrUsername,
             password = navArgs.password,
@@ -98,7 +96,7 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
                 }
             }
         )
-        isLoadingDialogShown.value = false
+        loadingMessage.value = 0
     }
 
     private suspend fun fetchAccount() {
@@ -122,9 +120,8 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
         val password: String,
         val otp: String,
         val isJetpackInstalled: Boolean,
-        val isLoadingDialogShown: Boolean = false,
-        val isSMSRequestDialogShown: Boolean = false,
-        val errorMessage: Int? = null
+        val errorMessage: Int? = null,
+        val loadingMessage: Int? = null
     ) {
         val enableSubmit = otp.isNotBlank()
     }

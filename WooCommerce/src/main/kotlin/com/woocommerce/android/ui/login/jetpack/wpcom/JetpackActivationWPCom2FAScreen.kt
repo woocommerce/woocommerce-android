@@ -145,16 +145,8 @@ fun JetpackActivationWPCom2FAScreen(
         }
     }
 
-    if (viewState.isLoadingDialogShown || viewState.isSMSRequestDialogShown) {
-        ProgressDialog(
-            title = "",
-            subtitle = stringResource(
-                id = if (viewState.isLoadingDialogShown)
-                    R.string.logging_in
-                else
-                    R.string.requesting_otp
-            )
-        )
+    viewState.loadingMessage?.let {
+        ProgressDialog(title = "", subtitle = stringResource(id = it))
     }
 }
 
