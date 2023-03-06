@@ -82,7 +82,7 @@
     <color name="color_ripple_overlay">@color/woo_black_90_alpha_012</color>
     <color name="image_border_color">@color/woo_black_90_alpha_012</color>
     <color name="splash_background">@color/woo_purple_60</color>
-    <color name="color_toolbar">@color/woo_white</color>
+    <color name="color_toolbar_without_overlay">@color/woo_white</color>
 
     <!--
         Elevation colors
@@ -192,7 +192,7 @@
     <!--
     Media picker colors
     -->
-    <color name="color_media_picker_toolbar_background">@color/color_toolbar</color>
+    <color name="color_media_picker_toolbar_background">@color/color_toolbar_without_overlay</color>
     <color name="color_media_picker_toolbar_foreground">@color/color_on_surface</color>
 
     <!--
