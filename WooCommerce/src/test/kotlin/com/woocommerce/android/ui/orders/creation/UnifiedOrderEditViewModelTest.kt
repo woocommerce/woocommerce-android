@@ -72,6 +72,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
         createOrderItemUseCase = mock {
             onBlocking { invoke(123, null) } doReturn defaultOrderItem
+            onBlocking { invoke(456, null) } doReturn createOrderItem(456)
+            onBlocking { invoke(1, 2) } doReturn createOrderItem(1, 2)
+            ProductSelectorViewModel.SelectedItem.ProductVariation(1, 2)
         }
         parameterRepository = mock {
             on { getParameters("parameters_key", savedState) } doReturn
@@ -317,11 +320,21 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         )
     }
 
-    protected fun createOrderItem(withId: Long = 123) =
-        Order.Item.EMPTY.copy(
-            productId = withId,
-            itemId = (1L..1000000000L).random()
-        )
+    protected fun createOrderItem(withProductId: Long = 123, withVariationId: Long? = null) =
+        if (withVariationId != null) {
+            Order.Item.EMPTY.copy(
+                productId = withProductId,
+                itemId = (1L..1000000000L).random(),
+                variationId = withVariationId,
+                quantity = 1F,
+            )
+        } else {
+            Order.Item.EMPTY.copy(
+                productId = withProductId,
+                itemId = (1L..1000000000L).random(),
+                quantity = 1F,
+            )
+        }
 
     protected val orderStatusList = listOf(
         Order.OrderStatus("first key", "first status"),

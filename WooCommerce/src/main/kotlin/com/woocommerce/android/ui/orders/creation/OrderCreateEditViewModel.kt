@@ -60,6 +60,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem.Product
 import com.woocommerce.android.ui.products.selector.variationIds
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -247,7 +248,7 @@ class OrderCreateEditViewModel @Inject constructor(
         viewModelScope.launch {
             _orderDraft.value.items.apply {
                 val productsToRemove = filter { item ->
-                    !item.isVariation && selectedItems.none { item.productId == it.id }
+                    !item.isVariation && selectedItems.filterIsInstance<Product>().none { item.productId == it.id }
                 }
                 productsToRemove.forEach { itemToRemove ->
                     _orderDraft.update { order -> order.removeItem(itemToRemove) }
@@ -328,7 +329,7 @@ class OrderCreateEditViewModel @Inject constructor(
             if (item.isVariation) {
                 ProductSelectorViewModel.SelectedItem.ProductVariation(item.productId, item.variationId)
             } else {
-                ProductSelectorViewModel.SelectedItem.Product(item.productId)
+                Product(item.productId)
             }
         }.orEmpty()
         triggerEvent(SelectItems(selectedItems))
