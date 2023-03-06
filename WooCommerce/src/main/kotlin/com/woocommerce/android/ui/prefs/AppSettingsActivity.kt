@@ -18,6 +18,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivityAppSettingsBinding
+import com.woocommerce.android.extensions.applyAppStatus
 import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
@@ -79,12 +80,16 @@ class AppSettingsActivity :
 
     private val fragmentLifecycleObserver: FragmentLifecycleCallbacks = object : FragmentLifecycleCallbacks() {
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
-            when ((f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
+            when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 AppBarStatus.Hidden -> {
                     toolbar?.isVisible = false
                 }
                 is AppBarStatus.Visible -> {
-                    toolbar?.isVisible = true
+                    applyAppStatus(
+                        appBarStatus,
+                        toolbar!!,
+                        binding.appBarLayout,
+                    )
                 }
             }
         }
