@@ -25,12 +25,13 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.component.WCPasswordField
+import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
@@ -98,19 +99,23 @@ fun JetpackActivationWPCom2FAScreen(
                     )
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
-                WCPasswordField(
+                WCOutlinedTextField(
                     value = viewState.otp,
                     onValueChange = onOTPChanged,
                     label = stringResource(id = R.string.verification_code),
                     isError = viewState.errorMessage != null,
                     helperText = viewState.errorMessage?.let { stringResource(id = it) },
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done
+                    ),
                     keyboardActions = KeyboardActions(
                         onDone = {
                             keyboardController?.hide()
                             onContinueClick()
                         }
-                    )
+                    ),
+                    singleLine = true
                 )
                 WCTextButton(onClick = onSMSLinkClick) {
                     Text(text = stringResource(id = R.string.login_text_otp))
