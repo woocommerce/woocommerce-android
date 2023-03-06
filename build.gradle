@@ -121,6 +121,7 @@ ext {
     aboutAutomatticVersion = '0.0.6'
     workManagerVersion = '2.7.1'
     billingVersion = '5.0.0'
+    roomVersion = "2.4.2"
 
     // Apache
     commonsText = '1.10.0'
