@@ -56,7 +56,18 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginEnd="0dp"
         app:layout_constraintBaseline_toBaselineOf="@id/subscription_id"
-        tools:text="$60.00 / Month" />
+        tools:text="$60.00 /" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/subscription_period"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@+id/subscription_total"
+        app:layout_constraintTop_toBottomOf="@+id/subscription_total"
+        android:layout_marginEnd="0dp"
+        android:layout_marginTop="0dp"
+        tools:text="Every 4 months" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

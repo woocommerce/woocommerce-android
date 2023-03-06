@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.details.adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,8 +10,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailSubscriptionListItemBinding
 import com.woocommerce.android.extensions.getMediumDate
 import com.woocommerce.android.model.Subscription
+import com.woocommerce.android.model.Subscription.Period
 import com.woocommerce.android.ui.orders.SubscriptionStatusTag
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.StringUtils
 
 class OrderDetailSubscriptionListAdapter(private val currencyFormatter: CurrencyFormatter) :
     RecyclerView.Adapter<OrderDetailSubscriptionListAdapter.OrderDetailSubscriptionViewHolder>() {
@@ -65,22 +68,60 @@ class OrderDetailSubscriptionListAdapter(private val currencyFormatter: Currency
 
             viewBinding.subscriptionStatusTag.tag = SubscriptionStatusTag(subscription.status)
             with(viewBinding.subscriptionTotal) {
-                val period = when (subscription.billingPeriod) {
-                    Subscription.Period.Day -> context.getString(R.string.subscription_period_day)
-                    Subscription.Period.Week -> context.getString(R.string.subscription_period_week)
-                    Subscription.Period.Month -> context.getString(R.string.subscription_period_month)
-                    Subscription.Period.Year -> context.getString(R.string.subscription_period_year)
-                    is Subscription.Period.Custom -> subscription.billingPeriod.value
-                }
                 text = context.getString(
-                    R.string.subscription_total_period,
+                    R.string.subscription_total,
                     currencyFormatter.formatCurrency(
                         amount = subscription.total,
                         currencyCode = subscription.currency,
                         applyDecimalFormatting = true
-                    ),
-                    period
+                    )
                 )
+            }
+            with(viewBinding.subscriptionPeriod) {
+                val period = getBillingPeriod(context, subscription.billingPeriod, subscription.billingInterval)
+                text = if (subscription.billingInterval > 1) {
+                    context.getString(
+                        R.string.subscription_period_interval_multiple,
+                        subscription.billingInterval,
+                        period
+                    )
+                } else {
+                    context.getString(R.string.subscription_period_interval_single, period)
+                }
+            }
+        }
+
+        private fun getBillingPeriod(
+            context: Context,
+            billingPeriod: Period,
+            billingInterval: Int
+        ): String {
+            return when (billingPeriod) {
+                Period.Day -> StringUtils.getQuantityString(
+                    context = context,
+                    quantity = billingInterval,
+                    default = R.string.subscription_period_multiple_days,
+                    one = R.string.subscription_period_day
+                )
+                Period.Week -> StringUtils.getQuantityString(
+                    context = context,
+                    quantity = billingInterval,
+                    default = R.string.subscription_period_multiple_weeks,
+                    one = R.string.subscription_period_week
+                )
+                Period.Month -> StringUtils.getQuantityString(
+                    context = context,
+                    quantity = billingInterval,
+                    default = R.string.subscription_period_multiple_months,
+                    one = R.string.subscription_period_month
+                )
+                Period.Year -> StringUtils.getQuantityString(
+                    context = context,
+                    quantity = billingInterval,
+                    default = R.string.subscription_period_multiple_years,
+                    one = R.string.subscription_period_year
+                )
+                is Period.Custom -> billingPeriod.value
             }
         }
     }
