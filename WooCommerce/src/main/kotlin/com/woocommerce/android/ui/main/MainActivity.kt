@@ -126,23 +126,12 @@ class MainActivity :
         }
     }
 
-    @Inject
-    lateinit var presenter: MainContract.Presenter
-
-    @Inject
-    lateinit var loginAnalyticsListener: LoginAnalyticsListener
-
-    @Inject
-    lateinit var selectedSite: SelectedSite
-
-    @Inject
-    lateinit var uiMessageResolver: UIMessageResolver
-
-    @Inject
-    lateinit var crashLogging: CrashLogging
-
-    @Inject
-    lateinit var appWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
+    @Inject lateinit var presenter: MainContract.Presenter
+    @Inject lateinit var loginAnalyticsListener: LoginAnalyticsListener
+    @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var crashLogging: CrashLogging
+    @Inject lateinit var appWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
 
     private val viewModel: MainActivityViewModel by viewModels()
 

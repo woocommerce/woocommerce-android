@@ -19,7 +19,7 @@ class IsTapToPayAvailable @Inject constructor(
             !isTapToPayEnabled() -> Result.NotAvailable.TapToPayDisabled
             !systemVersionUtilsWrapper.isAtLeastP() -> Result.NotAvailable.SystemVersionNotSupported
             !deviceFeatures.isGooglePlayServicesAvailable() -> Result.NotAvailable.GooglePlayServicesNotAvailable
-//            !deviceFeatures.isNFCAvailable() -> Result.NotAvailable.NfcNotAvailable
+            !deviceFeatures.isNFCAvailable() -> Result.NotAvailable.NfcNotAvailable
             !isTppSupportedInCountry(countryCode) -> Result.NotAvailable.CountryNotSupported
             else -> Result.Available
         }
