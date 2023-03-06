@@ -17,9 +17,9 @@ class ResolveAppLink @Inject constructor(
 
     operator fun invoke(uri: Uri?): Action {
         return when {
-            uri matches "orders/details" -> prepareOrderDetailsAction(uri!!)
-            uri matches "payments" -> preparePaymentsAction(uri!!)
-            uri matches "payments/tap-to-pay" -> prepareTapToPayAction(uri!!)
+            uri matches "mobile/orders/details" -> prepareOrderDetailsAction(uri!!)
+            uri matches "mobile/payments" -> preparePaymentsAction(uri!!)
+            uri matches "mobile/payments/tap-to-pay" -> prepareTapToPayAction(uri!!)
             else -> Action.DoNothing
         }
     }

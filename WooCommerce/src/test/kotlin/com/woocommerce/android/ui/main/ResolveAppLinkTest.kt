@@ -201,7 +201,7 @@ class ResolveAppLinkTest {
         blogId: String = TEST_BLOG_ID.toString()
     ): Uri {
         val uri = mock<Uri> {
-            on { path } doReturn "orders/details"
+            on { path } doReturn "mobile/orders/details"
             on { getQueryParameter("order_id") } doReturn orderId
             on { getQueryParameter("blog_id") } doReturn blogId
         }
@@ -212,7 +212,7 @@ class ResolveAppLinkTest {
         blogId: String? = TEST_BLOG_ID.toString()
     ): Uri {
         val uri = mock<Uri> {
-            on { path } doReturn "payments"
+            on { path } doReturn "mobile/payments"
             on { getQueryParameter("blog_id") } doReturn blogId
         }
         return uri
@@ -222,7 +222,7 @@ class ResolveAppLinkTest {
         blogId: String? = TEST_BLOG_ID.toString()
     ): Uri {
         val uri = mock<Uri> {
-            on { path } doReturn "payments/tap-to-pay"
+            on { path } doReturn "mobile/payments/tap-to-pay"
             on { getQueryParameter("blog_id") } doReturn blogId
         }
         return uri
