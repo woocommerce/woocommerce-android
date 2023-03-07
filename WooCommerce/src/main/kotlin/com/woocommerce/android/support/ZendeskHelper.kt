@@ -241,6 +241,11 @@ class ZendeskHelper(
         refreshIdentity()
     }
 
+    fun setSupportName(name: String) {
+        AppPrefs.setSupportName(name)
+        refreshIdentity()
+    }
+
     /**
      * This is a helper function that'll ensure the Zendesk identity is set with the credentials from AppPrefs.
      */
