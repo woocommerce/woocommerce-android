@@ -84,6 +84,7 @@ dependencies {
 
     implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
     implementation "androidx.hilt:hilt-navigation-fragment:$hiltJetpackVersion"
+    implementation "androidx.hilt:hilt-navigation-compose:$hiltJetpackVersion"
     kapt "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
 
     def room_version = "2.4.2"

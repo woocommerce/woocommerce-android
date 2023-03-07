@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -30,7 +31,7 @@ class ApiFakerHostFragment : Fragment() {
                     startDestination = Screen.Home.route()
                 ) {
                     composable(Screen.Home.route()) {
-                        HomeScreen(navController)
+                        HomeScreen(hiltViewModel(), navController)
                     }
                     composable(
                         Screen.EndpointDetails.baseRoute,
