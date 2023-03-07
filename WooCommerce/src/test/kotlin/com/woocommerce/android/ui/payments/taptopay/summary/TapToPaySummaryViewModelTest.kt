@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.payments.taptopay.summary
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -36,6 +37,22 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
             ShowSnackbar(R.string.card_reader_tap_to_pay_explanation_test_payment_error)
         )
     }
+
+    @Test
+    fun `give order creation success, when onTryPaymentClicked, then navigate to simple payment`() =
+        testBlocking {
+            // GIVEN
+            val order = mock<Order>()
+            whenever(orderCreateEditRepository.createSimplePaymentOrder(BigDecimal.valueOf(0.5))).thenReturn(
+                Result.success(order)
+            )
+
+            // WHEN
+            viewModel.onTryPaymentClicked()
+
+            // THEN
+            assertThat((viewModel.event.value as TapToPaySummaryViewModel.StartTryPaymentFlow).order).isEqualTo(order)
+        }
 
     @Test
     fun `when onTryPaymentClicked, then progress is shown and then hidden`() = testBlocking {
