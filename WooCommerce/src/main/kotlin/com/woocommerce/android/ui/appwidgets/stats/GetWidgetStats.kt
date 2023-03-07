@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.appwidgets.stats
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -34,15 +36,18 @@ class GetWidgetStats @Inject constructor(
                 siteModel == null -> WidgetStatsResult.WidgetStatsFailure("No site selected")
                 else -> {
                     // Fetch stats, always force to refresh data
+                    val areVisitorStatsSupported = siteModel.connectionType == SiteConnectionType.Jetpack
+
                     val fetchedStats = statsRepository.fetchStats(
                         granularity = granularity,
                         forced = true,
+                        includeVisitorStats = areVisitorStatsSupported,
                         site = siteModel
                     )
                     if (fetchedStats.isError) {
                         WidgetStatsResult.WidgetStatsFailure(fetchedStats.error.message)
                     } else {
-                        WidgetStatsResult.WidgetStats(fetchedStats.model!!)
+                        WidgetStatsResult.WidgetStats(fetchedStats.model!!, areVisitorStatsSupported)
                     }
                 }
             }
@@ -57,9 +62,13 @@ class GetWidgetStats @Inject constructor(
         data class WidgetStats(
             private val revenueModel: WCRevenueStatsModel?,
             private val visitorsMap: Map<String, Int>?,
-            val currencyCode: String
+            val currencyCode: String,
+            val areVisitorStatsSupported: Boolean
         ) : WidgetStatsResult() {
-            constructor(stats: StatsRepository.SiteStats) : this(stats.revenue, stats.visitors, stats.currencyCode)
+            constructor(
+                stats: StatsRepository.SiteStats,
+                areVisitorStatsSupported: Boolean
+            ) : this(stats.revenue, stats.visitors, stats.currencyCode, areVisitorStatsSupported)
 
             val visitorsTotal: Int
             val ordersTotal: Int
