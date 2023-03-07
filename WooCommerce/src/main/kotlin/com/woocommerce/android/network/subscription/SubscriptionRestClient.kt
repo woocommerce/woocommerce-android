@@ -22,7 +22,7 @@ class SubscriptionRestClient @Inject constructor(private val wooNetwork: WooNetw
     }
 
     @Suppress("PropertyName", "VariableNaming")
-    class SubscriptionDto: Response {
+    class SubscriptionDto : Response {
         val id: Long? = null
         val status: String? = null
         val billing_period: String? = null
