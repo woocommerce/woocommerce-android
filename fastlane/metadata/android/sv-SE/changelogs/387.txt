@@ -1,2 +1,0 @@
-12.4:
-Ni har önskat det, nu är det här. Det är nu möjligt att använda appen utan Jetpack-tillägget. Denna ändring är baserad på direkt feedback från er genom åren och vi vet att du kommer att gilla den!

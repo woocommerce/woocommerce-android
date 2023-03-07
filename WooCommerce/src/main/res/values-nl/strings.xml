@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-02-22 14:54:03+0000
+Translation-Revision-Date: 2023-03-01 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="domains_purchase_successful_settings_notice">Je kunt de domeininstellingen vinden onder Instellingen &gt; Domeinen</string>
+    <string name="domains_purchase_successful_delay_notice">Je siteadres wordt ingesteld. Het kan tot 30 minuten duren voor je domein werkt.</string>
+    <string name="domains_purchase_successful_heading">Gefeliciteerd met je aankoop</string>
+    <string name="domains_free_with_credits">Het eerste jaar gratis</string>
     <string name="settings_confirm_logout_site_credentials">Weet je zeker dat je wilt uitloggen bij je account?</string>
-    <string name="domains_error_title">Kan sitedomeinen niet laden</string>
+    <string name="domains_generic_error_title">Kan sitedomeinen niet laden</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d voltooid</string>
     <string name="store_onboarding_task_change_domain_description">Host je winkel met een aangepaste URL.</string>
     <string name="store_onboarding_task_change_domain_title">Je domein aanpassen</string>

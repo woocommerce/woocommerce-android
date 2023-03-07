@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-02-21 16:54:04+0000
+Translation-Revision-Date: 2023-03-01 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="domains_purchase_successful_settings_notice">您可以在“设置”&gt;“域名”中查找域名设置</string>
+    <string name="domains_purchase_successful_delay_notice">正在设置您的站点地址。 最多可能需花费 30 分钟时间，您的域名才能开始运行。</string>
+    <string name="domains_purchase_successful_heading">恭喜您购买成功</string>
+    <string name="domains_free_with_credits">第一年免费</string>
     <string name="settings_confirm_logout_site_credentials">是否确定要注销您的帐户？</string>
-    <string name="domains_error_title">无法加载站点域名</string>
+    <string name="domains_generic_error_title">无法加载站点域名</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d 已完成</string>
     <string name="store_onboarding_task_change_domain_description">有用于托管您的商店的自定义 URL。</string>
     <string name="store_onboarding_task_change_domain_title">自定义您的域名</string>

@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginAct
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstallFailed
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstalled
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.login.jetpack.GoToStore
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -354,7 +355,7 @@ class JetpackActivationMainViewModel @Inject constructor(
 
     private suspend fun confirmSiteConnection() {
         WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: fetch sites and confirm site connection")
-        jetpackActivationRepository.checkSiteConnection(navArgs.siteUrl).fold(
+        jetpackActivationRepository.fetchJetpackSite(navArgs.siteUrl).fold(
             onSuccess = {
                 connectionStep.value = ConnectionStep.Approved
             },
@@ -427,7 +428,6 @@ class JetpackActivationMainViewModel @Inject constructor(
         val connectionValidationUrls: List<String>
     ) : MultiLiveEvent.Event()
 
-    object GoToStore : MultiLiveEvent.Event()
     data class GoToPasswordScreen(val email: String) : MultiLiveEvent.Event()
     data class ShowWooNotInstalledScreen(val siteUrl: String) : MultiLiveEvent.Event()
 }

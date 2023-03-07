@@ -60,7 +60,7 @@ class PlansViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle, iapManager) {
     companion object {
         const val NEW_SITE_LANGUAGE_ID = "en"
-        const val NEW_SITE_THEME = "pub/zoologist"
+        const val NEW_SITE_THEME = "premium/tsubaki"
         const val CART_URL = "https://wordpress.com/checkout"
         const val WEBVIEW_SUCCESS_TRIGGER_KEYWORD = "https://wordpress.com/checkout/thank-you/"
         const val WEBVIEW_EXIT_TRIGGER_KEYWORD = "https://woocommerce.com/"
@@ -114,7 +114,7 @@ class PlansViewModel @Inject constructor(
         iapManager.purchaseWPComPlan(activityWrapper, siteId)
     }
 
-    fun onIapPurchaseSuccess() {
+    fun onPurchaseSuccess() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_IAP_PURCHASE_SUCCESS)
         triggerEvent(NavigateToNextStep)
     }
@@ -219,7 +219,7 @@ class PlansViewModel @Inject constructor(
             viewModelScope.launch {
                 iapPurchaseFlow?.collectLatest { result ->
                     when (result) {
-                        is WPComPurchaseResult.Success -> onIapPurchaseSuccess()
+                        is WPComPurchaseResult.Success -> onPurchaseSuccess()
                         is WPComPurchaseResult.Error -> onInAppPurchaseError(result)
                     }.exhaustive
                 }

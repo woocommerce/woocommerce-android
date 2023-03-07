@@ -31,7 +31,11 @@
             app:argType="long" />
         <action
             android:id="@+id/action_editCouponFragment_to_productSelectorFragment"
-            app:destination="@id/productSelectorFragment" />
+            app:destination="@id/nav_graph_product_selector" >
+            <argument
+                android:name="selectedItems"
+                app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectedItem[]" />
+        </action>
         <action
             android:id="@+id/action_editCouponFragment_to_couponRestrictionsFragment"
             app:destination="@id/couponRestrictionsFragment" />
@@ -60,53 +64,11 @@
             app:destination="@id/productCategorySelectorFragment" />
         <action
             android:id="@+id/action_couponRestrictionsFragment_to_productSelectorFragment"
-            app:destination="@id/productSelectorFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/productSelectorFragment"
-        android:name="com.woocommerce.android.ui.products.selector.ProductSelectorFragment"
-        android:label="ProductSelectorFragment" >
-        <argument
-            android:name="productIds"
-            app:argType="long[]" />
-        <action
-            android:id="@+id/action_productSelectorFragment_to_variationSelectorFragment"
-            app:destination="@id/variationSelectorFragment" />
-        <action
-            android:id="@+id/action_productSelectorFragment_to_nav_graph_product_filters"
-            app:destination="@id/nav_graph_product_filters">
+            app:destination="@id/nav_graph_product_selector" >
             <argument
-                android:name="selectedStockStatus"
-                app:argType="string"
-                app:nullable="true" />
-            <argument
-                android:name="selectedProductType"
-                app:argType="string"
-                app:nullable="true" />
-            <argument
-                android:name="selectedProductStatus"
-                app:argType="string"
-                app:nullable="true" />
-            <argument
-                android:name="selectedProductCategoryId"
-                app:argType="string"
-                app:nullable="true" />
-            <argument
-                android:name="selectedProductCategoryName"
-                app:argType="string"
-                app:nullable="true" />
+                android:name="selectedItems"
+                app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectedItem[]" />
         </action>
-    </fragment>
-    <fragment
-        android:id="@+id/variationSelectorFragment"
-        android:name="com.woocommerce.android.ui.products.variations.selector.VariationSelectorFragment"
-        android:label="VariationSelectorFragment" >
-        <argument
-            android:name="productId"
-            app:argType="long" />
-        <argument
-            android:name="variationIds"
-            app:argType="long[]" />
     </fragment>
     <fragment
         android:id="@+id/productCategorySelectorFragment"
@@ -124,5 +86,5 @@
             android:name="allowedEmails"
             app:argType="string" />
     </fragment>
-    <include app:graph="@navigation/nav_graph_product_filters" />
+    <include app:graph="@navigation/nav_graph_product_selector" />
 </navigation>
