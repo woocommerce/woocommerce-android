@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="woo_purple_10">#F7EDF7</color>
-    <color name="woo_purple_15">#E5CFE8</color>
+    <color name="woo_purple_0">#F7EDF7</color>
+    <color name="woo_purple_5">#E5CFE8</color>
+    <color name="woo_purple_10">#D6B4E0</color>
     <color name="woo_purple_20">#C792E0</color>
-    <color name="woo_purple_30">#B17FD4</color>
-    <color name="woo_purple_40">#AF7DD1</color>
+    <color name="woo_purple_30">#AF7DD1</color>
+    <color name="woo_purple_40">#9A69C7</color>
     <color name="woo_purple_50">#7F54B3</color>
     <color name="woo_purple_60">#674399</color>
     <color name="woo_purple_60_alpha_33">#33674399</color>
+    <color name="woo_purple_70">#533582</color>
     <color name="woo_purple_80">#3C2861</color>
     <color name="woo_purple_90">#271B3D</color>
+    <color name="woo_purple_1o0">#140E1F</color>
     <color name="woo_purple_dark_secondary">#99EBEBF5</color>
 
     <color name="woo_pink_10">#ED9BB8</color>

@@ -242,7 +242,7 @@ private fun ProfilerOptionItem(
             .background(
                 color = colorResource(
                     id = if (category.isSelected)
-                        if (isSystemInDarkTheme()) R.color.color_surface else R.color.woo_purple_10
+                        if (isSystemInDarkTheme()) R.color.color_surface else R.color.woo_purple_0
                     else R.color.color_surface
                 )
             )

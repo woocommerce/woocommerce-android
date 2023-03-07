@@ -87,7 +87,7 @@ fun Banner(bannerState: BannerState) {
                             .clip(
                                 RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
                             )
-                            .background(colorResource(id = R.color.woo_purple_10)),
+                            .background(colorResource(id = R.color.woo_purple_0)),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(

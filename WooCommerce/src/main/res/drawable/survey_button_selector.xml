@@ -2,7 +2,7 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:state_selected="true"
-        android:color="@color/woo_purple_10"/>
+        android:color="@color/woo_purple_0"/>
     <item
         android:state_selected="false"
         android:color="@android:color/transparent"/>

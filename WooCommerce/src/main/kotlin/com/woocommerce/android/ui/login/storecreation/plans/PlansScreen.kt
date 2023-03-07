@@ -305,7 +305,7 @@ fun PlanFeatureRow(@DrawableRes iconId: Int, @StringRes textId: Int) {
                 .height(26.dp)
                 .padding(end = dimensionResource(id = R.dimen.minor_100)),
             contentScale = ContentScale.FillHeight,
-            colorFilter = ColorFilter.tint(color = colorResource(id = R.color.woo_purple_15))
+            colorFilter = ColorFilter.tint(color = colorResource(id = R.color.woo_purple_5))
         )
         Text(
             text = stringResource(id = textId),
