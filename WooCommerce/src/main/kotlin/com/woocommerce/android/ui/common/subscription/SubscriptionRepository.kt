@@ -30,7 +30,7 @@ class SubscriptionRepository @Inject constructor(
                     WooResult(response.error)
                 }
                 response.result != null -> {
-                    val subscriptions = response.result!!.map { dto -> subscriptionMapper.toAppModel(dto,) }
+                    val subscriptions = response.result!!.map { dto -> subscriptionMapper.toAppModel(dto) }
                     WooResult(subscriptions)
                 }
                 else -> WooResult(WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN))
