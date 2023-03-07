@@ -65,4 +65,8 @@ dependencies {
 
     implementation(libs.google.dagger.hilt.android.main)
     ksp(libs.google.dagger.hilt.compiler)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.mockito.inline)
 }
