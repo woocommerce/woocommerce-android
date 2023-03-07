@@ -3,10 +3,10 @@
 -----
 - [*][Internal] Fixed IPP feedback survey banner display logic. [https://github.com/woocommerce/woocommerce-android/pull/8482]
 
-
 12.6
 -----
 - [*] Search in local database when searching for products in the edit coupons flow. [https://github.com/woocommerce/woocommerce-android/pull/8391]
+- [***] We added a new Domain change feature, which allows the store owners to register a TLD. [https://github.com/woocommerce/woocommerce-android/issues/8238]
 
 
 12.5
