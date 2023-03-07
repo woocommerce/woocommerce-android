@@ -7,12 +7,14 @@ import com.woocommerce.android.apifaker.db.ApiFakerDatabase
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.migration.DisableInstallInCheck
 import dagger.multibindings.IntoSet
 import okhttp3.Interceptor
 import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
+@DisableInstallInCheck // The module is installed in the app directly
 abstract class ApiFakerModule {
     companion object {
         @Provides
@@ -28,9 +30,4 @@ abstract class ApiFakerModule {
         internal fun providesInterceptor(endpointProcessor: EndpointProcessor): Interceptor =
             ApiFakerInterceptor(endpointProcessor)
     }
-
-//    @Binds
-//    @IntoSet
-//    @Named("network-interceptors")
-//    abstract fun bindsInterceptor(apiFakerInterceptor: ApiFakerInterceptor): Interceptor
 }
