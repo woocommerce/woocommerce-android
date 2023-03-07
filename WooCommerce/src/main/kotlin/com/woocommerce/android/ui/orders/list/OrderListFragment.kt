@@ -564,7 +564,6 @@ class OrderListFragment :
     }
 
     private fun disableSearchListeners() {
-        orderListMenu?.findItem(R.id.menu_settings)?.isVisible = true
         binding.orderListViewRoot.visibility = View.VISIBLE
         searchMenuItem?.setOnActionExpandListener(null)
         searchView?.setOnQueryTextListener(null)
@@ -580,7 +579,6 @@ class OrderListFragment :
     private fun enableSearchListeners() {
         hideEmptyView()
 
-        orderListMenu?.findItem(R.id.menu_settings)?.isVisible = false
         searchMenuItem?.setOnActionExpandListener(this)
         searchView?.setOnQueryTextListener(this)
 
