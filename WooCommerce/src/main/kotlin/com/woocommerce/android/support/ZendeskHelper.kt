@@ -10,6 +10,7 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.extensions.logInformation
 import com.woocommerce.android.extensions.stateLogInformation
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
@@ -40,6 +41,7 @@ import zendesk.support.Support
 import java.util.Locale
 import java.util.Timer
 import kotlin.concurrent.schedule
+import org.wordpress.android.fluxc.store.AccountStore
 
 private const val zendeskNeedsToBeEnabledError = "Zendesk needs to be setup before this method can be called"
 private const val enablePushNotificationsDelayAfterIdentityChange: Long = 2500
@@ -47,6 +49,9 @@ private const val maxLogfileLength: Int = 63000 // Max characters allowed in the
 
 class ZendeskHelper(
     private val siteStore: SiteStore,
+    private val supportHelper: SupportHelper,
+    private val accountStore: AccountStore,
+    private val selectedSite: SelectedSite,
     private val dispatchers: CoroutineDispatchers
 ) {
     private val zendeskInstance: Zendesk
@@ -70,8 +75,23 @@ class ZendeskHelper(
      * supportEmail and reset their identity on logout, we need to ensure that the correct identity is set all times.
      * Check [requireIdentity], [refreshIdentity] & [clearIdentity] for more details about how Zendesk identity works.
      */
-    private var supportEmail: String? = null
-    private var supportName: String? = null
+    var supportEmail: String?
+        get() = AppPrefs.getSupportEmail()
+            .takeIf { it.isNotEmpty() }
+            ?: supportHelper.getSupportNameSuggestion(accountStore.account, selectedSite.getIfExists())
+        set(value) {
+            AppPrefs.setSupportEmail(value)
+            refreshIdentity()
+        }
+
+    var supportName: String?
+        get() = AppPrefs.getSupportName()
+            .takeIf { it.isNotEmpty() }
+            ?: supportHelper.getSupportNameSuggestion(accountStore.account, selectedSite.getIfExists())
+        set(value) {
+            AppPrefs.setSupportName(value.orEmpty())
+            refreshIdentity()
+        }
 
     /**
      * Although rare, Zendesk SDK might reset the identity due to a 401 error. This seems to happen if the identity
@@ -230,20 +250,6 @@ class ZendeskHelper(
                     )
                 }
             })
-    }
-
-    /**
-     * This function provides a way to change the support email for the Zendesk identity. Due to the way Zendesk
-     * anonymous identity works, this will reset the users' tickets.
-     */
-    fun setSupportEmail(email: String?) {
-        AppPrefs.setSupportEmail(email)
-        refreshIdentity()
-    }
-
-    fun setSupportName(name: String) {
-        AppPrefs.setSupportName(name)
-        refreshIdentity()
     }
 
     /**
