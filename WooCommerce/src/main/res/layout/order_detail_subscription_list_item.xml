@@ -62,6 +62,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/subscription_period"
+        style="@style/Woo.ListItem.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="@+id/subscription_total"
