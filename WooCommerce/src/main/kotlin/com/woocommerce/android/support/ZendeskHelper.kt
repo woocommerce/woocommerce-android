@@ -79,9 +79,10 @@ class ZendeskHelper(
         get() = AppPrefs.getSupportEmail()
             .takeIf { it.isNotEmpty() }
             ?: supportHelper.getSupportNameSuggestion(accountStore.account, selectedSite.getIfExists())
+
         set(value) {
             if (value != field) {
-                AppPrefs.setSupportEmail(value.orEmpty())
+                AppPrefs.setSupportEmail(value)
                 refreshIdentity()
             }
         }
@@ -90,9 +91,10 @@ class ZendeskHelper(
         get() = AppPrefs.getSupportName()
             .takeIf { it.isNotEmpty() }
             ?: supportHelper.getSupportNameSuggestion(accountStore.account, selectedSite.getIfExists())
+
         set(value) {
             if (value != field) {
-                AppPrefs.setSupportName(value.orEmpty())
+                AppPrefs.setSupportName(value)
                 refreshIdentity()
             }
         }
