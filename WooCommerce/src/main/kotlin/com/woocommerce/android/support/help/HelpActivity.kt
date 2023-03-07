@@ -161,15 +161,13 @@ class HelpActivity : AppCompatActivity() {
         extraTags: List<String> = emptyList(),
         createNewTicket: Boolean = false
     ) {
-        val emailSuggestion = if (AppPrefs.hasSupportEmail()) {
-            AppPrefs.getSupportEmail()
-        } else {
-            supportHelper
-                .getSupportEmailAndNameSuggestion(accountStore.account, selectedSiteOrNull()).first
-        }
-
-        supportHelper.showSupportIdentityInputDialog(this, emailSuggestion) { email, _ ->
-            zendeskHelper.setSupportEmail(email)
+        supportHelper.showSupportIdentityInputDialog(
+            context = this,
+            email = zendeskHelper.supportEmail,
+            name = zendeskHelper.supportName
+        ) { email, name ->
+            zendeskHelper.supportEmail = email
+            zendeskHelper.supportName = name
             AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
             if (createNewTicket) createNewZendeskTicket(ticketType, extraTags)
         }
