@@ -7,6 +7,7 @@ import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
 import org.wordpress.android.fluxc.model.AccountModel
@@ -78,6 +79,16 @@ class SupportHelper {
         val nameSuggestion = if (!accountDisplayName.isNullOrEmpty()) accountDisplayName else selectedSite?.username
         return Pair(emailSuggestion, nameSuggestion)
     }
+
+    fun getSupportEmailSuggestion(
+        account: AccountModel?,
+        selectedSite: SiteModel?
+    ) = account?.email.takeIf { it.isNotNullOrEmpty() } ?: selectedSite?.email
+
+    fun getSupportNameSuggestion(
+        account: AccountModel?,
+        selectedSite: SiteModel?
+    ) = account?.displayName.takeIf { it.isNotNullOrEmpty() } ?: selectedSite?.username
 }
 
 /**
