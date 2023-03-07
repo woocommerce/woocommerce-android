@@ -88,6 +88,8 @@ private fun HomeScreen(
 
             FloatingActionButton(
                 onClick = { navController.navigate(Screen.EndpointDetails.routeForCreation()) },
+                backgroundColor = MaterialTheme.colors.primary,
+                contentColor = MaterialTheme.colors.onPrimary,
                 modifier = Modifier.align(Alignment.BottomEnd)
             ) {
                 Icon(imageVector = Icons.Filled.Add, contentDescription = "Add endpoint")

@@ -5,8 +5,6 @@
     android:id="@+id/nav_graph_settings"
     app:startDestination="@id/mainSettingsFragment">
 
-    <include app:graph="@navigation/nav_graph_api_faker" />
-
     <fragment
         android:id="@+id/mainSettingsFragment"
         android:name="com.woocommerce.android.ui.prefs.MainSettingsFragment"
@@ -136,7 +134,11 @@
         android:label="DeveloperOptionsFragment">
         <action
             android:id="@+id/action_developerOptionsFragment_to_ApiFaker"
-            app:destination="@id/nav_graph_api_faker" />
+            app:destination="@id/apiFakerHostFragment" />
     </fragment>
     <include app:graph="@navigation/nav_graph_domain_change" />
+    <fragment
+        android:id="@+id/apiFakerHostFragment"
+        android:name="com.woocommerce.android.apifaker.ApiFakerHostFragment"
+        android:label="ApiFakerHostFragment" />
 </navigation>
