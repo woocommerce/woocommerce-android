@@ -2,17 +2,17 @@ package com.woocommerce.android.ui.appwidgets.stats
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
-import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WCStatsStore
 import javax.inject.Inject
 
 class GetWidgetStats @Inject constructor(
-    private val accountStore: AccountStore,
+    private val accountRepository: AccountRepository,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val statsRepository: StatsRepository,
     private val coroutineDispatchers: CoroutineDispatchers,
@@ -25,7 +25,7 @@ class GetWidgetStats @Inject constructor(
         return withContext(coroutineDispatchers.io) {
             when {
                 // If user is not logged in, exit the function with WidgetStatsAuthFailure
-                accountStore.hasAccessToken().not() -> WidgetStatsResult.WidgetStatsAuthFailure
+                accountRepository.isUserLoggedIn().not() -> WidgetStatsResult.WidgetStatsAuthFailure
                 // If V4 stats is not supported, exit the function with WidgetStatsAPINotSupportedFailure
                 appPrefsWrapper.isV4StatsSupported().not() -> WidgetStatsResult.WidgetStatsAPINotSupportedFailure
                 // If network is not available, exit the function with WidgetStatsNetworkFailure
