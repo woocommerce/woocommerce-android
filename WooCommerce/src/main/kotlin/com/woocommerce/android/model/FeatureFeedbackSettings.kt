@@ -23,6 +23,7 @@ data class FeatureFeedbackSettings(
         PRODUCT_VARIATIONS,
         PRODUCT_ADDONS,
         SIMPLE_PAYMENTS_AND_ORDER_CREATION,
-        COUPONS
+        COUPONS,
+        ANALYTICS_HUB
     }
 }
