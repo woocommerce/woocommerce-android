@@ -87,12 +87,12 @@ class LoginMagicLinkSentImprovedFragment : Fragment(R.layout.fragment_login_magi
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menu.clear()
-        menuInflater.inflate(R.menu.menu_login, menu)
+        menuInflater.inflate(org.wordpress.android.login.R.menu.menu_login, menu)
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         return when (menuItem.itemId) {
-            R.id.help -> {
+            org.wordpress.android.login.R.id.help -> {
                 mAnalyticsListener.trackShowHelpClick()
                 mLoginListener?.helpMagicLinkSent(mEmail)
                 true

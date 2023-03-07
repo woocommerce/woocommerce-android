@@ -63,7 +63,7 @@ class MagicLinkInterceptFragment : Fragment() {
     ): View? {
         setHasOptionsMenu(true)
 
-        return inflater.inflate(R.layout.login_magic_link_sent_screen, container, false)
+        return inflater.inflate(org.wordpress.android.login.R.layout.login_magic_link_sent_screen, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

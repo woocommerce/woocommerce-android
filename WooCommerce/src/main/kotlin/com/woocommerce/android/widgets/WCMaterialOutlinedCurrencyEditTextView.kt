@@ -191,7 +191,7 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     }
 }
 
-private abstract class CurrencyEditText(context: Context) : TextInputEditText(context, null, R.attr.editTextStyle) {
+private abstract class CurrencyEditText(context: Context) : TextInputEditText(context, null, androidx.appcompat.R.attr.editTextStyle) {
     open var supportsEmptyState: Boolean = true
     abstract var supportsNegativeValues: Boolean
     abstract val value: LiveData<BigDecimal?>

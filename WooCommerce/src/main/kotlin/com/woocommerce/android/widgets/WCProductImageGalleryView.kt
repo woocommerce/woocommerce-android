@@ -134,8 +134,8 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
         imageSize = if (isGridView) {
             val windowWidth = DisplayUtils.getWindowPixelWidth(context)
-            val margin = context.resources.getDimensionPixelSize(R.dimen.margin_extra_large)
-            val deleteIconsSpace = context.resources.getDimensionPixelSize(R.dimen.margin_extra_large)
+            val margin = context.resources.getDimensionPixelSize(org.wordpress.aztec.R.dimen.margin_extra_large)
+            val deleteIconsSpace = context.resources.getDimensionPixelSize(org.wordpress.aztec.R.dimen.margin_extra_large)
             ((windowWidth - margin * NUM_GRID_MARGINS) / 2) - deleteIconsSpace
         } else {
             context.resources.getDimensionPixelSize(R.dimen.image_major_120)
@@ -145,7 +145,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             if (isGridView) {
                 GridItemDecoration(
                     spanCount = NUM_COLUMNS,
-                    spacing = resources.getDimensionPixelSize(R.dimen.margin_extra_large)
+                    spacing = resources.getDimensionPixelSize(org.wordpress.aztec.R.dimen.margin_extra_large)
                 )
             } else {
                 HorizontalItemDecoration(
@@ -443,7 +443,8 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         private fun setMargins() {
             (viewBinding.productImage.layoutParams as FrameLayout.LayoutParams).apply {
                 val margin = if (isGridView) {
-                    val additionalMarginToFitDeleteIcon = context.resources.getDimensionPixelSize(R.dimen.margin_medium)
+                    val additionalMarginToFitDeleteIcon = context.resources.getDimensionPixelSize(
+                        org.wordpress.aztec.R.dimen.margin_medium)
                     additionalMarginToFitDeleteIcon
                 } else {
                     0

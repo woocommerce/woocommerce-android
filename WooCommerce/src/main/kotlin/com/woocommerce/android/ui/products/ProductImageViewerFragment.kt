@@ -129,7 +129,7 @@ class ProductImageViewerFragment :
         resetAdapter()
 
         binding.viewPager.setPageTransformer(
-            MarginPageTransformer(resources.getDimensionPixelSize(R.dimen.margin_large))
+            MarginPageTransformer(resources.getDimensionPixelSize(org.wordpress.aztec.R.dimen.margin_large))
         )
 
         binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
