@@ -14,7 +14,7 @@ import androidx.room.PrimaryKey
     ]
 )
 internal data class FakeResponse(
-    @PrimaryKey val endpointId: Int,
+    @PrimaryKey val endpointId: Int = 0,
     val statusCode: Int,
     val body: String?,
 )

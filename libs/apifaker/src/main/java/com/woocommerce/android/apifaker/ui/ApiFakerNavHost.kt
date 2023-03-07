@@ -7,8 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.woocommerce.android.apifaker.ui.Screen.EndpointDetails
-import com.woocommerce.android.apifaker.ui.Screen.Home
+import com.woocommerce.android.apifaker.ui.details.EndpointDetailsScreen
 import com.woocommerce.android.apifaker.ui.home.HomeScreen
 
 @Composable
@@ -17,19 +16,19 @@ fun ApiFakerNavHost() {
 
     NavHost(
         navController = navController,
-        startDestination = Home.route()
+        startDestination = Screen.Home.route()
     ) {
-        composable(Home.route()) {
+        composable(Screen.Home.route()) {
             HomeScreen(hiltViewModel(), navController)
         }
         composable(
-            EndpointDetails.baseRoute,
-            arguments = listOf(navArgument("endpointId") {
+            Screen.EndpointDetails.baseRoute,
+            arguments = listOf(navArgument(Screen.EndpointDetails.endpointIdArgumentName) {
                 type = NavType.IntType
                 defaultValue = -1
             })
         ) {
-            TODO()
+            EndpointDetailsScreen(hiltViewModel(), navController)
         }
     }
 }
