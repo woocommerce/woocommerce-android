@@ -75,22 +75,26 @@ class ZendeskHelper(
      * supportEmail and reset their identity on logout, we need to ensure that the correct identity is set all times.
      * Check [requireIdentity], [refreshIdentity] & [clearIdentity] for more details about how Zendesk identity works.
      */
-    var supportEmail: String?
+    var supportEmail: String? = null
         get() = AppPrefs.getSupportEmail()
             .takeIf { it.isNotEmpty() }
             ?: supportHelper.getSupportNameSuggestion(accountStore.account, selectedSite.getIfExists())
         set(value) {
-            AppPrefs.setSupportEmail(value)
-            refreshIdentity()
+            if (value != field) {
+                AppPrefs.setSupportEmail(value.orEmpty())
+                refreshIdentity()
+            }
         }
 
-    var supportName: String?
+    var supportName: String? = null
         get() = AppPrefs.getSupportName()
             .takeIf { it.isNotEmpty() }
             ?: supportHelper.getSupportNameSuggestion(accountStore.account, selectedSite.getIfExists())
         set(value) {
-            AppPrefs.setSupportName(value.orEmpty())
-            refreshIdentity()
+            if (value != field) {
+                AppPrefs.setSupportName(value.orEmpty())
+                refreshIdentity()
+            }
         }
 
     /**
@@ -259,29 +263,23 @@ class ZendeskHelper(
         require(isZendeskEnabled) {
             zendeskNeedsToBeEnabledError
         }
-        val email = AppPrefs.getSupportEmail()
-        val name = AppPrefs.getSupportName()
         /**
-         * We refresh the Zendesk identity if the email or the name has been updated. We also check whether
+         * We refresh the Zendesk identity when the email or the name has been updated. We also check whether
          * Zendesk SDK has cleared the identity. Check out the documentation for [isIdentitySet] for more details.
          */
-        if (supportEmail != email || supportName != name || zendeskInstance.identity == null) {
-            supportEmail = email
-            supportName = name
-            zendeskInstance.setIdentity(createZendeskIdentity(email, name))
+        zendeskInstance.setIdentity(createZendeskIdentity(supportEmail, supportName))
 
-            /**
-             * When we change the identity in Zendesk, it seems to be making an asynchronous call to a server to
-             * receive a different access token. During this time, if there is a call to Zendesk with the previous
-             * access token, it could fail with a 401 error which seems to be clearing the identity. In order to avoid
-             * such cases, we put a delay on enabling push notifications for the new identity.
-             *
-             * [enablePushNotifications] will check if the identity is set, before making the actual call, so if the
-             * identity is cleared through [clearIdentity], this call will simply be ignored.
-             */
-            timer.schedule(enablePushNotificationsDelayAfterIdentityChange) {
-                enablePushNotifications()
-            }
+        /**
+         * When we change the identity in Zendesk, it seems to be making an asynchronous call to a server to
+         * receive a different access token. During this time, if there is a call to Zendesk with the previous
+         * access token, it could fail with a 401 error which seems to be clearing the identity. In order to avoid
+         * such cases, we put a delay on enabling push notifications for the new identity.
+         *
+         * [enablePushNotifications] will check if the identity is set, before making the actual call, so if the
+         * identity is cleared through [clearIdentity], this call will simply be ignored.
+         */
+        timer.schedule(enablePushNotificationsDelayAfterIdentityChange) {
+            enablePushNotifications()
         }
     }
 
