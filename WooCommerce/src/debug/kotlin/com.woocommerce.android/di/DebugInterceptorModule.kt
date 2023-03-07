@@ -13,7 +13,7 @@ import okhttp3.Interceptor
 import javax.inject.Named
 
 @InstallIn(SingletonComponent::class)
-@Module(includes = [ApiFakerModule::class])
+@Module
 class DebugInterceptorModule {
     @Provides
     @IntoSet
