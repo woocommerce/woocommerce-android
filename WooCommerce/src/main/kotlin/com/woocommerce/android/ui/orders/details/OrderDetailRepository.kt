@@ -17,11 +17,11 @@ import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.ShippingLabelMapper
 import com.woocommerce.android.model.Subscription
-import com.woocommerce.android.model.SubscriptionMapper
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.common.subscription.SubscriptionRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.ORDERS
@@ -36,7 +36,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WCShippingLabelStore
-import org.wordpress.android.fluxc.store.WCSubscriptionStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
@@ -50,8 +49,7 @@ class OrderDetailRepository @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val orderMapper: OrderMapper,
     private val shippingLabelMapper: ShippingLabelMapper,
-    private val subscriptionStore: WCSubscriptionStore,
-    private val subscriptionMapper: SubscriptionMapper
+    private val subscriptionRepository: SubscriptionRepository
 ) {
     suspend fun fetchOrderById(orderId: Long): Order? {
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
@@ -305,16 +303,13 @@ class OrderDetailRepository @Inject constructor(
     }
 
     suspend fun getOrderSubscriptions(orderId: Long): Result<List<Subscription>> {
-        val result = subscriptionStore.fetchSubscriptionsByOrderId(
+        val result = subscriptionRepository.fetchSubscriptionsByOrderId(
             site = selectedSite.get(),
             orderId = orderId
         )
         return when {
             result.isError -> Result.failure(WooException(result.error))
-            result.model != null -> {
-                val subscriptions = result.model!!.map { model -> subscriptionMapper.toAppModel(model) }
-                Result.success(subscriptions)
-            }
+            result.model != null -> Result.success(result.model!!)
             else -> Result.failure(Exception("Error fetching subscriptions"))
         }
     }
