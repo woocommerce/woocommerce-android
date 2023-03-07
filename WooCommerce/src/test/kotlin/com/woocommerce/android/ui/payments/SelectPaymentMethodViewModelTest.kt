@@ -214,6 +214,27 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given tap to pay test flow, when on cash payment clicked, then show dialog event emitted`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val viewModel = initViewModel(Payment(orderId, TRY_TAP_TO_PAY))
+
+            // WHEN
+            viewModel.onCashPaymentClicked()
+
+            // THEN
+            val events = viewModel.event.captureValues()
+            assertThat(events.last()).isInstanceOf(ShowDialog::class.java)
+            assertThat((events.last() as ShowDialog).titleId).isEqualTo(R.string.simple_payments_cash_dlg_title)
+            assertThat((events.last() as ShowDialog).messageId).isEqualTo(R.string.simple_payments_cash_dlg_message)
+            assertThat((events.last() as ShowDialog).positiveButtonId).isEqualTo(
+                R.string.simple_payments_cash_dlg_button
+            )
+            assertThat((events.last() as ShowDialog).negativeButtonId).isEqualTo(R.string.cancel)
+        }
+
+    @Test
     fun `given order payment flow, when on cash payment clicked, then collect tracked with order payment flow`() =
         testBlocking {
             // GIVEN
@@ -478,6 +499,25 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             val viewModel = initViewModel(Payment(1L, SIMPLE))
+
+            // WHEN
+            viewModel.onSharePaymentUrlClicked()
+
+            // THEN
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
+                mapOf(
+                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK,
+                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
+                )
+            )
+        }
+
+    @Test
+    fun `given tap to pay flow, when on share link clicked, then collect tracked with simple flow`() =
+        testBlocking {
+            // GIVEN
+            val viewModel = initViewModel(Payment(1L, TRY_TAP_TO_PAY))
 
             // WHEN
             viewModel.onSharePaymentUrlClicked()
