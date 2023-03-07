@@ -370,10 +370,6 @@ class VariationDetailViewModel @Inject constructor(
         )
     }
 
-    fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
-        productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
-            ?: viewState.variation?.shippingClass ?: ""
-
     private fun observeImageUploadEvents() {
         mediaFileUploadHandler.observeCurrentUploads(navArgs.remoteVariationId)
             .onEach {

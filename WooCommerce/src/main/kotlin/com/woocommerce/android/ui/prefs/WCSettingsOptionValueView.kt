@@ -75,10 +75,6 @@ class WCSettingsOptionValueView @JvmOverloads constructor(
         }
     }
 
-    var optionTitle: String
-        get() { return binding.optionTitle.text.toString() }
-        set(value) { binding.optionTitle.text = value }
-
     var optionValue: String?
         get() { return binding.optionValue.text.toString() }
         set(value) {

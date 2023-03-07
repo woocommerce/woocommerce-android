@@ -3,11 +3,6 @@ package com.woocommerce.android.extensions
 import org.apache.commons.text.StringEscapeUtils
 
 /**
- * Checks if a given string is a number (supports positive or negative numbers)
- */
-fun String?.isNumeric() = this?.toIntOrNull()?.let { true } ?: false
-
-/**
  * Checks if a given string is a Float
  */
 fun String?.isFloat() = this?.toFloatOrNull()?.let { true } ?: false
@@ -75,12 +70,6 @@ fun String.semverCompareTo(otherVersion: String): Int {
     } catch (e: NumberFormatException) {
         // if the parsing fails, consider this version lower than the other one
         return -1
-    }
-}
-
-fun String.capitalizeWords(): String {
-    return this.split(" ").joinToString(" ") { word ->
-        word.replaceFirstChar { it.uppercase() }
     }
 }
 

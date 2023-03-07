@@ -44,10 +44,6 @@ import org.wordpress.android.fluxc.store.WCLeaderboardsStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListPayload
 
 class NotificationMessageHandlerTest {
-    companion object {
-        val SITE_MODEL = SiteModel()
-    }
-
     private lateinit var notificationMessageHandler: NotificationMessageHandler
 
     private val accountModel = AccountModel().apply { userId = 12345 }

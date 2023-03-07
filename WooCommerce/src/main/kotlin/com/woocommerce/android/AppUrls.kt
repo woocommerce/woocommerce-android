@@ -6,7 +6,6 @@ import com.woocommerce.android.support.help.HelpOrigin.LOGIN_USERNAME_PASSWORD
 
 object AppUrls {
     const val APP_HELP_CENTER = "https://docs.woocommerce.com/document/android/"
-    const val APP_FEATURE_REQUEST = "http://ideas.woocommerce.com/forums/133476-woocommerce?category_id=84283"
 
     const val AUTOMATTIC_TOS = "https://woocommerce.com/terms-conditions/"
     const val AUTOMATTIC_PRIVACY_POLICY = "https://www.automattic.com/privacy"
