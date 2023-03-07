@@ -8,12 +8,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailSubscriptionListItemBinding
-import com.woocommerce.android.extensions.getMediumDate
 import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.model.Subscription.Period
 import com.woocommerce.android.ui.orders.SubscriptionStatusTag
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 class OrderDetailSubscriptionListAdapter(private val currencyFormatter: CurrencyFormatter) :
     RecyclerView.Adapter<OrderDetailSubscriptionListAdapter.OrderDetailSubscriptionViewHolder>() {
@@ -55,12 +56,14 @@ class OrderDetailSubscriptionListAdapter(private val currencyFormatter: Currency
                 text = context.getString(R.string.subscription_id, subscription.id)
             }
             with(viewBinding.subscriptionStartDate) {
-                text = subscription.startDate.getMediumDate(context)
+                text = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).format(subscription.startDate)
             }
             subscription.endDate?.let { endDate ->
                 viewBinding.subscriptionEndDate.visibility = View.VISIBLE
                 with(viewBinding.subscriptionEndDate) {
-                    text = context.getString(R.string.subscription_end_date, endDate.getMediumDate(context))
+                    val endDateString =
+                        DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).format(endDate)
+                    text = context.getString(R.string.subscription_end_date, endDateString)
                 }
             } ?: run {
                 viewBinding.subscriptionEndDate.visibility = View.GONE

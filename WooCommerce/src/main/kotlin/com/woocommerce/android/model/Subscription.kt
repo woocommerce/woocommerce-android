@@ -3,7 +3,7 @@ package com.woocommerce.android.model
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
-import java.util.Date
+import java.time.LocalDate
 
 @Parcelize
 data class Subscription(
@@ -12,8 +12,8 @@ data class Subscription(
     val billingPeriod: Period,
     val billingInterval: Int,
     val total: BigDecimal,
-    val startDate: Date,
-    val endDate: Date?,
+    val startDate: LocalDate,
+    val endDate: LocalDate?,
     val currency: String
 ) : Parcelable {
     @Parcelize
