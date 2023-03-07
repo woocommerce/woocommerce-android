@@ -32,7 +32,7 @@ class DeveloperOptionsViewModel @Inject constructor(
                 getListItemsForSimulatedReader()
             } else {
                 getListItemsForHardwareReader()
-            }
+            } + createApiFakerItem()
         )
     )
 
@@ -68,6 +68,16 @@ class DeveloperOptionsViewModel @Inject constructor(
             isChecked = developerOptionsRepository.isInteracPaymentEnabled(),
             onToggled = ::onEnableInteracToggled
         )
+
+    private fun createApiFakerItem() = ListItem.NonToggleableListItem(
+        icon = drawable.ic_globe,
+        label = UiStringRes(string.api_faker),
+        key = UiStringRes(string.api_faker_key),
+        isEnabled = true,
+        onClick = {
+            triggerEvent(DeveloperOptionsEvents.OpenApiFaker)
+        }
+    )
 
     private fun onSimulatedReaderToggled(isChecked: Boolean) {
         if (!isChecked) {
@@ -152,6 +162,8 @@ class DeveloperOptionsViewModel @Inject constructor(
             val options: List<UpdateOptions>,
             var selectedValue: UpdateOptions,
         ) : DeveloperOptionsEvents()
+
+        object OpenApiFaker: DeveloperOptionsEvents()
     }
 
     private fun getListItemsForSimulatedReader(): List<ListItem> {

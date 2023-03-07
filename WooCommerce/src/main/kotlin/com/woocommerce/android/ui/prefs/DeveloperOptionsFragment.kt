@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.ContextThemeWrapper
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -49,6 +50,11 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
                         values = event.options,
                         mapper = { requireContext().getString(it.title) },
                         selectedValue = event.selectedValue
+                    )
+                }
+                is DeveloperOptionsViewModel.DeveloperOptionsEvents.OpenApiFaker -> {
+                    findNavController().navigate(
+                        DeveloperOptionsFragmentDirections.actionDeveloperOptionsFragmentToApiFaker()
                     )
                 }
             }
