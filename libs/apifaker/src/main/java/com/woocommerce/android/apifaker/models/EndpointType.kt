@@ -1,5 +1,8 @@
 package com.woocommerce.android.apifaker.models
 
-internal enum class EndpointType {
-    WPApi, WPCom
+internal sealed interface EndpointType {
+    object WPApi : EndpointType
+    object WPCom : EndpointType
+
+    data class Custom(val host: String) : EndpointType
 }

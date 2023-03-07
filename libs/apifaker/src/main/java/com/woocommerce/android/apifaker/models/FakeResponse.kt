@@ -1,13 +1,21 @@
 package com.woocommerce.android.apifaker.models
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
-@Entity
+@Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = Endpoint::class,
+            parentColumns = ["id"],
+            childColumns = ["endpointId"]
+        )
+    ]
+)
 internal data class FakeResponse(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey val endpointId: Int,
     val statusCode: Int,
     val body: String?,
-    val endpointId: Int
 )
 
