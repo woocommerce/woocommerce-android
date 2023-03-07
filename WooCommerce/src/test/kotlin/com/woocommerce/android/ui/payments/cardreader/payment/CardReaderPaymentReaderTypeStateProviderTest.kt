@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.payments.cardreader.payment
 
-import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderCapturingPaymentState
@@ -141,7 +140,11 @@ class CardReaderPaymentReaderTypeStateProviderTest {
         // THEN
         assertThat(result).isInstanceOf(BuiltInReaderPaymentSuccessfulReceiptSentAutomaticallyState::class.java)
         assertThat(result.amountWithCurrencyLabel).isEqualTo("amountLabel")
-        assertThat(result.receiptSentAutomaticallyHint).isEqualTo(UiStringRes(androidx.navigation.dynamicfeatures.fragment.R.string.ok))
+        assertThat(result.receiptSentAutomaticallyHint).isEqualTo(
+            UiStringRes(
+                androidx.navigation.dynamicfeatures.fragment.R.string.ok
+            )
+        )
     }
 
     @Test
@@ -161,7 +164,11 @@ class CardReaderPaymentReaderTypeStateProviderTest {
         // THEN
         assertThat(result).isInstanceOf(ExternalReaderPaymentSuccessfulReceiptSentAutomaticallyState::class.java)
         assertThat(result.amountWithCurrencyLabel).isEqualTo("amountLabel")
-        assertThat(result.receiptSentAutomaticallyHint).isEqualTo(UiStringRes(androidx.navigation.dynamicfeatures.fragment.R.string.ok))
+        assertThat(result.receiptSentAutomaticallyHint).isEqualTo(
+            UiStringRes(
+                androidx.navigation.dynamicfeatures.fragment.R.string.ok
+            )
+        )
     }
 
     @Test
