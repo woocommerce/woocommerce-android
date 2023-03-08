@@ -9,7 +9,6 @@ import zendesk.core.Zendesk
 import zendesk.support.Support
 
 class ZendeskAccess {
-
     val instance: Zendesk?
         get() = Zendesk.INSTANCE.takeIfInitialized()
 
