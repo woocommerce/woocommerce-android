@@ -9,7 +9,8 @@ import androidx.room.PrimaryKey
         ForeignKey(
             entity = Request::class,
             parentColumns = ["id"],
-            childColumns = ["endpointId"]
+            childColumns = ["endpointId"],
+            onDelete = ForeignKey.CASCADE
         )
     ]
 )
@@ -18,4 +19,3 @@ internal data class Response(
     val statusCode: Int,
     val body: String?,
 )
-

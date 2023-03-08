@@ -15,6 +15,6 @@ internal class ApiFakerConfig @Inject constructor() {
     val enabled = _enabled.asStateFlow()
 
     internal suspend fun setStatus(enabled: Boolean) {
-        _enabled.value = enabled && endpointDao.endpointsCount() > 0
+        _enabled.value = enabled && !endpointDao.isEmpty()
     }
 }
