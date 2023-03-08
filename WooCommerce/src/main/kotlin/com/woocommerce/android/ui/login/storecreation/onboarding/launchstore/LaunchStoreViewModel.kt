@@ -4,19 +4,23 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.extensions.isCurrentPlanEcommerceTrial
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.network.UserAgent
 import javax.inject.Inject
 
 @HiltViewModel
 class LaunchStoreViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val launchStoreOnboardingRepository: StoreOnboardingRepository,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
+    val userAgent: UserAgent
 ) : ScopedViewModel(savedStateHandle) {
     private companion object {
         const val PLANS_URL = "https://wordpress.com/plans/"
