@@ -5,6 +5,8 @@ import android.app.Application
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.graphics.Point
+import android.view.WindowManager
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.util.SystemVersionUtils
@@ -23,4 +25,18 @@ fun Context.getCurrentProcessName() =
     } else {
         val am = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         am.runningAppProcesses.firstOrNull { it.pid == android.os.Process.myPid() }?.processName
+    }
+
+@Suppress("DEPRECATION")
+val Context.physicalScreenHeightInPx: Int
+    get() = run {
+        val windowManager = applicationContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        if (SystemVersionUtils.isAtLeastR()) {
+            val windowMetrics = windowManager.currentWindowMetrics
+            windowMetrics.bounds.height()
+        } else {
+            val size = Point()
+            display?.getSize(size)
+            size.y
+        }
     }

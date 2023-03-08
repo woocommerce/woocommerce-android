@@ -82,6 +82,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -305,10 +306,13 @@ class MainActivity :
 
         checkConnection()
         viewModel.showFeatureAnnouncementIfNeeded()
+
+        ChromeCustomTabUtils.connect(this)
     }
 
     override fun onPause() {
         binding.appBarLayout.removeOnOffsetChangedListener(appBarOffsetListener)
+        ChromeCustomTabUtils.disconnect(this)
         super.onPause()
     }
 
