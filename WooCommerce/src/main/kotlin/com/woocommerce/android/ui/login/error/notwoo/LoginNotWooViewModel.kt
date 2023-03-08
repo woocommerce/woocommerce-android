@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -44,7 +45,7 @@ class LoginNotWooViewModel @Inject constructor(
     fun openWooInstallationScreen() = launch {
         val site = wpApiSiteRepository.getSiteByUrl(siteUrl)
 
-        val installationUrl = (site?.adminUrl ?: siteUrl.slashJoin("wp-admin")).slashJoin(INSTALL_PATH)
+        val installationUrl = (site?.adminUrlOrDefault ?: siteUrl.slashJoin("wp-admin")).slashJoin(INSTALL_PATH)
 
         triggerEvent(LaunchWooInstallation(installationUrl))
         hasOpenedInstallationPage = true

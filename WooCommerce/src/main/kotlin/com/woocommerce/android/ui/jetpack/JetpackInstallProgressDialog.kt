@@ -240,7 +240,7 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
                 button.setOnClickListener {
                     isReturningFromWpAdmin = true
 
-                    val installJetpackInWpAdminUrl = selectedSite.get().adminUrl + JETPACK_INSTALL_URL
+                    val installJetpackInWpAdminUrl = selectedSite.get().adminUrlOrDefault + JETPACK_INSTALL_URL
                     ChromeCustomTabUtils.launchUrl(requireContext(), installJetpackInWpAdminUrl)
 
                     AnalyticsTracker.track(
@@ -253,7 +253,7 @@ class JetpackInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_inst
                 button.setOnClickListener {
                     isReturningFromWpAdmin = true
 
-                    val activateJetpackInWpAdminUrl = selectedSite.get().adminUrl + JETPACK_ACTIVATE_URL
+                    val activateJetpackInWpAdminUrl = selectedSite.get().adminUrlOrDefault + JETPACK_ACTIVATE_URL
                     ChromeCustomTabUtils.launchUrl(requireContext(), activateJetpackInWpAdminUrl)
                 }
             }

@@ -34,6 +34,15 @@
             android:id="@+id/action_selectPaymentMethodFragment_to_orderList"
             app:popUpTo="@+id/orders"
             app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_selectPaymentMethodFragment_to_orderDetailFragment"
+            app:popUpTo="@+id/tapToPaySummaryFragment"
+            app:popUpToInclusive="true"
+            app:destination="@id/nav_graph_orders">
+            <argument
+                android:name="orderId"
+                app:argType="long" />
+        </action>
     </fragment>
 
     <dialog
@@ -65,9 +74,9 @@
             app:nullable="false" />
         <action
             android:id="@+id/action_cardReaderStatusCheckerDialogFragment_to_cardReaderTypeSelectionDialogFragment"
+            app:destination="@id/cardReaderTypeSelectionDialogFragment"
             app:popUpTo="@+id/cardReaderStatusCheckerDialogFragment"
-            app:popUpToInclusive="true"
-            app:destination="@id/cardReaderTypeSelectionDialogFragment" />
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_cardReaderStatusCheckerDialogFragment_to_cardReaderWelcomeDialogFragment"
             app:destination="@id/cardReaderWelcomeDialogFragment"
@@ -283,6 +292,10 @@
             android:name="order"
             app:argType="com.woocommerce.android.model.Order"
             app:nullable="false" />
+        <argument
+            android:name="paymentType"
+            app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam$PaymentOrRefund$Payment$PaymentType"
+            app:nullable="false" />
         <action
             android:id="@+id/action_simplePaymentsFragment_to_simplePaymentsCustomerNoteFragment"
             app:destination="@id/simplePaymentsCustomerNoteFragment"
@@ -311,6 +324,10 @@
     <fragment
         android:id="@+id/tapToPaySummaryFragment"
         android:name="com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryFragment"
-        android:label="TapToPaySummaryFragment"/>
+        android:label="TapToPaySummaryFragment">
+        <action
+            android:id="@+id/action_tapToPaySummaryFragment_to_simplePaymentFragment"
+            app:destination="@+id/simplePaymentsFragment" />
+    </fragment>
 
 </navigation>
