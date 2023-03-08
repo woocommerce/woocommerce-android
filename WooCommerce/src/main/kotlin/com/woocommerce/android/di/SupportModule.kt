@@ -18,20 +18,27 @@ import org.wordpress.android.fluxc.store.AccountStore
 class SupportModule {
     @Singleton
     @Provides
+    fun provideZendeskProvider() : ZendeskAccess = ZendeskAccess()
+
+    @Singleton
+    @Provides
     fun provideZendeskHelper(
+        zendeskAccess: ZendeskAccess,
         siteStore: SiteStore,
         supportHelper: SupportHelper,
         accountStore: AccountStore,
         selectedSite: SelectedSite,
         dispatchers: CoroutineDispatchers
-    ): ZendeskManager = ZendeskManager(siteStore, supportHelper, accountStore, selectedSite, dispatchers)
+    ): ZendeskManager = ZendeskManager(
+        zendeskAccess,
+        siteStore,
+        supportHelper,
+        accountStore,
+        selectedSite,
+        dispatchers
+    )
 
     @Singleton
     @Provides
     fun provideSupportHelper(): SupportHelper = SupportHelper()
-
-    @Singleton
-    @Provides
-    fun provideZendeskProvider(
-    ) : ZendeskAccess = ZendeskAccess()
 }

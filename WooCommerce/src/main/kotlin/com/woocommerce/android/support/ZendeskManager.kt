@@ -6,7 +6,6 @@ import android.os.Parcelable
 import android.telephony.TelephonyManager
 import android.text.TextUtils
 import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.extensions.logInformation
 import com.woocommerce.android.extensions.stateLogInformation
 import com.woocommerce.android.support.help.HelpOrigin
@@ -15,7 +14,6 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import com.zendesk.logger.Logger
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
 import kotlinx.coroutines.channels.awaitClose
@@ -32,8 +30,6 @@ import org.wordpress.android.util.StringUtils
 import org.wordpress.android.util.UrlUtils
 import zendesk.core.AnonymousIdentity
 import zendesk.core.Identity
-import zendesk.core.PushRegistrationProvider
-import zendesk.core.Zendesk
 import zendesk.support.CreateRequest
 import zendesk.support.CustomField
 import zendesk.support.Request
@@ -48,24 +44,13 @@ private const val enablePushNotificationsDelayAfterIdentityChange: Long = 2500
 private const val maxLogfileLength: Int = 63000 // Max characters allowed in the system status report field
 
 class ZendeskManager(
+    private val zendeskAccess: ZendeskAccess,
     private val siteStore: SiteStore,
     private val supportHelper: SupportHelper,
     private val accountStore: AccountStore,
     private val selectedSite: SelectedSite,
     private val dispatchers: CoroutineDispatchers
 ) {
-    private val zendeskInstance: Zendesk
-        get() = Zendesk.INSTANCE
-
-    private val isZendeskEnabled: Boolean
-        get() = zendeskInstance.isInitialized
-
-    private val zendeskPushRegistrationProvider: PushRegistrationProvider?
-        get() = zendeskInstance.provider()?.pushRegistrationProvider()
-
-    private val requestProvider
-        get() = Support.INSTANCE.provider()?.requestProvider()
-
     private val timer: Timer by lazy {
         Timer()
     }
@@ -105,34 +90,7 @@ class ZendeskManager(
      * such issues, we check both Zendesk identity and the [supportEmail] to decide whether identity is set.
      */
     private val isIdentitySet: Boolean
-        get() = !supportEmail.isNullOrEmpty() && zendeskInstance.identity != null
-
-    /**
-     * This function sets up the Zendesk singleton instance with the passed in credentials. This step is required
-     * for the rest of Zendesk functions to work and it should only be called once, probably during the Application
-     * setup. It'll also enable Zendesk logs for DEBUG builds.
-     */
-    @JvmOverloads
-    fun setupZendesk(
-        context: Context,
-        zendeskUrl: String,
-        applicationId: String,
-        oauthClientId: String,
-        enableLogs: Boolean = BuildConfig.DEBUG
-    ) {
-        if (isZendeskEnabled) {
-            if (PackageUtils.isTesting()) return
-            else error("Zendesk shouldn't be initialized more than once!")
-        }
-        if (zendeskUrl.isEmpty() || applicationId.isEmpty() || oauthClientId.isEmpty()) {
-            return
-        }
-        zendeskInstance.init(context, zendeskUrl, applicationId, oauthClientId)
-        Logger.setLoggable(enableLogs)
-        Support.INSTANCE.init(zendeskInstance)
-
-        refreshIdentity()
-    }
+        get() = !supportEmail.isNullOrEmpty() && zendeskAccess.instance?.identity != null
 
     /**
      * This function creates a new customer Support Request through the Zendesk API Providers.
@@ -147,10 +105,6 @@ class ZendeskManager(
         description: String,
         extraTags: List<String>
     ) = callbackFlow {
-        require(isZendeskEnabled) {
-            zendeskNeedsToBeEnabledError
-        }
-
         val requestCallback = object : ZendeskCallback<Request>() {
             override fun onSuccess(result: Request?) {
                 trySend(Result.success(result))
@@ -169,7 +123,7 @@ class ZendeskManager(
             this.tags = buildZendeskTags(siteStore.sites, origin, ticketType.tags + extraTags)
                 .filter { ticketType.excludedTags.contains(it).not() }
             this.customFields = buildZendeskCustomFields(context, ticketType, siteStore.sites, selectedSite)
-        }.let { request -> requestProvider?.createRequest(request, requestCallback) }
+        }.let { request -> zendeskAccess.requestProvider?.createRequest(request, requestCallback) }
 
         // Sets a timeout since the callback might not be called from Zendesk API
         launch {
@@ -203,16 +157,13 @@ class ZendeskManager(
      * notification device token is required. If either doesn't exist, the request will simply be ignored.
      */
     fun enablePushNotifications() {
-        require(isZendeskEnabled) {
-            zendeskNeedsToBeEnabledError
-        }
         if (!isIdentitySet) {
             // identity should be set before registering the device token
             return
         }
         // The device token will not be available if the user is not logged in, so this check serves two purposes
         AppPrefs.getFCMToken().takeIf { it.isNotEmpty() }?.let { deviceToken ->
-            zendeskPushRegistrationProvider?.registerWithDeviceIdentifier(
+            zendeskAccess.pushRegistrationProvider?.registerWithDeviceIdentifier(
                 deviceToken,
                 object : ZendeskCallback<String>() {
                     override fun onSuccess(result: String?) {
@@ -235,14 +186,11 @@ class ZendeskManager(
      * This function will disable push notifications for Zendesk.
      */
     private fun disablePushNotifications() {
-        require(isZendeskEnabled) {
-            zendeskNeedsToBeEnabledError
-        }
         if (!isIdentitySet) {
             // identity should be set before removing the device token
             return
         }
-        zendeskPushRegistrationProvider?.unregisterDevice(
+        zendeskAccess.pushRegistrationProvider?.unregisterDevice(
             object : ZendeskCallback<Void>() {
                 override fun onSuccess(response: Void?) {
                     WooLog.v(T.SUPPORT, "Zendesk push notifications successfully disabled!")
@@ -260,26 +208,21 @@ class ZendeskManager(
 
     /**
      * This is a helper function that'll ensure the Zendesk identity is set with the credentials from AppPrefs.
+     *
+     * We should refresh the Zendesk identity when the email or the name has been updated. We also check whether
+     * Zendesk SDK has cleared the identity. Check out the documentation for [isIdentitySet] for more details.
+     *
+     * Also, when we change the identity in Zendesk, it seems to be making an asynchronous call to a server to
+     * receive a different access token. During this time, if there is a call to Zendesk with the previous
+     * access token, it could fail with a 401 error which seems to be clearing the identity. In order to avoid
+     * such cases, we put a delay on enabling push notifications for the new identity.
+     *
+     * [enablePushNotifications] will check if the identity is set, before making the actual call, so if the
+     * identity is cleared through [clearIdentity], this call will simply be ignored.
      */
     private fun refreshIdentity() {
-        require(isZendeskEnabled) {
-            zendeskNeedsToBeEnabledError
-        }
-        /**
-         * We refresh the Zendesk identity when the email or the name has been updated. We also check whether
-         * Zendesk SDK has cleared the identity. Check out the documentation for [isIdentitySet] for more details.
-         */
-        zendeskInstance.setIdentity(createZendeskIdentity(supportEmail, supportName))
+        zendeskAccess.instance?.setIdentity(createZendeskIdentity(supportEmail, supportName))
 
-        /**
-         * When we change the identity in Zendesk, it seems to be making an asynchronous call to a server to
-         * receive a different access token. During this time, if there is a call to Zendesk with the previous
-         * access token, it could fail with a 401 error which seems to be clearing the identity. In order to avoid
-         * such cases, we put a delay on enabling push notifications for the new identity.
-         *
-         * [enablePushNotifications] will check if the identity is set, before making the actual call, so if the
-         * identity is cleared through [clearIdentity], this call will simply be ignored.
-         */
         timer.schedule(enablePushNotificationsDelayAfterIdentityChange) {
             enablePushNotifications()
         }
