@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.woocommerce.android.apifaker.ui.details.EndpointDetailsScreen
+import com.woocommerce.android.apifaker.ui.details.MISSING_ENDPOINT_ID
 import com.woocommerce.android.apifaker.ui.home.HomeScreen
 
 @Composable
@@ -22,10 +23,10 @@ fun ApiFakerNavHost() {
             HomeScreen(hiltViewModel(), navController)
         }
         composable(
-            Screen.EndpointDetails.baseRoute,
+            Screen.EndpointDetails.routeTemplate,
             arguments = listOf(navArgument(Screen.EndpointDetails.endpointIdArgumentName) {
-                type = NavType.IntType
-                defaultValue = -1
+                type = NavType.LongType
+                defaultValue = MISSING_ENDPOINT_ID
             })
         ) {
             EndpointDetailsScreen(hiltViewModel(), navController)

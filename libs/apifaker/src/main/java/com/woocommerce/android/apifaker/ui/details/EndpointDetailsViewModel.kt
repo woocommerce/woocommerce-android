@@ -16,14 +16,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-const val MISSING_ENDPOINT_ID = -1
+const val MISSING_ENDPOINT_ID = 0L
 
 @HiltViewModel
 internal class EndpointDetailsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val endpointDao: EndpointDao
 ) : ViewModel() {
-    private val id = savedStateHandle.get<Int>(Screen.EndpointDetails.endpointIdArgumentName)!!
+    private val id = savedStateHandle.get<Long>(Screen.EndpointDetails.endpointIdArgumentName)!!
 
     var state: UiState by mutableStateOf(defaultEndpoint())
         private set
@@ -66,7 +66,7 @@ internal class EndpointDetailsViewModel @Inject constructor(
 
     fun onSaveClicked() {
         viewModelScope.launch {
-            endpointDao.insertEndpoint(state.endpoint, state.response)
+            endpointDao.insertEndpointWithResponse(state.endpoint, state.response)
             state = state.copy(isEndpointSaved = true)
         }
     }

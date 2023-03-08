@@ -7,7 +7,9 @@ internal sealed class Screen(val baseRoute: String) {
 
     object EndpointDetails : Screen("/endpoint-details") {
         const val endpointIdArgumentName = "endpointId"
-        fun route(endpointId: Int) = "$baseRoute/endpointId=$endpointId"
+        val routeTemplate = "$baseRoute?$endpointIdArgumentName={$endpointIdArgumentName}"
+
+        fun route(endpointId: Long) = "$baseRoute?$endpointIdArgumentName=$endpointId"
 
         fun routeForCreation() = baseRoute
     }

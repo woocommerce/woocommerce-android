@@ -23,8 +23,17 @@ internal interface EndpointDao {
 
     @Transaction
     @Query("Select * FROM Endpoint WHERE id = :id")
-    suspend fun getEndpoint(id: Int): EndpointWithResponse?
+    suspend fun getEndpoint(id: Long): EndpointWithResponse?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertEndpoint(endpoint: Endpoint, response: FakeResponse)
+    suspend fun insertEndpoint(endpoint: Endpoint): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertResponse(response: FakeResponse)
+
+    @Transaction
+    suspend fun insertEndpointWithResponse(endpoint: Endpoint, response: FakeResponse) {
+        val id = insertEndpoint(endpoint)
+        insertResponse(response.copy(endpointId = id))
+    }
 }
