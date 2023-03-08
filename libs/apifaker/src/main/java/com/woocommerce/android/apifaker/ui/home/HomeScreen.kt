@@ -41,6 +41,7 @@ internal fun HomeScreen(
 ) {
     HomeScreen(
         requests = viewModel.endpoints.collectAsState().value,
+        isEnabled = viewModel.isEnabled.collectAsState(initial = false).value,
         onMockingToggleChanged = viewModel::onMockingToggleChanged,
         navController = navController
     )
@@ -49,6 +50,7 @@ internal fun HomeScreen(
 @Composable
 private fun HomeScreen(
     requests: List<Request>,
+    isEnabled: Boolean,
     onMockingToggleChanged: (Boolean) -> Unit = {},
     navController: NavController
 ) {
@@ -65,7 +67,7 @@ private fun HomeScreen(
                     }
                 },
                 actions = {
-                    Switch(checked = true, onCheckedChange = onMockingToggleChanged)
+                    Switch(checked = isEnabled, onCheckedChange = onMockingToggleChanged)
                 }
             )
         }
@@ -143,6 +145,7 @@ private fun HomeScreenPreview() {
                 body = ""
             ),
         ),
+        isEnabled = true,
         navController = rememberNavController()
     )
 }

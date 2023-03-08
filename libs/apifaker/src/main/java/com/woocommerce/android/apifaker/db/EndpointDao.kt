@@ -18,6 +18,10 @@ internal interface EndpointDao {
     fun observeEndpoints(): Flow<List<MockedEndpoint>>
 
     @Transaction
+    @Query("Select count(*) FROM Request")
+    suspend fun endpointsCount(): Int
+
+    @Transaction
     @Query("""Select * FROM Request WHERE
         type = :type AND
         :path LIKE path AND
