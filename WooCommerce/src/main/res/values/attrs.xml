@@ -208,7 +208,7 @@
     </declare-styleable>
 
     <declare-styleable name="ScalableImageView">
-        <attr format="enum" name="scaleType">
+        <attr name="scaleType" format="enum">
             <enum name="center" value="0" />
             <enum name="centerCrop" value="1" />
             <enum name="centerInside" value="2" />
@@ -228,6 +228,11 @@
         <attr name="icon" />
         <attr name="iconTint" />
         <attr name="isExpanded" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="FeedbackBanner">
+        <attr name="title" />
+        <attr name="message" />
     </declare-styleable>
 
 </resources>
