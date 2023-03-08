@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.OrdersStat
@@ -62,6 +63,7 @@ class AnalyticsHubViewModel @Inject constructor(
     private val updateStats: UpdateAnalyticsHubStats,
     private val localeProvider: LocaleProvider,
     private val feedbackRepository: FeedbackRepository,
+    private val tracker: AnalyticsTrackerWrapper,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
@@ -361,6 +363,13 @@ class AnalyticsHubViewModel @Inject constructor(
     )
 
     fun onSendFeedbackClicked() {
+        tracker.track(
+            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_ANALYTICS_HUB_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
+            )
+        )
         feedbackRepository.saveFeatureFeedback(
             FeatureFeedbackSettings.Feature.ANALYTICS_HUB,
             FeatureFeedbackSettings.FeedbackState.GIVEN
@@ -370,6 +379,13 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 
     fun onDismissBannerClicked() {
+        tracker.track(
+            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_ANALYTICS_HUB_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
+            )
+        )
         feedbackRepository.saveFeatureFeedback(
             FeatureFeedbackSettings.Feature.ANALYTICS_HUB,
             FeatureFeedbackSettings.FeedbackState.DISMISSED
