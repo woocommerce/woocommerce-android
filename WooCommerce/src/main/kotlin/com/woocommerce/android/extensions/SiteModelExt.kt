@@ -35,3 +35,7 @@ fun SiteModel?.getTitle(default: String): String {
 // The isWPCom property is set as true only for pure WPCom sites that don't have Jetpack connection
 val SiteModel.isSimpleWPComSite
     get() = isWPCom
+
+const val ECOMMERCE_TRIAL_PLAN_ID = 1052L
+val SiteModel.isCurrentPlanEcommerceTrial
+    get() = planId == ECOMMERCE_TRIAL_PLAN_ID

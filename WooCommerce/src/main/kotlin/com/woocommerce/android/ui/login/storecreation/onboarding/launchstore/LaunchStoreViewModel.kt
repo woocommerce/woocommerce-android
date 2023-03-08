@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.login.storecreation.onboarding.launchstore
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.extensions.isCurrentPlanEcommerceTrial
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -15,11 +16,14 @@ import javax.inject.Inject
 class LaunchStoreViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val launchStoreOnboardingRepository: StoreOnboardingRepository,
-    private val selectedSite: SelectedSite
+    selectedSite: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
 
     val _viewState = MutableStateFlow(
         LaunchStoreState(
+            isTrialPlan = selectedSite.get().isCurrentPlanEcommerceTrial,
+            isStoreLaunched = false,
+            isLoading = false,
             siteUrl = selectedSite.get().url
         )
     )
@@ -44,9 +48,9 @@ class LaunchStoreViewModel @Inject constructor(
     }
 
     data class LaunchStoreState(
-        val isTrialPlan: Boolean = false,
-        val isStoreLaunched: Boolean = false,
-        val isLoading: Boolean = false,
+        val isTrialPlan: Boolean,
+        val isStoreLaunched: Boolean,
+        val isLoading: Boolean,
         val siteUrl: String
     )
 }
