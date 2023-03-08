@@ -1,7 +1,7 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 12.7
 -----
-
+[*] Analytics Hub: Improved Accessibility
 
 12.6
 -----
