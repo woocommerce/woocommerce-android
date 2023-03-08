@@ -6,6 +6,7 @@ import android.os.Parcelable
 import android.telephony.TelephonyManager
 import android.text.TextUtils
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.logInformation
 import com.woocommerce.android.extensions.stateLogInformation
 import com.woocommerce.android.support.help.HelpOrigin
@@ -61,7 +62,7 @@ class ZendeskManager(
      * Check [requireIdentity], [refreshIdentity] & [clearIdentity] for more details about how Zendesk identity works.
      */
     var supportEmail: String? = null
-        get() = AppPrefs.getSupportEmail()
+        get() = zendeskSettings.storedEmailSuggestion
             .takeIf { it.isNotEmpty() }
             ?: supportHelper.getSupportNameSuggestion(accountStore.account, selectedSite.getIfExists())
 
@@ -73,7 +74,7 @@ class ZendeskManager(
         }
 
     var supportName: String? = null
-        get() = AppPrefs.getSupportName()
+        get() = zendeskSettings.storedNameSuggestion
             .takeIf { it.isNotEmpty() }
             ?: supportHelper.getSupportNameSuggestion(accountStore.account, selectedSite.getIfExists())
 
@@ -90,7 +91,7 @@ class ZendeskManager(
      * such issues, we check both Zendesk identity and the [supportEmail] to decide whether identity is set.
      */
     private val isIdentitySet: Boolean
-        get() = !supportEmail.isNullOrEmpty() && zendeskSettings.instance?.identity != null
+        get() = supportEmail.isNotNullOrEmpty() && zendeskSettings.instance?.identity != null
 
     /**
      * This function creates a new customer Support Request through the Zendesk API Providers.

@@ -1,6 +1,7 @@
 package com.woocommerce.android.support
 
 import android.content.Context
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.util.PackageUtils
 import com.zendesk.logger.Logger
@@ -24,6 +25,14 @@ class ZendeskSettings {
             ?.requestProvider()
 
     private var setupDone = false
+
+    var storedEmailSuggestion
+        get() = AppPrefs.getSupportEmail()
+        set(value) = AppPrefs.setSupportEmail(value)
+
+    var storedNameSuggestion
+        get() = AppPrefs.getSupportName()
+        set(value) = AppPrefs.setSupportName(value)
 
     /**
      * This function sets up the Zendesk singleton instance with the passed in credentials. This step is required
