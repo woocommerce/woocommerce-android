@@ -132,6 +132,8 @@ android {
             applicationId "com.woocommerce.android.dev"
             dimension "buildType"
             isDefault true
+
+            resConfigs("en", "xxhdpi")
         }
 
         // Used for CI builds on PRs (downloadable apks). Can be used locally when a developer needs
