@@ -21,6 +21,19 @@ internal interface EndpointDao {
     @Query("Select * FROM Endpoint WHERE type = :type AND :path LIKE path AND :body LIKE COALESCE(body, '%')")
     fun queryEndpoint(type: EndpointType, path: String, body: String): EndpointWithResponse?
 
+    @Transaction
+    @Query("Select * FROM Endpoint WHERE id = :id")
+    suspend fun getEndpoint(id: Long): EndpointWithResponse?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertEndpoint(endpoint: Endpoint, response: FakeResponse)
+    suspend fun insertEndpoint(endpoint: Endpoint): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertResponse(response: FakeResponse)
+
+    @Transaction
+    suspend fun insertEndpointWithResponse(endpoint: Endpoint, response: FakeResponse) {
+        val id = insertEndpoint(endpoint)
+        insertResponse(response.copy(endpointId = id))
+    }
 }

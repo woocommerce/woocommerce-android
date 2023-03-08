@@ -2,12 +2,10 @@ package com.woocommerce.android.apifaker.models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
-import com.woocommerce.android.apifaker.db.EndpointTypeConverter
 
 @Entity
 internal data class Endpoint(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val type: EndpointType,
     val path: String,
     val body: String?
