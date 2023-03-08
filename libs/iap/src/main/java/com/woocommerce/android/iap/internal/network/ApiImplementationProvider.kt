@@ -1,10 +1,10 @@
 package com.woocommerce.android.iap.internal.network
 
-import com.woocommerce.android.iap.BuildConfig
 import com.woocommerce.android.iap.pub.IAPLogWrapper
 import com.woocommerce.android.iap.pub.network.IAPMobilePayAPI
+import com.woocommerce.android.iap.pub.network.SandboxTestingConfig
 
-internal class ApiImplementationProvider(private val buildConfigWrapper: BuildConfigWrapper = BuildConfigWrapper) {
+internal class ApiImplementationProvider(private val buildConfigWrapper: SandboxTestingConfig) {
     fun providerMobilePayAPI(
         logWrapper: IAPLogWrapper,
         realMobilePayApiProvider: (String?) -> IAPMobilePayAPI
@@ -18,10 +18,4 @@ internal class ApiImplementationProvider(private val buildConfigWrapper: BuildCo
                 realMobilePayApiProvider(null)
             }
         }
-
-    object BuildConfigWrapper {
-        val isDebug = BuildConfig.DEBUG
-        val iapTestingSandboxUrl
-            get() = BuildConfig.IAP_TESTING_SANDBOX_URL
-    }
 }
