@@ -24,7 +24,7 @@ internal class EndpointProcessor @Inject constructor(
         }
 
         return with(endpointData) {
-            endpointDao.queryEndpoint(apiType, path, body.orEmpty())
+            endpointDao.queryEndpoint(apiType, path.trimEnd('/'), body.orEmpty())
         }?.response
     }
 

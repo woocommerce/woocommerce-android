@@ -22,8 +22,8 @@ internal class ApiFakerInterceptor @Inject constructor(private val endpointProce
 
         return if (fakeResponse != null) {
             Log.d(
-                LOG_TAG, "Fake request: ${chain.request().url}:\n" +
-                    "$fakeResponse"
+                LOG_TAG, "Matched request: ${chain.request().url}:\n" +
+                    "Sending Mocked Response: $fakeResponse"
             )
             Response.Builder()
                 .request(request)
