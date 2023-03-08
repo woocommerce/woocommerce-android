@@ -97,18 +97,22 @@ class ZendeskSettings @Inject constructor(
         zendeskInstance.init(context, zendeskUrl, applicationId, oauthClientId)
         Logger.setLoggable(enableLogs)
         Support.INSTANCE.init(zendeskInstance)
+        refreshIdentity()
         setupDone = true
-        // refreshIdentity()
     }
 
     /**
-     * This function should be called when the user logs out of WordPress.com. Push notifications are only available
-     * for WordPress.com users, so they'll be disabled. We'll also clear the Zendesk identity of the user on logout
-     * and it will need to be set again when the user wants to create a new ticket.
+     * This is a helper function to clear the Zendesk identity. It'll remove the credentials from AppPrefs and update
+     * the Zendesk identity with a new anonymous one without an email or name. Due to the way Zendesk anonymous identity
+     * works, this will clear all the users' tickets.
+     *
+     * We should also clear the Zendesk identity of the user on logout and it will need to be set again
+     * when the user wants to create a new ticket.
      */
-    fun reset() {
-        //disablePushNotifications()
-        clearIdentity()
+    fun clearIdentity() {
+        AppPrefs.removeSupportEmail()
+        AppPrefs.removeSupportName()
+        refreshIdentity()
     }
 
     /**
@@ -116,32 +120,9 @@ class ZendeskSettings @Inject constructor(
      *
      * We should refresh the Zendesk identity when the email or the name has been updated. We also check whether
      * Zendesk SDK has cleared the identity. Check out the documentation for [isIdentitySet] for more details.
-     *
-     * Also, when we change the identity in Zendesk, it seems to be making an asynchronous call to a server to
-     * receive a different access token. During this time, if there is a call to Zendesk with the previous
-     * access token, it could fail with a 401 error which seems to be clearing the identity. In order to avoid
-     * such cases, we put a delay on enabling push notifications for the new identity.
-     *
-     * [enablePushNotifications] will check if the identity is set, before making the actual call, so if the
-     * identity is cleared through [clearIdentity], this call will simply be ignored.
      */
     private fun refreshIdentity() {
         instance?.setIdentity(createZendeskIdentity(supportEmail, supportName))
-
-//        timer.schedule(enablePushNotificationsDelayAfterIdentityChange) {
-//            enablePushNotifications()
-//        }
-    }
-
-    /**
-     * This is a helper function to clear the Zendesk identity. It'll remove the credentials from AppPrefs and update
-     * the Zendesk identity with a new anonymous one without an email or name. Due to the way Zendesk anonymous identity
-     * works, this will clear all the users' tickets.
-     */
-    private fun clearIdentity() {
-        AppPrefs.removeSupportEmail()
-        AppPrefs.removeSupportName()
-        refreshIdentity()
     }
 
     /**

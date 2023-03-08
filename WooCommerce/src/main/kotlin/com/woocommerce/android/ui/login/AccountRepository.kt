@@ -91,7 +91,7 @@ class AccountRepository @Inject constructor(
         // Reset analytics
         AnalyticsTracker.flush()
         AnalyticsTracker.clearAllData()
-        zendeskSettings.reset()
+        zendeskSettings.clearIdentity()
 
         // Wipe user-specific preferences
         prefs.resetUserPreferences()
