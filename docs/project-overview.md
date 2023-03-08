@@ -34,15 +34,18 @@ Read more about [OAuth2][oauth] and the [WordPress.com REST endpoint][wp-api].
 
 #### Main `gradle.properties`
 
-| Property                   | Description |
-|:---------------------------|:------------|
-|wc.oauth.app_id            | Required to build the app. See [OAuth2 Authentication](#oauth2-authentication)|
-| wc.oauth.app_secret        | Required to build the app. See [OAuth2 Authentication](#oauth2-authentication) |
-| wc.zendesk_app_id          | Used for Zendesk integration. Can be ignored.|
-| wc.zendesk.domain          | Used for Zendesk integration. Can be ignored.|
-| wc.zendesk.oauth_client_id | Used for Zendesk integration. Can be ignored.|
-| wc.reset_db_on_downgrade   | Debug/Beta builds: If `true` will drop all tables and recreate the db if a database downgrade is detected. |
-| wc.sentry.dsn              | Used for Sentry integration. Can be ignored.|
+| Property                   | Description                                                                                                                           |
+|:---------------------------|:--------------------------------------------------------------------------------------------------------------------------------------|
+| wc.oauth.app_id            | Required to build the app. See [OAuth2 Authentication](#oauth2-authentication)                                                        |
+| wc.oauth.app_secret        | Required to build the app. See [OAuth2 Authentication](#oauth2-authentication)                                                        |
+| wc.zendesk_app_id          | Used for Zendesk integration. Can be ignored.                                                                                         |
+| wc.zendesk.domain          | Used for Zendesk integration. Can be ignored.                                                                                         |
+| wc.zendesk.oauth_client_id | Used for Zendesk integration. Can be ignored.                                                                                         |
+| wc.reset_db_on_downgrade   | Debug/Beta builds: If `true` will drop all tables and recreate the db if a database downgrade is detected.                            |
+| wc.sentry.dsn              | Used for Sentry integration. Can be ignored.                                                                                          |
+| wc.openai.token            | Used for ChatGPT integration. See [OpenAI documentation][openai]                                                                      |
+| wc.openai.max_tokens       | Used for ChatGPT integration. See [OpenAI documentation][openai]                                                                      |
+| wc.openai.chosen_model     | Used for ChatGPT integration. See [OpenAI documentation][openai]                                                                      |
 
 ### Using detekt
 
@@ -81,3 +84,4 @@ that can't be shared publicly. More documentation and guides can be found on the
 [google-ident]: https://cloud.google.com/identity-platform/docs/
 [detekt]: https://detekt.github.io/detekt/
 [jetpack]: https://wordpress.org/plugins/jetpack/
+[openai]: https://platform.openai.com/docs/introduction

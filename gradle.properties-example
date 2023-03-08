@@ -35,6 +35,12 @@ wc.zendesk.domain = http://www.google.com/
 wc.zendesk.oauth_client_id = woocommerce
 wc.sentry.dsn = https://00000000000000000000000000000000@sentry.io/0000000
 
+# OpenAI
+wc.openai.token = woocommerce
+wc.openai.max_tokens = 256
+wc.openai.chosen_model = gpt-3.5-turbo
+
+
 # Sample key with the valid length. It's not a leak.
 wc.encrypted_logging_key=z0g+oVkqR4kWNUTxJfTozOZQjfXI7W9f6bD0uMJ5VkA=
 
