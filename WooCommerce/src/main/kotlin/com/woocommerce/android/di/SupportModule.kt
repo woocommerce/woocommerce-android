@@ -2,7 +2,7 @@ package com.woocommerce.android.di
 
 import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.support.ZendeskHelper
-import com.woocommerce.android.support.ZendeskInstance
+import com.woocommerce.android.support.ZendeskAccess
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import dagger.Module
@@ -33,5 +33,5 @@ class SupportModule {
     @Singleton
     @Provides
     fun provideZendeskProvider(
-    ) : ZendeskInstance = ZendeskInstance()
+    ) : ZendeskAccess = ZendeskAccess()
 }

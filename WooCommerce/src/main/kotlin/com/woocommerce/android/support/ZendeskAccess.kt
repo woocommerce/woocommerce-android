@@ -4,16 +4,27 @@ import android.content.Context
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.util.PackageUtils
 import com.zendesk.logger.Logger
+import zendesk.core.PushRegistrationProvider
 import zendesk.core.Zendesk
 import zendesk.support.Support
 
-class ZendeskInstance {
+class ZendeskAccess {
 
-    private val zendeskInstance: Zendesk
-        get() = Zendesk.INSTANCE
+    val instance: Zendesk?
+        get() = Zendesk.INSTANCE.takeIfInitialized()
 
-    private val isZendeskEnabled: Boolean
-        get() = zendeskInstance.isInitialized
+    val pushRegistrationProvider: PushRegistrationProvider?
+        get() = instance
+            ?.provider()
+            ?.pushRegistrationProvider()
+
+    val requestProvider
+        get() = Support.INSTANCE
+            .takeIfInitialized()
+            ?.provider()
+            ?.requestProvider()
+
+    private var setupDone = false
 
     /**
      * This function sets up the Zendesk singleton instance with the passed in credentials. This step is required
@@ -21,14 +32,15 @@ class ZendeskInstance {
      * setup. It'll also enable Zendesk logs for DEBUG builds.
      */
     @JvmOverloads
-    fun setupZendesk(
+    fun setup(
         context: Context,
         zendeskUrl: String,
         applicationId: String,
         oauthClientId: String,
         enableLogs: Boolean = BuildConfig.DEBUG
     ) {
-        if (isZendeskEnabled) {
+        val zendeskInstance = Zendesk.INSTANCE
+        if (zendeskInstance.isInitialized) {
             if (PackageUtils.isTesting()) return
             else error("Zendesk shouldn't be initialized more than once!")
         }
@@ -38,7 +50,10 @@ class ZendeskInstance {
         zendeskInstance.init(context, zendeskUrl, applicationId, oauthClientId)
         Logger.setLoggable(enableLogs)
         Support.INSTANCE.init(zendeskInstance)
-
+        setupDone = true
         // refreshIdentity()
     }
+
+    private fun <T> T.takeIfInitialized(): T? =
+        this.takeIf { setupDone }
 }
