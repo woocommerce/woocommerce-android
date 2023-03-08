@@ -102,7 +102,7 @@ class AnalyticsHubViewModel @Inject constructor(
         observeProductsChanges()
         observeRevenueChanges()
         observeRangeSelectionChanges()
-        if(FeatureFlag.ANALYTICS_HUB_FEEDBACK_BANNER.isEnabled()){
+        if (FeatureFlag.ANALYTICS_HUB_FEEDBACK_BANNER.isEnabled()) {
             shouldAskForFeedback()
         }
     }
