@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.analytics.hub.sync.ProductsState
 import com.woocommerce.android.ui.analytics.hub.sync.RevenueState
 import com.woocommerce.android.ui.analytics.hub.sync.SessionState
 import com.woocommerce.android.ui.analytics.hub.sync.UpdateAnalyticsHubStats
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_YEAR
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.TODAY
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
@@ -55,6 +56,7 @@ import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 import kotlin.test.assertEquals
@@ -602,6 +604,44 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
                 AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
             )
         )
+    }
+
+    @Test
+    fun `when a new range selection is selected, then the new selection is tracked`() = testBlocking {
+        configureSuccessfulStatsResponse()
+        sut = givenAViewModel()
+
+        sut.onNewRangeSelection(WEEK_TO_DATE)
+
+        verify(tracker).track(
+            AnalyticsEvent.ANALYTICS_HUB_DATE_RANGE_SELECTED,
+            mapOf(AnalyticsTracker.KEY_OPTION to WEEK_TO_DATE.tracksIdentifier)
+        )
+    }
+
+    @Test
+    fun `when a custom range selection is selected, then the custom range selection is tracked`() = testBlocking {
+        configureSuccessfulStatsResponse()
+        sut = givenAViewModel()
+        val startDate = Date()
+        val endDate = Date()
+
+        sut.onCustomRangeSelected(startDate, endDate)
+
+        verify(tracker).track(
+            AnalyticsEvent.ANALYTICS_HUB_DATE_RANGE_SELECTED,
+            mapOf(AnalyticsTracker.KEY_OPTION to CUSTOM.tracksIdentifier)
+        )
+    }
+
+    @Test
+    fun `when the range selection control is pressed, then register a track event`() = testBlocking {
+        configureSuccessfulStatsResponse()
+        sut = givenAViewModel()
+
+        sut.onDateRangeSelectorClick()
+
+        verify(tracker).track(AnalyticsEvent.ANALYTICS_HUB_DATE_RANGE_BUTTON_TAPPED)
     }
 
     private fun givenAResourceProvider(): ResourceProvider = mock {
