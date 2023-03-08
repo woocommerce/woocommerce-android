@@ -18,7 +18,11 @@ internal interface EndpointDao {
     fun observeEndpoints(): Flow<List<MockedEndpoint>>
 
     @Transaction
-    @Query("Select * FROM Request WHERE type = :type AND :path LIKE path AND :body LIKE COALESCE(body, '%')")
+    @Query("""Select * FROM Request WHERE
+        type = :type AND
+        :path LIKE path AND
+        :body LIKE COALESCE(body, '%')
+        """)
     fun queryEndpoint(type: ApiType, path: String, body: String): MockedEndpoint?
 
     @Transaction

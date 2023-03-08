@@ -94,7 +94,7 @@ internal class EndpointDetailsViewModel @Inject constructor(
             id = MISSING_ENDPOINT_ID,
             type = ApiType.WPApi,
             path = "",
-            body = "%"
+            body = null
         ),
         Response(
             endpointId = MISSING_ENDPOINT_ID,
