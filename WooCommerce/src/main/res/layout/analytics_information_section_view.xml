@@ -13,7 +13,7 @@
         android:paddingBottom="@dimen/major_100"
         android:screenReaderFocusable="true"
         android:focusable="true"
-        tools:targetApi="p">
+        tools:ignore="UnusedAttribute">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/cardInformationSectionTitle"
