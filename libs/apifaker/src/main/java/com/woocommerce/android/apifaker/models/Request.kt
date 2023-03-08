@@ -4,9 +4,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-internal data class Endpoint(
+internal data class Request(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val type: EndpointType,
+    val type: ApiType,
     val path: String,
     val body: String?
 )

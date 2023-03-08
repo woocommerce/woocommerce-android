@@ -8,9 +8,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.apifaker.db.EndpointDao
-import com.woocommerce.android.apifaker.models.Endpoint
-import com.woocommerce.android.apifaker.models.EndpointType
-import com.woocommerce.android.apifaker.models.FakeResponse
+import com.woocommerce.android.apifaker.models.Request
+import com.woocommerce.android.apifaker.models.ApiType
+import com.woocommerce.android.apifaker.models.Response
 import com.woocommerce.android.apifaker.ui.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -20,7 +20,7 @@ const val MISSING_ENDPOINT_ID = 0L
 
 @HiltViewModel
 internal class EndpointDetailsViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
     private val endpointDao: EndpointDao
 ) : ViewModel() {
     private val id = savedStateHandle.get<Long>(Screen.EndpointDetails.endpointIdArgumentName)!!
@@ -29,26 +29,26 @@ internal class EndpointDetailsViewModel @Inject constructor(
         private set
 
     init {
-        if (id != MISSING_ENDPOINT_ID && state.endpoint.id == MISSING_ENDPOINT_ID) {
+        if (id != MISSING_ENDPOINT_ID && state.request.id == MISSING_ENDPOINT_ID) {
             loadEndpoint()
         }
     }
 
-    fun onEndpointTypeChanged(endpointType: EndpointType) {
+    fun onApiTypeChanged(apiType: ApiType) {
         withMutableSnapshot {
-            state = state.copy(endpoint = state.endpoint.copy(type = endpointType))
+            state = state.copy(request = state.request.copy(type = apiType))
         }
     }
 
     fun onRequestPathChanged(path: String) {
         withMutableSnapshot {
-            state = state.copy(endpoint = state.endpoint.copy(path = path))
+            state = state.copy(request = state.request.copy(path = path))
         }
     }
 
     fun onRequestBodyChanged(body: String) {
         withMutableSnapshot {
-            state = state.copy(endpoint = state.endpoint.copy(body = body.ifEmpty { null }))
+            state = state.copy(request = state.request.copy(body = body.ifEmpty { null }))
         }
     }
 
@@ -66,7 +66,7 @@ internal class EndpointDetailsViewModel @Inject constructor(
 
     fun onSaveClicked() {
         viewModelScope.launch {
-            endpointDao.insertEndpointWithResponse(state.endpoint, state.response)
+            endpointDao.insertEndpoint(state.request, state.response)
             state = state.copy(isEndpointSaved = true)
         }
     }
@@ -74,29 +74,29 @@ internal class EndpointDetailsViewModel @Inject constructor(
     private fun loadEndpoint() = viewModelScope.launch {
         state = endpointDao.getEndpoint(id)!!.let {
             UiState(
-                it.endpoint,
+                it.request,
                 it.response
             )
         }
     }
 
     data class UiState(
-        val endpoint: Endpoint,
-        val response: FakeResponse,
+        val request: Request,
+        val response: Response,
         val isEndpointSaved: Boolean = false
     ) {
         val isEndpointValid: Boolean
-            get() = endpoint.path.isNotBlank()
+            get() = request.path.isNotBlank()
     }
 
     private fun defaultEndpoint() = UiState(
-        Endpoint(
+        Request(
             id = MISSING_ENDPOINT_ID,
-            type = EndpointType.WPApi,
+            type = ApiType.WPApi,
             path = "",
             body = "%"
         ),
-        FakeResponse(
+        Response(
             endpointId = MISSING_ENDPOINT_ID,
             statusCode = 200,
             body = ""

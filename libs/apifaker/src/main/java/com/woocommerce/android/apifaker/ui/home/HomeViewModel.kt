@@ -14,7 +14,7 @@ internal class HomeViewModel @Inject constructor(
     endpointDao: EndpointDao
 ) : ViewModel() {
     val endpoints = endpointDao.observeEndpoints()
-        .map { list -> list.map { it.endpoint } }
+        .map { list -> list.map { it.request } }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     fun onMockingToggleChanged(enabled: Boolean) {

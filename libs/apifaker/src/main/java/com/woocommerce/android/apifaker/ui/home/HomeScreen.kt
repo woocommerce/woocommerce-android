@@ -28,10 +28,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.woocommerce.android.apifaker.models.Endpoint
-import com.woocommerce.android.apifaker.models.EndpointType.Custom
-import com.woocommerce.android.apifaker.models.EndpointType.WPApi
-import com.woocommerce.android.apifaker.models.EndpointType.WPCom
+import com.woocommerce.android.apifaker.models.Request
+import com.woocommerce.android.apifaker.models.ApiType.Custom
+import com.woocommerce.android.apifaker.models.ApiType.WPApi
+import com.woocommerce.android.apifaker.models.ApiType.WPCom
 import com.woocommerce.android.apifaker.ui.Screen
 
 @Composable
@@ -40,7 +40,7 @@ internal fun HomeScreen(
     navController: NavController
 ) {
     HomeScreen(
-        endpoints = viewModel.endpoints.collectAsState().value,
+        requests = viewModel.endpoints.collectAsState().value,
         onMockingToggleChanged = viewModel::onMockingToggleChanged,
         navController = navController
     )
@@ -48,7 +48,7 @@ internal fun HomeScreen(
 
 @Composable
 private fun HomeScreen(
-    endpoints: List<Endpoint>,
+    requests: List<Request>,
     onMockingToggleChanged: (Boolean) -> Unit = {},
     navController: NavController
 ) {
@@ -76,9 +76,9 @@ private fun HomeScreen(
                 .padding(16.dp)
                 .fillMaxSize()
         ) {
-            if (endpoints.isNotEmpty()) {
+            if (requests.isNotEmpty()) {
                 LazyColumn {
-                    items(endpoints) { endpoint ->
+                    items(requests) { endpoint ->
                         EndpointItem(endpoint, navController, Modifier.padding(vertical = 8.dp))
                     }
                 }
@@ -100,27 +100,27 @@ private fun HomeScreen(
 
 @Composable
 private fun EndpointItem(
-    endpoint: Endpoint,
+    request: Request,
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = { navController.navigate(Screen.EndpointDetails.route(endpoint.id)) }),
+            .clickable(onClick = { navController.navigate(Screen.EndpointDetails.route(request.id)) }),
         elevation = 4.dp
     ) {
         Column(Modifier.padding(8.dp)) {
             Text(
-                text = when (endpoint.type) {
+                text = when (request.type) {
                     WPApi -> "WordPress API"
                     WPCom -> "WordPress.com API"
-                    is Custom -> "Host: ${endpoint.type.host}"
+                    is Custom -> "Host: ${request.type.host}"
                 },
                 style = MaterialTheme.typography.subtitle1
             )
             Text(
-                text = endpoint.path,
+                text = request.path,
                 style = MaterialTheme.typography.subtitle2
             )
         }
@@ -131,13 +131,13 @@ private fun EndpointItem(
 @Preview
 private fun HomeScreenPreview() {
     HomeScreen(
-        endpoints = listOf(
-            Endpoint(
+        requests = listOf(
+            Request(
                 type = WPApi,
                 path = "/wc/v3/products",
                 body = ""
             ),
-            Endpoint(
+            Request(
                 type = WPCom,
                 path = "/v1.1/me/sites",
                 body = ""

@@ -44,9 +44,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.woocommerce.android.apifaker.models.Endpoint
-import com.woocommerce.android.apifaker.models.EndpointType
-import com.woocommerce.android.apifaker.models.FakeResponse
+import com.woocommerce.android.apifaker.models.Request
+import com.woocommerce.android.apifaker.models.ApiType
+import com.woocommerce.android.apifaker.models.Response
 import com.woocommerce.android.apifaker.ui.DropDownMenu
 import kotlin.math.min
 
@@ -63,7 +63,7 @@ internal fun EndpointDetailsScreen(
         state = viewModel.state,
         navController = navController,
         onSaveClicked = viewModel::onSaveClicked,
-        onEndpointTypeChanged = viewModel::onEndpointTypeChanged,
+        onApiTypeChanged = viewModel::onApiTypeChanged,
         onRequestPathChanged = viewModel::onRequestPathChanged,
         onRequestBodyChanged = viewModel::onRequestBodyChanged,
         onResponseStatusCodeChanged = viewModel::onResponseStatusCodeChanged,
@@ -76,7 +76,7 @@ private fun EndpointDetailsScreen(
     state: EndpointDetailsViewModel.UiState,
     navController: NavController,
     onSaveClicked: () -> Unit = {},
-    onEndpointTypeChanged: (EndpointType) -> Unit = {},
+    onApiTypeChanged: (ApiType) -> Unit = {},
     onRequestPathChanged: (String) -> Unit = {},
     onRequestBodyChanged: (String) -> Unit = {},
     onResponseStatusCodeChanged: (Int) -> Unit = {},
@@ -115,8 +115,8 @@ private fun EndpointDetailsScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             EndpointDefinitionSection(
-                endpoint = state.endpoint,
-                onEndpointTypeChanged = onEndpointTypeChanged,
+                request = state.request,
+                onApiTypeChanged = onApiTypeChanged,
                 onPathChanged = onRequestPathChanged,
                 onBodyChanged = onRequestBodyChanged,
                 modifier = Modifier
@@ -142,8 +142,8 @@ private fun EndpointDetailsScreen(
 
 @Composable
 private fun EndpointDefinitionSection(
-    endpoint: Endpoint,
-    onEndpointTypeChanged: (EndpointType) -> Unit,
+    request: Request,
+    onApiTypeChanged: (ApiType) -> Unit,
     onPathChanged: (String) -> Unit,
     onBodyChanged: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -157,20 +157,20 @@ private fun EndpointDefinitionSection(
             style = MaterialTheme.typography.h6
         )
         EndpointTypeField(
-            endpointType = endpoint.type,
-            onEndpointTypeChanged = onEndpointTypeChanged,
+            apiType = request.type,
+            onApiTypeChanged = onApiTypeChanged,
             modifier = Modifier.fillMaxWidth()
         )
 
         PathField(
-            path = endpoint.path,
-            endpointType = endpoint.type,
+            path = request.path,
+            apiType = request.type,
             onPathChanged = onPathChanged,
             modifier = Modifier.fillMaxWidth()
         )
 
         RequestBodyField(
-            body = endpoint.body,
+            body = request.body,
             onBodyChanged = onBodyChanged,
             modifier = Modifier.fillMaxWidth()
         )
@@ -179,7 +179,7 @@ private fun EndpointDefinitionSection(
 
 @Composable
 private fun ResponseSection(
-    response: FakeResponse,
+    response: Response,
     onStatusCodeChanged: (Int) -> Unit,
     onBodyChanged: (String) -> Unit,
     modifier: Modifier
@@ -207,29 +207,29 @@ private fun ResponseSection(
 
 @Composable
 private fun EndpointTypeField(
-    endpointType: EndpointType,
-    onEndpointTypeChanged: (EndpointType) -> Unit,
+    apiType: ApiType,
+    onApiTypeChanged: (ApiType) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    fun EndpointType.label() = when (this) {
-        EndpointType.WPApi -> "WordPress REST API"
-        EndpointType.WPCom -> "WordPress.com REST API"
-        is EndpointType.Custom -> "Custom"
+    fun ApiType.label() = when (this) {
+        ApiType.WPApi -> "WordPress REST API"
+        ApiType.WPCom -> "WordPress.com REST API"
+        is ApiType.Custom -> "Custom"
     }
 
     DropDownMenu(
         label = "Type",
-        currentValue = endpointType,
-        values = EndpointType.defaultValues(),
-        onValueChange = onEndpointTypeChanged,
-        formatter = EndpointType::label,
+        currentValue = apiType,
+        values = ApiType.defaultValues(),
+        onValueChange = onApiTypeChanged,
+        formatter = ApiType::label,
         modifier = modifier.fillMaxWidth()
     )
-    if (endpointType is EndpointType.Custom) {
+    if (apiType is ApiType.Custom) {
         TextField(
             label = { Text(text = "Host (without scheme)") },
-            value = endpointType.host,
-            onValueChange = { onEndpointTypeChanged(endpointType.copy(host = it)) },
+            value = apiType.host,
+            onValueChange = { onApiTypeChanged(apiType.copy(host = it)) },
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -238,7 +238,7 @@ private fun EndpointTypeField(
 @Composable
 private fun PathField(
     path: String,
-    endpointType: EndpointType,
+    apiType: ApiType,
     onPathChanged: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -249,10 +249,10 @@ private fun PathField(
             onValueChange = onPathChanged,
             modifier = Modifier.fillMaxWidth()
         )
-        val prefix = when (endpointType) {
-            EndpointType.WPApi -> "/wp-json"
-            EndpointType.WPCom -> "/rest"
-            is EndpointType.Custom -> "host"
+        val prefix = when (apiType) {
+            ApiType.WPApi -> "/wp-json"
+            ApiType.WPCom -> "/rest"
+            is ApiType.Custom -> "host"
         }
         val caption = buildAnnotatedString {
             append("Enter the path after the")
@@ -435,12 +435,12 @@ private fun EndpointDetailsScreenPreview() {
     Surface(color = MaterialTheme.colors.background) {
         EndpointDetailsScreen(
             state = EndpointDetailsViewModel.UiState(
-                endpoint = Endpoint(
-                    type = EndpointType.Custom("https://example.com"),
+                request = Request(
+                    type = ApiType.Custom("https://example.com"),
                     path = "/wc/v3/products",
                     body = null
                 ),
-                response = FakeResponse(
+                response = Response(
                     statusCode = 300,
                     body = ""
                 )

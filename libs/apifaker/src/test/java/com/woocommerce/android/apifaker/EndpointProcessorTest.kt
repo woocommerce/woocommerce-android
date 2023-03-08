@@ -1,7 +1,7 @@
 package com.woocommerce.android.apifaker
 
 import com.woocommerce.android.apifaker.db.EndpointDao
-import com.woocommerce.android.apifaker.models.EndpointType
+import com.woocommerce.android.apifaker.models.ApiType
 import com.woocommerce.android.apifaker.util.JSONObjectProvider
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -30,7 +30,7 @@ class EndpointProcessorTest {
         endpointProcessor.fakeRequestIfNeeded(request)
 
         verify(endpointDaoMock).queryEndpoint(
-            type = EndpointType.WPCom,
+            type = ApiType.WPCom,
             path = "/v1.1/me",
             body = ""
         )
@@ -47,7 +47,7 @@ class EndpointProcessorTest {
         endpointProcessor.fakeRequestIfNeeded(request)
 
         verify(endpointDaoMock).queryEndpoint(
-            type = EndpointType.WPCom,
+            type = ApiType.WPCom,
             path = "/v1.1/me",
             body = body
         )
@@ -63,7 +63,7 @@ class EndpointProcessorTest {
         endpointProcessor.fakeRequestIfNeeded(request)
 
         verify(endpointDaoMock).queryEndpoint(
-            type = EndpointType.WPApi,
+            type = ApiType.WPApi,
             path = "/wc/v3/products",
             body = ""
         )
@@ -90,7 +90,7 @@ class EndpointProcessorTest {
         endpointProcessor.fakeRequestIfNeeded(request)
 
         verify(endpointDaoMock).queryEndpoint(
-            type = EndpointType.WPApi,
+            type = ApiType.WPApi,
             path = "/wc/v3/products",
             body = "test body"
         )
@@ -106,7 +106,7 @@ class EndpointProcessorTest {
         endpointProcessor.fakeRequestIfNeeded(request)
 
         verify(endpointDaoMock).queryEndpoint(
-            type = EndpointType.WPApi,
+            type = ApiType.WPApi,
             path = "/wc/v3/products",
             body = ""
         )
@@ -123,7 +123,7 @@ class EndpointProcessorTest {
         endpointProcessor.fakeRequestIfNeeded(request)
 
         verify(endpointDaoMock).queryEndpoint(
-            type = EndpointType.WPApi,
+            type = ApiType.WPApi,
             path = "/wc/v3/products",
             body = body
         )
@@ -139,7 +139,7 @@ class EndpointProcessorTest {
         endpointProcessor.fakeRequestIfNeeded(request)
 
         verify(endpointDaoMock).queryEndpoint(
-            type = EndpointType.Custom("test-site.com"),
+            type = ApiType.Custom("test-site.com"),
             path = "/an/endpoint",
             body = ""
         )
@@ -156,7 +156,7 @@ class EndpointProcessorTest {
         endpointProcessor.fakeRequestIfNeeded(request)
 
         verify(endpointDaoMock).queryEndpoint(
-            type = EndpointType.Custom("test-site.com"),
+            type = ApiType.Custom("test-site.com"),
             path = "/an/endpoint",
             body = body
         )
