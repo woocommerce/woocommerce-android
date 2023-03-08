@@ -16,8 +16,11 @@ import javax.inject.Inject
 class LaunchStoreViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val launchStoreOnboardingRepository: StoreOnboardingRepository,
-    selectedSite: SelectedSite
+    private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
+    private companion object {
+        const val PLANS_URL = "https://wordpress.com/plans/"
+    }
 
     val _viewState = MutableStateFlow(
         LaunchStoreState(
@@ -42,6 +45,13 @@ class LaunchStoreViewModel @Inject constructor(
         _viewState.value = _viewState.value.copy(isLoading = true)
     }
 
+    fun onUpgradePlanBannerClicked() {
+        triggerEvent(
+            UpgradeToEcommercePlan(
+                url = PLANS_URL + selectedSite.get().siteId
+            )
+        )
+    }
 
     fun onBackPressed() {
         triggerEvent(MultiLiveEvent.Event.Exit)
@@ -51,6 +61,9 @@ class LaunchStoreViewModel @Inject constructor(
         val isTrialPlan: Boolean,
         val isStoreLaunched: Boolean,
         val isLoading: Boolean,
-        val siteUrl: String
+        val siteUrl: String,
     )
+
+    sealed class LaunchStoreEvent : MultiLiveEvent.Event()
+    data class UpgradeToEcommercePlan(val url: String) : MultiLiveEvent.Event()
 }

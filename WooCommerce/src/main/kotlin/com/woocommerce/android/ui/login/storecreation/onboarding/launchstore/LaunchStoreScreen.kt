@@ -10,6 +10,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -65,6 +66,7 @@ fun LaunchStoreScreen(viewModel: LaunchStoreViewModel) {
             LaunchStoreScreen(
                 state = state,
                 onLaunchStoreClicked = viewModel::launchStore,
+                onBannerClicked = viewModel::onUpgradePlanBannerClicked,
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colors.surface)
@@ -78,6 +80,7 @@ fun LaunchStoreScreen(viewModel: LaunchStoreViewModel) {
 fun LaunchStoreScreen(
     state: LaunchStoreState,
     onLaunchStoreClicked: () -> Unit,
+    onBannerClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -89,7 +92,10 @@ fun LaunchStoreScreen(
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (state.isTrialPlan) EcommerceTrialBanner(modifier = Modifier.fillMaxWidth())
+            if (state.isTrialPlan) EcommerceTrialBanner(
+                onBannerClicked = onBannerClicked,
+                modifier = Modifier.fillMaxWidth()
+            )
             if (state.isStoreLaunched) {
                 Text(
                     text = stringResource(id = R.string.store_onboarding_launched_title),
@@ -234,12 +240,16 @@ fun SitePreview(
 }
 
 @Composable
-fun EcommerceTrialBanner(modifier: Modifier = Modifier) {
+fun EcommerceTrialBanner(
+    onBannerClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Row(
         modifier = modifier
             .background(color = colorResource(id = R.color.woo_purple_10))
-            .padding(dimensionResource(id = R.dimen.major_100)),
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
+            .padding(dimensionResource(id = R.dimen.major_100))
+            .clickable { onBannerClicked() },
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
     ) {
         Image(
             painter = painterResource(id = R.drawable.ic_tintable_info_outline_24dp),
