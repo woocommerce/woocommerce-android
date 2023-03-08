@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.login.storecreation.onboarding
 
+import com.woocommerce.android.extensions.isCurrentPlanEcommerceTrial
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.LAUNCH_YOUR_STORE
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.values
 import com.woocommerce.android.util.WooLog
@@ -21,9 +23,27 @@ class StoreOnboardingRepository @Inject constructor(
                 WooLog.i(WooLog.T.ONBOARDING, "TODO ERROR HANDLING fetchOnboardingTasks")
                 emptyList()
             }
-            else -> result.model?.map { it.toOnboardingTask() }
-                ?.filter { it.type != MOBILE_UNSUPPORTED }
-                ?: emptyList()
+            else -> {
+                val mobileSupportedTasks = result.model?.map { it.toOnboardingTask() }
+                    ?.filter { it.type != MOBILE_UNSUPPORTED }
+                    ?.toMutableList()
+                    ?: emptyList<OnboardingTask>().toMutableList()
+
+                if (selectedSite.get().isCurrentPlanEcommerceTrial
+                    && !mobileSupportedTasks.any { it.type == LAUNCH_YOUR_STORE }
+                ) {
+                    mobileSupportedTasks.add(
+                        OnboardingTask(
+                            type = LAUNCH_YOUR_STORE,
+                            isComplete = false,
+                            isVisible = true,
+                            isVisited = false
+                        )
+                    )
+                }
+
+                return mobileSupportedTasks
+            }
         }
     }
 
