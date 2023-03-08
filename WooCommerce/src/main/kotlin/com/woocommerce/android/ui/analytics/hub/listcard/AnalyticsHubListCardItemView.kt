@@ -10,6 +10,7 @@ import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsListCardItemViewBinding
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.util.PhotonUtils
 
 class AnalyticsHubListCardItemView @JvmOverloads constructor(
@@ -28,11 +29,28 @@ class AnalyticsHubListCardItemView @JvmOverloads constructor(
         binding.analyticsCardListItemDescription.text = viewState.description
         binding.divider.isVisible = viewState.showDivider == true
 
+        contentDescription = getViewContentDescription(
+            context = context,
+            title = viewState.title,
+            description = viewState.description,
+            value = viewState.value
+        )
+
         GlideApp
             .with(binding.root.context)
             .load(PhotonUtils.getPhotonImageUrl(viewState.imageUri, imageSize, imageSize))
             .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
             .placeholder(R.drawable.ic_product)
             .into(binding.analyticsCardListItemImage)
+    }
+
+    private fun getViewContentDescription(context: Context, title: String, description: String, value: String): String {
+        val items = StringUtils.getQuantityString(
+            context = context,
+            quantity = value.toIntOrNull() ?: 1,
+            one = R.string.analytics_item,
+            default = R.string.analytics_items
+        )
+        return context.getString(R.string.analytics_list_item_products_sold, title, description, value, items)
     }
 }
