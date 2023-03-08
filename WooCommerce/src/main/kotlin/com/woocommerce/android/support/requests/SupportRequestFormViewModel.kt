@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.support.TicketType
 import com.woocommerce.android.support.ZendeskManager
+import com.woocommerce.android.support.ZendeskSettings
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -27,6 +28,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SupportRequestFormViewModel @Inject constructor(
     private val zendeskManager: ZendeskManager,
+    private val zendeskSettings: ZendeskSettings,
     private val selectedSite: SelectedSite,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
@@ -63,7 +65,7 @@ class SupportRequestFormViewModel @Inject constructor(
         extraTags: List<String>,
         selectedEmail: String
     ) {
-        zendeskManager.supportEmail = selectedEmail
+        zendeskSettings.supportEmail = selectedEmail
         AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
         onSubmitRequestButtonClicked(
             context = context,
@@ -101,8 +103,8 @@ class SupportRequestFormViewModel @Inject constructor(
     private fun handleEmptyCredentials() {
         triggerEvent(
             ShowSupportIdentityInputDialog(
-                emailSuggestion = zendeskManager.supportEmail.orEmpty(),
-                nameSuggestion = zendeskManager.supportName.orEmpty()
+                emailSuggestion = zendeskSettings.supportEmail.orEmpty(),
+                nameSuggestion = zendeskSettings.supportName.orEmpty()
             )
         )
     }
