@@ -50,6 +50,7 @@ class SupportRequestFormActivity : AppCompatActivity() {
             observeViewEvents(this)
             observeViewModelEvents(this)
         }
+        viewModel.onViewCreated()
     }
 
     private fun ActivitySupportRequestFormBinding.setupActionBar() {
