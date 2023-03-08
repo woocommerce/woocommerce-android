@@ -41,12 +41,8 @@ class DomainPickerViewModel @Inject constructor(
     override val helpOrigin = HelpOrigin.STORE_CREATION
 
     override fun navigateToNextStep(selectedDomain: DomainSuggestion) {
+        newStore.update(domain = selectedDomain.name)
         triggerEvent(NavigateToNextStep(selectedDomain.name))
-    }
-
-    override fun onDomainSuggestionSelected(domain: String) {
-        super.onDomainSuggestionSelected(domain)
-        newStore.update(domain = domain)
     }
 
     data class NavigateToNextStep(val domain: String) : MultiLiveEvent.Event()
