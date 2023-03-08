@@ -231,12 +231,15 @@ class OrderCreateEditViewModel @Inject constructor(
         _orderDraft.update { it.copy(status = status) }
     }
 
-    fun onRemoveProduct(item: Order.Item) = _orderDraft.update {
+    fun onRemoveProduct(item: Order.Item) = viewModelScope.launch {
         tracker.track(
             ORDER_PRODUCT_REMOVE,
             mapOf(KEY_FLOW to flow)
         )
-        it.adjustProductQuantity(item.itemId, -item.quantity.toInt())
+        viewState = viewState.copy(isEditable = false)
+        _orderDraft.update {
+            it.removeItem(item)
+        }
     }
 
     fun onProductsSelected(selectedItems: Set<ProductSelectorViewModel.SelectedItem>) {
@@ -450,7 +453,7 @@ class OrderCreateEditViewModel @Inject constructor(
                             viewState = viewState.copy(
                                 isUpdatingOrderDraft = false,
                                 showOrderUpdateSnackbar = false,
-                                isEditable = updateStatus.order.isEditable || mode is Mode.Creation,
+                                isEditable = isOrderEditable(updateStatus),
                                 multipleLinesContext = determineMultipleLinesContext(updateStatus.order)
                             )
                             _orderDraft.update { currentDraft ->
@@ -467,6 +470,9 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
         }
     }
+
+    private fun isOrderEditable(updateStatus: OrderUpdateStatus.Succeeded) =
+        updateStatus.order.isEditable || mode is Mode.Creation
 
     private fun trackOrderCreationFailure(it: Throwable) {
         tracker.track(
