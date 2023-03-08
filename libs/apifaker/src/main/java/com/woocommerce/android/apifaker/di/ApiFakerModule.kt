@@ -1,6 +1,7 @@
 package com.woocommerce.android.apifaker.di
 
 import android.content.Context
+import com.woocommerce.android.apifaker.ApiFakerConfig
 import com.woocommerce.android.apifaker.ApiFakerInterceptor
 import com.woocommerce.android.apifaker.EndpointProcessor
 import com.woocommerce.android.apifaker.db.ApiFakerDatabase
@@ -29,7 +30,10 @@ abstract class ApiFakerModule {
         @Provides
         @IntoSet
         @Named("interceptors")
-        internal fun providesInterceptor(endpointProcessor: EndpointProcessor): Interceptor =
-            ApiFakerInterceptor(endpointProcessor)
+        internal fun providesInterceptor(
+            apiFakerConfig: ApiFakerConfig,
+            endpointProcessor: EndpointProcessor
+        ): Interceptor =
+            ApiFakerInterceptor(apiFakerConfig, endpointProcessor)
     }
 }

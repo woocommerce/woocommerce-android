@@ -1,6 +1,8 @@
 package com.woocommerce.android.apifaker
 
 import android.util.Log
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Interceptor.Chain
 import okhttp3.MediaType.Companion.toMediaType
@@ -9,8 +11,15 @@ import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
 import javax.inject.Inject
 
-internal class ApiFakerInterceptor @Inject constructor(private val endpointProcessor: EndpointProcessor) : Interceptor {
+internal class ApiFakerInterceptor @Inject constructor(
+    private val apiFakerConfig: ApiFakerConfig,
+    private val endpointProcessor: EndpointProcessor
+) : Interceptor {
     override fun intercept(chain: Chain): Response {
+        if (!apiFakerConfig.enabled.value) {
+            return chain.proceed(chain.request())
+        }
+
         Log.d(LOG_TAG, "Intercepting request: ${chain.request().url}")
         val request = chain.request()
         val fakeResponse = try {
