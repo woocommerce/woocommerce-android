@@ -12,6 +12,7 @@ data class AnalyticsViewState(
     val ordersState: AnalyticsHubInformationViewState,
     val productsState: AnalyticsHubListViewState,
     val sessionState: AnalyticsHubInformationViewState,
+    val showFeedBackBanner: Boolean
 )
 
 sealed class AnalyticsViewEvent : MultiLiveEvent.Event() {
@@ -19,6 +20,7 @@ sealed class AnalyticsViewEvent : MultiLiveEvent.Event() {
     data class OpenWPComWebView(val url: String) : AnalyticsViewEvent()
     data class OpenDatePicker(val fromMillis: Long, val toMillis: Long) : MultiLiveEvent.Event()
     object OpenDateRangeSelector : AnalyticsViewEvent()
+    object SendFeedback : AnalyticsViewEvent()
 }
 
 sealed class RefreshIndicator {

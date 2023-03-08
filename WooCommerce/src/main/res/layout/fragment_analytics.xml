@@ -18,25 +18,17 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <com.woocommerce.android.ui.products.FeatureWIPNoticeCard
-                android:id="@+id/analyticsHubWIPCard"
-                style="@style/Woo.Card.Expandable"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:visibility="gone" />
-
-            <com.woocommerce.android.ui.payments.feedback.ipp.FeedbackBanner
-                android:id="@+id/analyticsHubWIPBanner"
+            <com.woocommerce.android.ui.feedback.FeedbackBanner
+                android:id="@+id/analyticsHubFeedbackBanner"
                 style="@style/Woo.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                />
+                android:visibility="gone"
+                app:title="@string/analytics_banner_title"
+                app:message="@string/analytics_banner_message" />
 
             <View
                 android:id="@+id/divider"
@@ -45,7 +37,7 @@
                 android:background="@color/divider_color"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/analyticsHubWIPBanner" />
+                app:layout_constraintTop_toBottomOf="@+id/analyticsHubFeedbackBanner" />
 
             <com.woocommerce.android.ui.analytics.hub.daterangeselector.AnalyticsHubDateRangeCardView
                 android:id="@+id/analyticsDateSelectorCard"

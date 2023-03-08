@@ -8,16 +8,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
-import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAnalyticsBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
-import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
@@ -28,7 +24,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.ANALYTICS_HUB
 import java.util.Date
 
 @AndroidEntryPoint
@@ -38,10 +33,6 @@ class AnalyticsHubFragment :
         const val KEY_DATE_RANGE_SELECTOR_RESULT = "key_order_status_result"
         const val DATE_PICKER_FRAGMENT_TAG = "DateRangePicker"
     }
-
-    private val feedbackState
-        get() = FeedbackPrefs.getFeatureFeedbackSettings(ANALYTICS_HUB)?.feedbackState
-            ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
     private val viewModel: AnalyticsHubViewModel by viewModels()
     private var _binding: FragmentAnalyticsBinding? = null
@@ -69,7 +60,6 @@ class AnalyticsHubFragment :
         binding.scrollView.scrollStartEvents()
             .onEach { viewModel.onTrackableUIInteraction() }
             .launchIn(viewLifecycleOwner.lifecycleScope)
-        displayAnalyticsHubWIPCard(true)
     }
 
     override fun onDestroyView() {
@@ -84,6 +74,7 @@ class AnalyticsHubFragment :
                 .navigate(NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url))
             is AnalyticsViewEvent.OpenDatePicker -> showDateRangePicker(event.fromMillis, event.toMillis)
             is AnalyticsViewEvent.OpenDateRangeSelector -> openDateRangeSelector()
+            is AnalyticsViewEvent.SendFeedback -> sendFeedback()
             else -> event.isHandled = false
         }
     }
@@ -124,6 +115,7 @@ class AnalyticsHubFragment :
         binding.analyticsProductsCard.updateInformation(viewState.productsState)
         binding.analyticsVisitorsCard.updateInformation(viewState.sessionState)
         binding.analyticsRefreshLayout.isRefreshing = viewState.refreshIndicator == ShowIndicator
+        displayFeedbackBanner(viewState.showFeedBackBanner)
     }
 
     private fun getDateRangeSelectorViewState() = viewModel.viewState.value.analyticsDateRangeSelectorState
@@ -145,60 +137,18 @@ class AnalyticsHubFragment :
         }
     }
 
-    private fun displayAnalyticsHubWIPCard(show: Boolean) {
-        if (!show || feedbackState == FeatureFeedbackSettings.FeedbackState.DISMISSED) {
-            //binding.analyticsHubWIPCard.isVisible = false
-            binding.analyticsHubWIPBanner.isVisible = false
-            return
+    private fun displayFeedbackBanner(isVisible: Boolean) {
+        binding.analyticsHubFeedbackBanner.isVisible = isVisible
+        if (!isVisible) return
+        binding.analyticsHubFeedbackBanner.run {
+            onSendFeedbackListener = { viewModel.onSendFeedbackClicked() }
+            onDismissClickListener = { viewModel.onDismissBannerClicked() }
         }
-
-        binding.analyticsHubWIPBanner.run {
-            isVisible = true
-            setTitle(R.string.analytics_banner_title)
-            setMessage(R.string.analytics_banner_message)
-            onCTAClickListener = { onGiveFeedbackClicked() }
-            onDismissClickListener = { onDismissWIPCardClicked() }
-        }
-        /*binding.analyticsHubWIPCard.isVisible = true
-        binding.analyticsHubWIPCard.initView(
-            getString(R.string.analytics_wip_title),
-            getString(R.string.analytics_wip_message),
-            onGiveFeedbackClick = { onGiveFeedbackClicked() },
-            onDismissClick = { onDismissWIPCardClicked() },
-            showFeedbackButton = true
-        )*/
     }
 
-    private fun onGiveFeedbackClicked() {
-        AnalyticsTracker.track(
-            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
-            mapOf(
-                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_ANALYTICS_HUB_FEEDBACK,
-                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
-            )
-        )
-        registerFeedbackSetting(FeatureFeedbackSettings.FeedbackState.GIVEN)
+    private fun sendFeedback() {
         NavGraphMainDirections
-            .actionGlobalFeedbackSurveyFragment(SurveyType.MAIN)
+            .actionGlobalFeedbackSurveyFragment(SurveyType.ANALYTICS_HUB)
             .apply { findNavController().navigateSafely(this) }
-    }
-
-    private fun onDismissWIPCardClicked() {
-        AnalyticsTracker.track(
-            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
-            mapOf(
-                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_ANALYTICS_HUB_FEEDBACK,
-                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
-            )
-        )
-        registerFeedbackSetting(FeatureFeedbackSettings.FeedbackState.DISMISSED)
-        displayAnalyticsHubWIPCard(false)
-    }
-
-    private fun registerFeedbackSetting(state: FeatureFeedbackSettings.FeedbackState) {
-        FeatureFeedbackSettings(
-            FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION,
-            state
-        ).registerItself()
     }
 }
