@@ -5,16 +5,12 @@ import android.net.ConnectivityManager
 import android.os.Parcelable
 import android.telephony.TelephonyManager
 import android.text.TextUtils
-import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.logInformation
 import com.woocommerce.android.extensions.stateLogInformation
 import com.woocommerce.android.support.help.HelpOrigin
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
 import kotlinx.coroutines.channels.awaitClose
@@ -29,16 +25,12 @@ import org.wordpress.android.util.DeviceUtils
 import org.wordpress.android.util.NetworkUtils
 import org.wordpress.android.util.StringUtils
 import org.wordpress.android.util.UrlUtils
-import zendesk.core.AnonymousIdentity
-import zendesk.core.Identity
 import zendesk.support.CreateRequest
 import zendesk.support.CustomField
 import zendesk.support.Request
 import zendesk.support.Support
 import java.util.Locale
 import java.util.Timer
-import kotlin.concurrent.schedule
-import org.wordpress.android.fluxc.store.AccountStore
 
 private const val zendeskNeedsToBeEnabledError = "Zendesk needs to be setup before this method can be called"
 private const val enablePushNotificationsDelayAfterIdentityChange: Long = 2500
@@ -47,51 +39,11 @@ private const val maxLogfileLength: Int = 63000 // Max characters allowed in the
 class ZendeskManager(
     private val zendeskSettings: ZendeskSettings,
     private val siteStore: SiteStore,
-    private val supportHelper: SupportHelper,
-    private val accountStore: AccountStore,
-    private val selectedSite: SelectedSite,
     private val dispatchers: CoroutineDispatchers
 ) {
     private val timer: Timer by lazy {
         Timer()
     }
-
-    /**
-     * These two properties are used to keep track of the Zendesk identity set. Since we allow users' to change their
-     * supportEmail and reset their identity on logout, we need to ensure that the correct identity is set all times.
-     * Check [requireIdentity], [refreshIdentity] & [clearIdentity] for more details about how Zendesk identity works.
-     */
-    var supportEmail: String? = null
-        get() = zendeskSettings.storedEmailSuggestion
-            .takeIf { it.isNotEmpty() }
-            ?: supportHelper.getSupportNameSuggestion(accountStore.account, selectedSite.getIfExists())
-
-        set(value) {
-            if (value != field) {
-                AppPrefs.setSupportEmail(value)
-                refreshIdentity()
-            }
-        }
-
-    var supportName: String? = null
-        get() = zendeskSettings.storedNameSuggestion
-            .takeIf { it.isNotEmpty() }
-            ?: supportHelper.getSupportNameSuggestion(accountStore.account, selectedSite.getIfExists())
-
-        set(value) {
-            if (value != field) {
-                AppPrefs.setSupportName(value)
-                refreshIdentity()
-            }
-        }
-
-    /**
-     * Although rare, Zendesk SDK might reset the identity due to a 401 error. This seems to happen if the identity
-     * is changed and another Zendesk action happens before the identity change could be completed. In order to avoid
-     * such issues, we check both Zendesk identity and the [supportEmail] to decide whether identity is set.
-     */
-    private val isIdentitySet: Boolean
-        get() = supportEmail.isNotNullOrEmpty() && zendeskSettings.instance?.identity != null
 
     /**
      * This function creates a new customer Support Request through the Zendesk API Providers.
@@ -111,6 +63,7 @@ class ZendeskManager(
                 trySend(Result.success(result))
                 close()
             }
+
             override fun onError(error: ErrorResponse) {
                 trySend(Result.failure(Throwable(error.reason)))
                 close()
@@ -143,225 +96,108 @@ class ZendeskManager(
     fun refreshRequest(context: Context, requestId: String?): Boolean =
         Support.INSTANCE.refreshRequest(requestId, context)
 
-    /**
-     * This function should be called when the user logs out of WordPress.com. Push notifications are only available
-     * for WordPress.com users, so they'll be disabled. We'll also clear the Zendesk identity of the user on logout
-     * and it will need to be set again when the user wants to create a new ticket.
-     */
-    fun reset() {
-        disablePushNotifications()
-        clearIdentity()
+    private fun getHomeURLOrHostName(site: SiteModel): String {
+        var homeURL = UrlUtils.removeScheme(site.url)
+        homeURL = StringUtils.removeTrailingSlash(homeURL)
+        return if (TextUtils.isEmpty(homeURL)) {
+            UrlUtils.getHost(site.xmlRpcUrl)
+        } else homeURL
     }
 
     /**
-     * This function will enable push notifications for Zendesk. Both a Zendesk identity and a valid push
-     * notification device token is required. If either doesn't exist, the request will simply be ignored.
+     * This is a helper function which builds a list of `CustomField`s which will be used during ticket creation. They
+     * will be used to fill the custom fields we have setup in Zendesk UI for Happiness Engineers.
      */
-    fun enablePushNotifications() {
-        if (!isIdentitySet) {
-            // identity should be set before registering the device token
-            return
+    private fun buildZendeskCustomFields(
+        context: Context,
+        ticketType: TicketType,
+        allSites: List<SiteModel>?,
+        selectedSite: SiteModel?,
+        ssr: String? = null
+    ): List<CustomField> {
+        val currentSiteInformation = if (selectedSite != null) {
+            "${getHomeURLOrHostName(selectedSite)} (${selectedSite.stateLogInformation})"
+        } else {
+            "not_selected"
         }
-        // The device token will not be available if the user is not logged in, so this check serves two purposes
-        AppPrefs.getFCMToken().takeIf { it.isNotEmpty() }?.let { deviceToken ->
-            zendeskSettings.pushRegistrationProvider?.registerWithDeviceIdentifier(
-                deviceToken,
-                object : ZendeskCallback<String>() {
-                    override fun onSuccess(result: String?) {
-                        WooLog.v(T.SUPPORT, "Zendesk push notifications successfully enabled!")
-                    }
-
-                    override fun onError(errorResponse: ErrorResponse?) {
-                        WooLog.v(
-                            T.SUPPORT,
-                            "Enabling Zendesk push notifications failed with" +
-                                " error: ${errorResponse?.reason}"
-                        )
-                    }
-                }
-            )
-        }
+        return listOf(
+            CustomField(TicketFieldIds.appVersion, PackageUtils.getVersionName(context)),
+            CustomField(TicketFieldIds.deviceFreeSpace, DeviceUtils.getTotalAvailableMemorySize()),
+            CustomField(TicketFieldIds.networkInformation, getNetworkInformation(context)),
+            CustomField(TicketFieldIds.logs, WooLog.toString().takeLast(maxLogfileLength)),
+            CustomField(TicketFieldIds.ssr, ssr),
+            CustomField(TicketFieldIds.currentSite, currentSiteInformation),
+            CustomField(TicketFieldIds.sourcePlatform, ZendeskConstants.sourcePlatform),
+            CustomField(TicketFieldIds.appLanguage, Locale.getDefault().language),
+            CustomField(TicketFieldIds.categoryId, ticketType.categoryName),
+            CustomField(TicketFieldIds.subcategoryId, ticketType.subcategoryName),
+            CustomField(TicketFieldIds.blogList, getCombinedLogInformationOfSites(allSites))
+        )
     }
 
     /**
-     * This function will disable push notifications for Zendesk.
+     * This is a small helper function which just joins the `logInformation` of all the sites passed in with a separator.
      */
-    private fun disablePushNotifications() {
-        if (!isIdentitySet) {
-            // identity should be set before removing the device token
-            return
+    private fun getCombinedLogInformationOfSites(allSites: List<SiteModel>?): String {
+        allSites?.let { it ->
+            return it.joinToString(separator = ZendeskConstants.blogSeparator) { it.logInformation }
         }
-        zendeskSettings.pushRegistrationProvider?.unregisterDevice(
-            object : ZendeskCallback<Void>() {
-                override fun onSuccess(response: Void?) {
-                    WooLog.v(T.SUPPORT, "Zendesk push notifications successfully disabled!")
-                }
-
-                override fun onError(errorResponse: ErrorResponse?) {
-                    WooLog.v(
-                        T.SUPPORT,
-                        "Disabling Zendesk push notifications failed with" +
-                            " error: ${errorResponse?.reason}"
-                    )
-                }
-            })
+        return ZendeskConstants.noneValue
     }
 
     /**
-     * This is a helper function that'll ensure the Zendesk identity is set with the credentials from AppPrefs.
-     *
-     * We should refresh the Zendesk identity when the email or the name has been updated. We also check whether
-     * Zendesk SDK has cleared the identity. Check out the documentation for [isIdentitySet] for more details.
-     *
-     * Also, when we change the identity in Zendesk, it seems to be making an asynchronous call to a server to
-     * receive a different access token. During this time, if there is a call to Zendesk with the previous
-     * access token, it could fail with a 401 error which seems to be clearing the identity. In order to avoid
-     * such cases, we put a delay on enabling push notifications for the new identity.
-     *
-     * [enablePushNotifications] will check if the identity is set, before making the actual call, so if the
-     * identity is cleared through [clearIdentity], this call will simply be ignored.
+     * This is a helper function which returns a set of pre-defined tags depending on some conditions. It accepts a list of
+     * custom tags to be added for special cases.
      */
-    private fun refreshIdentity() {
-        zendeskSettings.instance?.setIdentity(createZendeskIdentity(supportEmail, supportName))
+    private fun buildZendeskTags(
+        allSites: List<SiteModel>?,
+        origin: HelpOrigin,
+        extraTags: List<String>
+    ): List<String> {
+        val tags = ArrayList<String>()
+        allSites?.let { it ->
+            // Add wpcom tag if at least one site is WordPress.com site
+            if (it.any { it.isWPCom }) {
+                tags.add(ZendeskConstants.wpComTag)
+            }
 
-        timer.schedule(enablePushNotificationsDelayAfterIdentityChange) {
-            enablePushNotifications()
+            // Add Jetpack tag if at least one site is Jetpack connected. Even if a site is Jetpack connected,
+            // it does not necessarily mean that user is connected with the REST API, but we don't care about that here
+            if (it.any { it.isJetpackConnected }) {
+                tags.add(ZendeskConstants.jetpackTag)
+            }
+
+            // Find distinct plans and add them
+            val plans = it.asSequence().mapNotNull { it.planShortName }.distinct().toList()
+            tags.addAll(plans)
         }
+        tags.add(origin.toString())
+        // Add Android tag to make it easier to filter tickets by platform
+        tags.add(ZendeskConstants.platformTag)
+        tags.addAll(extraTags)
+        return tags
     }
 
     /**
-     * This is a helper function to clear the Zendesk identity. It'll remove the credentials from AppPrefs and update
-     * the Zendesk identity with a new anonymous one without an email or name. Due to the way Zendesk anonymous identity
-     * works, this will clear all the users' tickets.
+     * This is a helper function which returns information about the network state of the app to be sent to Zendesk, which
+     * could prove useful for the Happiness Engineers while debugging the users' issues.
      */
-    private fun clearIdentity() {
-        AppPrefs.removeSupportEmail()
-        AppPrefs.removeSupportName()
-        refreshIdentity()
-    }
-}
-
-private fun getHomeURLOrHostName(site: SiteModel): String {
-    var homeURL = UrlUtils.removeScheme(site.url)
-    homeURL = StringUtils.removeTrailingSlash(homeURL)
-    return if (TextUtils.isEmpty(homeURL)) {
-        UrlUtils.getHost(site.xmlRpcUrl)
-    } else homeURL
-}
-
-/**
- * This is a helper function which builds a list of `CustomField`s which will be used during ticket creation. They
- * will be used to fill the custom fields we have setup in Zendesk UI for Happiness Engineers.
- */
-private fun buildZendeskCustomFields(
-    context: Context,
-    ticketType: TicketType,
-    allSites: List<SiteModel>?,
-    selectedSite: SiteModel?,
-    ssr: String? = null
-): List<CustomField> {
-    val currentSiteInformation = if (selectedSite != null) {
-        "${getHomeURLOrHostName(selectedSite)} (${selectedSite.stateLogInformation})"
-    } else {
-        "not_selected"
-    }
-    return listOf(
-        CustomField(TicketFieldIds.appVersion, PackageUtils.getVersionName(context)),
-        CustomField(TicketFieldIds.deviceFreeSpace, DeviceUtils.getTotalAvailableMemorySize()),
-        CustomField(TicketFieldIds.networkInformation, getNetworkInformation(context)),
-        CustomField(TicketFieldIds.logs, WooLog.toString().takeLast(maxLogfileLength)),
-        CustomField(TicketFieldIds.ssr, ssr),
-        CustomField(TicketFieldIds.currentSite, currentSiteInformation),
-        CustomField(TicketFieldIds.sourcePlatform, ZendeskConstants.sourcePlatform),
-        CustomField(TicketFieldIds.appLanguage, Locale.getDefault().language),
-        CustomField(TicketFieldIds.categoryId, ticketType.categoryName),
-        CustomField(TicketFieldIds.subcategoryId, ticketType.subcategoryName),
-        CustomField(TicketFieldIds.blogList, getCombinedLogInformationOfSites(allSites))
-    )
-}
-
-/**
- * This is a helper function which creates an anonymous Zendesk identity with the email and name passed in. They can
- * both be `null` as they are not required for a valid identity.
- *
- * An important thing to note is that whenever a different set of values are passed in, a different identity will be
- * created which will reset the ticket list for the user. So, for example, even if the passed in email is the same,
- * if the name is different, it'll reset Zendesk's local DB.
- *
- * This is currently the way we handle identity for Zendesk, but it's possible that we may switch to a JWT based
- * authentication which will avoid the resetting issue, but will mean that we'll need to involve our own servers in the
- * authentication. More information can be found in their documentation:
- * https://developer.zendesk.com/embeddables/docs/android-support-sdk/sdk_set_identity#setting-a-unique-identity
- */
-private fun createZendeskIdentity(email: String?, name: String?): Identity {
-    val identity = AnonymousIdentity.Builder()
-    if (!email.isNullOrEmpty()) {
-        identity.withEmailIdentifier(email)
-    }
-    if (!name.isNullOrEmpty()) {
-        identity.withNameIdentifier(name)
-    }
-    return identity.build()
-}
-
-/**
- * This is a small helper function which just joins the `logInformation` of all the sites passed in with a separator.
- */
-private fun getCombinedLogInformationOfSites(allSites: List<SiteModel>?): String {
-    allSites?.let { it ->
-        return it.joinToString(separator = ZendeskConstants.blogSeparator) { it.logInformation }
-    }
-    return ZendeskConstants.noneValue
-}
-
-/**
- * This is a helper function which returns a set of pre-defined tags depending on some conditions. It accepts a list of
- * custom tags to be added for special cases.
- */
-private fun buildZendeskTags(allSites: List<SiteModel>?, origin: HelpOrigin, extraTags: List<String>): List<String> {
-    val tags = ArrayList<String>()
-    allSites?.let { it ->
-        // Add wpcom tag if at least one site is WordPress.com site
-        if (it.any { it.isWPCom }) {
-            tags.add(ZendeskConstants.wpComTag)
+    @Suppress("DEPRECATION")
+    private fun getNetworkInformation(context: Context): String {
+        val networkType = when (NetworkUtils.getActiveNetworkInfo(context)?.type) {
+            ConnectivityManager.TYPE_WIFI -> ZendeskConstants.networkWifi
+            ConnectivityManager.TYPE_MOBILE -> ZendeskConstants.networkWWAN
+            else -> ZendeskConstants.unknownValue
         }
-
-        // Add Jetpack tag if at least one site is Jetpack connected. Even if a site is Jetpack connected,
-        // it does not necessarily mean that user is connected with the REST API, but we don't care about that here
-        if (it.any { it.isJetpackConnected }) {
-            tags.add(ZendeskConstants.jetpackTag)
-        }
-
-        // Find distinct plans and add them
-        val plans = it.asSequence().mapNotNull { it.planShortName }.distinct().toList()
-        tags.addAll(plans)
+        val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?
+        val carrierName = telephonyManager?.networkOperatorName ?: ZendeskConstants.unknownValue
+        val countryCodeLabel = telephonyManager?.networkCountryIso ?: ZendeskConstants.unknownValue
+        return listOf(
+            "${ZendeskConstants.networkTypeLabel} $networkType",
+            "${ZendeskConstants.networkCarrierLabel} $carrierName",
+            "${ZendeskConstants.networkCountryCodeLabel} ${countryCodeLabel.uppercase(Locale.getDefault())}"
+        ).joinToString(separator = "\n")
     }
-    tags.add(origin.toString())
-    // Add Android tag to make it easier to filter tickets by platform
-    tags.add(ZendeskConstants.platformTag)
-    tags.addAll(extraTags)
-    return tags
-}
-
-/**
- * This is a helper function which returns information about the network state of the app to be sent to Zendesk, which
- * could prove useful for the Happiness Engineers while debugging the users' issues.
- */
-@Suppress("DEPRECATION")
-private fun getNetworkInformation(context: Context): String {
-    val networkType = when (NetworkUtils.getActiveNetworkInfo(context)?.type) {
-        ConnectivityManager.TYPE_WIFI -> ZendeskConstants.networkWifi
-        ConnectivityManager.TYPE_MOBILE -> ZendeskConstants.networkWWAN
-        else -> ZendeskConstants.unknownValue
-    }
-    val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?
-    val carrierName = telephonyManager?.networkOperatorName ?: ZendeskConstants.unknownValue
-    val countryCodeLabel = telephonyManager?.networkCountryIso ?: ZendeskConstants.unknownValue
-    return listOf(
-        "${ZendeskConstants.networkTypeLabel} $networkType",
-        "${ZendeskConstants.networkCarrierLabel} $carrierName",
-        "${ZendeskConstants.networkCountryCodeLabel} ${countryCodeLabel.uppercase(Locale.getDefault())}"
-    ).joinToString(separator = "\n")
 }
 
 sealed class TicketType(
