@@ -17,7 +17,7 @@ import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.push.RegisterDevice
 import com.woocommerce.android.push.RegisterDevice.Mode.IF_NEEDED
 import com.woocommerce.android.push.WooNotificationBuilder
-import com.woocommerce.android.support.ZendeskAccess
+import com.woocommerce.android.support.ZendeskSettings
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.RateLimitedTask
 import com.woocommerce.android.tools.SelectedSite
@@ -84,7 +84,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var networkStatus: NetworkStatus
-    @Inject lateinit var zendeskAccess: ZendeskAccess
+    @Inject lateinit var zendeskSettings: ZendeskSettings
     @Inject lateinit var wooNotificationBuilder: WooNotificationBuilder
     @Inject lateinit var userEligibilityFetcher: UserEligibilityFetcher
     @Inject lateinit var uploadEncryptedLogs: UploadEncryptedLogs
@@ -158,7 +158,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         trackStartupAnalytics()
 
-        zendeskAccess.setup(
+        zendeskSettings.setup(
             context = application,
             zendeskUrl = BuildConfig.ZENDESK_DOMAIN,
             applicationId = BuildConfig.ZENDESK_APP_ID,

@@ -2,7 +2,7 @@ package com.woocommerce.android.di
 
 import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.support.ZendeskManager
-import com.woocommerce.android.support.ZendeskAccess
+import com.woocommerce.android.support.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import dagger.Module
@@ -18,19 +18,19 @@ import org.wordpress.android.fluxc.store.AccountStore
 class SupportModule {
     @Singleton
     @Provides
-    fun provideZendeskProvider() : ZendeskAccess = ZendeskAccess()
+    fun provideZendeskProvider() : ZendeskSettings = ZendeskSettings()
 
     @Singleton
     @Provides
     fun provideZendeskHelper(
-        zendeskAccess: ZendeskAccess,
+        zendeskSettings: ZendeskSettings,
         siteStore: SiteStore,
         supportHelper: SupportHelper,
         accountStore: AccountStore,
         selectedSite: SelectedSite,
         dispatchers: CoroutineDispatchers
     ): ZendeskManager = ZendeskManager(
-        zendeskAccess,
+        zendeskSettings,
         siteStore,
         supportHelper,
         accountStore,

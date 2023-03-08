@@ -8,7 +8,7 @@ import zendesk.core.PushRegistrationProvider
 import zendesk.core.Zendesk
 import zendesk.support.Support
 
-class ZendeskAccess {
+class ZendeskSettings {
     val instance: Zendesk?
         get() = Zendesk.INSTANCE.takeIfInitialized()
 

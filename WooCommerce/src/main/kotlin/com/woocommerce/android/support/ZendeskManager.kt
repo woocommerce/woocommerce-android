@@ -44,7 +44,7 @@ private const val enablePushNotificationsDelayAfterIdentityChange: Long = 2500
 private const val maxLogfileLength: Int = 63000 // Max characters allowed in the system status report field
 
 class ZendeskManager(
-    private val zendeskAccess: ZendeskAccess,
+    private val zendeskSettings: ZendeskSettings,
     private val siteStore: SiteStore,
     private val supportHelper: SupportHelper,
     private val accountStore: AccountStore,
@@ -90,7 +90,7 @@ class ZendeskManager(
      * such issues, we check both Zendesk identity and the [supportEmail] to decide whether identity is set.
      */
     private val isIdentitySet: Boolean
-        get() = !supportEmail.isNullOrEmpty() && zendeskAccess.instance?.identity != null
+        get() = !supportEmail.isNullOrEmpty() && zendeskSettings.instance?.identity != null
 
     /**
      * This function creates a new customer Support Request through the Zendesk API Providers.
@@ -123,7 +123,7 @@ class ZendeskManager(
             this.tags = buildZendeskTags(siteStore.sites, origin, ticketType.tags + extraTags)
                 .filter { ticketType.excludedTags.contains(it).not() }
             this.customFields = buildZendeskCustomFields(context, ticketType, siteStore.sites, selectedSite)
-        }.let { request -> zendeskAccess.requestProvider?.createRequest(request, requestCallback) }
+        }.let { request -> zendeskSettings.requestProvider?.createRequest(request, requestCallback) }
 
         // Sets a timeout since the callback might not be called from Zendesk API
         launch {
@@ -163,7 +163,7 @@ class ZendeskManager(
         }
         // The device token will not be available if the user is not logged in, so this check serves two purposes
         AppPrefs.getFCMToken().takeIf { it.isNotEmpty() }?.let { deviceToken ->
-            zendeskAccess.pushRegistrationProvider?.registerWithDeviceIdentifier(
+            zendeskSettings.pushRegistrationProvider?.registerWithDeviceIdentifier(
                 deviceToken,
                 object : ZendeskCallback<String>() {
                     override fun onSuccess(result: String?) {
@@ -190,7 +190,7 @@ class ZendeskManager(
             // identity should be set before removing the device token
             return
         }
-        zendeskAccess.pushRegistrationProvider?.unregisterDevice(
+        zendeskSettings.pushRegistrationProvider?.unregisterDevice(
             object : ZendeskCallback<Void>() {
                 override fun onSuccess(response: Void?) {
                     WooLog.v(T.SUPPORT, "Zendesk push notifications successfully disabled!")
@@ -221,7 +221,7 @@ class ZendeskManager(
      * identity is cleared through [clearIdentity], this call will simply be ignored.
      */
     private fun refreshIdentity() {
-        zendeskAccess.instance?.setIdentity(createZendeskIdentity(supportEmail, supportName))
+        zendeskSettings.instance?.setIdentity(createZendeskIdentity(supportEmail, supportName))
 
         timer.schedule(enablePushNotificationsDelayAfterIdentityChange) {
             enablePushNotifications()
