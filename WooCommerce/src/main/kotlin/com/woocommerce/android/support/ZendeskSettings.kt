@@ -11,7 +11,6 @@ import javax.inject.Inject
 import org.wordpress.android.fluxc.store.AccountStore
 import zendesk.core.AnonymousIdentity
 import zendesk.core.Identity
-import zendesk.core.PushRegistrationProvider
 import zendesk.core.Zendesk
 import zendesk.support.Support
 
@@ -24,11 +23,6 @@ class ZendeskSettings @Inject constructor(
 
     val instance: Zendesk?
         get() = Zendesk.INSTANCE.takeIfInitialized()
-
-    val pushRegistrationProvider: PushRegistrationProvider?
-        get() = instance
-            ?.provider()
-            ?.pushRegistrationProvider()
 
     val requestProvider
         get() = Support.INSTANCE

@@ -30,10 +30,7 @@ import zendesk.support.CustomField
 import zendesk.support.Request
 import zendesk.support.Support
 import java.util.Locale
-import java.util.Timer
 
-private const val zendeskNeedsToBeEnabledError = "Zendesk needs to be setup before this method can be called"
-private const val enablePushNotificationsDelayAfterIdentityChange: Long = 2500
 private const val maxLogfileLength: Int = 63000 // Max characters allowed in the system status report field
 
 class ZendeskManager(
@@ -41,10 +38,6 @@ class ZendeskManager(
     private val siteStore: SiteStore,
     private val dispatchers: CoroutineDispatchers
 ) {
-    private val timer: Timer by lazy {
-        Timer()
-    }
-
     /**
      * This function creates a new customer Support Request through the Zendesk API Providers.
      */
@@ -58,6 +51,12 @@ class ZendeskManager(
         description: String,
         extraTags: List<String>
     ) = callbackFlow {
+        if (zendeskSettings.isIdentitySet.not()) {
+            trySend(Result.failure(Throwable(RequestConstants.requestCreationIdentityNotSetErrorMessage)))
+            close()
+            return@callbackFlow
+        }
+
         val requestCallback = object : ZendeskCallback<Request>() {
             override fun onSuccess(result: Request?) {
                 trySend(Result.success(result))
@@ -317,4 +316,5 @@ object ZendeskTags {
 private object RequestConstants {
     const val requestCreationTimeout = 10000L
     const val requestCreationTimeoutErrorMessage = "Request creation timed out"
+    const val requestCreationIdentityNotSetErrorMessage = "Request creation failed: identity not set"
 }
