@@ -9,7 +9,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.support.TicketType
-import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.support.ZendeskManager
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -26,7 +26,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SupportRequestFormViewModel @Inject constructor(
-    private val zendeskHelper: ZendeskHelper,
+    private val zendeskManager: ZendeskManager,
     private val selectedSite: SelectedSite,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
@@ -63,7 +63,7 @@ class SupportRequestFormViewModel @Inject constructor(
         extraTags: List<String>,
         selectedEmail: String
     ) {
-        zendeskHelper.supportEmail = selectedEmail
+        zendeskManager.supportEmail = selectedEmail
         AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
         onSubmitRequestButtonClicked(
             context = context,
@@ -86,7 +86,7 @@ class SupportRequestFormViewModel @Inject constructor(
 
         viewState.update { it.copy(isLoading = true) }
         launch {
-            zendeskHelper.createRequest(
+            zendeskManager.createRequest(
                 context,
                 helpOrigin,
                 ticketType,
@@ -101,8 +101,8 @@ class SupportRequestFormViewModel @Inject constructor(
     private fun handleEmptyCredentials() {
         triggerEvent(
             ShowSupportIdentityInputDialog(
-                emailSuggestion = zendeskHelper.supportEmail.orEmpty(),
-                nameSuggestion = zendeskHelper.supportName.orEmpty()
+                emailSuggestion = zendeskManager.supportEmail.orEmpty(),
+                nameSuggestion = zendeskManager.supportName.orEmpty()
             )
         )
     }

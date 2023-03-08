@@ -47,7 +47,7 @@ private const val zendeskNeedsToBeEnabledError = "Zendesk needs to be setup befo
 private const val enablePushNotificationsDelayAfterIdentityChange: Long = 2500
 private const val maxLogfileLength: Int = 63000 // Max characters allowed in the system status report field
 
-class ZendeskHelper(
+class ZendeskManager(
     private val siteStore: SiteStore,
     private val supportHelper: SupportHelper,
     private val accountStore: AccountStore,

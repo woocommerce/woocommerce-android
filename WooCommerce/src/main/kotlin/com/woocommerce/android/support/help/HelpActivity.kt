@@ -24,7 +24,7 @@ import com.woocommerce.android.support.SSRActivity
 import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.support.TicketType
 import com.woocommerce.android.support.WooLogViewerActivity
-import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.support.ZendeskManager
 import com.woocommerce.android.support.help.HelpViewModel.ContactSupportEvent
 import com.woocommerce.android.support.help.HelpViewModel.ContactSupportEvent.CreateTicket
 import com.woocommerce.android.support.help.HelpViewModel.ContactSupportEvent.ShowLoading
@@ -46,7 +46,7 @@ class HelpActivity : AppCompatActivity() {
     @Inject lateinit var accountStore: AccountStore
     @Inject lateinit var siteStore: SiteStore
     @Inject lateinit var supportHelper: SupportHelper
-    @Inject lateinit var zendeskHelper: ZendeskHelper
+    @Inject lateinit var zendeskManager: ZendeskManager
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var loginNotificationScheduler: LoginNotificationScheduler
 
@@ -163,11 +163,11 @@ class HelpActivity : AppCompatActivity() {
     ) {
         supportHelper.showSupportIdentityInputDialog(
             context = this,
-            email = zendeskHelper.supportEmail,
-            name = zendeskHelper.supportName
+            email = zendeskManager.supportEmail,
+            name = zendeskManager.supportName
         ) { email, name ->
-            zendeskHelper.supportEmail = email
-            zendeskHelper.supportName = name
+            zendeskManager.supportEmail = email
+            zendeskManager.supportName = name
             AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
             if (createNewTicket) createNewZendeskTicket(ticketType, extraTags)
         }
