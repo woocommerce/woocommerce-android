@@ -188,12 +188,15 @@ private fun PreviewWebView(
             )
     ) {
 
-        CircularProgressIndicator(
-            progress = (progress / 100f),
-            modifier = Modifier
-                .align(Alignment.Center)
-                .alpha(if (progress == 100) 0f else 1f)
-        )
+        Column(modifier = Modifier.align(Alignment.Center)) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .alpha(if (progress == 100) 0f else 1f)
+                    .padding(dimensionResource(id = dimen.major_100)),
+            )
+            Text(text = stringResource(id = string.store_creation_installation_rendering_preview_label))
+        }
         AndroidView(
             factory = { context ->
                 WebView(context).apply {
