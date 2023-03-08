@@ -16,7 +16,6 @@ internal class HomeViewModel @Inject constructor(
     private val config: ApiFakerConfig
 ) : ViewModel() {
     val endpoints = endpointDao.observeEndpoints()
-        .map { list -> list.map { it.request } }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val isEnabled = config.enabled

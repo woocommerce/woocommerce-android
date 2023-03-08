@@ -1,8 +1,12 @@
 package com.woocommerce.android.apifaker.ui.home
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -32,6 +36,8 @@ import com.woocommerce.android.apifaker.models.Request
 import com.woocommerce.android.apifaker.models.ApiType.Custom
 import com.woocommerce.android.apifaker.models.ApiType.WPApi
 import com.woocommerce.android.apifaker.models.ApiType.WPCom
+import com.woocommerce.android.apifaker.models.MockedEndpoint
+import com.woocommerce.android.apifaker.models.Response
 import com.woocommerce.android.apifaker.ui.Screen
 
 @Composable
@@ -40,7 +46,7 @@ internal fun HomeScreen(
     navController: NavController
 ) {
     HomeScreen(
-        requests = viewModel.endpoints.collectAsState().value,
+        endpoints = viewModel.endpoints.collectAsState().value,
         isEnabled = viewModel.isEnabled.collectAsState(initial = false).value,
         onMockingToggleChanged = viewModel::onMockingToggleChanged,
         navController = navController
@@ -49,7 +55,7 @@ internal fun HomeScreen(
 
 @Composable
 private fun HomeScreen(
-    requests: List<Request>,
+    endpoints: List<MockedEndpoint>,
     isEnabled: Boolean,
     onMockingToggleChanged: (Boolean) -> Unit = {},
     navController: NavController
@@ -78,9 +84,9 @@ private fun HomeScreen(
                 .padding(16.dp)
                 .fillMaxSize()
         ) {
-            if (requests.isNotEmpty()) {
+            if (endpoints.isNotEmpty()) {
                 LazyColumn {
-                    items(requests) { endpoint ->
+                    items(endpoints) { endpoint ->
                         EndpointItem(endpoint, navController, Modifier.padding(vertical = 8.dp))
                     }
                 }
@@ -102,28 +108,42 @@ private fun HomeScreen(
 
 @Composable
 private fun EndpointItem(
-    request: Request,
+    endpoint: MockedEndpoint,
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = { navController.navigate(Screen.EndpointDetails.route(request.id)) }),
+            .clickable(onClick = { navController.navigate(Screen.EndpointDetails.route(endpoint.request.id)) }),
         elevation = 4.dp
     ) {
-        Column(Modifier.padding(8.dp)) {
-            Text(
-                text = when (request.type) {
-                    WPApi -> "WordPress API"
-                    WPCom -> "WordPress.com API"
-                    is Custom -> "Host: ${request.type.host}"
-                },
-                style = MaterialTheme.typography.subtitle1
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(8.dp)
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(
+                    text = when (endpoint.request.type) {
+                        WPApi -> "WordPress API"
+                        WPCom -> "WordPress.com API"
+                        is Custom -> "Host: ${endpoint.request.type.host}"
+                    },
+                    style = MaterialTheme.typography.subtitle1
+                )
+                Text(
+                    text = endpoint.request.path,
+                    style = MaterialTheme.typography.body1
+                )
+            }
+            Spacer(
+                modifier = Modifier
+                    .weight(1f)
+                    .defaultMinSize(minWidth = 16.dp)
             )
             Text(
-                text = request.path,
-                style = MaterialTheme.typography.subtitle2
+                text = endpoint.response.statusCode.toString(),
+                style = MaterialTheme.typography.subtitle1
             )
         }
     }
@@ -133,17 +153,23 @@ private fun EndpointItem(
 @Preview
 private fun HomeScreenPreview() {
     HomeScreen(
-        requests = listOf(
-            Request(
-                type = WPApi,
-                path = "/wc/v3/products",
-                body = ""
+        endpoints = listOf(
+            MockedEndpoint(
+                Request(
+                    type = WPApi,
+                    path = "/wc/v3/products",
+                    body = ""
+                ),
+                Response(statusCode = 200, body = "")
             ),
-            Request(
-                type = WPCom,
-                path = "/v1.1/me/sites",
-                body = ""
-            ),
+            MockedEndpoint(
+                Request(
+                    type = WPCom,
+                    path = "/v1.1/me/sites",
+                    body = ""
+                ),
+                Response(statusCode = 404, body = "")
+            )
         ),
         isEnabled = true,
         navController = rememberNavController()
