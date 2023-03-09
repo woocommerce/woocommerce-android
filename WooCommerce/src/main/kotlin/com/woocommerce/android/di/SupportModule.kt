@@ -9,9 +9,9 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Singleton
-import org.wordpress.android.fluxc.store.AccountStore
 
 @InstallIn(SingletonComponent::class)
 @Module
