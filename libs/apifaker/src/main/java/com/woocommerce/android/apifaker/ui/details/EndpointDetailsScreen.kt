@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -22,7 +23,8 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.material.TextField
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -101,13 +103,15 @@ private fun EndpointDetailsScreen(
                     TextButton(
                         onClick = onSaveClicked,
                         enabled = state.isEndpointValid,
-                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colors.onPrimary)
+                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colors.onSurface)
                     ) {
                         Text(
                             text = "Save"
                         )
                     }
-                }
+                },
+                backgroundColor = MaterialTheme.colors.surface,
+                elevation = 4.dp
             )
         },
         backgroundColor = MaterialTheme.colors.surface
@@ -237,7 +241,7 @@ private fun EndpointTypeField(
         modifier = modifier.fillMaxWidth()
     )
     if (apiType is ApiType.Custom) {
-        TextField(
+        OutlinedTextField(
             label = { Text(text = "Host (without scheme)") },
             value = apiType.host,
             onValueChange = { onApiTypeChanged(apiType.copy(host = it)) },
@@ -270,7 +274,7 @@ private fun PathField(
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
-        TextField(
+        OutlinedTextField(
             label = { Text(text = "Path") },
             value = path,
             onValueChange = onPathChanged,
@@ -308,14 +312,15 @@ private fun RequestBodyField(
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
-        TextField(
+        OutlinedTextField(
             label = { Text(text = "Body") },
             value = body.orEmpty(),
             placeholder = { Text(text = "An empty value will match everything") },
             textStyle = if (body != null) LocalTextStyle.current
             else LocalTextStyle.current.copy(color = Color.Gray),
             onValueChange = onBodyChanged,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
         )
         val caption = buildAnnotatedString {
             append("Use")
@@ -372,7 +377,7 @@ private fun StatusCodeField(
                 var fieldValue by remember {
                     mutableStateOf(statusCode.toString())
                 }
-                TextField(
+                OutlinedTextField(
                     label = { Text(text = "Custom status code") },
                     value = fieldValue,
                     onValueChange = {
@@ -448,11 +453,12 @@ private fun ResponseBodyField(
     onBodyChanged: (String) -> Unit,
     modifier: Modifier
 ) {
-    TextField(
+    OutlinedTextField(
         label = { Text(text = "Body") },
         value = body.orEmpty(),
         onValueChange = onBodyChanged,
         modifier = modifier
+            .defaultMinSize(minHeight = TextFieldDefaults.MinHeight * 2)
     )
 }
 

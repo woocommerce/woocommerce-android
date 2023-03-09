@@ -5,8 +5,8 @@ import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ExposedDropdownMenuBox
 import androidx.compose.material.ExposedDropdownMenuDefaults
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,7 +30,7 @@ internal fun <T> DropDownMenu(
         onExpandedChange = { expanded = it },
         modifier = modifier
     ) {
-        TextField(
+        OutlinedTextField(
             readOnly = true,
             label = { Text(label) },
             value = formatter(currentValue), onValueChange = {},
@@ -39,7 +39,7 @@ internal fun <T> DropDownMenu(
                     expanded = expanded
                 )
             },
-            colors = ExposedDropdownMenuDefaults.textFieldColors(),
+            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
             modifier = Modifier.fillMaxWidth()
         )
 
