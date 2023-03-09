@@ -10,6 +10,8 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.extensions.logInformation
 import com.woocommerce.android.extensions.stateLogInformation
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
@@ -125,6 +127,12 @@ class ZendeskHelper(
             zendeskNeedsToBeEnabledError
         }
 
+        val siteConnectionTag = if (selectedSite?.connectionType == SiteConnectionType.ApplicationPasswords) {
+            ZendeskTags.applicationPasswordAuthenticated
+        } else null
+
+        val tags = (ticketType.tags + extraTags + siteConnectionTag).filterNotNull()
+
         val requestCallback = object : ZendeskCallback<Request>() {
             override fun onSuccess(result: Request?) {
                 trySend(Result.success(result))
@@ -140,7 +148,7 @@ class ZendeskHelper(
             this.ticketFormId = ticketType.form
             this.subject = subject
             this.description = description
-            this.tags = buildZendeskTags(siteStore.sites, origin, ticketType.tags + extraTags)
+            this.tags = buildZendeskTags(siteStore.sites, origin, tags)
                 .filter { ticketType.excludedTags.contains(it).not() }
             this.customFields = buildZendeskCustomFields(context, ticketType, siteStore.sites, selectedSite)
         }.let { request -> requestProvider?.createRequest(request, requestCallback) }
@@ -511,6 +519,7 @@ private object TicketFieldIds {
 }
 
 object ZendeskTags {
+    const val applicationPasswordAuthenticated = "application_password_authenticated"
     const val mobileApp = "mobile_app"
     const val woocommerceCore = "woocommerce_core"
     const val paymentsProduct = "woocommerce_payments"
