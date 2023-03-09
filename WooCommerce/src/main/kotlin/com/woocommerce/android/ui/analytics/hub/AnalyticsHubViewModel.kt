@@ -151,7 +151,7 @@ class AnalyticsHubViewModel @Inject constructor(
 
     fun onDateRangeSelectorClick() {
         onTrackableUIInteraction()
-        AnalyticsTracker.track(AnalyticsEvent.ANALYTICS_HUB_DATE_RANGE_BUTTON_TAPPED)
+        tracker.track(AnalyticsEvent.ANALYTICS_HUB_DATE_RANGE_BUTTON_TAPPED)
         triggerEvent(AnalyticsViewEvent.OpenDateRangeSelector)
     }
 
@@ -346,7 +346,7 @@ class AnalyticsHubViewModel @Inject constructor(
 
     private fun trackSelectedDateRange() {
         onTrackableUIInteraction()
-        AnalyticsTracker.track(
+        tracker.track(
             AnalyticsEvent.ANALYTICS_HUB_DATE_RANGE_SELECTED,
             mapOf(AnalyticsTracker.KEY_OPTION to ranges.selectionType.tracksIdentifier)
         )
