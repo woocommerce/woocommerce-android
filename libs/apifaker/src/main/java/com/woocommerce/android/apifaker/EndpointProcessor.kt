@@ -3,8 +3,10 @@ package com.woocommerce.android.apifaker
 import com.woocommerce.android.apifaker.db.EndpointDao
 import com.woocommerce.android.apifaker.models.ApiType
 import com.woocommerce.android.apifaker.models.HttpMethod
+import com.woocommerce.android.apifaker.models.QueryParameter
 import com.woocommerce.android.apifaker.models.Response
 import com.woocommerce.android.apifaker.util.JSONObjectProvider
+import okhttp3.HttpUrl
 import okhttp3.Request
 import okio.Buffer
 import javax.inject.Inject
@@ -26,7 +28,9 @@ internal class EndpointProcessor @Inject constructor(
 
         return with(endpointData) {
             endpointDao.queryEndpoint(apiType, request.httpMethod, path.trimEnd('/'), body.orEmpty())
-        }?.response
+        }.filter {
+            request.url.checkQueryParameters(it.request.queryParameters)
+        }.firstOrNull()?.response
     }
 
     private fun Request.extractDataFromWPComEndpoint(): EndpointData {
@@ -73,6 +77,14 @@ internal class EndpointProcessor @Inject constructor(
             path = url.encodedPath,
             body = readBody()
         )
+    }
+
+    private fun HttpUrl.checkQueryParameters(queryParameters: List<QueryParameter>): Boolean {
+        if (queryParameters.isEmpty()) return true
+
+        return queryParameters.all { queryParameter ->
+            queryParameter(queryParameter.name) == queryParameter.value
+        }
     }
 
     private fun Request.readBody(): String {

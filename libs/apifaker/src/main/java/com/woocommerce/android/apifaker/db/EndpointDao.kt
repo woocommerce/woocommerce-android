@@ -32,7 +32,7 @@ internal interface EndpointDao {
         :body LIKE COALESCE(body, '%')
         """
     )
-    fun queryEndpoint(type: ApiType, httpMethod: HttpMethod, path: String, body: String): MockedEndpoint?
+    fun queryEndpoint(type: ApiType, httpMethod: HttpMethod, path: String, body: String): List<MockedEndpoint>
 
     @Transaction
     @Query("Select * FROM Request WHERE id = :id")
