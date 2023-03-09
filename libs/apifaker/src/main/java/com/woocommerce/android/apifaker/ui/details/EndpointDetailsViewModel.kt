@@ -8,8 +8,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.apifaker.db.EndpointDao
-import com.woocommerce.android.apifaker.models.Request
 import com.woocommerce.android.apifaker.models.ApiType
+import com.woocommerce.android.apifaker.models.HttpMethod
+import com.woocommerce.android.apifaker.models.Request
 import com.woocommerce.android.apifaker.models.Response
 import com.woocommerce.android.apifaker.ui.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,6 +38,12 @@ internal class EndpointDetailsViewModel @Inject constructor(
     fun onApiTypeChanged(apiType: ApiType) {
         withMutableSnapshot {
             state = state.copy(request = state.request.copy(type = apiType))
+        }
+    }
+
+    fun onRequestHttpMethodChanged(httpMethod: HttpMethod?) {
+        withMutableSnapshot {
+            state = state.copy(request = state.request.copy(httpMethod = httpMethod))
         }
     }
 
@@ -93,6 +100,7 @@ internal class EndpointDetailsViewModel @Inject constructor(
         Request(
             id = MISSING_ENDPOINT_ID,
             type = ApiType.WPApi,
+            httpMethod = null,
             path = "",
             body = null
         ),

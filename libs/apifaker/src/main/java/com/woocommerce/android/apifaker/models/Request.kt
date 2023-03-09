@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 internal data class Request(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val type: ApiType,
+    val httpMethod: HttpMethod?,
     val path: String,
     val body: String?
 )

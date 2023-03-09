@@ -46,6 +46,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.woocommerce.android.apifaker.models.Request
 import com.woocommerce.android.apifaker.models.ApiType
+import com.woocommerce.android.apifaker.models.HttpMethod
 import com.woocommerce.android.apifaker.models.Response
 import com.woocommerce.android.apifaker.ui.DropDownMenu
 import kotlin.math.min
@@ -64,6 +65,7 @@ internal fun EndpointDetailsScreen(
         navController = navController,
         onSaveClicked = viewModel::onSaveClicked,
         onApiTypeChanged = viewModel::onApiTypeChanged,
+        onRequestHttpMethodChanged = viewModel::onRequestHttpMethodChanged,
         onRequestPathChanged = viewModel::onRequestPathChanged,
         onRequestBodyChanged = viewModel::onRequestBodyChanged,
         onResponseStatusCodeChanged = viewModel::onResponseStatusCodeChanged,
@@ -77,6 +79,7 @@ private fun EndpointDetailsScreen(
     navController: NavController,
     onSaveClicked: () -> Unit = {},
     onApiTypeChanged: (ApiType) -> Unit = {},
+    onRequestHttpMethodChanged: (HttpMethod?) -> Unit = {},
     onRequestPathChanged: (String) -> Unit = {},
     onRequestBodyChanged: (String) -> Unit = {},
     onResponseStatusCodeChanged: (Int) -> Unit = {},
@@ -117,6 +120,7 @@ private fun EndpointDetailsScreen(
             EndpointDefinitionSection(
                 request = state.request,
                 onApiTypeChanged = onApiTypeChanged,
+                onHttpMethodChanged = onRequestHttpMethodChanged,
                 onPathChanged = onRequestPathChanged,
                 onBodyChanged = onRequestBodyChanged,
                 modifier = Modifier
@@ -144,6 +148,7 @@ private fun EndpointDetailsScreen(
 private fun EndpointDefinitionSection(
     request: Request,
     onApiTypeChanged: (ApiType) -> Unit,
+    onHttpMethodChanged: (HttpMethod?) -> Unit,
     onPathChanged: (String) -> Unit,
     onBodyChanged: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -159,6 +164,12 @@ private fun EndpointDefinitionSection(
         EndpointTypeField(
             apiType = request.type,
             onApiTypeChanged = onApiTypeChanged,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        HttpMethodField(
+            method = request.httpMethod,
+            onHttpMethodChanged = onHttpMethodChanged,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -233,6 +244,23 @@ private fun EndpointTypeField(
             modifier = Modifier.fillMaxWidth()
         )
     }
+}
+
+
+@Composable
+private fun HttpMethodField(
+    method: HttpMethod?,
+    onHttpMethodChanged: (HttpMethod?) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    DropDownMenu(
+        label = "HTTP Method",
+        currentValue = method,
+        values = listOf(null) + HttpMethod.values(),
+        onValueChange = onHttpMethodChanged,
+        formatter = { it?.name ?: "Any" },
+        modifier = modifier.fillMaxWidth()
+    )
 }
 
 @Composable
@@ -437,6 +465,7 @@ private fun EndpointDetailsScreenPreview() {
             state = EndpointDetailsViewModel.UiState(
                 request = Request(
                     type = ApiType.Custom("https://example.com"),
+                    httpMethod = HttpMethod.GET,
                     path = "/wc/v3/products",
                     body = null
                 ),

@@ -2,6 +2,7 @@ package com.woocommerce.android.apifaker
 
 import com.woocommerce.android.apifaker.db.EndpointDao
 import com.woocommerce.android.apifaker.models.ApiType
+import com.woocommerce.android.apifaker.models.HttpMethod
 import com.woocommerce.android.apifaker.models.Response
 import com.woocommerce.android.apifaker.util.JSONObjectProvider
 import okhttp3.Request
@@ -24,7 +25,7 @@ internal class EndpointProcessor @Inject constructor(
         }
 
         return with(endpointData) {
-            endpointDao.queryEndpoint(apiType, path.trimEnd('/'), body.orEmpty())
+            endpointDao.queryEndpoint(apiType, request.httpMethod, path.trimEnd('/'), body.orEmpty())
         }?.response
     }
 
@@ -83,6 +84,9 @@ internal class EndpointProcessor @Inject constructor(
             buffer.readUtf8()
         } else ""
     }
+
+    private val Request.httpMethod
+        get() = HttpMethod.valueOf(this.method.uppercase())
 
     private data class EndpointData(
         val apiType: ApiType,
