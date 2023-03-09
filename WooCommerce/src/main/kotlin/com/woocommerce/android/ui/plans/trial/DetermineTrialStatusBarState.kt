@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.plans.trial
 
 import com.woocommerce.android.SitePlanRepository
+import com.woocommerce.android.SitePlanRepository.FreeTrialExpiryDateResult.Error
+import com.woocommerce.android.SitePlanRepository.FreeTrialExpiryDateResult.ExpiryAt
+import com.woocommerce.android.SitePlanRepository.FreeTrialExpiryDateResult.NotTrial
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivityViewModel.BottomBarState
 import kotlinx.coroutines.flow.Flow
@@ -15,11 +18,11 @@ class DetermineTrialStatusBarState @Inject constructor(
 ) {
 
     operator fun invoke(bottomBarState: Flow<BottomBarState>): Flow<TrialStatusBarState> =
-        selectedSite.observe().combine(bottomBarState) { selectedSite, state: BottomBarState ->
+        selectedSite.observe().combine(bottomBarState) { selectedSite, state ->
             if (state == BottomBarState.Hidden) {
                 TrialStatusBarState.Hidden
             } else {
-                if (selectedSite?.planId == SitePlanRepository.FREE_TRIAL_PLAN_ID) {
+                if (selectedSite.isFreeTrial) {
                     fetchFreeTrialDetails()
                 } else {
                     TrialStatusBarState.Hidden
@@ -29,13 +32,13 @@ class DetermineTrialStatusBarState @Inject constructor(
 
     private suspend fun fetchFreeTrialDetails(): TrialStatusBarState {
         return when (val result = sitePlanRepository.fetchFreeTrialExpiryDate(selectedSite.get())) {
-            is SitePlanRepository.FreeTrialExpiryDateResult.ExpiryAt -> {
+            is ExpiryAt -> {
                 val expireIn = Period.between(LocalDate.now(), result.date)
                 val days = expireIn.days
                 TrialStatusBarState.Visible(days)
             }
-            is SitePlanRepository.FreeTrialExpiryDateResult.Error,
-            SitePlanRepository.FreeTrialExpiryDateResult.NotTrial -> TrialStatusBarState.Hidden
+            is Error,
+            NotTrial -> TrialStatusBarState.Hidden
         }
     }
 
