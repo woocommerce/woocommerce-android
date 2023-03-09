@@ -24,10 +24,12 @@ fun ApiFakerNavHost() {
         }
         composable(
             Screen.EndpointDetails.routeTemplate,
-            arguments = listOf(navArgument(Screen.EndpointDetails.endpointIdArgumentName) {
-                type = NavType.LongType
-                defaultValue = MISSING_ENDPOINT_ID
-            })
+            arguments = listOf(
+                navArgument(Screen.EndpointDetails.endpointIdArgumentName) {
+                    type = NavType.LongType
+                    defaultValue = MISSING_ENDPOINT_ID
+                }
+            )
         ) {
             EndpointDetailsScreen(hiltViewModel(), navController)
         }

@@ -16,6 +16,7 @@ internal class HomeViewModel @Inject constructor(
     private val endpointDao: EndpointDao,
     private val config: ApiFakerConfig
 ) : ViewModel() {
+    @Suppress("MagicNumber")
     val endpoints = endpointDao.observeEndpoints()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 

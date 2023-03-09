@@ -44,9 +44,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.woocommerce.android.apifaker.models.Request
 import com.woocommerce.android.apifaker.models.ApiType
 import com.woocommerce.android.apifaker.models.HttpMethod
+import com.woocommerce.android.apifaker.models.Request
 import com.woocommerce.android.apifaker.models.Response
 import com.woocommerce.android.apifaker.ui.DropDownMenu
 import kotlin.math.min
@@ -245,7 +245,6 @@ private fun EndpointTypeField(
         )
     }
 }
-
 
 @Composable
 private fun HttpMethodField(

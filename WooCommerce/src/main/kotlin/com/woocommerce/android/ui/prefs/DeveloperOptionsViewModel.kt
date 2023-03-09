@@ -45,13 +45,13 @@ class DeveloperOptionsViewModel @Inject constructor(
     }
 
     private fun createSimulatedReaderToggle() = ToggleableListItem(
-            icon = drawable.img_card_reader_connecting,
-            label = UiStringRes(string.enable_card_reader),
-            key = UiStringRes(string.simulated_reader_key),
-            isEnabled = true,
-            isChecked = developerOptionsRepository.isSimulatedCardReaderEnabled(),
-            onToggled = ::onSimulatedReaderToggled
-        )
+        icon = drawable.img_card_reader_connecting,
+        label = UiStringRes(string.enable_card_reader),
+        key = UiStringRes(string.simulated_reader_key),
+        isEnabled = true,
+        isChecked = developerOptionsRepository.isSimulatedCardReaderEnabled(),
+        onToggled = ::onSimulatedReaderToggled
+    )
 
     private fun createReaderUpdateFrequencyItem() =
         SpinnerListItem(
@@ -164,7 +164,7 @@ class DeveloperOptionsViewModel @Inject constructor(
             var selectedValue: UpdateOptions,
         ) : DeveloperOptionsEvents()
 
-        object OpenApiFaker: DeveloperOptionsEvents()
+        object OpenApiFaker : DeveloperOptionsEvents()
     }
 
     data class DeveloperOptionsViewState(

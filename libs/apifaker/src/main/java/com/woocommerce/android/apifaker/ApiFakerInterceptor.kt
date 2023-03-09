@@ -1,8 +1,6 @@
 package com.woocommerce.android.apifaker
 
 import android.util.Log
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Interceptor.Chain
 import okhttp3.MediaType.Companion.toMediaType
@@ -15,6 +13,7 @@ internal class ApiFakerInterceptor @Inject constructor(
     private val apiFakerConfig: ApiFakerConfig,
     private val endpointProcessor: EndpointProcessor
 ) : Interceptor {
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
     override fun intercept(chain: Chain): Response {
         if (!apiFakerConfig.enabled.value) {
             return chain.proceed(chain.request())
@@ -31,7 +30,8 @@ internal class ApiFakerInterceptor @Inject constructor(
 
         return if (fakeResponse != null) {
             Log.d(
-                LOG_TAG, "Matched request: ${chain.request().url}:\n" +
+                LOG_TAG,
+                "Matched request: ${chain.request().url}:\n" +
                     "Sending Mocked Response: $fakeResponse"
             )
             Response.Builder()
