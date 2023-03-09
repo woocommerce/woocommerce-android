@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.login.storecreation.onboarding.launchstore
 
 import android.annotation.SuppressLint
-import android.content.res.Configuration
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,8 +30,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.annotatedStringRes
@@ -233,15 +229,4 @@ fun EcommerceTrialBanner(
             style = MaterialTheme.typography.body1,
         )
     }
-}
-
-@ExperimentalFoundationApi
-@Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
-@Preview(name = "small screen", device = Devices.PIXEL)
-@Preview(name = "mid screen", device = Devices.PIXEL_4)
-@Preview(name = "large screen", device = Devices.NEXUS_10)
-@Composable
-fun LaunchStoreScreenPreview() {
-
 }
