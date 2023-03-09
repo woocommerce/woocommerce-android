@@ -108,7 +108,7 @@ object ChromeCustomTabUtils {
 
     private fun createIntent(context: Context, tabSession: CustomTabsSession? = null): CustomTabsIntent {
         val defaultColorSchemeParams = CustomTabColorSchemeParams.Builder()
-            .setToolbarColor(ContextCompat.getColor(context, R.color.color_toolbar_without_overlay))
+            .setToolbarColor(ContextCompat.getColor(context, R.color.color_toolbar))
             .build()
         val intent = CustomTabsIntent.Builder(tabSession)
             .setDefaultColorSchemeParams(defaultColorSchemeParams)

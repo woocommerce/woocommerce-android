@@ -9,7 +9,7 @@
     android:padding="@dimen/major_100"
     android:orientation="horizontal"
     android:elevation="@dimen/plane_02"
-    tools:showIn="@layout/fragment_site_picker">
+    tools:showIn="@layout/activity_site_picker">
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_primary"
