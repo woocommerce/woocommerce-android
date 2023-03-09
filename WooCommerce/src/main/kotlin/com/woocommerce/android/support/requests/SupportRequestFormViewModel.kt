@@ -5,7 +5,6 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -88,7 +87,7 @@ class SupportRequestFormViewModel @Inject constructor(
         verifyIdentity: Boolean = false
     ) {
         val ticketType = viewState.value.ticketType ?: return
-        if (verifyIdentity && AppPrefs.hasSupportEmail().not()) {
+        if (verifyIdentity && zendeskSettings.isIdentitySet.not()) {
             handleEmptyCredentials()
             return
         }
