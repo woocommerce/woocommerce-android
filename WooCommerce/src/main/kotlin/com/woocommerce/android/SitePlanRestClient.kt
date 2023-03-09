@@ -7,6 +7,7 @@ import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.generated.endpoint.WPCOMREST
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpcom.BaseWPComRestClient
@@ -27,24 +28,23 @@ class SitePlanRestClient @Inject constructor(
 ) : BaseWPComRestClient(appContext, dispatcher, requestQueue, accessToken, userAgent) {
 
     suspend fun fetchSitePlans(site: SiteModel): WPComGsonRequestBuilder.Response<Map<Int, SitePlanDto>> {
-        val url = "https://public-api.wordpress.com/rest/v1.3/sites/${site.siteId}/plans/"
-
+        val url = WPCOMREST.sites.site(site.siteId).plans.urlV1_3
         val type: Type = object : TypeToken<Map<Int, SitePlanDto>>() {}.type
 
         return wpComGsonRequestBuilder.syncGetRequest(
             this,
             url,
             emptyMap(),
-            clazz = JsonObject::class.java
+            JsonObject::class.java
         ).let { originalResponse ->
             when (originalResponse) {
                 is WPComGsonRequestBuilder.Response.Success -> {
                     WPComGsonRequestBuilder.Response.Success(
-                        data = gson.fromJson(originalResponse.data, type)
+                        gson.fromJson(originalResponse.data, type)
                     )
                 }
                 is WPComGsonRequestBuilder.Response.Error ->
-                    WPComGsonRequestBuilder.Response.Error(error = originalResponse.error)
+                    WPComGsonRequestBuilder.Response.Error(originalResponse.error)
             }
         }
     }
