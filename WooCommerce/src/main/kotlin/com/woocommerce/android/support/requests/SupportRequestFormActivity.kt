@@ -72,11 +72,10 @@ class SupportRequestFormActivity : AppCompatActivity() {
             }
         }
         binding.submitRequestButton.setOnClickListener {
-            viewModel.onSubmitRequestButtonClicked(
+            viewModel.submitSupportRequest(
                 context = this,
                 helpOrigin = helpOrigin,
-                extraTags = extraTags,
-                verifyIdentity = true
+                extraTags = extraTags
             )
         }
     }

@@ -73,24 +73,15 @@ class SupportRequestFormViewModel @Inject constructor(
     ) {
         zendeskSettings.supportEmail = selectedEmail
         AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
-        onSubmitRequestButtonClicked(
-            context = context,
-            helpOrigin = helpOrigin,
-            extraTags = extraTags
-        )
+        submitSupportRequest(context = context, helpOrigin = helpOrigin, extraTags = extraTags)
     }
 
-    fun onSubmitRequestButtonClicked(
+    fun submitSupportRequest(
         context: Context,
         helpOrigin: HelpOrigin,
-        extraTags: List<String>,
-        verifyIdentity: Boolean = false
+        extraTags: List<String>
     ) {
         val ticketType = viewState.value.ticketType ?: return
-        if (verifyIdentity && zendeskSettings.isIdentitySet.not()) {
-            handleEmptyCredentials()
-            return
-        }
 
         viewState.update { it.copy(isLoading = true) }
         launch {
@@ -129,12 +120,8 @@ class SupportRequestFormViewModel @Inject constructor(
     private fun handleRequestCreationFailure(error: Throwable) {
         tracks.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_FAILED)
         when (error) {
-            is IdentityNotSetException -> {
-                handleEmptyCredentials()
-            }
-            else -> {
-                triggerEvent(RequestCreationFailed)
-            }
+            is IdentityNotSetException -> handleEmptyCredentials()
+            else -> triggerEvent(RequestCreationFailed)
         }
     }
 
