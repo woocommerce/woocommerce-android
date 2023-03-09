@@ -92,6 +92,7 @@ class ApiFakerUiHelper @Inject constructor() : ActivityLifecycleCallbacks {
                 TextView(context).apply {
                     text = "ApiFaker Enabled"
                     textAlignment = View.TEXT_ALIGNMENT_CENTER
+                    setTextColor(Color.WHITE)
                 }
             )
             setOnClickListener {

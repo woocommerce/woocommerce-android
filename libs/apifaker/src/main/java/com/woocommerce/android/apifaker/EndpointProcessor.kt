@@ -38,13 +38,13 @@ internal class EndpointProcessor @Inject constructor(
         return if (url.encodedPath.trimEnd('/').matches(Regex(JETPACK_TUNNEL_REGEX))) {
             val (path, body) = if (method == "GET") {
                 Pair(
-                    url.queryParameter("path")!!,
+                    url.queryParameter("path")!!.substringBefore("&"),
                     null
                 )
             } else {
                 val jsonObject = jsonObjectProvider.parseString(originalBody)
                 Pair(
-                    jsonObject.getString("path"),
+                    jsonObject.getString("path").substringBefore("&"),
                     jsonObject.optString("body")
                 )
             }

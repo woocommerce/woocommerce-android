@@ -7,6 +7,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
+import okhttp3.internal.EMPTY_RESPONSE
 import javax.inject.Inject
 
 internal class ApiFakerInterceptor @Inject constructor(
@@ -40,7 +41,10 @@ internal class ApiFakerInterceptor @Inject constructor(
                 .message("Fake Response")
                 .code(fakeResponse.statusCode)
                 // TODO check if it's safe to always use JSON as the content type
-                .body(fakeResponse.body?.toResponseBody("application/json".toMediaType()))
+                .body(
+                    fakeResponse.body?.toResponseBody("application/json".toMediaType())
+                        ?: EMPTY_RESPONSE
+                )
                 .addHeader("content-type", "application/json")
                 .build()
         } else {

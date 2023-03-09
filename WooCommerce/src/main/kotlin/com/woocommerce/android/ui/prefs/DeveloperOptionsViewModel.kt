@@ -85,7 +85,7 @@ class DeveloperOptionsViewModel @Inject constructor(
 
     private fun onSimulatedReaderToggled(isChecked: Boolean) {
         simulatedReaderStateChanged(isChecked)
-        viewState.value?.rows = prepareItems()
+        _viewState.value = _viewState.value?.copy(rows = prepareItems())
         if (!isChecked) {
             disconnectAndClearSelectedCardReader()
             triggerEvent(

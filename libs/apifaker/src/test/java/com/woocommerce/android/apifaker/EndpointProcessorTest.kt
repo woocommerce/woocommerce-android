@@ -2,6 +2,7 @@ package com.woocommerce.android.apifaker
 
 import com.woocommerce.android.apifaker.db.EndpointDao
 import com.woocommerce.android.apifaker.models.ApiType
+import com.woocommerce.android.apifaker.models.HttpMethod
 import com.woocommerce.android.apifaker.util.JSONObjectProvider
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -31,6 +32,7 @@ class EndpointProcessorTest {
 
         verify(endpointDaoMock).queryEndpoint(
             type = ApiType.WPCom,
+            httpMethod = HttpMethod.GET,
             path = "/v1.1/me",
             body = ""
         )
@@ -48,6 +50,7 @@ class EndpointProcessorTest {
 
         verify(endpointDaoMock).queryEndpoint(
             type = ApiType.WPCom,
+            httpMethod = HttpMethod.POST,
             path = "/v1.1/me",
             body = body
         )
@@ -57,13 +60,14 @@ class EndpointProcessorTest {
     fun `when processing a GET Jetpack Tunnel endpoint, then extract data correctly`() {
         val request = Request.Builder()
             .method("GET", null)
-            .url("https://public-api.wordpress.com/rest/v1.1/jetpack-blogs/161477129/rest-api/?path=/wc/v3/products")
+            .url("https://public-api.wordpress.com/rest/v1.1/jetpack-blogs/161477129/rest-api/?path=/wc/v3/products&_method=get")
             .build()
 
         endpointProcessor.fakeRequestIfNeeded(request)
 
         verify(endpointDaoMock).queryEndpoint(
             type = ApiType.WPApi,
+            httpMethod = HttpMethod.GET,
             path = "/wc/v3/products",
             body = ""
         )
@@ -91,6 +95,7 @@ class EndpointProcessorTest {
 
         verify(endpointDaoMock).queryEndpoint(
             type = ApiType.WPApi,
+            httpMethod = HttpMethod.POST,
             path = "/wc/v3/products",
             body = "test body"
         )
@@ -107,6 +112,7 @@ class EndpointProcessorTest {
 
         verify(endpointDaoMock).queryEndpoint(
             type = ApiType.WPApi,
+            httpMethod = HttpMethod.GET,
             path = "/wc/v3/products",
             body = ""
         )
@@ -124,6 +130,7 @@ class EndpointProcessorTest {
 
         verify(endpointDaoMock).queryEndpoint(
             type = ApiType.WPApi,
+            httpMethod = HttpMethod.POST,
             path = "/wc/v3/products",
             body = body
         )
@@ -140,6 +147,7 @@ class EndpointProcessorTest {
 
         verify(endpointDaoMock).queryEndpoint(
             type = ApiType.Custom("test-site.com"),
+            httpMethod = HttpMethod.GET,
             path = "/an/endpoint",
             body = ""
         )
@@ -157,6 +165,7 @@ class EndpointProcessorTest {
 
         verify(endpointDaoMock).queryEndpoint(
             type = ApiType.Custom("test-site.com"),
+            httpMethod = HttpMethod.POST,
             path = "/an/endpoint",
             body = body
         )
