@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.util.DeviceUtils
 import org.wordpress.android.util.NetworkUtils
@@ -41,7 +42,6 @@ import zendesk.support.Support
 import java.util.Locale
 import java.util.Timer
 import kotlin.concurrent.schedule
-import org.wordpress.android.fluxc.store.AccountStore
 
 private const val zendeskNeedsToBeEnabledError = "Zendesk needs to be setup before this method can be called"
 private const val enablePushNotificationsDelayAfterIdentityChange: Long = 2500

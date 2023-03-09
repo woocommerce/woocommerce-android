@@ -34,7 +34,6 @@ import com.woocommerce.android.ui.login.localnotifications.LoginNotificationSche
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Inject
@@ -178,17 +177,6 @@ class HelpActivity : AppCompatActivity() {
         val supportEmail = AppPrefs.getSupportEmail()
         binding.identityContainer.optionValue = supportEmail.ifEmpty {
             getString(R.string.support_contact_email_not_set)
-        }
-    }
-
-    /**
-     * Help activity may have been called during the login flow before the selected site has been set
-     */
-    private fun selectedSiteOrNull(): SiteModel? {
-        return if (selectedSite.exists()) {
-            selectedSite.get()
-        } else {
-            null
         }
     }
 
