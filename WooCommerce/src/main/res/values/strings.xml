@@ -1405,6 +1405,7 @@
 
     <string name="card_reader_onboarding_account_pending_requirements_header">Your account has pending requirements</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">There are pending requirements in your account. Please complete those requirements by %1$s to keep accepting In-Person Payments.</string>
+    <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">There are pending requirements in your account. Please complete those requirements to keep accepting In-Person Payments.</string>
     <string name="card_reader_onboarding_account_pending_requirements_dismiss_button" translatable="false">@string/dismiss</string>
 
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">In-Person Payments is currently unavailable</string>
