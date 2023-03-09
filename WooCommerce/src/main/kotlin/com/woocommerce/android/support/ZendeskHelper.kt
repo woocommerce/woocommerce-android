@@ -78,7 +78,7 @@ class ZendeskHelper(
     var supportEmail: String? = null
         get() = AppPrefs.getSupportEmail()
             .takeIf { it.isNotEmpty() }
-            ?: supportHelper.getSupportNameSuggestion(accountStore.account, selectedSite.getIfExists())
+            ?: supportHelper.getSupportEmailSuggestion(accountStore.account, selectedSite.getIfExists())
 
         set(value) {
             if (value != field) {
