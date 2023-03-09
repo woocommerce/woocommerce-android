@@ -24,6 +24,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.Switch
+import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -78,7 +79,7 @@ private fun HomeScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "API Faker") },
+                title = { Text(text = "ApiFaker") },
                 navigationIcon = {
                     IconButton(onClick = onExit) {
                         Icon(
@@ -88,7 +89,11 @@ private fun HomeScreen(
                     }
                 },
                 actions = {
-                    Switch(checked = isEnabled, onCheckedChange = onMockingToggleChanged)
+                    Switch(
+                        checked = isEnabled,
+                        onCheckedChange = onMockingToggleChanged,
+                        colors = SwitchDefaults.colors(checkedThumbColor = MaterialTheme.colors.primary)
+                    )
                 },
                 backgroundColor = MaterialTheme.colors.surface,
                 elevation = 4.dp

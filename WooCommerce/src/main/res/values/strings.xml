@@ -1940,7 +1940,7 @@
     <string name="randomly_update_reader">Randomly</string>
     <string name="enable_interac_payment" translatable="false">Enable Interac Payment</string>
     <string name="enable_interac_key" translatable="false">Enable Interac Key</string>
-    <string name="api_faker" translatable="false">Api Faker</string>
+    <string name="api_faker" translatable="false">ApiFaker</string>
     <string name="api_faker_key" translatable="false">api_faker</string>
 
 

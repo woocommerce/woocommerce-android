@@ -315,11 +315,10 @@ private fun PathField(
             }
             append("part, without the query arguments")
             append("\n")
-            append("Use")
-            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                append(" % ")
+            withStyle(style = SpanStyle(fontWeight = FontWeight.ExtraBold)) {
+                append("% ")
             }
-            append("as a wildcard for zero or more characters")
+            append("can be as a wildcard for zero or more characters")
         }
         Text(
             text = caption,
@@ -466,11 +465,10 @@ private fun RequestBodyField(
                 .fillMaxWidth()
         )
         val caption = buildAnnotatedString {
-            append("Use")
-            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                append(" % ")
+            withStyle(style = SpanStyle(fontWeight = FontWeight.ExtraBold)) {
+                append("% ")
             }
-            append("as a wildcard for zero or more characters")
+            append("can be as a wildcard for zero or more characters")
         }
         Text(
             text = caption,
