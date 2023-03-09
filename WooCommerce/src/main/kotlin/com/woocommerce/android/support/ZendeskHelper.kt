@@ -11,6 +11,7 @@ import com.woocommerce.android.extensions.logInformation
 import com.woocommerce.android.extensions.stateLogInformation
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
@@ -25,7 +26,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.util.DeviceUtils
 import org.wordpress.android.util.NetworkUtils
@@ -49,8 +49,8 @@ private const val maxLogfileLength: Int = 63000 // Max characters allowed in the
 
 class ZendeskHelper(
     private val siteStore: SiteStore,
+    private val accountRepository: AccountRepository,
     private val supportHelper: SupportHelper,
-    private val accountStore: AccountStore,
     private val selectedSite: SelectedSite,
     private val dispatchers: CoroutineDispatchers
 ) {
@@ -70,6 +70,9 @@ class ZendeskHelper(
         Timer()
     }
 
+    private val userAccount
+        get() = accountRepository.getUserAccount()
+
     /**
      * These two properties are used to keep track of the Zendesk identity set. Since we allow users' to change their
      * supportEmail and reset their identity on logout, we need to ensure that the correct identity is set all times.
@@ -78,7 +81,7 @@ class ZendeskHelper(
     var supportEmail: String? = null
         get() = AppPrefs.getSupportEmail()
             .takeIf { it.isNotEmpty() }
-            ?: supportHelper.getSupportEmailSuggestion(accountStore.account, selectedSite.getIfExists())
+            ?: supportHelper.getSupportEmailSuggestion(userAccount, selectedSite.getIfExists())
 
         set(value) {
             if (value != field) {
@@ -90,7 +93,7 @@ class ZendeskHelper(
     var supportName: String? = null
         get() = AppPrefs.getSupportName()
             .takeIf { it.isNotEmpty() }
-            ?: supportHelper.getSupportNameSuggestion(accountStore.account, selectedSite.getIfExists())
+            ?: supportHelper.getSupportNameSuggestion(userAccount, selectedSite.getIfExists())
 
         set(value) {
             if (value != field) {
