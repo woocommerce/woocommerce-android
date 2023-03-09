@@ -179,7 +179,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
     @Test
     fun `when submit request fails with identity error, then trigger the expected event`() = testBlocking {
         // Given
-        configureMocks(requestResult = Result.failure(IdentityNotSetException), isIdentitySet = true)
+        configureMocks(requestResult = Result.failure(IdentityNotSetException))
         val event = mutableListOf<MultiLiveEvent.Event>()
         sut.event.observeForever {
             event.add(it)
@@ -204,7 +204,25 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         verify(tracks, times(1)).track(AnalyticsEvent.SUPPORT_NEW_REQUEST_VIEWED)
     }
 
-    private fun configureMocks(requestResult: Result<Request?>, isIdentitySet: Boolean = true) {
+    @Test
+    fun `when onUserIdentitySet is called, then run the expected actions`() = testBlocking {
+        // Given
+        val email = "email@test.com"
+        val name = "test name"
+
+        // When
+        sut.onHelpOptionSelected(TicketType.MobileApp)
+        sut.onUserIdentitySet(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList(), email, name)
+
+        // Then
+        verify(zendeskSettings).supportEmail = email
+        verify(zendeskSettings).supportName = name
+        verify(tracks, times(1)).track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
+        verify(zendeskManager, times(1)).createRequest(any(), any(), any(), any(), any(), any(), any())
+    }
+
+    private fun configureMocks(requestResult: Result<Request?>) {
+        zendeskSettings = mock()
         tracks = mock()
         val testSite = SiteModel().apply { id = 123 }
         selectedSite = mock {
@@ -223,13 +241,10 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
                 )
             } doReturn flowOf(requestResult)
         }
-        zendeskSettings = mock {
-            on { it.isIdentitySet }.then { isIdentitySet }
-        }
 
         sut = SupportRequestFormViewModel(
             zendeskManager = zendeskManager,
-            zendeskSettings = mock(),
+            zendeskSettings = zendeskSettings,
             selectedSite = selectedSite,
             tracks = tracks,
             savedState = savedState
