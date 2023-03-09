@@ -1,3 +1,3 @@
 package com.woocommerce.android.apifaker
 
-const val LOG_TAG = "WCApiFaker"
+internal const val LOG_TAG = "WCApiFaker"
