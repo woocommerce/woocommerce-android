@@ -434,6 +434,11 @@
     <string name="analytics_conversion_subtitle">Conversion Rate</string>
     <string name="analytics_visitors_subtitle">Visitors</string>
 
+    <string name="analytics_wip_title">See your stats, revenue and more from your device!</string>
+    <string name="analytics_wip_message">We\'ve been working on making it possible to display significant store information from your device! Could it be better? Please help us improve this feature by sharing your feedback with us</string>
+
+    <string name="analytics_banner_title">Enjoying analytics?</string>
+    <string name="analytics_banner_message">Please rate your analytics experience</string>
     <!--
         Order List View
     -->

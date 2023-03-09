@@ -4,6 +4,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.DeltaPercentage.NotExist
+import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
@@ -29,6 +30,7 @@ import com.woocommerce.android.ui.analytics.hub.sync.UpdateAnalyticsHubStats
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_YEAR
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.TODAY
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
+import com.woocommerce.android.ui.feedback.FeedbackRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -48,10 +50,12 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
@@ -71,6 +75,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     private val updateStats: UpdateAnalyticsHubStats = mock()
     private val savedState = AnalyticsHubFragmentArgs(targetGranularity = TODAY).initSavedStateHandle()
     private val transactionLauncher = mock<AnalyticsHubTransactionLauncher>()
+    private val feedbackRepository: FeedbackRepository = mock()
 
     private lateinit var localeProvider: LocaleProvider
     private lateinit var testLocale: Locale
@@ -120,6 +125,10 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
             with(sut.viewState.value.refreshIndicator) {
                 assertTrue(this is NotShowIndicator)
+            }
+
+            with(sut.viewState.value.showFeedBackBanner) {
+                assertFalse(this)
             }
         }
 
@@ -495,6 +504,60 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when the analytics feedback is on state UNANSWERED then show the feedback banner`() = testBlocking {
+        whenever(feedbackRepository.getFeatureFeedback(FeatureFeedbackSettings.Feature.ANALYTICS_HUB))
+            .thenReturn(FeatureFeedbackSettings.FeedbackState.UNANSWERED)
+
+        sut = givenAViewModel()
+
+        assertTrue { sut.viewState.value.showFeedBackBanner }
+    }
+
+    @Test
+    fun `when the analytics feedback is on state GIVEN then hide the feedback banner`() = testBlocking {
+        whenever(feedbackRepository.getFeatureFeedback(FeatureFeedbackSettings.Feature.ANALYTICS_HUB))
+            .thenReturn(FeatureFeedbackSettings.FeedbackState.GIVEN)
+
+        sut = givenAViewModel()
+
+        assertFalse { sut.viewState.value.showFeedBackBanner }
+    }
+
+    @Test
+    fun `when the analytics feedback is on state DISMISSED then hide the feedback banner`() = testBlocking {
+        whenever(feedbackRepository.getFeatureFeedback(FeatureFeedbackSettings.Feature.ANALYTICS_HUB))
+            .thenReturn(FeatureFeedbackSettings.FeedbackState.DISMISSED)
+
+        sut = givenAViewModel()
+
+        assertFalse { sut.viewState.value.showFeedBackBanner }
+    }
+    @Test
+    fun `when send feedback is pressed then feedback status is saved as GIVEN`() = testBlocking {
+        sut = givenAViewModel()
+
+        sut.onSendFeedbackClicked()
+
+        verify(feedbackRepository).saveFeatureFeedback(
+            FeatureFeedbackSettings.Feature.ANALYTICS_HUB,
+            FeatureFeedbackSettings.FeedbackState.GIVEN
+        )
+        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.SendFeedback::class.java)
+    }
+
+    @Test
+    fun `when dismiss feedback is pressed then feedback status is saved as DISMISSED`() = testBlocking {
+        sut = givenAViewModel()
+
+        sut.onDismissBannerClicked()
+
+        verify(feedbackRepository).saveFeatureFeedback(
+            FeatureFeedbackSettings.Feature.ANALYTICS_HUB,
+            FeatureFeedbackSettings.FeedbackState.DISMISSED
+        )
+    }
+
+    @Test
     fun `given a date range selected, then has expected visitors values`() = testBlocking {
         configureSuccessfulStatsResponse()
         updateStats.stub {
@@ -520,6 +583,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             mock(),
             updateStats,
             localeProvider,
+            feedbackRepository,
             savedState
         )
     }

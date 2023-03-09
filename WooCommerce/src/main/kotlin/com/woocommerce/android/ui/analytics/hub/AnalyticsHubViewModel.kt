@@ -7,6 +7,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.DeltaPercentage
+import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
@@ -28,8 +29,10 @@ import com.woocommerce.android.ui.analytics.hub.sync.RevenueState
 import com.woocommerce.android.ui.analytics.hub.sync.SessionState
 import com.woocommerce.android.ui.analytics.hub.sync.UpdateAnalyticsHubStats
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.android.ui.feedback.FeedbackRepository
 import com.woocommerce.android.ui.mystore.MyStoreStatsUsageTracksEventEmitter
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -58,6 +61,7 @@ class AnalyticsHubViewModel @Inject constructor(
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
     private val updateStats: UpdateAnalyticsHubStats,
     private val localeProvider: LocaleProvider,
+    private val feedbackRepository: FeedbackRepository,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
@@ -78,6 +82,7 @@ class AnalyticsHubViewModel @Inject constructor(
             LoadingViewState,
             LoadingProductsViewState,
             LoadingViewState,
+            false
         )
     )
     val viewState: StateFlow<AnalyticsViewState> = mutableState
@@ -97,6 +102,18 @@ class AnalyticsHubViewModel @Inject constructor(
         observeProductsChanges()
         observeRevenueChanges()
         observeRangeSelectionChanges()
+        if (FeatureFlag.ANALYTICS_HUB_FEEDBACK_BANNER.isEnabled()) {
+            shouldAskForFeedback()
+        }
+    }
+
+    private fun shouldAskForFeedback() {
+        viewModelScope.launch {
+            val feedbackStatus = feedbackRepository.getFeatureFeedback(FeatureFeedbackSettings.Feature.ANALYTICS_HUB)
+            mutableState.update { viewState ->
+                viewState.copy(showFeedBackBanner = feedbackStatus == FeatureFeedbackSettings.FeedbackState.UNANSWERED)
+            }
+        }
     }
 
     fun onNewRangeSelection(selectionType: SelectionType) {
@@ -342,4 +359,21 @@ class AnalyticsHubViewModel @Inject constructor(
         calendar = Calendar.getInstance(),
         locale = localeProvider.provideLocale() ?: Locale.getDefault()
     )
+
+    fun onSendFeedbackClicked() {
+        feedbackRepository.saveFeatureFeedback(
+            FeatureFeedbackSettings.Feature.ANALYTICS_HUB,
+            FeatureFeedbackSettings.FeedbackState.GIVEN
+        )
+        triggerEvent(AnalyticsViewEvent.SendFeedback)
+        shouldAskForFeedback()
+    }
+
+    fun onDismissBannerClicked() {
+        feedbackRepository.saveFeatureFeedback(
+            FeatureFeedbackSettings.Feature.ANALYTICS_HUB,
+            FeatureFeedbackSettings.FeedbackState.DISMISSED
+        )
+        shouldAskForFeedback()
+    }
 }
