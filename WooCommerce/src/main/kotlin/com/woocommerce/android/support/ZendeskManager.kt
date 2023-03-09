@@ -7,6 +7,10 @@ import android.telephony.TelephonyManager
 import android.text.TextUtils
 import com.woocommerce.android.extensions.logInformation
 import com.woocommerce.android.extensions.stateLogInformation
+import com.woocommerce.android.support.RequestConstants.requestCreationIdentityNotSetErrorMessage
+import com.woocommerce.android.support.RequestConstants.requestCreationTimeoutErrorMessage
+import com.woocommerce.android.support.ZendeskException.IdentityNotSetException
+import com.woocommerce.android.support.ZendeskException.RequestCreationTimeoutException
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.PackageUtils
@@ -50,7 +54,7 @@ class ZendeskManager(
         extraTags: List<String>
     ) = callbackFlow {
         if (zendeskSettings.isIdentitySet.not()) {
-            trySend(Result.failure(Throwable(RequestConstants.requestCreationIdentityNotSetErrorMessage)))
+            trySend(Result.failure(IdentityNotSetException))
             close()
             return@callbackFlow
         }
@@ -79,7 +83,7 @@ class ZendeskManager(
         // Sets a timeout since the callback might not be called from Zendesk API
         launch {
             delay(RequestConstants.requestCreationTimeout)
-            trySend(Result.failure(Throwable(RequestConstants.requestCreationTimeoutErrorMessage)))
+            trySend(Result.failure(RequestCreationTimeoutException))
             close()
         }
 
@@ -311,6 +315,11 @@ object ZendeskTags {
     const val supportCategoryTag = "support"
     const val paymentSubcategoryTag = "payment"
     const val jetpackTag = "jetpack"
+}
+
+sealed class ZendeskException(message: String) : Exception(message) {
+    object IdentityNotSetException : ZendeskException(requestCreationTimeoutErrorMessage)
+    object RequestCreationTimeoutException : ZendeskException(requestCreationIdentityNotSetErrorMessage)
 }
 
 private object RequestConstants {
