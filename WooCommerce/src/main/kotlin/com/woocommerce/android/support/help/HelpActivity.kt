@@ -18,6 +18,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_F
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_STEP
 import com.woocommerce.android.databinding.ActivityHelpBinding
 import com.woocommerce.android.extensions.exhaustive
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.support.SSRActivity
@@ -121,7 +122,7 @@ class HelpActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        refreshContactEmailText()
+        refreshContactInfo()
         AnalyticsTracker.trackViewShown(this)
     }
 
@@ -167,17 +168,17 @@ class HelpActivity : AppCompatActivity() {
         ) { email, name ->
             zendeskHelper.supportEmail = email
             zendeskHelper.supportName = name
+            refreshContactInfo()
             AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
             if (createNewTicket) createNewZendeskTicket(ticketType, extraTags)
         }
         AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_FORM_VIEWED)
     }
 
-    private fun refreshContactEmailText() {
-        val supportEmail = AppPrefs.getSupportEmail()
-        binding.identityContainer.optionValue = supportEmail.ifEmpty {
-            getString(R.string.support_contact_email_not_set)
-        }
+    private fun refreshContactInfo() {
+        binding.identityContainer.optionValue = zendeskHelper.supportEmail
+            .takeIf { it.isNotNullOrEmpty() }
+            ?: getString(R.string.support_contact_email_not_set)
     }
 
     private fun showLoginHelpCenter(origin: HelpOrigin, loginFlow: String, loginStep: String) {
