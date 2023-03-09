@@ -6,6 +6,7 @@ import android.app.Application
 import android.app.Application.ActivityLifecycleCallbacks
 import android.graphics.Color
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
@@ -14,6 +15,7 @@ import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.doOnLayout
+import androidx.core.view.setPadding
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
@@ -70,6 +72,13 @@ class ApiFakerUiHelper @Inject constructor() : ActivityLifecycleCallbacks {
 
     @SuppressLint("SetTextI18n")
     private fun View.showApiFakerHint(activity: ComponentActivity) {
+        fun dpToPx(dp: Int): Int {
+            return TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                dp.toFloat(),
+                resources.displayMetrics
+            ).toInt()
+        }
         // This works only for activities that has the content view as a direct child of the FrameLayout, which is true
         // for all AppCompat activities, so it should work for all the cases we need.
         val contentLayout = findViewById<View>(android.R.id.content) as? FrameLayout ?: return
@@ -78,6 +87,7 @@ class ApiFakerUiHelper @Inject constructor() : ActivityLifecycleCallbacks {
         val apiFakerHint = FrameLayout(context).apply {
             id = apiFakerHintId
             setBackgroundColor(Color.RED)
+            setPadding(dpToPx(4))
             addView(
                 TextView(context).apply {
                     text = "ApiFaker Enabled"
@@ -114,8 +124,11 @@ class ApiFakerUiHelper @Inject constructor() : ActivityLifecycleCallbacks {
 
     private fun View.hideApiFakerHint() {
         val contentLayout = findViewById<ViewGroup>(android.R.id.content)
+        val activityLayout = contentLayout.getChildAt(0)
+
         contentLayout.findViewById<View>(apiFakerHintId)?.let { apiFakerHint ->
             contentLayout.removeView(apiFakerHint)
+            activityLayout.updateLayoutParams<MarginLayoutParams> { bottomMargin = 0 }
         }
     }
 }
