@@ -1,11 +1,11 @@
 package com.woocommerce.android.ui.plans.trial
 
-import com.woocommerce.android.SitePlanRepository
-import com.woocommerce.android.SitePlanRepository.FreeTrialExpiryDateResult.Error
-import com.woocommerce.android.SitePlanRepository.FreeTrialExpiryDateResult.ExpiryAt
-import com.woocommerce.android.SitePlanRepository.FreeTrialExpiryDateResult.NotTrial
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivityViewModel.BottomBarState
+import com.woocommerce.android.ui.plans.domain.FreeTrialExpiryDateResult.Error
+import com.woocommerce.android.ui.plans.domain.FreeTrialExpiryDateResult.ExpiryAt
+import com.woocommerce.android.ui.plans.domain.FreeTrialExpiryDateResult.NotTrial
+import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import java.time.LocalDate
@@ -37,8 +37,7 @@ class DetermineTrialStatusBarState @Inject constructor(
                 val days = expireIn.days
                 TrialStatusBarState.Visible(days)
             }
-            is Error,
-            NotTrial -> TrialStatusBarState.Hidden
+            NotTrial, is Error -> TrialStatusBarState.Hidden
         }
     }
 

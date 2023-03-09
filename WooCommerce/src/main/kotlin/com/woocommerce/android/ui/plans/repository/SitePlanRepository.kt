@@ -1,15 +1,16 @@
-package com.woocommerce.android
+package com.woocommerce.android.ui.plans.repository
 
-import com.woocommerce.android.SitePlanRepository.FreeTrialExpiryDateResult.Error
-import com.woocommerce.android.SitePlanRepository.FreeTrialExpiryDateResult.ExpiryAt
-import com.woocommerce.android.SitePlanRepository.FreeTrialExpiryDateResult.NotTrial
+import com.woocommerce.android.ui.plans.domain.FreeTrialExpiryDateResult
+import com.woocommerce.android.ui.plans.domain.FreeTrialExpiryDateResult.Error
+import com.woocommerce.android.ui.plans.domain.FreeTrialExpiryDateResult.ExpiryAt
+import com.woocommerce.android.ui.plans.domain.FreeTrialExpiryDateResult.NotTrial
+import com.woocommerce.android.ui.plans.domain.SitePlan
+import com.woocommerce.android.ui.plans.networking.SitePlanRestClient
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder
 import org.wordpress.android.util.AppLog
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
 import javax.inject.Inject
 
 class SitePlanRepository @Inject constructor(
@@ -25,12 +26,12 @@ class SitePlanRepository @Inject constructor(
         sitePlanRestClient.fetchSitePlans(site).let { result ->
             when (result) {
                 is WPComGsonRequestBuilder.Response.Success -> {
-                    val freeTrialPlan: SitePlanRestClient.SitePlanDto? = result.data[FREE_TRIAL_PLAN_ID.toInt()]
+                    val freeTrialPlan: SitePlan? = result.data[FREE_TRIAL_PLAN_ID.toInt()]
 
-                    if (freeTrialPlan == null || freeTrialPlan.expirationDate.isNullOrBlank()) {
+                    if (freeTrialPlan?.expirationDate == null) {
                         NotTrial
                     } else {
-                        ExpiryAt(LocalDate.parse(freeTrialPlan.expirationDate, ISO_OFFSET_DATE_TIME))
+                        ExpiryAt(freeTrialPlan.expirationDate)
                     }
                 }
                 is WPComGsonRequestBuilder.Response.Error -> {
@@ -39,11 +40,5 @@ class SitePlanRepository @Inject constructor(
                 }
             }
         }
-    }
-
-    sealed class FreeTrialExpiryDateResult {
-        data class ExpiryAt(val date: LocalDate) : FreeTrialExpiryDateResult()
-        object NotTrial : FreeTrialExpiryDateResult()
-        data class Error(val message: String) : FreeTrialExpiryDateResult()
     }
 }
