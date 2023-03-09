@@ -7,7 +7,6 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
@@ -50,6 +49,9 @@ class InstallationViewModel @Inject constructor(
         private const val SITE_CHECK_DEBOUNCE = 5000L
     }
 
+    private val newStoreUrl = "https://${newStore.data.domain!!}"
+    private val newStoreWpAdminUrl = "https://${newStore.data.domain!!}".slashJoin("wp-admin")
+
     private val _viewState = savedState.getStateFlow<ViewState>(this, InitialState)
     val viewState = _viewState
         .onEach {
@@ -79,7 +81,7 @@ class InstallationViewModel @Inject constructor(
                 )
                 analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SITE_CREATED, properties)
 
-                _viewState.update { SuccessState("https://${newStore.data.domain!!}") }
+                _viewState.update { SuccessState(newStoreWpAdminUrl) }
             } else {
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.SITE_CREATION_FAILED,
@@ -122,11 +124,14 @@ class InstallationViewModel @Inject constructor(
     }
 
     fun onUrlLoaded(url: String) {
+        if (url.contains(newStoreWpAdminUrl)) {
+            _viewState.update { SuccessState(newStoreUrl) }
+        }
     }
 
     fun onShowPreviewButtonClicked() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_SITE_PREVIEWED)
-        triggerEvent(OpenStore("https://${newStore.data.domain!!}"))
+        triggerEvent(OpenStore(newStoreUrl))
     }
 
     fun onManageStoreButtonClicked() {
