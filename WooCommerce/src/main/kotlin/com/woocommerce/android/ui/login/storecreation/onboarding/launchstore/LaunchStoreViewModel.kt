@@ -29,7 +29,7 @@ class LaunchStoreViewModel @Inject constructor(
     private val _viewState = MutableStateFlow(
         LaunchStoreState(
             isTrialPlan = selectedSite.get().isCurrentPlanEcommerceTrial,
-            isStoreLaunched = false,
+            isStoreLaunched = true,
             isLoading = false,
             siteUrl = selectedSite.get().url
         )

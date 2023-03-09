@@ -58,6 +58,7 @@ fun LaunchStoreScreen(viewModel: LaunchStoreViewModel) {
                 authenticator = viewModel.wpComWebViewAuthenticator,
                 onLaunchStoreClicked = viewModel::launchStore,
                 onBannerClicked = viewModel::onUpgradePlanBannerClicked,
+                onBackToStoreClicked = viewModel::onBackPressed,
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colors.surface)
@@ -74,6 +75,7 @@ fun LaunchStoreScreen(
     authenticator: WPComWebViewAuthenticator,
     onLaunchStoreClicked: () -> Unit,
     onBannerClicked: () -> Unit,
+    onBackToStoreClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -88,7 +90,10 @@ fun LaunchStoreScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             if (state.isStoreLaunched) {
-                Column(verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Text(
                         text = stringResource(id = R.string.store_onboarding_launched_title),
                         style = MaterialTheme.typography.h5,
@@ -165,9 +170,9 @@ fun LaunchStoreScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
+                        top = dimensionResource(id = R.dimen.minor_100),
                         start = dimensionResource(id = R.dimen.major_100),
                         end = dimensionResource(id = R.dimen.major_100),
-                        bottom = dimensionResource(id = R.dimen.minor_100)
                     ),
                 onClick = { },
             ) {
@@ -181,7 +186,7 @@ fun LaunchStoreScreen(
                         end = dimensionResource(id = R.dimen.major_100),
                         bottom = dimensionResource(id = R.dimen.major_100)
                     ),
-                onClick = {}
+                onClick = { onBackToStoreClicked() }
             ) {
                 Text(text = stringResource(id = R.string.store_onboarding_launch_store_back_to_store_button))
             }
