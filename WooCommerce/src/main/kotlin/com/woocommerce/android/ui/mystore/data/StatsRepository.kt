@@ -6,6 +6,7 @@ import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -268,15 +269,21 @@ class StatsRepository @Inject constructor(
     suspend fun fetchStats(
         granularity: StatsGranularity,
         forced: Boolean,
+        includeVisitorStats: Boolean,
         site: SiteModel = selectedSite.get()
     ): WooResult<SiteStats> = coroutineScope {
-        val fetchVisitorStats = async {
-            fetchVisitorStats(
-                granularity = granularity,
-                forced = forced,
-                site = site
-            )
+        val fetchVisitorStats = if (includeVisitorStats) {
+            async {
+                fetchVisitorStats(
+                    granularity = granularity,
+                    forced = forced,
+                    site = site
+                )
+            }
+        } else {
+            CompletableDeferred(WooResult(emptyMap()))
         }
+
         val fetchRevenueStats = async {
             fetchRevenueStats(
                 granularity = granularity,

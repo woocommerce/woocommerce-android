@@ -30,11 +30,11 @@ import com.woocommerce.android.support.help.HelpViewModel.ContactSupportEvent.Cr
 import com.woocommerce.android.support.help.HelpViewModel.ContactSupportEvent.ShowLoading
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Inject
 
@@ -42,7 +42,7 @@ import javax.inject.Inject
 class HelpActivity : AppCompatActivity() {
     private val viewModel: HelpViewModel by viewModels()
 
-    @Inject lateinit var accountStore: AccountStore
+    @Inject lateinit var accountRepository: AccountRepository
     @Inject lateinit var siteStore: SiteStore
     @Inject lateinit var supportHelper: SupportHelper
     @Inject lateinit var zendeskHelper: ZendeskHelper
@@ -143,7 +143,7 @@ class HelpActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun userIsLoggedIn() = accountStore.hasAccessToken()
+    private fun userIsLoggedIn() = accountRepository.isUserLoggedIn()
 
     private fun createNewZendeskTicket(ticketType: TicketType, extraTags: List<String> = emptyList()) {
         if (!AppPrefs.hasSupportEmail()) {

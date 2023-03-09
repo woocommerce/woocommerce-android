@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.TicketType
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.support.help.HelpOrigin
@@ -28,6 +29,7 @@ import javax.inject.Inject
 class SupportRequestFormViewModel @Inject constructor(
     private val zendeskHelper: ZendeskHelper,
     private val selectedSite: SelectedSite,
+    private val tracks: AnalyticsTrackerWrapper,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val viewState = savedState.getStateFlow(
@@ -44,6 +46,10 @@ class SupportRequestFormViewModel @Inject constructor(
         .map { it.isLoading }
         .distinctUntilChanged()
         .asLiveData()
+
+    fun onViewCreated() {
+        tracks.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_VIEWED)
+    }
 
     fun onHelpOptionSelected(ticketType: TicketType) {
         viewState.update { it.copy(ticketType = ticketType) }
@@ -110,8 +116,14 @@ class SupportRequestFormViewModel @Inject constructor(
     private fun Result<Request?>.handleCreateRequestResult() {
         viewState.update { it.copy(isLoading = false) }
         fold(
-            onSuccess = { triggerEvent(RequestCreationSucceeded) },
-            onFailure = { triggerEvent(RequestCreationFailed) }
+            onSuccess = {
+                triggerEvent(RequestCreationSucceeded)
+                tracks.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_CREATED)
+            },
+            onFailure = {
+                triggerEvent(RequestCreationFailed)
+                tracks.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_FAILED)
+            }
         )
     }
 

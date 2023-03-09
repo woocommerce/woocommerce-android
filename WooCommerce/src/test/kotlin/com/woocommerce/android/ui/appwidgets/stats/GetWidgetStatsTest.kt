@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.appwidgets.stats
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -15,19 +16,22 @@ import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
-import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WCStatsStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GetWidgetStatsTest : BaseUnitTest() {
 
-    private val accountStore: AccountStore = mock()
+    private val accountRepository: AccountRepository = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val statsRepository: StatsRepository = mock()
     private val networkStatus: NetworkStatus = mock()
 
     private val defaultGranularity = WCStatsStore.StatsGranularity.DAYS
-    private val defaultSiteModel = SiteModel().apply { siteId = 1 }
+    private val defaultSiteModel = SiteModel().apply {
+        siteId = 1
+        origin = SiteModel.ORIGIN_WPCOM_REST
+        setIsJetpackConnected(true)
+    }
     private val defaultError = WooError(
         type = WooErrorType.GENERIC_ERROR,
         original = BaseRequest.GenericErrorType.UNKNOWN,
@@ -44,7 +48,7 @@ class GetWidgetStatsTest : BaseUnitTest() {
     )
 
     private val sut = GetWidgetStats(
-        accountStore = accountStore,
+        accountRepository = accountRepository,
         appPrefsWrapper = appPrefsWrapper,
         statsRepository = statsRepository,
         networkStatus = networkStatus,
@@ -54,7 +58,7 @@ class GetWidgetStatsTest : BaseUnitTest() {
     @Test
     fun `when the user is NOT logged in then get stats respond with WidgetStatsAuthFailure `() = testBlocking {
         // Given the user is NOT logged in
-        whenever(accountStore.hasAccessToken()).thenReturn(false)
+        whenever(accountRepository.isUserLoggedIn()).thenReturn(false)
 
         // When GetWidgetStats is invoked
         val result = sut.invoke(defaultGranularity, defaultSiteModel)
@@ -67,7 +71,7 @@ class GetWidgetStatsTest : BaseUnitTest() {
     fun `when the v4 stats is NOT supported then get stats respond with WidgetStatsAPINotSupportedFailure `() =
         testBlocking {
             // Given the user is logged in and v4 stats is not supported
-            whenever(accountStore.hasAccessToken()).thenReturn(true)
+            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
             whenever(appPrefsWrapper.isV4StatsSupported()).thenReturn(false)
 
             // When GetWidgetStats is invoked
@@ -81,7 +85,7 @@ class GetWidgetStatsTest : BaseUnitTest() {
     fun `when there is no connection then get stats respond with WidgetStatsNetworkFailure `() =
         testBlocking {
             // Given the user is logged, v4 stats is supported and there is no connection
-            whenever(accountStore.hasAccessToken()).thenReturn(true)
+            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
             whenever(appPrefsWrapper.isV4StatsSupported()).thenReturn(true)
             whenever(networkStatus.isConnected()).thenReturn(false)
 
@@ -96,7 +100,7 @@ class GetWidgetStatsTest : BaseUnitTest() {
     fun `when we don't have information about siteModel then get stats respond with WidgetStatsFailure`() =
         testBlocking {
             // Given the user is logged, v4 stats is supported and network is working fine
-            whenever(accountStore.hasAccessToken()).thenReturn(true)
+            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
             whenever(appPrefsWrapper.isV4StatsSupported()).thenReturn(true)
             whenever(networkStatus.isConnected()).thenReturn(true)
 
@@ -112,12 +116,12 @@ class GetWidgetStatsTest : BaseUnitTest() {
     fun `when fetchStats fails then get stats respond with WidgetStatsFailure`() =
         testBlocking {
             // Given the user is logged, v4 stats is supported and network is working fine
-            whenever(accountStore.hasAccessToken()).thenReturn(true)
+            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
             whenever(appPrefsWrapper.isV4StatsSupported()).thenReturn(true)
             whenever(networkStatus.isConnected()).thenReturn(true)
 
             // Given fetching the stats fails
-            whenever(statsRepository.fetchStats(defaultGranularity, true, defaultSiteModel))
+            whenever(statsRepository.fetchStats(defaultGranularity, true, true, defaultSiteModel))
                 .thenReturn(WooResult(defaultError))
 
             // When GetWidgetStats is invoked
@@ -132,17 +136,17 @@ class GetWidgetStatsTest : BaseUnitTest() {
     fun `when fetchStats succeed then get stats respond with WidgetStatsFailure`() =
         testBlocking {
             // Given the user is logged, v4 stats is supported and network is working fine
-            whenever(accountStore.hasAccessToken()).thenReturn(true)
+            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
             whenever(appPrefsWrapper.isV4StatsSupported()).thenReturn(true)
             whenever(networkStatus.isConnected()).thenReturn(true)
 
             // Given fetching the stats succeed
-            whenever(statsRepository.fetchStats(defaultGranularity, true, defaultSiteModel))
+            whenever(statsRepository.fetchStats(defaultGranularity, true, true, defaultSiteModel))
                 .thenReturn(WooResult(defaultResponse))
 
             // When GetWidgetStats is invoked
             val result = sut.invoke(defaultGranularity, defaultSiteModel)
-            val expected = GetWidgetStats.WidgetStatsResult.WidgetStats(defaultResponse)
+            val expected = GetWidgetStats.WidgetStatsResult.WidgetStats(defaultResponse, true)
 
             // Then the result is WidgetStatsFailure
             assertThat(result).isEqualTo(expected)
