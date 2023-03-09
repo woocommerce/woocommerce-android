@@ -16,7 +16,7 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-internal abstract class ApiFakerModule {
+internal class ApiFakerModule {
     @Provides
     @Singleton
     internal fun providesDatabase(context: Context) = ApiFakerDatabase.buildDb(context)
