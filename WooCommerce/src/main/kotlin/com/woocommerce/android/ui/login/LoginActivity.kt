@@ -66,6 +66,7 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils.Height.Partial.Half
+import com.woocommerce.android.util.ChromeCustomTabUtils.Height.Partial.ThreeQuarters
 import com.woocommerce.android.util.UrlUtils
 import com.woocommerce.android.util.WooLog
 import dagger.android.AndroidInjector
@@ -753,7 +754,7 @@ class LoginActivity :
     }
 
     override fun onTermsOfServiceClicked() {
-        ChromeCustomTabUtils.launchUrl(this, urlUtils.tosUrlWithLocale, Half)
+        ChromeCustomTabUtils.launchUrl(this, urlUtils.tosUrlWithLocale, ThreeQuarters)
     }
 
     //  -- END: LoginListener implementation methods
