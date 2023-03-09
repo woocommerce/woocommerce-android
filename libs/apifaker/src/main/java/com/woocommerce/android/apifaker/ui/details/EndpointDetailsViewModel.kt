@@ -67,7 +67,7 @@ internal class EndpointDetailsViewModel @Inject constructor(
 
     fun onResponseBodyChanged(body: String) {
         withMutableSnapshot {
-            state = state.copy(response = state.response.copy(body = body))
+            state = state.copy(response = state.response.copy(body = body.ifEmpty { null }))
         }
     }
 
@@ -87,6 +87,18 @@ internal class EndpointDetailsViewModel @Inject constructor(
         }
     }
 
+    private fun defaultEndpoint() = UiState(
+        Request(
+            id = MISSING_ENDPOINT_ID,
+            type = ApiType.WPApi,
+            path = ""
+        ),
+        Response(
+            endpointId = MISSING_ENDPOINT_ID,
+            statusCode = 200
+        )
+    )
+
     data class UiState(
         val request: Request,
         val response: Response,
@@ -95,19 +107,4 @@ internal class EndpointDetailsViewModel @Inject constructor(
         val isEndpointValid: Boolean
             get() = request.path.isNotBlank()
     }
-
-    private fun defaultEndpoint() = UiState(
-        Request(
-            id = MISSING_ENDPOINT_ID,
-            type = ApiType.WPApi,
-            httpMethod = null,
-            path = "",
-            body = null
-        ),
-        Response(
-            endpointId = MISSING_ENDPOINT_ID,
-            statusCode = 200,
-            body = ""
-        )
-    )
 }

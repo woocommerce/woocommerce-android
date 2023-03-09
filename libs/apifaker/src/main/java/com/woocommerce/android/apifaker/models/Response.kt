@@ -17,5 +17,5 @@ import androidx.room.PrimaryKey
 internal data class Response(
     @PrimaryKey val endpointId: Long = 0,
     val statusCode: Int,
-    val body: String?,
+    val body: String? = null
 )
