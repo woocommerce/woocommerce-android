@@ -40,7 +40,10 @@ class TrialStatusBarFormatter @AssistedInject constructor(
                     analyticsTrackerWrapper.track(FREE_TRIAL_UPGRADE_NOW, mapOf(KEY_SOURCE to VALUE_BANNER))
                     navController.navigateSafely(
                         NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                            urlToLoad = "https://wordpress.com/plans/${selectedSite.get().siteId}"
+                            urlToLoad = "https://wordpress.com/plans/${selectedSite.get().siteId}",
+                            urlsToTriggerExit = arrayOf(
+                                "my-plan/trial-upgraded"
+                            )
                         )
                     )
                 }
