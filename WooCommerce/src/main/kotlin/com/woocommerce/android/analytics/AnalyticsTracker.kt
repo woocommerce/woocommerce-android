@@ -483,6 +483,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_STEP_PURCHASE_SUCCESS = "purchase_success"
         const val KEY_USE_DOMAIN_CREDIT = "use_domain_credit"
 
+        // -- Free Trial
+        const val VALUE_BANNER = "banner"
+
         var sendUsageStats: Boolean = true
             set(value) {
                 if (value != field) {
