@@ -11,9 +11,10 @@ import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.doOnLayout
 import androidx.core.view.updateLayoutParams
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
@@ -32,7 +33,7 @@ class ApiFakerUiHelper @Inject constructor() : ActivityLifecycleCallbacks {
     }
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-        (activity as LifecycleOwner).lifecycleScope.launch {
+        (activity as? ComponentActivity)?.lifecycleScope?.launch {
             updateApiFakerHint(WeakReference(activity))
         }
     }
@@ -50,13 +51,13 @@ class ApiFakerUiHelper @Inject constructor() : ActivityLifecycleCallbacks {
     override fun onActivityDestroyed(activity: Activity) {}
 
     private suspend fun updateApiFakerHint(
-        activityReference: WeakReference<Activity>
+        activityReference: WeakReference<ComponentActivity>
     ) {
         apiFakerConfig.enabled.collect { enabled ->
             activityReference.get()?.let { activity ->
                 if (enabled) {
                     activity.window.decorView.post {
-                        activity.window.decorView.showApiFakerHint()
+                        activity.window.decorView.showApiFakerHint(activity)
                     }
                 } else {
                     activity.window.decorView.post {
@@ -68,7 +69,7 @@ class ApiFakerUiHelper @Inject constructor() : ActivityLifecycleCallbacks {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun View.showApiFakerHint() {
+    private fun View.showApiFakerHint(activity: ComponentActivity) {
         // This works only for activities that has the content view as a direct child of the FrameLayout, which is true
         // for all AppCompat activities, so it should work for all the cases we need.
         val contentLayout = findViewById<View>(android.R.id.content) as? FrameLayout ?: return
@@ -83,6 +84,18 @@ class ApiFakerUiHelper @Inject constructor() : ActivityLifecycleCallbacks {
                     textAlignment = View.TEXT_ALIGNMENT_CENTER
                 }
             )
+            setOnClickListener {
+                AlertDialog.Builder(context)
+                    .setTitle("ApiFaker")
+                    .setMessage("ApiFaker is enabled. Do you want to disable it?")
+                    .setPositiveButton("Yes") { _, _ ->
+                        activity.lifecycleScope.launch {
+                            apiFakerConfig.setStatus(false)
+                        }
+                    }
+                    .setNegativeButton("No") { _, _ -> }
+                    .show()
+            }
         }
         contentLayout.addView(
             apiFakerHint,
