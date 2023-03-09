@@ -1944,8 +1944,10 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             assertThat(
                 (viewModel.viewStateData.value as StripeAcountError.StripeAccountPendingRequirementsState).hintLabel
-            ).isEqualTo(UiString.UiStringRes(
-                R.string.card_reader_onboarding_account_pending_requirements_without_date_hint)
+            ).isEqualTo(
+                UiString.UiStringRes(
+                    R.string.card_reader_onboarding_account_pending_requirements_without_date_hint
+                )
             )
         }
 
