@@ -27,7 +27,7 @@ class SitePlanRepository @Inject constructor(
                 is WPComGsonRequestBuilder.Response.Success -> {
                     val freeTrialPlan: SitePlanRestClient.SitePlanDto? = result.data[FREE_TRIAL_PLAN_ID.toInt()]
 
-                    if (freeTrialPlan == null) {
+                    if (freeTrialPlan == null || freeTrialPlan.expirationDate.isNullOrBlank()) {
                         NotTrial
                     } else {
                         ExpiryAt(LocalDate.parse(freeTrialPlan.expirationDate, ISO_OFFSET_DATE_TIME))
