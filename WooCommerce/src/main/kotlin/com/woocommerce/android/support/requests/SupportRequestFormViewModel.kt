@@ -6,7 +6,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.TicketType
 import com.woocommerce.android.support.ZendeskException.IdentityNotSetException
@@ -74,7 +73,7 @@ class SupportRequestFormViewModel @Inject constructor(
     ) {
         zendeskSettings.supportEmail = selectedEmail
         zendeskSettings.supportName = selectedName
-        AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
+        tracks.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
         submitSupportRequest(context = context, helpOrigin = helpOrigin, extraTags = extraTags)
     }
 
