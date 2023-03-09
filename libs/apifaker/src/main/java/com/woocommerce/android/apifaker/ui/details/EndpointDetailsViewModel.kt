@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.apifaker.db.EndpointDao
 import com.woocommerce.android.apifaker.models.ApiType
 import com.woocommerce.android.apifaker.models.HttpMethod
+import com.woocommerce.android.apifaker.models.QueryParameter
 import com.woocommerce.android.apifaker.models.Request
 import com.woocommerce.android.apifaker.models.Response
 import com.woocommerce.android.apifaker.ui.Screen
@@ -24,7 +25,7 @@ internal class EndpointDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val endpointDao: EndpointDao
 ) : ViewModel() {
-    private val id = savedStateHandle.get<Long>(Screen.EndpointDetails.endpointIdArgumentName)!!
+    private val id = checkNotNull(savedStateHandle.get<Long>(Screen.EndpointDetails.endpointIdArgumentName))
 
     var state: UiState by mutableStateOf(defaultEndpoint())
         private set
@@ -50,6 +51,24 @@ internal class EndpointDetailsViewModel @Inject constructor(
     fun onRequestPathChanged(path: String) {
         withMutableSnapshot {
             state = state.copy(request = state.request.copy(path = path))
+        }
+    }
+
+    fun onQueryParameterAdded(name: String, value: String) {
+        val queryParameter = QueryParameter(name, value)
+        withMutableSnapshot {
+            state = state.copy(
+                request = state.request.copy(
+                    queryParameters = state.request.queryParameters + queryParameter
+                )
+            )
+        }
+    }
+
+    fun onQueryParameterDeleted(queryParameter: QueryParameter) {
+        withMutableSnapshot {
+            state =
+                state.copy(request = state.request.copy(queryParameters = state.request.queryParameters - queryParameter))
         }
     }
 

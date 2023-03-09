@@ -4,12 +4,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Chip
 import androidx.compose.material.ChipDefaults
@@ -19,15 +24,17 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,6 +55,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.woocommerce.android.apifaker.models.ApiType
 import com.woocommerce.android.apifaker.models.HttpMethod
+import com.woocommerce.android.apifaker.models.QueryParameter
 import com.woocommerce.android.apifaker.models.Request
 import com.woocommerce.android.apifaker.models.Response
 import com.woocommerce.android.apifaker.ui.DropDownMenu
@@ -69,6 +77,8 @@ internal fun EndpointDetailsScreen(
         onApiTypeChanged = viewModel::onApiTypeChanged,
         onRequestHttpMethodChanged = viewModel::onRequestHttpMethodChanged,
         onRequestPathChanged = viewModel::onRequestPathChanged,
+        onQueryParameterAdded = viewModel::onQueryParameterAdded,
+        onQueryParameterDeleted = viewModel::onQueryParameterDeleted,
         onRequestBodyChanged = viewModel::onRequestBodyChanged,
         onResponseStatusCodeChanged = viewModel::onResponseStatusCodeChanged,
         onResponseBodyChanged = viewModel::onResponseBodyChanged,
@@ -83,6 +93,8 @@ private fun EndpointDetailsScreen(
     onApiTypeChanged: (ApiType) -> Unit = {},
     onRequestHttpMethodChanged: (HttpMethod?) -> Unit = {},
     onRequestPathChanged: (String) -> Unit = {},
+    onQueryParameterAdded: (String, String) -> Unit = { _, _ -> },
+    onQueryParameterDeleted: (QueryParameter) -> Unit = {},
     onRequestBodyChanged: (String) -> Unit = {},
     onResponseStatusCodeChanged: (Int) -> Unit = {},
     onResponseBodyChanged: (String) -> Unit = {},
@@ -126,6 +138,8 @@ private fun EndpointDetailsScreen(
                 onApiTypeChanged = onApiTypeChanged,
                 onHttpMethodChanged = onRequestHttpMethodChanged,
                 onPathChanged = onRequestPathChanged,
+                onQueryParameterAdded = onQueryParameterAdded,
+                onQueryParameterDeleted = onQueryParameterDeleted,
                 onBodyChanged = onRequestBodyChanged,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -154,6 +168,8 @@ private fun EndpointDefinitionSection(
     onApiTypeChanged: (ApiType) -> Unit,
     onHttpMethodChanged: (HttpMethod?) -> Unit,
     onPathChanged: (String) -> Unit,
+    onQueryParameterAdded: (String, String) -> Unit,
+    onQueryParameterDeleted: (QueryParameter) -> Unit,
     onBodyChanged: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -181,6 +197,13 @@ private fun EndpointDefinitionSection(
             path = request.path,
             apiType = request.type,
             onPathChanged = onPathChanged,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        QueryParametersField(
+            queryParameters = request.queryParameters,
+            onQueryParameterAdded = onQueryParameterAdded,
+            onQueryParameterDeleted = onQueryParameterDeleted,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -300,7 +323,122 @@ private fun PathField(
         }
         Text(
             text = caption,
-            style = MaterialTheme.typography.caption
+            style = MaterialTheme.typography.caption,
+            color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+        )
+    }
+}
+
+@Composable
+private fun QueryParametersField(
+    queryParameters: List<QueryParameter>,
+    onQueryParameterAdded: (String, String) -> Unit,
+    onQueryParameterDeleted: (QueryParameter) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    @Composable
+    fun AddDialog(onAdd: (String, String) -> Unit, onDismiss: () -> Unit) {
+        var name by remember { mutableStateOf("") }
+        var value by remember { mutableStateOf("") }
+        Dialog(onDismissRequest = onDismiss) {
+            Column(
+                Modifier
+                    .background(MaterialTheme.colors.surface, MaterialTheme.shapes.medium)
+                    .padding(16.dp)
+            ) {
+                Text(text = "Add Query Parameter (unencoded)")
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    label = { Text(text = "Name") },
+                    value = name,
+                    onValueChange = { name = it },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    label = { Text(text = "Value") },
+                    value = value,
+                    onValueChange = { value = it },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Button(onClick = onDismiss) {
+                        Text(text = "Cancel")
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(onClick = { onAdd(name, value) }) {
+                        Text(text = "Add")
+                    }
+                }
+
+            }
+        }
+    }
+
+    var isAddDialogShown by remember { mutableStateOf(false) }
+
+    Column(modifier) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "Query Parameters",
+                style = MaterialTheme.typography.subtitle1
+            )
+            IconButton(
+                onClick = { isAddDialogShown = true },
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add query parameter"
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "A request is matched only if it contains all the parameters listed here",
+            style = MaterialTheme.typography.caption,
+            color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+        )
+        if (queryParameters.isNotEmpty()) {
+            queryParameters.forEach { queryParameter ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = "${queryParameter.name} = ${queryParameter.value}",
+                        style = MaterialTheme.typography.caption
+                    )
+                    IconButton(
+                        onClick = { onQueryParameterDeleted(queryParameter) },
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete query parameter"
+                        )
+                    }
+                }
+                Divider()
+            }
+        }
+    }
+
+    if (isAddDialogShown) {
+        AddDialog(onAdd = { name, value ->
+            onQueryParameterAdded(name, value)
+            isAddDialogShown = false
+        },
+            onDismiss = { isAddDialogShown = false }
         )
     }
 }
@@ -331,7 +469,8 @@ private fun RequestBodyField(
         }
         Text(
             text = caption,
-            style = MaterialTheme.typography.caption
+            style = MaterialTheme.typography.caption,
+            color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
         )
     }
 }
@@ -471,6 +610,10 @@ private fun EndpointDetailsScreenPreview() {
                 request = Request(
                     type = ApiType.Custom("https://example.com"),
                     httpMethod = HttpMethod.GET,
+                    queryParameters = listOf(
+                        QueryParameter("name", "value"),
+                        QueryParameter("name2", "value2")
+                    ),
                     path = "/wc/v3/products",
                     body = null
                 ),
