@@ -379,6 +379,10 @@ dependencies {
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
 
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.8'
+
+    // OpenAI, as recommended in https://platform.openai.com/docs/libraries/community-libraries
+    implementation "com.aallam.openai:openai-client:3.0.0"
+    implementation "io.ktor:ktor-client-android:2.2.1"
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
