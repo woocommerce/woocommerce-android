@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.TicketType
+import com.woocommerce.android.support.ZendeskException.IdentityNotSetException
 import com.woocommerce.android.support.ZendeskManager
 import com.woocommerce.android.support.ZendeskSettings
 import com.woocommerce.android.support.help.HelpOrigin
@@ -122,11 +123,20 @@ class SupportRequestFormViewModel @Inject constructor(
                 triggerEvent(RequestCreationSucceeded)
                 tracks.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_CREATED)
             },
-            onFailure = {
-                triggerEvent(RequestCreationFailed)
-                tracks.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_FAILED)
-            }
+            onFailure = ::handleRequestCreationFailure
         )
+    }
+
+    private fun handleRequestCreationFailure(error: Throwable) {
+        tracks.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_FAILED)
+        when (error) {
+            is IdentityNotSetException -> {
+                handleEmptyCredentials()
+            }
+            else -> {
+                triggerEvent(RequestCreationFailed)
+            }
+        }
     }
 
     object RequestCreationSucceeded : Event()
