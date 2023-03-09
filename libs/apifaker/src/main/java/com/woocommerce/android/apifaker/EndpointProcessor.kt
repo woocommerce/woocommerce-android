@@ -83,7 +83,8 @@ internal class EndpointProcessor @Inject constructor(
         if (queryParameters.isEmpty()) return true
 
         return queryParameters.all { queryParameter ->
-            queryParameter(queryParameter.name) == queryParameter.value
+            val regex = Regex(queryParameter.value.replace("%", ".*"))
+            queryParameter(queryParameter.name)?.matches(regex) == true
         }
     }
 

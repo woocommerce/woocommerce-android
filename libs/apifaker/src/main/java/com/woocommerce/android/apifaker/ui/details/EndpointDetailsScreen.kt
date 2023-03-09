@@ -319,7 +319,7 @@ private fun PathField(
             withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                 append(" % ")
             }
-            append("as a wildcard for one or more characters")
+            append("as a wildcard for zero or more characters")
         }
         Text(
             text = caption,
@@ -359,6 +359,11 @@ private fun QueryParametersField(
                     value = value,
                     onValueChange = { value = it },
                     modifier = Modifier.fillMaxWidth()
+                )
+                Text(
+                    text = "The value field accepts the wildcard % for zero or more characters",
+                    style = MaterialTheme.typography.caption,
+                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
@@ -400,12 +405,12 @@ private fun QueryParametersField(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = "A request is matched only if it contains all the parameters listed here",
             style = MaterialTheme.typography.caption,
             color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
         )
+        Spacer(modifier = Modifier.height(8.dp))
         if (queryParameters.isNotEmpty()) {
             queryParameters.forEach { queryParameter ->
                 Row(
@@ -465,7 +470,7 @@ private fun RequestBodyField(
             withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                 append(" % ")
             }
-            append("as a wildcard for one or more characters")
+            append("as a wildcard for zero or more characters")
         }
         Text(
             text = caption,
