@@ -203,6 +203,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
 
         sut = SupportRequestFormViewModel(
             zendeskManager = zendeskManager,
+            zendeskSettings = mock(),
             selectedSite = selectedSite,
             tracks = tracks,
             savedState = savedState
