@@ -65,6 +65,7 @@ import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFrag
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.ChromeCustomTabUtils.Height.Partial.Half
 import com.woocommerce.android.util.UrlUtils
 import com.woocommerce.android.util.WooLog
 import dagger.android.AndroidInjector
@@ -224,6 +225,12 @@ class LoginActivity :
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+        ChromeCustomTabUtils.connect(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        ChromeCustomTabUtils.disconnect(this)
     }
 
     override fun onDestroy() {
@@ -746,7 +753,7 @@ class LoginActivity :
     }
 
     override fun onTermsOfServiceClicked() {
-        ChromeCustomTabUtils.launchUrl(this, urlUtils.tosUrlWithLocale)
+        ChromeCustomTabUtils.launchUrl(this, urlUtils.tosUrlWithLocale, Half)
     }
 
     //  -- END: LoginListener implementation methods

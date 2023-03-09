@@ -1,4 +1,9 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+12.8
+-----
+- [*] [Internal] Adds partial height chrome tab in a few places. [https://github.com/woocommerce/woocommerce-android/pull/8502]
+
+
 12.7
 -----
 
