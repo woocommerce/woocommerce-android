@@ -93,6 +93,12 @@ class UnifiedOrderScreen : Screen(ORDER_CREATION) {
         return this
     }
 
+    fun addProductTap(): OrderSelectProductScreen {
+        waitForElementToBeDisplayed(PRODUCTS_SECTION)
+        Espresso.onView(withText(R.string.order_creation_add_products)).perform(click())
+        return OrderSelectProductScreen()
+    }
+
     fun assertNewOrderScreen(): UnifiedOrderScreen {
         Espresso.onView(withId(TOOLBAR))
             .check(matches(hasDescendant(withText(R.string.order_creation_fragment_title))))
