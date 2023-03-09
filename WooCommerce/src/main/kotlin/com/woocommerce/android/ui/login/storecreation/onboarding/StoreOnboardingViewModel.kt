@@ -14,6 +14,8 @@ import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboarding
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.WC_PAYMENTS
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T.ONBOARDING
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -81,11 +83,11 @@ class StoreOnboardingViewModel @Inject constructor(
 
     fun onTaskClicked(task: OnboardingTaskUi) {
         when (task.taskUiResources) {
-            AboutYourStoreTaskRes -> TODO()
-            AddProductTaskRes -> TODO()
-            CustomizeDomainTaskRes -> TODO()
+            AboutYourStoreTaskRes -> WooLog.d(ONBOARDING, "TODO")
+            AddProductTaskRes -> WooLog.d(ONBOARDING, "TODO")
+            CustomizeDomainTaskRes -> WooLog.d(ONBOARDING, "TODO")
             LaunchStoreTaskRes -> triggerEvent(NavigateToLaunchStore)
-            SetupPaymentsTaskRes -> TODO()
+            SetupPaymentsTaskRes -> WooLog.d(ONBOARDING, "TODO")
         }
     }
 
