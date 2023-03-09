@@ -65,7 +65,6 @@ import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFrag
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.ChromeCustomTabUtils.Height.Partial.Half
 import com.woocommerce.android.util.ChromeCustomTabUtils.Height.Partial.ThreeQuarters
 import com.woocommerce.android.util.UrlUtils
 import com.woocommerce.android.util.WooLog
