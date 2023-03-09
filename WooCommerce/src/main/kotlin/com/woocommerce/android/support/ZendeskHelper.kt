@@ -184,7 +184,7 @@ class ZendeskHelper(
      * This function will enable push notifications for Zendesk. Both a Zendesk identity and a valid push
      * notification device token is required. If either doesn't exist, the request will simply be ignored.
      */
-    fun enablePushNotifications() {
+    private fun enablePushNotifications() {
         require(isZendeskEnabled) {
             zendeskNeedsToBeEnabledError
         }
