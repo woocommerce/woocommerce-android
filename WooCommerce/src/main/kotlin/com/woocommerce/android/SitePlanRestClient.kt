@@ -50,6 +50,6 @@ class SitePlanRestClient @Inject constructor(
     }
 
     data class SitePlanDto(
-        @SerializedName("expiry") val expirationDate: String?
+        @SerializedName("user_facing_expiry") val expirationDate: String?
     )
 }
