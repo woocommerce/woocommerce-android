@@ -7,12 +7,12 @@ import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.PackageUtils
 import com.zendesk.logger.Logger
-import javax.inject.Inject
 import org.wordpress.android.fluxc.store.AccountStore
 import zendesk.core.AnonymousIdentity
 import zendesk.core.Identity
 import zendesk.core.Zendesk
 import zendesk.support.Support
+import javax.inject.Inject
 
 class ZendeskSettings @Inject constructor(
     private val supportHelper: SupportHelper,

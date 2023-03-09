@@ -22,7 +22,7 @@ class SupportModule {
         supportHelper: SupportHelper,
         accountStore: AccountStore,
         selectedSite: SelectedSite
-    ) : ZendeskSettings = ZendeskSettings(supportHelper, accountStore, selectedSite)
+    ): ZendeskSettings = ZendeskSettings(supportHelper, accountStore, selectedSite)
 
     @Singleton
     @Provides

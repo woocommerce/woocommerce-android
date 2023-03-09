@@ -31,8 +31,6 @@ import zendesk.support.Request
 import zendesk.support.Support
 import java.util.Locale
 
-private const val maxLogfileLength: Int = 63000 // Max characters allowed in the system status report field
-
 class ZendeskManager(
     private val zendeskSettings: ZendeskSettings,
     private val siteStore: SiteStore,
@@ -123,7 +121,7 @@ class ZendeskManager(
             CustomField(TicketFieldIds.appVersion, PackageUtils.getVersionName(context)),
             CustomField(TicketFieldIds.deviceFreeSpace, DeviceUtils.getTotalAvailableMemorySize()),
             CustomField(TicketFieldIds.networkInformation, getNetworkInformation(context)),
-            CustomField(TicketFieldIds.logs, WooLog.toString().takeLast(maxLogfileLength)),
+            CustomField(TicketFieldIds.logs, WooLog.toString().takeLast(ZendeskConstants.maxLogfileLength)),
             CustomField(TicketFieldIds.ssr, ssr),
             CustomField(TicketFieldIds.currentSite, currentSiteInformation),
             CustomField(TicketFieldIds.sourcePlatform, ZendeskConstants.sourcePlatform),
@@ -279,6 +277,8 @@ private object ZendeskConstants {
     const val sourcePlatform = "Mobile_-_Woo_Android"
     const val wpComTag = "wpcom"
     const val unknownValue = "unknown"
+
+    const val maxLogfileLength: Int = 63000 // Max characters allowed in the system status report field
 }
 
 private object TicketFieldIds {
