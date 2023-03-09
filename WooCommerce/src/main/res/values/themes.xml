@@ -144,8 +144,6 @@
     <style name="Woo.Dialog.ButtonBar">
         <item name="android:paddingStart">@dimen/minor_100</item>
         <item name="android:paddingEnd">@dimen/minor_100</item>
-        <item name="android:paddingTop">@dimen/minor_50</item>
-        <item name="android:paddingBottom">@dimen/minor_50</item>
     </style>
 
     <style name="Theme.Woo.NumberPicker" parent="Theme.Woo.DayNight">

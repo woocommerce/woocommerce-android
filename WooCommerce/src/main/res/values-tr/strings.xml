@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-02-22 17:54:04+0000
+Translation-Revision-Date: 2023-03-01 17:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="domains_purchase_successful_settings_notice">Alan adı ayarlarını Ayarlar &gt; Alan Adları\'nda bulabilirsiniz.</string>
+    <string name="domains_purchase_successful_delay_notice">Site adresiniz oluşturuluyor. Alan adınızın çalışmaya başlaması 30 dakika kadar sürebilir.</string>
+    <string name="domains_purchase_successful_heading">Satın aldığınız için tebrikler</string>
+    <string name="domains_free_with_credits">İlk yıl ücretsiz</string>
     <string name="settings_confirm_logout_site_credentials">Hesabınızla açılan oturumu kapatmak istediğinizden emin misiniz?</string>
-    <string name="domains_error_title">Site alan adları yüklenemiyor </string>
+    <string name="domains_generic_error_title">Site alan adları yüklenemiyor </string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d tamamlandı</string>
     <string name="store_onboarding_task_change_domain_description">Mağazanızı depolamak için özel bir URL\'ye sahip olun.</string>
     <string name="store_onboarding_task_change_domain_title">Alan adınızı özelleştirin</string>

@@ -60,20 +60,6 @@
                 app:optionValue="@string/support_contact_detail"/>
 
             <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-                android:id="@+id/contactPaymentsContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:optionTitle="@string/support_contact_payments"
-                app:optionValue="@string/support_contact_payments_detail"/>
-
-            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-                android:id="@+id/myTicketsContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:optionTitle="@string/support_my_tickets"
-                app:optionValue="@string/support_my_tickets_detail"/>
-
-            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
                 android:id="@+id/identityContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

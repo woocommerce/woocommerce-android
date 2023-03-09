@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login.storecreation
 import android.annotation.SuppressLint
 import android.os.Parcelable
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.PLAN_PURCHASE_FAILED
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_ADDRESS_ALREADY_EXISTS
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_CREATION_FAILED
@@ -31,7 +32,7 @@ import org.wordpress.android.fluxc.store.SiteStore.NewSitePayload
 import org.wordpress.android.fluxc.store.SiteStore.OnNewSiteCreated
 import org.wordpress.android.fluxc.store.SiteStore.SiteFilter.WPCOM
 import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility
-import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility.PUBLIC
+import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility.PRIVATE
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.login.util.SiteUtils
 import org.wordpress.android.util.UrlUtils
@@ -43,14 +44,16 @@ class StoreCreationRepository @Inject constructor(
     private val siteStore: SiteStore,
     private val shoppingCartStore: ShoppingCartStore,
     private val dispatcher: Dispatcher,
-    private val plansStore: PlansStore
+    private val plansStore: PlansStore,
+    private val userEligibilityFetcher: UserEligibilityFetcher
 ) {
     fun selectSite(site: SiteModel) {
         selectedSite.set(site)
     }
 
-    fun selectSite(siteId: Long) {
+    suspend fun selectSite(siteId: Long) {
         siteStore.getSiteBySiteId(siteId)?.let {
+            userEligibilityFetcher.fetchUserInfo(it) // prefetch user info so it's available when the store is loaded
             selectedSite.set(it)
         }
     }
@@ -142,7 +145,7 @@ class StoreCreationRepository @Inject constructor(
         siteData: SiteCreationData,
         languageWordPressId: String,
         timeZoneId: String,
-        siteVisibility: SiteVisibility = PUBLIC,
+        siteVisibility: SiteVisibility = PRIVATE,
         dryRun: Boolean = false
     ): StoreCreationResult<Long> {
         fun isWordPressComSubDomain(url: String) = url.endsWith(".wordpress.com")

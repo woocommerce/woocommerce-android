@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.categories.selector.ProductCategorySelectorFragment
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
@@ -78,7 +79,7 @@ class CouponRestrictionsFragment : BaseFragment(), BackPressListener {
         handleResult<String>(EmailRestrictionFragment.ALLOWED_EMAILS) {
             viewModel.onAllowedEmailsUpdated(it)
         }
-        handleResult<Set<Long>>(ProductSelectorFragment.PRODUCT_SELECTOR_RESULT) {
+        handleResult<Set<ProductSelectorViewModel.SelectedItem>>(ProductSelectorFragment.PRODUCT_SELECTOR_RESULT) {
             viewModel.onExcludedProductChanged(it)
         }
         handleResult<Set<Long>>(ProductCategorySelectorFragment.PRODUCT_CATEGORY_SELECTOR_RESULT) {

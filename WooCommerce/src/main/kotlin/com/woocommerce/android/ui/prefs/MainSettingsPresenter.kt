@@ -1,12 +1,9 @@
 package com.woocommerce.android.ui.prefs
 
-import com.woocommerce.android.model.UserRole
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
-import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.filter
@@ -22,12 +19,10 @@ class MainSettingsPresenter @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val featureAnnouncementRepository: FeatureAnnouncementRepository,
     private val buildConfigWrapper: BuildConfigWrapper,
-    userEligibilityFetcher: UserEligibilityFetcher
 ) : MainSettingsContract.Presenter {
     private var appSettingsFragmentView: MainSettingsContract.View? = null
 
     private var jetpackMonitoringJob: Job? = null
-    private val isUserAdmin = userEligibilityFetcher.getUser()?.roles?.contains(UserRole.Administrator) ?: false
 
     override fun takeView(view: MainSettingsContract.View) {
         appSettingsFragmentView = view
@@ -82,5 +77,5 @@ class MainSettingsPresenter @Inject constructor(
     }
 
     override val isDomainOptionVisible: Boolean
-        get() = selectedSite.get().isWPComAtomic && isUserAdmin && FeatureFlag.DOMAIN_CHANGE.isEnabled()
+        get() = selectedSite.get().isWPComAtomic
 }

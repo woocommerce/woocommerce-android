@@ -32,9 +32,14 @@ object AppUrls {
     const val CROWDSIGNAL_SHIPPING_LABELS_SURVEY =
         "https://automattic.survey.fm/woo-app-feature-feedback-shipping-labels"
 
+    const val CROWDSIGNAL_ANALYTICS_HUB_SURVEY = "https://automattic.survey.fm/woo-app-analytics-hub-testing"
+
     const val ORDER_CREATION_SURVEY = "https://automattic.survey.fm/woo-app-order-creation-production"
 
     const val ADDONS_SURVEY = "https://automattic.survey.fm/woo-app-addons-production"
+
+    const val CROWDSIGNAL_STORE_SETUP_SURVEY =
+        "https://automattic.survey.fm/woo-mobile-%E2%80%93-store-setup-survey-2022"
 
     // Will be used later when the feature is fully launched.
     const val COUPONS_SURVEY = "https://automattic.survey.fm/woo-app-coupon-management-production"

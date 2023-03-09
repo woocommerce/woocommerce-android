@@ -103,7 +103,8 @@ object AppPrefs {
         NEW_SIGN_UP,
         STORE_CREATION_SOURCE,
         UPDATE_SIMULATED_READER_OPTION,
-        ENABLE_SIMULATED_INTERAC
+        ENABLE_SIMULATED_INTERAC,
+        CUSTOM_DOMAINS_SOURCE,
     }
 
     /**
@@ -895,6 +896,12 @@ object AppPrefs {
     }
 
     fun getStoreCreationSource() = getString(DeletablePrefKey.STORE_CREATION_SOURCE, AnalyticsTracker.VALUE_OTHER)
+
+    fun setCustomDomainsSource(source: String) {
+        setString(DeletablePrefKey.CUSTOM_DOMAINS_SOURCE, source)
+    }
+
+    fun getCustomDomainsSource() = getString(DeletablePrefKey.CUSTOM_DOMAINS_SOURCE, AnalyticsTracker.VALUE_SETTINGS)
 
     private fun getActiveStatsGranularityFilterKey(currentSiteId: Int) =
         PrefKeyString("${DeletablePrefKey.ACTIVE_STATS_GRANULARITY}:$currentSiteId")

@@ -1,2 +1,0 @@
-12.4 :
-Vous nous l’avez demandé, nous l’avons fait ! Il est désormais possible d’utiliser l’application sans l’extension Jetpack. Nous nous sommes fondés sur les avis que nous avons recueillis directement auprès de vous au cours de ces dernières années. Nous sommes donc certains que cela va vous plaire !

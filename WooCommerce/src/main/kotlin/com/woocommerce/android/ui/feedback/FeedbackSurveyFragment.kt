@@ -15,13 +15,18 @@ import com.woocommerce.android.analytics.AnalyticsEvent.SURVEY_SCREEN
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FEEDBACK_ACTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FEEDBACK_CONTEXT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ANALYTICS_HUB_FEEDBACK
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_COUPONS_FEEDBACK
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_CANCELED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_GENERAL_CONTEXT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_OPENED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_PRODUCT_M3_CONTEXT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_STORE_SETUP_CONTEXT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCT_ADDONS_FEEDBACK
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SHIPPING_LABELS_M4_FEEDBACK
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_FEEDBACK
 import com.woocommerce.android.databinding.FragmentFeedbackSurveyBinding
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.ui.feedback.SurveyType.MAIN
 import com.woocommerce.android.widgets.CustomProgressDialog
 
 class FeedbackSurveyFragment : androidx.fragment.app.Fragment(R.layout.fragment_feedback_survey) {
@@ -36,8 +41,16 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment(R.layout.fragment_
     private val surveyWebViewClient = SurveyWebViewClient()
     private val arguments: FeedbackSurveyFragmentArgs by navArgs()
     private val feedbackContext by lazy {
-        if (arguments.surveyType == MAIN) VALUE_FEEDBACK_GENERAL_CONTEXT
-        else VALUE_FEEDBACK_PRODUCT_M3_CONTEXT
+        when (arguments.surveyType) {
+            SurveyType.MAIN -> VALUE_FEEDBACK_GENERAL_CONTEXT
+            SurveyType.PRODUCT -> VALUE_FEEDBACK_PRODUCT_M3_CONTEXT
+            SurveyType.STORE_ONBOARDING -> VALUE_FEEDBACK_STORE_SETUP_CONTEXT
+            SurveyType.ORDER_CREATION -> VALUE_SIMPLE_PAYMENTS_FEEDBACK
+            SurveyType.SHIPPING_LABELS -> VALUE_SHIPPING_LABELS_M4_FEEDBACK
+            SurveyType.COUPONS -> VALUE_COUPONS_FEEDBACK
+            SurveyType.ADDONS -> VALUE_PRODUCT_ADDONS_FEEDBACK
+            SurveyType.ANALYTICS_HUB -> VALUE_ANALYTICS_HUB_FEEDBACK
+        }
     }
 
     private var _binding: FragmentFeedbackSurveyBinding? = null

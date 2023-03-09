@@ -25,15 +25,17 @@ import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.support.TicketType
 import com.woocommerce.android.support.WooLogViewerActivity
 import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.support.help.HelpViewModel.ContactSupportEvent
+import com.woocommerce.android.support.help.HelpViewModel.ContactSupportEvent.CreateTicket
+import com.woocommerce.android.support.help.HelpViewModel.ContactSupportEvent.ShowLoading
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PackageUtils
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Inject
 
@@ -41,7 +43,7 @@ import javax.inject.Inject
 class HelpActivity : AppCompatActivity() {
     private val viewModel: HelpViewModel by viewModels()
 
-    @Inject lateinit var accountStore: AccountStore
+    @Inject lateinit var accountRepository: AccountRepository
     @Inject lateinit var siteStore: SiteStore
     @Inject lateinit var supportHelper: SupportHelper
     @Inject lateinit var zendeskHelper: ZendeskHelper
@@ -68,14 +70,8 @@ class HelpActivity : AppCompatActivity() {
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        if (FeatureFlag.NEW_SUPPORT_REQUESTS.isEnabled()) {
-            binding.contactContainer.setOnClickListener { openSupportRequestForm() }
-        } else {
-            binding.contactContainer.setOnClickListener { viewModel.contactSupport(TicketType.General) }
-        }
-
-        binding.identityContainer.setOnClickListener { showIdentityDialog(TicketType.General) }
-        binding.myTicketsContainer.setOnClickListener { showZendeskTickets() }
+        binding.contactContainer.setOnClickListener { viewModel.contactSupport(TicketType.MobileApp) }
+        binding.identityContainer.setOnClickListener { showIdentityDialog(TicketType.MobileApp) }
         binding.faqContainer.setOnClickListener {
             val loginFlow = intent.extras?.getString(LOGIN_FLOW_KEY)
             val loginStep = intent.extras?.getString(LOGIN_STEP_KEY)
@@ -92,30 +88,14 @@ class HelpActivity : AppCompatActivity() {
             binding.ssrContainer.setOnClickListener { showSSR() }
         }
 
-        with(binding.contactPaymentsContainer) {
-            setOnClickListener {
-                viewModel.contactSupport(TicketType.Payments)
-            }
-        }
-
         binding.textVersion.text = getString(R.string.version_with_name_param, PackageUtils.getVersionName(this))
-
-        /**
-         * If the user taps on a Zendesk notification, we want to show them the `My Tickets` page. However, this
-         * should only be triggered when the activity is first created, otherwise if the user comes back from
-         * `My Tickets` and rotates the screen (or triggers the activity re-creation in any other way) it'll navigate
-         * them to `My Tickets` again since the `originFromExtras` will still be [Origin.ZENDESK_NOTIFICATION].
-         */
-        if (savedInstanceState == null && originFromExtras == HelpOrigin.ZENDESK_NOTIFICATION) {
-            showZendeskTickets()
-        }
 
         if (originFromExtras == HelpOrigin.LOGIN_HELP_NOTIFICATION) {
             loginNotificationScheduler.onNotificationTapped(extraTagsFromExtras?.first())
         }
 
         if (originFromExtras == HelpOrigin.SITE_PICKER_JETPACK_TIMEOUT) {
-            viewModel.contactSupport(TicketType.General)
+            viewModel.contactSupport(TicketType.MobileApp)
         }
 
         initObservers(binding)
@@ -124,13 +104,13 @@ class HelpActivity : AppCompatActivity() {
     private fun initObservers(binding: ActivityHelpBinding) {
         viewModel.event.observe(this) { event ->
             when (event) {
-                is HelpViewModel.ContactSupportEvent -> {
+                is ContactSupportEvent -> {
                     when (event) {
-                        is HelpViewModel.ContactSupportEvent.CreateTicket -> {
+                        is CreateTicket -> {
                             binding.helpLoading.visibility = View.GONE
                             createNewZendeskTicket(event.ticketType, extraTags = event.supportTags)
                         }
-                        HelpViewModel.ContactSupportEvent.ShowLoading -> {
+                        is ShowLoading -> {
                             binding.helpLoading.visibility = View.VISIBLE
                         }
                     }.exhaustive
@@ -164,7 +144,7 @@ class HelpActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun userIsLoggedIn() = accountStore.hasAccessToken()
+    private fun userIsLoggedIn() = accountRepository.isUserLoggedIn()
 
     private fun createNewZendeskTicket(ticketType: TicketType, extraTags: List<String> = emptyList()) {
         if (!AppPrefs.hasSupportEmail()) {
@@ -172,14 +152,8 @@ class HelpActivity : AppCompatActivity() {
             return
         }
 
-        zendeskHelper.createNewTicket(
-            context = this,
-            origin = originFromExtras,
-            selectedSite = selectedSiteOrNull(),
-            extraTags = extraTags + extraTagsFromExtras.orEmpty(),
-            ticketType = ticketType,
-            ssr = viewModel.ssr
-        )
+        val tags = extraTags + (extraTagsFromExtras ?: emptyList())
+        openSupportRequestForm(tags)
     }
 
     private fun showIdentityDialog(
@@ -191,10 +165,10 @@ class HelpActivity : AppCompatActivity() {
             AppPrefs.getSupportEmail()
         } else {
             supportHelper
-                .getSupportEmailAndNameSuggestion(accountStore.account, selectedSiteOrNull()).first
+                .getSupportEmailAndNameSuggestion(accountRepository.getUserAccount(), selectedSiteOrNull()).first
         }
 
-        supportHelper.showSupportIdentityInputDialog(this, emailSuggestion, isNameInputHidden = true) { email, _ ->
+        supportHelper.showSupportIdentityInputDialog(this, emailSuggestion) { email, _ ->
             zendeskHelper.setSupportEmail(email)
             AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
             if (createNewTicket) createNewZendeskTicket(ticketType, extraTags)
@@ -218,11 +192,6 @@ class HelpActivity : AppCompatActivity() {
         } else {
             null
         }
-    }
-
-    private fun showZendeskTickets() {
-        AnalyticsTracker.track(AnalyticsEvent.SUPPORT_TICKETS_VIEWED)
-        zendeskHelper.showAllTickets(this, originFromExtras, selectedSiteOrNull(), extraTagsFromExtras)
     }
 
     private fun showLoginHelpCenter(origin: HelpOrigin, loginFlow: String, loginStep: String) {
@@ -258,8 +227,14 @@ class HelpActivity : AppCompatActivity() {
         startActivity(Intent(this, SSRActivity::class.java))
     }
 
-    private fun openSupportRequestForm() {
-        startActivity(Intent(this, SupportRequestFormActivity::class.java))
+    private fun openSupportRequestForm(extraTags: List<String>) {
+        startActivity(
+            SupportRequestFormActivity.createIntent(
+                this,
+                originFromExtras,
+                ArrayList(extraTags)
+            )
+        )
     }
 
     companion object {

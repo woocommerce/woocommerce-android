@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login.sitecredentials
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -61,6 +62,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     private val loginAnalyticsListener: LoginAnalyticsListener = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
+    private val appPrefs: AppPrefsWrapper = mock()
 
     private lateinit var viewModel: LoginSiteCredentialsViewModel
 
@@ -79,7 +81,8 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             loginAnalyticsListener = loginAnalyticsListener,
             resourceProvider = resourceProvider,
             applicationPasswordsNotifier = applicationPasswordsNotifier,
-            analyticsTracker = analyticsTracker
+            analyticsTracker = analyticsTracker,
+            appPrefs = appPrefs
         )
     }
 

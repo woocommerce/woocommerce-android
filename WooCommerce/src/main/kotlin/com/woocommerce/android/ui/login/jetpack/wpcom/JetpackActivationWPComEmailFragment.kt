@@ -4,11 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -50,16 +50,37 @@ class JetpackActivationWPComEmailFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowPasswordScreen -> {
-                    // TODO
-                    Toast.makeText(requireContext(), "$event", Toast.LENGTH_SHORT).show()
+                    navigateToPasswordScreen(event)
                 }
+
                 is ShowMagicLinkScreen -> {
-                    // TODO
-                    Toast.makeText(requireContext(), "$event", Toast.LENGTH_SHORT).show()
+                    navigateToMagicLinkScreen(event)
                 }
+
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 Exit -> findNavController().navigateUp()
             }
         }
+    }
+
+    private fun navigateToPasswordScreen(event: ShowPasswordScreen) {
+        findNavController().navigateSafely(
+            JetpackActivationWPComEmailFragmentDirections
+                .actionJetpackActivationWPComEmailFragmentToJetpackActivationWPComPasswordFragment(
+                    jetpackStatus = event.jetpackStatus,
+                    emailOrUsername = event.emailOrUsername
+                )
+        )
+    }
+
+    private fun navigateToMagicLinkScreen(event: ShowMagicLinkScreen) {
+        findNavController().navigateSafely(
+            JetpackActivationWPComEmailFragmentDirections
+                .actionJetpackActivationWPComEmailFragmentToJetpackActivationMagicLinkRequestFragment(
+                    emailOrUsername = event.emailOrUsername,
+                    jetpackStatus = event.jetpackStatus,
+                    isAccountPasswordless = true
+                )
+        )
     }
 }

@@ -39,6 +39,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingCollapsed
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -225,7 +226,10 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         storeOnboardingViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is StoreOnboardingViewModel.NavigateToOnboardingFullScreen -> openOnboardingInFullScreen()
-                is StoreOnboardingViewModel.NavigateToSurvey -> mainNavigationRouter?.showFeedbackSurvey()
+                is StoreOnboardingViewModel.NavigateToSurvey ->
+                    NavGraphMainDirections.actionGlobalFeedbackSurveyFragment(SurveyType.STORE_ONBOARDING).apply {
+                        findNavController().navigateSafely(this)
+                    }
                 is StoreOnboardingViewModel.NavigateToLaunchStore ->
                     findNavController().navigateSafely(
                         directions = MyStoreFragmentDirections.actionMyStoreToLaunchStoreFragment()

@@ -9,13 +9,21 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType
+import com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryViewModel.StartTryPaymentFlow
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class TapToPaySummaryFragment : BaseFragment() {
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
+
     private val viewModel: TapToPaySummaryViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
@@ -41,6 +49,17 @@ class TapToPaySummaryFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is Exit -> findNavController().navigateUp()
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is StartTryPaymentFlow -> {
+                    findNavController().navigate(
+                        TapToPaySummaryFragmentDirections
+                            .actionTapToPaySummaryFragmentToSimplePaymentFragment(
+                                event.order,
+                                PaymentType.TRY_TAP_TO_PAY,
+                            )
+                    )
+                }
+                else -> event.isHandled = false
             }
         }
     }
