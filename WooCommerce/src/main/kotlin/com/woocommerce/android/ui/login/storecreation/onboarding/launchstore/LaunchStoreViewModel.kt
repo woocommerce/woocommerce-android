@@ -26,7 +26,7 @@ class LaunchStoreViewModel @Inject constructor(
         const val PLANS_URL = "https://wordpress.com/plans/"
     }
 
-    val _viewState = MutableStateFlow(
+    private val _viewState = MutableStateFlow(
         LaunchStoreState(
             isTrialPlan = selectedSite.get().isCurrentPlanEcommerceTrial,
             isStoreLaunched = false,
@@ -43,7 +43,6 @@ class LaunchStoreViewModel @Inject constructor(
             when {
                 result.isFailure -> TODO()
                 result.isSuccess -> _viewState.value = _viewState.value.copy(isStoreLaunched = true)
-
             }
         }
         _viewState.value = _viewState.value.copy(isLoading = true)

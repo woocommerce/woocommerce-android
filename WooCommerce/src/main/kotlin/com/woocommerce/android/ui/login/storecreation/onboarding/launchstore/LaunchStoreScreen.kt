@@ -46,7 +46,9 @@ fun LaunchStoreScreen(viewModel: LaunchStoreViewModel) {
     viewModel.viewState.observeAsState().value?.let { state ->
         Scaffold(topBar = {
             Toolbar(
-                title = if (!state.isStoreLaunched) stringResource(id = R.string.store_onboarding_launch_preview_title) else "",
+                title = if (!state.isStoreLaunched)
+                    stringResource(id = R.string.store_onboarding_launch_preview_title)
+                else "",
                 onNavigationButtonClick = viewModel::onBackPressed,
             )
         }) { padding ->
@@ -179,7 +181,8 @@ fun LaunchStoreScreen(
                         end = dimensionResource(id = R.dimen.major_100),
                         bottom = dimensionResource(id = R.dimen.major_100)
                     ),
-                onClick = {}) {
+                onClick = {}
+            ) {
                 Text(text = stringResource(id = R.string.store_onboarding_launch_store_back_to_store_button))
             }
         }

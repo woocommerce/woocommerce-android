@@ -52,8 +52,11 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WcTag
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.*
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.AboutYourStoreTaskRes
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.Companion.NUMBER_ITEMS_IN_COLLAPSED_MODE
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.LaunchStoreTaskRes
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.OnboardingState
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.OnboardingTaskUi
 
 @Composable
 fun StoreOnboardingScreen(viewModel: StoreOnboardingViewModel) {

@@ -29,8 +29,9 @@ class StoreOnboardingRepository @Inject constructor(
                     ?.toMutableList()
                     ?: emptyList<OnboardingTask>().toMutableList()
 
-                if (selectedSite.get().isCurrentPlanEcommerceTrial
-                    && !mobileSupportedTasks.any { it.type == LAUNCH_YOUR_STORE }
+                if (
+                    selectedSite.get().isCurrentPlanEcommerceTrial &&
+                    !mobileSupportedTasks.any { it.type == LAUNCH_YOUR_STORE }
                 ) {
                     mobileSupportedTasks.add(
                         OnboardingTask(
