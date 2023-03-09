@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.analytics
 
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.DeltaPercentage.NotExist
@@ -76,6 +79,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     private val savedState = AnalyticsHubFragmentArgs(targetGranularity = TODAY).initSavedStateHandle()
     private val transactionLauncher = mock<AnalyticsHubTransactionLauncher>()
     private val feedbackRepository: FeedbackRepository = mock()
+    private val tracker: AnalyticsTrackerWrapper = mock()
 
     private lateinit var localeProvider: LocaleProvider
     private lateinit var testLocale: Locale
@@ -504,6 +508,19 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given a date range selected, then has expected visitors values`() = testBlocking {
+        configureSuccessfulStatsResponse()
+        updateStats.stub {
+            onBlocking { sessionState } doReturn flow { emit(SessionState.Available(defaultSessionStat)) }
+        }
+
+        sut = givenAViewModel()
+        sut.onNewRangeSelection(WEEK_TO_DATE)
+
+        assert(sut.viewState.value.sessionState)
+    }
+
+    @Test
     fun `when the analytics feedback is on state UNANSWERED then show the feedback banner`() = testBlocking {
         whenever(feedbackRepository.getFeatureFeedback(FeatureFeedbackSettings.Feature.ANALYTICS_HUB))
             .thenReturn(FeatureFeedbackSettings.FeedbackState.UNANSWERED)
@@ -558,16 +575,33 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given a date range selected, then has expected visitors values`() = testBlocking {
-        configureSuccessfulStatsResponse()
-        updateStats.stub {
-            onBlocking { sessionState } doReturn flow { emit(SessionState.Available(defaultSessionStat)) }
-        }
-
+    fun `when send feedback is pressed then send feedback event is tracked`() = testBlocking {
         sut = givenAViewModel()
-        sut.onNewRangeSelection(WEEK_TO_DATE)
 
-        assert(sut.viewState.value.sessionState)
+        sut.onSendFeedbackClicked()
+
+        verify(tracker).track(
+            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_ANALYTICS_HUB_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
+            )
+        )
+    }
+
+    @Test
+    fun `when dismiss feedback is pressed then dismiss feedback event is tracked`() = testBlocking {
+        sut = givenAViewModel()
+
+        sut.onDismissBannerClicked()
+
+        verify(tracker).track(
+            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_ANALYTICS_HUB_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
+            )
+        )
     }
 
     private fun givenAResourceProvider(): ResourceProvider = mock {
@@ -584,6 +618,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             updateStats,
             localeProvider,
             feedbackRepository,
+            tracker,
             savedState
         )
     }
