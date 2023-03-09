@@ -59,11 +59,11 @@ class StoreOnboardingViewModel @Inject constructor(
 
     private fun mapToOnboardingTaskState(task: OnboardingTask) =
         when (task.type) {
-            ABOUT_YOUR_STORE -> OnboardingTaskUi(AboutYourStoreTask, isCompleted = task.isComplete)
-            ADD_FIRST_PRODUCT -> OnboardingTaskUi(AddProductTask, isCompleted = task.isComplete)
-            LAUNCH_YOUR_STORE -> OnboardingTaskUi(LaunchStoreTask, isCompleted = task.isComplete)
-            CUSTOMIZE_DOMAIN -> OnboardingTaskUi(CustomizeDomainTask, isCompleted = task.isComplete)
-            WC_PAYMENTS -> OnboardingTaskUi(SetupPaymentsTask, isCompleted = task.isComplete)
+            ABOUT_YOUR_STORE -> OnboardingTaskUi(AboutYourStoreTaskRes, isCompleted = task.isComplete)
+            ADD_FIRST_PRODUCT -> OnboardingTaskUi(AddProductTaskRes, isCompleted = task.isComplete)
+            LAUNCH_YOUR_STORE -> OnboardingTaskUi(LaunchStoreTaskRes, isCompleted = task.isComplete)
+            CUSTOMIZE_DOMAIN -> OnboardingTaskUi(CustomizeDomainTaskRes, isCompleted = task.isComplete)
+            WC_PAYMENTS -> OnboardingTaskUi(SetupPaymentsTaskRes, isCompleted = task.isComplete)
             MOBILE_UNSUPPORTED -> error("Unknown task type is not allowed in UI layer")
         }
 
@@ -81,11 +81,11 @@ class StoreOnboardingViewModel @Inject constructor(
 
     fun onTaskClicked(task: OnboardingTaskUi) {
         when (task.taskUiResources) {
-            AboutYourStoreTask -> TODO()
-            AddProductTask -> TODO()
-            CustomizeDomainTask -> TODO()
-            LaunchStoreTask -> triggerEvent(NavigateToLaunchStore)
-            SetupPaymentsTask -> TODO()
+            AboutYourStoreTaskRes -> TODO()
+            AddProductTaskRes -> TODO()
+            CustomizeDomainTaskRes -> TODO()
+            LaunchStoreTaskRes -> triggerEvent(NavigateToLaunchStore)
+            SetupPaymentsTaskRes -> TODO()
         }
     }
 
@@ -109,31 +109,31 @@ class StoreOnboardingViewModel @Inject constructor(
         @StringRes val description: Int
     ) : Parcelable
 
-    object AboutYourStoreTask : OnboardingTaskUiResources(
+    object AboutYourStoreTaskRes : OnboardingTaskUiResources(
         icon = R.drawable.ic_onboarding_about_your_store,
         title = R.string.store_onboarding_task_about_your_store_title,
         description = R.string.store_onboarding_task_about_your_store_description
     )
 
-    object AddProductTask : OnboardingTaskUiResources(
+    object AddProductTaskRes : OnboardingTaskUiResources(
         icon = R.drawable.ic_onboarding_add_product,
         title = R.string.store_onboarding_task_add_product_title,
         description = R.string.store_onboarding_task_add_product_description
     )
 
-    object LaunchStoreTask : OnboardingTaskUiResources(
+    object LaunchStoreTaskRes : OnboardingTaskUiResources(
         icon = R.drawable.ic_onboarding_launch_store,
         title = R.string.store_onboarding_task_launch_store_title,
         description = R.string.store_onboarding_task_launch_store_description
     )
 
-    object CustomizeDomainTask : OnboardingTaskUiResources(
+    object CustomizeDomainTaskRes : OnboardingTaskUiResources(
         icon = R.drawable.ic_onboarding_customize_domain,
         title = R.string.store_onboarding_task_change_domain_title,
         description = R.string.store_onboarding_task_change_domain_description
     )
 
-    object SetupPaymentsTask : OnboardingTaskUiResources(
+    object SetupPaymentsTaskRes : OnboardingTaskUiResources(
         icon = R.drawable.ic_onboarding_payments_setup,
         title = R.string.store_onboarding_task_payments_setup_title,
         description = R.string.store_onboarding_task_payments_setup_description

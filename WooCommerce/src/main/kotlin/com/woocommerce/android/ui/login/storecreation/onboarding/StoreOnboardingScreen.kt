@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.WcTag
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.*
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.Companion.NUMBER_ITEMS_IN_COLLAPSED_MODE
 
@@ -190,50 +191,66 @@ fun OnboardingTaskList(
 ) {
     Column(modifier) {
         tasks.forEachIndexed { index, task ->
-            Row(
-                modifier = when {
-                    !task.isCompleted -> Modifier.clickable { onTaskClicked(task) }
-                    else -> Modifier
-                }.padding(dimensionResource(id = R.dimen.major_100)),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
-            ) {
-                Image(
-                    modifier = Modifier.fillMaxHeight(),
-                    painter = painterResource(
-                        id = if (task.isCompleted)
-                            R.drawable.ic_onboarding_task_completed
-                        else task.taskUiResources.icon
-                    ),
-                    contentDescription = "",
-                    colorFilter =
-                    if (!task.isCompleted)
-                        ColorFilter.tint(color = colorResource(id = R.color.color_icon))
-                    else null
-                )
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = stringResource(id = task.taskUiResources.title),
-                        style = MaterialTheme.typography.subtitle1,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        modifier = Modifier.padding(top = dimensionResource(id = R.dimen.minor_75)),
-                        text = stringResource(id = task.taskUiResources.description),
-                        style = MaterialTheme.typography.body1,
-                    )
-                }
-                Image(
-                    painter = painterResource(R.drawable.ic_arrow_right),
-                    contentDescription = ""
-                )
-            }
+            TaskItem(task, onTaskClicked)
             if (index < tasks.size - 1)
                 Divider(
                     color = colorResource(id = R.color.divider_color),
                     thickness = dimensionResource(id = R.dimen.minor_10)
                 )
         }
+    }
+}
+
+@Composable
+private fun TaskItem(
+    task: OnboardingTaskUi,
+    onTaskClicked: (OnboardingTaskUi) -> Unit
+) {
+    Row(
+        modifier = when {
+            !task.isCompleted -> Modifier.clickable { onTaskClicked(task) }
+            else -> Modifier
+        }.padding(dimensionResource(id = R.dimen.major_100)),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
+    ) {
+        Image(
+            modifier = Modifier.fillMaxHeight(),
+            painter = painterResource(
+                id = if (task.isCompleted)
+                    R.drawable.ic_onboarding_task_completed
+                else task.taskUiResources.icon
+            ),
+            contentDescription = "",
+            colorFilter =
+            if (!task.isCompleted)
+                ColorFilter.tint(color = colorResource(id = R.color.color_icon))
+            else null
+        )
+        Column(modifier = Modifier.weight(1f)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = stringResource(id = task.taskUiResources.title),
+                    style = MaterialTheme.typography.subtitle1,
+                    fontWeight = FontWeight.Bold
+                )
+                if (!task.isCompleted && task.taskUiResources is LaunchStoreTaskRes) {
+                    WcTag(
+                        text = stringResource(id = R.string.store_onboarding_launch_store_task_private_tag).uppercase(),
+                        modifier = Modifier.padding(start = dimensionResource(id = R.dimen.minor_100))
+                    )
+                }
+            }
+            Text(
+                modifier = Modifier.padding(top = dimensionResource(id = R.dimen.minor_75)),
+                text = stringResource(id = task.taskUiResources.description),
+                style = MaterialTheme.typography.body1,
+            )
+        }
+        Image(
+            painter = painterResource(R.drawable.ic_arrow_right),
+            contentDescription = ""
+        )
     }
 }
 
@@ -326,15 +343,15 @@ private fun OnboardingPreview() {
             title = R.string.store_onboarding_title,
             tasks = listOf(
                 OnboardingTaskUi(
-                    taskUiResources = AboutYourStoreTask,
+                    taskUiResources = AboutYourStoreTaskRes,
                     isCompleted = false,
                 ),
                 OnboardingTaskUi(
-                    taskUiResources = AboutYourStoreTask,
+                    taskUiResources = AboutYourStoreTaskRes,
                     isCompleted = true,
                 ),
                 OnboardingTaskUi(
-                    taskUiResources = AboutYourStoreTask,
+                    taskUiResources = AboutYourStoreTaskRes,
                     isCompleted = false,
                 )
             )
