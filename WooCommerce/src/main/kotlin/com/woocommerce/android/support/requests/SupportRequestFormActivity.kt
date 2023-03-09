@@ -138,12 +138,13 @@ class SupportRequestFormActivity : AppCompatActivity() {
     }
 
     private fun showSupportIdentityInputDialog(emailSuggestion: String) {
-        supportHelper.showSupportIdentityInputDialog(this, emailSuggestion) { email, _ ->
+        supportHelper.showSupportIdentityInputDialog(this, emailSuggestion) { email, name ->
             viewModel.onUserIdentitySet(
                 context = this,
                 helpOrigin = helpOrigin,
                 extraTags = extraTags,
-                selectedEmail = email
+                selectedEmail = email,
+                selectedName = name
             )
         }
         AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_FORM_VIEWED)

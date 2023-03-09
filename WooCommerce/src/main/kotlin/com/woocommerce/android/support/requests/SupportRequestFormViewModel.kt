@@ -69,9 +69,11 @@ class SupportRequestFormViewModel @Inject constructor(
         context: Context,
         helpOrigin: HelpOrigin,
         extraTags: List<String>,
-        selectedEmail: String
+        selectedEmail: String,
+        selectedName: String
     ) {
         zendeskSettings.supportEmail = selectedEmail
+        zendeskSettings.supportName = selectedName
         AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
         submitSupportRequest(context = context, helpOrigin = helpOrigin, extraTags = extraTags)
     }
