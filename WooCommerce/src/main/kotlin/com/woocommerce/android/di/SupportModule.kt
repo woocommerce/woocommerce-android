@@ -1,8 +1,8 @@
 package com.woocommerce.android.di
 
 import com.woocommerce.android.support.SupportHelper
-import com.woocommerce.android.support.ZendeskManager
-import com.woocommerce.android.support.ZendeskSettings
+import com.woocommerce.android.support.zendesk.ZendeskManager
+import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import dagger.Module

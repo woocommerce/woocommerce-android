@@ -23,9 +23,9 @@ import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.support.SSRActivity
 import com.woocommerce.android.support.SupportHelper
-import com.woocommerce.android.support.TicketType
+import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.support.WooLogViewerActivity
-import com.woocommerce.android.support.ZendeskSettings
+import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.support.help.HelpViewModel.ContactSupportEvent
 import com.woocommerce.android.support.help.HelpViewModel.ContactSupportEvent.CreateTicket
 import com.woocommerce.android.support.help.HelpViewModel.ContactSupportEvent.ShowLoading

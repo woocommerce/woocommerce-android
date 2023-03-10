@@ -1,7 +1,7 @@
 package com.woocommerce.android.support.help
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.support.TicketType
+import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi

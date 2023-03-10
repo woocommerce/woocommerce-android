@@ -1,4 +1,4 @@
-package com.woocommerce.android.support
+package com.woocommerce.android.support.zendesk
 
 import android.content.Context
 import android.net.ConnectivityManager
@@ -7,10 +7,10 @@ import android.telephony.TelephonyManager
 import android.text.TextUtils
 import com.woocommerce.android.extensions.logInformation
 import com.woocommerce.android.extensions.stateLogInformation
-import com.woocommerce.android.support.RequestConstants.requestCreationIdentityNotSetErrorMessage
-import com.woocommerce.android.support.RequestConstants.requestCreationTimeoutErrorMessage
-import com.woocommerce.android.support.ZendeskException.IdentityNotSetException
-import com.woocommerce.android.support.ZendeskException.RequestCreationTimeoutException
+import com.woocommerce.android.support.zendesk.RequestConstants.requestCreationIdentityNotSetErrorMessage
+import com.woocommerce.android.support.zendesk.RequestConstants.requestCreationTimeoutErrorMessage
+import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetException
+import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationTimeoutException
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.PackageUtils

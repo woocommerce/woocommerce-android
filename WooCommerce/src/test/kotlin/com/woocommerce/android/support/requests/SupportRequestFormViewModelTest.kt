@@ -3,10 +3,10 @@ package com.woocommerce.android.support.requests
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.support.TicketType
-import com.woocommerce.android.support.ZendeskException.IdentityNotSetException
-import com.woocommerce.android.support.ZendeskManager
-import com.woocommerce.android.support.ZendeskSettings
+import com.woocommerce.android.support.zendesk.TicketType
+import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetException
+import com.woocommerce.android.support.zendesk.ZendeskManager
+import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationFailed
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationSucceeded
