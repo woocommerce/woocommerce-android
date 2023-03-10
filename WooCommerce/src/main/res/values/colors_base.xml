@@ -55,12 +55,12 @@
         Icon-related resources that use the secondary color should be assigned
         this resource.
     -->
-    <color name="color_icon_secondary">@color/color_secondary_selector</color>
+    <color name="color_icon_primary">@color/color_primary_selector</color>
 
     <!--
         Toolbar and bottom bar icons should be assigned this resource.
     -->
-    <color name="color_icon_menu">@color/color_secondary</color>
+    <color name="color_icon_menu">?colorPrimary</color>
 
     <!--
         Toolbar icons for login menus
