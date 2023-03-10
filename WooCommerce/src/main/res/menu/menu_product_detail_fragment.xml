@@ -43,6 +43,11 @@
         app:showAsAction="withText" />
 
     <item
+        android:id="@+id/menu_ai_product_generate_tweet"
+        android:title="@string/ai_product_details_generate_tweet"
+        app:showAsAction="withText"/>
+
+    <item
         android:id="@+id/menu_trash_product"
         android:title="@string/product_trash"
         android:visible="false"

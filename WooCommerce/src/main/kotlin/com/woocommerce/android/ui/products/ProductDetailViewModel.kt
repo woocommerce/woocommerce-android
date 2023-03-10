@@ -2211,6 +2211,10 @@ class ProductDetailViewModel @Inject constructor(
         )
     }
 
+    fun onAiProductGenerateTweetButtonClicked() {
+        TODO("Not yet implemented")
+    }
+
     /**
      * Sealed class that handles the back navigation for the product detail screens while providing a common
      * interface for managing them as a single type. Currently used in all the product sub detail screens when

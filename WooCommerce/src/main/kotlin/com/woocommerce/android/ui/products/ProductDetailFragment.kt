@@ -456,6 +456,10 @@ class ProductDetailFragment :
                 viewModel.onDuplicateProduct()
                 true
             }
+            R.id.menu_ai_product_generate_tweet -> {
+                viewModel.onAiProductGenerateTweetButtonClicked()
+                true
+            }
             R.id.menu_trash_product -> {
                 viewModel.onTrashButtonClicked()
                 true
