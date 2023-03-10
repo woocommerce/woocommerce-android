@@ -3142,6 +3142,7 @@
     <string name="store_onboarding_launch_preview_title">Preview</string>
     <string name="store_onboarding_launched_title">Your store is live!</string>
     <string name="store_onboarding_launch_store_task_private_tag">Private</string>
+    <string name="store_onboarding_share_url_error">Unable to share store url</string>
 
     <!--
     Support Request

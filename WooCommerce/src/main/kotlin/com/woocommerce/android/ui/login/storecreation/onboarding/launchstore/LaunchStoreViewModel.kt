@@ -63,6 +63,10 @@ class LaunchStoreViewModel @Inject constructor(
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
+    fun shareStoreUrl() {
+        triggerEvent(ShareStoreUrl(selectedSite.get().url))
+    }
+
     private fun SiteModel.getAbsoluteUrl(): String = runCatching { URL(url).host }.getOrDefault("")
 
     data class LaunchStoreState(
@@ -73,6 +77,6 @@ class LaunchStoreViewModel @Inject constructor(
         val displayUrl: String
     )
 
-    sealed class LaunchStoreEvent : MultiLiveEvent.Event()
     data class UpgradeToEcommercePlan(val url: String) : MultiLiveEvent.Event()
+    data class ShareStoreUrl(val url: String) : MultiLiveEvent.Event()
 }

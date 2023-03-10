@@ -59,6 +59,7 @@ fun LaunchStoreScreen(viewModel: LaunchStoreViewModel) {
                 authenticator = viewModel.wpComWebViewAuthenticator,
                 onLaunchStoreClicked = viewModel::launchStore,
                 onBannerClicked = viewModel::onUpgradePlanBannerClicked,
+                onShareStoreUrl = viewModel::shareStoreUrl,
                 onBackToStoreClicked = viewModel::onBackPressed,
                 modifier = Modifier
                     .fillMaxSize()
@@ -76,6 +77,7 @@ fun LaunchStoreScreen(
     authenticator: WPComWebViewAuthenticator,
     onLaunchStoreClicked: () -> Unit,
     onBannerClicked: () -> Unit,
+    onShareStoreUrl: () -> Unit,
     onBackToStoreClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -156,52 +158,62 @@ fun LaunchStoreScreen(
                 )
             }
         }
-        Divider(
-            color = colorResource(id = R.color.divider_color),
-            thickness = dimensionResource(id = R.dimen.minor_10)
-        )
-        if (!state.isStoreLaunched) {
-            WCColoredButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(dimensionResource(id = R.dimen.major_100)),
-                onClick = onLaunchStoreClicked,
-                enabled = !state.isTrialPlan
-            ) {
-                if (state.isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(size = dimensionResource(id = R.dimen.major_150)),
-                        color = colorResource(id = R.color.color_on_primary_surface),
-                    )
-                } else {
-                    Text(text = stringResource(id = R.string.store_onboarding_launch_store_button))
-                }
+        ActionsFooter(state, onLaunchStoreClicked, onShareStoreUrl, onBackToStoreClicked)
+    }
+}
+
+@Composable
+private fun ActionsFooter(
+    state: LaunchStoreState,
+    onLaunchStoreClicked: () -> Unit,
+    onShareStoreUrl: () -> Unit,
+    onBackToStoreClicked: () -> Unit
+) {
+    Divider(
+        color = colorResource(id = R.color.divider_color),
+        thickness = dimensionResource(id = R.dimen.minor_10)
+    )
+    if (!state.isStoreLaunched) {
+        WCColoredButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(id = R.dimen.major_100)),
+            onClick = onLaunchStoreClicked,
+            enabled = !state.isTrialPlan
+        ) {
+            if (state.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(size = dimensionResource(id = R.dimen.major_150)),
+                    color = colorResource(id = R.color.color_on_primary_surface),
+                )
+            } else {
+                Text(text = stringResource(id = R.string.store_onboarding_launch_store_button))
             }
-        } else {
-            WCColoredButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        top = dimensionResource(id = R.dimen.minor_100),
-                        start = dimensionResource(id = R.dimen.major_100),
-                        end = dimensionResource(id = R.dimen.major_100),
-                    ),
-                onClick = { },
-            ) {
-                Text(text = stringResource(id = R.string.store_onboarding_launch_store_share_url_button))
-            }
-            WCOutlinedButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        start = dimensionResource(id = R.dimen.major_100),
-                        end = dimensionResource(id = R.dimen.major_100),
-                        bottom = dimensionResource(id = R.dimen.major_100)
-                    ),
-                onClick = { onBackToStoreClicked() }
-            ) {
-                Text(text = stringResource(id = R.string.store_onboarding_launch_store_back_to_store_button))
-            }
+        }
+    } else {
+        WCColoredButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    top = dimensionResource(id = R.dimen.minor_100),
+                    start = dimensionResource(id = R.dimen.major_100),
+                    end = dimensionResource(id = R.dimen.major_100),
+                ),
+            onClick = onShareStoreUrl,
+        ) {
+            Text(text = stringResource(id = R.string.store_onboarding_launch_store_share_url_button))
+        }
+        WCOutlinedButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = dimensionResource(id = R.dimen.major_100),
+                    end = dimensionResource(id = R.dimen.major_100),
+                    bottom = dimensionResource(id = R.dimen.major_100)
+                ),
+            onClick = onBackToStoreClicked
+        ) {
+            Text(text = stringResource(id = R.string.store_onboarding_launch_store_back_to_store_button))
         }
     }
 }
