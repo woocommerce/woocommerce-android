@@ -8,7 +8,6 @@ import com.woocommerce.android.push.NotificationTestUtils.TEST_ORDER_NOTE_FULL_D
 import com.woocommerce.android.push.NotificationTestUtils.TEST_ORDER_NOTE_FULL_DATA_SITE_2
 import com.woocommerce.android.push.NotificationTestUtils.TEST_REVIEW_NOTE_FULL_DATA_2
 import com.woocommerce.android.push.NotificationTestUtils.TEST_REVIEW_NOTE_FULL_DATA_SITE_2
-import com.woocommerce.android.support.ZendeskManager
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.Base64Decoder
 import com.woocommerce.android.util.NotificationsParser
@@ -44,10 +43,6 @@ import org.wordpress.android.fluxc.store.WCLeaderboardsStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListPayload
 
 class NotificationMessageHandlerTest {
-    companion object {
-        val SITE_MODEL = SiteModel()
-    }
-
     private lateinit var notificationMessageHandler: NotificationMessageHandler
 
     private val accountModel = AccountModel().apply { userId = 12345 }
@@ -58,7 +53,6 @@ class NotificationMessageHandlerTest {
         on { getSiteBySiteId(any()) } doReturn SiteModel()
     }
     private val dispatcher: Dispatcher = mock()
-    private val zendeskManager: ZendeskManager = mock()
     private val actionCaptor: KArgumentCaptor<Action<*>> = argumentCaptor()
     private val wooLogWrapper: WooLogWrapper = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
@@ -103,7 +97,6 @@ class NotificationMessageHandlerTest {
             resourceProvider = resourceProvider,
             notificationBuilder = notificationBuilder,
             analyticsTracker = notificationAnalyticsTracker,
-            zendeskManager = zendeskManager,
             notificationsParser = notificationsParser,
             selectedSite = selectedSite,
             topPerformersStore = topPerformersStore,
@@ -279,16 +272,6 @@ class NotificationMessageHandlerTest {
             channelId = eq(resourceProvider.getString(NotificationChannelType.OTHER.getChannelId())),
             notification = eq(zendeskNote)
         )
-    }
-
-    @Test
-    fun `when zendesk notification is received, then refresh zendesk UI`() {
-        val dummyRequestId = "dummy"
-        val notificationPayload = mapOf("type" to "zendesk", "zendesk_sdk_request_id" to dummyRequestId)
-
-        notificationMessageHandler.onNewMessageReceived(notificationPayload, mock())
-
-        verify(zendeskManager).refreshRequest(any(), eq(dummyRequestId))
     }
 
     @Test
