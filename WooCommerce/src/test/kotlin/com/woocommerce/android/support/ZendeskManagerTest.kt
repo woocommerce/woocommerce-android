@@ -3,6 +3,7 @@ package com.woocommerce.android.support
 import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetException
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.zendesk.TicketType
+import com.woocommerce.android.support.zendesk.ZendeskEnvironmentDataSource
 import com.woocommerce.android.support.zendesk.ZendeskManager
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -27,6 +28,7 @@ import zendesk.support.Request
 internal class ZendeskManagerTest : BaseUnitTest() {
     private lateinit var sut: ZendeskManager
     private lateinit var zendeskSettings: ZendeskSettings
+    private lateinit var envDataSource: ZendeskEnvironmentDataSource
     private lateinit var siteStore: SiteStore
     private val captor = argumentCaptor<ZendeskCallback<Request>>()
 
@@ -38,6 +40,7 @@ internal class ZendeskManagerTest : BaseUnitTest() {
         siteStore = mock {
             on { sites } doReturn emptyList()
         }
+        envDataSource = mockEnvDataSource()
         createSUT()
     }
 
@@ -97,8 +100,19 @@ internal class ZendeskManagerTest : BaseUnitTest() {
     private fun createSUT() {
         sut = ZendeskManager(
             zendeskSettings = zendeskSettings,
+            envDataSource = envDataSource,
             siteStore = siteStore,
             dispatchers = coroutinesTestRule.testDispatchers
         )
+    }
+
+    private fun mockEnvDataSource() = mock<ZendeskEnvironmentDataSource> {
+        on { totalAvailableMemorySize } doReturn "100"
+        on { deviceLanguage } doReturn "testLanguage"
+        on { deviceLogs } doReturn "logs"
+        on { generateVersionName(any()) } doReturn "version"
+        on { generateNetworkInformation(any()) } doReturn "networkInfo"
+        on { generateCombinedLogInformationOfSites(any()) } doReturn "sitesInfo"
+        on { generateHostData(any()) } doReturn "hostInfo"
     }
 }
