@@ -1,6 +1,7 @@
 package com.woocommerce.android.di
 
 import com.woocommerce.android.support.SupportHelper
+import com.woocommerce.android.support.zendesk.ZendeskDeviceDataSource
 import com.woocommerce.android.support.zendesk.ZendeskManager
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
@@ -28,9 +29,10 @@ class SupportModule {
     @Provides
     fun provideZendeskManager(
         zendeskSettings: ZendeskSettings,
+        deviceDataSource: ZendeskDeviceDataSource,
         siteStore: SiteStore,
         dispatchers: CoroutineDispatchers
-    ): ZendeskManager = ZendeskManager(zendeskSettings, siteStore, dispatchers)
+    ): ZendeskManager = ZendeskManager(zendeskSettings, deviceDataSource, siteStore, dispatchers)
 
     @Singleton
     @Provides

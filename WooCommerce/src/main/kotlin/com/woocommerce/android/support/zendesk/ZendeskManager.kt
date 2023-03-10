@@ -13,8 +13,6 @@ import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetEx
 import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationTimeoutException
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.PackageUtils
-import com.woocommerce.android.util.WooLog
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
 import kotlinx.coroutines.channels.awaitClose
@@ -25,7 +23,6 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
-import org.wordpress.android.util.DeviceUtils
 import org.wordpress.android.util.NetworkUtils
 import org.wordpress.android.util.StringUtils
 import org.wordpress.android.util.UrlUtils
@@ -36,6 +33,7 @@ import java.util.Locale
 
 class ZendeskManager(
     private val zendeskSettings: ZendeskSettings,
+    private val deviceDataSource: ZendeskDeviceDataSource,
     private val siteStore: SiteStore,
     private val dispatchers: CoroutineDispatchers
 ) {
@@ -89,14 +87,6 @@ class ZendeskManager(
         awaitClose()
     }.flowOn(dispatchers.io)
 
-    private fun getHomeURLOrHostName(site: SiteModel): String {
-        var homeURL = UrlUtils.removeScheme(site.url)
-        homeURL = StringUtils.removeTrailingSlash(homeURL)
-        return if (TextUtils.isEmpty(homeURL)) {
-            UrlUtils.getHost(site.xmlRpcUrl)
-        } else homeURL
-    }
-
     /**
      * This is a helper function which builds a list of `CustomField`s which will be used during ticket creation. They
      * will be used to fill the custom fields we have setup in Zendesk UI for Happiness Engineers.
@@ -108,34 +98,19 @@ class ZendeskManager(
         selectedSite: SiteModel?,
         ssr: String? = null
     ): List<CustomField> {
-        val currentSiteInformation = if (selectedSite != null) {
-            "${getHomeURLOrHostName(selectedSite)} (${selectedSite.stateLogInformation})"
-        } else {
-            "not_selected"
-        }
         return listOf(
-            CustomField(TicketFieldIds.appVersion, PackageUtils.getVersionName(context)),
-            CustomField(TicketFieldIds.deviceFreeSpace, DeviceUtils.getTotalAvailableMemorySize()),
-            CustomField(TicketFieldIds.networkInformation, getNetworkInformation(context)),
-            CustomField(TicketFieldIds.logs, WooLog.toString().takeLast(ZendeskConstants.maxLogfileLength)),
+            CustomField(TicketFieldIds.appVersion, deviceDataSource.generateVersionName(context)),
+            CustomField(TicketFieldIds.deviceFreeSpace, deviceDataSource.totalAvailableMemorySize),
+            CustomField(TicketFieldIds.networkInformation, deviceDataSource.generateNetworkInformation(context)),
+            CustomField(TicketFieldIds.logs, deviceDataSource.deviceLogs),
             CustomField(TicketFieldIds.ssr, ssr),
-            CustomField(TicketFieldIds.currentSite, currentSiteInformation),
+            CustomField(TicketFieldIds.currentSite, generateHostData(selectedSite)),
             CustomField(TicketFieldIds.sourcePlatform, ZendeskConstants.sourcePlatform),
-            CustomField(TicketFieldIds.appLanguage, Locale.getDefault().language),
+            CustomField(TicketFieldIds.appLanguage, deviceDataSource.deviceLanguage),
             CustomField(TicketFieldIds.categoryId, ticketType.categoryName),
             CustomField(TicketFieldIds.subcategoryId, ticketType.subcategoryName),
             CustomField(TicketFieldIds.blogList, getCombinedLogInformationOfSites(allSites))
         )
-    }
-
-    /**
-     * This is a small helper function which just joins the `logInformation` of all the sites passed in with a separator.
-     */
-    private fun getCombinedLogInformationOfSites(allSites: List<SiteModel>?): String {
-        allSites?.let { it ->
-            return it.joinToString(separator = ZendeskConstants.blogSeparator) { it.logInformation }
-        }
-        return ZendeskConstants.noneValue
     }
 
     /**
@@ -169,6 +144,27 @@ class ZendeskManager(
         tags.add(ZendeskConstants.platformTag)
         tags.addAll(extraTags)
         return tags
+    }
+
+    private fun generateHostData(selectedSite: SiteModel?) =
+        selectedSite?.let {
+            "${generateHostURL(selectedSite)} (${selectedSite.stateLogInformation})"
+        } ?: "not_selected"
+
+    private fun generateHostURL(site: SiteModel) =
+        UrlUtils.removeScheme(site.url)
+            .let { StringUtils.removeTrailingSlash(it) }
+            .takeUnless { TextUtils.isEmpty(it) }
+            ?: UrlUtils.getHost(site.xmlRpcUrl)
+
+    /**
+     * This is a small helper function which just joins the `logInformation` of all the sites passed in with a separator.
+     */
+    private fun getCombinedLogInformationOfSites(allSites: List<SiteModel>?): String {
+        allSites?.let { it ->
+            return it.joinToString(separator = ZendeskConstants.blogSeparator) { it.logInformation }
+        }
+        return ZendeskConstants.noneValue
     }
 
     /**
