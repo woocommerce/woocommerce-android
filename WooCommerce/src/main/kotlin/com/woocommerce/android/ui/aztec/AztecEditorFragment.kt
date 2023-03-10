@@ -1,9 +1,16 @@
 package com.woocommerce.android.ui.aztec
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
+import androidx.core.view.MenuProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
+import com.woocommerce.android.ai.AIPrompts
+import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAztecEditorBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
@@ -12,6 +19,7 @@ import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.aztec.Aztec
 import org.wordpress.aztec.AztecText.EditorHasChanges.NO_CHANGES
@@ -19,13 +27,15 @@ import org.wordpress.aztec.IHistoryListener
 import org.wordpress.aztec.ITextFormat
 import org.wordpress.aztec.glideloader.GlideImageLoader
 import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AztecEditorFragment :
     BaseFragment(R.layout.fragment_aztec_editor),
     IAztecToolbarClickListener,
     BackPressListener,
-    IHistoryListener {
+    IHistoryListener,
+    MenuProvider {
     companion object {
         const val TAG: String = "AztecEditorFragment"
         const val AZTEC_EDITOR_RESULT = "aztec_editor_result"
@@ -35,6 +45,8 @@ class AztecEditorFragment :
 
         private const val FIELD_IS_HTML_EDITOR_ENABLED = "is_html_editor_enabled"
     }
+
+    @Inject lateinit var aiRepository: AIRepository
 
     private lateinit var aztec: Aztec
 
@@ -81,6 +93,8 @@ class AztecEditorFragment :
             aztec.visualEditor.requestFocus()
             ActivityUtils.showKeyboard(aztec.visualEditor)
         }
+
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -170,5 +184,29 @@ class AztecEditorFragment :
 
     override fun onUndoEnabled() {
         // no-op
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        return when (menuItem.itemId) {
+            R.id.menu_ai_generate_product_description -> {
+                ActivityUtils.hideKeyboard(activity)
+                lifecycleScope.launch {
+                    val result = aiRepository.openAIGenerateChat(
+                        AIPrompts.CHATGPT_GENERATE_PRODUCT_FROM_TITLE + navArgs.productTitle
+                    )
+                    val originalText = aztec.visualEditor.text.toString()
+                    aztec.visualEditor.fromHtml(originalText + "\n" + result)
+                    aztec.sourceEditor?.displayStyledAndFormattedHtml(originalText + "\n" + result)
+                }
+                true
+            }
+            else ->
+                false
+        }
+    }
+
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.menu_product_description, menu)
     }
 }

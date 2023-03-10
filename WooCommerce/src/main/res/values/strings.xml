@@ -3155,4 +3155,5 @@
     <string name="support_request_error_title">Something went wrong</string>
     <string name="support_request_error_message">Sorry, we cannot create support requests right now, please try again later.</string>
 
+    <string name="ai_generate_product_description">AI: Generate description</string>
 </resources>
