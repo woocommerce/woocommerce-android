@@ -67,6 +67,15 @@
         </FrameLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
+    <com.woocommerce.android.ui.message.NotificationsPermissionBarView
+        android:id="@+id/notifications_permission_bar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/offline_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <com.woocommerce.android.ui.network.OfflineStatusBarView
         android:id="@+id/offline_bar"
         android:layout_width="0dp"
