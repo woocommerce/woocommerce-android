@@ -10,16 +10,21 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.wordpress.android.fluxc.store.SiteStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ZendeskManagerTest : BaseUnitTest() {
     private lateinit var sut: ZendeskManager
     private lateinit var zendeskSettings: ZendeskSettings
+    private lateinit var siteStore: SiteStore
 
     @Before
     fun setup() {
         zendeskSettings = mock {
-            on { isIdentitySet } doReturn false
+            on { isIdentitySet } doReturn true
+        }
+        siteStore = mock {
+            on { sites } doReturn emptyList()
         }
         createSUT()
     }
@@ -28,6 +33,8 @@ internal class ZendeskManagerTest : BaseUnitTest() {
     fun `when createRequest is called with no identity set, then an result with IdentityNotSetException is emitted`()
     = testBlocking {
         // Given
+        zendeskSettings = mock { on { isIdentitySet } doReturn false }
+        createSUT()
 
         // When
         val result = sut.createRequest(
@@ -49,7 +56,7 @@ internal class ZendeskManagerTest : BaseUnitTest() {
     private fun createSUT() {
         sut = ZendeskManager(
             zendeskSettings = zendeskSettings,
-            siteStore = mock(),
+            siteStore = siteStore,
             dispatchers = coroutinesTestRule.testDispatchers
         )
     }
