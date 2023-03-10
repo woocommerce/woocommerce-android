@@ -73,7 +73,7 @@ class LaunchStoreViewModel @Inject constructor(
                 }
             }
         }
-        _viewState.value = _viewState.value.copy(isLoading = true)
+        _viewState.value = _viewState.value.copy(isLoading = false)
     }
 
     fun onUpgradePlanBannerClicked() {
