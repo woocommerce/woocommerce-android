@@ -11,7 +11,6 @@ import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.model.isOrderNotification
 import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.support.ZendeskManager
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_ID
 import com.woocommerce.android.util.NotificationsParser
@@ -45,18 +44,11 @@ class NotificationMessageHandler @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val notificationBuilder: WooNotificationBuilder,
     private val analyticsTracker: NotificationAnalyticsTracker,
-    private val zendeskManager: ZendeskManager,
     private val notificationsParser: NotificationsParser,
     private val selectedSite: SelectedSite,
     private val topPerformersStore: WCLeaderboardsStore
 ) {
     companion object {
-        private const val KEY_PUSH_TYPE_ZENDESK = "zendesk"
-        private const val KEY_ZENDESK_REQUEST_ID = "zendesk_sdk_request_id"
-
-        // All Zendesk push notifications will show the same notification, so hopefully this will be a unique ID
-        private const val ZENDESK_PUSH_NOTIFICATION_ID = 1999999999
-
         private const val PUSH_NOTIFICATION_ID = 10000
 
         private const val PUSH_ARG_USER = "user"
@@ -95,20 +87,6 @@ class NotificationMessageHandler @Inject constructor(
 
         if (messageData.isEmpty()) {
             wooLogWrapper.e(NOTIFS, "Push notification received without a valid Bundle!")
-            return
-        }
-
-        if (messageData["type"] == KEY_PUSH_TYPE_ZENDESK) {
-            // Make sure the UI gets refreshed so the user can see the reply
-            zendeskManager.refreshRequest(appContext, messageData[KEY_ZENDESK_REQUEST_ID])
-            val zendeskNote = NotificationModel(
-                noteId = ZENDESK_PUSH_NOTIFICATION_ID,
-                remoteNoteId = ZENDESK_PUSH_NOTIFICATION_ID.toLong()
-            ).toAppModel(resourceProvider)
-            notificationBuilder.buildAndDisplayZendeskNotification(
-                channelId = resourceProvider.getString(zendeskNote.channelType.getChannelId()),
-                notification = zendeskNote
-            )
             return
         }
 
