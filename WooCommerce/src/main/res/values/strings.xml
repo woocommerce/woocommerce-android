@@ -344,6 +344,7 @@
     <string name="login_jetpack_connection_enter_wpcom_password">Enter the password of your WordPress.com account to connect to Jetpack</string>
     <string name="login_jetpack_installation_enter_wpcom_password">Enter the password of your WordPress.com account to install Jetpack</string>
     <string name="login_jetpack_installation_continue_magic_link">Or continue using Magic Link</string>
+    <string name="login_jetpack_installation_magic_link_failure">An error occurred while fetching your website, please retry!</string>
 
     <!--
         My Store View
@@ -3160,5 +3161,4 @@
     <string name="support_request_dialog_action">Got It!</string>
     <string name="support_request_error_title">Something went wrong</string>
     <string name="support_request_error_message">Sorry, we cannot create support requests right now, please try again later.</string>
-
 </resources>
