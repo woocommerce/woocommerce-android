@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.NavigateToSettingsEvent
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.NavigateToSubscriptionsEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.StartSitePickerEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewAdminEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewCouponsEvent
@@ -73,6 +74,7 @@ class MoreMenuFragment : TopLevelFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is NavigateToSettingsEvent -> navigateToSettings()
+                is NavigateToSubscriptionsEvent -> navigateToSubscriptions()
                 is StartSitePickerEvent -> startSitePicker()
                 is ViewAdminEvent -> openInBrowser(event.url)
                 is ViewStoreEvent -> openInBrowser(event.url)
@@ -93,6 +95,12 @@ class MoreMenuFragment : TopLevelFragment() {
     private fun navigateToSettings() {
         findNavController().navigateSafely(
             MoreMenuFragmentDirections.actionMoreMenuToSettingsActivity()
+        )
+    }
+
+    private fun navigateToSubscriptions() {
+        findNavController().navigateSafely(
+            MoreMenuFragmentDirections.actionMoreMenuToSubscriptions()
         )
     }
 

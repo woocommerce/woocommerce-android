@@ -20,6 +20,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -93,8 +94,18 @@ class MoreMenuViewModel @Inject constructor(
             icon = R.drawable.ic_more_menu_inbox,
             isEnabled = moreMenuRepository.isInboxEnabled(),
             onClick = ::onInboxButtonClick
+        ),
+        MenuUiButton(
+            text = R.string.more_menu_button_upgrades,
+            icon = R.drawable.ic_more_menu_upgrades,
+            isEnabled = FeatureFlag.FREE_TRIAL.isEnabled(),
+            onClick = ::onUpgradesButtonClick
         )
     )
+
+    private fun onUpgradesButtonClick() {
+        triggerEvent(MoreMenuEvent.NavigateToSubscriptionsEvent)
+    }
 
     private fun buildUnseenReviewsBadgeState(unseenReviewsCount: Int) =
         if (unseenReviewsCount > 0) BadgeState(
@@ -186,6 +197,7 @@ class MoreMenuViewModel @Inject constructor(
 
     sealed class MoreMenuEvent : MultiLiveEvent.Event() {
         object NavigateToSettingsEvent : MoreMenuEvent()
+        object NavigateToSubscriptionsEvent : MoreMenuEvent()
         object StartSitePickerEvent : MoreMenuEvent()
         object ViewPayments : MoreMenuEvent()
         data class ViewAdminEvent(val url: String) : MoreMenuEvent()

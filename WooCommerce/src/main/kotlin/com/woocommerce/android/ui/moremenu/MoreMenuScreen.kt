@@ -372,6 +372,7 @@ private fun MoreMenuPreview() {
                 )
             ),
             MenuUiButton(string.more_menu_button_coupons, drawable.ic_more_menu_coupons),
+            MenuUiButton(string.more_menu_button_upgrades, drawable.ic_more_menu_upgrades),
         ),
         siteName = "Example Site",
         siteUrl = "woocommerce.com",
