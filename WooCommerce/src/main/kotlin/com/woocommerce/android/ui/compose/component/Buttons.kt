@@ -25,10 +25,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.ripple.LocalRippleTheme
+import androidx.compose.material.ripple.RippleAlpha
+import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.intl.Locale
@@ -46,21 +52,40 @@ fun WCColoredButton(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     colors: ButtonColors = ButtonDefaults.buttonColors(),
+    rippleColor: Color = MaterialTheme.colors.primaryVariant,
     content: @Composable RowScope.() -> Unit
 ) {
-    Button(
-        onClick = onClick,
-        enabled = enabled,
-        colors = colors,
-        elevation = null,
-        interactionSource = interactionSource,
-        contentPadding = contentPadding,
-        modifier = modifier
-    ) {
-        ProvideTextStyle(
-            value = MaterialTheme.typography.subtitle2
+    val contentColor by colors.contentColor(enabled = enabled)
+    val rippleTheme = remember(rippleColor, contentColor) {
+        object : RippleTheme {
+            @Composable
+            override fun defaultColor(): Color = RippleTheme.defaultRippleColor(
+                rippleColor,
+                MaterialTheme.colors.isLight
+            )
+
+            @Composable
+            override fun rippleAlpha(): RippleAlpha = RippleTheme.defaultRippleAlpha(
+                rippleColor,
+                MaterialTheme.colors.isLight
+            )
+        }
+    }
+    CompositionLocalProvider(LocalRippleTheme provides rippleTheme) {
+        Button(
+            onClick = onClick,
+            enabled = enabled,
+            colors = colors,
+            elevation = null,
+            interactionSource = interactionSource,
+            contentPadding = contentPadding,
+            modifier = modifier
         ) {
-            content()
+            ProvideTextStyle(
+                value = MaterialTheme.typography.subtitle2
+            ) {
+                content()
+            }
         }
     }
 }

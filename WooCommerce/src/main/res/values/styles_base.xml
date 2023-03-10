@@ -471,6 +471,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
         <item name="android:paddingStart">@dimen/major_100</item>
         <item name="android:paddingEnd">@dimen/major_100</item>
+        <item name="rippleColor">?colorPrimaryVariant</item>
     </style>
 
     <!--  Circular button filled with color  -->
