@@ -17,8 +17,8 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.ONBOARDING
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,8 +32,7 @@ class StoreOnboardingViewModel @Inject constructor(
         const val NUMBER_ITEMS_IN_COLLAPSED_MODE = 3
     }
 
-    private val _viewState = savedState.getStateFlow(
-        this,
+    private val _viewState = MutableStateFlow(
         OnboardingState(
             show = false,
             title = R.string.store_onboarding_title,
