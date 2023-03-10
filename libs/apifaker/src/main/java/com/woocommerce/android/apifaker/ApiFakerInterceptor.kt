@@ -10,6 +10,8 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import okhttp3.internal.EMPTY_RESPONSE
 import javax.inject.Inject
 
+private const val ARTIFICIAL_DELAY_MS = 500L
+
 internal class ApiFakerInterceptor @Inject constructor(
     private val apiFakerConfig: ApiFakerConfig,
     private val endpointProcessor: EndpointProcessor
@@ -35,6 +37,7 @@ internal class ApiFakerInterceptor @Inject constructor(
                 "Matched request: ${chain.request().url}:\n" +
                     "Sending Mocked Response: $fakeResponse"
             )
+            Thread.sleep(ARTIFICIAL_DELAY_MS)
             Response.Builder()
                 .request(request)
                 .protocol(Protocol.HTTP_1_1)
