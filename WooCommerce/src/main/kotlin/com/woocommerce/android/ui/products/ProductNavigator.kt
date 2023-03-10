@@ -9,6 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Product.Image
+import com.woocommerce.android.ui.common.texteditor.SimpleTextEditorStrategy
 import com.woocommerce.android.ui.products.GroupedProductListType.GROUPED
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttributeTerms
@@ -367,6 +368,16 @@ class ProductNavigator @Inject constructor() {
                         target.productCategoryName
                     )
                 )
+            }
+
+            is ProductNavigationTarget.NavigateToAIResult -> {
+                val action = NavGraphMainDirections.actionGlobalSimpleTextEditorFragment(
+                    currentText = target.currentText,
+                    screenTitle = target.screenTitle,
+                    hint = target.hint,
+                    strategy = SimpleTextEditorStrategy.SEND_RESULT_ON_NAVIGATE_BACK
+                )
+                fragment.findNavController().navigateSafely(action)
             }
 
             is ExitProduct -> fragment.findNavController().navigateUp()
