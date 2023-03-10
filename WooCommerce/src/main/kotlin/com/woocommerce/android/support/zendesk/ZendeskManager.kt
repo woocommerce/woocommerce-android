@@ -1,12 +1,7 @@
 package com.woocommerce.android.support.zendesk
 
 import android.content.Context
-import android.net.ConnectivityManager
 import android.os.Parcelable
-import android.telephony.TelephonyManager
-import android.text.TextUtils
-import com.woocommerce.android.extensions.logInformation
-import com.woocommerce.android.extensions.stateLogInformation
 import com.woocommerce.android.support.zendesk.RequestConstants.requestCreationIdentityNotSetErrorMessage
 import com.woocommerce.android.support.zendesk.RequestConstants.requestCreationTimeoutErrorMessage
 import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetException
@@ -23,17 +18,13 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
-import org.wordpress.android.util.NetworkUtils
-import org.wordpress.android.util.StringUtils
-import org.wordpress.android.util.UrlUtils
 import zendesk.support.CreateRequest
 import zendesk.support.CustomField
 import zendesk.support.Request
-import java.util.Locale
 
 class ZendeskManager(
     private val zendeskSettings: ZendeskSettings,
-    private val deviceDataSource: ZendeskDeviceDataSource,
+    private val envDataSource: ZendeskEnvironmentDataSource,
     private val siteStore: SiteStore,
     private val dispatchers: CoroutineDispatchers
 ) {
@@ -58,6 +49,7 @@ class ZendeskManager(
 
         val requestCallback = object : ZendeskCallback<Request>() {
             override fun onSuccess(result: Request?) {
+                trySend(Result.success(result))
                 trySend(Result.success(result))
                 close()
             }
@@ -99,17 +91,17 @@ class ZendeskManager(
         ssr: String? = null
     ): List<CustomField> {
         return listOf(
-            CustomField(TicketFieldIds.appVersion, deviceDataSource.generateVersionName(context)),
-            CustomField(TicketFieldIds.deviceFreeSpace, deviceDataSource.totalAvailableMemorySize),
-            CustomField(TicketFieldIds.networkInformation, deviceDataSource.generateNetworkInformation(context)),
-            CustomField(TicketFieldIds.logs, deviceDataSource.deviceLogs),
+            CustomField(TicketFieldIds.appVersion, envDataSource.generateVersionName(context)),
+            CustomField(TicketFieldIds.deviceFreeSpace, envDataSource.totalAvailableMemorySize),
+            CustomField(TicketFieldIds.networkInformation, envDataSource.generateNetworkInformation(context)),
+            CustomField(TicketFieldIds.logs, envDataSource.deviceLogs),
             CustomField(TicketFieldIds.ssr, ssr),
-            CustomField(TicketFieldIds.currentSite, generateHostData(selectedSite)),
-            CustomField(TicketFieldIds.sourcePlatform, ZendeskConstants.sourcePlatform),
-            CustomField(TicketFieldIds.appLanguage, deviceDataSource.deviceLanguage),
+            CustomField(TicketFieldIds.currentSite, envDataSource.generateHostData(selectedSite)),
+            CustomField(TicketFieldIds.sourcePlatform, ZendeskEnvironmentDataSource.sourcePlatform),
+            CustomField(TicketFieldIds.appLanguage, envDataSource.deviceLanguage),
             CustomField(TicketFieldIds.categoryId, ticketType.categoryName),
             CustomField(TicketFieldIds.subcategoryId, ticketType.subcategoryName),
-            CustomField(TicketFieldIds.blogList, getCombinedLogInformationOfSites(allSites))
+            CustomField(TicketFieldIds.blogList, envDataSource.generateCombinedLogInformationOfSites(allSites))
         )
     }
 
@@ -144,48 +136,6 @@ class ZendeskManager(
         tags.add(ZendeskConstants.platformTag)
         tags.addAll(extraTags)
         return tags
-    }
-
-    private fun generateHostData(selectedSite: SiteModel?) =
-        selectedSite?.let {
-            "${generateHostURL(selectedSite)} (${selectedSite.stateLogInformation})"
-        } ?: "not_selected"
-
-    private fun generateHostURL(site: SiteModel) =
-        UrlUtils.removeScheme(site.url)
-            .let { StringUtils.removeTrailingSlash(it) }
-            .takeUnless { TextUtils.isEmpty(it) }
-            ?: UrlUtils.getHost(site.xmlRpcUrl)
-
-    /**
-     * This is a small helper function which just joins the `logInformation` of all the sites passed in with a separator.
-     */
-    private fun getCombinedLogInformationOfSites(allSites: List<SiteModel>?): String {
-        allSites?.let { it ->
-            return it.joinToString(separator = ZendeskConstants.blogSeparator) { it.logInformation }
-        }
-        return ZendeskConstants.noneValue
-    }
-
-    /**
-     * This is a helper function which returns information about the network state of the app to be sent to Zendesk, which
-     * could prove useful for the Happiness Engineers while debugging the users' issues.
-     */
-    @Suppress("DEPRECATION")
-    private fun getNetworkInformation(context: Context): String {
-        val networkType = when (NetworkUtils.getActiveNetworkInfo(context)?.type) {
-            ConnectivityManager.TYPE_WIFI -> ZendeskConstants.networkWifi
-            ConnectivityManager.TYPE_MOBILE -> ZendeskConstants.networkWWAN
-            else -> ZendeskConstants.unknownValue
-        }
-        val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?
-        val carrierName = telephonyManager?.networkOperatorName ?: ZendeskConstants.unknownValue
-        val countryCodeLabel = telephonyManager?.networkCountryIso ?: ZendeskConstants.unknownValue
-        return listOf(
-            "${ZendeskConstants.networkTypeLabel} $networkType",
-            "${ZendeskConstants.networkCarrierLabel} $carrierName",
-            "${ZendeskConstants.networkCountryCodeLabel} ${countryCodeLabel.uppercase(Locale.getDefault())}"
-        ).joinToString(separator = "\n")
     }
 }
 

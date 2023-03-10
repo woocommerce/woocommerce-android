@@ -1,7 +1,7 @@
 package com.woocommerce.android.di
 
 import com.woocommerce.android.support.SupportHelper
-import com.woocommerce.android.support.zendesk.ZendeskDeviceDataSource
+import com.woocommerce.android.support.zendesk.ZendeskEnvironmentDataSource
 import com.woocommerce.android.support.zendesk.ZendeskManager
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
@@ -29,7 +29,7 @@ class SupportModule {
     @Provides
     fun provideZendeskManager(
         zendeskSettings: ZendeskSettings,
-        deviceDataSource: ZendeskDeviceDataSource,
+        deviceDataSource: ZendeskEnvironmentDataSource,
         siteStore: SiteStore,
         dispatchers: CoroutineDispatchers
     ): ZendeskManager = ZendeskManager(zendeskSettings, deviceDataSource, siteStore, dispatchers)
