@@ -123,19 +123,6 @@
 
     <style name="Theme.Woo.Dialog" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
         <!-- Colors -->
-        <item name="colorPrimary">@color/color_secondary</item>
-        <item name="colorSecondary">@color/color_primary</item>
-
-        <item name="android:colorBackground">@color/default_window_background</item>
-        <item name="colorSurface">@color/color_surface</item>
-        <item name="colorError">@color/color_error</item>
-
-        <item name="colorOnPrimary">@color/color_on_primary</item>
-        <item name="colorOnPrimarySurface">@color/color_on_primary_surface_high</item>
-        <item name="colorOnSecondary">@color/color_on_secondary</item>
-        <item name="colorOnBackground">@color/color_on_background</item>
-        <item name="colorOnSurface">@color/color_on_surface_high</item>
-        <item name="colorOnError">@color/color_on_error</item>
         <item name="buttonBarStyle">@style/Woo.Dialog.ButtonBar</item>
         <item name="android:buttonBarStyle">@style/Woo.Dialog.ButtonBar</item>
     </style>

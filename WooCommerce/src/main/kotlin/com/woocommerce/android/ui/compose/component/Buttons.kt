@@ -45,12 +45,7 @@ fun WCColoredButton(
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    colors: ButtonColors = ButtonDefaults.buttonColors(
-        backgroundColor = MaterialTheme.colors.secondary,
-        contentColor = MaterialTheme.colors.onPrimary,
-        disabledBackgroundColor = MaterialTheme.colors.secondary.copy(alpha = 0.38f),
-        disabledContentColor = MaterialTheme.colors.onPrimary
-    ),
+    colors: ButtonColors = ButtonDefaults.buttonColors(),
     content: @Composable RowScope.() -> Unit
 ) {
     Button(
@@ -80,10 +75,7 @@ fun WCColoredButton(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     enabled: Boolean = true,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    colors: ButtonColors = ButtonDefaults.buttonColors(
-        backgroundColor = MaterialTheme.colors.secondary,
-        contentColor = MaterialTheme.colors.onPrimary
-    )
+    colors: ButtonColors = ButtonDefaults.buttonColors()
 ) {
     WCColoredButton(
         onClick = onClick,
@@ -112,7 +104,7 @@ fun WCOutlinedButton(
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    colors: ButtonColors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.secondary),
+    colors: ButtonColors = ButtonDefaults.outlinedButtonColors(),
     content: @Composable RowScope.() -> Unit
 ) {
     OutlinedButton(
@@ -141,7 +133,7 @@ fun WCOutlinedButton(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     enabled: Boolean = true,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    colors: ButtonColors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.secondary),
+    colors: ButtonColors = ButtonDefaults.outlinedButtonColors(),
 ) {
     WCOutlinedButton(
         onClick = onClick,
@@ -170,7 +162,7 @@ fun WCTextButton(
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.TextButtonContentPadding,
-    colors: ButtonColors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colors.secondary),
+    colors: ButtonColors = ButtonDefaults.textButtonColors(),
     content: @Composable RowScope.() -> Unit
 ) {
     TextButton(
@@ -193,7 +185,7 @@ fun WCTextButton(
     allCaps: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.TextButtonContentPadding,
-    colors: ButtonColors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colors.secondary),
+    colors: ButtonColors = ButtonDefaults.textButtonColors(),
 ) {
     TextButton(
         onClick = onClick,
@@ -217,7 +209,7 @@ fun WCTextButton(
     allCaps: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.TextButtonContentPadding,
-    colors: ButtonColors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colors.secondary),
+    colors: ButtonColors = ButtonDefaults.textButtonColors(),
 ) {
     TextButton(
         onClick = onClick,
