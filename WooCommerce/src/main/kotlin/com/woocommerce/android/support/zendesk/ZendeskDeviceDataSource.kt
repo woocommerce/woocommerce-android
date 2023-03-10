@@ -10,9 +10,9 @@ import org.wordpress.android.util.DeviceUtils
 import org.wordpress.android.util.NetworkUtils
 
 class ZendeskDeviceDataSource {
-    val totalAvailableMemorySize get() = DeviceUtils.getTotalAvailableMemorySize()
+    val totalAvailableMemorySize: String get() = DeviceUtils.getTotalAvailableMemorySize()
+    val deviceLanguage: String get() = Locale.getDefault().language
     val deviceLogs get() = WooLog.toString().takeLast(maxLogfileLength)
-    val localeLanguage get() = Locale.getDefault().language
 
     fun generateVersionName(context: Context) = PackageUtils.getVersionName(context)
 
@@ -27,9 +27,9 @@ class ZendeskDeviceDataSource {
         val carrierName = telephonyManager?.networkOperatorName ?: unknownValue
         val countryCodeLabel = telephonyManager?.networkCountryIso ?: unknownValue
         return listOf(
-            "${networkTypeLabel} $networkType",
-            "${networkCarrierLabel} $carrierName",
-            "${networkCountryCodeLabel} ${countryCodeLabel.uppercase(Locale.getDefault())}"
+            "$networkTypeLabel $networkType",
+            "$networkCarrierLabel $carrierName",
+            "$networkCountryCodeLabel ${countryCodeLabel.uppercase(Locale.getDefault())}"
         ).joinToString(separator = "\n")
     }
 
