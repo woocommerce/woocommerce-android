@@ -102,6 +102,7 @@
     <string name="more_menu_button_store">View Store</string>
     <string name="more_menu_button_coupons">Coupons</string>
     <string name="more_menu_button_reviews">Reviews</string>
+    <string name="more_menu_button_upgrades">Upgrades</string>
     <string name="more_menu_avatar">User profile picture</string>
     <string name="version_with_name_param">Version %s</string>
     <string name="share_store_button">Share your store</string>
@@ -3161,5 +3162,15 @@
     <string name="free_trial_trial_ended">Your trial has ended.</string>
     <string name="free_trial_days_left">%1$d days left in your trial.</string>
     <string name="free_trial_upgrade_now">Upgrade Now</string>
+
+    <!--
+    Upgrades
+    -->
+    <string name="upgrades_report_subscription_issue">Report subscription issue</string>
+    <string name="upgrades_subscribe_now">Subscribe now</string>
+    <string name="upgrades_current_plan">Current: %s</string>
+    <string name="upgrades_troubleshooting">Troubleshooting</string>
+    <string name="upgrades_title">Upgrades</string>
+    <string name="upgrades_subscription_status">Subscription status</string>
 
 </resources>
