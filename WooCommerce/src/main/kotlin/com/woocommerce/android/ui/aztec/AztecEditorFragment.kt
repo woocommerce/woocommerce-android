@@ -192,7 +192,7 @@ class AztecEditorFragment :
                 ActivityUtils.hideKeyboard(activity)
                 lifecycleScope.launch {
                     val result = aiRepository.openAIGenerateChat(
-                        AIPrompts.CHATGPT_GENERATE_PRODUCT_FROM_TITLE + navArgs.productTitle
+                        AIPrompts.GENERATE_PRODUCT_DESCRIPTION_FROM_TITLE + navArgs.productTitle
                     )
                     val originalText = aztec.visualEditor.text.toString()
                     aztec.visualEditor.fromHtml(originalText + "\n" + result)
