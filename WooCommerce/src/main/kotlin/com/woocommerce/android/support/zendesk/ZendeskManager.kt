@@ -91,17 +91,17 @@ class ZendeskManager(
         ssr: String? = null
     ): List<CustomField> {
         return listOf(
-            CustomField(TicketFieldIds.appVersion, envDataSource.generateVersionName(context)),
-            CustomField(TicketFieldIds.deviceFreeSpace, envDataSource.totalAvailableMemorySize),
-            CustomField(TicketFieldIds.networkInformation, envDataSource.generateNetworkInformation(context)),
-            CustomField(TicketFieldIds.logs, envDataSource.deviceLogs),
-            CustomField(TicketFieldIds.ssr, ssr),
-            CustomField(TicketFieldIds.currentSite, envDataSource.generateHostData(selectedSite)),
-            CustomField(TicketFieldIds.sourcePlatform, ZendeskEnvironmentDataSource.sourcePlatform),
-            CustomField(TicketFieldIds.appLanguage, envDataSource.deviceLanguage),
-            CustomField(TicketFieldIds.categoryId, ticketType.categoryName),
-            CustomField(TicketFieldIds.subcategoryId, ticketType.subcategoryName),
-            CustomField(TicketFieldIds.blogList, envDataSource.generateCombinedLogInformationOfSites(allSites))
+            CustomField(TicketCustomField.appVersion, envDataSource.generateVersionName(context)),
+            CustomField(TicketCustomField.deviceFreeSpace, envDataSource.totalAvailableMemorySize),
+            CustomField(TicketCustomField.networkInformation, envDataSource.generateNetworkInformation(context)),
+            CustomField(TicketCustomField.logs, envDataSource.deviceLogs),
+            CustomField(TicketCustomField.ssr, ssr),
+            CustomField(TicketCustomField.currentSite, envDataSource.generateHostData(selectedSite)),
+            CustomField(TicketCustomField.sourcePlatform, ZendeskEnvironmentDataSource.sourcePlatform),
+            CustomField(TicketCustomField.appLanguage, envDataSource.deviceLanguage),
+            CustomField(TicketCustomField.categoryId, ticketType.categoryName),
+            CustomField(TicketCustomField.subcategoryId, ticketType.subcategoryName),
+            CustomField(TicketCustomField.blogList, envDataSource.generateCombinedLogInformationOfSites(allSites))
         )
     }
 
@@ -118,13 +118,13 @@ class ZendeskManager(
         allSites?.let { it ->
             // Add wpcom tag if at least one site is WordPress.com site
             if (it.any { it.isWPCom }) {
-                tags.add(ZendeskConstants.wpComTag)
+                tags.add(ZendeskTags.wpComTag)
             }
 
             // Add Jetpack tag if at least one site is Jetpack connected. Even if a site is Jetpack connected,
             // it does not necessarily mean that user is connected with the REST API, but we don't care about that here
             if (it.any { it.isJetpackConnected }) {
-                tags.add(ZendeskConstants.jetpackTag)
+                tags.add(ZendeskTags.jetpackTag)
             }
 
             // Find distinct plans and add them
@@ -132,8 +132,8 @@ class ZendeskManager(
             tags.addAll(plans)
         }
         tags.add(origin.toString())
-        // Add Android tag to make it easier to filter tickets by platform
-        tags.add(ZendeskConstants.platformTag)
+        // We rely on this platform tag to filter tickets in Zendesk
+        tags.add(ZendeskTags.platformTag)
         tags.addAll(extraTags)
         return tags
     }
@@ -147,13 +147,13 @@ sealed class TicketType(
     val excludedTags: List<String> = emptyList()
 ) : Parcelable {
     @Parcelize object MobileApp : TicketType(
-        form = TicketFieldIds.wooMobileFormID,
+        form = TicketCustomField.wooMobileFormID,
         categoryName = ZendeskConstants.mobileAppCategory,
         subcategoryName = ZendeskConstants.mobileSubcategoryValue,
         tags = listOf(ZendeskTags.mobileApp)
     )
     @Parcelize object InPersonPayments : TicketType(
-        form = TicketFieldIds.wooMobileFormID,
+        form = TicketCustomField.wooMobileFormID,
         categoryName = ZendeskConstants.mobileAppCategory,
         subcategoryName = ZendeskConstants.mobileSubcategoryValue,
         tags = listOf(
@@ -162,7 +162,7 @@ sealed class TicketType(
         )
     )
     @Parcelize object Payments : TicketType(
-        form = TicketFieldIds.wooFormID,
+        form = TicketCustomField.wooFormID,
         categoryName = ZendeskConstants.supportCategory,
         subcategoryName = ZendeskConstants.paymentsSubcategoryValue,
         tags = listOf(
@@ -175,7 +175,7 @@ sealed class TicketType(
         excludedTags = listOf(ZendeskTags.jetpackTag)
     )
     @Parcelize object WooPlugin : TicketType(
-        form = TicketFieldIds.wooFormID,
+        form = TicketCustomField.wooFormID,
         categoryName = ZendeskConstants.supportCategory,
         subcategoryName = "",
         tags = listOf(
@@ -186,7 +186,7 @@ sealed class TicketType(
         excludedTags = listOf(ZendeskTags.jetpackTag)
     )
     @Parcelize object OtherPlugins : TicketType(
-        form = TicketFieldIds.wooFormID,
+        form = TicketCustomField.wooFormID,
         categoryName = ZendeskConstants.supportCategory,
         subcategoryName = ZendeskConstants.storeSubcategoryValue,
         tags = listOf(
@@ -200,30 +200,14 @@ sealed class TicketType(
 }
 
 private object ZendeskConstants {
-    const val blogSeparator = "\n----------\n"
-    const val jetpackTag = "jetpack"
     const val supportCategory = "Support"
     const val mobileAppCategory = "Mobile App"
     const val mobileSubcategoryValue = "WooCommerce Mobile Apps"
     const val paymentsSubcategoryValue = "Payment"
     const val storeSubcategoryValue = "Store"
-    const val networkWifi = "WiFi"
-    const val networkWWAN = "Mobile"
-    const val networkTypeLabel = "Network Type:"
-    const val networkCarrierLabel = "Carrier:"
-    const val networkCountryCodeLabel = "Country Code:"
-    const val noneValue = "none"
-
-    // We rely on this platform tag to filter tickets in Zendesk, so should be kept separate from the `articleLabel`
-    const val platformTag = "Android"
-    const val sourcePlatform = "Mobile_-_Woo_Android"
-    const val wpComTag = "wpcom"
-    const val unknownValue = "unknown"
-
-    const val maxLogfileLength: Int = 63000 // Max characters allowed in the system status report field
 }
 
-private object TicketFieldIds {
+private object TicketCustomField {
     const val appVersion = 360000086866L
     const val blogList = 360000087183L
     const val deviceFreeSpace = 360000089123L
@@ -253,6 +237,8 @@ object ZendeskTags {
     const val supportCategoryTag = "support"
     const val paymentSubcategoryTag = "payment"
     const val jetpackTag = "jetpack"
+    const val platformTag = "Android"
+    const val wpComTag = "wpcom"
 }
 
 sealed class ZendeskException(message: String) : Exception(message) {
