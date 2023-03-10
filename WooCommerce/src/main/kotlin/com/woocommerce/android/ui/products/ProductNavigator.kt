@@ -373,7 +373,7 @@ class ProductNavigator @Inject constructor() {
             is ProductNavigationTarget.NavigateToAIResult -> {
                 val action = NavGraphMainDirections.actionGlobalSimpleTextEditorFragment(
                     currentText = target.currentText,
-                    screenTitle = target.screenTitle,
+                    screenTitle = fragment.resources.getText(target.screenTitleStringId).toString(),
                     hint = target.hint,
                     strategy = SimpleTextEditorStrategy.SEND_RESULT_ON_NAVIGATE_BACK
                 )

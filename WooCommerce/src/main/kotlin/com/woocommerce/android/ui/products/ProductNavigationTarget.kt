@@ -124,7 +124,7 @@ sealed class ProductNavigationTarget : Event() {
 
     data class NavigateToAIResult(
         val currentText: String = "",
-        val screenTitle: String = "",
+        val screenTitleStringId: Int,
         val hint: String = ""
     ) : ProductNavigationTarget()
 }

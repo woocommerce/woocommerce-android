@@ -11,6 +11,8 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.ai.AIPrompts
+import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS
@@ -118,6 +120,7 @@ class ProductDetailViewModel @Inject constructor(
     private val mediaFileUploadHandler: MediaFileUploadHandler,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val addonRepository: AddonRepository,
+    private val aiRepository: AIRepository,
     private val generateVariationCandidates: GenerateVariationCandidates,
     private val duplicateProduct: DuplicateProduct,
     private val tracker: AnalyticsTrackerWrapper,
@@ -2212,7 +2215,20 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun onAiProductGenerateTweetButtonClicked() {
-        TODO("Not yet implemented")
+        if (viewState.productDraft?.name.isNullOrEmpty()) {
+            triggerEvent(ShowSnackbar(R.string.ai_product_missing_name_error))
+        }
+        else {
+            launch {
+                val result = aiRepository.openAIGenerateChat(
+                    AIPrompts.GENERATE_PROMO_TWEET_FROM_PRODUCT_TITLE + viewState.productDraft?.name
+                )
+                triggerEvent(ProductNavigationTarget.NavigateToAIResult(
+                    result,
+                    R.string.ai_product_details_generate_tweet_heading
+                ))
+            }
+        }
     }
 
     /**
