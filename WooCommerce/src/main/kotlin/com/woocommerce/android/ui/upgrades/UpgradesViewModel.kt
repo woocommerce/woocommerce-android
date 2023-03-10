@@ -22,12 +22,11 @@ class UpgradesViewModel @Inject constructor(
     data class UpgradesViewState(
         val currentPlan: CurrentPlanInfo = CurrentPlanInfo.NonUpgradeable(name = "")
     ) {
-        sealed class CurrentPlanInfo() {
+        sealed class CurrentPlanInfo {
             abstract val name: String
 
             data class Upgradeable(override val name: String) : CurrentPlanInfo()
             data class NonUpgradeable(override val name: String) : CurrentPlanInfo()
         }
-
     }
 }

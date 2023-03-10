@@ -104,6 +104,7 @@ private fun UpgradesScreenPreviewShowSubscribeNow() {
 private fun UpgradesScreenPreviewHideSubscribeNow() {
     WooThemeWithBackground {
         UpgradesScreen(
-            state = UpgradesViewState(NonUpgradeable("eCommerce")), {}, {})
+            state = UpgradesViewState(NonUpgradeable("eCommerce")), {}, {}
+        )
     }
 }
