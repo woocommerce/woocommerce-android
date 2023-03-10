@@ -8,19 +8,20 @@ import kotlinx.coroutines.flow.single
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ZendeskManagerTest : BaseUnitTest() {
     private lateinit var sut: ZendeskManager
+    private lateinit var zendeskSettings: ZendeskSettings
 
     @Before
     fun setup() {
-        sut = ZendeskManager(
-            zendeskSettings = mock(),
-            siteStore = mock(),
-            dispatchers = mock()
-        )
+        zendeskSettings = mock {
+            on { isIdentitySet } doReturn false
+        }
+        createSUT()
     }
 
     @Test
@@ -43,5 +44,13 @@ internal class ZendeskManagerTest : BaseUnitTest() {
         assertThat(result).isNotNull
         assertThat(result.isFailure).isTrue
         assertThat(result.exceptionOrNull()).isEqualTo(IdentityNotSetException)
+    }
+
+    private fun createSUT() {
+        sut = ZendeskManager(
+            zendeskSettings = zendeskSettings,
+            siteStore = mock(),
+            dispatchers = coroutinesTestRule.testDispatchers
+        )
     }
 }
