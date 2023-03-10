@@ -9,6 +9,9 @@ import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.onboarding.TaskDto
 import org.wordpress.android.fluxc.store.OnboardingStore
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.SiteStore.LaunchSiteErrorType.ALREADY_LAUNCHED
+import org.wordpress.android.fluxc.store.SiteStore.LaunchSiteErrorType.GENERIC_ERROR
+import org.wordpress.android.fluxc.store.SiteStore.LaunchSiteErrorType.UNAUTHORIZED
 import javax.inject.Inject
 
 class StoreOnboardingRepository @Inject constructor(
@@ -48,17 +51,24 @@ class StoreOnboardingRepository @Inject constructor(
         }
     }
 
-    suspend fun launchStore(): Result<Unit> {
+    suspend fun launchStore(): LaunchStoreResult {
         WooLog.d(WooLog.T.ONBOARDING, "Launching store")
         val result = siteStore.launchSite(selectedSite.get())
         return when {
             result.isError -> {
                 WooLog.w(WooLog.T.ONBOARDING, "Error while launching store. Message: ${result.error.message} ")
-                Result.failure(Exception(result.error.message))
+                Error(
+                    when (result.error.type) {
+                        ALREADY_LAUNCHED -> LaunchStoreError.ALREADY_LAUNCHED
+                        GENERIC_ERROR,
+                        UNAUTHORIZED,
+                        null -> LaunchStoreError.GENERIC_ERROR
+                    }
+                )
             }
             else -> {
                 WooLog.d(WooLog.T.ONBOARDING, "Site launched successfully")
-                Result.success(Unit)
+                Success
             }
         }
     }
@@ -85,5 +95,14 @@ class StoreOnboardingRepository @Inject constructor(
         CUSTOMIZE_DOMAIN("add_domain"),
         WC_PAYMENTS("woocommerce-payments"),
         MOBILE_UNSUPPORTED("mobile-unsupported")
+    }
+
+    sealed class LaunchStoreResult
+    object Success : LaunchStoreResult()
+    data class Error(val type: LaunchStoreError) : LaunchStoreResult()
+
+    enum class LaunchStoreError {
+        ALREADY_LAUNCHED,
+        GENERIC_ERROR
     }
 }

@@ -21,6 +21,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.LogLevel.e
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ToastUtils
 
@@ -55,6 +56,7 @@ class LaunchStoreFragment : BaseFragment() {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 is UpgradeToEcommercePlan -> openInWebView(event.url)
                 is ShareStoreUrl -> shareStoreUrl(event.url)
+                is ShowDialog -> event.showDialog()
             }
         }
     }
