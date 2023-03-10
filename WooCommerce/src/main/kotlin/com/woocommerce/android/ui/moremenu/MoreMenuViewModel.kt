@@ -20,7 +20,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -98,7 +97,7 @@ class MoreMenuViewModel @Inject constructor(
         MenuUiButton(
             text = R.string.more_menu_button_upgrades,
             icon = R.drawable.ic_more_menu_upgrades,
-            isEnabled = FeatureFlag.FREE_TRIAL.isEnabled(),
+            isEnabled = moreMenuRepository.isUpgradesEnabled(),
             onClick = ::onUpgradesButtonClick
         )
     )
