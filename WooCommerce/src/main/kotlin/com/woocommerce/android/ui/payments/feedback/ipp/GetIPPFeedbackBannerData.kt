@@ -58,7 +58,7 @@ class GetIPPFeedbackBannerData @Inject constructor(
             hasIPPOrdersInLast30Days && ippOrdersInLast30Days in IPP_BEGINNER_TRANSACTIONS_RANGE -> {
                 IPP_BEGINNER_BANNER
             }
-            wcPayIPPOrdersCount >= IPP_NINJA_TRANSACTIONS_THRESHOLD -> {
+            wcPayIPPOrdersCount > IPP_BEGINNER_TRANSACTIONS_RANGE.last -> {
                 IPP_NINJA_BANNER
             }
             else -> {
@@ -144,6 +144,5 @@ class GetIPPFeedbackBannerData @Inject constructor(
         private const val BANNER_MESSAGE_NINJA = R.string.feedback_banner_ipp_message_ninja
 
         private val IPP_BEGINNER_TRANSACTIONS_RANGE = 1..9
-        private const val IPP_NINJA_TRANSACTIONS_THRESHOLD = 10
     }
 }
