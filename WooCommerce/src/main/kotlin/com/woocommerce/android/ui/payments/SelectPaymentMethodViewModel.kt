@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.SIMPLE
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.TRY_TAP_TO_PAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Refund
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -159,7 +160,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
             )
         )
         val messageIdForPaymentType = when (cardReaderPaymentFlowParam.paymentType) {
-            SIMPLE -> R.string.simple_payments_cash_dlg_message
+            SIMPLE, TRY_TAP_TO_PAY -> R.string.simple_payments_cash_dlg_message
             ORDER -> R.string.existing_order_cash_dlg_message
         }
         triggerEvent(
@@ -324,6 +325,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         triggerEvent(
             when (cardReaderPaymentFlowParam.paymentType) {
                 SIMPLE -> NavigateBackToHub(CardReadersHub())
+                TRY_TAP_TO_PAY -> NavigateToOrderDetails(cardReaderPaymentFlowParam.orderId)
                 ORDER -> NavigateBackToOrderList
             }
         )
@@ -331,7 +333,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     private fun Payment.toAnalyticsFlowParams() =
         AnalyticsTracker.KEY_FLOW to when (paymentType) {
-            SIMPLE -> AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW
+            SIMPLE, TRY_TAP_TO_PAY -> AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW
             ORDER -> AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW
         }
 
@@ -422,6 +424,10 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     data class NavigateBackToHub(
         val cardReaderFlowParam: CardReadersHub
+    ) : MultiLiveEvent.Event()
+
+    data class NavigateToOrderDetails(
+        val orderId: Long
     ) : MultiLiveEvent.Event()
 
     object NavigateBackToOrderList : MultiLiveEvent.Event()

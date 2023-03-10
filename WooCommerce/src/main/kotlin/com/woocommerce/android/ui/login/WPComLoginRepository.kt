@@ -6,10 +6,13 @@ import com.woocommerce.android.util.dispatchAndAwait
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.AuthenticationActionBuilder
+import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayload
+import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticatePayload
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationError
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.NEEDS_2FA
 import org.wordpress.android.fluxc.store.AccountStore.FetchAuthOptionsPayload
+import org.wordpress.android.fluxc.store.AccountStore.OnAuthEmailSent
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthOptionsFetched
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.login.AuthOptions
@@ -65,6 +68,35 @@ class WPComLoginRepository @Inject constructor(
                     throw it
                 }
             }
+    }
+
+    suspend fun requestMagicLink(emailOrUsername: String, flow: MagicLinkFlow, source: MagicLinkSource): Result<Unit> {
+        WooLog.i(WooLog.T.LOGIN, "Submitting a Magic Link request")
+
+        val action = AuthenticationActionBuilder.newSendAuthEmailAction(
+            AuthEmailPayload(
+                emailOrUsername,
+                false,
+                flow,
+                source,
+                AuthEmailPayloadScheme.WOOCOMMERCE
+            )
+        )
+        val event: OnAuthEmailSent = dispatcher.dispatchAndAwait(action)
+
+        return when {
+            event.isError -> {
+                WooLog.w(
+                    WooLog.T.LOGIN,
+                    "Magic Link request failed: " + event.error.type + " - " + event.error.message
+                )
+                Result.failure(OnChangedException(event.error))
+            }
+            else -> {
+                WooLog.i(WooLog.T.LOGIN, "Magic Link request sent successfully")
+                Result.success(Unit)
+            }
+        }
     }
 
     private suspend fun submitAuthRequest(

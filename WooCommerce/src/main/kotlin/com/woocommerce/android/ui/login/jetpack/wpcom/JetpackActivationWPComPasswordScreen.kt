@@ -1,18 +1,13 @@
 package com.woocommerce.android.ui.login.jetpack.wpcom
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -23,22 +18,14 @@ import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest.Builder
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -48,6 +35,7 @@ import com.woocommerce.android.ui.compose.component.WCPasswordField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
+import com.woocommerce.android.ui.login.jetpack.components.UserInfo
 
 @Composable
 fun JetpackActivationWPComPasswordScreen(viewModel: JetpackActivationWPComPasswordViewModel) {
@@ -177,42 +165,6 @@ fun JetpackActivationWPComPasswordScreen(
 
     if (viewState.isLoadingDialogShown) {
         ProgressDialog(title = "", subtitle = stringResource(id = R.string.logging_in))
-    }
-}
-
-@Composable
-private fun UserInfo(
-    emailOrUsername: String,
-    avatarUrl: String,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(
-            dimensionResource(id = R.dimen.major_100),
-            Alignment.Start
-        ),
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .border(1.dp, color = colorResource(id = R.color.divider_color), shape = MaterialTheme.shapes.medium)
-            .semantics(mergeDescendants = true) {}
-            .padding(dimensionResource(id = R.dimen.major_100))
-    ) {
-        AsyncImage(
-            model = Builder(LocalContext.current)
-                .data(avatarUrl)
-                .crossfade(true)
-                .placeholder(R.drawable.img_gravatar_placeholder)
-                .error(R.drawable.img_gravatar_placeholder)
-                .build(),
-            contentDescription = null,
-            modifier = Modifier
-                .size(dimensionResource(id = R.dimen.image_minor_100))
-                .clip(CircleShape)
-        )
-        Text(
-            text = emailOrUsername,
-            style = MaterialTheme.typography.subtitle1
-        )
     }
 }
 

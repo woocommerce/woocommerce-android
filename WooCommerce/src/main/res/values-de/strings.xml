@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-02-21 14:54:03+0000
+Translation-Revision-Date: 2023-03-01 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="domains_purchase_successful_settings_notice">Die Domaineinstellungen findest du unter „Einstellungen“ -&gt; „Domains“</string>
+    <string name="domains_purchase_successful_delay_notice">Deine Website-Adresse wird eingerichtet. Es kann bis zu 30 Minuten dauern, bis deine Domain funktioniert.</string>
+    <string name="domains_purchase_successful_heading">Herzlichen Glückwunsch zu deinem Kauf</string>
+    <string name="domains_free_with_credits">Im ersten Jahr kostenlos</string>
     <string name="settings_confirm_logout_site_credentials">Möchtest du dich wirklich von deinem Konto abmelden?</string>
     <string name="domains_generic_error_title">Website-Domains konnten nicht geladen werden</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d abgeschlossen</string>

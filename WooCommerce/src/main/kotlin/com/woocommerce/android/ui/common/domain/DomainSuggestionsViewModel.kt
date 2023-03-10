@@ -55,6 +55,8 @@ abstract class DomainSuggestionsViewModel constructor(
     private val selectedDomain = MutableStateFlow<DomainSuggestion?>(null)
     private val products = domainSuggestionsRepository.products
 
+    private val priceMap = mutableMapOf<String, String>()
+
     val viewState = combine(
         domainSuggestions,
         loadingState,
@@ -125,7 +127,7 @@ abstract class DomainSuggestionsViewModel constructor(
 
     abstract fun navigateToNextStep(selectedDomain: DomainSuggestion)
 
-    open fun onDomainSuggestionSelected(domain: String) {
+    fun onDomainSuggestionSelected(domain: String) {
         selectedDomain.value = domainSuggestions.value.first { it.name == domain }
     }
 
@@ -180,7 +182,7 @@ abstract class DomainSuggestionsViewModel constructor(
                     }
                     is Premium -> {
                         val product = products.firstOrNull { it.productId == domain.productId }
-                        val price = domainSuggestionsRepository.fetchDomainPrice(domain.name).getOrNull()
+                        val price = getDomainPrice(domain)
                         if (product != null && price != null) {
                             DomainSuggestionUi.Paid(
                                 isSelected = domain.name == currentSelection?.name,
@@ -194,6 +196,15 @@ abstract class DomainSuggestionsViewModel constructor(
                 }
             }
         }
+    }
+
+    private suspend fun getDomainPrice(domain: DomainSuggestion): String? {
+        if (!priceMap.containsKey(domain.name)) {
+            domainSuggestionsRepository.fetchDomainPrice(domain.name).getOrNull()?.let {
+                priceMap[domain.name] = it
+            }
+        }
+        return priceMap[domain.name]
     }
 
     private fun Product.isDomainOnSale(): Boolean = this.saleCost?.let { it.compareTo(0.0) > 0 } == true

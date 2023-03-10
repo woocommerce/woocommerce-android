@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-02-18 08:43:24+0000
+Translation-Revision-Date: 2023-03-01 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="domains_purchase_successful_settings_notice">Du hittar domäninställningarna via Inställningar &gt; Domäner</string>
+    <string name="domains_purchase_successful_delay_notice">Din webbplatsadress håller på att konfigureras. Det kan dröja upp till 30 minuter innan din domän börjar fungera.</string>
+    <string name="domains_purchase_successful_heading">Grattis till dina köp</string>
+    <string name="domains_free_with_credits">Gratis första året</string>
     <string name="settings_confirm_logout_site_credentials">Är du säker på att du vill logga ut från ditt konto?</string>
     <string name="domains_generic_error_title">Kan inte ladda webbplatsdomäner</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d har slutförts</string>

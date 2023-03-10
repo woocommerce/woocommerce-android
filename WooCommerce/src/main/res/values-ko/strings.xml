@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-02-21 09:54:04+0000
+Translation-Revision-Date: 2023-02-28 15:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="domains_purchase_successful_settings_notice">설정 &gt; 도메인에서 도메인 설정을 찾을 수 있습니다.</string>
+    <string name="domains_purchase_successful_delay_notice">사이트가 설정되고 있습니다. 도메인이 작동하기 시작하려면 최대 30분 정도 걸릴 수 있습니다.</string>
+    <string name="domains_purchase_successful_heading">구매 축하</string>
+    <string name="domains_free_with_credits">첫해 무료</string>
     <string name="settings_confirm_logout_site_credentials">계정에서 로그아웃하시겠나요?</string>
     <string name="domains_generic_error_title">사이트 도메인을 로드할 수 없음</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d개 완료됨</string>

@@ -364,7 +364,7 @@ sealed class CardReaderFlowParam : Parcelable {
             val paymentType: PaymentType
         ) : PaymentOrRefund() {
             enum class PaymentType {
-                SIMPLE, ORDER
+                SIMPLE, ORDER, TRY_TAP_TO_PAY,
             }
         }
 

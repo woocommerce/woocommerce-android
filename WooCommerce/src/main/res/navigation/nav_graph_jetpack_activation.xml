@@ -84,6 +84,9 @@
         <action
             android:id="@+id/action_jetpackActivationWPComEmailFragment_to_jetpackActivationWPComPasswordFragment"
             app:destination="@id/jetpackActivationWPComPasswordFragment" />
+        <action
+            android:id="@+id/action_jetpackActivationWPComEmailFragment_to_jetpackActivationMagicLinkRequestFragment"
+            app:destination="@id/jetpackActivationMagicLinkRequestFragment" />
     </fragment>
     <fragment
         android:id="@+id/jetpackActivationWPComPasswordFragment"
@@ -101,6 +104,9 @@
         <action
             android:id="@+id/action_jetpackActivationWPComPasswordFragment_to_jetpackActivationWPCom2FAFragment"
             app:destination="@id/jetpackActivationWPCom2FAFragment" />
+        <action
+            android:id="@+id/action_jetpackActivationWPComPasswordFragment_to_jetpackActivationMagicLinkRequestFragment"
+            app:destination="@id/jetpackActivationMagicLinkRequestFragment" />
     </fragment>
     <fragment
         android:id="@+id/jetpackActivationWPCom2FAFragment"
@@ -118,5 +124,19 @@
         <action
             android:id="@+id/action_jetpackActivationWPCom2FAFragment_to_jetpackActivationMainFragment"
             app:destination="@id/jetpackActivationMainFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/jetpackActivationMagicLinkRequestFragment"
+        android:name="com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationMagicLinkRequestFragment"
+        android:label="JetpackActivationMagicLinkRequestFragment">
+        <argument
+            android:name="jetpackStatus"
+            app:argType="com.woocommerce.android.model.JetpackStatus" />
+        <argument
+            android:name="emailOrUsername"
+            app:argType="string" />
+        <argument
+            android:name="isAccountPasswordless"
+            app:argType="boolean" />
     </fragment>
 </navigation>
