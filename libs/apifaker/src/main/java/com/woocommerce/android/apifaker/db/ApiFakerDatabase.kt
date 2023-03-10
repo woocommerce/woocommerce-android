@@ -12,7 +12,8 @@ import com.woocommerce.android.apifaker.models.Response
     entities = [
         Request::class, Response::class
     ],
-    version = 1
+    version = 1,
+    exportSchema = false
 )
 @TypeConverters(
     EndpointTypeConverter::class,
