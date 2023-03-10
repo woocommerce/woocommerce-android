@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.login.storecreation.onboarding
 
-import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
@@ -22,7 +21,6 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
@@ -91,25 +89,22 @@ class StoreOnboardingViewModel @Inject constructor(
         }
     }
 
-    @Parcelize
     data class OnboardingState(
         val show: Boolean,
         @StringRes val title: Int,
         val tasks: List<OnboardingTaskUi>,
-    ) : Parcelable
+    )
 
-    @Parcelize
     data class OnboardingTaskUi(
         val taskUiResources: OnboardingTaskUiResources,
         val isCompleted: Boolean,
-    ) : Parcelable
+    )
 
-    @Parcelize
     sealed class OnboardingTaskUiResources(
         @DrawableRes val icon: Int,
         @StringRes val title: Int,
         @StringRes val description: Int
-    ) : Parcelable
+    )
 
     object AboutYourStoreTaskRes : OnboardingTaskUiResources(
         icon = R.drawable.ic_onboarding_about_your_store,
