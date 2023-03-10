@@ -67,8 +67,9 @@ internal class EndpointDetailsViewModel @Inject constructor(
 
     fun onQueryParameterDeleted(queryParameter: QueryParameter) {
         withMutableSnapshot {
-            state =
-                state.copy(request = state.request.copy(queryParameters = state.request.queryParameters - queryParameter))
+            state = state.copy(
+                request = state.request.copy(queryParameters = state.request.queryParameters - queryParameter)
+            )
         }
     }
 

@@ -60,7 +60,10 @@ class EndpointProcessorTest {
     fun `when processing a GET Jetpack Tunnel endpoint, then extract data correctly`() {
         val request = Request.Builder()
             .method("GET", null)
-            .url("https://public-api.wordpress.com/rest/v1.1/jetpack-blogs/161477129/rest-api/?path=/wc/v3/products&_method=get")
+            .url(
+                "https://public-api.wordpress.com/rest/v1.1/jetpack-blogs/161477129/rest-api/" +
+                    "?path=/wc/v3/products&_method=get"
+            )
             .build()
 
         endpointProcessor.fakeRequestIfNeeded(request)

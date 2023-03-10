@@ -377,7 +377,6 @@ private fun QueryParametersField(
                         Text(text = "Add")
                     }
                 }
-
             }
         }
     }
@@ -438,10 +437,11 @@ private fun QueryParametersField(
     }
 
     if (isAddDialogShown) {
-        AddDialog(onAdd = { name, value ->
-            onQueryParameterAdded(name, value)
-            isAddDialogShown = false
-        },
+        AddDialog(
+            onAdd = { name, value ->
+                onQueryParameterAdded(name, value)
+                isAddDialogShown = false
+            },
             onDismiss = { isAddDialogShown = false }
         )
     }

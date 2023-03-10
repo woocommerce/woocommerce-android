@@ -23,6 +23,7 @@ import java.lang.ref.WeakReference
 import javax.inject.Inject
 import javax.inject.Singleton
 
+@Suppress("EmptyFunctionBlock")
 @Singleton
 class ApiFakerUiHelper @Inject constructor() : ActivityLifecycleCallbacks {
     @Inject
@@ -70,7 +71,6 @@ class ApiFakerUiHelper @Inject constructor() : ActivityLifecycleCallbacks {
         }
     }
 
-    @SuppressLint("SetTextI18n")
     private fun View.showApiFakerHint(activity: ComponentActivity) {
         fun dpToPx(dp: Int): Int {
             return TypedValue.applyDimension(
@@ -87,9 +87,11 @@ class ApiFakerUiHelper @Inject constructor() : ActivityLifecycleCallbacks {
         val apiFakerHint = FrameLayout(context).apply {
             id = apiFakerHintId
             setBackgroundColor(Color.RED)
+            @Suppress("MagicNumber")
             setPadding(dpToPx(4))
             addView(
                 TextView(context).apply {
+                    @SuppressLint("SetTextI18n")
                     text = "ApiFaker Enabled"
                     textAlignment = View.TEXT_ALIGNMENT_CENTER
                     setTextColor(Color.WHITE)
