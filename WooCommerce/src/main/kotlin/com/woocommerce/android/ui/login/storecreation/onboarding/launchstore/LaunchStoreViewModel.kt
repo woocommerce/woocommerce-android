@@ -11,7 +11,9 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.UserAgent
+import java.net.URL
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,9 +31,10 @@ class LaunchStoreViewModel @Inject constructor(
     private val _viewState = MutableStateFlow(
         LaunchStoreState(
             isTrialPlan = selectedSite.get().isCurrentPlanEcommerceTrial,
-            isStoreLaunched = true,
+            isStoreLaunched = false,
             isLoading = false,
-            siteUrl = selectedSite.get().url
+            siteUrl = selectedSite.get().url,
+            displayUrl = selectedSite.get().getAbsoluteUrl()
         )
     )
     val viewState = _viewState.asLiveData()
@@ -60,11 +63,14 @@ class LaunchStoreViewModel @Inject constructor(
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
+    private fun SiteModel.getAbsoluteUrl(): String = runCatching { URL(url).host }.getOrDefault("")
+
     data class LaunchStoreState(
         val isTrialPlan: Boolean,
         val isStoreLaunched: Boolean,
         val isLoading: Boolean,
         val siteUrl: String,
+        val displayUrl: String
     )
 
     sealed class LaunchStoreEvent : MultiLiveEvent.Event()

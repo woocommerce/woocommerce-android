@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
@@ -94,13 +95,24 @@ fun LaunchStoreScreen(
                     verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(size = dimensionResource(id = R.dimen.major_85))
+                                .clip(shape = CircleShape)
+                                .background(color = colorResource(id = R.color.color_info))
+                        ) {}
+                        Text(
+                            text = stringResource(id = R.string.store_onboarding_launched_title),
+                            style = MaterialTheme.typography.h5,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                     Text(
-                        text = stringResource(id = R.string.store_onboarding_launched_title),
-                        style = MaterialTheme.typography.h5,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = state.siteUrl,
+                        text = state.displayUrl,
                         style = MaterialTheme.typography.caption
                     )
                     Box(
