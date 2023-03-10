@@ -32,7 +32,6 @@ import org.wordpress.android.util.UrlUtils
 import zendesk.support.CreateRequest
 import zendesk.support.CustomField
 import zendesk.support.Request
-import zendesk.support.Support
 import java.util.Locale
 
 class ZendeskManager(
@@ -89,13 +88,6 @@ class ZendeskManager(
 
         awaitClose()
     }.flowOn(dispatchers.io)
-
-    /**
-     * This function refreshes the Zendesk's request activity if it's currently being displayed. It'll return true if
-     * it's successful. We'll use the return value to decide whether to show a push notification or not.
-     */
-    fun refreshRequest(context: Context, requestId: String?): Boolean =
-        Support.INSTANCE.refreshRequest(requestId, context)
 
     private fun getHomeURLOrHostName(site: SiteModel): String {
         var homeURL = UrlUtils.removeScheme(site.url)
