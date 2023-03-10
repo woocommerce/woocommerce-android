@@ -18,6 +18,9 @@ import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
+import com.woocommerce.android.ui.main.ResolveAppLink.Action.ChangeSiteAndRestart
+import com.woocommerce.android.ui.main.ResolveAppLink.Action.DoNothing
+import com.woocommerce.android.ui.main.ResolveAppLink.Action.ViewStats
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.WooLog
@@ -99,13 +102,13 @@ class MainActivityViewModel @Inject constructor(
 
     fun handleIncomingAppLink(uri: Uri?) {
         when (val event = resolveAppLink(uri)) {
-            is ResolveAppLink.Action.ChangeSiteAndRestart -> {
+            is ChangeSiteAndRestart -> {
                 changeSiteAndRestart(event.siteId, RestartActivityForAppLink(event.uri))
             }
             is ResolveAppLink.Action.ViewOrderDetail -> {
                 triggerEvent(ViewOrderDetail(uniqueId = event.orderId, remoteNoteId = 0L))
             }
-            ResolveAppLink.Action.ViewStats -> {
+            ViewStats -> {
                 triggerEvent(ViewMyStoreStats)
             }
             ResolveAppLink.Action.ViewPayments -> {
@@ -114,7 +117,10 @@ class MainActivityViewModel @Inject constructor(
             ResolveAppLink.Action.ViewTapToPay -> {
                 triggerEvent(ViewTapToPay)
             }
-            ResolveAppLink.Action.DoNothing -> {
+            is ResolveAppLink.Action.ViewUrlInWebView -> {
+                triggerEvent(ViewUrlInWebView(event.url))
+            }
+            DoNothing -> {
                 // no-op
             }
         }.exhaustive
@@ -197,6 +203,7 @@ class MainActivityViewModel @Inject constructor(
     object ViewZendeskTickets : Event()
     object ViewPayments : Event()
     object ViewTapToPay : Event()
+    data class ViewUrlInWebView(val url: String) : Event()
     object ShortcutOpenPayments : Event()
     object ShortcutOpenOrderCreation : Event()
     data class RestartActivityForNotification(val pushId: Int, val notification: Notification) : Event()

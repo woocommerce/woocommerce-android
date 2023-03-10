@@ -74,6 +74,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewTapToPay
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewUrlInWebView
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
 import com.woocommerce.android.ui.moremenu.MoreMenuFragmentDirections
 import com.woocommerce.android.ui.mystore.MyStoreFragmentDirections
@@ -694,7 +695,8 @@ class MainActivity :
                 is ViewReviewList -> showReviewList()
                 is RestartActivityForNotification -> restartActivityForNotification(event)
                 is RestartActivityForAppLink -> restartActivityForAppLink(event)
-                is ShowFeatureAnnouncement -> navigateToFeratureAnnouncement(event)
+                is ShowFeatureAnnouncement -> navigateToFeatureAnnouncement(event)
+                is ViewUrlInWebView -> navigateToWebView(event)
                 ViewPayments -> showPayments()
                 ViewTapToPay -> showTapToPaySummary()
                 ShortcutOpenPayments -> shortcutShowPayments()
@@ -714,9 +716,15 @@ class MainActivity :
         }
     }
 
-    private fun navigateToFeratureAnnouncement(event: ShowFeatureAnnouncement) {
+    private fun navigateToFeatureAnnouncement(event: ShowFeatureAnnouncement) {
         val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)
         navController.navigateSafely(action)
+    }
+
+    private fun navigateToWebView(event: ViewUrlInWebView) {
+        navController.navigate(
+            NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url)
+        )
     }
 
     private fun showOrderDetail(event: ViewOrderDetail) {

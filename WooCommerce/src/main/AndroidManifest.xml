@@ -70,6 +70,11 @@
                     android:host="woocommerce.com"
                     android:path="/mobile/payments/tap-to-pay"
                     android:scheme="https" />
+
+                <data
+                    android:host="woocommerce.com"
+                    android:pathPrefix="/products/hardware/"
+                    android:scheme="https" />
             </intent-filter>
         </activity>
         <activity

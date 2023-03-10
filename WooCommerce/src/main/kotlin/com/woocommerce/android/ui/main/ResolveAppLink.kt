@@ -17,9 +17,10 @@ class ResolveAppLink @Inject constructor(
 
     operator fun invoke(uri: Uri?): Action {
         return when {
-            uri matches "mobile/orders/details" -> prepareOrderDetailsAction(uri!!)
-            uri matches "mobile/payments" -> preparePaymentsAction(uri!!)
-            uri matches "mobile/payments/tap-to-pay" -> prepareTapToPayAction(uri!!)
+            uri endsWith "mobile/orders/details" -> prepareOrderDetailsAction(uri!!)
+            uri endsWith "mobile/payments" -> preparePaymentsAction(uri!!)
+            uri endsWith "mobile/payments/tap-to-pay" -> prepareTapToPayAction(uri!!)
+            uri startsWith "/products/hardware" -> prepareUrlInWebViewAction(uri!!)
             else -> Action.DoNothing
         }
     }
@@ -27,6 +28,11 @@ class ResolveAppLink @Inject constructor(
     private fun prepareTapToPayAction(data: Uri) = handleUriWithOptionalBlogId(data, Action.ViewTapToPay)
 
     private fun preparePaymentsAction(data: Uri) = handleUriWithOptionalBlogId(data, Action.ViewPayments)
+
+    private fun prepareUrlInWebViewAction(data: Uri) = handleUriWithOptionalBlogId(
+        data,
+        Action.ViewUrlInWebView(data.toString())
+    )
 
     private fun prepareOrderDetailsAction(data: Uri): Action {
         val (blogId, orderId) = try {
@@ -90,7 +96,9 @@ class ResolveAppLink @Inject constructor(
     private fun trackLinkFailure(data: Uri) =
         tracker.track(AnalyticsEvent.UNIVERSAL_LINK_FAILED, properties = mapOf(KEY_URL to data.toString()))
 
-    private infix fun Uri?.matches(suffix: String) = this?.path?.endsWith(suffix, ignoreCase = true) == true
+    private infix fun Uri?.endsWith(suffix: String) = this?.path?.endsWith(suffix, ignoreCase = true) == true
+
+    private infix fun Uri?.startsWith(prefix: String) = this?.path?.startsWith(prefix, ignoreCase = true) == true
 
     private fun Uri.getParamOrNull(key: String) = getQueryParameter(key)?.toLong()
 
@@ -100,6 +108,7 @@ class ResolveAppLink @Inject constructor(
         object ViewStats : Action()
         object ViewPayments : Action()
         object ViewTapToPay : Action()
+        data class ViewUrlInWebView(val url: String) : Action()
         object DoNothing : Action()
     }
 
