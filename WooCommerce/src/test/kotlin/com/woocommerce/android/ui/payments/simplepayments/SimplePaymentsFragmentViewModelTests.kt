@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderTestUtils
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -41,7 +42,10 @@ class SimplePaymentsFragmentViewModelTests : BaseUnitTest() {
     private lateinit var viewModel: SimplePaymentsFragmentViewModel
 
     private val savedState: SavedStateHandle =
-        SimplePaymentsFragmentArgs(order = testOrder).initSavedStateHandle()
+        SimplePaymentsFragmentArgs(
+            order = testOrder,
+            paymentType = PaymentType.SIMPLE
+        ).initSavedStateHandle()
 
     private fun initViewModel() {
         viewModel = SimplePaymentsFragmentViewModel(savedState, mock(), mock(), mock())

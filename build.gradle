@@ -99,7 +99,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'trunk-2e28cbac6ef03fdcde28de9fb79c88f4138ba23d'
+    fluxCVersion = '2.18.0'
     glideVersion = '4.13.2'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
@@ -208,3 +208,4 @@ tasks.register("configureApply") {
 }
 
 apply from: './config/gradle/jacoco.gradle'
+apply from: './config/gradle/gradle_build_scan.gradle'

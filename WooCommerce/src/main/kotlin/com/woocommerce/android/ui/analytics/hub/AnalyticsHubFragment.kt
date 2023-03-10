@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.analytics.hub
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -17,6 +18,7 @@ import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -72,6 +74,7 @@ class AnalyticsHubFragment :
                 .navigate(NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url))
             is AnalyticsViewEvent.OpenDatePicker -> showDateRangePicker(event.fromMillis, event.toMillis)
             is AnalyticsViewEvent.OpenDateRangeSelector -> openDateRangeSelector()
+            is AnalyticsViewEvent.SendFeedback -> sendFeedback()
             else -> event.isHandled = false
         }
     }
@@ -112,6 +115,7 @@ class AnalyticsHubFragment :
         binding.analyticsProductsCard.updateInformation(viewState.productsState)
         binding.analyticsVisitorsCard.updateInformation(viewState.sessionState)
         binding.analyticsRefreshLayout.isRefreshing = viewState.refreshIndicator == ShowIndicator
+        displayFeedbackBanner(viewState.showFeedBackBanner)
     }
 
     private fun getDateRangeSelectorViewState() = viewModel.viewState.value.analyticsDateRangeSelectorState
@@ -131,5 +135,20 @@ class AnalyticsHubFragment :
         datePicker.addOnPositiveButtonClickListener {
             viewModel.onCustomRangeSelected(Date(it?.first ?: 0L), Date(it.second ?: 0L))
         }
+    }
+
+    private fun displayFeedbackBanner(isVisible: Boolean) {
+        binding.analyticsHubFeedbackBanner.isVisible = isVisible
+        if (!isVisible) return
+        binding.analyticsHubFeedbackBanner.run {
+            onSendFeedbackListener = { viewModel.onSendFeedbackClicked() }
+            onDismissClickListener = { viewModel.onDismissBannerClicked() }
+        }
+    }
+
+    private fun sendFeedback() {
+        NavGraphMainDirections
+            .actionGlobalFeedbackSurveyFragment(SurveyType.ANALYTICS_HUB)
+            .apply { findNavController().navigateSafely(this) }
     }
 }
