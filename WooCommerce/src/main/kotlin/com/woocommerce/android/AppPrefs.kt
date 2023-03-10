@@ -105,6 +105,7 @@ object AppPrefs {
         UPDATE_SIMULATED_READER_OPTION,
         ENABLE_SIMULATED_INTERAC,
         CUSTOM_DOMAINS_SOURCE,
+        NOTIFICATIONS_PERMISSION_BAR,
     }
 
     /**
@@ -902,6 +903,12 @@ object AppPrefs {
     }
 
     fun getCustomDomainsSource() = getString(DeletablePrefKey.CUSTOM_DOMAINS_SOURCE, AnalyticsTracker.VALUE_SETTINGS)
+
+    fun setWasNotificationsPermissionBarDismissed(source: Boolean) {
+        setBoolean(DeletablePrefKey.NOTIFICATIONS_PERMISSION_BAR, source)
+    }
+
+    fun getWasNotificationsPermissionBarDismissed() = getBoolean(DeletablePrefKey.NOTIFICATIONS_PERMISSION_BAR, false)
 
     private fun getActiveStatsGranularityFilterKey(currentSiteId: Int) =
         PrefKeyString("${DeletablePrefKey.ACTIVE_STATS_GRANULARITY}:$currentSiteId")
