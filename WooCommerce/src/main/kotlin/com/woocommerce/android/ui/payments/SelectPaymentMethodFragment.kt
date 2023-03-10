@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.Navigate
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderHubFlow
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderPaymentFlow
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderRefundFlow
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToOrderDetails
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.OpenGenericWebView
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.OpenPurchaseCardReaderLink
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.SharePaymentUrl
@@ -160,7 +161,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
         applyBannerComposeUI(state.bannerState)
     }
 
-    @Suppress("LongMethod")
+    @Suppress("LongMethod", "ComplexMethod")
     private fun handleEvents(binding: FragmentTakePaymentBinding) {
         viewModel.event.observe(
             viewLifecycleOwner
@@ -232,6 +233,13 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
                 }
                 is OpenGenericWebView -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                }
+                is NavigateToOrderDetails -> {
+                    val action = SelectPaymentMethodFragmentDirections
+                        .actionSelectPaymentMethodFragmentToOrderDetailFragment(
+                            orderId = event.orderId
+                        )
+                    findNavController().navigateSafely(action)
                 }
             }
         }

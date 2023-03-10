@@ -16,6 +16,7 @@ import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,8 +26,10 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
-    @Inject lateinit var currencyFormatter: CurrencyFormatter
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var currencyFormatter: CurrencyFormatter
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: SimplePaymentsDialogViewModel by viewModels()
 
@@ -105,7 +108,8 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
             }
             new.createdOrder.takeIfNotEqualTo(old?.createdOrder) { order ->
                 val action = SimplePaymentsDialogDirections.actionSimplePaymentDialogToSimplePaymentFragment(
-                    order!!
+                    order!!,
+                    PaymentType.SIMPLE,
                 )
                 findNavController().navigateSafely(action)
             }
