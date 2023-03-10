@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.mystore
 
-import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
@@ -88,7 +87,7 @@ class MyStoreViewModel @Inject constructor(
     private val jitmTracker: JitmTracker,
     private val myStoreUtmProvider: MyStoreUtmProvider,
     private val queryParamsEncoder: QueryParamsEncoder,
-    private val jitmClickHandler: JitmClickHandler
+    private val jitmClickHandler: JitmClickHandler,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
@@ -207,9 +206,13 @@ class MyStoreViewModel @Inject constructor(
         featureClass: String,
         url: String
     ) {
+        jitmTracker.trackJitmCtaTapped(
+            UTM_SOURCE,
+            id,
+            featureClass
+        )
+
         jitmClickHandler.onJitmCtaClicked(
-            id = id,
-            featureClass = featureClass,
             url = myStoreUtmProvider.getUrlWithUtmParams(
                 source = UTM_SOURCE,
                 id = id,
@@ -522,9 +525,5 @@ class MyStoreViewModel @Inject constructor(
         ) : MyStoreEvent()
 
         data class OpenAnalytics(val analyticsPeriod: SelectionType) : MyStoreEvent()
-        data class OnJitmCtaClicked(
-            val url: String,
-            @StringRes val titleRes: Int = R.string.card_reader_purchase_card_reader
-        ) : MyStoreEvent()
     }
 }

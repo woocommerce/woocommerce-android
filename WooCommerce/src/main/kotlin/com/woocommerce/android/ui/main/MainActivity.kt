@@ -684,6 +684,7 @@ class MainActivity :
     }
     // endregion
 
+    @Suppress("ComplexMethod")
     private fun setupObservers() {
         viewModel.event.observe(this) { event ->
             when (event) {

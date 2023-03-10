@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.BuildConfig
-import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -13,10 +12,10 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.ui.jitm.JitmClickHandler
 import com.woocommerce.android.ui.jitm.JitmTracker
 import com.woocommerce.android.ui.jitm.QueryParamsEncoder
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.Companion.UTM_SOURCE
-import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OnJitmCtaClicked
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
@@ -71,6 +70,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val jitmTracker: JitmTracker = mock()
     private val utmProvider: MyStoreUtmProvider = mock()
     private val queryParamsEncoder: QueryParamsEncoder = mock()
+    private val jitmClickHandler: JitmClickHandler = mock()
 
     private lateinit var sut: MyStoreViewModel
 
@@ -615,7 +615,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given jitm displayed, when jitm cta clicked, then proper event is triggered`() {
+    fun `given jitm displayed, when jitm cta clicked, then jitm`() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
@@ -642,11 +642,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
                 (sut.bannerState.value as BannerState) as BannerState.DisplayBannerState
                 ).onPrimaryActionClicked.invoke()
 
-            assertThat(
-                sut.event.value
-            ).isInstanceOf(
-                OnJitmCtaClicked::class.java
-            )
+            verify(jitmClickHandler).onJitmCtaClicked(any())
         }
     }
 
@@ -686,48 +682,8 @@ class MyStoreViewModelTest : BaseUnitTest() {
                 (sut.bannerState.value as BannerState) as BannerState.DisplayBannerState
                 ).onPrimaryActionClicked.invoke()
 
-            assertThat(
-                (sut.event.value as OnJitmCtaClicked).url
-            ).isEqualTo(
-                "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
-            )
-        }
-    }
-
-    @Test
-    fun `given jitm displayed, when jitm cta clicked, then proper title is passed`() {
-        testBlocking {
-            givenNetworkConnectivity(connected = true)
-            whenever(selectedSite.get()).thenReturn(SiteModel())
-            whenever(selectedSite.getIfExists()).thenReturn(SiteModel())
-            whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any())
-            ).thenReturn(
-                WooResult(
-                    model = arrayOf(provideJitmApiResponse())
-                )
-            )
-            whenever(
-                utmProvider.getUrlWithUtmParams(
-                    anyString(),
-                    anyString(),
-                    anyString(),
-                    any(),
-                    anyString(),
-                )
-            ).thenReturn(
-                ""
-            )
-
-            whenViewModelIsCreated()
-            (
-                (sut.bannerState.value as BannerState) as BannerState.DisplayBannerState
-                ).onPrimaryActionClicked.invoke()
-
-            assertThat(
-                (sut.event.value as OnJitmCtaClicked).titleRes
-            ).isEqualTo(
-                R.string.card_reader_purchase_card_reader
+            verify(jitmClickHandler).onJitmCtaClicked(
+                eq("${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US")
             )
         }
     }
@@ -1373,7 +1329,8 @@ class MyStoreViewModelTest : BaseUnitTest() {
             jitmStore,
             jitmTracker,
             utmProvider,
-            queryParamsEncoder
+            queryParamsEncoder,
+            jitmClickHandler,
         )
     }
 
