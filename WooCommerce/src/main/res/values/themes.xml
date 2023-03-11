@@ -41,7 +41,7 @@
         <item name="android:navigationBarColor">@color/nav_bar</item>
         <item name="elevationOverlayEnabled">true</item>
         <item name="elevationOverlayColor">@color/woo_white</item>
-        <item name="android:textColorLink">@color/color_secondary</item>
+        <item name="android:textColorLink">@color/color_primary</item>
 
         <item name="minTouchTargetSize">@dimen/min_tap_target</item>
 
