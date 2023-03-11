@@ -37,4 +37,8 @@ class SupportModule {
     @Singleton
     @Provides
     fun provideSupportHelper(): SupportHelper = SupportHelper()
+
+    @Singleton
+    @Provides
+    fun provideZendeskEnvironmentDataSource(): ZendeskEnvironmentDataSource = ZendeskEnvironmentDataSource()
 }
