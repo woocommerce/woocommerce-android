@@ -7,7 +7,7 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
+import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.NotificationsPermissionsBarBinding
@@ -17,7 +17,7 @@ import com.woocommerce.android.util.WooPermissionUtils
 class NotificationsPermissionBarView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null
-) : CardView(ctx, attrs) {
+) : MaterialCardView(ctx, attrs) {
     companion object {
         private const val INIT_DELAY = 2000L
     }
