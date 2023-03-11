@@ -75,6 +75,7 @@ internal class ZendeskManagerTest : BaseUnitTest() {
     fun `when createRequest is called correctly, then an result with the Request is emitted` () = testBlocking {
         // Given
         var result: Result<Request?>? = null
+        val expectedRequest = Request()
         val captor = argumentCaptor<ZendeskCallback<Request>>()
 
 
@@ -92,13 +93,16 @@ internal class ZendeskManagerTest : BaseUnitTest() {
         }
 
         verify(requestProvider).createRequest(any(), captor.capture())
-        captor.firstValue.onSuccess(Request())
+        captor.firstValue.onSuccess(expectedRequest)
         advanceUntilIdle()
         job.cancel()
 
         // Then
         assertThat(result).isNotNull
         assertThat(result?.isSuccess).isTrue
+        assertThat(result?.isFailure).isFalse
+        assertThat(result?.getOrNull()).isNotNull
+        assertThat(result?.getOrNull()).isEqualTo(expectedRequest)
     }
 
     private fun createSUT() {
