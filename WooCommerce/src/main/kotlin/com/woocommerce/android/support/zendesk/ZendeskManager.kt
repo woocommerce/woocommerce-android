@@ -50,7 +50,6 @@ class ZendeskManager(
         val requestCallback = object : ZendeskCallback<Request>() {
             override fun onSuccess(result: Request?) {
                 trySend(Result.success(result))
-                trySend(Result.success(result))
                 close()
             }
 
