@@ -23,19 +23,22 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.store.SiteStore
 import zendesk.support.Request
+import zendesk.support.RequestProvider
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ZendeskManagerTest : BaseUnitTest() {
     private lateinit var sut: ZendeskManager
     private lateinit var zendeskSettings: ZendeskSettings
+    private lateinit var requestProvider: RequestProvider
     private lateinit var envDataSource: ZendeskEnvironmentDataSource
     private lateinit var siteStore: SiteStore
-    private val captor = argumentCaptor<ZendeskCallback<Request>>()
 
     @Before
     fun setup() {
+        requestProvider = mock()
         zendeskSettings = mock {
             on { isIdentitySet } doReturn true
+            on { requestProvider } doReturn requestProvider
         }
         siteStore = mock {
             on { sites } doReturn emptyList()
@@ -72,6 +75,7 @@ internal class ZendeskManagerTest : BaseUnitTest() {
     fun `when createRequest is called correctly, then an result with the Request is emitted` () = testBlocking {
         // Given
         var result: Result<Request?>? = null
+        val captor = argumentCaptor<ZendeskCallback<Request>>()
 
 
         // When
@@ -87,7 +91,7 @@ internal class ZendeskManagerTest : BaseUnitTest() {
             ).first()
         }
 
-        verify(zendeskSettings).requestProvider?.createRequest(any(), captor.capture())
+        verify(requestProvider).createRequest(any(), captor.capture())
         captor.firstValue.onSuccess(Request())
         advanceUntilIdle()
         job.cancel()
