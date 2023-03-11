@@ -4,10 +4,7 @@ import android.content.Context
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.util.AttributeSet
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
@@ -21,12 +18,17 @@ class NotificationsPermissionBarView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null
 ) : CardView(ctx, attrs) {
+    companion object {
+        private const val INIT_DELAY = 2000L
+    }
     private val activity = context as AppCompatActivity
-    private val binding = NotificationsPermissionsBarBinding.bind(View.inflate(
-        context,
-        R.layout.notifications_permissions_bar,
-        this
-    ))
+    private val binding = NotificationsPermissionsBarBinding.bind(
+        View.inflate(
+            context,
+            R.layout.notifications_permissions_bar,
+            this
+        )
+    )
 
     private val shouldShowNotificationsPermissionBar: Boolean
         get() {
@@ -42,8 +44,6 @@ class NotificationsPermissionBarView @JvmOverloads constructor(
     }
 
     init {
-//        addView(this)
-
         postDelayed(
             {
                 if (shouldShowNotificationsPermissionBar) {
@@ -52,7 +52,7 @@ class NotificationsPermissionBarView @JvmOverloads constructor(
                     hide()
                 }
             },
-            2000
+            INIT_DELAY
         )
 
         binding.btnAllow.setOnClickListener {
