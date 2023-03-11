@@ -66,6 +66,8 @@ repositories {
 }
 
 android {
+    namespace "com.woocommerce.android"
+
     compileSdkVersion gradle.ext.compileSdkVersion
 
     defaultConfig {
