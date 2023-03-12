@@ -130,6 +130,6 @@ sealed class ProductNavigationTarget : Event() {
 
     data class NavigateToAITools(
         val productName: String,
-        val productDescription: String
+        val productDescription: String = ""
     ) : ProductNavigationTarget()
 }

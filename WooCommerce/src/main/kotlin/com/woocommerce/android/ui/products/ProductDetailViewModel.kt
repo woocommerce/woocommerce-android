@@ -2213,7 +2213,7 @@ class ProductDetailViewModel @Inject constructor(
 
     fun onAiToolsButtonClicked() {
         viewState.productDraft?.let {
-            triggerEvent(ProductNavigationTarget.NavigateToAITools(it.name))
+            triggerEvent(ProductNavigationTarget.NavigateToAITools(it.name, it.description))
         }
     }
 
