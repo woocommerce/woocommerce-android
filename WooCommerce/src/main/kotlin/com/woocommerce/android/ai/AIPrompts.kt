@@ -13,7 +13,8 @@ object AIPrompts {
     fun generateAdvertisementTextPrompt(name: String, description: String = ""): String {
         val prompt = GENERATE_AD_TEXT_BASE + name
         return if (description.isNotEmpty()) {
-            "$prompt with the following description: $description"
+            "$prompt . Whenever it makes sense, take into account the following " +
+                "product description when creating the text: $description"
         } else {
             prompt
         }
