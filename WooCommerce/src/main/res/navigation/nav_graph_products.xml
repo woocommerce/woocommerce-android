@@ -85,6 +85,9 @@
         <action
             android:id="@+id/action_productDetailFragment_to_productAddonsFragment"
             app:destination="@id/productAddonsFragment"/>
+        <action
+            android:id="@+id/action_productDetailFragment_to_productAIToolsFragment"
+            app:destination="@id/productAIToolsFragment" />
     </fragment>
     <fragment
         android:id="@+id/variationListFragment"
@@ -591,6 +594,15 @@
             android:defaultValue="@null"
             app:argType="com.woocommerce.android.ui.media.MediaFileUploadHandler$ProductImageUploadData[]"
             app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/productAIToolsFragment"
+        android:name="com.woocommerce.android.ui.products.ProductAIToolsFragment"
+        android:label="ProductAIToolsFragment">
+        <argument
+            android:name="productName"
+            android:defaultValue='""'
+            app:argType="string" />
     </fragment>
     <dialog
         android:id="@+id/addProductDownloadBottomSheetFragment"

@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAtt
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductCategory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ExitProduct
+import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToAITools
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToProductFilter
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToVariationSelector
 import com.woocommerce.android.ui.products.ProductNavigationTarget.RenameProductAttribute
@@ -376,6 +377,13 @@ class ProductNavigator @Inject constructor() {
                     screenTitle = fragment.resources.getText(target.screenTitleStringId).toString(),
                     hint = target.hint,
                     strategy = SimpleTextEditorStrategy.SEND_RESULT_ON_NAVIGATE_BACK
+                )
+                fragment.findNavController().navigateSafely(action)
+            }
+
+            is NavigateToAITools -> {
+                val action = ProductDetailFragmentDirections.actionProductDetailFragmentToProductAIToolsFragment(
+                    productName = target.productName
                 )
                 fragment.findNavController().navigateSafely(action)
             }

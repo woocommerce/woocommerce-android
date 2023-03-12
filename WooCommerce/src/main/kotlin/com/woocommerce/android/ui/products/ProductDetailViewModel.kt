@@ -2231,6 +2231,12 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
+    fun onAiToolsButtonClicked() {
+        viewState.productDraft?.let {
+            triggerEvent(ProductNavigationTarget.NavigateToAITools(it.name))
+        }
+    }
+
     /**
      * Sealed class that handles the back navigation for the product detail screens while providing a common
      * interface for managing them as a single type. Currently used in all the product sub detail screens when
