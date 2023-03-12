@@ -12,9 +12,12 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductAIToolsFragment: BaseFragment() {
+    @Inject lateinit var navigator: ProductNavigator
+
     private val viewModel: ProductAIToolsViewModel by viewModels()
 
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -38,7 +41,7 @@ class ProductAIToolsFragment: BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is Exit -> findNavController().navigateUp()
-                else -> { /* do nothing */ }
+                is ProductNavigationTarget -> navigator.navigate(this, event)
             }
         }
     }
