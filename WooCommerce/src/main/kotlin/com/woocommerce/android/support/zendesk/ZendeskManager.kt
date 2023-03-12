@@ -7,6 +7,7 @@ import com.woocommerce.android.support.zendesk.RequestConstants.requestCreationT
 import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetException
 import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationTimeoutException
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationFailedException
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
@@ -54,7 +55,7 @@ class ZendeskManager(
             }
 
             override fun onError(error: ErrorResponse) {
-                trySend(Result.failure(Throwable(error.reason)))
+                trySend(Result.failure(RequestCreationFailedException(error.reason)))
                 close()
             }
         }
@@ -243,6 +244,7 @@ object ZendeskTags {
 sealed class ZendeskException(message: String) : Exception(message) {
     object IdentityNotSetException : ZendeskException(requestCreationTimeoutErrorMessage)
     object RequestCreationTimeoutException : ZendeskException(requestCreationIdentityNotSetErrorMessage)
+    data class RequestCreationFailedException(private val errorMessage: String) : ZendeskException(errorMessage)
 }
 
 private object RequestConstants {
