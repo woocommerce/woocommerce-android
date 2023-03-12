@@ -383,7 +383,8 @@ class ProductNavigator @Inject constructor() {
 
             is NavigateToAITools -> {
                 val action = ProductDetailFragmentDirections.actionProductDetailFragmentToProductAIToolsFragment(
-                    productName = target.productName
+                    productName = target.productName,
+                    productDescription = target.productDescription
                 )
                 fragment.findNavController().navigateSafely(action)
             }

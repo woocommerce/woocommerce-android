@@ -129,6 +129,7 @@ sealed class ProductNavigationTarget : Event() {
     ) : ProductNavigationTarget()
 
     data class NavigateToAITools(
-        val productName: String
+        val productName: String,
+        val productDescription: String
     ) : ProductNavigationTarget()
 }
