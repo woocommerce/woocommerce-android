@@ -21,7 +21,7 @@ class ProductAIToolsFragment: BaseFragment() {
 
             setContent {
                 WooThemeWithBackground {
-                    ProductsAIToolsScreen()
+                    ProductAIToolsScreen(viewModel)
                 }
             }
         }

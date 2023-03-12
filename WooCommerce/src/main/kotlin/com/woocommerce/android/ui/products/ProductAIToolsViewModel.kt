@@ -36,6 +36,10 @@ class ProductAIToolsViewModel @Inject constructor(
         }
     }
 
+    fun onGenerateTweetClicked() {
+        TODO()
+    }
+
     fun onBackPressed() {
         triggerEvent(Exit)
     }
