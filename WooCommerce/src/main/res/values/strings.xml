@@ -3156,7 +3156,6 @@
     <string name="support_request_error_message">Sorry, we cannot create support requests right now, please try again later.</string>
 
     <string name="ai_generate_product_description">AI: Generate description</string>
-    <string name="ai_product_details_generate_tweet">AI: Generate promo Tweet</string>
     <string name="ai_product_details_generate_tweet_heading">Generated Product Promo Tweet</string>
     <string name="ai_product_missing_name_error">This feature requires a product name. Please add a product name first.</string>
     <string name="ai_product_tools">AI Tools</string>
