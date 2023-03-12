@@ -603,6 +603,11 @@
             android:name="productName"
             android:defaultValue='""'
             app:argType="string" />
+        <argument
+            android:name="productDescription"
+            android:defaultValue='""'
+            app:argType="string" />
+
     </fragment>
     <dialog
         android:id="@+id/addProductDownloadBottomSheetFragment"

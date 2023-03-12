@@ -24,17 +24,13 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 @Composable
 fun ProductAIToolsScreen(viewModel: ProductAIToolsViewModel) {
     viewModel.viewState.observeAsState().value?.let {
-        ProductAIToolsScreen(
-            viewState = it,
-            onGenerateTweetClicked = viewModel::onGenerateTweetClicked,
-        )
+        ProductAIToolsScreen(viewState = it)
     }
 }
 
 @Composable
 fun ProductAIToolsScreen(
-    viewState: ProductAIToolsViewModel.ViewState,
-    onGenerateTweetClicked: () -> Unit = {}
+    viewState: ProductAIToolsViewModel.ViewState
 ) {
     LazyColumn(
         modifier = Modifier
@@ -47,7 +43,7 @@ fun ProductAIToolsScreen(
             ProductAIToolOption(
                 title = option.title,
                 description = option.description,
-                onClick = onGenerateTweetClicked
+                onClick = option.onClick
             )
         }
 

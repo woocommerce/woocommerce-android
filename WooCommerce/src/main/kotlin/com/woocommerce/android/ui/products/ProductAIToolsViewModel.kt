@@ -23,7 +23,7 @@ import javax.inject.Inject
 class ProductAIToolsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val aiRepository: AIRepository,
-    private val resourceProvider: ResourceProvider
+    private val resProvider: ResourceProvider
 ) : ScopedViewModel(savedState) {
 
     private val navArgs: ProductAIToolsFragmentArgs by savedState.navArgs()
@@ -38,16 +38,22 @@ class ProductAIToolsViewModel @Inject constructor(
             it.copy(
                 options = listOf(
                     AIToolOption(
-                        title = resourceProvider.getString(R.string.ai_product_tools_generate_tweet),
-                        description = resourceProvider.getString(R.string.ai_product_tools_generate_tweet_description),
+                        title = resProvider.getString(R.string.ai_product_tools_generate_tweet),
+                        description = resProvider.getString(R.string.ai_product_tools_generate_tweet_description),
+                        onClick = { onGenerateTweetClicked(navArgs.productName) }
+                    ),
+                    AIToolOption(
+                        title = resProvider.getString(R.string.ai_product_tools_generate_ad),
+                        description = resProvider.getString(R.string.ai_product_tools_generate_ad_description),
+                        onClick = { onGenerateAdClicked(navArgs.productName, navArgs.productDescription) }
                     )
+
                 )
             )
         }
     }
 
-    fun onGenerateTweetClicked() {
-        val name = navArgs.productName
+    private fun onGenerateTweetClicked(name: String) {
         if(name.isEmpty()) {
             triggerEvent(ShowSnackbar(R.string.ai_product_missing_name_error))
         }
@@ -58,11 +64,27 @@ class ProductAIToolsViewModel @Inject constructor(
                 )
                 triggerEvent(ProductNavigationTarget.NavigateToAIResult(
                     result,
-                    R.string.ai_product_details_generate_tweet_heading
+                    R.string.ai_product_tools_generate_tweet_heading
                 ))
             }
         }
+    }
 
+    private fun onGenerateAdClicked(name: String, description: String) {
+        if(name.isEmpty()) {
+            triggerEvent(ShowSnackbar(R.string.ai_product_missing_name_error))
+        }
+        else {
+            launch {
+                val result = aiRepository.openAIGenerateChat(
+                    AIPrompts.generateAdvertisementTextPrompt(name, description)
+                )
+                triggerEvent(ProductNavigationTarget.NavigateToAIResult(
+                    result,
+                    R.string.ai_product_tools_generate_ad_heading
+                ))
+            }
+        }
     }
 
     fun onBackPressed() {
@@ -78,5 +100,6 @@ class ProductAIToolsViewModel @Inject constructor(
     data class AIToolOption(
         val title: String,
         val description: String,
+        val onClick: () -> Unit = {}
     ) : Parcelable
 }
