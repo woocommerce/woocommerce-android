@@ -3161,5 +3161,7 @@
     <string name="ai_product_tools">AI Tools</string>
     <string name="ai_product_tools_generate_tweet">Generate promotional Tweet</string>
     <string name="ai_product_tools_generate_tweet_description">Create a 280-char maximum promotional tweet based on product name.</string>
+    <string name="ai_product_tools_generate_ad">Generate advertisement text</string>
+    <string name="ai_product_tools_generate_ad_description">Create advertisement text based on product name.</string>
 
 </resources>
