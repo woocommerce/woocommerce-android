@@ -19,6 +19,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
@@ -46,8 +47,11 @@ fun ProductAIToolsScreen(
                 onClick = option.onClick
             )
         }
-
     }
+    if (viewState.isLoading) {
+        ProgressDialog(title = "", subtitle = stringResource(id = R.string.ai_product_loading))
+    }
+
 }
 
 @Composable

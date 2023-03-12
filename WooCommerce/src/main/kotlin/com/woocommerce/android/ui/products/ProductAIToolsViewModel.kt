@@ -59,13 +59,16 @@ class ProductAIToolsViewModel @Inject constructor(
         }
         else {
             launch {
+                viewStateFlow.update { it.copy(isLoading = true) }
                 val result = aiRepository.openAIGenerateChat(
                     AIPrompts.GENERATE_PROMO_TWEET_FROM_PRODUCT_TITLE + name
                 )
+                viewStateFlow.update { it.copy(isLoading = false) }
                 triggerEvent(ProductNavigationTarget.NavigateToAIResult(
                     result,
                     R.string.ai_product_tools_generate_tweet_heading
                 ))
+
             }
         }
     }
@@ -76,9 +79,11 @@ class ProductAIToolsViewModel @Inject constructor(
         }
         else {
             launch {
+                viewStateFlow.update { it.copy(isLoading = true) }
                 val result = aiRepository.openAIGenerateChat(
                     AIPrompts.generateAdvertisementTextPrompt(name, description)
                 )
+                viewStateFlow.update { it.copy(isLoading = false) }
                 triggerEvent(ProductNavigationTarget.NavigateToAIResult(
                     result,
                     R.string.ai_product_tools_generate_ad_heading
@@ -93,6 +98,7 @@ class ProductAIToolsViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
+        val isLoading: Boolean = false,
         val options: List<AIToolOption> = emptyList()
     ) : Parcelable
 
