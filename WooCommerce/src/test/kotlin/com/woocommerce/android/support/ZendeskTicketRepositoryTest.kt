@@ -8,6 +8,7 @@ import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationF
 import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationTimeoutException
 import com.woocommerce.android.support.zendesk.ZendeskTicketRepository
 import com.woocommerce.android.support.zendesk.ZendeskSettings
+import com.woocommerce.android.support.zendesk.ZendeskTags
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
@@ -202,6 +203,35 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
         assertThat(actualRequest.subject).isEqualTo(expectedSubject)
         assertThat(actualRequest.tags).contains(*expectedTags)
     }
+
+    @Test
+    fun `when createRequest is called using MobileApp as ticketType, then the request is created with the expected tags`() =
+        testBlocking {
+            // Given
+            val expectedTags = arrayOf(ZendeskTags.mobileApp)
+            val captor = argumentCaptor<CreateRequest>()
+
+            // When
+            val job = launch {
+                sut.createRequest(
+                    context = mock(),
+                    origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                    ticketType = TicketType.MobileApp,
+                    selectedSite = null,
+                    subject = "subject",
+                    description = "description",
+                    extraTags = emptyList()
+                ).first()
+            }
+
+            // Then
+            verify(requestProvider).createRequest(captor.capture(), any())
+            advanceUntilIdle()
+            job.cancel()
+
+            val actualRequest = captor.firstValue
+            assertThat(actualRequest.tags).contains(*expectedTags)
+        }
 
     private fun createSUT() {
         sut = ZendeskTicketRepository(
