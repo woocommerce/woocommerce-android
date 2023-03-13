@@ -2,6 +2,7 @@ package com.woocommerce.android.support
 
 import android.content.Context
 import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Parcelable
 import android.telephony.TelephonyManager
 import android.text.TextUtils
@@ -12,6 +13,8 @@ import com.woocommerce.android.support.RequestConstants.requestCreationTimeoutEr
 import com.woocommerce.android.support.ZendeskException.IdentityNotSetException
 import com.woocommerce.android.support.ZendeskException.RequestCreationTimeoutException
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
@@ -26,7 +29,6 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.util.DeviceUtils
-import org.wordpress.android.util.NetworkUtils
 import org.wordpress.android.util.StringUtils
 import org.wordpress.android.util.UrlUtils
 import zendesk.support.CreateRequest
@@ -59,6 +61,12 @@ class ZendeskTicketRepository(
             return@callbackFlow
         }
 
+        val siteConnectionTag = if (selectedSite?.connectionType == SiteConnectionType.ApplicationPasswords) {
+            ZendeskTags.applicationPasswordAuthenticated
+        } else null
+
+        val tags = (ticketType.tags + extraTags + siteConnectionTag).filterNotNull()
+
         val requestCallback = object : ZendeskCallback<Request>() {
             override fun onSuccess(result: Request?) {
                 trySend(Result.success(result))
@@ -75,7 +83,7 @@ class ZendeskTicketRepository(
             this.ticketFormId = ticketType.form
             this.subject = subject
             this.description = description
-            this.tags = buildZendeskTags(siteStore.sites, origin, ticketType.tags + extraTags)
+            this.tags = buildZendeskTags(siteStore.sites, origin, tags)
                 .filter { ticketType.excludedTags.contains(it).not() }
             this.customFields = buildZendeskCustomFields(context, ticketType, siteStore.sites, selectedSite)
         }.let { request -> zendeskSettings.requestProvider?.createRequest(request, requestCallback) }
@@ -183,13 +191,8 @@ class ZendeskTicketRepository(
      * This is a helper function which returns information about the network state of the app to be sent to Zendesk, which
      * could prove useful for the Happiness Engineers while debugging the users' issues.
      */
-    @Suppress("DEPRECATION")
     private fun getNetworkInformation(context: Context): String {
-        val networkType = when (NetworkUtils.getActiveNetworkInfo(context)?.type) {
-            ConnectivityManager.TYPE_WIFI -> ZendeskConstants.networkWifi
-            ConnectivityManager.TYPE_MOBILE -> ZendeskConstants.networkWWAN
-            else -> ZendeskConstants.unknownValue
-        }
+        val networkType = generateNetworkType(context)
         val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?
         val carrierName = telephonyManager?.networkOperatorName ?: ZendeskConstants.unknownValue
         val countryCodeLabel = telephonyManager?.networkCountryIso ?: ZendeskConstants.unknownValue
@@ -199,6 +202,18 @@ class ZendeskTicketRepository(
             "${ZendeskConstants.networkCountryCodeLabel} ${countryCodeLabel.uppercase(Locale.getDefault())}"
         ).joinToString(separator = "\n")
     }
+
+    private fun generateNetworkType(context: Context) =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE)
+            .run { this as? ConnectivityManager }
+            ?.let { it.getNetworkCapabilities(it.activeNetwork) }
+            ?.let {
+                when {
+                    it.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> ZendeskConstants.networkWifi
+                    it.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> ZendeskConstants.networkWWAN
+                    else -> ZendeskConstants.unknownValue
+                }
+            } ?: ZendeskConstants.unknownValue
 }
 
 sealed class TicketType(
@@ -303,6 +318,7 @@ private object TicketFieldIds {
 }
 
 object ZendeskTags {
+    const val applicationPasswordAuthenticated = "application_password_authenticated"
     const val mobileApp = "mobile_app"
     const val woocommerceCore = "woocommerce_core"
     const val paymentsProduct = "woocommerce_payments"
