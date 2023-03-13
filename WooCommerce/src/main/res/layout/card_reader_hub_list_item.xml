@@ -13,9 +13,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="0.5dp"
         android:padding="@dimen/major_85"
+        app:layout_constraintBottom_toBottomOf="@id/cardReaderHubListItemDescriptionTv"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/cardReaderHubListItemLabelTv"
-        app:layout_constraintBottom_toBottomOf="@id/cardReaderHubListItemDescriptionTv"
         app:srcCompat="@drawable/ic_manage_card_reader" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -23,11 +23,11 @@
         style="@style/Widget.Woo.Settings.OptionValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/minor_100"
         android:paddingStart="@dimen/major_100"
+        android:paddingTop="@dimen/minor_50"
         android:paddingEnd="@dimen/major_100"
         android:paddingBottom="@dimen/minor_50"
-        android:paddingTop="@dimen/minor_50"
-        android:layout_marginTop="@dimen/minor_100"
         android:textColor="@color/color_on_surface"
         app:layout_constraintStart_toEndOf="@id/cardReaderMenuIcon"
         app:layout_constraintTop_toTopOf="parent"
@@ -45,4 +45,12 @@
         app:layout_constraintStart_toStartOf="@id/cardReaderHubListItemLabelTv"
         app:layout_constraintTop_toBottomOf="@id/cardReaderHubListItemLabelTv"
         tools:text="Use your phone to accept card payments" />
+
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/cardReaderHubListItemDivider"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

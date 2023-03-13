@@ -1157,7 +1157,7 @@
     <string name="card_reader_onboarding_with_pending_requirements">There is an issue that requires your attention. Please &lt;a href=\'\'&gt;take a look&lt;/a&gt;</string>
     <string name="card_reader_tap_to_pay">Tap To Pay</string>
     <string name="card_reader_tap_to_pay_share_feedback">Share Tap to Pay feedback</string>
-    <string name="card_reader_tap_to_pay_description">Use your phone to accept card payments</string>
+    <string name="card_reader_tap_to_pay_description">Use your phone to accept card payments. Try it now.</string>
 
     <!--
            Card Reader Tap To Pay Explanation

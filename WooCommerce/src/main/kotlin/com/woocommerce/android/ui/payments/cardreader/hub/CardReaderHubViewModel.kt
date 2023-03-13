@@ -208,7 +208,8 @@ class CardReaderHubViewModel @Inject constructor(
                     label = UiStringRes(R.string.card_reader_tap_to_pay),
                     description = UiStringRes(R.string.card_reader_tap_to_pay_description),
                     index = 5,
-                    onClick = ::onTapTooPayClicked
+                    onClick = ::onTapTooPayClicked,
+                    shortDivider = true,
                 )
             )
             if (appPrefs.isTTPWasUsedAtLeastOnce()) {
@@ -446,7 +447,8 @@ class CardReaderHubViewModel @Inject constructor(
                 val description: UiString? = null,
                 override var isEnabled: Boolean = true,
                 override val index: Int,
-                override val onClick: () -> Unit
+                override val onClick: () -> Unit,
+                val shortDivider: Boolean = false,
             ) : ListItem()
 
             data class ToggleableListItem(
