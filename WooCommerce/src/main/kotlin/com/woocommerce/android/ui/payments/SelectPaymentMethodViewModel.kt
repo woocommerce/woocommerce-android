@@ -16,12 +16,16 @@ import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.OrderDurationRecorder
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.ViewState.Loading
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.ViewState.Success
 import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.payments.banner.BannerState
+import com.woocommerce.android.ui.payments.banner.BannerState.DisplayBannerState
+import com.woocommerce.android.ui.payments.banner.BannerState.HideBannerState
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
@@ -31,7 +35,12 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.SIMPLE
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.TRY_TAP_TO_PAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Refund
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
+import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable
+import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.NotAvailable
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.UtmProvider
@@ -64,13 +73,15 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
     private val learnMoreUrlProvider: LearnMoreUrlProvider,
     private val cardReaderTracker: CardReaderTracker,
+    private val wooStore: WooCommerceStore,
+    private val isTapToPayAvailable: IsTapToPayAvailable,
     @Named("select-payment") private val selectPaymentUtmProvider: UtmProvider,
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
     val shouldShowUpsellCardReaderDismissDialog: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    private val viewState = MutableLiveData<TakePaymentViewState>(Loading)
-    val viewStateData: LiveData<TakePaymentViewState> = viewState
+    private val viewState = MutableLiveData<ViewState>(Loading)
+    val viewStateData: LiveData<ViewState> = viewState
 
     private lateinit var order: Order
     private lateinit var orderTotal: String
@@ -95,52 +106,62 @@ class SelectPaymentMethodViewModel @Inject constructor(
                         }
                         val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
                         orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode)
-                        val isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order)
-                        viewState.value = TakePaymentViewState.Success(
-                            paymentUrl = order.paymentUrl,
-                            orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode),
-                            isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader,
-                            bannerState = if (
-                                canShowCardReaderUpsellBanner(System.currentTimeMillis()) &&
-                                isPaymentCollectableWithCardReader
-                            ) {
-                                BannerState.DisplayBannerState(
-                                    onPrimaryActionClicked = { onCtaClicked(AnalyticsTracker.KEY_BANNER_PAYMENTS) },
-                                    onDismissClicked = { onDismissClicked() },
-                                    title = UiString.UiStringRes(
-                                        R.string.card_reader_upsell_card_reader_banner_title
-                                    ),
-                                    description = UiString.UiStringRes(
-                                        R.string.card_reader_upsell_card_reader_banner_description
-                                    ),
-                                    primaryActionLabel = UiString.UiStringRes(
-                                        R.string.card_reader_upsell_card_reader_banner_cta
-                                    ),
-                                    chipLabel = UiString.UiStringRes(
-                                        R.string.card_reader_upsell_card_reader_banner_new
-                                    )
-                                )
-                            } else {
-                                BannerState.HideBannerState
-                            },
-                            learMoreIpp = LearMoreIpp(
-                                label = UiString.UiStringRes(
-                                    R.string.card_reader_connect_learn_more,
-                                    containsHtml = true
-                                ),
-                                onClick = ::onLearnMoreIppClicked
-                            )
+                        viewState.value = buildSuccessState(
+                            currencyCode = currencyCode,
+                            isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order),
+                            isPaymentCollectableWithTapToPay = isTapToPayAvailable()
                         )
                         trackBannerShownIfDisplayed()
                     }
-                    is Refund -> triggerEvent(NavigateToCardReaderRefundFlow(param))
+                    is Refund -> triggerEvent(NavigateToCardReaderRefundFlow(param, EXTERNAL))
                 }
             }
         }.exhaustive
     }
 
+    private fun buildSuccessState(
+        currencyCode: String,
+        isPaymentCollectableWithCardReader: Boolean,
+        isPaymentCollectableWithTapToPay: Boolean,
+    ) = Success(
+        paymentUrl = order.paymentUrl,
+        orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode),
+        isPaymentCollectableWithExternalCardReader = isPaymentCollectableWithCardReader,
+        isPaymentCollectableWithTapToPay = isPaymentCollectableWithCardReader && isPaymentCollectableWithTapToPay,
+        bannerState = if (
+            canShowCardReaderUpsellBanner(System.currentTimeMillis()) &&
+            isPaymentCollectableWithCardReader
+        ) {
+            DisplayBannerState(
+                onPrimaryActionClicked = { onCtaClicked(AnalyticsTracker.KEY_BANNER_PAYMENTS) },
+                onDismissClicked = { onDismissClicked() },
+                title = UiStringRes(
+                    R.string.card_reader_upsell_card_reader_banner_title
+                ),
+                description = UiStringRes(
+                    R.string.card_reader_upsell_card_reader_banner_description
+                ),
+                primaryActionLabel = UiStringRes(
+                    R.string.card_reader_upsell_card_reader_banner_cta
+                ),
+                chipLabel = UiStringRes(
+                    R.string.card_reader_upsell_card_reader_banner_new
+                )
+            )
+        } else {
+            HideBannerState
+        },
+        learMoreIpp = LearMoreIpp(
+            label = UiStringRes(
+                R.string.card_reader_connect_learn_more,
+                containsHtml = true
+            ),
+            onClick = ::onLearnMoreIppClicked
+        )
+    )
+
     private fun trackBannerShownIfDisplayed() {
-        if ((viewState.value as? TakePaymentViewState.Success)?.bannerState is BannerState.DisplayBannerState) {
+        if ((viewState.value as? Success)?.bannerState is DisplayBannerState) {
             analyticsTrackerWrapper.track(
                 AnalyticsEvent.FEATURE_CARD_SHOWN,
                 mapOf(
@@ -148,6 +169,17 @@ class SelectPaymentMethodViewModel @Inject constructor(
                     AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
                 )
             )
+        }
+    }
+
+    private fun isTapToPayAvailable(): Boolean {
+        val countryCode = wooStore.getStoreCountryCode(selectedSite.get()) ?: return false
+        val result = isTapToPayAvailable(countryCode)
+        return if (result is NotAvailable) {
+            cardReaderTracker.trackTapToPayNotAvailableReason(result)
+            false
+        } else {
+            true
         }
     }
 
@@ -221,7 +253,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         }
     }
 
-    fun onCardPaymentClicked() {
+    fun onBtReaderClicked() {
         OrderDurationRecorder.recordCardPaymentStarted()
         analyticsTrackerWrapper.track(
             AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
@@ -235,7 +267,11 @@ class SelectPaymentMethodViewModel @Inject constructor(
             }
         )
 
-        triggerEvent(NavigateToCardReaderPaymentFlow(cardReaderPaymentFlowParam))
+        triggerEvent(NavigateToCardReaderPaymentFlow(cardReaderPaymentFlowParam, EXTERNAL))
+    }
+
+    fun onTapToPayClicked() {
+        triggerEvent(NavigateToCardReaderPaymentFlow(cardReaderPaymentFlowParam, BUILT_IN))
     }
 
     fun onConnectToReaderResultReceived(connected: Boolean) {
@@ -386,15 +422,16 @@ class SelectPaymentMethodViewModel @Inject constructor(
         )
     }
 
-    sealed class TakePaymentViewState {
-        object Loading : TakePaymentViewState()
+    sealed class ViewState {
+        object Loading : ViewState()
         data class Success(
             val paymentUrl: String,
             val orderTotal: String,
-            val isPaymentCollectableWithCardReader: Boolean,
+            val isPaymentCollectableWithExternalCardReader: Boolean,
+            val isPaymentCollectableWithTapToPay: Boolean,
             val bannerState: BannerState,
             val learMoreIpp: LearMoreIpp,
-        ) : TakePaymentViewState()
+        ) : ViewState()
     }
 
     object DismissCardReaderUpsellBanner : MultiLiveEvent.Event()
@@ -415,11 +452,13 @@ class SelectPaymentMethodViewModel @Inject constructor(
     ) : MultiLiveEvent.Event()
 
     data class NavigateToCardReaderPaymentFlow(
-        val cardReaderFlowParam: Payment
+        val cardReaderFlowParam: Payment,
+        val cardReaderType: CardReaderType
     ) : MultiLiveEvent.Event()
 
     data class NavigateToCardReaderRefundFlow(
-        val cardReaderFlowParam: Refund
+        val cardReaderFlowParam: Refund,
+        val cardReaderType: CardReaderType
     ) : MultiLiveEvent.Event()
 
     data class NavigateBackToHub(

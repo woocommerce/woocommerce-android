@@ -400,9 +400,8 @@ class CardReaderHubViewModel @Inject constructor(
             val countryConfig: CardReaderConfigForSupportedCountry
         ) : CardReaderHubEvents()
 
-        data class NavigateToCardReaderOnboardingScreen(
-            val onboardingState: CardReaderOnboardingState
-        ) : CardReaderHubEvents()
+        data class NavigateToCardReaderOnboardingScreen(val onboardingState: CardReaderOnboardingState) :
+            CardReaderHubEvents()
 
         data class OpenGenericWebView(val url: String) : CardReaderHubEvents()
         data class ShowToastString(val message: String) : CardReaderHubEvents()

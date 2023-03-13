@@ -1,0 +1,2 @@
+12.6 :
+Saviez-vous que vous pouviez créer une commande dans l’application ? Nous avons apporté quelques améliorations à la création de commandes pour optimiser votre expérience. Continuez de nous donner votre avis ! Nous les lisons tous !

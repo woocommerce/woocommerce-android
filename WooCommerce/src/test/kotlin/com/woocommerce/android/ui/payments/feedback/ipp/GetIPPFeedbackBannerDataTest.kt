@@ -1,27 +1,22 @@
 package com.woocommerce.android.ui.payments.feedback.ipp
 
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.daysAgo
+import com.woocommerce.android.extensions.WOOCOMMERCE_PAYMENTS_PAYMENT_TYPE
 import com.woocommerce.android.extensions.formatToYYYYmmDD
+import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.payments.GetActivePaymentsPlugin
+import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentCaptor
 import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.firstValue
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentTransactionsSummaryResult
-import org.wordpress.android.fluxc.network.BaseRequest
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
+import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.util.AppLog
 import java.util.Date
@@ -31,26 +26,20 @@ import kotlin.test.assertNull
 @OptIn(ExperimentalCoroutinesApi::class)
 class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
     private val shouldShowFeedbackBanner: ShouldShowFeedbackBanner = mock()
-    private val ippStore: WCInPersonPaymentsStore = mock()
+    private val orderStore: WCOrderStore = mock()
+    private val cashOnDeliverySettings: CashOnDeliverySettingsRepository = mock()
     private val siteModel: SiteModel = mock()
     private val getActivePaymentsPlugin: GetActivePaymentsPlugin = mock()
     private val logger: AppLogWrapper = mock()
 
     private val sut = GetIPPFeedbackBannerData(
         shouldShowFeedbackBanner = shouldShowFeedbackBanner,
-        ippStore = ippStore,
+        orderStore = orderStore,
+        cashOnDeliverySettings = cashOnDeliverySettings,
         siteModel = siteModel,
         getActivePaymentsPlugin = getActivePaymentsPlugin,
         logger = logger,
     )
-
-    @Before
-    fun setup() {
-        val fakeSummary = WCPaymentTransactionsSummaryResult(99, "", 0, 0, 0, null, null)
-        testBlocking {
-            whenever(ippStore.fetchTransactionsSummary(any(), any(), any())).thenReturn(WooPayload(fakeSummary))
-        }
-    }
 
     @Test
     fun `given banner should not be displayed, then should return null`() = testBlocking {
@@ -62,6 +51,30 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
 
         // then
         assertNull(result)
+    }
+
+    @Test
+    fun `given banner should not be shown, then log the error`() = testBlocking {
+        // given
+        whenever(shouldShowFeedbackBanner()).thenReturn(false)
+
+        // when
+        sut()
+
+        // then
+        verify(logger).e(any(), any())
+    }
+
+    @Test
+    fun `given banner should not be shown, then log the error with proper message`() = testBlocking {
+        // given
+        whenever(shouldShowFeedbackBanner()).thenReturn(false)
+
+        // when
+        sut()
+
+        // then
+        verify(logger).e(AppLog.T.API, "GetIPPFeedbackBannerData should not be shown.")
     }
 
     @Test
@@ -82,16 +95,15 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given COD enabled and zero IPP transactions ever, then newbie user should be detected`() = testBlocking {
+    fun `given COD enabled and has 0 IPP transactions, then newbie user should be detected`() = testBlocking {
         // given
         whenever(shouldShowFeedbackBanner()).thenReturn(true)
-
         whenever(getActivePaymentsPlugin())
             .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
-
-        val fakeNewbieTransactionsSummary = WCPaymentTransactionsSummaryResult(0, "", 0, 0, 0, null, null)
-        whenever(ippStore.fetchTransactionsSummary(any(), any(), anyOrNull()))
-            .thenReturn(WooPayload(fakeNewbieTransactionsSummary))
+        whenever(cashOnDeliverySettings.isCashOnDeliveryEnabled()).thenReturn(true)
+        whenever(orderStore.getOrdersForSite(siteModel)).thenReturn(
+            listOf(OrderTestUtils.generateOrder(), OrderTestUtils.generateOrder())
+        )
 
         // when
         val result = sut()
@@ -104,78 +116,131 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given COD enabled and at least one IPP transaction in last 30 days, then should detect a beginner`() =
-        testBlocking {
-            // given
-            whenever(shouldShowFeedbackBanner()).thenReturn(true)
-            whenever(getActivePaymentsPlugin())
-                .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
+    fun `given COD disabled and has 0 IPP transactions, then return null`() = testBlocking {
+        // given
+        whenever(shouldShowFeedbackBanner()).thenReturn(true)
+        whenever(getActivePaymentsPlugin())
+            .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
+        whenever(cashOnDeliverySettings.isCashOnDeliveryEnabled()).thenReturn(false)
+        whenever(orderStore.getOrdersForSite(siteModel)).thenReturn(
+            listOf(OrderTestUtils.generateOrder(), OrderTestUtils.generateOrder())
+        )
 
-            val fakeBeginnerTransactionsSummary = WCPaymentTransactionsSummaryResult(1, "", 0, 0, 0, null, null)
-            whenever(ippStore.fetchTransactionsSummary(any(), any(), any()))
-                .thenReturn(WooPayload(fakeBeginnerTransactionsSummary))
+        // when
+        val result = sut()
 
-            // when
-            val result = sut()
-
-            // then
-            assertEquals("https://automattic.survey.fm/woo-app-–-ipp-first-transaction-survey", result?.url)
-            assertEquals(R.string.feedback_banner_ipp_message_beginner, result?.message)
-            assertEquals(R.string.feedback_banner_ipp_title_beginner, result?.title)
-            assertEquals("ipp_new_user", result?.campaignName)
-        }
+        // then
+        assertNull(result)
+    }
 
     @Test
-    fun `given COD enabled and zero IPP transactions in last 30 days and at least one IPP transaction ever, then should detect a beginner`() =
-        testBlocking {
-            // given
-            whenever(shouldShowFeedbackBanner()).thenReturn(true)
-            whenever(getActivePaymentsPlugin())
-                .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
-
-            val fakeTransactionsSummaryZeroTransactions = WCPaymentTransactionsSummaryResult(0, "", 0, 0, 0, null, null)
-            val fakeTransactionsSummaryOneTransaction = WCPaymentTransactionsSummaryResult(1, "", 0, 0, 0, null, null)
-
-            val expectedTimeWindowCaptor = ArgumentCaptor.forClass(String::class.java)
-            whenever(ippStore.fetchTransactionsSummary(any(), any(), expectedTimeWindowCaptor.capture())).thenReturn(
-                WooPayload(fakeTransactionsSummaryZeroTransactions),
-                WooPayload(fakeTransactionsSummaryOneTransaction)
+    fun `given IPP transactions in last 30 days and the transaction count is in beginners range (1 to 9), then beginner user should be detected`() = testBlocking {
+        // given
+        whenever(shouldShowFeedbackBanner()).thenReturn(true)
+        whenever(getActivePaymentsPlugin())
+            .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
+        val orderList = mutableListOf<OrderEntity>()
+        repeat(9) {
+            orderList.add(
+                OrderTestUtils.generateOrder(
+                    metadata = "[{\"id\":22346,\"key\":\"receipt_url\",\"value\":\"\"}]",
+                    paymentMethod = WOOCOMMERCE_PAYMENTS_PAYMENT_TYPE,
+                    datePaid = Date().formatToYYYYmmDD()
+                )
             )
-
-            // when
-            val result = sut()
-
-            // then
-            assertEquals(R.string.feedback_banner_ipp_message_beginner, result?.message)
-            assertEquals(R.string.feedback_banner_ipp_title_beginner, result?.title)
-            assertEquals("https://automattic.survey.fm/woo-app-–-ipp-first-transaction-survey", result?.url)
-            assertEquals("https://automattic.survey.fm/woo-app-–-ipp-first-transaction-survey", result?.url)
-            assertEquals("ipp_new_user", result?.campaignName)
-            assertNull(expectedTimeWindowCaptor.allValues.last())
-            assertEquals(Date().daysAgo(30).formatToYYYYmmDD(), expectedTimeWindowCaptor.firstValue)
         }
+        whenever(orderStore.getOrdersForSite(siteModel)).thenReturn(orderList)
+
+        // when
+        val result = sut()
+
+        // then
+        assertEquals("https://automattic.survey.fm/woo-app-–-ipp-first-transaction-survey", result?.url)
+        assertEquals(R.string.feedback_banner_ipp_message_beginner, result?.message)
+        assertEquals(R.string.feedback_banner_ipp_title_beginner, result?.title)
+        assertEquals("ipp_new_user", result?.campaignName)
+    }
 
     @Test
-    fun `given COD enabled and more than 10 IPP transactions done in last 30 days, then should detect a ninja`() =
-        testBlocking {
-            // given
-            whenever(shouldShowFeedbackBanner()).thenReturn(true)
-            whenever(getActivePaymentsPlugin())
-                .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
-
-            val fakeNinjaTransactionsSummary = WCPaymentTransactionsSummaryResult(11, "", 0, 0, 0, null, null)
-            whenever(ippStore.fetchTransactionsSummary(any(), any(), any()))
-                .thenReturn(WooPayload(fakeNinjaTransactionsSummary))
-
-            // when
-            val result = sut()
-
-            // then
-            assertEquals("https://automattic.survey.fm/woo-app-–-ipp-survey-for-power-users", result?.url)
-            assertEquals(R.string.feedback_banner_ipp_message_ninja, result?.message)
-            assertEquals(R.string.feedback_banner_ipp_title_ninja, result?.title)
-            assertEquals("ipp_power_user", result?.campaignName)
+    fun `given has IPP transactions and the transaction count is greater than 9, then ninja user should be detected`() = testBlocking {
+        // given
+        whenever(shouldShowFeedbackBanner()).thenReturn(true)
+        whenever(getActivePaymentsPlugin())
+            .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
+        val orderList = mutableListOf<OrderEntity>()
+        repeat(10) {
+            orderList.add(
+                OrderTestUtils.generateOrder(
+                    metadata = "[{\"id\":22346,\"key\":\"receipt_url\",\"value\":\"\"}]",
+                    paymentMethod = WOOCOMMERCE_PAYMENTS_PAYMENT_TYPE,
+                    datePaid = Date().formatToYYYYmmDD()
+                )
+            )
         }
+        whenever(orderStore.getOrdersForSite(siteModel)).thenReturn(orderList)
+
+        // when
+        val result = sut()
+
+        // then
+        assertEquals("https://automattic.survey.fm/woo-app-–-ipp-survey-for-power-users", result?.url)
+        assertEquals(R.string.feedback_banner_ipp_message_ninja, result?.message)
+        assertEquals(R.string.feedback_banner_ipp_title_ninja, result?.title)
+        assertEquals("ipp_power_user", result?.campaignName)
+    }
+
+    @Test
+    fun `given has IPP transactions older than 30 days and the transaction count is greater than 9, then ninja user should be detected`() = testBlocking {
+        // given
+        whenever(shouldShowFeedbackBanner()).thenReturn(true)
+        whenever(getActivePaymentsPlugin())
+            .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
+        val orderList = mutableListOf<OrderEntity>()
+        repeat(10) {
+            orderList.add(
+                OrderTestUtils.generateOrder(
+                    metadata = "[{\"id\":22346,\"key\":\"receipt_url\",\"value\":\"\"}]",
+                    paymentMethod = WOOCOMMERCE_PAYMENTS_PAYMENT_TYPE,
+                    datePaid = "2018-02-02T16:11:13Z"
+                )
+            )
+        }
+        whenever(orderStore.getOrdersForSite(siteModel)).thenReturn(orderList)
+
+        // when
+        val result = sut()
+
+        // then
+        assertEquals("https://automattic.survey.fm/woo-app-–-ipp-survey-for-power-users", result?.url)
+        assertEquals(R.string.feedback_banner_ipp_message_ninja, result?.message)
+        assertEquals(R.string.feedback_banner_ipp_title_ninja, result?.title)
+        assertEquals("ipp_power_user", result?.campaignName)
+    }
+
+    @Test
+    fun `given has IPP transactions older than 30 days and the transaction count is lesser than 10, then return null`() = testBlocking {
+        // given
+        whenever(shouldShowFeedbackBanner()).thenReturn(true)
+        whenever(getActivePaymentsPlugin())
+            .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
+        val orderList = mutableListOf<OrderEntity>()
+        repeat(9) {
+            orderList.add(
+                OrderTestUtils.generateOrder(
+                    metadata = "[{\"id\":22346,\"key\":\"receipt_url\",\"value\":\"\"}]",
+                    paymentMethod = WOOCOMMERCE_PAYMENTS_PAYMENT_TYPE,
+                    datePaid = "2018-02-02T16:11:13Z"
+                )
+            )
+        }
+        whenever(orderStore.getOrdersForSite(siteModel)).thenReturn(orderList)
+
+        // when
+        val result = sut()
+
+        // then
+        assertNull(result)
+    }
 
     @Test
     fun `given COD is enabled and payments plugin is Stripe, then should detect newbie`() = testBlocking {
@@ -191,107 +256,4 @@ class GetIPPFeedbackBannerDataTest : BaseUnitTest() {
         assertEquals(R.string.feedback_banner_ipp_title_newbie, result?.title)
         assertEquals("https://automattic.survey.fm/woo-app-–-cod-survey", result?.url)
     }
-
-    @Test
-    fun `given banner should be displayed, then should analyze IPP stats from the correct time window`() =
-        testBlocking {
-            // given
-            whenever(shouldShowFeedbackBanner()).thenReturn(true)
-            whenever(getActivePaymentsPlugin())
-                .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
-
-            val expectedTimeWindowCaptor = ArgumentCaptor.forClass(String::class.java)
-
-            // when
-            sut()
-            verify(ippStore).fetchTransactionsSummary(
-                any(),
-                any(),
-                expectedTimeWindowCaptor.capture()
-            )
-
-            // then
-            val timeWindowLengthDays = 30
-            val desiredTimeWindowStart = Date().daysAgo(timeWindowLengthDays).formatToYYYYmmDD()
-            assertEquals(desiredTimeWindowStart, expectedTimeWindowCaptor.value)
-        }
-
-    @Test
-    fun `given COD enabled and endpoint returns error, then should detect newbie`() = testBlocking {
-        // given
-        whenever(shouldShowFeedbackBanner()).thenReturn(true)
-        whenever(getActivePaymentsPlugin())
-            .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
-
-        val error = WooError(WooErrorType.API_ERROR, BaseRequest.GenericErrorType.NO_CONNECTION, "error")
-        whenever(ippStore.fetchTransactionsSummary(any(), any(), any())).thenReturn(WooPayload(error))
-
-        // when
-        val result = sut()
-
-        // then
-        assertEquals(R.string.feedback_banner_ipp_message_newbie, result?.message)
-        assertEquals(R.string.feedback_banner_ipp_title_newbie, result?.title)
-        assertEquals("https://automattic.survey.fm/woo-app-–-cod-survey", result?.url)
-    }
-
-    @Test
-    fun `given endpoint returns error, when use case invoked, then should log error`() = testBlocking {
-        // given
-        whenever(shouldShowFeedbackBanner()).thenReturn(true)
-        whenever(getActivePaymentsPlugin())
-            .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
-
-        val errorMessage = "error"
-        val error = WooError(WooErrorType.API_ERROR, BaseRequest.GenericErrorType.NO_CONNECTION, errorMessage)
-        whenever(ippStore.fetchTransactionsSummary(any(), any(), any())).thenReturn(WooPayload(error))
-
-        // when
-        sut()
-
-        // then
-        verify(logger).e(AppLog.T.API, "Error fetching transactions summary: $error")
-    }
-
-    @Test
-    fun `given endpoint returns null response, then should detect newbie`() = testBlocking {
-        // given
-        whenever(shouldShowFeedbackBanner()).thenReturn(true)
-        whenever(getActivePaymentsPlugin())
-            .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
-
-        whenever(ippStore.fetchTransactionsSummary(any(), any(), any())).thenReturn(WooPayload(null))
-
-        // when
-        val result = sut()
-
-        // then
-        assertEquals(R.string.feedback_banner_ipp_message_newbie, result?.message)
-        assertEquals(R.string.feedback_banner_ipp_title_newbie, result?.title)
-        assertEquals("https://automattic.survey.fm/woo-app-–-cod-survey", result?.url)
-    }
-
-    @Test
-    fun `given successful endpoint response, when transactions count is negative, then should return null`() =
-        testBlocking {
-            // given
-            whenever(shouldShowFeedbackBanner()).thenReturn(true)
-            whenever(getActivePaymentsPlugin())
-                .thenReturn(WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS)
-
-            val fakeTransactionsSummary = WCPaymentTransactionsSummaryResult(-1, "", 0, 0, 0, null, null)
-            whenever(
-                ippStore.fetchTransactionsSummary(
-                    any(),
-                    any(),
-                    any()
-                )
-            ).thenReturn(WooPayload(fakeTransactionsSummary))
-
-            // when
-            val result = sut()
-
-            // then
-            assertNull(result)
-        }
 }
