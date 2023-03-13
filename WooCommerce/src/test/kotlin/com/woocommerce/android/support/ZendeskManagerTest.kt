@@ -25,6 +25,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.store.SiteStore
+import zendesk.support.CreateRequest
 import zendesk.support.Request
 import zendesk.support.RequestProvider
 
@@ -168,6 +169,38 @@ internal class ZendeskManagerTest : BaseUnitTest() {
         assertThat(result?.isSuccess).isFalse
         assertThat(result?.isFailure).isTrue
         assertThat(result?.exceptionOrNull()).isEqualTo(RequestCreationTimeoutException)
+    }
+
+    @Test
+    fun `when createRequest is called, then the request is created with the correct parameters`() = testBlocking {
+        // Given
+        val expectedSubject = "subject"
+        val expectedDescription = "description"
+        val expectedTags = arrayOf("tag1", "tag2")
+        val captor = argumentCaptor<CreateRequest>()
+
+        // When
+        val job = launch {
+            sut.createRequest(
+                context = mock(),
+                origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                ticketType = TicketType.MobileApp,
+                selectedSite = null,
+                subject = expectedSubject,
+                description = expectedDescription,
+                extraTags = expectedTags.toList()
+            ).first()
+        }
+
+        // Then
+        verify(requestProvider).createRequest(captor.capture(), any())
+        advanceUntilIdle()
+        job.cancel()
+
+        val actualRequest = captor.firstValue
+        assertThat(actualRequest.description).isEqualTo(expectedDescription)
+        assertThat(actualRequest.subject).isEqualTo(expectedSubject)
+        assertThat(actualRequest.tags).contains(*expectedTags)
     }
 
     private fun createSUT() {
