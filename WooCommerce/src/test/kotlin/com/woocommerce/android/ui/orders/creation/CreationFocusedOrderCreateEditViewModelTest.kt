@@ -415,6 +415,42 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
+    fun `when removing product, should make view not editable`() = testBlocking {
+        // given
+        val orderItemToRemove: Order.Item = mock()
+
+        // when
+        sut.onRemoveProduct(orderItemToRemove)
+
+        // then
+        sut.viewStateData.liveData.value?.let { viewState ->
+            assertThat(viewState.isEditable).isFalse
+        } ?: fail("Expected view state to be not null")
+    }
+
+    @Test
+    fun `when product is removed, should make view editable again`() = testBlocking {
+        // given
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+
+        sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
+        orderDraft?.items?.find { it.productId == 123L }?.let { addedProductItem ->
+            assertThat(addedProductItem.quantity).isEqualTo(1F)
+        }
+
+        // when
+        sut.onProductsSelected(emptySet())
+
+        // then
+        sut.viewStateData.liveData.value?.let { viewState ->
+            assertThat(viewState.isEditable).isTrue
+        } ?: fail("Expected view state to be not null")
+    }
+
+    @Test
     fun `given order contains variation item, when variation is unselected, should be removed from order`() {
         // given
         var orderDraft: Order? = null
