@@ -23,7 +23,7 @@ import zendesk.support.CreateRequest
 import zendesk.support.CustomField
 import zendesk.support.Request
 
-class ZendeskManager(
+class ZendeskTicketRepository(
     private val zendeskSettings: ZendeskSettings,
     private val envDataSource: ZendeskEnvironmentDataSource,
     private val siteStore: SiteStore,

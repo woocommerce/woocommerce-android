@@ -2,7 +2,7 @@ package com.woocommerce.android.di
 
 import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.support.zendesk.ZendeskEnvironmentDataSource
-import com.woocommerce.android.support.zendesk.ZendeskManager
+import com.woocommerce.android.support.zendesk.ZendeskTicketRepository
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -32,7 +32,7 @@ class SupportModule {
         deviceDataSource: ZendeskEnvironmentDataSource,
         siteStore: SiteStore,
         dispatchers: CoroutineDispatchers
-    ): ZendeskManager = ZendeskManager(zendeskSettings, deviceDataSource, siteStore, dispatchers)
+    ): ZendeskTicketRepository = ZendeskTicketRepository(zendeskSettings, deviceDataSource, siteStore, dispatchers)
 
     @Singleton
     @Provides

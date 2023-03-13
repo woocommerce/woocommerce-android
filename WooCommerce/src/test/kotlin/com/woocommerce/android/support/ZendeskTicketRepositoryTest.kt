@@ -6,7 +6,7 @@ import com.woocommerce.android.support.zendesk.ZendeskEnvironmentDataSource
 import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetException
 import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationFailedException
 import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationTimeoutException
-import com.woocommerce.android.support.zendesk.ZendeskManager
+import com.woocommerce.android.support.zendesk.ZendeskTicketRepository
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.zendesk.service.ErrorResponse
@@ -30,8 +30,8 @@ import zendesk.support.Request
 import zendesk.support.RequestProvider
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class ZendeskManagerTest : BaseUnitTest() {
-    private lateinit var sut: ZendeskManager
+internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
+    private lateinit var sut: ZendeskTicketRepository
     private lateinit var zendeskSettings: ZendeskSettings
     private lateinit var requestProvider: RequestProvider
     private lateinit var envDataSource: ZendeskEnvironmentDataSource
@@ -204,7 +204,7 @@ internal class ZendeskManagerTest : BaseUnitTest() {
     }
 
     private fun createSUT() {
-        sut = ZendeskManager(
+        sut = ZendeskTicketRepository(
             zendeskSettings = zendeskSettings,
             envDataSource = envDataSource,
             siteStore = siteStore,

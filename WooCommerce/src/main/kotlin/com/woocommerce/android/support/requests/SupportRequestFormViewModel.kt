@@ -10,7 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetException
-import com.woocommerce.android.support.zendesk.ZendeskManager
+import com.woocommerce.android.support.zendesk.ZendeskTicketRepository
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -27,7 +27,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SupportRequestFormViewModel @Inject constructor(
-    private val zendeskManager: ZendeskManager,
+    private val zendeskTicketRepository: ZendeskTicketRepository,
     private val zendeskSettings: ZendeskSettings,
     private val selectedSite: SelectedSite,
     private val tracks: AnalyticsTrackerWrapper,
@@ -86,7 +86,7 @@ class SupportRequestFormViewModel @Inject constructor(
 
         viewState.update { it.copy(isLoading = true) }
         launch {
-            zendeskManager.createRequest(
+            zendeskTicketRepository.createRequest(
                 context,
                 helpOrigin,
                 ticketType,

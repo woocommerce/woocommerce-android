@@ -9,7 +9,7 @@ import com.woocommerce.android.support.requests.SupportRequestFormViewModel.Requ
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.ShowSupportIdentityInputDialog
 import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetException
-import com.woocommerce.android.support.zendesk.ZendeskManager
+import com.woocommerce.android.support.zendesk.ZendeskTicketRepository
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -32,7 +32,7 @@ import zendesk.support.Request
 @ExperimentalCoroutinesApi
 internal class SupportRequestFormViewModelTest : BaseUnitTest() {
     private lateinit var sut: SupportRequestFormViewModel
-    private lateinit var zendeskManager: ZendeskManager
+    private lateinit var zendeskTicketRepository: ZendeskTicketRepository
     private lateinit var zendeskSettings: ZendeskSettings
     private lateinit var selectedSite: SelectedSite
     private lateinit var tracks: AnalyticsTrackerWrapper
@@ -119,7 +119,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         assertThat(isRequestLoading[0]).isFalse
         assertThat(isRequestLoading[1]).isTrue
         assertThat(isRequestLoading[2]).isFalse
-        verify(zendeskManager, times(1)).createRequest(any(), any(), any(), any(), any(), any(), any())
+        verify(zendeskTicketRepository, times(1)).createRequest(any(), any(), any(), any(), any(), any(), any())
     }
 
     @Test
@@ -136,7 +136,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // Then
         assertThat(isRequestLoading).hasSize(1)
         assertThat(isRequestLoading[0]).isFalse
-        verify(zendeskManager, never()).createRequest(any(), any(), any(), any(), any(), any(), any())
+        verify(zendeskTicketRepository, never()).createRequest(any(), any(), any(), any(), any(), any(), any())
     }
 
     @Test
@@ -218,7 +218,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         verify(zendeskSettings).supportEmail = email
         verify(zendeskSettings).supportName = name
         verify(tracks, times(1)).track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
-        verify(zendeskManager, times(1)).createRequest(any(), any(), any(), any(), any(), any(), any())
+        verify(zendeskTicketRepository, times(1)).createRequest(any(), any(), any(), any(), any(), any(), any())
     }
 
     private fun configureMocks(requestResult: Result<Request?>) {
@@ -228,7 +228,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         selectedSite = mock {
             on { getIfExists() }.then { testSite }
         }
-        zendeskManager = mock {
+        zendeskTicketRepository = mock {
             onBlocking {
                 createRequest(
                     any(),
@@ -243,7 +243,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         }
 
         sut = SupportRequestFormViewModel(
-            zendeskManager = zendeskManager,
+            zendeskTicketRepository = zendeskTicketRepository,
             zendeskSettings = zendeskSettings,
             selectedSite = selectedSite,
             tracks = tracks,
