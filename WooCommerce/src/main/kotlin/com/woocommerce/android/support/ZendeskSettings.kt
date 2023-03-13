@@ -13,7 +13,9 @@ import zendesk.core.Identity
 import zendesk.core.Zendesk
 import zendesk.support.Support
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class ZendeskSettings @Inject constructor(
     private val supportHelper: SupportHelper,
     private val accountStore: AccountStore,
