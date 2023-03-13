@@ -615,7 +615,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given jitm displayed, when jitm cta clicked, then jitm`() {
+    fun `given jitm displayed, when jitm cta clicked, then jitm click handler invoked`() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
