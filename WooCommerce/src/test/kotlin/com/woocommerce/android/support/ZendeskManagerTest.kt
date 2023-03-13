@@ -1,9 +1,9 @@
 package com.woocommerce.android.support
 
-import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetException
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.support.zendesk.ZendeskEnvironmentDataSource
+import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetException
 import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationFailedException
 import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationTimeoutException
 import com.woocommerce.android.support.zendesk.ZendeskManager
@@ -51,40 +51,39 @@ internal class ZendeskManagerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when createRequest is called with no identity set, then an result with IdentityNotSetException is emitted`()
-    = testBlocking {
-        // Given
-        zendeskSettings = mock { on { isIdentitySet } doReturn false }
-        createSUT()
+    fun `when createRequest is called with no identity set, then an result with IdentityNotSetException is emitted`() =
+        testBlocking {
+            // Given
+            zendeskSettings = mock { on { isIdentitySet } doReturn false }
+            createSUT()
 
-        // When
-        val result = sut.createRequest(
-            context = mock(),
-            origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
-            ticketType = TicketType.MobileApp,
-            selectedSite = mock(),
-            subject = "subject",
-            description = "description",
-            extraTags = emptyList()
-        ).single()
+            // When
+            val result = sut.createRequest(
+                context = mock(),
+                origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                ticketType = TicketType.MobileApp,
+                selectedSite = mock(),
+                subject = "subject",
+                description = "description",
+                extraTags = emptyList()
+            ).single()
 
-        // Then
-        assertThat(result).isNotNull
-        assertThat(result.isFailure).isTrue
-        assertThat(result.exceptionOrNull()).isEqualTo(IdentityNotSetException)
-    }
+            // Then
+            assertThat(result).isNotNull
+            assertThat(result.isFailure).isTrue
+            assertThat(result.exceptionOrNull()).isEqualTo(IdentityNotSetException)
+        }
 
     @Test
-    fun `when createRequest is called correctly, then an result with the Request is emitted` () = testBlocking {
+    fun `when createRequest is called correctly, then an result with the Request is emitted`() = testBlocking {
         // Given
         var result: Result<Request?>? = null
         val expectedRequest = Request()
         val captor = argumentCaptor<ZendeskCallback<Request>>()
 
-
         // When
         val job = launch {
-             result = sut.createRequest(
+            result = sut.createRequest(
                 context = mock(),
                 origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
                 ticketType = TicketType.MobileApp,
@@ -109,7 +108,7 @@ internal class ZendeskManagerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when createRequest is fails, then an result with an exception is emitted` () = testBlocking {
+    fun `when createRequest is fails, then an result with an exception is emitted`() = testBlocking {
         // Given
         var result: Result<Request?>? = null
         val captor = argumentCaptor<ZendeskCallback<Request>>()
@@ -117,7 +116,6 @@ internal class ZendeskManagerTest : BaseUnitTest() {
         val error = mock<ErrorResponse> {
             on { reason } doReturn errorMessage
         }
-
 
         // When
         val job = launch {
@@ -146,10 +144,9 @@ internal class ZendeskManagerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when createRequest timeout, then an result with an exception is emitted` () = testBlocking {
+    fun `when createRequest timeout, then an result with an exception is emitted`() = testBlocking {
         // Given
         var result: Result<Request?>? = null
-
 
         // When
         val job = launch {

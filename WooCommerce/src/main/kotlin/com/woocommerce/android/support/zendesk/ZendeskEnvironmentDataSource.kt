@@ -8,12 +8,12 @@ import com.woocommerce.android.extensions.logInformation
 import com.woocommerce.android.extensions.stateLogInformation
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
-import java.util.Locale
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.util.DeviceUtils
 import org.wordpress.android.util.NetworkUtils
 import org.wordpress.android.util.StringUtils
 import org.wordpress.android.util.UrlUtils
+import java.util.Locale
 
 class ZendeskEnvironmentDataSource {
     val totalAvailableMemorySize: String get() = DeviceUtils.getTotalAvailableMemorySize()
@@ -72,7 +72,7 @@ class ZendeskEnvironmentDataSource {
         const val networkCountryCodeLabel = "Country Code:"
         const val unknownValue = "unknown"
 
-        //URL
+        // URL
         const val blogSeparator = "\n----------\n"
         const val noneValue = "none"
 

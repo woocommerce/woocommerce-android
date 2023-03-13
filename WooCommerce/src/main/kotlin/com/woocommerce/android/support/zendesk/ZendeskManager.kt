@@ -2,12 +2,12 @@ package com.woocommerce.android.support.zendesk
 
 import android.content.Context
 import android.os.Parcelable
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.zendesk.RequestConstants.requestCreationIdentityNotSetErrorMessage
 import com.woocommerce.android.support.zendesk.RequestConstants.requestCreationTimeoutErrorMessage
 import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetException
-import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationTimeoutException
-import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationFailedException
+import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationTimeoutException
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
