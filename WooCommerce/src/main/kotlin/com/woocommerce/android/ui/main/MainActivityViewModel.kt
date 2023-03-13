@@ -18,9 +18,6 @@ import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
-import com.woocommerce.android.ui.main.ResolveAppLink.Action.ChangeSiteAndRestart
-import com.woocommerce.android.ui.main.ResolveAppLink.Action.DoNothing
-import com.woocommerce.android.ui.main.ResolveAppLink.Action.ViewStats
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.WooLog
@@ -102,13 +99,13 @@ class MainActivityViewModel @Inject constructor(
 
     fun handleIncomingAppLink(uri: Uri?) {
         when (val event = resolveAppLink(uri)) {
-            is ChangeSiteAndRestart -> {
+            is ResolveAppLink.Action.ChangeSiteAndRestart -> {
                 changeSiteAndRestart(event.siteId, RestartActivityForAppLink(event.uri))
             }
             is ResolveAppLink.Action.ViewOrderDetail -> {
                 triggerEvent(ViewOrderDetail(uniqueId = event.orderId, remoteNoteId = 0L))
             }
-            ViewStats -> {
+            ResolveAppLink.Action.ViewStats -> {
                 triggerEvent(ViewMyStoreStats)
             }
             ResolveAppLink.Action.ViewPayments -> {
@@ -120,7 +117,7 @@ class MainActivityViewModel @Inject constructor(
             is ResolveAppLink.Action.ViewUrlInWebView -> {
                 triggerEvent(ViewUrlInWebView(event.url))
             }
-            DoNothing -> {
+            ResolveAppLink.Action.DoNothing -> {
                 // no-op
             }
         }.exhaustive
