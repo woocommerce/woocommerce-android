@@ -5,6 +5,7 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.support.zendesk.ZendeskEnvironmentDataSource
 import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationFailedException
+import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationTimeoutException
 import com.woocommerce.android.support.zendesk.ZendeskManager
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -142,6 +143,34 @@ internal class ZendeskManagerTest : BaseUnitTest() {
         assertThat(result?.isFailure).isTrue
         assertThat(result?.exceptionOrNull()).isInstanceOf(RequestCreationFailedException::class.java)
         assertThat(result?.exceptionOrNull()?.message).isEqualTo(errorMessage)
+    }
+
+    @Test
+    fun `when createRequest timeout, then an result with an exception is emitted` () = testBlocking {
+        // Given
+        var result: Result<Request?>? = null
+
+
+        // When
+        val job = launch {
+            result = sut.createRequest(
+                context = mock(),
+                origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                ticketType = TicketType.MobileApp,
+                selectedSite = null,
+                subject = "subject",
+                description = "description",
+                extraTags = emptyList()
+            ).first()
+        }
+        advanceUntilIdle()
+        job.cancel()
+
+        // Then
+        assertThat(result).isNotNull
+        assertThat(result?.isSuccess).isFalse
+        assertThat(result?.isFailure).isTrue
+        assertThat(result?.exceptionOrNull()).isEqualTo(RequestCreationTimeoutException)
     }
 
     private fun createSUT() {
