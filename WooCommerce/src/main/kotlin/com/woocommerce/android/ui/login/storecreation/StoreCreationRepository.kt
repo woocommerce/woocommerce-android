@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STO
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Failure
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Success
 import com.woocommerce.android.ui.login.storecreation.plans.BillingPeriod
+import com.woocommerce.android.ui.plans.networking.SitePlanRestClient
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.LOGIN
 import com.woocommerce.android.util.dispatchAndAwait
@@ -45,7 +46,8 @@ class StoreCreationRepository @Inject constructor(
     private val shoppingCartStore: ShoppingCartStore,
     private val dispatcher: Dispatcher,
     private val plansStore: PlansStore,
-    private val userEligibilityFetcher: UserEligibilityFetcher
+    private val userEligibilityFetcher: UserEligibilityFetcher,
+    private val sitePlanRestClient: SitePlanRestClient,
 ) {
     fun selectSite(site: SiteModel) {
         selectedSite.set(site)
@@ -138,6 +140,23 @@ class StoreCreationRepository @Inject constructor(
                     else -> Failure(PLAN_PURCHASE_FAILED, "Null response")
                 }
             }
+        }
+    }
+
+    suspend fun createNewFreeTrialSite(
+        siteData: SiteCreationData,
+        languageWordPressId: String,
+        timeZoneId: String,
+        siteVisibility: SiteVisibility = PRIVATE,
+        dryRun: Boolean = false
+    ): StoreCreationResult<Long> {
+        val result = createNewSite(siteData, languageWordPressId, timeZoneId, siteVisibility, dryRun)
+
+        return if (result is Success) {
+            sitePlanRestClient.addEcommercePlanTrial(result.data)
+            result
+        } else {
+            result
         }
     }
 
