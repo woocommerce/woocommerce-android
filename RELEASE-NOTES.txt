@@ -1,11 +1,8 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 12.8
 -----
-
-
-12.8
------
-- [*] [Internal] Fix the wording for the cases when we don't have due date on stripe pending requirements state for IPP [https://github.com/woocommerce/woocommerce-android/pull/8516]
+- [*][Internal] Do not show full screen input for the payment amount for simple payments flow. [https://github.com/woocommerce/woocommerce-android/pull/8517]
+- [*][Internal] Fix the wording for the cases when we don't have due date on stripe pending requirements state for IPP [https://github.com/woocommerce/woocommerce-android/pull/8516]
 
 12.7
 -----
