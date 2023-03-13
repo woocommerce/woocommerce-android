@@ -38,8 +38,12 @@ class DomainSearchViewModel @Inject constructor(
     currencyFormatter = currencyFormatter,
     initialQuery = selectedSite.get().getTitle(""),
     searchOnlyFreeDomains = false,
-    isFreeCreditAvailable = savedStateHandle[KEY_IS_FREE_CREDIT_AVAILABLE]!!
+    isFreeCreditAvailable = savedStateHandle[KEY_IS_FREE_CREDIT_AVAILABLE]!!,
+    freeUrl = savedStateHandle[KEY_FREE_DOMAIN_URL]
 ) {
+    companion object {
+        const val KEY_FREE_DOMAIN_URL = "freeDomainUrl"
+    }
     override val helpOrigin = HelpOrigin.DOMAIN_CHANGE
 
     private val navArgs: DomainSearchFragmentArgs by savedStateHandle.navArgs()
