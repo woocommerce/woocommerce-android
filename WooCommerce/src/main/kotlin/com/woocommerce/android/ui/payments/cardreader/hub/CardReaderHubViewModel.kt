@@ -318,7 +318,7 @@ class CardReaderHubViewModel @Inject constructor(
     }
 
     private fun onTapTooPayFeedbackClicked() {
-        //TODO
+        // TODO
     }
 
     private fun onCardReaderManualsClicked(countryConfig: CardReaderConfigForSupportedCountry) {
