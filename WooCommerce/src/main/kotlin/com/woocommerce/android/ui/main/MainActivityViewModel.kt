@@ -17,6 +17,7 @@ import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
+import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.WooLog
@@ -24,6 +25,7 @@ import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.SiteStore
@@ -41,6 +43,7 @@ class MainActivityViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val resolveAppLink: ResolveAppLink,
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
+    private val determineTrialStatusBarState: DetermineTrialStatusBarState,
 ) : ScopedViewModel(savedState) {
     init {
         launch {
@@ -53,6 +56,11 @@ class MainActivityViewModel @Inject constructor(
     val moreMenuBadgeState = unseenReviewsCountHandler.observeUnseenCount().map { reviewsCount ->
         determineMenuBadgeState(reviewsCount)
     }.asLiveData()
+
+    private val _bottomBarState: MutableStateFlow<BottomBarState> = MutableStateFlow(BottomBarState.Visible)
+    val bottomBarState = _bottomBarState.asLiveData()
+
+    val trialStatusBarState = determineTrialStatusBarState(_bottomBarState).asLiveData()
 
     fun handleShortcutAction(action: String?) {
         when (action) {
@@ -187,6 +195,14 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
+    fun hideBottomNav() {
+        _bottomBarState.value = BottomBarState.Hidden
+    }
+
+    fun showBottomNav() {
+        _bottomBarState.value = BottomBarState.Visible
+    }
+
     object ViewOrderList : Event()
     object ViewReviewList : Event()
     object ViewMyStoreStats : Event()
@@ -203,6 +219,11 @@ class MainActivityViewModel @Inject constructor(
     sealed class MoreMenuBadgeState {
         data class UnseenReviews(val count: Int) : MoreMenuBadgeState()
         object Hidden : MoreMenuBadgeState()
+    }
+
+    sealed class BottomBarState : Event() {
+        object Visible : BottomBarState()
+        object Hidden : BottomBarState()
     }
 
     companion object {
