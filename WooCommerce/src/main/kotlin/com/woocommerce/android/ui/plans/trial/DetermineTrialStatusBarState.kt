@@ -33,9 +33,9 @@ class DetermineTrialStatusBarState @Inject constructor(
     private suspend fun fetchFreeTrialDetails(): TrialStatusBarState {
         return when (val result = sitePlanRepository.fetchFreeTrialExpiryDate(selectedSite.get())) {
             is ExpiryAt -> {
-                val expireIn = Period.between(LocalDate.now(), result.date)
-                val days = expireIn.days
-                TrialStatusBarState.Visible(days)
+                val expireIn = Period.between(LocalDate.now(), result.date.minusDays(1))
+                val daysLeft = expireIn.days
+                TrialStatusBarState.Visible(daysLeft)
             }
             NotTrial, is Error -> TrialStatusBarState.Hidden
         }
