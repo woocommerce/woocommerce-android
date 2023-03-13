@@ -9,7 +9,6 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.support.TicketType
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.support.help.HelpOrigin
@@ -23,15 +22,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.store.AccountStore
 import zendesk.support.Request
 import javax.inject.Inject
 
 @HiltViewModel
 class SupportRequestFormViewModel @Inject constructor(
-    private val accountStore: AccountStore,
     private val zendeskHelper: ZendeskHelper,
-    private val supportHelper: SupportHelper,
     private val selectedSite: SelectedSite,
     private val tracks: AnalyticsTrackerWrapper,
     savedState: SavedStateHandle
@@ -73,7 +69,7 @@ class SupportRequestFormViewModel @Inject constructor(
         extraTags: List<String>,
         selectedEmail: String
     ) {
-        zendeskHelper.setSupportEmail(selectedEmail)
+        zendeskHelper.supportEmail = selectedEmail
         AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
         onSubmitRequestButtonClicked(
             context = context,
@@ -109,14 +105,12 @@ class SupportRequestFormViewModel @Inject constructor(
     }
 
     private fun handleEmptyCredentials() {
-        if (AppPrefs.hasSupportEmail()) {
-            AppPrefs.getSupportEmail()
-        } else {
-            supportHelper.getSupportEmailAndNameSuggestion(
-                accountStore.account,
-                selectedSite.getIfExists()
-            ).first
-        }.let { triggerEvent(ShowSupportIdentityInputDialog(it.orEmpty())) }
+        triggerEvent(
+            ShowSupportIdentityInputDialog(
+                emailSuggestion = zendeskHelper.supportEmail.orEmpty(),
+                nameSuggestion = zendeskHelper.supportName.orEmpty()
+            )
+        )
     }
 
     private fun Result<Request?>.handleCreateRequestResult() {
@@ -135,7 +129,10 @@ class SupportRequestFormViewModel @Inject constructor(
 
     object RequestCreationSucceeded : Event()
     object RequestCreationFailed : Event()
-    data class ShowSupportIdentityInputDialog(val emailSuggestion: String) : Event()
+    data class ShowSupportIdentityInputDialog(
+        val emailSuggestion: String,
+        val nameSuggestion: String
+    ) : Event()
 
     @Parcelize
     data class ViewState(
