@@ -17,8 +17,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationError
+import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.INCORRECT_USERNAME_OR_PASSWORD
+import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.INVALID_OTP
+import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.NOT_AUTHENTICATED
 import javax.inject.Inject
 
 @HiltViewModel
@@ -87,9 +89,10 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
                 val failure = (it as? OnChangedException)?.error as? AuthenticationError
 
                 when (failure?.type) {
-                    AccountStore.AuthenticationErrorType.INVALID_OTP ->
+                    INVALID_OTP ->
                         errorMessage.value = R.string.otp_incorrect
-
+                    INCORRECT_USERNAME_OR_PASSWORD, NOT_AUTHENTICATED ->
+                        triggerEvent(Exit)
                     else -> {
                         triggerEvent(ShowSnackbar(R.string.error_generic))
                     }
