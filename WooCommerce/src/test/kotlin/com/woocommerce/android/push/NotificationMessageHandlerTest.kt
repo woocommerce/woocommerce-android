@@ -8,7 +8,7 @@ import com.woocommerce.android.push.NotificationTestUtils.TEST_ORDER_NOTE_FULL_D
 import com.woocommerce.android.push.NotificationTestUtils.TEST_ORDER_NOTE_FULL_DATA_SITE_2
 import com.woocommerce.android.push.NotificationTestUtils.TEST_REVIEW_NOTE_FULL_DATA_2
 import com.woocommerce.android.push.NotificationTestUtils.TEST_REVIEW_NOTE_FULL_DATA_SITE_2
-import com.woocommerce.android.support.ZendeskManager
+import com.woocommerce.android.support.ZendeskTicketRepository
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.Base64Decoder
 import com.woocommerce.android.util.NotificationsParser
@@ -58,7 +58,7 @@ class NotificationMessageHandlerTest {
         on { getSiteBySiteId(any()) } doReturn SiteModel()
     }
     private val dispatcher: Dispatcher = mock()
-    private val zendeskManager: ZendeskManager = mock()
+    private val zendeskTicketRepository: ZendeskTicketRepository = mock()
     private val actionCaptor: KArgumentCaptor<Action<*>> = argumentCaptor()
     private val wooLogWrapper: WooLogWrapper = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
@@ -103,7 +103,7 @@ class NotificationMessageHandlerTest {
             resourceProvider = resourceProvider,
             notificationBuilder = notificationBuilder,
             analyticsTracker = notificationAnalyticsTracker,
-            zendeskManager = zendeskManager,
+            zendeskTicketRepository = zendeskTicketRepository,
             notificationsParser = notificationsParser,
             selectedSite = selectedSite,
             topPerformersStore = topPerformersStore,
@@ -288,7 +288,7 @@ class NotificationMessageHandlerTest {
 
         notificationMessageHandler.onNewMessageReceived(notificationPayload, mock())
 
-        verify(zendeskManager).refreshRequest(any(), eq(dummyRequestId))
+        verify(zendeskTicketRepository).refreshRequest(any(), eq(dummyRequestId))
     }
 
     @Test
