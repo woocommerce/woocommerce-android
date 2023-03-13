@@ -70,4 +70,11 @@ abstract class CardReaderHubViewHolder(val parent: ViewGroup, @LayoutRes layout:
             binding.cardReaderHubHeaderTv.text = UiHelpers.getTextOfUiString(itemView.context, uiState.label)
         }
     }
+
+    class GapBetweenSectionsViewHolder(parent: ViewGroup) :
+        CardReaderHubViewHolder(parent, R.layout.card_reader_hub_gap_between_sections) {
+        override fun onBind(uiState: CardReaderHubViewModel.CardReaderHubViewState.ListItem) {
+            // no-op
+        }
+    }
 }
