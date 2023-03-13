@@ -2,6 +2,7 @@
 
 package com.woocommerce.android.e2e.tests.ui
 
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.rule.ActivityTestRule
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.e2e.helpers.InitializationRule
@@ -17,7 +18,6 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.json.JSONObject
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -27,9 +27,12 @@ class OrdersUITest : TestBase() {
     val rule = HiltAndroidRule(this)
 
     @get:Rule(order = 1)
-    val initRule = InitializationRule()
+    val composeTestRule = createAndroidComposeRule<LoginActivity>()
 
     @get:Rule(order = 2)
+    val initRule = InitializationRule()
+
+    @get:Rule(order = 3)
     var activityRule = ActivityTestRule(LoginActivity::class.java)
 
     @Before
@@ -45,10 +48,6 @@ class OrdersUITest : TestBase() {
     }
 
     @Test
-    @Ignore(
-        "Ignoring this test since we migrated to the new product multi-selection component. " +
-            "https://github.com/woocommerce/woocommerce-android/projects/49#card-88420164"
-    )
     fun e2eCreateOrderTest() {
         val firstName = "Mira"
         val note = "Customer notes 123~"
@@ -63,8 +62,8 @@ class OrdersUITest : TestBase() {
                 .assertNewOrderScreen()
                 .updateOrderStatus(status)
                 .addProductTap()
-                .assertOrderSelectProductScreen()
-                .selectProduct(orderData.productName)
+                .assertProductsSelectorScreen(composeTestRule)
+                .selectProduct(composeTestRule, orderData.productName)
                 .clickAddCustomerDetails()
                 .addCustomerDetails(firstName)
                 .addCustomerNotes(note)
