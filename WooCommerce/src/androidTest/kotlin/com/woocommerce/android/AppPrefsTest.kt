@@ -611,4 +611,16 @@ class AppPrefsTest {
             )
         ).isFalse
     }
+
+    @Test
+    fun givenTTPWasUseAtLeastOnceNeverInvokeThenIsTTPWasUsedAtLeastOnceReturnsFalse() {
+        assertThat(AppPrefs.isTTPWasUsedAtLeastOnce()).isFalse
+    }
+
+    @Test
+    fun givenTTPWasUseAtLeastOnceInvokedThenIsTTPWasUsedAtLeastOnceReturnsTrue() {
+        AppPrefs.setTTPWasUsedAtLeastOnce()
+
+        assertThat(AppPrefs.isTTPWasUsedAtLeastOnce()).isTrue
+    }
 }
