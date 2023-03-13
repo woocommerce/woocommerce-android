@@ -31,7 +31,7 @@ import zendesk.support.Request
 import zendesk.support.Support
 import java.util.Locale
 
-class ZendeskManager(
+class ZendeskTicketRepository(
     private val zendeskSettings: ZendeskSettings,
     private val siteStore: SiteStore,
     private val dispatchers: CoroutineDispatchers

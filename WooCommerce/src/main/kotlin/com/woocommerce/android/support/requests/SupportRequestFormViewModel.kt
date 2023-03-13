@@ -10,7 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.TicketType
-import com.woocommerce.android.support.ZendeskManager
+import com.woocommerce.android.support.ZendeskTicketRepository
 import com.woocommerce.android.support.ZendeskSettings
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
@@ -28,7 +28,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SupportRequestFormViewModel @Inject constructor(
-    private val zendeskManager: ZendeskManager,
+    private val zendeskTicketRepository: ZendeskTicketRepository,
     private val zendeskSettings: ZendeskSettings,
     private val selectedSite: SelectedSite,
     private val tracks: AnalyticsTrackerWrapper,
@@ -94,7 +94,7 @@ class SupportRequestFormViewModel @Inject constructor(
 
         viewState.update { it.copy(isLoading = true) }
         launch {
-            zendeskManager.createRequest(
+            zendeskTicketRepository.createRequest(
                 context,
                 helpOrigin,
                 ticketType,
