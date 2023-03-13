@@ -15,25 +15,30 @@ open class JetpackActivationWPComPostLoginViewModel(
     private val selectedSite: SelectedSite,
     private val jetpackActivationRepository: JetpackActivationRepository
 ) : ScopedViewModel(savedStateHandle) {
-    protected suspend fun onLoginSuccess(jetpackStatus: JetpackStatus) {
+    @Suppress("ReturnCount")
+    protected suspend fun onLoginSuccess(jetpackStatus: JetpackStatus): Result<Unit> {
+        val siteUrl = selectedSite.get().url
         if (jetpackStatus.isJetpackConnected) {
-            jetpackActivationRepository.fetchJetpackSite(selectedSite.get().url)
-                .fold(
-                    onSuccess = {
-                        jetpackActivationRepository.setSelectedSiteAndCleanOldSites(it)
-                        triggerEvent(GoToStore)
-                    },
-                    onFailure = {
+            // Attempt returning the site from the DB if it exists, otherwise fetch it from API
+            val jetpackSite = jetpackActivationRepository.getJetpackSiteByUrl(siteUrl)
+                .takeIf { it?.hasWooCommerce == true }
+                ?: jetpackActivationRepository.fetchJetpackSite(siteUrl)
+                    .getOrElse {
                         triggerEvent(ShowSnackbar(R.string.error_generic))
+                        return Result.failure(it)
                     }
-                )
+
+            jetpackActivationRepository.setSelectedSiteAndCleanOldSites(jetpackSite)
+            triggerEvent(GoToStore)
+            return Result.success(Unit)
         } else {
             triggerEvent(
                 ShowJetpackActivationScreen(
                     isJetpackInstalled = jetpackStatus.isJetpackInstalled,
-                    siteUrl = selectedSite.get().url
+                    siteUrl = siteUrl
                 )
             )
+            return Result.success(Unit)
         }
     }
 
