@@ -32,7 +32,7 @@ class MoreMenuRepository @Inject constructor(
         }
 
     fun isUpgradesEnabled(): Boolean =
-        selectedSite.get().planId != 0L && FeatureFlag.FREE_TRIAL.isEnabled()
+        selectedSite.get().isWpComStore && FeatureFlag.FREE_TRIAL.isEnabled()
 
     fun observeCouponBetaSwitch() = appPrefsWrapper.observePrefs()
         .onStart { emit(Unit) }
