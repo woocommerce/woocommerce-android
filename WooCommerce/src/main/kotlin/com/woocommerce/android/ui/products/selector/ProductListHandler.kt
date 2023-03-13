@@ -1,10 +1,14 @@
 package com.woocommerce.android.ui.products.selector
 
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.products.ProductType
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -33,6 +37,15 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
             searchResults
         }
     }.flatMapLatest { it }
+        .map {
+            it.filter { product -> product.isPublished && !product.isVariableAndHasNoVariations }
+        }
+
+    private val Product.isPublished: Boolean
+        get() = status == ProductStatus.PUBLISH
+
+    private val Product.isVariableAndHasNoVariations: Boolean
+        get() = productType == ProductType.VARIABLE && numVariations == 0
 
     suspend fun loadFromCacheAndFetch(
         searchQuery: String = "",
