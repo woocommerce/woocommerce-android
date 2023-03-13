@@ -202,7 +202,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given payment flow and ipp collectable and ttp not collectable, when view model init, then success emitted with ttp collectable true`() =
+    fun `given payment flow and ipp collectable and ttp not collectable, when view model init, then success emitted with ttp collectable false`() =
         testBlocking {
             // GIVEN
             whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
@@ -1109,7 +1109,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given payment flow and not connected and tpp disabled, when vm init, then tracks tap to pay not available`() =
+    fun `given payment flow and not connected and ttp disabled, when vm init, then tracks tap to pay not available`() =
         testBlocking {
             // GIVEN
             val orderId = 1L
@@ -1125,7 +1125,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given payment flow and not connected and tpp system not supported, when vm init, then tracks tpp system`() =
+    fun `given payment flow and not connected and ttp system not supported, when vm init, then tracks ttp system`() =
         testBlocking {
             // GIVEN
             val orderId = 1L
@@ -1141,7 +1141,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given payment flow and not connected and tpp country not supported, when vm init, then tracks tpp country`() =
+    fun `given payment flow and not connected and ttp country not supported, when vm init, then tracks ttp country`() =
         testBlocking {
             // GIVEN
             val orderId = 1L
@@ -1157,7 +1157,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given payment flow tpp gps not available, when vm init, then tracks tpp gps`() =
+    fun `given payment flow ttp gps not available, when vm init, then tracks ttp gps`() =
         testBlocking {
             // GIVEN
             val tapToPayGpsNotAvailable = IsTapToPayAvailable.Result.NotAvailable.GooglePlayServicesNotAvailable
@@ -1173,7 +1173,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given payment flow and not connected and tpp nfc not available, when vm init, then tracks tpp nfc`() =
+    fun `given payment flow and not connected and ttp nfc not available, when vm init, then tracks ttp nfc`() =
         testBlocking {
             // GIVEN
             val orderId = 1L
