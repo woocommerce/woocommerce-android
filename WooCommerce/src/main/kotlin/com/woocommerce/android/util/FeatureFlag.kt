@@ -19,7 +19,8 @@ enum class FeatureFlag {
     IPP_FEEDBACK_BANNER,
     STORE_CREATION_ONBOARDING,
     FREE_TRIAL,
-    REST_API_I2;
+    REST_API_I2,
+    ANALYTICS_HUB_FEEDBACK_BANNER;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -40,7 +41,8 @@ enum class FeatureFlag {
             IPP_TAP_TO_PAY,
             STORE_CREATION_ONBOARDING,
             FREE_TRIAL,
-            REST_API_I2 -> PackageUtils.isDebugBuild()
+            REST_API_I2,
+            ANALYTICS_HUB_FEEDBACK_BANNER -> PackageUtils.isDebugBuild()
         }
     }
 }

@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.payments.feedback.ipp
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
 import com.woocommerce.android.extensions.daysAgo
-import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
@@ -21,14 +20,12 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class ShouldShowFeedbackBannerTest : BaseUnitTest() {
     private val appPrefs: AppPrefsWrapper = mock()
-    private val cashOnDeliverySettings: CashOnDeliverySettingsRepository = mock()
     private val siteModel: SiteModel = SiteModel()
     private val wooCommerceStore: WooCommerceStore = mock()
     private val siteSettings: WCSettingsModel = mock()
 
     private val sut = ShouldShowFeedbackBanner(
         prefs = appPrefs,
-        cashOnDeliverySettings = cashOnDeliverySettings,
         wooCommerceStore = wooCommerceStore,
         siteModel = siteModel,
         cardReaderConfig = CardReaderConfigFactory()
@@ -36,7 +33,6 @@ class ShouldShowFeedbackBannerTest : BaseUnitTest() {
 
     @Before
     fun setup() = testBlocking {
-        whenever(cashOnDeliverySettings.isCashOnDeliveryEnabled()).thenReturn(true)
         whenever(appPrefs.isIPPFeedbackSurveyCompleted()).thenReturn(false)
         whenever(appPrefs.isIPPFeedbackBannerDismissedForever()).thenReturn(false)
         whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(siteSettings)
@@ -72,30 +68,6 @@ class ShouldShowFeedbackBannerTest : BaseUnitTest() {
     fun `given the store's country code is CA, then the banner should be shown`() = testBlocking {
         // given
         whenever(wooCommerceStore.getSiteSettings(siteModel)?.countryCode).thenReturn("CA")
-
-        // when
-        val result = sut()
-
-        // then
-        assertTrue(result)
-    }
-
-    @Test
-    fun `given COD is not enabled, then banner should not be shown`() = testBlocking {
-        // given
-        whenever(cashOnDeliverySettings.isCashOnDeliveryEnabled()).thenReturn(false)
-
-        // when
-        val result = sut()
-
-        // then
-        assertFalse(result)
-    }
-
-    @Test
-    fun `given COD is enabled, then banner should be shown`() = testBlocking {
-        // given
-        whenever(cashOnDeliverySettings.isCashOnDeliveryEnabled()).thenReturn(true)
 
         // when
         val result = sut()

@@ -18,13 +18,26 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <com.woocommerce.android.ui.feedback.FeedbackBanner
+                android:id="@+id/analyticsHubFeedbackBanner"
+                style="@style/Woo.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:visibility="gone"
+                app:title="@string/analytics_banner_title"
+                app:message="@string/analytics_banner_message" />
+
             <View
+                android:id="@+id/divider"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/divider_color"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/analyticsHubFeedbackBanner" />
 
             <com.woocommerce.android.ui.analytics.hub.daterangeselector.AnalyticsHubDateRangeCardView
                 android:id="@+id/analyticsDateSelectorCard"
@@ -35,7 +48,7 @@
                 app:cardElevation="@dimen/minor_50"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/divider" />
 
             <com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationCardView
                 android:id="@+id/analyticsRevenueCard"
