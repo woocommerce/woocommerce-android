@@ -1172,8 +1172,6 @@
     <!--
             Card Reader Type Selection
         -->
-    <string name="card_reader_type_selection_title">Select reader type</string>
-    <string name="card_reader_type_selection_description">Your phone can be used as a card reader, or you can connect to an external reader via bluetooth</string>
     <string name="card_reader_type_selection_tap_to_pay">Tap To Pay</string>
     <string name="card_reader_type_selection_bluetooth_reader">Bluetooth Reader</string>
 
