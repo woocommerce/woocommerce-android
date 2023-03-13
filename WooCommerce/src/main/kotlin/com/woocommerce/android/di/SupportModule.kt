@@ -24,9 +24,8 @@ class SupportModule {
         selectedSite: SelectedSite
     ): ZendeskSettings = ZendeskSettings(supportHelper, accountStore, selectedSite)
 
-    @Singleton
     @Provides
-    fun provideZendeskManager(
+    fun provideZendeskTicketRepository(
         zendeskSettings: ZendeskSettings,
         siteStore: SiteStore,
         dispatchers: CoroutineDispatchers
