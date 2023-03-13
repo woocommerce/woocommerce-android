@@ -218,6 +218,12 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getStoreCreationSource() = AppPrefs.getStoreCreationSource()
 
+    fun setCustomDomainsSource(source: String) {
+        AppPrefs.setCustomDomainsSource(source)
+    }
+
+    fun getCustomDomainsSource() = AppPrefs.getCustomDomainsSource()
+
     /**
      * Card Reader Upsell
      */

@@ -28,9 +28,9 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_LOGIN_
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
 import com.woocommerce.android.extensions.parcelable
-import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.login.LoginPrologueCarouselFragment.PrologueCarouselListener
 import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
@@ -118,8 +118,6 @@ class LoginActivity :
     QrCodeLoginListener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
-        private const val MAGIC_LOGIN = "magic-login"
-        private const val TOKEN_PARAMETER = "token"
         private const val JETPACK_CONNECT_URL = "https://wordpress.com/jetpack/connect"
         private const val JETPACK_CONNECTED_REDIRECT_URL = "woocommerce://jetpack-connected"
 
@@ -149,7 +147,6 @@ class LoginActivity :
     @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
     @Inject internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
     @Inject internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
-    @Inject internal lateinit var zendeskHelper: ZendeskHelper
     @Inject internal lateinit var urlUtils: UrlUtils
     @Inject internal lateinit var experimentTracker: ExperimentTracker
     @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
@@ -193,9 +190,6 @@ class LoginActivity :
                     properties = mapOf(KEY_SOURCE to VALUE_JETPACK_INSTALLATION_SOURCE_WEB)
                 )
                 startLoginViaWPCom()
-            }
-            hasMagicLinkLoginIntent() -> {
-                getAuthTokenFromIntent()?.let { showMagicLinkInterceptFragment(it) }
             }
             !loginHelpNotification.isNullOrBlank() -> {
                 processLoginHelpNotification(loginHelpNotification)
@@ -249,26 +243,6 @@ class LoginActivity :
         } else {
             showPrologueFragment()
         }
-    }
-
-    private fun hasMagicLinkLoginIntent(): Boolean {
-        val action = intent.action
-        val uri = intent.data
-        val host = uri?.host ?: ""
-        return Intent.ACTION_VIEW == action && host.contains(MAGIC_LOGIN)
-    }
-
-    private fun getAuthTokenFromIntent(): String? {
-        val uri = intent.data
-        return uri?.getQueryParameter(TOKEN_PARAMETER)
-    }
-
-    private fun showMagicLinkInterceptFragment(authToken: String) {
-        val fragment = MagicLinkInterceptFragment.newInstance(authToken)
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment, MagicLinkInterceptFragment.TAG)
-            .addToBackStack(null)
-            .commitAllowingStateLoss()
     }
 
     private fun hasJetpackConnectedIntent(): Boolean {
@@ -607,7 +581,13 @@ class LoginActivity :
 
     override fun helpFindingSiteAddress(username: String?, siteStore: SiteStore?) {
         unifiedLoginTracker.trackClick(Click.HELP_FINDING_SITE_ADDRESS)
-        zendeskHelper.createNewTicket(this, HelpOrigin.LOGIN_SITE_ADDRESS, null)
+        startActivity(
+            SupportRequestFormActivity.createIntent(
+                context = this,
+                origin = HelpOrigin.LOGIN_SITE_ADDRESS,
+                extraTags = ArrayList()
+            )
+        )
     }
 
     // TODO This can be modified to also receive the URL the user entered, so we can make that the primary store

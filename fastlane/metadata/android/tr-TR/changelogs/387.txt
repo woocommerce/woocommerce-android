@@ -1,2 +1,0 @@
-12.4:
-Siz istediniz, biz de yaptık! Artık uygulamayı Jetpack eklentisi olmadan kullanmak da mümkün. Bu değişikliği yıllardır sizden aldığımız geri bildirimlere göre yaptık. Beğeneceğinizi biliyoruz!

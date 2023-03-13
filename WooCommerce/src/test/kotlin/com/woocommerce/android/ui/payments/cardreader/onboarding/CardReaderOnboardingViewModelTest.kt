@@ -1971,12 +1971,12 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when account pending requirements, then due date not empty`() =
+    fun `given due date is not given, when account pending requirements, then due date is null`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(
                     StripeAccountPendingRequirement(
-                        0L,
+                        null,
                         WOOCOMMERCE_PAYMENTS,
                         pluginVersion,
                         countryCode
@@ -1987,7 +1987,56 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             assertThat(
                 (viewModel.viewStateData.value as StripeAcountError.StripeAccountPendingRequirementsState).dueDate
-            ).isNotEmpty()
+            ).isNull()
+        }
+
+    @Test
+    fun `given due date is not given, when account pending requirements, then string used without date`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    StripeAccountPendingRequirement(
+                        null,
+                        WOOCOMMERCE_PAYMENTS,
+                        pluginVersion,
+                        countryCode
+                    )
+                )
+
+            val viewModel = createVM()
+
+            assertThat(
+                (viewModel.viewStateData.value as StripeAcountError.StripeAccountPendingRequirementsState).hintLabel
+            ).isEqualTo(
+                UiString.UiStringRes(
+                    R.string.card_reader_onboarding_account_pending_requirements_without_date_hint
+                )
+            )
+        }
+
+    @Test
+    fun `given due date is given, when account pending requirements, then string used with date`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    StripeAccountPendingRequirement(
+                        1L,
+                        WOOCOMMERCE_PAYMENTS,
+                        pluginVersion,
+                        countryCode,
+                    )
+                )
+
+            val viewModel = createVM()
+
+            assertThat(
+                (viewModel.viewStateData.value as StripeAcountError.StripeAccountPendingRequirementsState).hintLabel
+            ).isEqualTo(
+                UiString.UiStringRes(
+                    R.string.card_reader_onboarding_account_pending_requirements_hint,
+                    listOf(UiString.UiStringText("January 01"))
+                )
+            )
         }
 
     @Test

@@ -1,7 +1,9 @@
 package com.woocommerce.android.support.requests
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.support.HelpOption
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.support.TicketType
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationFailed
@@ -29,6 +31,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
     private lateinit var sut: SupportRequestFormViewModel
     private lateinit var zendeskHelper: ZendeskHelper
     private lateinit var selectedSite: SelectedSite
+    private lateinit var tracks: AnalyticsTrackerWrapper
     private val savedState = SavedStateHandle()
 
     @Before
@@ -47,7 +50,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // When
         sut.onSubjectChanged("subject")
         sut.onMessageChanged("message")
-        sut.onHelpOptionSelected(HelpOption.MobileApp)
+        sut.onHelpOptionSelected(TicketType.MobileApp)
 
         // Then
         assertThat(isSubmitButtonEnabled).hasSize(2)
@@ -66,7 +69,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // When
         sut.onSubjectChanged("")
         sut.onMessageChanged("")
-        sut.onHelpOptionSelected(HelpOption.MobileApp)
+        sut.onHelpOptionSelected(TicketType.MobileApp)
 
         // Then
         assertThat(isSubmitButtonEnabled).hasSize(1)
@@ -84,7 +87,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // When
         sut.onSubjectChanged("subject")
         sut.onMessageChanged("message")
-        sut.onHelpOptionSelected(HelpOption.MobileApp)
+        sut.onHelpOptionSelected(TicketType.MobileApp)
         sut.onSubmitRequestButtonClicked(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
 
         // Then
@@ -104,7 +107,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         }
 
         // When
-        sut.onHelpOptionSelected(HelpOption.MobileApp)
+        sut.onHelpOptionSelected(TicketType.MobileApp)
         sut.onSubmitRequestButtonClicked(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
 
         // Then
@@ -112,7 +115,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         assertThat(isRequestLoading[0]).isFalse
         assertThat(isRequestLoading[1]).isTrue
         assertThat(isRequestLoading[2]).isFalse
-        verify(zendeskHelper, times(1)).createRequest(any(), any(), any(), any(), any(), any())
+        verify(zendeskHelper, times(1)).createRequest(any(), any(), any(), any(), any(), any(), any())
     }
 
     @Test
@@ -129,7 +132,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // Then
         assertThat(isRequestLoading).hasSize(1)
         assertThat(isRequestLoading[0]).isFalse
-        verify(zendeskHelper, never()).createRequest(any(), any(), any(), any(), any(), any())
+        verify(zendeskHelper, never()).createRequest(any(), any(), any(), any(), any(), any(), any())
     }
 
     @Test
@@ -141,12 +144,13 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         }
 
         // When
-        sut.onHelpOptionSelected(HelpOption.MobileApp)
+        sut.onHelpOptionSelected(TicketType.MobileApp)
         sut.onSubmitRequestButtonClicked(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
 
         // Then
         assertThat(event).hasSize(1)
         assertThat(event[0]).isEqualTo(RequestCreationSucceeded)
+        verify(tracks, times(1)).track(AnalyticsEvent.SUPPORT_NEW_REQUEST_CREATED)
     }
 
     @Test
@@ -159,22 +163,34 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         }
 
         // When
-        sut.onHelpOptionSelected(HelpOption.MobileApp)
+        sut.onHelpOptionSelected(TicketType.MobileApp)
         sut.onSubmitRequestButtonClicked(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
 
         // Then
         assertThat(event).hasSize(1)
         assertThat(event[0]).isEqualTo(RequestCreationFailed)
+        verify(tracks, times(1)).track(AnalyticsEvent.SUPPORT_NEW_REQUEST_FAILED)
+    }
+
+    @Test
+    fun `when onViewCreated is called, then trigger the expected track event`() {
+        // When
+        sut.onViewCreated()
+
+        // Then
+        verify(tracks, times(1)).track(AnalyticsEvent.SUPPORT_NEW_REQUEST_VIEWED)
     }
 
     private fun configureMocks(requestResult: Result<Request?>) {
+        tracks = mock()
         val testSite = SiteModel().apply { id = 123 }
         selectedSite = mock {
-            on { get() }.then { testSite }
+            on { getIfExists() }.then { testSite }
         }
         zendeskHelper = mock {
             onBlocking {
                 createRequest(
+                    any(),
                     any(),
                     any(),
                     eq(testSite),
@@ -186,8 +202,11 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         }
 
         sut = SupportRequestFormViewModel(
+            accountStore = mock(),
             zendeskHelper = zendeskHelper,
+            supportHelper = mock(),
             selectedSite = selectedSite,
+            tracks = tracks,
             savedState = savedState
         )
     }

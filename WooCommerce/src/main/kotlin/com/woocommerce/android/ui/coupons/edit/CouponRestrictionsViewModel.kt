@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Coupon.CouponRestrictions
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.EditExcludedProductCategories
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.EditExcludedProducts
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -107,16 +108,20 @@ class CouponRestrictionsViewModel @Inject constructor(
     }
 
     fun onExcludeProductsButtonClick() {
-        triggerEvent(EditExcludedProducts(restrictionsDraft.value.excludedProductIds))
+        restrictionsDraft.value.excludedProductIds.map { productOrVariationId ->
+            ProductSelectorViewModel.SelectedItem.ProductOrVariation(productOrVariationId)
+        }.let {
+            triggerEvent(EditExcludedProducts(it))
+        }
     }
 
     fun onExcludeCategoriesButtonClick() {
         triggerEvent(EditExcludedProductCategories(restrictionsDraft.value.excludedCategoryIds))
     }
 
-    fun onExcludedProductChanged(excludedProductIds: Set<Long>) {
+    fun onExcludedProductChanged(excludedProductItems: Set<ProductSelectorViewModel.SelectedItem>) {
         restrictionsDraft.update {
-            it.copy(excludedProductIds = excludedProductIds.toList())
+            it.copy(excludedProductIds = excludedProductItems.map { it.id })
         }
     }
 

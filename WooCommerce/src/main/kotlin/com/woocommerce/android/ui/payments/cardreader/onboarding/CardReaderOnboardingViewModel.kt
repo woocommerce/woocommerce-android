@@ -412,7 +412,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
         Locale("", countryCode.orEmpty()).displayName
 
     private fun formatDueDate(state: StripeAccountPendingRequirement) =
-        state.dueDate?.let { Date(it * UNIX_TO_JAVA_TIMESTAMP_OFFSET).formatToMMMMdd() } ?: ""
+        state.dueDate?.let { Date(it * UNIX_TO_JAVA_TIMESTAMP_OFFSET).formatToMMMMdd() }
 
     sealed class OnboardingEvent : Event() {
         object NavigateToSupport : Event()
@@ -619,13 +619,15 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 override val onContactSupportActionClicked: () -> Unit,
                 override val onLearnMoreActionClicked: () -> Unit,
                 override val onButtonActionClicked: () -> Unit,
-                val dueDate: String
+                val dueDate: String?
             ) : StripeAcountError(
                 headerLabel = UiString
                     .UiStringRes(R.string.card_reader_onboarding_account_pending_requirements_header),
-                hintLabel = UiString.UiStringRes(
+                hintLabel = if (dueDate != null) UiString.UiStringRes(
                     R.string.card_reader_onboarding_account_pending_requirements_hint,
                     listOf(UiString.UiStringText(dueDate))
+                ) else UiString.UiStringRes(
+                    R.string.card_reader_onboarding_account_pending_requirements_without_date_hint,
                 ),
                 buttonLabel = UiString.UiStringRes(R.string.skip)
             )

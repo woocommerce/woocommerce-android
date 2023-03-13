@@ -9,18 +9,27 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.doOnTextChanged
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivitySupportRequestFormBinding
 import com.woocommerce.android.extensions.serializable
-import com.woocommerce.android.support.HelpOption
+import com.woocommerce.android.support.SupportHelper
+import com.woocommerce.android.support.TicketType
+import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationFailed
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationSucceeded
+import com.woocommerce.android.support.requests.SupportRequestFormViewModel.ShowSupportIdentityInputDialog
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SupportRequestFormActivity : AppCompatActivity() {
+    @Inject lateinit var supportHelper: SupportHelper
+    @Inject lateinit var zendeskHelper: ZendeskHelper
+
     private val viewModel: SupportRequestFormViewModel by viewModels()
 
     private val helpOrigin by lazy {
@@ -41,6 +50,7 @@ class SupportRequestFormActivity : AppCompatActivity() {
             observeViewEvents(this)
             observeViewModelEvents(this)
         }
+        viewModel.onViewCreated()
     }
 
     private fun ActivitySupportRequestFormBinding.setupActionBar() {
@@ -54,15 +64,20 @@ class SupportRequestFormActivity : AppCompatActivity() {
         binding.requestMessage.doOnTextChanged { text, _, _, _ -> viewModel.onMessageChanged(text.toString()) }
         binding.helpOptionsGroup.setOnCheckedChangeListener { _, selectionID ->
             when (selectionID) {
-                binding.mobileAppOption.id -> viewModel.onHelpOptionSelected(HelpOption.MobileApp)
-                binding.ippOption.id -> viewModel.onHelpOptionSelected(HelpOption.InPersonPayments)
-                binding.paymentsOption.id -> viewModel.onHelpOptionSelected(HelpOption.Payments)
-                binding.wooPluginOption.id -> viewModel.onHelpOptionSelected(HelpOption.WooPlugin)
-                binding.otherOption.id -> viewModel.onHelpOptionSelected(HelpOption.OtherPlugins)
+                binding.mobileAppOption.id -> viewModel.onHelpOptionSelected(TicketType.MobileApp)
+                binding.ippOption.id -> viewModel.onHelpOptionSelected(TicketType.InPersonPayments)
+                binding.paymentsOption.id -> viewModel.onHelpOptionSelected(TicketType.Payments)
+                binding.wooPluginOption.id -> viewModel.onHelpOptionSelected(TicketType.WooPlugin)
+                binding.otherOption.id -> viewModel.onHelpOptionSelected(TicketType.OtherPlugins)
             }
         }
         binding.submitRequestButton.setOnClickListener {
-            viewModel.onSubmitRequestButtonClicked(this, helpOrigin, extraTags)
+            viewModel.onSubmitRequestButtonClicked(
+                context = this,
+                helpOrigin = helpOrigin,
+                extraTags = extraTags,
+                verifyIdentity = true
+            )
         }
     }
 
@@ -77,6 +92,7 @@ class SupportRequestFormActivity : AppCompatActivity() {
             when (it) {
                 is RequestCreationSucceeded -> showRequestCreationSuccessDialog()
                 is RequestCreationFailed -> showRequestCreationFailureDialog()
+                is ShowSupportIdentityInputDialog -> showSupportIdentityInputDialog(it.emailSuggestion)
             }
         }
     }
@@ -120,6 +136,18 @@ class SupportRequestFormActivity : AppCompatActivity() {
     private fun hideProgressDialog() {
         progressDialog?.dismiss()
         progressDialog = null
+    }
+
+    private fun showSupportIdentityInputDialog(emailSuggestion: String) {
+        supportHelper.showSupportIdentityInputDialog(this, emailSuggestion) { email, _ ->
+            viewModel.onUserIdentitySet(
+                context = this,
+                helpOrigin = helpOrigin,
+                extraTags = extraTags,
+                selectedEmail = email
+            )
+        }
+        AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_FORM_VIEWED)
     }
 
     companion object {

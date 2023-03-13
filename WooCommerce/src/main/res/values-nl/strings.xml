@@ -1,13 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-02-22 14:54:03+0000
+Translation-Revision-Date: 2023-03-10 12:34:18+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="support_request_error_message">Helaas, we kunnen ondersteuningsverzoeken nu niet aanmaken, probeer het later opnieuw.</string>
+    <string name="support_request_error_title">Er is iets fout gegaan</string>
+    <string name="support_request_dialog_action">Begrepen!</string>
+    <string name="support_request_success_message">Je ondersteuningsverzoek is in goede orde bij ons aangekomen. We zullen zo snel mogelijk via e-mail reageren.</string>
+    <string name="support_request_success_title">Verzoek verstuurd!</string>
+    <string name="support_request_loading_message">Een moment geduld</string>
+    <string name="support_request_loading_title">Aanvraag wordt verzonden …</string>
+    <string name="support_request_help_other">Andere extensie / plugin</string>
+    <string name="support_request_help_plugins">WooCommerce-plugin</string>
+    <string name="support_request_help_payments">WooCommerce Payments</string>
+    <string name="support_request_help_ipp">Kaartlezer / Fysieke betalingen</string>
+    <string name="support_request_help_app">Mobiele app</string>
+    <string name="support_request_message_hint">Write something</string>
+    <string name="support_request_message">Bericht</string>
+    <string name="support_request_submit">Ondersteuningsverzoek indienen</string>
+    <string name="support_request_subject">Onderwerp</string>
+    <string name="support_request_description">Vertel ons zoveel mogelijk over het probleem en we nemen snel contact met je op.</string>
+    <string name="support_request_title">Laten we dit oplossen</string>
+    <string name="support_request_help_title">Ik heb hulp nodig met</string>
+    <string name="support_request">Ondersteuningsverzoek indienen</string>
+    <string name="store_onboarding_menu_share_feedback">Deel je feedback</string>
+    <string name="store_onboarding_collapsed_transition_name">Onboarding collapsed list</string>
+    <string name="store_onboarding_full_screen_transition_name">Onboarding full screen</string>
+    <string name="store_onboarding_task_view_all">Alles weergeven (%1$d)</string>
+    <string name="store_onboarding_completed_tasks_full_screen_status">%1$d van %2$d taken voltooid</string>
+    <string name="store_onboarding_task_payments_setup_description">Bied je klanten een eenvoudige en handige betaalmethode!</string>
+    <string name="store_onboarding_task_payments_setup_title">Verdien geld</string>
+    <string name="store_onboarding_task_about_your_store_description">We gebruiken deze gegevens om alvast te beginnen met het instellen van betalingen, verzending en belasting.</string>
+    <string name="store_onboarding_task_about_your_store_title">Vertel ons eerst iets over je winkel</string>
+    <string name="login_magic_links_email_sent_to_unknown_email">We hebben je per e-mail een magische link toegestuurd.</string>
+    <string name="jetpack_benefits_modal_login">Log opnieuw in om door te gaan.</string>
+    <string name="jetpack_benefits_modal_multiple_stores_subtitle">Get access to all of your WooCommerce stores.</string>
+    <string name="jetpack_benefits_modal_multiple_stores_title">Heb je meerdere winkels onder je beheer?</string>
+    <string name="jetpack_benefits_fetching_status">Fetching Jetpack Status</string>
+    <string name="card_reader_tap_to_pay_explanation_test_payment_error">Er is iets fout gegaan. Probeer het later opnieuw.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_payment">Try a payment</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find"> You can find Tap to Pay on Android in\nMenu &gt; Payments, or Collect Payment and\nchoose Tap to Pay.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Try a payment using your card and\nrefund it when you’re done.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">Your phone is ready for Tap to Pay.\nYour customer can tap their card\non your phone to pay.</string>
+    <string name="card_reader_tap_to_pay_explanation_title">Betalingen ontvangen\nAfdrukken met je telefoon</string>
+    <string name="card_reader_tap_to_pay_explanation_screen_title">Tik om te betalen</string>
+    <string name="card_reader_tap_to_pay_description">Use your phone to accept card payments</string>
+    <string name="card_reader_tap_to_pay">Tik om te betalen</string>
+    <string name="card_reader_hub_actions_category_header">Acties</string>
+    <string name="domain_registration_generic_error">Fout opgetreden tijdens domeinregistratie:</string>
+    <string name="domain_registration_state_picker_dialog_title">Selecteer provincie</string>
+    <string name="domain_registration_country_picker_dialog_title">Selecteer land</string>
+    <string name="domain_registration_registering_domain_name_progress_dialog_message">Domeinnaam wordt geregistreerd…</string>
+    <string name="domain_contact_information_register_domain_button">Registreer domein</string>
+    <string name="domain_contact_information_postal_code_hint">Postcode</string>
+    <string name="domain_contact_information_state_not_available_hint">Status (niet beschikbaar)</string>
+    <string name="domain_contact_information_state_hint">Provincie</string>
+    <string name="domain_contact_information_city_hint">Plaats</string>
+    <string name="domain_contact_information_address_hint_two">Adres 2</string>
+    <string name="domain_contact_information_address_hint">Adres</string>
+    <string name="domain_contact_information_country_hint">Land</string>
+    <string name="domain_contact_information_country_code_hint">Landcode</string>
+    <string name="domain_contact_information_phone_number_hint">Telefoonnummer</string>
+    <string name="domain_contact_information_organization_hint">Organisatie (optioneel)</string>
+    <string name="domain_contact_information_description">Om je op weg te helpen, hebben je contactgegevens van WordPress.com\n alvast ingevuld. Controleer of dit de juiste gegevens zijn die je voor dit domein wilt gebruiken.</string>
+    <string name="domain_contact_information_title">Contactgegevens domein</string>
+    <string name="domain_privacy_option_off_title">Openbaar registreren</string>
+    <string name="domain_privacy_option_on_title">Privé registreren met privacybescherming</string>
+    <string name="domain_registration_contact_form_input_error">Voer een geldige %s in</string>
+    <string name="domain_registration_privacy_protection_tos">Door dit domein te registreren, ga je akkoord met onze %1$salgemene voorwaarden%2$s</string>
+    <string name="domain_registration_privacy_protection_description">Domeineigenaren moeten contactgegevens delen in een openbare database met alle domeinen.\n Met Privacybescherming publiceren we onze eigen informatie in plaats van die van jou en sturen we berichten privé naar je door.</string>
+    <string name="domain_registration_privacy_protection_title">Privacybescherming</string>
+    <string name="domains_access_error_title">Only store administrators can access domain settings</string>
+    <string name="login_jetpack_installation_continue_magic_link">Or continue using Magic Link</string>
+    <string name="login_jetpack_installation_enter_wpcom_password">Voer wachtwoord voor je WordPress.com account in.</string>
+    <string name="login_jetpack_connection_enter_wpcom_password">Log je in op je WordPress.com-account om verbinding te maken met Jetpack.</string>
+    <string name="login_jetpack_installation_enter_wpcom_email">Log in met je WordPress.com account</string>
+    <string name="login_jetpack_connection_enter_wpcom_email">Log je in op je WordPress.com-account om verbinding te maken met Jetpack.</string>
+    <string name="domains_purchase_successful_settings_notice">Je kunt de domeininstellingen vinden onder Instellingen &gt; Domeinen</string>
+    <string name="domains_purchase_successful_delay_notice">Je siteadres wordt ingesteld. Het kan tot 30 minuten duren voor je domein werkt.</string>
+    <string name="domains_purchase_successful_heading">Gefeliciteerd met je aankoop</string>
+    <string name="domains_free_with_credits">Het eerste jaar gratis</string>
     <string name="settings_confirm_logout_site_credentials">Weet je zeker dat je wilt uitloggen bij je account?</string>
-    <string name="domains_error_title">Kan sitedomeinen niet laden</string>
+    <string name="domains_generic_error_title">Kan sitedomeinen niet laden</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d voltooid</string>
     <string name="store_onboarding_task_change_domain_description">Host je winkel met een aangepaste URL.</string>
     <string name="store_onboarding_task_change_domain_title">Je domein aanpassen</string>
@@ -1081,8 +1158,6 @@ Language: nl
     <string name="ordered_add_ons_details_info_notice">Als je de naam van een extra optie wijzigt in je webdashboard, onthoud dan dat eerdere bestellingen deze extra optie niet langer zullen weergeven in de app.</string>
     <string name="orderdetail_product_lineitem_view_addons_action">Add-ons bekijken</string>
     <string name="save">Opslaan</string>
-    <string name="support_contact_payments_detail">Neem contact op met onze Happiness Engineers, die alle lastige vragen met betrekking tot betalingen kunnen beantwoorden</string>
-    <string name="support_contact_payments">Contact opnemen met de ondersteuning van Payments</string>
     <string name="product_images_error_detail_title">Details uploaden (%d)</string>
     <string name="product_image_service_error_uploading_multiple">%d bestanden konden niet worden geüpload</string>
     <string name="product_image_service_error_uploading_single">%d bestand kon niet worden geüpload</string>
@@ -2384,8 +2459,6 @@ Language: nl
     <string name="support_contact_email">E-mail voor contact</string>
     <string name="support_application_log_detail">Geavanceerde tool om app-status te controleren</string>
     <string name="support_application_log">Toepassingslog</string>
-    <string name="support_my_tickets_detail">Eerder ingediende rapporttickets bekijken</string>
-    <string name="support_my_tickets">Mijn tickets</string>
     <string name="support_contact_detail">Neem contact op met onze Happiness Engineers, die alle lastige vragen kunnen beantwoorden</string>
     <string name="support_contact">Neem contact op met ondersteuning</string>
     <string name="support_faq_detail">Krijg antwoord op de vragen die je hebt</string>

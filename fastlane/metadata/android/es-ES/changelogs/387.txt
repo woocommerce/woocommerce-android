@@ -1,2 +1,0 @@
-12.4:
-Lo habías pedido y aquí lo tienes. ¡Ahora puedes utilizar la aplicación sin el plugin de Jetpack! Este cambio se lleva a cabo a raíz de los comentarios directos que hemos recibido a lo largo de los años, así que estamos seguros de que te gustará.

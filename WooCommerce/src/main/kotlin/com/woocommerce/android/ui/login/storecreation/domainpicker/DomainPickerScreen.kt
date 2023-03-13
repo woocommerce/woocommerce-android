@@ -29,7 +29,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -202,12 +201,6 @@ private fun DomainSuggestionList(
     keyboardController: SoftwareKeyboardController?,
     modifier: Modifier = Modifier,
 ) {
-    LaunchedEffect(Unit) {
-        suggestions.firstOrNull { it.isSelected }?.domain?.let { domain ->
-            onDomainSuggestionSelected(domain)
-        }
-    }
-
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))

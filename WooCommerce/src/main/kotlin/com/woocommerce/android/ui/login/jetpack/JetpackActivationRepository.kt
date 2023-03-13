@@ -4,10 +4,13 @@ import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.JetpackStore
 import org.wordpress.android.fluxc.store.JetpackStore.JetpackConnectionUrlError
@@ -15,12 +18,15 @@ import org.wordpress.android.fluxc.store.JetpackStore.JetpackUserError
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.login.util.SiteUtils
+import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
 class JetpackActivationRepository @Inject constructor(
+    private val dispatcher: Dispatcher,
     private val siteStore: SiteStore,
     private val jetpackStore: JetpackStore,
     private val wooCommerceStore: WooCommerceStore,
+    private val selectedSite: SelectedSite,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) {
     companion object {
@@ -40,6 +46,7 @@ class JetpackActivationRepository @Inject constructor(
                 WooLog.w(WooLog.T.LOGIN, "Fetching Jetpack Connection URL failed: ${result.error.message}")
                 Result.failure(OnChangedException(result.error, result.error.message))
             }
+
             else -> {
                 WooLog.d(WooLog.T.LOGIN, "Jetpack connection URL fetched successfully")
                 Result.success(result.url)
@@ -55,6 +62,7 @@ class JetpackActivationRepository @Inject constructor(
                 WooLog.w(WooLog.T.LOGIN, "Fetching Jetpack User failed error: $result.error.message")
                 Result.failure(OnChangedException(result.error, result.error.message))
             }
+
             result.user?.wpcomEmail.isNullOrEmpty() -> {
                 analyticsTrackerWrapper.track(
                     stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_CANNOT_FIND_WPCOM_USER
@@ -62,6 +70,7 @@ class JetpackActivationRepository @Inject constructor(
                 WooLog.w(WooLog.T.LOGIN, "Cannot find Jetpack Email in response")
                 Result.failure(Exception("Email missing from response"))
             }
+
             else -> {
                 WooLog.d(WooLog.T.LOGIN, "Jetpack User fetched successfully")
                 Result.success(result.user!!.wpcomEmail)
@@ -69,7 +78,7 @@ class JetpackActivationRepository @Inject constructor(
         }
     }
 
-    suspend fun checkSiteConnection(siteUrl: String): Result<Unit> = runWithRetry {
+    suspend fun fetchJetpackSite(siteUrl: String): Result<SiteModel> = runWithRetry {
         WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: Fetch WooCommerce Stores to confirm Jetpack Connection")
         wooCommerceStore.fetchWooCommerceSites().let { result ->
             if (result.isError) {
@@ -80,15 +89,42 @@ class JetpackActivationRepository @Inject constructor(
                 return@runWithRetry Result.failure(WooException(result.error))
             }
 
-            val site = withContext(Dispatchers.IO) {
-                SiteUtils.getSiteByMatchingUrl(siteStore, siteUrl)
-            }?.takeIf { it.siteId != 0L }
+            val site = getJetpackSiteByUrl(siteUrl)
 
             return@runWithRetry if (site == null) {
                 WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: Site $siteUrl is missing from account sites")
                 Result.failure(IllegalStateException("Site missing"))
-            } else Result.success(Unit)
+            } else {
+                if (!site.hasWooCommerce) {
+                    // If the site doesn't have WooCommerce, let's do one additional fetch using `fetchSite`,
+                    // this function will make sure to fetch data from the remote site, which might result in more
+                    // accurate result
+                    siteStore.fetchSite(site)
+                }
+                Result.success(site)
+            }
         }
+    }
+
+    suspend fun getJetpackSiteByUrl(siteUrl: String): SiteModel? {
+        val baseUrl = UrlUtils.removeScheme(siteUrl).trim('/')
+
+        return withContext(Dispatchers.IO) {
+            siteStore.getSitesAccessedViaWPComRestByNameOrUrlMatching(baseUrl)
+        }.firstOrNull()
+    }
+
+    fun setSelectedSiteAndCleanOldSites(jetpackSite: SiteModel) {
+        val baseUrl = UrlUtils.removeScheme(jetpackSite.url).trim('/')
+
+        // Remove all previous entries that don't use WPCom REST API
+        siteStore.getSitesByNameOrUrlMatching(baseUrl).forEach {
+            if (it.origin != SiteModel.ORIGIN_WPCOM_REST) {
+                dispatcher.dispatch(SiteActionBuilder.newRemoveSiteAction(it))
+            }
+        }
+
+        selectedSite.set(jetpackSite)
     }
 
     @Suppress("ReturnCount", "MagicNumber")

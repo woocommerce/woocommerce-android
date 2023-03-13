@@ -1,7 +1,21 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+12.8
+-----
+
+
+12.8
+-----
+- [*] [Internal] Fix the wording for the cases when we don't have due date on stripe pending requirements state for IPP [https://github.com/woocommerce/woocommerce-android/pull/8516]
+
+12.7
+-----
+- [*][Internal] Fixed IPP feedback survey banner display logic. [https://github.com/woocommerce/woocommerce-android/pull/8482]
+
 12.6
 -----
+- [**] Support: Merchants can now contact support with a new and refined experience. [https://github.com/woocommerce/woocommerce-android/issues/8336]
 - [*] Search in local database when searching for products in the edit coupons flow. [https://github.com/woocommerce/woocommerce-android/pull/8391]
+- [***] We added a new Domain change feature, which allows the store owners to register a TLD. [https://github.com/woocommerce/woocommerce-android/issues/8238]
 
 
 12.5

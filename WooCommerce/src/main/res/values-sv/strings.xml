@@ -1,13 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-02-18 08:43:24+0000
+Translation-Revision-Date: 2023-03-10 12:36:01+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="support_request_error_message">Vi kan tyvärr inte skapa supportförfrågningar för tillfället. Försök igen senare.</string>
+    <string name="support_request_error_title">Något gick fel</string>
+    <string name="support_request_dialog_action">Jag förstår!</string>
+    <string name="support_request_success_message">Din supportförfrågan har landat säkert i vår inkorg. Vi kommer att svara via e-post så snart vi kan.</string>
+    <string name="support_request_success_title">Förfrågan skickad.</string>
+    <string name="support_request_loading_message">Vänta …</string>
+    <string name="support_request_loading_title">Skickar din förfrågan</string>
+    <string name="support_request_help_other">Annan utökning/tillägg</string>
+    <string name="support_request_help_plugins">WooCommerce-tillägg</string>
+    <string name="support_request_help_payments">WooCommerce-betalningar</string>
+    <string name="support_request_help_ipp">Kortläsare/personliga betalningar</string>
+    <string name="support_request_help_app">Mobilapp</string>
+    <string name="support_request_message_hint">Skriv något</string>
+    <string name="support_request_message">Meddelande</string>
+    <string name="support_request_submit">Skicka supportförfrågan</string>
+    <string name="support_request_subject">Ämne</string>
+    <string name="support_request_description">Meddela oss din webbplatsadress (URL) och berätta så mycket du kan om problemet, så kommer vi att kontakta dig snart.</string>
+    <string name="support_request_title">Låt oss ordna detta</string>
+    <string name="support_request_help_title">Jag behöver hjälp med</string>
+    <string name="support_request">Supportförfrågan</string>
+    <string name="store_onboarding_menu_share_feedback">Dela feedback</string>
+    <string name="store_onboarding_collapsed_transition_name">Onboarding, minimerad lista</string>
+    <string name="store_onboarding_full_screen_transition_name">Onboarding, fullskärm</string>
+    <string name="store_onboarding_task_view_all">Visa alla (%1$d)</string>
+    <string name="store_onboarding_completed_tasks_full_screen_status">%1$d av %2$d uppgifter har slutförts</string>
+    <string name="store_onboarding_task_payments_setup_description">Ge dina kunder ett enkelt och bekvämt sätt att betala!</string>
+    <string name="store_onboarding_task_payments_setup_title">Få betalt</string>
+    <string name="store_onboarding_task_about_your_store_description">Vi använder den här informationen för att snabbare kunna konfigurera dina frakt-, moms- och betalningsinställningar.</string>
+    <string name="store_onboarding_task_about_your_store_title">Berätta mer om din butik</string>
+    <string name="login_magic_links_email_sent_to_unknown_email">Vi har precis skickat en magisk länk till e-postadressen för ditt konto</string>
+    <string name="jetpack_benefits_modal_login">Logga in för att fortsätta</string>
+    <string name="jetpack_benefits_modal_multiple_stores_subtitle">Få åtkomst till alla dina WooCommerce-butiker.</string>
+    <string name="jetpack_benefits_modal_multiple_stores_title">Flera butiker</string>
+    <string name="jetpack_benefits_fetching_status">Hämtar Jetpack-status</string>
+    <string name="card_reader_tap_to_pay_explanation_test_payment_error">Något blev fel. Försök igen senare.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_payment">Prova en betalning</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find"> Du hittar Tryck för att betala på Android via\nMeny &gt; Betalningar, eller genom att gå till Ta emot betalning och\nvälja Tryck för att betala.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Prova att genomföra en betalning med ditt kort och\nåterbetala den när du är klar.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">Din telefon är redo för Tryck för att betala.\nDin kund kan trycka på sitt kort\npå din telefon för att betala.</string>
+    <string name="card_reader_tap_to_pay_explanation_title">Ta emot kortbetalningar\nmed din telefon</string>
+    <string name="card_reader_tap_to_pay_explanation_screen_title">Tryck för att betala</string>
+    <string name="card_reader_tap_to_pay_description">Använd din telefon för att ta emot kortbetalningar</string>
+    <string name="card_reader_tap_to_pay">Tryck för att betala</string>
+    <string name="card_reader_hub_actions_category_header">ÅTGÄRDER</string>
+    <string name="domain_registration_generic_error">Ett fel uppstod under domänregistrering</string>
+    <string name="domain_registration_state_picker_dialog_title">Välj delstat</string>
+    <string name="domain_registration_country_picker_dialog_title">Välj land</string>
+    <string name="domain_registration_registering_domain_name_progress_dialog_message">Registrerar domännamn…</string>
+    <string name="domain_contact_information_register_domain_button">Registrera domän</string>
+    <string name="domain_contact_information_postal_code_hint">Postnummer</string>
+    <string name="domain_contact_information_state_not_available_hint">Delstat (Inte tillgänglig)</string>
+    <string name="domain_contact_information_state_hint">Delstat</string>
+    <string name="domain_contact_information_city_hint">Ort</string>
+    <string name="domain_contact_information_address_hint_two">Adress 2</string>
+    <string name="domain_contact_information_address_hint">Adress</string>
+    <string name="domain_contact_information_country_hint">Land</string>
+    <string name="domain_contact_information_country_code_hint">Landskod</string>
+    <string name="domain_contact_information_phone_number_hint">Telefon</string>
+    <string name="domain_contact_information_organization_hint">Organisation (valfritt)</string>
+    <string name="domain_contact_information_description">För din bekvämlighet har vi förfyllt din WordPress.com\n        kontaktinformation. Granska det för att vara säker på att det är rätt information du vill använda för denna domän.</string>
+    <string name="domain_contact_information_title">Kontaktinformation för domän</string>
+    <string name="domain_privacy_option_off_title">Registrera publikt</string>
+    <string name="domain_privacy_option_on_title">Registrera privat med integritetsskydd</string>
+    <string name="domain_registration_contact_form_input_error">Ange en giltig %s</string>
+    <string name="domain_registration_privacy_protection_tos">I och med att du registrerar denna domän accepterar du våra %1$savtalsvillkor%2$s</string>
+    <string name="domain_registration_privacy_protection_description">Domänägare måste uppge kontaktinformation i en publik databas som omfattar alla domäner. Med integritetsskydd publicerar vi våra uppgifter istället för dina, och vidarebefordrar sedan privat eventuella meddelanden till dig.</string>
+    <string name="domain_registration_privacy_protection_title">Integritetsskydd</string>
+    <string name="domains_access_error_title">Endast butiksadministratörer kan komma åt domäninställningar</string>
+    <string name="login_jetpack_installation_continue_magic_link">Eller fortsätt med magisk länk</string>
+    <string name="login_jetpack_installation_enter_wpcom_password">Ange lösenordet för ditt WordPress.com-konto för att installera Jetpack</string>
+    <string name="login_jetpack_connection_enter_wpcom_password">Ange lösenordet för ditt WordPress.com-konto för att ansluta till Jetpack</string>
+    <string name="login_jetpack_installation_enter_wpcom_email">Logga in på ditt WordPress.com-konto för att installera Jetpack</string>
+    <string name="login_jetpack_connection_enter_wpcom_email">Logga in på ditt WordPress.com-konto för att ansluta Jetpack</string>
+    <string name="domains_purchase_successful_settings_notice">Du hittar domäninställningarna via Inställningar &gt; Domäner</string>
+    <string name="domains_purchase_successful_delay_notice">Din webbplatsadress håller på att konfigureras. Det kan dröja upp till 30 minuter innan din domän börjar fungera.</string>
+    <string name="domains_purchase_successful_heading">Grattis till dina köp</string>
+    <string name="domains_free_with_credits">Gratis första året</string>
     <string name="settings_confirm_logout_site_credentials">Är du säker på att du vill logga ut från ditt konto?</string>
-    <string name="domains_error_title">Kan inte ladda webbplatsdomäner</string>
+    <string name="domains_generic_error_title">Kan inte ladda webbplatsdomäner</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d har slutförts</string>
     <string name="store_onboarding_task_change_domain_description">Få en anpassad URL för din butik.</string>
     <string name="store_onboarding_task_change_domain_title">Anpassa din domän</string>
@@ -1081,8 +1158,6 @@ Language: sv_SE
     <string name="ordered_add_ons_details_info_notice">Om du byter namn på ett tillägg i din webbadminpanel, observera att vissa beställningar inte längre kommer att visa tillägget i appen.</string>
     <string name="orderdetail_product_lineitem_view_addons_action">Visa utökningar</string>
     <string name="save">Spara</string>
-    <string name="support_contact_payments_detail">Kontakta våra supporttekniker för att få svar på frågor rörande betalningar</string>
-    <string name="support_contact_payments">Kontakta supporten för betalningar</string>
     <string name="product_images_error_detail_title">Ladda upp information (%d)</string>
     <string name="product_image_service_error_uploading_multiple">%d filer kunde inte laddas upp</string>
     <string name="product_image_service_error_uploading_single">%d fil kunde inte laddas upp</string>
@@ -2384,8 +2459,6 @@ Language: sv_SE
     <string name="support_contact_email">E-postadress för kontakt</string>
     <string name="support_application_log_detail">Avancerat verktyg för att granska appens status</string>
     <string name="support_application_log">Logg för applikationen</string>
-    <string name="support_my_tickets_detail">Visa tidigare inskickade supportärenden</string>
-    <string name="support_my_tickets">Mina ärenden</string>
     <string name="support_contact_detail">Kontakta våra supporttekniker för att få svar på svåra frågor</string>
     <string name="support_contact">Kontakta supporten</string>
     <string name="support_faq_detail">Få svar på frågor som du har</string>

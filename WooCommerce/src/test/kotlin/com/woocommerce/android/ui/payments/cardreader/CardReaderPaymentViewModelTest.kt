@@ -46,17 +46,20 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
-import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderInteracRefundErrorMapper
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderInteracRefundableChecker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragmentArgs
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentErrorMapper
+import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentOrderHelper
+import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentReaderTypeStateProvider
+import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentReceiptHelper
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentViewModel
 import com.woocommerce.android.ui.payments.cardreader.payment.InteracRefundFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError.AmountTooSmall
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError.Unknown
+import com.woocommerce.android.ui.payments.cardreader.payment.PlayChaChing
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderCapturingPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderCollectPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderFailedPaymentState
@@ -87,7 +90,6 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -118,13 +120,13 @@ import kotlin.test.assertEquals
 
 private val DUMMY_TOTAL = BigDecimal(10.72)
 private const val DUMMY_CURRENCY_SYMBOL = "£"
-private const val DUMMY_ORDER_NUMBER = "123"
 
 @InternalCoroutinesApi
 @ExperimentalCoroutinesApi
 class CardReaderPaymentViewModelTest : BaseUnitTest() {
     companion object {
         private const val ORDER_ID = 1L
+        private val siteModel = SiteModel().apply { name = "testName" }.apply { url = "testUrl.com" }
     }
 
     private lateinit var viewModel: CardReaderPaymentViewModel
@@ -132,7 +134,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val orderRepository: OrderDetailRepository = mock()
     private val mockedOrder = mock<Order>()
     private val mockedAddress = mock<Address>()
-    private var resourceProvider: ResourceProvider = mock()
     private val selectedSite: SelectedSite = mock()
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
     private val tracker: CardReaderTracker = mock()
@@ -164,6 +165,9 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
     private val interacRefundErrorMapper: CardReaderInteracRefundErrorMapper = mock()
     private val interacRefundableChecker: CardReaderInteracRefundableChecker = mock()
+    private val cardReaderPaymentReaderTypeStateProvider = CardReaderPaymentReaderTypeStateProvider()
+    private val cardReaderPaymentOrderHelper: CardReaderPaymentOrderHelper = mock()
+    private val cardReaderPaymentReceiptHelper: CardReaderPaymentReceiptHelper = mock()
 
     @Before
     fun setUp() = testBlocking {
@@ -171,7 +175,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             savedState,
             cardReaderManager = cardReaderManager,
             orderRepository = orderRepository,
-            resourceProvider = resourceProvider,
             selectedSite = selectedSite,
             paymentCollectibilityChecker = paymentCollectibilityChecker,
             interacRefundableChecker = interacRefundableChecker,
@@ -183,6 +186,9 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             wooStore = wooStore,
             dispatchers = coroutinesTestRule.testDispatchers,
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
+            cardReaderPaymentReaderTypeStateProvider = cardReaderPaymentReaderTypeStateProvider,
+            cardReaderPaymentOrderHelper = cardReaderPaymentOrderHelper,
+            cardReaderPaymentReceiptHelper = cardReaderPaymentReceiptHelper,
         )
 
         whenever(orderRepository.getOrderById(any())).thenReturn(mockedOrder)
@@ -195,7 +201,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(mockedAddress.firstName).thenReturn("Tester")
         whenever(mockedAddress.lastName).thenReturn("Test")
         whenever(mockedOrder.orderKey).thenReturn("wc_order_j0LMK3bFhalEL")
-        whenever(mockedOrder.number).thenReturn(DUMMY_ORDER_NUMBER)
         whenever(mockedOrder.id).thenReturn(ORDER_ID)
         whenever(mockedOrder.chargeId).thenReturn("chargeId")
         whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(mockedOrder)
@@ -206,18 +211,22 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(cardReaderManager.retryCollectPayment(any(), any())).thenAnswer {
             flow<CardPaymentStatus> { }
         }
-        whenever(selectedSite.get()).thenReturn(SiteModel().apply { name = "testName" }.apply { url = "testUrl.com" })
-        whenever(resourceProvider.getString(anyOrNull(), anyOrNull())).thenReturn("")
+        whenever(selectedSite.get()).thenReturn(siteModel)
         whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(true)
         whenever(interacRefundableChecker.isRefundable(any())).thenReturn(true)
-        whenever(appPrefsWrapper.getReceiptUrl(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
-            .thenReturn("test url")
         whenever(appPrefsWrapper.getCardReaderStatementDescriptor(anyOrNull(), anyOrNull(), anyOrNull()))
             .thenReturn("test statement descriptor")
         whenever(wooStore.getStoreCountryCode(any())).thenReturn("US")
         whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
             flow<BluetoothCardReaderMessages> {}
         }
+        whenever(cardReaderPaymentReceiptHelper.isPluginCanSendReceipt(siteModel)).thenReturn(true)
+        whenever(cardReaderPaymentReceiptHelper.getReceiptUrl(ORDER_ID)).thenReturn("test url")
+        whenever(cardReaderPaymentOrderHelper.getPaymentDescription(mockedOrder)).thenReturn("test description")
+        whenever(cardReaderPaymentOrderHelper.getAmountLabel(mockedOrder))
+            .thenReturn("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
+        whenever(cardReaderPaymentOrderHelper.getReceiptDocumentName(mockedOrder)).thenReturn("receipt-order-1")
+        whenever(cardReaderManager.batteryStatus).thenAnswer { flow { emit(CardReaderBatteryStatus.Unknown) } }
     }
 
     //region - Payments tests
@@ -487,10 +496,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                     this.siteId = siteId
                 }
             )
-            whenever(
-                resourceProvider
-                    .getString(R.string.card_reader_payment_description_v2, DUMMY_ORDER_NUMBER, siteName, siteId)
-            ).thenReturn(expectedResult)
+            whenever(cardReaderPaymentOrderHelper.getPaymentDescription(mockedOrder)).thenReturn(expectedResult)
             val captor = argumentCaptor<PaymentInfo>()
 
             viewModel.start()
@@ -741,7 +747,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 events.add(it)
             }
 
-            assertThat(events[0]).isInstanceOf(CardReaderPaymentViewModel.PlayChaChing::class.java)
+            assertThat(events[0]).isInstanceOf(PlayChaChing::class.java)
         }
 
     @Test
@@ -1611,7 +1617,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            verify(appPrefsWrapper).setReceiptUrl(any(), any(), any(), any(), eq(receiptUrl))
+            verify(cardReaderPaymentReceiptHelper).storeReceiptUrl(eq(ORDER_ID), eq(receiptUrl))
         }
 
     @Test
@@ -2744,10 +2750,10 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given null saved plugin, when flow started, then wc pay can send receipt is false`() =
+    fun `given plugin can not be send, when flow started, then wc pay can send receipt is false`() =
         testBlocking {
             // Given
-            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any())).thenReturn(null)
+            whenever(cardReaderPaymentReceiptHelper.isPluginCanSendReceipt(siteModel)).thenReturn(false)
             val captor = argumentCaptor<PaymentInfo>()
 
             // When
@@ -2759,82 +2765,10 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given stripe saved plugin, when flow started, then wc pay can send receipt is false`() =
+    fun `given plugin can be send, when flow started, then wc pay can send receipt is true`() =
         testBlocking {
             // Given
-            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
-                .thenReturn(PluginType.STRIPE_EXTENSION_GATEWAY)
-            val captor = argumentCaptor<PaymentInfo>()
-
-            // When
-            viewModel.start()
-
-            // Then
-            verify(cardReaderManager).collectPayment(captor.capture())
-            assertThat(captor.firstValue.isPluginCanSendReceipt).isFalse()
-        }
-
-    @Test
-    fun `given null saved plugin version, when flow started, then wc pay can send receipt is false`() =
-        testBlocking {
-            // Given
-            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
-                .thenReturn(PluginType.WOOCOMMERCE_PAYMENTS)
-            whenever(appPrefsWrapper.getCardReaderPreferredPluginVersion(any(), any(), any(), any())).thenReturn(null)
-            val captor = argumentCaptor<PaymentInfo>()
-
-            // When
-            viewModel.start()
-
-            // Then
-            verify(cardReaderManager).collectPayment(captor.capture())
-            assertThat(captor.firstValue.isPluginCanSendReceipt).isFalse()
-        }
-
-    @Test
-    fun `given saved plugin version 3-9-9, when flow started, then wc pay can send receipt is false`() =
-        testBlocking {
-            // Given
-            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
-                .thenReturn(PluginType.WOOCOMMERCE_PAYMENTS)
-            whenever(appPrefsWrapper.getCardReaderPreferredPluginVersion(any(), any(), any(), any()))
-                .thenReturn("3.9.9")
-            val captor = argumentCaptor<PaymentInfo>()
-
-            // When
-            viewModel.start()
-
-            // Then
-            verify(cardReaderManager).collectPayment(captor.capture())
-            assertThat(captor.firstValue.isPluginCanSendReceipt).isFalse()
-        }
-
-    @Test
-    fun `given saved plugin version 4-0-0, when flow started, then wc pay can send receipt is true`() =
-        testBlocking {
-            // Given
-            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
-                .thenReturn(PluginType.WOOCOMMERCE_PAYMENTS)
-            whenever(appPrefsWrapper.getCardReaderPreferredPluginVersion(any(), any(), any(), any()))
-                .thenReturn("4.0.0")
-            val captor = argumentCaptor<PaymentInfo>()
-
-            // When
-            viewModel.start()
-
-            // Then
-            verify(cardReaderManager).collectPayment(captor.capture())
-            assertThat(captor.firstValue.isPluginCanSendReceipt).isTrue()
-        }
-
-    @Test
-    fun `given saved plugin version 16-3-13, when flow started, then wc pay can send receipt is true`() =
-        testBlocking {
-            // Given
-            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
-                .thenReturn(PluginType.WOOCOMMERCE_PAYMENTS)
-            whenever(appPrefsWrapper.getCardReaderPreferredPluginVersion(any(), any(), any(), any()))
-                .thenReturn("16.3.13")
+            whenever(cardReaderPaymentReceiptHelper.isPluginCanSendReceipt(siteModel)).thenReturn(true)
             val captor = argumentCaptor<PaymentInfo>()
 
             // When
@@ -3936,30 +3870,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             interacRefundSavedState,
             cardReaderManager = cardReaderManager,
             orderRepository = orderRepository,
-            resourceProvider = resourceProvider,
-            selectedSite = selectedSite,
-            paymentCollectibilityChecker = paymentCollectibilityChecker,
-            interacRefundableChecker = interacRefundableChecker,
-            tracker = tracker,
-            appPrefsWrapper = appPrefsWrapper,
-            currencyFormatter = currencyFormatter,
-            errorMapper = errorMapper,
-            interacRefundErrorMapper = interacRefundErrorMapper,
-            wooStore = wooStore,
-            dispatchers = coroutinesTestRule.testDispatchers,
-            cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper
-        )
-    }
-
-    private fun initViewModel(readerType: CardReaderType) {
-        viewModel = CardReaderPaymentViewModel(
-            CardReaderPaymentDialogFragmentArgs(
-                CardReaderFlowParam.PaymentOrRefund.Payment(ORDER_ID, ORDER),
-                readerType,
-            ).initSavedStateHandle(),
-            cardReaderManager = cardReaderManager,
-            orderRepository = orderRepository,
-            resourceProvider = resourceProvider,
             selectedSite = selectedSite,
             paymentCollectibilityChecker = paymentCollectibilityChecker,
             interacRefundableChecker = interacRefundableChecker,
@@ -3971,6 +3881,34 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             wooStore = wooStore,
             dispatchers = coroutinesTestRule.testDispatchers,
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
+            cardReaderPaymentReaderTypeStateProvider = cardReaderPaymentReaderTypeStateProvider,
+            cardReaderPaymentOrderHelper = cardReaderPaymentOrderHelper,
+            cardReaderPaymentReceiptHelper = cardReaderPaymentReceiptHelper,
+        )
+    }
+
+    private fun initViewModel(readerType: CardReaderType) {
+        viewModel = CardReaderPaymentViewModel(
+            CardReaderPaymentDialogFragmentArgs(
+                CardReaderFlowParam.PaymentOrRefund.Payment(ORDER_ID, ORDER),
+                readerType,
+            ).initSavedStateHandle(),
+            cardReaderManager = cardReaderManager,
+            orderRepository = orderRepository,
+            selectedSite = selectedSite,
+            paymentCollectibilityChecker = paymentCollectibilityChecker,
+            interacRefundableChecker = interacRefundableChecker,
+            tracker = tracker,
+            appPrefsWrapper = appPrefsWrapper,
+            currencyFormatter = currencyFormatter,
+            errorMapper = errorMapper,
+            interacRefundErrorMapper = interacRefundErrorMapper,
+            wooStore = wooStore,
+            dispatchers = coroutinesTestRule.testDispatchers,
+            cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
+            cardReaderPaymentReaderTypeStateProvider = cardReaderPaymentReaderTypeStateProvider,
+            cardReaderPaymentOrderHelper = cardReaderPaymentOrderHelper,
+            cardReaderPaymentReceiptHelper = cardReaderPaymentReceiptHelper,
         )
     }
 }

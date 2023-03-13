@@ -2,6 +2,7 @@ package com.woocommerce.android.extensions
 
 import android.text.TextUtils
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.utils.extensions.slashJoin
 
 val SiteModel.logInformation: String
     get() {
@@ -35,3 +36,6 @@ fun SiteModel?.getTitle(default: String): String {
 // The isWPCom property is set as true only for pure WPCom sites that don't have Jetpack connection
 val SiteModel.isSimpleWPComSite
     get() = isWPCom
+
+val SiteModel.adminUrlOrDefault
+    get() = adminUrl ?: url.slashJoin("wp-admin")

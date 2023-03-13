@@ -285,6 +285,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_SHIPPING_LABELS_M4_FEEDBACK = "shipping_labels_m4"
         const val VALUE_PRODUCT_ADDONS_FEEDBACK = "product_addons"
         const val VALUE_COUPONS_FEEDBACK = "coupons"
+        const val VALUE_ANALYTICS_HUB_FEEDBACK = "analytics_hub"
         const val VALUE_STATE_ON = "on"
         const val VALUE_STATE_OFF = "off"
 
@@ -473,6 +474,15 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         // -- IPP Learn More Link
         const val IPP_LEARN_MORE_SOURCE = "source"
+
+        // -- Domain change
+        const val VALUE_SETTINGS = "settings"
+        const val VALUE_ONBOARDING = "onboarding"
+        const val VALUE_STEP_DASHBOARD = "dashboard"
+        const val VALUE_STEP_PICKER = "picker"
+        const val VALUE_STEP_CONTACT_INFO = "contact_info"
+        const val VALUE_STEP_PURCHASE_SUCCESS = "purchase_success"
+        const val KEY_USE_DOMAIN_CREDIT = "use_domain_credit"
 
         var sendUsageStats: Boolean = true
             set(value) {

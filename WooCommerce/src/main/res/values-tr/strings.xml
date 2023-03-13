@@ -1,13 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-02-22 17:54:04+0000
+Translation-Revision-Date: 2023-03-09 15:54:06+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="support_request_error_message">Üzgünüz, şu anda destek talebi oluşturamıyoruz, lütfen daha sonra tekrar deneyin.</string>
+    <string name="support_request_error_title">Bir sorun oluştu</string>
+    <string name="support_request_dialog_action">Anladım!</string>
+    <string name="support_request_success_message">Destek talebiniz güvenli bir şekilde gelen kutumuza ulaştı. Mümkün olan en kısa sürede e-posta yoluyla yanıt vereceğiz.</string>
+    <string name="support_request_success_title">Talep gönderildi!</string>
+    <string name="support_request_loading_message">Lütfen bekleyin…</string>
+    <string name="support_request_loading_title">Talebiniz gönderiliyor</string>
+    <string name="support_request_help_other">Diğer Uzantı / Eklenti</string>
+    <string name="support_request_help_plugins">WooCommerce Eklentisi</string>
+    <string name="support_request_help_payments">WooCommerce Ödemeler</string>
+    <string name="support_request_help_ipp">Kart Okuyucu / Şahsen Ödemeler</string>
+    <string name="support_request_help_app">Mobil Uygulama</string>
+    <string name="support_request_message_hint">Bir şeyler yazın</string>
+    <string name="support_request_message">Mesaj</string>
+    <string name="support_request_submit">Destek Talebi Gönder</string>
+    <string name="support_request_subject">Konu</string>
+    <string name="support_request_description">Site adresinizi (URL) bize bildirin ve sorunla ilgili bize mümkün olduğunca çok şey anlatın, yakında sizinle iletişime geçeceğiz.</string>
+    <string name="support_request_title">Bunu sıralayalım</string>
+    <string name="support_request_help_title">Şu konuda yardıma ihtiyacım var</string>
+    <string name="support_request">Destek Talebi</string>
+    <string name="store_onboarding_menu_share_feedback">Görüşlerinizi paylaşın</string>
+    <string name="store_onboarding_collapsed_transition_name">Daraltılmış liste sisteme tanıtılıyor</string>
+    <string name="store_onboarding_full_screen_transition_name">Tam ekran sisteme tanıtılıyor</string>
+    <string name="store_onboarding_task_view_all">Tamamını görüntüle (%1$d)</string>
+    <string name="store_onboarding_completed_tasks_full_screen_status">%2$d görevden %1$d tanesi tamamlandı</string>
+    <string name="store_onboarding_task_payments_setup_description">Müşterilerinize kolay ve rahat bir ödeme yöntemi sağlayın!</string>
+    <string name="store_onboarding_task_payments_setup_title">Ödeme alın</string>
+    <string name="store_onboarding_task_about_your_store_description">Gönderim, vergi ve ödeme ayarlarınıza bir adım önde başlamak için bu bilgileri kullanacağız.</string>
+    <string name="store_onboarding_task_about_your_store_title">Bize mağazanızdan biraz daha bahsedin</string>
+    <string name="login_magic_links_email_sent_to_unknown_email">Az önce hesabınızın e-posta adresine sihirli bir bağlantı gönderdik</string>
+    <string name="jetpack_benefits_modal_login">Devam Etmek İçin Oturum Açın</string>
+    <string name="jetpack_benefits_modal_multiple_stores_subtitle">Tüm WooCommerce mağazalarınıza erişim elde edin.</string>
+    <string name="jetpack_benefits_modal_multiple_stores_title">Birden fazla mağaza</string>
+    <string name="jetpack_benefits_fetching_status">Jetpack Durumu Alınıyor</string>
+    <string name="card_reader_tap_to_pay_explanation_test_payment_error">Bir sorun oluştu. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_payment">Ödeme yapmayı deneyin</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find"> Tap to Pay on Android\'i\nMenü &gt; Ödemeler kısmında bulabilirsiniz veya Ödeme Al ve\nTap to Pay\'i seçin.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Kartınızı kullanarak ödeme yapmayı deneyin ve\nişiniz bittiğinde iade edin.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">Telefonunuz Tap to Pay için hazır.\nMüşteriniz ödeme yapmak için\nkartını telefonunuza dokundurabilir.</string>
+    <string name="card_reader_tap_to_pay_explanation_title">Kart ödemelerini\ntelefonunuzla alın</string>
+    <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
+    <string name="card_reader_tap_to_pay_description">Kart ödemeleri almak için telefonunuzu kullanın</string>
+    <string name="card_reader_tap_to_pay">Tap To Pay</string>
+    <string name="card_reader_hub_actions_category_header">EYLEMLER</string>
+    <string name="domain_registration_generic_error">Alan adı kaydı sırasında bir hata oluştu</string>
+    <string name="domain_registration_state_picker_dialog_title">Eyalet seçin</string>
+    <string name="domain_registration_country_picker_dialog_title">Ülke seçin</string>
+    <string name="domain_registration_registering_domain_name_progress_dialog_message">Alan adı kaydediliyor…</string>
+    <string name="domain_contact_information_register_domain_button">Alan adı kaydet</string>
+    <string name="domain_contact_information_postal_code_hint">Posta kodu</string>
+    <string name="domain_contact_information_state_not_available_hint">Eyalet (mevcut değil)</string>
+    <string name="domain_contact_information_state_hint">Eyalet</string>
+    <string name="domain_contact_information_city_hint">Şehir</string>
+    <string name="domain_contact_information_address_hint_two">Adres 2</string>
+    <string name="domain_contact_information_address_hint">Adres</string>
+    <string name="domain_contact_information_country_hint">Ülke</string>
+    <string name="domain_contact_information_country_code_hint">Ülke kodu</string>
+    <string name="domain_contact_information_phone_number_hint">Telefon</string>
+    <string name="domain_contact_information_organization_hint">Kuruluş (isteğe bağlı)</string>
+    <string name="domain_contact_information_description">Size kolaylık olması için, WordPress.com iletişim bilgilerinizi önceden doldurduk. Lütfen bu bilgilerin bu alan adında kullanmak istediğiniz doğru bilgiler olduğundan emin olmak için gözden geçirin.</string>
+    <string name="domain_contact_information_title">Alan adı iletişim bilgileri</string>
+    <string name="domain_privacy_option_off_title">Herkese açık olarak kaydet</string>
+    <string name="domain_privacy_option_on_title">Gizlilik koruması ile özel olarak kaydet</string>
+    <string name="domain_registration_contact_form_input_error">Lütfen geçerli bir %s girin</string>
+    <string name="domain_registration_privacy_protection_tos">Bu etki alanını kaydettirerek %1$sşartlar ve koşulları%2$s kabul etmiş sayılırsınız.</string>
+    <string name="domain_registration_privacy_protection_description">Alan adı sahiplerinin, tüm alan adlarının herkese açık bir veritabanında iletişim bilgilerini paylaşmaları gerekir. Privacy Protection özelliğiyle sizin bilgileriniz yerine kendi bilgilerimizi yayımlıyoruz ve her türlü iletişimi size gizlice iletiyoruz.</string>
+    <string name="domain_registration_privacy_protection_title">Gizlilik koruması</string>
+    <string name="domains_access_error_title">Alan adı ayarlarına yalnızca mağaza yöneticileri erişebilir</string>
+    <string name="login_jetpack_installation_continue_magic_link">Veya Sihirli Bağlantıyı kullanmaya devam edin</string>
+    <string name="login_jetpack_installation_enter_wpcom_password">Jetpack\'i yüklemek için WordPress.com hesabınızın şifresini girin</string>
+    <string name="login_jetpack_connection_enter_wpcom_password">Jetpack\'e bağlanmak için WordPress.com hesabınızın şifresini girin</string>
+    <string name="login_jetpack_installation_enter_wpcom_email">Jetpack\'i yüklemek için WordPress.com hesabınızla oturum açın</string>
+    <string name="login_jetpack_connection_enter_wpcom_email">Jetpack\'i bağlamak için WordPress.com hesabınızla oturum açın.</string>
+    <string name="domains_purchase_successful_settings_notice">Alan adı ayarlarını Ayarlar &gt; Alan Adları\'nda bulabilirsiniz.</string>
+    <string name="domains_purchase_successful_delay_notice">Site adresiniz oluşturuluyor. Alan adınızın çalışmaya başlaması 30 dakika kadar sürebilir.</string>
+    <string name="domains_purchase_successful_heading">Satın aldığınız için tebrikler</string>
+    <string name="domains_free_with_credits">İlk yıl ücretsiz</string>
     <string name="settings_confirm_logout_site_credentials">Hesabınızla açılan oturumu kapatmak istediğinizden emin misiniz?</string>
-    <string name="domains_error_title">Site alan adları yüklenemiyor </string>
+    <string name="domains_generic_error_title">Site alan adları yüklenemiyor </string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d tamamlandı</string>
     <string name="store_onboarding_task_change_domain_description">Mağazanızı depolamak için özel bir URL\'ye sahip olun.</string>
     <string name="store_onboarding_task_change_domain_title">Alan adınızı özelleştirin</string>
@@ -1081,8 +1158,6 @@ Language: tr
     <string name="ordered_add_ons_details_info_notice">Web yönetim panelinizde bir eklentiyi yeniden adlandırıyorsanız, önceki siparişlerin artık uygulama içinde bu eklentiyi göstermeyeceğini lütfen unutmayın.</string>
     <string name="orderdetail_product_lineitem_view_addons_action">Eklentileri Görüntüle</string>
     <string name="save">Kaydet</string>
-    <string name="support_contact_payments_detail">Ödemelerle ilgili sorularınızda size yardımcı olabilecek mutluluk mühendislerimize ulaşın</string>
-    <string name="support_contact_payments">Ödeme Desteği ile iletişime geçin</string>
     <string name="product_images_error_detail_title">Yükleme ayrıntıları (%d)</string>
     <string name="product_image_service_error_uploading_multiple">%d dosya yüklenemedi</string>
     <string name="product_image_service_error_uploading_single">%d dosya yüklenemedi</string>
@@ -2384,8 +2459,6 @@ Language: tr
     <string name="support_contact_email">İletişim e-postası</string>
     <string name="support_application_log_detail">Uygulama durumunu incelemek için gelişmiş araç</string>
     <string name="support_application_log">Uygulama kaydı</string>
-    <string name="support_my_tickets_detail">Daha önce verilen destek biletlerini görüntüleyin</string>
-    <string name="support_my_tickets">Biletlerim</string>
     <string name="support_contact_detail">Zor sorulara yanıt verilmesine yardımcı olabilecek mutluluk mühendislerimize ulaşın</string>
     <string name="support_contact">Destek birimine başvurun</string>
     <string name="support_faq_detail">Sorularınıza yanıt alın</string>

@@ -17,17 +17,14 @@
         android:name="com.woocommerce.android.ui.prefs.domain.DomainSearchFragment"
         android:label="DomainSearchFragment" >
         <argument
-            android:name="key_is_free_credit_available"
+            android:name="isFreeCreditAvailable"
             app:argType="boolean" />
-        <argument
-            android:name="search_only_free_domains"
-            app:argType="boolean" />
-        <argument
-            android:name="initial_query"
-            app:argType="string" />
         <action
-            android:id="@+id/action_domainSearchFragment_to_purchaseSuccessfulFragment"
-            app:destination="@id/purchaseSuccessfulFragment" />
+            android:id="@+id/action_domainSearchFragment_to_domainRegistrationDetailsFragment"
+            app:destination="@id/domainRegistrationDetailsFragment" />
+        <action
+            android:id="@+id/action_domainSearchFragment_to_domainRegistrationCheckoutFragment"
+            app:destination="@id/domainRegistrationCheckoutFragment" />
     </fragment>
     <fragment
         android:id="@+id/purchaseSuccessfulFragment"
@@ -40,5 +37,31 @@
             android:id="@+id/action_purchaseSuccessfulFragment_to_domainDashboardFragment"
             app:destination="@id/domainDashboardFragment"
             app:popUpTo="@id/nav_graph_domain_change" />
+    </fragment>
+    <fragment
+        android:id="@+id/domainRegistrationDetailsFragment"
+        android:name="com.woocommerce.android.ui.prefs.domain.FreeDomainRegistrationFragment"
+        android:label="DomainRegistrationDetailsFragment" >
+        <action
+            android:id="@+id/action_domainRegistrationDetailsFragment_to_purchaseSuccessfulFragment"
+            app:destination="@id/purchaseSuccessfulFragment" />
+        <argument
+            android:name="domainProductDetails"
+            app:argType="com.woocommerce.android.ui.prefs.domain.DomainProductDetails" />
+        <action
+            android:id="@+id/action_domainRegistrationDetailsFragment_to_domainDashboardFragment"
+            app:destination="@id/domainDashboardFragment"
+            app:popUpTo="@id/nav_graph_domain_change" />
+    </fragment>
+    <fragment
+        android:id="@+id/domainRegistrationCheckoutFragment"
+        android:name="com.woocommerce.android.ui.prefs.domain.DomainPurchaseFragment"
+        android:label="DomainRegistrationCheckoutFragment" >
+        <argument
+            android:name="domain"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_domainRegistrationCheckoutFragment_to_purchaseSuccessfulFragment"
+            app:destination="@id/purchaseSuccessfulFragment" />
     </fragment>
 </navigation>
