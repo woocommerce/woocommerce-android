@@ -2,7 +2,7 @@
 
 package com.woocommerce.android.e2e.tests.ui
 
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.rule.ActivityTestRule
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.e2e.helpers.InitializationRule
@@ -27,7 +27,7 @@ class OrdersUITest : TestBase() {
     val rule = HiltAndroidRule(this)
 
     @get:Rule(order = 1)
-    val composeTestRule = createAndroidComposeRule<LoginActivity>()
+    val composeTestRule = createComposeRule()
 
     @get:Rule(order = 2)
     val initRule = InitializationRule()
