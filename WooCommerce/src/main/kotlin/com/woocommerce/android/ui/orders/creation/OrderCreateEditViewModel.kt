@@ -60,6 +60,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorRestriction
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem.Product
 import com.woocommerce.android.ui.products.selector.variationIds
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -335,7 +336,15 @@ class OrderCreateEditViewModel @Inject constructor(
                 Product(item.productId)
             }
         }.orEmpty()
-        triggerEvent(SelectItems(selectedItems))
+        triggerEvent(
+            SelectItems(
+                selectedItems,
+                listOf(
+                    ProductSelectorRestriction.OnlyPublishedProducts,
+                    ProductSelectorRestriction.NoVariableProductsWithNoVariations
+                )
+            )
+        )
     }
 
     fun onProductClicked(item: Order.Item) {
