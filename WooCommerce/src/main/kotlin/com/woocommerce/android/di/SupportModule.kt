@@ -1,8 +1,8 @@
 package com.woocommerce.android.di
 
 import com.woocommerce.android.support.SupportHelper
-import com.woocommerce.android.support.ZendeskTicketRepository
 import com.woocommerce.android.support.ZendeskSettings
+import com.woocommerce.android.support.ZendeskTicketRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import dagger.Module
 import dagger.Provides
