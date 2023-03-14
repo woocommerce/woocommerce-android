@@ -57,8 +57,12 @@ class SitePlanRestClient @Inject constructor(
         }
     }
 
-    suspend fun addEcommercePlanTrial(siteRemoteId: Long): WPComGsonRequestBuilder.Response<Unit>{
-        val url = "https://public-api.wordpress.com/rest/v1.1/sites/$siteRemoteId/ecommerce-trial/add/ecommerce-trial-bundle-monthly"
+    suspend fun addEcommercePlanTrial(siteRemoteId: Long): WPComGsonRequestBuilder.Response<Unit> {
+        val url = WPCOMREST.sites.site(siteRemoteId)
+            .ecommerce_trial
+            .add
+            .plan_slug("ecommerce-trial-bundle-monthly")
+            .urlV1_1
 
         return wpComGsonRequestBuilder.syncPostRequest<Unit>(
             this,
