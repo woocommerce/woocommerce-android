@@ -1713,6 +1713,7 @@
     <string name="edit_products_button">Edit products</string>
     <string name="empty_product_add_product_button">Add product</string>
     <string name="empty_product_message">Start selling today by adding your first product to the store.</string>
+    <string name="product_subscription_title">Subscription</string>
     <string name="product_add_ons_title">Product Add-ons</string>
     <string name="product_add_ons_details_info_notice">You can edit product add-ons in the web dashboard.</string>
     <string name="product_count_one">%d product</string>
@@ -2168,6 +2169,7 @@
     <string name="product_type_physical">Physical</string>
     <string name="product_type_virtual">Virtual</string>
     <string name="product_type_downloadable">Downloadable</string>
+    <string name="product_type_subscription">Subscription</string>
 
     <!-- Product type bottom sheets -->
     <string name="product_type_list_header">Select a product type</string>
