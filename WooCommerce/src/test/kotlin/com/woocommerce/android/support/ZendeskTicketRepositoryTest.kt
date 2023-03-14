@@ -233,6 +233,43 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             assertThat(actualRequest.tags).contains(*expectedTags)
         }
 
+    @Test
+    fun `when createRequest is called using Payments as ticketType, then the request is created with the expected tags`() =
+        testBlocking {
+            // Given
+            val expectedTags = arrayOf(
+                ZendeskTags.paymentsProduct,
+                ZendeskTags.paymentsProductArea,
+                ZendeskTags.mobileAppWooTransfer,
+                ZendeskTags.supportCategoryTag,
+                ZendeskTags.paymentSubcategoryTag
+            )
+            val excludedTags = arrayOf(ZendeskTags.jetpackTag)
+            val captor = argumentCaptor<CreateRequest>()
+
+            // When
+            val job = launch {
+                sut.createRequest(
+                    context = mock(),
+                    origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                    ticketType = TicketType.Payments,
+                    selectedSite = null,
+                    subject = "subject",
+                    description = "description",
+                    extraTags = listOf(ZendeskTags.jetpackTag)
+                ).first()
+            }
+
+            // Then
+            verify(requestProvider).createRequest(captor.capture(), any())
+            advanceUntilIdle()
+            job.cancel()
+
+            val actualRequest = captor.firstValue
+            assertThat(actualRequest.tags).contains(*expectedTags)
+            assertThat(actualRequest.tags).doesNotContain(*excludedTags)
+        }
+
     private fun createSUT() {
         sut = ZendeskTicketRepository(
             zendeskSettings = zendeskSettings,
