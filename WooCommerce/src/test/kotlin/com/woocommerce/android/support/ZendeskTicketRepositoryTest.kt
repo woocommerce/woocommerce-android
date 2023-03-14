@@ -235,6 +235,38 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when createRequest is called using InPersonPayments as ticketType, then the request is created with the expected tags`() =
+        testBlocking {
+            // Given
+            val expectedTags = arrayOf(
+                ZendeskTags.woocommerceMobileApps,
+                ZendeskTags.productAreaAppsInPersonPayments
+            )
+            val captor = argumentCaptor<CreateRequest>()
+
+            // When
+            val job = launch {
+                sut.createRequest(
+                    context = mock(),
+                    origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                    ticketType = TicketType.InPersonPayments,
+                    selectedSite = null,
+                    subject = "subject",
+                    description = "description",
+                    extraTags = emptyList()
+                ).first()
+            }
+
+            // Then
+            verify(requestProvider).createRequest(captor.capture(), any())
+            advanceUntilIdle()
+            job.cancel()
+
+            val actualRequest = captor.firstValue
+            assertThat(actualRequest.tags).contains(*expectedTags)
+        }
+
+    @Test
     fun `when createRequest is called using Payments as ticketType, then the request is created with the expected tags`() =
         testBlocking {
             // Given
