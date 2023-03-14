@@ -11,7 +11,7 @@ import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.model.isOrderNotification
 import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.support.ZendeskTicketRepository
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_ID
 import com.woocommerce.android.util.NotificationsParser
@@ -45,7 +45,7 @@ class NotificationMessageHandler @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val notificationBuilder: WooNotificationBuilder,
     private val analyticsTracker: NotificationAnalyticsTracker,
-    private val zendeskHelper: ZendeskHelper,
+    private val zendeskTicketRepository: ZendeskTicketRepository,
     private val notificationsParser: NotificationsParser,
     private val selectedSite: SelectedSite,
     private val topPerformersStore: WCLeaderboardsStore
@@ -100,7 +100,7 @@ class NotificationMessageHandler @Inject constructor(
 
         if (messageData["type"] == KEY_PUSH_TYPE_ZENDESK) {
             // Make sure the UI gets refreshed so the user can see the reply
-            zendeskHelper.refreshRequest(appContext, messageData[KEY_ZENDESK_REQUEST_ID])
+            zendeskTicketRepository.refreshRequest(appContext, messageData[KEY_ZENDESK_REQUEST_ID])
             val zendeskNote = NotificationModel(
                 noteId = ZENDESK_PUSH_NOTIFICATION_ID,
                 remoteNoteId = ZENDESK_PUSH_NOTIFICATION_ID.toLong()

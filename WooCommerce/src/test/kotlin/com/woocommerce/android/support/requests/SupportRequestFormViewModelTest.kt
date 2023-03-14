@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.TicketType
-import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.support.ZendeskTicketRepository
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationFailed
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationSucceeded
@@ -29,7 +29,7 @@ import zendesk.support.Request
 @ExperimentalCoroutinesApi
 internal class SupportRequestFormViewModelTest : BaseUnitTest() {
     private lateinit var sut: SupportRequestFormViewModel
-    private lateinit var zendeskHelper: ZendeskHelper
+    private lateinit var zendeskTicketRepository: ZendeskTicketRepository
     private lateinit var selectedSite: SelectedSite
     private lateinit var tracks: AnalyticsTrackerWrapper
     private val savedState = SavedStateHandle()
@@ -115,7 +115,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         assertThat(isRequestLoading[0]).isFalse
         assertThat(isRequestLoading[1]).isTrue
         assertThat(isRequestLoading[2]).isFalse
-        verify(zendeskHelper, times(1)).createRequest(any(), any(), any(), any(), any(), any(), any())
+        verify(zendeskTicketRepository, times(1)).createRequest(any(), any(), any(), any(), any(), any(), any())
     }
 
     @Test
@@ -132,7 +132,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // Then
         assertThat(isRequestLoading).hasSize(1)
         assertThat(isRequestLoading[0]).isFalse
-        verify(zendeskHelper, never()).createRequest(any(), any(), any(), any(), any(), any(), any())
+        verify(zendeskTicketRepository, never()).createRequest(any(), any(), any(), any(), any(), any(), any())
     }
 
     @Test
@@ -187,7 +187,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         selectedSite = mock {
             on { getIfExists() }.then { testSite }
         }
-        zendeskHelper = mock {
+        zendeskTicketRepository = mock {
             onBlocking {
                 createRequest(
                     any(),
@@ -202,7 +202,8 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         }
 
         sut = SupportRequestFormViewModel(
-            zendeskHelper = zendeskHelper,
+            zendeskTicketRepository = zendeskTicketRepository,
+            zendeskSettings = mock(),
             selectedSite = selectedSite,
             tracks = tracks,
             savedState = savedState

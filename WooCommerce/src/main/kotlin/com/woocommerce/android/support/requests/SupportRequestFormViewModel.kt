@@ -10,7 +10,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.TicketType
-import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.support.ZendeskSettings
+import com.woocommerce.android.support.ZendeskTicketRepository
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -27,7 +28,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SupportRequestFormViewModel @Inject constructor(
-    private val zendeskHelper: ZendeskHelper,
+    private val zendeskTicketRepository: ZendeskTicketRepository,
+    private val zendeskSettings: ZendeskSettings,
     private val selectedSite: SelectedSite,
     private val tracks: AnalyticsTrackerWrapper,
     savedState: SavedStateHandle
@@ -69,7 +71,7 @@ class SupportRequestFormViewModel @Inject constructor(
         extraTags: List<String>,
         selectedEmail: String
     ) {
-        zendeskHelper.supportEmail = selectedEmail
+        zendeskSettings.supportEmail = selectedEmail
         AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
         onSubmitRequestButtonClicked(
             context = context,
@@ -92,7 +94,7 @@ class SupportRequestFormViewModel @Inject constructor(
 
         viewState.update { it.copy(isLoading = true) }
         launch {
-            zendeskHelper.createRequest(
+            zendeskTicketRepository.createRequest(
                 context,
                 helpOrigin,
                 ticketType,
@@ -107,8 +109,8 @@ class SupportRequestFormViewModel @Inject constructor(
     private fun handleEmptyCredentials() {
         triggerEvent(
             ShowSupportIdentityInputDialog(
-                emailSuggestion = zendeskHelper.supportEmail.orEmpty(),
-                nameSuggestion = zendeskHelper.supportName.orEmpty()
+                emailSuggestion = zendeskSettings.supportEmail.orEmpty(),
+                nameSuggestion = zendeskSettings.supportName.orEmpty()
             )
         )
     }
