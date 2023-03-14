@@ -54,7 +54,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // When
         sut.onSubjectChanged("subject")
         sut.onMessageChanged("message")
-        sut.onHelpOptionSelected(TicketType.MobileApp)
+        sut.onHelpOptionSelected(TicketType.MobileApp(emptyList()))
 
         // Then
         assertThat(isSubmitButtonEnabled).hasSize(2)
@@ -73,7 +73,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // When
         sut.onSubjectChanged("")
         sut.onMessageChanged("")
-        sut.onHelpOptionSelected(TicketType.MobileApp)
+        sut.onHelpOptionSelected(TicketType.MobileApp(emptyList()))
 
         // Then
         assertThat(isSubmitButtonEnabled).hasSize(1)
@@ -91,8 +91,8 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // When
         sut.onSubjectChanged("subject")
         sut.onMessageChanged("message")
-        sut.onHelpOptionSelected(TicketType.MobileApp)
-        sut.submitSupportRequest(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
+        sut.onHelpOptionSelected(TicketType.MobileApp(emptyList()))
+        sut.submitSupportRequest(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION)
 
         // Then
         assertThat(isSubmitButtonEnabled).hasSize(4)
@@ -111,15 +111,15 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         }
 
         // When
-        sut.onHelpOptionSelected(TicketType.MobileApp)
-        sut.submitSupportRequest(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
+        sut.onHelpOptionSelected(TicketType.MobileApp(emptyList()))
+        sut.submitSupportRequest(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION)
 
         // Then
         assertThat(isRequestLoading).hasSize(3)
         assertThat(isRequestLoading[0]).isFalse
         assertThat(isRequestLoading[1]).isTrue
         assertThat(isRequestLoading[2]).isFalse
-        verify(zendeskTicketRepository, times(1)).createRequest(any(), any(), any(), any(), any(), any(), any())
+        verify(zendeskTicketRepository, times(1)).createRequest(any(), any(), any(), any(), any(), any())
     }
 
     @Test
@@ -131,12 +131,12 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         }
 
         // When
-        sut.submitSupportRequest(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
+        sut.submitSupportRequest(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION)
 
         // Then
         assertThat(isRequestLoading).hasSize(1)
         assertThat(isRequestLoading[0]).isFalse
-        verify(zendeskTicketRepository, never()).createRequest(any(), any(), any(), any(), any(), any(), any())
+        verify(zendeskTicketRepository, never()).createRequest(any(), any(), any(), any(), any(), any())
     }
 
     @Test
@@ -148,8 +148,8 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         }
 
         // When
-        sut.onHelpOptionSelected(TicketType.MobileApp)
-        sut.submitSupportRequest(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
+        sut.onHelpOptionSelected(TicketType.MobileApp(emptyList()))
+        sut.submitSupportRequest(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION)
 
         // Then
         assertThat(event).hasSize(1)
@@ -167,8 +167,8 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         }
 
         // When
-        sut.onHelpOptionSelected(TicketType.MobileApp)
-        sut.submitSupportRequest(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
+        sut.onHelpOptionSelected(TicketType.MobileApp(emptyList()))
+        sut.submitSupportRequest(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION)
 
         // Then
         assertThat(event).hasSize(1)
@@ -186,8 +186,8 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         }
 
         // When
-        sut.onHelpOptionSelected(TicketType.MobileApp)
-        sut.submitSupportRequest(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
+        sut.onHelpOptionSelected(TicketType.MobileApp(emptyList()))
+        sut.submitSupportRequest(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION)
 
         // Then
         assertThat(event).hasSize(1)
@@ -211,14 +211,14 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         val name = "test name"
 
         // When
-        sut.onHelpOptionSelected(TicketType.MobileApp)
-        sut.onUserIdentitySet(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList(), email, name)
+        sut.onHelpOptionSelected(TicketType.MobileApp(emptyList()))
+        sut.onUserIdentitySet(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, email, name)
 
         // Then
         verify(zendeskSettings).supportEmail = email
         verify(zendeskSettings).supportName = name
         verify(tracks, times(1)).track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
-        verify(zendeskTicketRepository, times(1)).createRequest(any(), any(), any(), any(), any(), any(), any())
+        verify(zendeskTicketRepository, times(1)).createRequest(any(), any(), any(), any(), any(), any())
     }
 
     private fun configureMocks(requestResult: Result<Request?>) {
@@ -235,7 +235,6 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
                     any(),
                     any(),
                     eq(testSite),
-                    any(),
                     any(),
                     any()
                 )
