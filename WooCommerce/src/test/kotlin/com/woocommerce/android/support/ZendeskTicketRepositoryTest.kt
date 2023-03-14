@@ -25,6 +25,7 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
 import zendesk.support.CreateRequest
 import zendesk.support.Request
@@ -268,6 +269,38 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             val actualRequest = captor.firstValue
             assertThat(actualRequest.tags).contains(*expectedTags)
             assertThat(actualRequest.tags).doesNotContain(*excludedTags)
+        }
+
+    @Test
+    fun `when createRequest is called with authenticated site, then the request is created with the expected tags`() =
+        testBlocking {
+            // Given
+            val selectedSite = mock<SiteModel> {
+                on { origin } doReturn SiteModel.ORIGIN_WPAPI
+            }
+            val expectedTags = arrayOf(ZendeskTags.applicationPasswordAuthenticated)
+            val captor = argumentCaptor<CreateRequest>()
+
+            // When
+            val job = launch {
+                sut.createRequest(
+                    context = mock(),
+                    origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                    ticketType = TicketType.MobileApp,
+                    selectedSite = selectedSite,
+                    subject = "subject",
+                    description = "description",
+                    extraTags = emptyList()
+                ).first()
+            }
+
+            // Then
+            verify(requestProvider).createRequest(captor.capture(), any())
+            advanceUntilIdle()
+            job.cancel()
+
+            val actualRequest = captor.firstValue
+            assertThat(actualRequest.tags).contains(*expectedTags)
         }
 
     private fun createSUT() {
