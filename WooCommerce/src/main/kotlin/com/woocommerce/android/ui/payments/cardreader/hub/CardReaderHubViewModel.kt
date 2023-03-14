@@ -199,17 +199,19 @@ class CardReaderHubViewModel @Inject constructor(
 
     private fun MutableList<ListItem>.addTapToPay() {
         if (storeCountryCode != null && isTapToPayAvailable(storeCountryCode) == Available) {
-            add(
-                GapBetweenSections(index = 4)
-            )
+            add(GapBetweenSections(index = 4))
             add(
                 NonToggleableListItem(
                     icon = R.drawable.ic_baseline_contactless,
                     label = UiStringRes(R.string.card_reader_tap_to_pay),
-                    description = UiStringRes(R.string.card_reader_tap_to_pay_description),
+                    description = if (appPrefs.isTTPWasUsedAtLeastOnce()) {
+                        UiStringRes(R.string.card_reader_tap_to_pay_description_used)
+                    } else {
+                        UiStringRes(R.string.card_reader_tap_to_pay_description_not_used)
+                    },
                     index = 5,
                     onClick = ::onTapTooPayClicked,
-                    shortDivider = true,
+                    shortDivider = appPrefs.isTTPWasUsedAtLeastOnce(),
                 )
             )
             if (appPrefs.isTTPWasUsedAtLeastOnce()) {
