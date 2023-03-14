@@ -50,11 +50,7 @@ class ZendeskTicketRepository(
             return@callbackFlow
         }
 
-        val siteConnectionTag = if (selectedSite?.connectionType == SiteConnectionType.ApplicationPasswords) {
-            ZendeskTags.applicationPasswordAuthenticated
-        } else null
-
-        val tags = (ticketType.tags + extraTags + siteConnectionTag).filterNotNull()
+        val tags = (ticketType.tags + extraTags)
 
         val requestCallback = object : ZendeskCallback<Request>() {
             override fun onSuccess(result: Request?) {
@@ -72,7 +68,7 @@ class ZendeskTicketRepository(
             this.ticketFormId = ticketType.form
             this.subject = subject
             this.description = description
-            this.tags = buildZendeskTags(siteStore.sites, origin, tags)
+            this.tags = buildZendeskTags(selectedSite, siteStore.sites, origin, tags)
                 .filter { ticketType.excludedTags.contains(it).not() }
             this.customFields = buildZendeskCustomFields(context, ticketType, siteStore.sites, selectedSite)
         }.let { request -> zendeskSettings.requestProvider?.createRequest(request, requestCallback) }
@@ -118,11 +114,15 @@ class ZendeskTicketRepository(
      * custom tags to be added for special cases.
      */
     private fun buildZendeskTags(
+        selectedSite: SiteModel?,
         allSites: List<SiteModel>?,
         origin: HelpOrigin,
         extraTags: List<String>
     ): List<String> {
         val tags = ArrayList<String>()
+        if (selectedSite?.connectionType == SiteConnectionType.ApplicationPasswords) {
+            tags.add(ZendeskTags.applicationPasswordAuthenticated)
+        }
         allSites?.let { it ->
             // Add wpcom tag if at least one site is WordPress.com site
             if (it.any { it.isWPCom }) {
