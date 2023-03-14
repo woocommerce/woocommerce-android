@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductFile
+import com.woocommerce.android.model.SubscriptionDetails
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
@@ -121,4 +122,6 @@ sealed class ProductNavigationTarget : Event() {
         val productCategory: String?,
         val productCategoryName: String?
     ) : ProductNavigationTarget()
+
+    data class ViewProductSubscription(val subscription: SubscriptionDetails) : ProductNavigationTarget()
 }

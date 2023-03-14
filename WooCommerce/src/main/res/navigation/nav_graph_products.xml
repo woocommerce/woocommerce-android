@@ -85,6 +85,10 @@
         <action
             android:id="@+id/action_productDetailFragment_to_productAddonsFragment"
             app:destination="@id/productAddonsFragment"/>
+        <action
+            android:id="@+id/action_productDetailFragment_to_productSubscriptionFragment"
+            app:destination="@id/productSubscriptionFragment">
+        </action>
     </fragment>
     <fragment
         android:id="@+id/variationListFragment"
@@ -607,4 +611,12 @@
         android:id="@+id/action_global_addVariationAttributeTermsFragment"
         app:destination="@id/addAttributeTermsFragment" />
     <include app:graph="@navigation/nav_graph_image_gallery" />
+    <fragment
+        android:id="@+id/productSubscriptionFragment"
+        android:name="com.woocommerce.android.ui.products.ProductSubscriptionFragment"
+        android:label="ProductSubscriptionFragment" >
+        <argument
+            android:name="subscription"
+            app:argType="com.woocommerce.android.model.SubscriptionDetails" />
+    </fragment>
 </navigation>
