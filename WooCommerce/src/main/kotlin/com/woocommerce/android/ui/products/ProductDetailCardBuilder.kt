@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPr
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductReviews
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscription
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTypes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
@@ -161,6 +162,23 @@ class ProductDetailCardBuilder(
                 product.inventory(VARIABLE),
                 product.addons(),
                 product.shipping(),
+                product.categories(),
+                product.tags(),
+                product.shortDescription(),
+                product.linkedProducts(),
+                product.productType()
+            ).filterNotEmpty()
+        )
+    }
+
+    private suspend fun getSubscriptionProductCard(product: Product): ProductPropertyCard {
+        return ProductPropertyCard(
+            type = SECONDARY,
+            properties = listOf(
+                if (viewModel.isProductUnderCreation) null else product.productReviews(),
+                product.subscription(),
+                product.inventory(SIMPLE),
+                product.addons(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
@@ -642,6 +660,35 @@ class ProductDetailCardBuilder(
                 onClick = {
                     viewModel.onEditProductCardClicked(
                         ViewProductAddonsDetails,
+                        AnalyticsEvent.PRODUCT_ADDONS_PRODUCT_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED
+                    )
+                }
+            )
+        }
+
+    private fun Product.subscription(): ProductProperty? =
+        this.subscription?.let { subscription ->
+            // If we have pricing info, show price & sales price as a group,
+            // otherwise provide option to add pricing info for the product
+            val properties = PriceUtils.getPriceGroup(
+                parameters,
+                resources,
+                currencyFormatter,
+                subscription.price,
+                salePrice,
+                isSaleScheduled,
+                saleStartDateGmt,
+                saleEndDateGmt
+            )
+
+            PropertyGroup(
+                title = string.product_subscription_title,
+                icon = drawable.ic_gridicons_money,
+                properties = properties,
+                showTitle = true,
+                onClick = {
+                    viewModel.onEditProductCardClicked(
+                        ViewProductSubscription(subscription),
                         AnalyticsEvent.PRODUCT_ADDONS_PRODUCT_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED
                     )
                 }
