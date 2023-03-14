@@ -32,7 +32,7 @@ object ProductHelper {
     /**
      * Default Product for initial state of Product Add flow
      * */
-
+    @Suppress("LongMethod")
     fun getDefaultNewProduct(productType: ProductType, isVirtual: Boolean): Product {
         return Product(
             remoteId = 0L,
