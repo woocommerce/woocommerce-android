@@ -89,7 +89,8 @@ object ProductHelper {
             upsellProductIds = listOf(),
             variationIds = listOf(),
             downloads = listOf(),
-            isPurchasable = false
+            isPurchasable = false,
+            subscription = null
         )
     }
 }
