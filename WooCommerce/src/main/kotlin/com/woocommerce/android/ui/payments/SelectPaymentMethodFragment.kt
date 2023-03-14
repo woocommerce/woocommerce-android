@@ -15,7 +15,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.databinding.FragmentTakePaymentBinding
+import com.woocommerce.android.databinding.FragmentSelectPaymentMethodBinding
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleDialogResult
@@ -32,11 +32,12 @@ import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.Navigate
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderHubFlow
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderPaymentFlow
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderRefundFlow
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToOrderDetails
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.OpenGenericWebView
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.OpenPurchaseCardReaderLink
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.SharePaymentUrl
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Success
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.ViewState.Loading
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.ViewState.Success
 import com.woocommerce.android.ui.payments.banner.Banner
 import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.ui.payments.banner.PaymentsScreenBannerDismissDialog
@@ -49,7 +50,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment), BackPressListener {
+class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_payment_method), BackPressListener {
     private val viewModel: SelectPaymentMethodViewModel by viewModels()
     private val sharePaymentUrlLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -57,7 +58,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
         viewModel.onSharePaymentUrlCompleted()
     }
 
-    private var _binding: FragmentTakePaymentBinding? = null
+    private var _binding: FragmentSelectPaymentMethodBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -65,7 +66,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentTakePaymentBinding.inflate(inflater, container, false)
+        _binding = FragmentSelectPaymentMethodBinding.inflate(inflater, container, false)
 
         val view = binding.root
         if (viewModel.shouldShowUpsellCardReaderDismissDialog.value == true) {
@@ -104,12 +105,12 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
         }
     }
 
-    private fun setUpObservers(binding: FragmentTakePaymentBinding) {
+    private fun setUpObservers(binding: FragmentSelectPaymentMethodBinding) {
         handleViewState(binding)
         handleEvents(binding)
     }
 
-    private fun handleViewState(binding: FragmentTakePaymentBinding) {
+    private fun handleViewState(binding: FragmentSelectPaymentMethodBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { state ->
             when (state) {
                 Loading -> renderLoadingState(binding)
@@ -118,13 +119,13 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
         }
     }
 
-    private fun renderLoadingState(binding: FragmentTakePaymentBinding) {
+    private fun renderLoadingState(binding: FragmentSelectPaymentMethodBinding) {
         binding.container.isVisible = false
         binding.pbLoading.isVisible = true
     }
 
     private fun renderSuccessfulState(
-        binding: FragmentTakePaymentBinding,
+        binding: FragmentSelectPaymentMethodBinding,
         state: Success
     ) {
         binding.container.isVisible = true
@@ -138,12 +139,21 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
             viewModel.onCashPaymentClicked()
         }
 
-        with(binding.textCard) {
-            isVisible = state.isPaymentCollectableWithCardReader
+        with(binding.tvTapToPay) {
+            isVisible = state.isPaymentCollectableWithTapToPay
             setOnClickListener {
-                viewModel.onCardPaymentClicked()
+                viewModel.onTapToPayClicked()
             }
         }
+        binding.divider3.isVisible = state.isPaymentCollectableWithTapToPay
+
+        with(binding.tvBtReader) {
+            isVisible = state.isPaymentCollectableWithExternalCardReader
+            setOnClickListener {
+                viewModel.onBtReaderClicked()
+            }
+        }
+        binding.divider4.isVisible = state.isPaymentCollectableWithExternalCardReader
 
         with(binding.textShare) {
             isVisible = state.paymentUrl.isNotEmpty()
@@ -160,8 +170,8 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
         applyBannerComposeUI(state.bannerState)
     }
 
-    @Suppress("LongMethod")
-    private fun handleEvents(binding: FragmentTakePaymentBinding) {
+    @Suppress("LongMethod", "ComplexMethod")
+    private fun handleEvents(binding: FragmentSelectPaymentMethodBinding) {
         viewModel.event.observe(
             viewLifecycleOwner
         ) { event ->
@@ -182,7 +192,8 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
                 is NavigateToCardReaderPaymentFlow -> {
                     val action =
                         SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToCardReaderPaymentFlow(
-                            event.cardReaderFlowParam
+                            event.cardReaderFlowParam,
+                            event.cardReaderType
                         )
                     findNavController().navigate(action)
                 }
@@ -196,7 +207,8 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
                 is NavigateToCardReaderRefundFlow -> {
                     val action =
                         SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToCardReaderRefundFlow(
-                            event.cardReaderFlowParam
+                            event.cardReaderFlowParam,
+                            event.cardReaderType
                         )
                     findNavController().navigate(action)
                 }
@@ -232,6 +244,13 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
                 }
                 is OpenGenericWebView -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                }
+                is NavigateToOrderDetails -> {
+                    val action = SelectPaymentMethodFragmentDirections
+                        .actionSelectPaymentMethodFragmentToOrderDetailFragment(
+                            orderId = event.orderId
+                        )
+                    findNavController().navigateSafely(action)
                 }
             }
         }

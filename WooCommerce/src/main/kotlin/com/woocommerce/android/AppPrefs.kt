@@ -258,10 +258,10 @@ object AppPrefs {
     }
 
     fun setSupportEmail(email: String?) {
-        if (!email.isNullOrEmpty()) {
-            setString(DeletablePrefKey.SUPPORT_EMAIL, email)
-        } else {
+        if (email.isNullOrEmpty()) {
             remove(DeletablePrefKey.SUPPORT_EMAIL)
+        } else {
+            setString(DeletablePrefKey.SUPPORT_EMAIL, email)
         }
     }
 
@@ -271,6 +271,14 @@ object AppPrefs {
 
     fun removeSupportEmail() {
         remove(DeletablePrefKey.SUPPORT_EMAIL)
+    }
+
+    fun setSupportName(name: String?) {
+        if (name.isNullOrEmpty()) {
+            remove(DeletablePrefKey.SUPPORT_NAME)
+        } else {
+            setString(DeletablePrefKey.SUPPORT_NAME, name)
+        }
     }
 
     fun getSupportName() = getString(DeletablePrefKey.SUPPORT_NAME)

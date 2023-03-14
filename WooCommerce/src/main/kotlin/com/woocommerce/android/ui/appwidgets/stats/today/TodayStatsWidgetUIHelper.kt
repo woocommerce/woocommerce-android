@@ -78,6 +78,15 @@ class TodayStatsWidgetUIHelper @Inject constructor(
         remoteViews.setViewVisibility(R.id.widget_visitors_value, View.VISIBLE)
         remoteViews.setViewVisibility(R.id.widget_visitors_skeleton, View.INVISIBLE)
 
+        remoteViews.setViewVisibility(
+            R.id.widget_visitors_title,
+            if (stats.areVisitorStatsSupported) View.VISIBLE else View.GONE
+        )
+        remoteViews.setViewVisibility(
+            R.id.widget_visitors_value,
+            if (stats.areVisitorStatsSupported) View.VISIBLE else View.GONE
+        )
+
         remoteViews.setTextViewText(
             R.id.widget_update_time,
             String.format(

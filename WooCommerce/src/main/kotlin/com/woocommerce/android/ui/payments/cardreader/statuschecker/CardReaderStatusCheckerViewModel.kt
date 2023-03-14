@@ -5,7 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
-import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
@@ -14,11 +14,9 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import com.woocommerce.android.ui.payments.cardreader.statuschecker.CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToConnection
-import com.woocommerce.android.ui.payments.cardreader.statuschecker.CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToIPPReaderTypeSelection
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.Available
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.NotAvailable
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
@@ -35,7 +33,6 @@ class CardReaderStatusCheckerViewModel
     private val cardReaderChecker: CardReaderOnboardingChecker,
     private val cardReaderTracker: CardReaderTracker,
     private val appPrefsWrapper: AppPrefsWrapper,
-    private val isTapToPayAvailable: IsTapToPayAvailable,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderStatusCheckerDialogFragmentArgs by savedState.navArgs()
 
@@ -52,18 +49,24 @@ class CardReaderStatusCheckerViewModel
         when (val param = arguments.cardReaderFlowParam) {
             CardReaderFlowParam.CardReadersHub -> triggerEvent(
                 StatusCheckerEvent.NavigateToOnboarding(
-                    CardReaderOnboardingParams.Check(param)
+                    CardReaderOnboardingParams.Check(param),
+                    arguments.cardReaderType
                 )
             )
             is CardReaderFlowParam.PaymentOrRefund -> {
                 val cardReaderStatus = cardReaderManager.readerStatus.value
-                if (cardReaderStatus is CardReaderStatus.Connected) {
-                    triggerEvent(
-                        StatusCheckerEvent.NavigateToPayment(
-                            param,
-                            cardReaderStatus.cardReader.toCardReaderType()
+                if (cardReaderStatus is Connected) {
+                    if (cardReaderStatus.cardReader.toCardReaderType() != arguments.cardReaderType) {
+                        cardReaderManager.disconnectReader()
+                        handleOnboardingStatus(param)
+                    } else {
+                        triggerEvent(
+                            StatusCheckerEvent.NavigateToPayment(
+                                param,
+                                cardReaderStatus.cardReader.toCardReaderType()
+                            )
                         )
-                    )
+                    }
                 } else {
                     handleOnboardingStatus(param)
                 }
@@ -76,21 +79,15 @@ class CardReaderStatusCheckerViewModel
             is CardReaderOnboardingState.OnboardingCompleted -> {
                 if (appPrefsWrapper.isCardReaderWelcomeDialogShown()) {
                     cardReaderTracker.trackOnboardingState(state)
-
-                    when (val result = isTapToPayAvailable(state.countryCode)) {
-                        Available -> triggerEvent(NavigateToIPPReaderTypeSelection(param, state.countryCode))
-                        is NotAvailable -> {
-                            cardReaderTracker.trackTapToPayNotAvailableReason(result)
-                            triggerEvent(NavigateToConnection(param))
-                        }
-                    }
+                    triggerEvent(NavigateToConnection(param, arguments.cardReaderType))
                 } else {
-                    triggerEvent(StatusCheckerEvent.NavigateToWelcome(param, state.countryCode))
+                    triggerEvent(StatusCheckerEvent.NavigateToWelcome(param, arguments.cardReaderType))
                 }
             }
             else -> triggerEvent(
                 StatusCheckerEvent.NavigateToOnboarding(
-                    CardReaderOnboardingParams.Failed(param, state)
+                    CardReaderOnboardingParams.Failed(param, state),
+                    arguments.cardReaderType
                 )
             )
         }
@@ -98,30 +95,32 @@ class CardReaderStatusCheckerViewModel
 
     private fun CardReader.toCardReaderType() =
         if (ReaderType.isExternalReaderType(type)) {
-            CardReaderType.EXTERNAL
+            EXTERNAL
+        } else if (ReaderType.isBuiltInReaderType(type)) {
+            BUILT_IN
         } else {
-            CardReaderType.BUILT_IN
+            error("Unknown reader type: $type")
         }
 
     sealed class StatusCheckerEvent : MultiLiveEvent.Event() {
         data class NavigateToWelcome(
             val cardReaderFlowParam: CardReaderFlowParam,
-            val countryCode: String,
+            val cardReaderType: CardReaderType,
         ) : MultiLiveEvent.Event()
 
-        data class NavigateToIPPReaderTypeSelection(
+        data class NavigateToConnection(
             val cardReaderFlowParam: CardReaderFlowParam,
-            val countryCode: String,
+            val cardReaderType: CardReaderType,
         ) : MultiLiveEvent.Event()
-
-        data class NavigateToConnection(val cardReaderFlowParam: CardReaderFlowParam) : MultiLiveEvent.Event()
 
         data class NavigateToPayment(
             val cardReaderFlowParam: CardReaderFlowParam,
             val cardReaderType: CardReaderType,
         ) : MultiLiveEvent.Event()
 
-        data class NavigateToOnboarding(val cardReaderOnboardingParams: CardReaderOnboardingParams) :
-            MultiLiveEvent.Event()
+        data class NavigateToOnboarding(
+            val cardReaderOnboardingParams: CardReaderOnboardingParams,
+            val cardReaderType: CardReaderType,
+        ) : MultiLiveEvent.Event()
     }
 }

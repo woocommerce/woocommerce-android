@@ -595,6 +595,11 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     SUPPORT_APPLICATION_LOG_VIEWED(siteless = true),
     SUPPORT_SSR_COPY_BUTTON_TAPPED,
 
+    // -- Support Request Form
+    SUPPORT_NEW_REQUEST_VIEWED,
+    SUPPORT_NEW_REQUEST_CREATED,
+    SUPPORT_NEW_REQUEST_FAILED,
+
     // -- Push notifications
     PUSH_NOTIFICATION_RECEIVED,
     PUSH_NOTIFICATION_TAPPED,

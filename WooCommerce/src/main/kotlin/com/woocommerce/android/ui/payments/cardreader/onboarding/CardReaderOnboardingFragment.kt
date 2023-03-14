@@ -69,9 +69,9 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                 is CardReaderOnboardingViewModel.OnboardingEvent.ContinueToConnection -> {
                     findNavController().navigate(
                         CardReaderOnboardingFragmentDirections
-                            .actionCardReaderOnboardingFragmentToCardReaderTypeSelectionDialogFragment(
+                            .actionCardReaderOnboardingFragmentToCardReaderConnectDialogFragment(
                                 event.cardReaderFlowParam,
-                                event.countryCode
+                                event.cardReaderType
                             )
                     )
                 }
@@ -358,7 +358,7 @@ sealed class CardReaderFlowParam : Parcelable {
             val paymentType: PaymentType
         ) : PaymentOrRefund() {
             enum class PaymentType {
-                SIMPLE, ORDER
+                SIMPLE, ORDER, TRY_TAP_TO_PAY,
             }
         }
 
