@@ -272,6 +272,77 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when createRequest is called using WooPlugin as ticketType, then the request is created with the expected tags`() =
+        testBlocking {
+            // Given
+            val expectedTags = arrayOf(
+                ZendeskTags.woocommerceCore,
+                ZendeskTags.mobileAppWooTransfer,
+                ZendeskTags.supportCategoryTag
+            )
+            val excludedTags = arrayOf(ZendeskTags.jetpackTag)
+            val captor = argumentCaptor<CreateRequest>()
+
+            // When
+            val job = launch {
+                sut.createRequest(
+                    context = mock(),
+                    origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                    ticketType = TicketType.WooPlugin,
+                    selectedSite = null,
+                    subject = "subject",
+                    description = "description",
+                    extraTags = listOf(ZendeskTags.jetpackTag)
+                ).first()
+            }
+
+            // Then
+            verify(requestProvider).createRequest(captor.capture(), any())
+            advanceUntilIdle()
+            job.cancel()
+
+            val actualRequest = captor.firstValue
+            assertThat(actualRequest.tags).contains(*expectedTags)
+            assertThat(actualRequest.tags).doesNotContain(*excludedTags)
+        }
+
+    @Test
+    fun `when createRequest is called using OtherPlugins as ticketType, then the request is created with the expected tags`() =
+        testBlocking {
+            // Given
+            val expectedTags = arrayOf(
+                ZendeskTags.productAreaWooExtensions,
+                ZendeskTags.mobileAppWooTransfer,
+                ZendeskTags.supportCategoryTag,
+                ZendeskTags.storeSubcategoryTag
+            )
+            val excludedTags = arrayOf(ZendeskTags.jetpackTag)
+            val captor = argumentCaptor<CreateRequest>()
+
+            // When
+            val job = launch {
+                sut.createRequest(
+                    context = mock(),
+                    origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                    ticketType = TicketType.OtherPlugins,
+                    selectedSite = null,
+                    subject = "subject",
+                    description = "description",
+                    extraTags = listOf(ZendeskTags.jetpackTag)
+                ).first()
+            }
+
+            // Then
+            verify(requestProvider).createRequest(captor.capture(), any())
+            advanceUntilIdle()
+            job.cancel()
+
+            val actualRequest = captor.firstValue
+            assertThat(actualRequest.tags).contains(*expectedTags)
+            assertThat(actualRequest.tags).doesNotContain(*excludedTags)
+        }
+
+    @Test
     fun `when createRequest is called with authenticated site, then the request is created with the expected tags`() =
         testBlocking {
             // Given
