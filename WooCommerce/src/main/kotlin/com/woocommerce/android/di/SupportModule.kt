@@ -10,24 +10,14 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
 class SupportModule {
-    @Singleton
     @Provides
-    fun provideZendeskSettings(
-        supportHelper: SupportHelper,
-        accountStore: AccountStore,
-        selectedSite: SelectedSite
-    ): ZendeskSettings = ZendeskSettings(supportHelper, accountStore, selectedSite)
-
-    @Singleton
-    @Provides
-    fun provideZendeskManager(
+    fun provideZendeskTicketRepository(
         zendeskSettings: ZendeskSettings,
         deviceDataSource: ZendeskEnvironmentDataSource,
         siteStore: SiteStore,

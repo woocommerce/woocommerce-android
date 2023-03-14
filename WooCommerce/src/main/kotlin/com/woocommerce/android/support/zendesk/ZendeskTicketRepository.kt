@@ -1,13 +1,23 @@
 package com.woocommerce.android.support.zendesk
 
 import android.content.Context
+<<<<<<<< HEAD:WooCommerce/src/main/kotlin/com/woocommerce/android/support/zendesk/ZendeskTicketRepository.kt
+========
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+>>>>>>>> improve/remove-zendesk-push-notification-code:WooCommerce/src/main/kotlin/com/woocommerce/android/support/ZendeskTicketRepository.kt
 import android.os.Parcelable
 import com.woocommerce.android.support.help.HelpOrigin
+<<<<<<<< HEAD:WooCommerce/src/main/kotlin/com/woocommerce/android/support/zendesk/ZendeskTicketRepository.kt
 import com.woocommerce.android.support.zendesk.RequestConstants.requestCreationIdentityNotSetErrorMessage
 import com.woocommerce.android.support.zendesk.RequestConstants.requestCreationTimeoutErrorMessage
 import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetException
 import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationFailedException
 import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationTimeoutException
+========
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.tools.connectionType
+>>>>>>>> improve/remove-zendesk-push-notification-code:WooCommerce/src/main/kotlin/com/woocommerce/android/support/ZendeskTicketRepository.kt
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
@@ -19,6 +29,12 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
+<<<<<<<< HEAD:WooCommerce/src/main/kotlin/com/woocommerce/android/support/zendesk/ZendeskTicketRepository.kt
+========
+import org.wordpress.android.util.DeviceUtils
+import org.wordpress.android.util.StringUtils
+import org.wordpress.android.util.UrlUtils
+>>>>>>>> improve/remove-zendesk-push-notification-code:WooCommerce/src/main/kotlin/com/woocommerce/android/support/ZendeskTicketRepository.kt
 import zendesk.support.CreateRequest
 import zendesk.support.CustomField
 import zendesk.support.Request
@@ -48,6 +64,12 @@ class ZendeskTicketRepository(
             return@callbackFlow
         }
 
+        val siteConnectionTag = if (selectedSite?.connectionType == SiteConnectionType.ApplicationPasswords) {
+            ZendeskTags.applicationPasswordAuthenticated
+        } else null
+
+        val tags = (ticketType.tags + extraTags + siteConnectionTag).filterNotNull()
+
         val requestCallback = object : ZendeskCallback<Request>() {
             override fun onSuccess(result: Request?) {
                 trySend(Result.success(result))
@@ -64,7 +86,7 @@ class ZendeskTicketRepository(
             this.ticketFormId = ticketType.form
             this.subject = subject
             this.description = description
-            this.tags = buildZendeskTags(siteStore.sites, origin, ticketType.tags + extraTags)
+            this.tags = buildZendeskTags(siteStore.sites, origin, tags)
                 .filter { ticketType.excludedTags.contains(it).not() }
             this.customFields = buildZendeskCustomFields(context, ticketType, siteStore.sites, selectedSite)
         }.let { request -> zendeskSettings.requestProvider?.createRequest(request, requestCallback) }
@@ -137,6 +159,37 @@ class ZendeskTicketRepository(
         tags.addAll(extraTags)
         return tags
     }
+<<<<<<<< HEAD:WooCommerce/src/main/kotlin/com/woocommerce/android/support/zendesk/ZendeskTicketRepository.kt
+========
+
+    /**
+     * This is a helper function which returns information about the network state of the app to be sent to Zendesk, which
+     * could prove useful for the Happiness Engineers while debugging the users' issues.
+     */
+    private fun getNetworkInformation(context: Context): String {
+        val networkType = generateNetworkType(context)
+        val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?
+        val carrierName = telephonyManager?.networkOperatorName ?: ZendeskConstants.unknownValue
+        val countryCodeLabel = telephonyManager?.networkCountryIso ?: ZendeskConstants.unknownValue
+        return listOf(
+            "${ZendeskConstants.networkTypeLabel} $networkType",
+            "${ZendeskConstants.networkCarrierLabel} $carrierName",
+            "${ZendeskConstants.networkCountryCodeLabel} ${countryCodeLabel.uppercase(Locale.getDefault())}"
+        ).joinToString(separator = "\n")
+    }
+
+    private fun generateNetworkType(context: Context) =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE)
+            .run { this as? ConnectivityManager }
+            ?.let { it.getNetworkCapabilities(it.activeNetwork) }
+            ?.let {
+                when {
+                    it.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> ZendeskConstants.networkWifi
+                    it.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> ZendeskConstants.networkWWAN
+                    else -> ZendeskConstants.unknownValue
+                }
+            } ?: ZendeskConstants.unknownValue
+>>>>>>>> improve/remove-zendesk-push-notification-code:WooCommerce/src/main/kotlin/com/woocommerce/android/support/ZendeskTicketRepository.kt
 }
 
 sealed class TicketType(
@@ -225,6 +278,7 @@ private object TicketCustomField {
 }
 
 object ZendeskTags {
+    const val applicationPasswordAuthenticated = "application_password_authenticated"
     const val mobileApp = "mobile_app"
     const val woocommerceCore = "woocommerce_core"
     const val paymentsProduct = "woocommerce_payments"
