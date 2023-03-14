@@ -12,9 +12,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -105,7 +107,14 @@ private fun CountryPickerForm(
                 .padding(dimensionResource(id = R.dimen.major_100)),
             onClick = onContinueClicked,
         ) {
-            Text(text = stringResource(id = R.string.continue_button))
+            if (countryPickerState.creatingStoreInProgress) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(size = dimensionResource(id = R.dimen.major_150)),
+                    color = colorResource(id = R.color.color_on_primary_surface),
+                )
+            } else {
+                Text(text = stringResource(id = R.string.continue_button))
+            }
         }
     }
 }
@@ -235,7 +244,8 @@ fun CountryPickerPreview() {
                         emojiFlag = "\uD83C\uDDEE\uD83C\uDDF9",
                         isSelected = false
                     )
-                )
+                ),
+                creatingStoreInProgress = false
             ),
             onContinueClicked = {},
             onCountrySelected = {},

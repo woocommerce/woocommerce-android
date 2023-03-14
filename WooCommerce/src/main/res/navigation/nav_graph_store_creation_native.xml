@@ -71,6 +71,10 @@
         <action
             android:id="@+id/action_countryPickerFragment_to_domainPickerFragment"
             app:destination="@id/domainPickerFragment" />
+        <action
+            android:id="@+id/action_countryPickerFragment_to_installationFragment"
+            app:destination="@id/installationFragment"
+            app:popUpTo="@id/nav_graph_store_creation" />
     </fragment>
 
     <fragment
