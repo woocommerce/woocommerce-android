@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.login.storecreation.installation.InstallationV
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.InitialState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.LoadingState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.SuccessState
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -49,6 +50,8 @@ class InstallationViewModel @Inject constructor(
         .onEach {
             if (it is InitialState) {
                 loadNewStore()
+            } else if (it is SuccessState && FeatureFlag.FREE_TRIAL.isEnabled()) {
+                triggerEvent(NavigateToNewStore)
             }
         }.asLiveData()
 
