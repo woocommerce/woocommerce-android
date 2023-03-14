@@ -38,6 +38,7 @@ import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.OTHER
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
+import com.woocommerce.android.ui.products.ProductType.SUBSCRIPTION
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.models.ProductProperty
@@ -78,7 +79,8 @@ class ProductDetailCardBuilder(
             VARIABLE -> cards.addIfNotEmpty(getVariableProductCard(product))
             GROUPED -> cards.addIfNotEmpty(getGroupedProductCard(product))
             EXTERNAL -> cards.addIfNotEmpty(getExternalProductCard(product))
-            OTHER -> cards.addIfNotEmpty(getOtherProductCard(product))
+            SUBSCRIPTION -> cards.addIfNotEmpty(getSubscriptionProductCard(product))
+            else -> cards.addIfNotEmpty(getOtherProductCard(product))
         }
 
         return cards
@@ -389,7 +391,8 @@ class ProductDetailCardBuilder(
             VARIABLE -> resources.getString(string.product_type_variable)
             GROUPED -> resources.getString(string.product_type_grouped)
             EXTERNAL -> resources.getString(string.product_type_external)
-            OTHER -> this.type.capitalize() // show the actual product type string for unsupported products
+            SUBSCRIPTION -> resources.getString(string.product_type_subscription)
+            else -> this.type.capitalize() // show the actual product type string for unsupported products
         }
     }
 
