@@ -11,6 +11,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToProductFilter
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToVariationSelector
+import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus.Custom
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.NotAvailable
@@ -76,12 +77,18 @@ class ProductSelectorViewModel @Inject constructor(
     private val loadingState = MutableStateFlow(IDLE)
     private val selectedItems = savedState.getStateFlow(viewModelScope, navArgs.selectedItems.toSet())
     private val filterState = savedState.getStateFlow(viewModelScope, FilterState())
+    private val productsRestrictions = navArgs.restrictions
+    private val products = listHandler.productsFlow.map { products ->
+        products.filter { product ->
+            productsRestrictions.map { restriction -> restriction(product) }.fold(true) { acc, result -> acc && result }
+        }
+    }
 
     private var fetchProductsJob: Job? = null
     private var loadMoreJob: Job? = null
 
     val viewState = combine(
-        flow = listHandler.productsFlow,
+        flow = products,
         flow2 = loadingState.withIndex()
             .debounce {
                 if (it.index != 0 && it.value == IDLE) {
@@ -348,6 +355,22 @@ class ProductSelectorViewModel @Inject constructor(
 
         @Parcelize
         data class ProductVariation(val productId: Long, val variationId: Long) : SelectedItem(variationId)
+    }
+
+    @Parcelize
+    sealed class ProductSelectorRestriction : (Product) -> Boolean, Parcelable {
+        @Parcelize
+        object OnlyPublishedProducts : ProductSelectorRestriction() {
+            override fun invoke(product: Product): Boolean {
+                return product.status == ProductStatus.PUBLISH
+            }
+        }
+        @Parcelize
+        object NoVariableProductsWithNoVariations : ProductSelectorRestriction() {
+            override fun invoke(product: Product): Boolean {
+                return !(product.productType == VARIABLE && product.numVariations == 0)
+            }
+        }
     }
 }
 

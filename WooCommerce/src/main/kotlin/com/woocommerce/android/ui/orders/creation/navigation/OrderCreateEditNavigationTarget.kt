@@ -9,8 +9,10 @@ import java.math.BigDecimal
 sealed class OrderCreateEditNavigationTarget : Event() {
     object EditCustomer : OrderCreateEditNavigationTarget()
     object EditCustomerNote : OrderCreateEditNavigationTarget()
-    data class SelectItems(val selectedItems: List<ProductSelectorViewModel.SelectedItem>) :
-        OrderCreateEditNavigationTarget()
+    data class SelectItems(
+        val selectedItems: List<ProductSelectorViewModel.SelectedItem>,
+        val restrictions: List<ProductSelectorViewModel.ProductSelectorRestriction>
+    ) : OrderCreateEditNavigationTarget()
     data class ShowProductDetails(val item: Order.Item) : OrderCreateEditNavigationTarget()
     data class ShowCreatedOrder(val orderId: Long) : OrderCreateEditNavigationTarget()
     data class EditShipping(val currentShippingLine: ShippingLine?) : OrderCreateEditNavigationTarget()
