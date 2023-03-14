@@ -178,20 +178,7 @@ class OrderListViewModel @Inject constructor(
             }
         }
 
-        viewModelScope.launch {
-            val shouldShowFeedbackBanner =
-                FeatureFlag.IPP_FEEDBACK_BANNER.isEnabled() && shouldShowFeedbackBanner()
-            if (shouldShowFeedbackBanner) {
-                val bannerData = getIPPFeedbackBannerData()
-                if (bannerData != null) {
-                    viewState = viewState.copy(
-                        ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(bannerData)
-                    )
-                    trackIPPBannerEvent(AnalyticsEvent.IPP_FEEDBACK_BANNER_SHOWN)
-                }
-            }
-            refreshOrdersBannerVisibility()
-        }
+        displayIPPFeedbackOrOrdersBanner()
     }
 
     fun loadOrders() {
@@ -321,7 +308,16 @@ class OrderListViewModel @Inject constructor(
 
         _pagedListData.addSource(pagedListWrapper.data) { pagedList ->
             pagedList?.let {
-
+                // We are re-checking the ipp feedback survey banner logic on every order fetch
+                // from the API. This is primarily being done because when the app migrates
+                // WCDatabase from v22 to v23, we clear all the orders in the database and fetch
+                // it freshly. After the update, on the very first launch, the ipp feedback survey banner logic
+                // returns that there are no IPP orders since the database is not filled with any orders
+                // (The API call happens after the database check). After the API returns, we re-check the logic
+                // so that the database is populated by now and we can show the correct banner.
+                // This also helps in updating the feedback survey banner according to the order changes
+                // on pull-to-refresh.
+                displayIPPFeedbackOrOrdersBanner()
                 _pagedListData.value = it
             }
         }
@@ -346,6 +342,23 @@ class OrderListViewModel @Inject constructor(
             fetchOrdersAndOrderDependencies()
         } else {
             pagedListWrapper.invalidateData()
+        }
+    }
+
+    private fun displayIPPFeedbackOrOrdersBanner() {
+        viewModelScope.launch {
+            val shouldShowFeedbackBanner =
+                FeatureFlag.IPP_FEEDBACK_BANNER.isEnabled() && shouldShowFeedbackBanner()
+            if (shouldShowFeedbackBanner) {
+                val bannerData = getIPPFeedbackBannerData()
+                if (bannerData != null) {
+                    viewState = viewState.copy(
+                        ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(bannerData)
+                    )
+                    trackIPPBannerEvent(AnalyticsEvent.IPP_FEEDBACK_BANNER_SHOWN)
+                }
+            }
+            refreshOrdersBannerVisibility()
         }
     }
 

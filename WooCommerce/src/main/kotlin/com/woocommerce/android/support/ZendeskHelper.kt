@@ -10,6 +10,9 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.extensions.logInformation
 import com.woocommerce.android.extensions.stateLogInformation
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
@@ -24,6 +27,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.util.DeviceUtils
 import org.wordpress.android.util.NetworkUtils
@@ -47,6 +51,9 @@ private const val maxLogfileLength: Int = 63000 // Max characters allowed in the
 
 class ZendeskHelper(
     private val siteStore: SiteStore,
+    private val supportHelper: SupportHelper,
+    private val accountStore: AccountStore,
+    private val selectedSite: SelectedSite,
     private val dispatchers: CoroutineDispatchers
 ) {
     private val zendeskInstance: Zendesk
@@ -70,8 +77,29 @@ class ZendeskHelper(
      * supportEmail and reset their identity on logout, we need to ensure that the correct identity is set all times.
      * Check [requireIdentity], [refreshIdentity] & [clearIdentity] for more details about how Zendesk identity works.
      */
-    private var supportEmail: String? = null
-    private var supportName: String? = null
+    var supportEmail: String? = null
+        get() = AppPrefs.getSupportEmail()
+            .takeIf { it.isNotEmpty() }
+            ?: supportHelper.getSupportEmailSuggestion(accountStore.account, selectedSite.getIfExists())
+
+        set(value) {
+            if (value != field) {
+                AppPrefs.setSupportEmail(value)
+                refreshIdentity()
+            }
+        }
+
+    var supportName: String? = null
+        get() = AppPrefs.getSupportName()
+            .takeIf { it.isNotEmpty() }
+            ?: supportHelper.getSupportNameSuggestion(accountStore.account, selectedSite.getIfExists())
+
+        set(value) {
+            if (value != field) {
+                AppPrefs.setSupportName(value)
+                refreshIdentity()
+            }
+        }
 
     /**
      * Although rare, Zendesk SDK might reset the identity due to a 401 error. This seems to happen if the identity
@@ -125,6 +153,12 @@ class ZendeskHelper(
             zendeskNeedsToBeEnabledError
         }
 
+        val siteConnectionTag = if (selectedSite?.connectionType == SiteConnectionType.ApplicationPasswords) {
+            ZendeskTags.applicationPasswordAuthenticated
+        } else null
+
+        val tags = (ticketType.tags + extraTags + siteConnectionTag).filterNotNull()
+
         val requestCallback = object : ZendeskCallback<Request>() {
             override fun onSuccess(result: Request?) {
                 trySend(Result.success(result))
@@ -140,7 +174,7 @@ class ZendeskHelper(
             this.ticketFormId = ticketType.form
             this.subject = subject
             this.description = description
-            this.tags = buildZendeskTags(siteStore.sites, origin, ticketType.tags + extraTags)
+            this.tags = buildZendeskTags(siteStore.sites, origin, tags)
                 .filter { ticketType.excludedTags.contains(it).not() }
             this.customFields = buildZendeskCustomFields(context, ticketType, siteStore.sites, selectedSite)
         }.let { request -> requestProvider?.createRequest(request, requestCallback) }
@@ -176,7 +210,7 @@ class ZendeskHelper(
      * This function will enable push notifications for Zendesk. Both a Zendesk identity and a valid push
      * notification device token is required. If either doesn't exist, the request will simply be ignored.
      */
-    fun enablePushNotifications() {
+    private fun enablePushNotifications() {
         require(isZendeskEnabled) {
             zendeskNeedsToBeEnabledError
         }
@@ -233,44 +267,29 @@ class ZendeskHelper(
     }
 
     /**
-     * This function provides a way to change the support email for the Zendesk identity. Due to the way Zendesk
-     * anonymous identity works, this will reset the users' tickets.
-     */
-    fun setSupportEmail(email: String?) {
-        AppPrefs.setSupportEmail(email)
-        refreshIdentity()
-    }
-
-    /**
      * This is a helper function that'll ensure the Zendesk identity is set with the credentials from AppPrefs.
      */
     private fun refreshIdentity() {
         require(isZendeskEnabled) {
             zendeskNeedsToBeEnabledError
         }
-        val email = AppPrefs.getSupportEmail()
-        val name = AppPrefs.getSupportName()
         /**
-         * We refresh the Zendesk identity if the email or the name has been updated. We also check whether
+         * We refresh the Zendesk identity when the email or the name has been updated. We also check whether
          * Zendesk SDK has cleared the identity. Check out the documentation for [isIdentitySet] for more details.
          */
-        if (supportEmail != email || supportName != name || zendeskInstance.identity == null) {
-            supportEmail = email
-            supportName = name
-            zendeskInstance.setIdentity(createZendeskIdentity(email, name))
+        zendeskInstance.setIdentity(createZendeskIdentity(supportEmail, supportName))
 
-            /**
-             * When we change the identity in Zendesk, it seems to be making an asynchronous call to a server to
-             * receive a different access token. During this time, if there is a call to Zendesk with the previous
-             * access token, it could fail with a 401 error which seems to be clearing the identity. In order to avoid
-             * such cases, we put a delay on enabling push notifications for the new identity.
-             *
-             * [enablePushNotifications] will check if the identity is set, before making the actual call, so if the
-             * identity is cleared through [clearIdentity], this call will simply be ignored.
-             */
-            timer.schedule(enablePushNotificationsDelayAfterIdentityChange) {
-                enablePushNotifications()
-            }
+        /**
+         * When we change the identity in Zendesk, it seems to be making an asynchronous call to a server to
+         * receive a different access token. During this time, if there is a call to Zendesk with the previous
+         * access token, it could fail with a 401 error which seems to be clearing the identity. In order to avoid
+         * such cases, we put a delay on enabling push notifications for the new identity.
+         *
+         * [enablePushNotifications] will check if the identity is set, before making the actual call, so if the
+         * identity is cleared through [clearIdentity], this call will simply be ignored.
+         */
+        timer.schedule(enablePushNotificationsDelayAfterIdentityChange) {
+            enablePushNotifications()
         }
     }
 
@@ -511,6 +530,7 @@ private object TicketFieldIds {
 }
 
 object ZendeskTags {
+    const val applicationPasswordAuthenticated = "application_password_authenticated"
     const val mobileApp = "mobile_app"
     const val woocommerceCore = "woocommerce_core"
     const val paymentsProduct = "woocommerce_payments"
