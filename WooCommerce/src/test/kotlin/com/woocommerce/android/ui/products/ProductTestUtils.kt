@@ -15,15 +15,14 @@ object ProductTestUtils {
         isVirtual: Boolean = false,
         isVariable: Boolean = false,
         isPurchasable: Boolean = true,
-        customStatus: String? = null,
-        variationIds: String = if (isVariable) "[123]" else "[]",
+        customStatus: String? = null
     ): Product {
         return WCProductModel(2).apply {
             dateCreated = "2018-01-05T05:14:30Z"
             localSiteId = 1
             remoteProductId = productId
             status = customStatus ?: "publish"
-            type = if (isVariable) "variable" else "simple"
+            type = "simple"
             stockStatus = "instock"
             price = "20.00"
             salePrice = "10.00"
@@ -44,7 +43,7 @@ object ProductTestUtils {
             length = "1"
             width = "2"
             height = "3"
-            variations = variationIds
+            variations = if (isVariable) "[123]" else "[]"
             attributes = """[
                                 {
                                     "id": 1,
