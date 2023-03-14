@@ -2,6 +2,9 @@
 
 package com.woocommerce.android.ui.main
 
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -13,6 +16,8 @@ import com.woocommerce.android.push.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SelectedSite.SelectedSiteChangedEvent
+import com.woocommerce.android.tools.SiteConnectionType.Jetpack
+import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.payments.cardreader.ClearCardReaderDataAction
 import com.woocommerce.android.util.WooLog
@@ -52,6 +57,14 @@ class MainPresenter @Inject constructor(
     private var isHandlingMagicLink: Boolean = false
     private var pendingUnfilledOrderCountCheck: Boolean = false
 
+    private val shouldShowNotificationsPermissionBar: Boolean
+        get() {
+            return VERSION.SDK_INT >= VERSION_CODES.TIRAMISU &&
+                mainView?.hasNotificationsPermission == false &&
+                !AppPrefs.getWasNotificationsPermissionBarDismissed() &&
+                selectedSite.get().connectionType == Jetpack
+        }
+
     override fun takeView(view: MainContract.View) {
         mainView = view
         dispatcher.register(this)
@@ -75,6 +88,8 @@ class MainPresenter @Inject constructor(
                 }
             }
         }
+
+        mainView?.setNotificationBarVisibility(shouldShowNotificationsPermissionBar)
     }
 
     override fun dropView() {

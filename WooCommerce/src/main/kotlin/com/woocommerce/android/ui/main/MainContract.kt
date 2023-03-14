@@ -31,5 +31,8 @@ interface MainContract {
         fun showProgressDialog(@StringRes stringId: Int)
         fun showUserEligibilityErrorScreen()
         fun updateStatsWidgets()
+        fun setNotificationBarVisibility(isVisible: Boolean)
+
+        val hasNotificationsPermission: Boolean
     }
 }

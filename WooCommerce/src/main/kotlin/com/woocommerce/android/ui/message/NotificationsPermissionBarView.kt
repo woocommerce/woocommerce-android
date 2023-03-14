@@ -30,13 +30,6 @@ class NotificationsPermissionBarView @JvmOverloads constructor(
         )
     )
 
-    private val shouldShowNotificationsPermissionBar: Boolean
-        get() {
-            return VERSION.SDK_INT >= VERSION_CODES.TIRAMISU &&
-                !WooPermissionUtils.hasNotificationsPermission(activity) &&
-                !AppPrefs.getWasNotificationsPermissionBarDismissed()
-        }
-
     private val launcher = activity.registerForActivityResult(RequestPermission()) { isGranted: Boolean ->
         if (isGranted) {
             hide()
@@ -44,17 +37,6 @@ class NotificationsPermissionBarView @JvmOverloads constructor(
     }
 
     init {
-        postDelayed(
-            {
-                if (shouldShowNotificationsPermissionBar) {
-                    show()
-                } else {
-                    hide()
-                }
-            },
-            INIT_DELAY
-        )
-
         binding.btnAllow.setOnClickListener {
             requestNotificationsPermission()
         }
@@ -66,7 +48,12 @@ class NotificationsPermissionBarView @JvmOverloads constructor(
     }
 
     fun show() {
-        WooAnimUtils.animateBottomBar(this, show = true)
+        postDelayed(
+            {
+                WooAnimUtils.animateBottomBar(this, show = true)
+            },
+            INIT_DELAY
+        )
     }
 
     fun hide() {

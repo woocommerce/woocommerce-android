@@ -7,12 +7,14 @@ import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
+import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
@@ -84,6 +86,7 @@ import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
+import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.DisabledAppBarLayoutBehavior
 import dagger.hilt.android.AndroidEntryPoint
@@ -968,6 +971,18 @@ class MainActivity :
     override fun updateStatsWidgets() {
         appWidgetUpdaters.updateTodayWidget()
     }
+
+    override fun setNotificationBarVisibility(isVisible: Boolean) {
+        if (isVisible) {
+            binding.notificationsPermissionBar.show()
+        } else {
+            binding.notificationsPermissionBar.hide()
+        }
+    }
+
+    override val hasNotificationsPermission: Boolean
+        @RequiresApi(VERSION_CODES.TIRAMISU)
+        get() = WooPermissionUtils.hasNotificationsPermission(this)
 
     private fun trackIfOpenedFromWidget() {
         if (intent.getBooleanExtra(FIELD_OPENED_FROM_WIDGET, false)) {
