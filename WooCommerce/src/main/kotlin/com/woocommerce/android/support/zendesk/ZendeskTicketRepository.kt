@@ -41,16 +41,13 @@ class ZendeskTicketRepository(
         ticketType: TicketType,
         selectedSite: SiteModel?,
         subject: String,
-        description: String,
-        extraTags: List<String>
+        description: String
     ) = callbackFlow {
         if (zendeskSettings.isIdentitySet.not()) {
             trySend(Result.failure(IdentityNotSetException))
             close()
             return@callbackFlow
         }
-
-        val tags = (ticketType.tags + extraTags)
 
         val requestCallback = object : ZendeskCallback<Request>() {
             override fun onSuccess(result: Request?) {
@@ -64,12 +61,12 @@ class ZendeskTicketRepository(
             }
         }
 
+        val conditionalTags = buildZendeskTags(selectedSite, siteStore.sites, origin)
         CreateRequest().apply {
             this.ticketFormId = ticketType.form
             this.subject = subject
             this.description = description
-            this.tags = buildZendeskTags(selectedSite, siteStore.sites, origin, tags)
-                .filter { ticketType.excludedTags.contains(it).not() }
+            this.tags = ticketType.buildFullTagListWith(conditionalTags)
             this.customFields = buildZendeskCustomFields(context, ticketType, siteStore.sites, selectedSite)
         }.let { request -> zendeskSettings.requestProvider?.createRequest(request, requestCallback) }
 
@@ -116,8 +113,7 @@ class ZendeskTicketRepository(
     private fun buildZendeskTags(
         selectedSite: SiteModel?,
         allSites: List<SiteModel>?,
-        origin: HelpOrigin,
-        extraTags: List<String>
+        origin: HelpOrigin
     ): List<String> {
         val tags = ArrayList<String>()
         if (selectedSite?.connectionType == SiteConnectionType.ApplicationPasswords) {
@@ -142,7 +138,6 @@ class ZendeskTicketRepository(
         tags.add(origin.toString())
         // We rely on this platform tag to filter tickets in Zendesk
         tags.add(ZendeskTags.platformTag)
-        tags.addAll(extraTags)
         return tags
     }
 }
@@ -151,59 +146,88 @@ sealed class TicketType(
     val form: Long,
     val categoryName: String,
     val subcategoryName: String,
-    val tags: List<String> = emptyList(),
-    val excludedTags: List<String> = emptyList()
+    val mandatoryTags: List<String> = emptyList(),
+    val excludedTags: List<String> = emptyList(),
+    val additionalTags: List<String>
 ) : Parcelable {
-    @Parcelize object MobileApp : TicketType(
+    fun buildFullTagListWith(conditionalTags: List<String>) =
+        (mandatoryTags + conditionalTags + additionalTags)
+            .filter { excludedTags.contains(it).not() }
+
+    @Parcelize
+    data class MobileApp(
+        private val extraTags: List<String>
+    ) : TicketType(
         form = TicketCustomField.wooMobileFormID,
         categoryName = ZendeskConstants.mobileAppCategory,
         subcategoryName = ZendeskConstants.mobileSubcategoryValue,
-        tags = listOf(ZendeskTags.mobileApp)
+        mandatoryTags = listOf(ZendeskTags.mobileApp),
+        additionalTags = extraTags
     )
-    @Parcelize object InPersonPayments : TicketType(
+
+    @Parcelize
+    data class InPersonPayments(
+        private val extraTags: List<String>
+    ) : TicketType(
         form = TicketCustomField.wooMobileFormID,
         categoryName = ZendeskConstants.mobileAppCategory,
         subcategoryName = ZendeskConstants.mobileSubcategoryValue,
-        tags = listOf(
+        mandatoryTags = listOf(
             ZendeskTags.woocommerceMobileApps,
             ZendeskTags.productAreaAppsInPersonPayments
-        )
+        ),
+        additionalTags = extraTags
     )
-    @Parcelize object Payments : TicketType(
+
+    @Parcelize
+    data class Payments(
+        private val extraTags: List<String>
+    ) : TicketType(
         form = TicketCustomField.wooFormID,
         categoryName = ZendeskConstants.supportCategory,
         subcategoryName = ZendeskConstants.paymentsSubcategoryValue,
-        tags = listOf(
+        mandatoryTags = listOf(
             ZendeskTags.paymentsProduct,
             ZendeskTags.paymentsProductArea,
             ZendeskTags.mobileAppWooTransfer,
             ZendeskTags.supportCategoryTag,
             ZendeskTags.paymentSubcategoryTag
         ),
-        excludedTags = listOf(ZendeskTags.jetpackTag)
+        excludedTags = listOf(ZendeskTags.jetpackTag),
+        additionalTags = extraTags
     )
-    @Parcelize object WooPlugin : TicketType(
+
+    @Parcelize
+    data class WooPlugin(
+        private val extraTags: List<String>
+    ) : TicketType(
         form = TicketCustomField.wooFormID,
         categoryName = ZendeskConstants.supportCategory,
         subcategoryName = "",
-        tags = listOf(
+        mandatoryTags = listOf(
             ZendeskTags.woocommerceCore,
             ZendeskTags.mobileAppWooTransfer,
             ZendeskTags.supportCategoryTag
         ),
-        excludedTags = listOf(ZendeskTags.jetpackTag)
+        excludedTags = listOf(ZendeskTags.jetpackTag),
+        additionalTags = extraTags
     )
-    @Parcelize object OtherPlugins : TicketType(
+
+    @Parcelize
+    data class OtherPlugins(
+        private val extraTags: List<String>
+    ) : TicketType(
         form = TicketCustomField.wooFormID,
         categoryName = ZendeskConstants.supportCategory,
         subcategoryName = ZendeskConstants.storeSubcategoryValue,
-        tags = listOf(
+        mandatoryTags = listOf(
             ZendeskTags.productAreaWooExtensions,
             ZendeskTags.mobileAppWooTransfer,
             ZendeskTags.supportCategoryTag,
             ZendeskTags.storeSubcategoryTag
         ),
-        excludedTags = listOf(ZendeskTags.jetpackTag)
+        excludedTags = listOf(ZendeskTags.jetpackTag),
+        additionalTags = extraTags
     )
 }
 
