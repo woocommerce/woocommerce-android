@@ -22,7 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProgressDialog
-import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
@@ -37,7 +37,8 @@ fun LoginSiteCredentialsScreen(viewModel: LoginSiteCredentialsViewModel) {
             onPasswordChanged = viewModel::onPasswordChanged,
             onContinueClick = viewModel::onContinueClick,
             onResetPasswordClick = viewModel::onResetPasswordClick,
-            onBackClick = viewModel::onBackClick
+            onBackClick = viewModel::onBackClick,
+            onHelpButtonClick = viewModel::onHelpButtonClick
         )
     }
 }
@@ -49,13 +50,15 @@ fun LoginSiteCredentialsScreen(
     onPasswordChanged: (String) -> Unit,
     onContinueClick: () -> Unit,
     onResetPasswordClick: () -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onHelpButtonClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
-            Toolbar(
+            ToolbarWithHelpButton(
                 title = stringResource(id = R.string.log_in),
-                onNavigationButtonClick = onBackClick
+                onNavigationButtonClick = onBackClick,
+                onHelpButtonClick = onHelpButtonClick
             )
         }
     ) { paddingValues ->

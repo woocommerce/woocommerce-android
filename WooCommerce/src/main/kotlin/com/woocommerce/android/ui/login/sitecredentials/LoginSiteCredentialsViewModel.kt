@@ -189,6 +189,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                             errorDescription = exception.message
                         )
                     }
+
                     else -> {
                         val wooError = (exception as? WooException)?.error
                         trackLoginFailure(
@@ -210,6 +211,12 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     fun onBackClick() {
         triggerEvent(Exit)
+    }
+
+    fun onHelpButtonClick() {
+        state.value?.let {
+            triggerEvent(ShowHelpScreen(siteAddress, it.username))
+        }
     }
 
     fun onWooInstallationAttempted() = launch {
@@ -262,5 +269,10 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     data class ShowApplicationPasswordsUnavailableScreen(
         val siteAddress: String,
         val isJetpackConnected: Boolean
+    ) : MultiLiveEvent.Event()
+
+    data class ShowHelpScreen(
+        val siteAddress: String,
+        val username: String?
     ) : MultiLiveEvent.Event()
 }
