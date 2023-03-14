@@ -6,9 +6,9 @@ import com.woocommerce.android.support.zendesk.ZendeskEnvironmentDataSource
 import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetException
 import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationFailedException
 import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationTimeoutException
-import com.woocommerce.android.support.zendesk.ZendeskTicketRepository
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.support.zendesk.ZendeskTags
+import com.woocommerce.android.support.zendesk.ZendeskTicketRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
