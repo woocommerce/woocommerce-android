@@ -249,6 +249,5 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
         on { generateVersionName(any()) } doReturn "version"
         on { generateNetworkInformation(any()) } doReturn "networkInfo"
         on { generateCombinedLogInformationOfSites(any()) } doReturn "sitesInfo"
-        on { generateHostData(any()) } doReturn "hostInfo"
     }
 }
