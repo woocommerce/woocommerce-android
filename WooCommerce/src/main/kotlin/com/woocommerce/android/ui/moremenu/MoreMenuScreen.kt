@@ -52,6 +52,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -242,6 +243,7 @@ private fun MoreMenuUserAvatar(avatarUrl: String) {
     bitmapState.value?.let {
         Image(
             bitmap = it.asImageBitmap(),
+            contentScale = ContentScale.Crop,
             contentDescription = stringResource(id = string.more_menu_avatar),
             modifier = circledModifier
         )
