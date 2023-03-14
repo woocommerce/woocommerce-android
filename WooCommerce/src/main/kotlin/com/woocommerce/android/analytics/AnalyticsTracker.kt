@@ -291,6 +291,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         const val VALUE_SIMPLE_PAYMENTS_FLOW = "simple_payment"
         const val VALUE_SIMPLE_PAYMENTS_FEEDBACK = "simple_payments"
+        const val VALUE_TAP_TO_PAY_FEEDBACK = "tap_to_pay"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_CARD = "card"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_CASH = "cash"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_LINK = "payment_link"

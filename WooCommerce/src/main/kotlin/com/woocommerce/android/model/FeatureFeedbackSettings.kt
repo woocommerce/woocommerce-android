@@ -24,6 +24,7 @@ data class FeatureFeedbackSettings(
         PRODUCT_ADDONS,
         SIMPLE_PAYMENTS_AND_ORDER_CREATION,
         COUPONS,
-        ANALYTICS_HUB
+        ANALYTICS_HUB,
+        TAP_TO_PAY,
     }
 }

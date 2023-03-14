@@ -41,6 +41,8 @@ object AppUrls {
     const val CROWDSIGNAL_STORE_SETUP_SURVEY =
         "https://automattic.survey.fm/woo-mobile-%E2%80%93-store-setup-survey-2022"
 
+    const val CROWDSIGNAL_TAP_TO_PAY_SURVEY = "https://automattic.survey.fm/woo-app-tap-to-pay-survey"
+
     // Will be used later when the feature is fully launched.
     const val COUPONS_SURVEY = "https://automattic.survey.fm/woo-app-coupon-management-production"
 
