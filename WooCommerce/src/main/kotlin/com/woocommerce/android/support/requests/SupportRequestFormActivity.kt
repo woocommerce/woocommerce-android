@@ -62,18 +62,17 @@ class SupportRequestFormActivity : AppCompatActivity() {
         binding.requestMessage.doOnTextChanged { text, _, _, _ -> viewModel.onMessageChanged(text.toString()) }
         binding.helpOptionsGroup.setOnCheckedChangeListener { _, selectionID ->
             when (selectionID) {
-                binding.mobileAppOption.id -> viewModel.onHelpOptionSelected(TicketType.MobileApp)
-                binding.ippOption.id -> viewModel.onHelpOptionSelected(TicketType.InPersonPayments)
-                binding.paymentsOption.id -> viewModel.onHelpOptionSelected(TicketType.Payments)
-                binding.wooPluginOption.id -> viewModel.onHelpOptionSelected(TicketType.WooPlugin)
-                binding.otherOption.id -> viewModel.onHelpOptionSelected(TicketType.OtherPlugins)
+                binding.mobileAppOption.id -> viewModel.onHelpOptionSelected(TicketType.MobileApp(extraTags))
+                binding.ippOption.id -> viewModel.onHelpOptionSelected(TicketType.InPersonPayments(extraTags))
+                binding.paymentsOption.id -> viewModel.onHelpOptionSelected(TicketType.Payments(extraTags))
+                binding.wooPluginOption.id -> viewModel.onHelpOptionSelected(TicketType.WooPlugin(extraTags))
+                binding.otherOption.id -> viewModel.onHelpOptionSelected(TicketType.OtherPlugins(extraTags))
             }
         }
         binding.submitRequestButton.setOnClickListener {
             viewModel.submitSupportRequest(
                 context = this,
-                helpOrigin = helpOrigin,
-                extraTags = extraTags
+                helpOrigin = helpOrigin
             )
         }
     }
@@ -140,7 +139,6 @@ class SupportRequestFormActivity : AppCompatActivity() {
             viewModel.onUserIdentitySet(
                 context = this,
                 helpOrigin = helpOrigin,
-                extraTags = extraTags,
                 selectedEmail = email,
                 selectedName = name
             )

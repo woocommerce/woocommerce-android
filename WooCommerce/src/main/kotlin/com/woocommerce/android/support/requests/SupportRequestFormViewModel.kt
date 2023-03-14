@@ -67,20 +67,18 @@ class SupportRequestFormViewModel @Inject constructor(
     fun onUserIdentitySet(
         context: Context,
         helpOrigin: HelpOrigin,
-        extraTags: List<String>,
         selectedEmail: String,
         selectedName: String
     ) {
         zendeskSettings.supportEmail = selectedEmail
         zendeskSettings.supportName = selectedName
         tracks.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
-        submitSupportRequest(context = context, helpOrigin = helpOrigin, extraTags = extraTags)
+        submitSupportRequest(context, helpOrigin)
     }
 
     fun submitSupportRequest(
         context: Context,
-        helpOrigin: HelpOrigin,
-        extraTags: List<String>
+        helpOrigin: HelpOrigin
     ) {
         val ticketType = viewState.value.ticketType ?: return
 
@@ -92,8 +90,7 @@ class SupportRequestFormViewModel @Inject constructor(
                 ticketType,
                 selectedSite.getIfExists(),
                 viewState.value.subject,
-                viewState.value.message,
-                extraTags
+                viewState.value.message
             ).collect { it.handleCreateRequestResult() }
         }
     }

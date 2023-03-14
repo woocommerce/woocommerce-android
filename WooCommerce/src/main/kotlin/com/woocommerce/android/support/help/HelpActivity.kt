@@ -57,7 +57,7 @@ class HelpActivity : AppCompatActivity() {
     }
 
     private val extraTagsFromExtras by lazy {
-        intent.extras?.getStringArrayList(EXTRA_TAGS_KEY)
+        intent.extras?.getStringArrayList(EXTRA_TAGS_KEY) ?: emptyList()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,8 +70,12 @@ class HelpActivity : AppCompatActivity() {
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        binding.contactContainer.setOnClickListener { viewModel.contactSupport(TicketType.MobileApp) }
-        binding.identityContainer.setOnClickListener { showIdentityDialog(TicketType.MobileApp) }
+        binding.contactContainer.setOnClickListener {
+            viewModel.contactSupport(TicketType.MobileApp(extraTagsFromExtras.toList()))
+        }
+        binding.identityContainer.setOnClickListener {
+            showIdentityDialog(TicketType.MobileApp(extraTagsFromExtras.toList()))
+        }
         binding.faqContainer.setOnClickListener {
             val loginFlow = intent.extras?.getString(LOGIN_FLOW_KEY)
             val loginStep = intent.extras?.getString(LOGIN_STEP_KEY)
@@ -91,11 +95,11 @@ class HelpActivity : AppCompatActivity() {
         binding.textVersion.text = getString(R.string.version_with_name_param, PackageUtils.getVersionName(this))
 
         if (originFromExtras == HelpOrigin.LOGIN_HELP_NOTIFICATION) {
-            loginNotificationScheduler.onNotificationTapped(extraTagsFromExtras?.first())
+            loginNotificationScheduler.onNotificationTapped(extraTagsFromExtras.first())
         }
 
         if (originFromExtras == HelpOrigin.SITE_PICKER_JETPACK_TIMEOUT) {
-            viewModel.contactSupport(TicketType.MobileApp)
+            viewModel.contactSupport(TicketType.MobileApp(extraTagsFromExtras.toList()))
         }
 
         initObservers(binding)
@@ -152,7 +156,7 @@ class HelpActivity : AppCompatActivity() {
             return
         }
 
-        val tags = extraTags + (extraTagsFromExtras ?: emptyList())
+        val tags = extraTags + extraTagsFromExtras
         openSupportRequestForm(tags)
     }
 
