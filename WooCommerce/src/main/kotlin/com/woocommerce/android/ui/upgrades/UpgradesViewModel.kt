@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.upgrades
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -40,7 +41,7 @@ class UpgradesViewModel @Inject constructor(
 
     fun onSubscribeNowClicked() = triggerEvent(UpgradesEvent.OpenSubscribeNow)
 
-    fun onReportSubscriptionIssueClicked() = Unit
+    fun onReportSubscriptionIssueClicked(context: Context) {}
 
     data class UpgradesViewState(
         val currentPlan: CurrentPlanInfo = NonUpgradeable(name = "")
