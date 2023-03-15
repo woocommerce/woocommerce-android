@@ -17,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.CurrentPlanInfo.NonUpgradeable
@@ -38,7 +39,7 @@ fun UpgradesScreen(
     onSubscribeNowClicked: () -> Unit,
     onReportSubscriptionIssueClicked: () -> Unit
 ) {
-    Scaffold() { paddingValues ->
+    Scaffold { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
@@ -52,7 +53,7 @@ fun UpgradesScreen(
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
                         text = stringResource(R.string.upgrades_subscription_status),
-                        style = MaterialTheme.typography.caption,
+                        style = MaterialTheme.typography.h6,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                     Text(
@@ -61,7 +62,7 @@ fun UpgradesScreen(
                     )
                     if (state.currentPlan is Upgradeable) {
                         Divider()
-                        Button(
+                        WCOutlinedButton(
                             onClick = onSubscribeNowClicked,
                             modifier = Modifier.padding(vertical = 8.dp),
                         ) {
@@ -77,10 +78,10 @@ fun UpgradesScreen(
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
                         text = stringResource(R.string.upgrades_troubleshooting),
-                        style = MaterialTheme.typography.caption,
+                        style = MaterialTheme.typography.h6,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
-                    Button(
+                    WCOutlinedButton(
                         onClick = onReportSubscriptionIssueClicked
                     ) {
                         Text(stringResource(R.string.upgrades_report_subscription_issue))
