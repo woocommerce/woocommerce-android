@@ -15,7 +15,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.BaseWPComRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
 import java.lang.reflect.Type
-import java.time.LocalDate
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import javax.inject.Named
@@ -57,11 +57,11 @@ class SitePlanRestClient @Inject constructor(
         }
     }
 
-    private fun parseDateOrNull(rawDate: String?): LocalDate? = rawDate?.let {
-        LocalDate.parse(it, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+    private fun parseDateOrNull(rawDate: String?) = rawDate?.let {
+        ZonedDateTime.parse(it, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
     }
 
     data class SitePlanDto(
-        @SerializedName("user_facing_expiry") val expirationDate: String?
+        @SerializedName("expiry") val expirationDate: String?
     )
 }

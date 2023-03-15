@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.plans.trial
 
 import android.text.Spannable
 import android.text.SpannableStringBuilder
+import android.text.style.UnderlineSpan
 import androidx.core.text.inSpans
 import androidx.navigation.NavController
 import com.woocommerce.android.NavGraphMainDirections
@@ -35,7 +36,7 @@ class TrialStatusBarFormatter @AssistedInject constructor(
             .append(statusMessage)
             .append(" ")
             .inSpans(
-                WooClickableSpan {
+                WooClickableSpan(customLinkColor = resourceProvider.getColor(R.color.woo_purple_60)) {
                     analyticsTrackerWrapper.track(FREE_TRIAL_UPGRADE_NOW, mapOf(KEY_SOURCE to VALUE_BANNER))
                     navController.navigateSafely(
                         NavGraphMainDirections.actionGlobalWPComWebViewFragment(
@@ -45,7 +46,8 @@ class TrialStatusBarFormatter @AssistedInject constructor(
                             )
                         )
                     )
-                }
+                },
+                UnderlineSpan(),
             ) {
                 append(resourceProvider.getString(R.string.free_trial_upgrade_now))
             }
