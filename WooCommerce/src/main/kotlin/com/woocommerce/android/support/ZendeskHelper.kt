@@ -532,6 +532,7 @@ object ZendeskTags {
     const val supportCategoryTag = "support"
     const val paymentSubcategoryTag = "payment"
     const val jetpackTag = "jetpack"
+    const val freeTrialTag = "free_trial"
 }
 
 private object RequestConstants {
