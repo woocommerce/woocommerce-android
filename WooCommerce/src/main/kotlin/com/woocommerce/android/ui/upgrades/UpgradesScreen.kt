@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.upgrades
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -20,12 +20,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.CurrentPlanInfo.NonUpgradeable
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.CurrentPlanInfo.Upgradeable
+import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.*
 
 @Composable
 fun UpgradesScreen(viewModel: UpgradesViewModel) {
-    val upgradesState by viewModel.upgradesState.observeAsState(UpgradesViewState())
+    val upgradesState by viewModel.upgradesState.observeAsState(Loading)
     UpgradesScreen(
         state = upgradesState,
         onSubscribeNowClicked = viewModel::onSubscribeNowClicked,
@@ -58,9 +57,9 @@ fun UpgradesScreen(
                     )
                     Text(
                         modifier = Modifier.padding(vertical = 8.dp),
-                        text = stringResource(R.string.upgrades_current_plan, state.currentPlan.name),
+                        text = stringResource(R.string.upgrades_current_plan, state.name),
                     )
-                    if (state.currentPlan is Upgradeable) {
+                    if (state is Upgradeable || state is TrialEnded) {
                         Divider()
                         WCOutlinedButton(
                             onClick = onSubscribeNowClicked,
@@ -69,6 +68,25 @@ fun UpgradesScreen(
                             Text(stringResource(R.string.upgrades_subscribe_now))
                         }
                     }
+                    Text(
+                        style = MaterialTheme.typography.caption,
+                        text = when (state) {
+                            Loading -> ""
+                            is NonUpgradeable -> stringResource(
+                                R.string.upgrades_non_upgradeable_caption,
+                                state.name,
+                                state.currentPlanEndDate
+                            )
+
+                            is TrialEnded -> stringResource(R.string.upgrades_trial_ended_caption, state.planToUpgrade)
+                            is Upgradeable -> stringResource(
+                                R.string.upgrades_upgradeable_caption,
+                                state.daysLeftInCurrentPlan,
+                                state.currentPlanEndDate,
+                                state.nextPlanMonthlyFee
+                            )
+                        }
+                    )
                 }
             }
             Card(
@@ -92,20 +110,44 @@ fun UpgradesScreen(
     }
 }
 
-@Preview
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun UpgradesScreenPreviewShowSubscribeNow() {
+private fun Upgradeable() {
     WooThemeWithBackground {
-        UpgradesScreen(state = UpgradesViewState(Upgradeable("Free Trial")), {}, {})
+        UpgradesScreen(state =
+        Upgradeable("Free Trial", 14, "March 2, 2023", "$45"), {}, {}
+        )
     }
 }
 
-@Preview
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun UpgradesScreenPreviewHideSubscribeNow() {
+private fun TrialEnded() {
     WooThemeWithBackground {
         UpgradesScreen(
-            state = UpgradesViewState(NonUpgradeable("eCommerce")), {}, {}
+            state = TrialEnded("Free Trial"), {}, {}
         )
+    }
+}
+
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun NonUpgradeable() {
+    WooThemeWithBackground {
+        UpgradesScreen(state =
+        NonUpgradeable("eCommerce", "March 2, 2023"), {}, {}
+        )
+    }
+}
+
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun Loading() {
+    WooThemeWithBackground {
+        UpgradesScreen(state = Loading, {}, {})
     }
 }

@@ -19,14 +19,28 @@ class UpgradesViewModel @Inject constructor(
 
     fun onReportSubscriptionIssueClicked() = Unit
 
-    data class UpgradesViewState(
-        val currentPlan: CurrentPlanInfo = CurrentPlanInfo.NonUpgradeable(name = "")
-    ) {
-        sealed class CurrentPlanInfo {
-            abstract val name: String
+    sealed class UpgradesViewState() {
+        abstract val name: String
 
-            data class Upgradeable(override val name: String) : CurrentPlanInfo()
-            data class NonUpgradeable(override val name: String) : CurrentPlanInfo()
+        object Loading : UpgradesViewState() {
+            override val name: String = ""
         }
+
+        data class TrialEnded(
+            override val name: String,
+            val planToUpgrade: String = "eCommerce"
+        ) : UpgradesViewState()
+
+        data class Upgradeable(
+            override val name: String,
+            val daysLeftInCurrentPlan: Int,
+            val currentPlanEndDate: String,
+            val nextPlanMonthlyFee: String
+        ) : UpgradesViewState()
+
+        data class NonUpgradeable(
+            override val name: String,
+            val currentPlanEndDate: String
+        ) : UpgradesViewState()
     }
 }
