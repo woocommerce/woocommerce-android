@@ -175,7 +175,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     step = Step.AUTHENTICATION,
                     errorContext = error.javaClass.simpleName,
                     errorType = siteError?.wpApiError?.errorType?.name ?: siteError?.type?.name,
-                    errorDescription = exception.message
+                    errorDescription = exception.message,
+                    statusCode = siteError?.wpApiError?.statusCode
                 )
             }
         )
@@ -249,17 +250,26 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         fetchUserInfo()
     }
 
-    private fun trackLoginFailure(step: Step, errorContext: String?, errorType: String?, errorDescription: String?) {
+    private fun trackLoginFailure(
+        step: Step,
+        errorContext: String?,
+        errorType: String?,
+        errorDescription: String?,
+        statusCode: Int? = null
+    ) {
         loginAnalyticsListener.trackFailure(
             message = errorDescription
         )
 
         analyticsTracker.track(
             LOGIN_SITE_CREDENTIALS_LOGIN_FAILED,
-            mapOf(AnalyticsTracker.KEY_STEP to step.name.lowercase()),
+            mapOf(
+                AnalyticsTracker.KEY_STEP to step.name.lowercase(),
+                AnalyticsTracker.KEY_NETWORK_STATUS_CODE to statusCode?.toString().orEmpty()
+            ),
             errorContext = errorContext,
             errorType = errorType,
-            errorDescription = errorDescription
+            errorDescription = errorDescription,
         )
     }
 
