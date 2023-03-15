@@ -1,8 +1,10 @@
 package com.woocommerce.android.support.requests
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.TicketType
-import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.support.ZendeskTicketRepository
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationFailed
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationSucceeded
@@ -27,8 +29,9 @@ import zendesk.support.Request
 @ExperimentalCoroutinesApi
 internal class SupportRequestFormViewModelTest : BaseUnitTest() {
     private lateinit var sut: SupportRequestFormViewModel
-    private lateinit var zendeskHelper: ZendeskHelper
+    private lateinit var zendeskTicketRepository: ZendeskTicketRepository
     private lateinit var selectedSite: SelectedSite
+    private lateinit var tracks: AnalyticsTrackerWrapper
     private val savedState = SavedStateHandle()
 
     @Before
@@ -112,7 +115,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         assertThat(isRequestLoading[0]).isFalse
         assertThat(isRequestLoading[1]).isTrue
         assertThat(isRequestLoading[2]).isFalse
-        verify(zendeskHelper, times(1)).createRequest(any(), any(), any(), any(), any(), any(), any())
+        verify(zendeskTicketRepository, times(1)).createRequest(any(), any(), any(), any(), any(), any(), any())
     }
 
     @Test
@@ -129,7 +132,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // Then
         assertThat(isRequestLoading).hasSize(1)
         assertThat(isRequestLoading[0]).isFalse
-        verify(zendeskHelper, never()).createRequest(any(), any(), any(), any(), any(), any(), any())
+        verify(zendeskTicketRepository, never()).createRequest(any(), any(), any(), any(), any(), any(), any())
     }
 
     @Test
@@ -147,6 +150,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // Then
         assertThat(event).hasSize(1)
         assertThat(event[0]).isEqualTo(RequestCreationSucceeded)
+        verify(tracks, times(1)).track(AnalyticsEvent.SUPPORT_NEW_REQUEST_CREATED)
     }
 
     @Test
@@ -165,14 +169,25 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // Then
         assertThat(event).hasSize(1)
         assertThat(event[0]).isEqualTo(RequestCreationFailed)
+        verify(tracks, times(1)).track(AnalyticsEvent.SUPPORT_NEW_REQUEST_FAILED)
+    }
+
+    @Test
+    fun `when onViewCreated is called, then trigger the expected track event`() {
+        // When
+        sut.onViewCreated()
+
+        // Then
+        verify(tracks, times(1)).track(AnalyticsEvent.SUPPORT_NEW_REQUEST_VIEWED)
     }
 
     private fun configureMocks(requestResult: Result<Request?>) {
+        tracks = mock()
         val testSite = SiteModel().apply { id = 123 }
         selectedSite = mock {
             on { getIfExists() }.then { testSite }
         }
-        zendeskHelper = mock {
+        zendeskTicketRepository = mock {
             onBlocking {
                 createRequest(
                     any(),
@@ -187,10 +202,10 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         }
 
         sut = SupportRequestFormViewModel(
-            accountStore = mock(),
-            zendeskHelper = zendeskHelper,
-            supportHelper = mock(),
+            zendeskTicketRepository = zendeskTicketRepository,
+            zendeskSettings = mock(),
             selectedSite = selectedSite,
+            tracks = tracks,
             savedState = savedState
         )
     }
