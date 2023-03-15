@@ -55,10 +55,12 @@ fun UpgradesScreen(
                         style = MaterialTheme.typography.h6,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
-                    Text(
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        text = stringResource(R.string.upgrades_current_plan, state.name),
-                    )
+                    if (state is HasPlan) {
+                        Text(
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            text = stringResource(R.string.upgrades_current_plan, state.name),
+                        )
+                    }
                     if (state is Upgradeable || state is TrialEnded) {
                         Divider()
                         WCOutlinedButton(
