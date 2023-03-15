@@ -209,7 +209,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
     fun `when createRequest is called using MobileApp as ticketType, then the request is created with the expected tags`() =
         testBlocking {
             // Given
-            val expectedTags = arrayOf(ZendeskTags.mobileApp)
+            val expectedTags = arrayOf("mobile_app")
             val captor = argumentCaptor<CreateRequest>()
 
             // When
@@ -239,8 +239,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
         testBlocking {
             // Given
             val expectedTags = arrayOf(
-                ZendeskTags.woocommerceMobileApps,
-                ZendeskTags.productAreaAppsInPersonPayments
+                "woocommerce_mobile_apps",
+                "product_area_apps_in_person_payments"
             )
             val captor = argumentCaptor<CreateRequest>()
 
@@ -271,13 +271,13 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
         testBlocking {
             // Given
             val expectedTags = arrayOf(
-                ZendeskTags.paymentsProduct,
-                ZendeskTags.paymentsProductArea,
-                ZendeskTags.mobileAppWooTransfer,
-                ZendeskTags.supportCategoryTag,
-                ZendeskTags.paymentSubcategoryTag
+                "woocommerce_payments",
+                "product_area_woo_payment_gateway",
+                "mobile_app_woo_transfer",
+                "support",
+                "payment"
             )
-            val excludedTags = arrayOf(ZendeskTags.jetpackTag)
+            val excludedTags = arrayOf("jetpack")
             val captor = argumentCaptor<CreateRequest>()
 
             // When
@@ -308,11 +308,11 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
         testBlocking {
             // Given
             val expectedTags = arrayOf(
-                ZendeskTags.woocommerceCore,
-                ZendeskTags.mobileAppWooTransfer,
-                ZendeskTags.supportCategoryTag
+                "woocommerce_core",
+                "mobile_app_woo_transfer",
+                "support"
             )
-            val excludedTags = arrayOf(ZendeskTags.jetpackTag)
+            val excludedTags = arrayOf("jetpack")
             val captor = argumentCaptor<CreateRequest>()
 
             // When
@@ -343,12 +343,12 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
         testBlocking {
             // Given
             val expectedTags = arrayOf(
-                ZendeskTags.productAreaWooExtensions,
-                ZendeskTags.mobileAppWooTransfer,
-                ZendeskTags.supportCategoryTag,
-                ZendeskTags.storeSubcategoryTag
+                "product_area_woo_extensions",
+                "mobile_app_woo_transfer",
+                "support",
+                "store"
             )
-            val excludedTags = arrayOf(ZendeskTags.jetpackTag)
+            val excludedTags = arrayOf("jetpack")
             val captor = argumentCaptor<CreateRequest>()
 
             // When
@@ -381,7 +381,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             val selectedSite = mock<SiteModel> {
                 on { origin } doReturn SiteModel.ORIGIN_WPAPI
             }
-            val expectedTags = arrayOf(ZendeskTags.applicationPasswordAuthenticated)
+            val expectedTags = arrayOf("application_password_authenticated")
             val captor = argumentCaptor<CreateRequest>()
 
             // When
@@ -413,7 +413,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             val site = mock<SiteModel> { on { isWPCom } doReturn true }
             siteStore = mock { on { sites } doReturn listOf(site) }
             createSUT()
-            val expectedTags = arrayOf(ZendeskTags.wpComTag)
+            val expectedTags = arrayOf("wpcom")
             val captor = argumentCaptor<CreateRequest>()
 
             // When
@@ -445,7 +445,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             val site = mock<SiteModel> { on { isJetpackConnected } doReturn true }
             siteStore = mock { on { sites } doReturn listOf(site) }
             createSUT()
-            val expectedTags = arrayOf(ZendeskTags.jetpackTag)
+            val expectedTags = arrayOf("jetpack")
             val captor = argumentCaptor<CreateRequest>()
 
             // When
@@ -510,7 +510,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
         testBlocking {
             // Given
             val helpOrigin = HelpOrigin.LOGIN_HELP_NOTIFICATION
-            val expectedTags = arrayOf(helpOrigin.toString(), ZendeskTags.platformTag)
+            val expectedTags = arrayOf(helpOrigin.toString(), "Android")
             val captor = argumentCaptor<CreateRequest>()
 
             // When
