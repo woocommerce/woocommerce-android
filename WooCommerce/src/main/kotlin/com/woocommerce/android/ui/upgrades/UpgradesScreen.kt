@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.upgrades
 
-import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,7 +36,7 @@ fun UpgradesScreen(viewModel: UpgradesViewModel) {
 fun UpgradesScreen(
     state: UpgradesViewState,
     onSubscribeNowClicked: () -> Unit,
-    onReportSubscriptionIssueClicked: (Context) -> Unit
+    onReportSubscriptionIssueClicked: () -> Unit
 ) {
     Scaffold() { paddingValues ->
         Column(
@@ -77,14 +75,13 @@ fun UpgradesScreen(
                 elevation = 8.dp,
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    val context = LocalContext.current
                     Text(
                         text = stringResource(R.string.upgrades_troubleshooting),
                         style = MaterialTheme.typography.caption,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                     Button(
-                        onClick = { onReportSubscriptionIssueClicked(context) },
+                        onClick = onReportSubscriptionIssueClicked,
                     ) {
                         Text(stringResource(R.string.upgrades_report_subscription_issue))
                     }
