@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.login.sitecredentials
 
 import android.os.Parcelable
-import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
@@ -15,6 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordGenerationException
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
@@ -22,22 +22,22 @@ import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
+import org.wordpress.android.fluxc.store.SiteStore.WPAPIErrorType
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
@@ -62,7 +62,12 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     private val siteAddress: String = savedStateHandle[SITE_ADDRESS_KEY]!!
 
-    private val errorMessage = savedStateHandle.getStateFlow(viewModelScope, 0, "error-message")
+    private val errorDialogMessage = savedStateHandle.getNullableStateFlow(
+        scope = viewModelScope,
+        initialValue = null,
+        clazz = UiString::class.java,
+        key = "error-message"
+    )
     private val fetchedSiteId = savedStateHandle.getStateFlow(viewModelScope, -1, "site-id")
 
     private val isLoading = MutableStateFlow(false)
@@ -72,14 +77,14 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         savedStateHandle.getStateFlow(USERNAME_KEY, ""),
         savedStateHandle.getStateFlow(PASSWORD_KEY, ""),
         isLoading,
-        errorMessage.map { it.takeIf { it != 0 } }
-    ) { siteAddress, username, password, isLoading, errorMessage ->
+        errorDialogMessage
+    ) { siteAddress, username, password, isLoading, errorDialog ->
         LoginSiteCredentialsViewState(
             siteUrl = siteAddress,
             username = username,
             password = password,
             isLoading = isLoading,
-            errorMessage = errorMessage
+            errorDialogMessage = errorDialog
         )
     }.asLiveData()
 
@@ -99,13 +104,11 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     fun onUsernameChanged(username: String) {
         savedState[USERNAME_KEY] = username
-        errorMessage.value = 0
         fetchedSiteId.value = -1
     }
 
     fun onPasswordChanged(password: String) {
         savedState[PASSWORD_KEY] = password
-        errorMessage.value = 0
         fetchedSiteId.value = -1
     }
 
@@ -117,6 +120,10 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         } else {
             login()
         }
+    }
+
+    fun onErrorDialogDismissed() {
+        errorDialogMessage.value = null
     }
 
     private suspend fun login() {
@@ -137,24 +144,39 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             },
             onFailure = { exception ->
                 val siteError = (exception as? OnChangedException)?.error as? SiteError
-                if (siteError != null) {
-                    val errorMessage = if (siteError.type == SiteErrorType.NOT_AUTHENTICATED) {
-                        R.string.username_or_password_incorrect
-                    } else null
-                    if (errorMessage == null) {
-                        val message = siteError.message?.takeIf { it.isNotEmpty() }
-                            ?.let { UiStringText(it) } ?: UiStringRes(R.string.error_generic)
-                        triggerEvent(ShowUiStringSnackbar(message))
+                this.errorDialogMessage.value = if (siteError != null) {
+                    when {
+                        siteError.type == SiteErrorType.NOT_AUTHENTICATED ->
+                            UiStringText(siteError.message!!)
+
+                        siteError.type == SiteErrorType.INVALID_RESPONSE ->
+                            UiStringRes(R.string.login_site_credentials_invalid_response)
+
+                        siteError.wpApiError?.errorType == WPAPIErrorType.CUSTOM_LOGIN_URL ->
+                            UiStringRes(R.string.login_site_credentials_custom_login_url)
+
+                        siteError.wpApiError?.errorType == WPAPIErrorType.CUSTOM_ADMIN_URL ->
+                            UiStringRes(R.string.login_site_credentials_custom_admin_url)
+
+                        siteError.wpApiError?.statusCode != null -> {
+                            val statusCode = siteError.wpApiError!!.statusCode
+                            UiStringRes(
+                                R.string.login_site_credentials_http_error,
+                                listOf(UiStringText(statusCode.toString()))
+                            )
+                        }
+
+                        else -> UiStringRes(R.string.error_generic)
                     }
-                    this@LoginSiteCredentialsViewModel.errorMessage.value = errorMessage ?: 0
                 } else {
-                    triggerEvent(ShowSnackbar(R.string.error_generic))
+                    UiStringRes(R.string.error_generic)
                 }
+
                 val error = (exception as? OnChangedException)?.error ?: exception
                 trackLoginFailure(
                     step = Step.AUTHENTICATION,
                     errorContext = error.javaClass.simpleName,
-                    errorType = siteError?.type?.toString(),
+                    errorType = siteError?.wpApiError?.errorType?.name ?: siteError?.type?.name,
                     errorDescription = exception.message
                 )
             }
@@ -231,8 +253,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     private fun trackLoginFailure(step: Step, errorContext: String?, errorType: String?, errorDescription: String?) {
         loginAnalyticsListener.trackFailure(
-            message = errorMessage.value.takeIf { it != 0 }?.let { resourceProvider.getString(it) }
-                ?: errorDescription
+            message = errorDescription
         )
 
         analyticsTracker.track(
@@ -252,7 +273,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         val username: String = "",
         val password: String = "",
         val isLoading: Boolean = false,
-        @StringRes val errorMessage: Int? = null
+        val errorDialogMessage: UiString? = null
     ) : Parcelable {
         @IgnoredOnParcel
         val isValid = username.isNotBlank() && password.isNotBlank()
