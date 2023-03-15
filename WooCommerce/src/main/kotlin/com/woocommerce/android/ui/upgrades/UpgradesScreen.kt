@@ -20,7 +20,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.*
+import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.HasPlan
+import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Loading
+import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.NonUpgradeable
+import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialEnded
+import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Upgradeable
 
 @Composable
 fun UpgradesScreen(viewModel: UpgradesViewModel) {
@@ -117,8 +121,10 @@ fun UpgradesScreen(
 @Composable
 private fun Upgradeable() {
     WooThemeWithBackground {
-        UpgradesScreen(state =
-        Upgradeable("Free Trial", 14, "March 2, 2023", "$45"), {}, {}
+        UpgradesScreen(
+            state =
+            Upgradeable("Free Trial", 14, "March 2, 2023", "$45"),
+            {}, {}
         )
     }
 }
@@ -139,8 +145,10 @@ private fun TrialEnded() {
 @Composable
 private fun NonUpgradeable() {
     WooThemeWithBackground {
-        UpgradesScreen(state =
-        NonUpgradeable("eCommerce", "March 2, 2023"), {}, {}
+        UpgradesScreen(
+            state =
+            NonUpgradeable("eCommerce", "March 2, 2023"),
+            {}, {}
         )
     }
 }

@@ -25,8 +25,7 @@ class UpgradesViewModel @Inject constructor(
             val name: String
         }
 
-        object Loading : UpgradesViewState {
-        }
+        object Loading : UpgradesViewState
 
         data class TrialEnded(
             override val name: String,
