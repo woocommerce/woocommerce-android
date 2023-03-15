@@ -470,6 +470,71 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             assertThat(actualRequest.tags).contains(*expectedTags)
         }
 
+    @Test
+    fun `when createRequest is called with two sites, then the request is created with both planShortName as tags`() =
+        testBlocking {
+            // Given
+            val firstSite = mock<SiteModel> { on { planShortName } doReturn "First site plan" }
+            val secondSite = mock<SiteModel> { on { planShortName } doReturn "Second site plan" }
+            val thirdSite = mock<SiteModel> { on { planShortName } doReturn null }
+            val fourthSite = mock<SiteModel> { on { planShortName } doReturn "Second site plan" }
+            siteStore = mock { on { sites } doReturn listOf(firstSite, secondSite, thirdSite, fourthSite) }
+            createSUT()
+            val expectedTags = arrayOf("First site plan", "Second site plan")
+            val captor = argumentCaptor<CreateRequest>()
+
+            // When
+            val job = launch {
+                sut.createRequest(
+                    context = mock(),
+                    origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                    ticketType = TicketType.MobileApp,
+                    selectedSite = null,
+                    subject = "subject",
+                    description = "description",
+                    extraTags = emptyList()
+                ).first()
+            }
+
+            // Then
+            verify(requestProvider).createRequest(captor.capture(), any())
+            advanceUntilIdle()
+            job.cancel()
+
+            val actualRequest = captor.firstValue
+            assertThat(actualRequest.tags).contains(*expectedTags)
+        }
+
+    @Test
+    fun `when createRequest is called, then the request is created with the origin and platform tags`() =
+        testBlocking {
+            // Given
+            val helpOrigin = HelpOrigin.LOGIN_HELP_NOTIFICATION
+            val expectedTags = arrayOf(helpOrigin.toString(), ZendeskTags.platformTag)
+            val captor = argumentCaptor<CreateRequest>()
+
+            // When
+            val job = launch {
+                sut.createRequest(
+                    context = mock(),
+                    origin = helpOrigin,
+                    ticketType = TicketType.MobileApp,
+                    selectedSite = null,
+                    subject = "subject",
+                    description = "description",
+                    extraTags = emptyList()
+                ).first()
+            }
+
+            // Then
+            verify(requestProvider).createRequest(captor.capture(), any())
+            advanceUntilIdle()
+            job.cancel()
+
+            val actualRequest = captor.firstValue
+            assertThat(actualRequest.tags).contains(*expectedTags)
+        }
+
     private fun createSUT() {
         sut = ZendeskTicketRepository(
             zendeskSettings = zendeskSettings,
