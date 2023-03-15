@@ -3160,4 +3160,11 @@
     <string name="support_request_dialog_action">Got It!</string>
     <string name="support_request_error_title">Something went wrong</string>
     <string name="support_request_error_message">Sorry, we cannot create support requests right now, please try again later.</string>
+
+    <!--
+    Free trial
+    -->
+    <string name="free_trial_trial_ended">Your trial has ended.</string>
+    <string name="free_trial_days_left">%1$d days left in your trial.</string>
+    <string name="free_trial_upgrade_now">Upgrade Now</string>
 </resources>
