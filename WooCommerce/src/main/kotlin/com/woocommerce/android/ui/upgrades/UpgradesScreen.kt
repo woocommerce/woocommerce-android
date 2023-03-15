@@ -31,7 +31,7 @@ fun UpgradesScreen(viewModel: UpgradesViewModel) {
     val upgradesState by viewModel.upgradesState.observeAsState(Loading)
     UpgradesScreen(
         state = upgradesState,
-        onSubscribeNowClicked = viewModel::onSubscribeNowClicked,
+        onUpgradeNowClicked = viewModel::onSubscribeNowClicked,
         onReportSubscriptionIssueClicked = viewModel::onReportSubscriptionIssueClicked,
     )
 }
@@ -39,7 +39,7 @@ fun UpgradesScreen(viewModel: UpgradesViewModel) {
 @Composable
 fun UpgradesScreen(
     state: UpgradesViewState,
-    onSubscribeNowClicked: () -> Unit,
+    onUpgradeNowClicked: () -> Unit,
     onReportSubscriptionIssueClicked: () -> Unit
 ) {
     Scaffold { paddingValues ->
@@ -68,10 +68,10 @@ fun UpgradesScreen(
                     if (state is Upgradeable || state is TrialEnded) {
                         Divider()
                         WCOutlinedButton(
-                            onClick = onSubscribeNowClicked,
+                            onClick = onUpgradeNowClicked,
                             modifier = Modifier.padding(vertical = 8.dp),
                         ) {
-                            Text(stringResource(R.string.upgrades_subscribe_now))
+                            Text(stringResource(R.string.upgrades_upgrade_now))
                         }
                     }
                     Text(

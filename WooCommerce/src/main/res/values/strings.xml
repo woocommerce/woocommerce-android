@@ -3172,7 +3172,7 @@
     Upgrades
     -->
     <string name="upgrades_report_subscription_issue">Report subscription issue</string>
-    <string name="upgrades_subscribe_now">Subscribe now</string>
+    <string name="upgrades_upgrade_now">Upgrade now</string>
     <string name="upgrades_current_plan">Current: %s</string>
     <string name="upgrades_troubleshooting">Troubleshooting</string>
     <string name="upgrades_title">Upgrades</string>
