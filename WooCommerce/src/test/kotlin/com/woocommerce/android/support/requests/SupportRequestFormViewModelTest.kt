@@ -4,10 +4,13 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.TicketType
+import com.woocommerce.android.support.ZendeskException.IdentityNotSetException
+import com.woocommerce.android.support.ZendeskSettings
 import com.woocommerce.android.support.ZendeskTicketRepository
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationFailed
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationSucceeded
+import com.woocommerce.android.support.requests.SupportRequestFormViewModel.ShowSupportIdentityInputDialog
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -30,6 +33,7 @@ import zendesk.support.Request
 internal class SupportRequestFormViewModelTest : BaseUnitTest() {
     private lateinit var sut: SupportRequestFormViewModel
     private lateinit var zendeskTicketRepository: ZendeskTicketRepository
+    private lateinit var zendeskSettings: ZendeskSettings
     private lateinit var selectedSite: SelectedSite
     private lateinit var tracks: AnalyticsTrackerWrapper
     private val savedState = SavedStateHandle()
@@ -88,7 +92,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         sut.onSubjectChanged("subject")
         sut.onMessageChanged("message")
         sut.onHelpOptionSelected(TicketType.MobileApp)
-        sut.onSubmitRequestButtonClicked(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
+        sut.submitSupportRequest(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
 
         // Then
         assertThat(isSubmitButtonEnabled).hasSize(4)
@@ -108,7 +112,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
 
         // When
         sut.onHelpOptionSelected(TicketType.MobileApp)
-        sut.onSubmitRequestButtonClicked(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
+        sut.submitSupportRequest(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
 
         // Then
         assertThat(isRequestLoading).hasSize(3)
@@ -127,7 +131,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         }
 
         // When
-        sut.onSubmitRequestButtonClicked(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
+        sut.submitSupportRequest(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
 
         // Then
         assertThat(isRequestLoading).hasSize(1)
@@ -145,7 +149,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
 
         // When
         sut.onHelpOptionSelected(TicketType.MobileApp)
-        sut.onSubmitRequestButtonClicked(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
+        sut.submitSupportRequest(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
 
         // Then
         assertThat(event).hasSize(1)
@@ -164,11 +168,30 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
 
         // When
         sut.onHelpOptionSelected(TicketType.MobileApp)
-        sut.onSubmitRequestButtonClicked(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
+        sut.submitSupportRequest(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
 
         // Then
         assertThat(event).hasSize(1)
         assertThat(event[0]).isEqualTo(RequestCreationFailed)
+        verify(tracks, times(1)).track(AnalyticsEvent.SUPPORT_NEW_REQUEST_FAILED)
+    }
+
+    @Test
+    fun `when submit request fails with identity error, then trigger the expected event`() = testBlocking {
+        // Given
+        configureMocks(requestResult = Result.failure(IdentityNotSetException))
+        val event = mutableListOf<MultiLiveEvent.Event>()
+        sut.event.observeForever {
+            event.add(it)
+        }
+
+        // When
+        sut.onHelpOptionSelected(TicketType.MobileApp)
+        sut.submitSupportRequest(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
+
+        // Then
+        assertThat(event).hasSize(1)
+        assertThat(event[0]).isInstanceOf(ShowSupportIdentityInputDialog::class.java)
         verify(tracks, times(1)).track(AnalyticsEvent.SUPPORT_NEW_REQUEST_FAILED)
     }
 
@@ -181,7 +204,25 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         verify(tracks, times(1)).track(AnalyticsEvent.SUPPORT_NEW_REQUEST_VIEWED)
     }
 
+    @Test
+    fun `when onUserIdentitySet is called, then run the expected actions`() = testBlocking {
+        // Given
+        val email = "email@test.com"
+        val name = "test name"
+
+        // When
+        sut.onHelpOptionSelected(TicketType.MobileApp)
+        sut.onUserIdentitySet(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList(), email, name)
+
+        // Then
+        verify(zendeskSettings).supportEmail = email
+        verify(zendeskSettings).supportName = name
+        verify(tracks, times(1)).track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
+        verify(zendeskTicketRepository, times(1)).createRequest(any(), any(), any(), any(), any(), any(), any())
+    }
+
     private fun configureMocks(requestResult: Result<Request?>) {
+        zendeskSettings = mock()
         tracks = mock()
         val testSite = SiteModel().apply { id = 123 }
         selectedSite = mock {
@@ -203,7 +244,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
 
         sut = SupportRequestFormViewModel(
             zendeskTicketRepository = zendeskTicketRepository,
-            zendeskSettings = mock(),
+            zendeskSettings = zendeskSettings,
             selectedSite = selectedSite,
             tracks = tracks,
             savedState = savedState
