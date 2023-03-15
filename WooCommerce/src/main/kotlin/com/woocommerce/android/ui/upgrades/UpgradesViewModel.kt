@@ -20,8 +20,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UpgradesViewModel @Inject constructor(
-    savedState: SavedStateHandle,
-    selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
     private val _upgradesState = MutableLiveData<UpgradesViewState>()
@@ -44,9 +44,13 @@ class UpgradesViewModel @Inject constructor(
 
     fun onSubscribeNowClicked() = triggerEvent(OpenSubscribeNow)
 
-    fun onReportSubscriptionIssueClicked() = triggerEvent(
-        OpenSupportRequestForm(HelpOrigin.UPGRADES, listOf(ZendeskTags.freeTrialTag))
-    )
+    fun onReportSubscriptionIssueClicked() {
+        val tags = selectedSite.getIfExists()
+            ?.takeIf { it.isFreeTrial }
+            ?.let { listOf(ZendeskTags.freeTrialTag) }
+            ?: emptyList()
+        triggerEvent(OpenSupportRequestForm(HelpOrigin.UPGRADES, tags))
+    }
 
     data class UpgradesViewState(
         val currentPlan: CurrentPlanInfo = NonUpgradeable(name = "")
