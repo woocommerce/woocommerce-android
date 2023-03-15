@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.plans.trial
 
+import com.woocommerce.android.extensions.clock
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivityViewModel.BottomBarState
 import com.woocommerce.android.ui.plans.domain.FreeTrialExpiryDateResult.Error
@@ -8,8 +9,8 @@ import com.woocommerce.android.ui.plans.domain.FreeTrialExpiryDateResult.NotTria
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import java.time.LocalDate
 import java.time.Period
+import java.time.ZonedDateTime
 import javax.inject.Inject
 
 class DetermineTrialStatusBarState @Inject constructor(
@@ -33,7 +34,10 @@ class DetermineTrialStatusBarState @Inject constructor(
     private suspend fun fetchFreeTrialDetails(): TrialStatusBarState {
         return when (val result = sitePlanRepository.fetchFreeTrialExpiryDate(selectedSite.get())) {
             is ExpiryAt -> {
-                val expireIn = Period.between(LocalDate.now(), result.date.minusDays(1))
+                val expireIn = Period.between(
+                    ZonedDateTime.now(selectedSite.get().clock).toLocalDate(),
+                    result.date.minusDays(1).toLocalDate()
+                )
                 val daysLeft = expireIn.days
                 TrialStatusBarState.Visible(daysLeft)
             }
