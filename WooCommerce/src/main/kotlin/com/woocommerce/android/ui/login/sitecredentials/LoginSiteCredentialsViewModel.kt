@@ -22,7 +22,6 @@ import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -48,7 +47,6 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     private val wpApiSiteRepository: WPApiSiteRepository,
     private val selectedSite: SelectedSite,
     private val loginAnalyticsListener: LoginAnalyticsListener,
-    private val resourceProvider: ResourceProvider,
     applicationPasswordsNotifier: ApplicationPasswordsNotifier,
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val appPrefs: AppPrefsWrapper
