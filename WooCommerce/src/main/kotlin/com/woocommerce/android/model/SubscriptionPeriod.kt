@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Parcelable
 import com.woocommerce.android.R
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -55,6 +56,39 @@ sealed class SubscriptionPeriod(val value: String) : Parcelable {
             )
             Year -> StringUtils.getQuantityString(
                 context = context,
+                quantity = billingInterval,
+                default = R.string.subscription_period_multiple_years,
+                one = R.string.subscription_period_year
+            )
+            is Custom -> this.value
+        }
+    }
+
+    fun getPeriodString(
+        resources: ResourceProvider,
+        billingInterval: Int
+    ): String {
+        return when (this) {
+            Day -> StringUtils.getQuantityString(
+                resourceProvider = resources,
+                quantity = billingInterval,
+                default = R.string.subscription_period_multiple_days,
+                one = R.string.subscription_period_day
+            )
+            Week -> StringUtils.getQuantityString(
+                resourceProvider = resources,
+                quantity = billingInterval,
+                default = R.string.subscription_period_multiple_weeks,
+                one = R.string.subscription_period_week
+            )
+            Month -> StringUtils.getQuantityString(
+                resourceProvider = resources,
+                quantity = billingInterval,
+                default = R.string.subscription_period_multiple_months,
+                one = R.string.subscription_period_month
+            )
+            Year -> StringUtils.getQuantityString(
+                resourceProvider = resources,
                 quantity = billingInterval,
                 default = R.string.subscription_period_multiple_years,
                 one = R.string.subscription_period_year

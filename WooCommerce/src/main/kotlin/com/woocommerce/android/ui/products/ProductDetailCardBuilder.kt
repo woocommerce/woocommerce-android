@@ -668,17 +668,24 @@ class ProductDetailCardBuilder(
 
     private fun Product.subscription(): ProductProperty? =
         this.subscription?.let { subscription ->
-            // If we have pricing info, show price & sales price as a group,
-            // otherwise provide option to add pricing info for the product
-            val properties = PriceUtils.getPriceGroup(
-                parameters,
-                resources,
-                currencyFormatter,
-                subscription.price,
-                salePrice,
-                isSaleScheduled,
-                saleStartDateGmt,
-                saleEndDateGmt
+
+            val period = subscription.period.getPeriodString(resources, subscription.periodInterval)
+            val price = resources.getString(
+                string.product_subscription_description,
+                currencyFormatter.formatCurrency(subscription.price, viewModel.currencyCode, true),
+                subscription.periodInterval.toString(),
+                period
+            )
+
+            val expire = if (subscription.length != null) {
+                resources.getString(string.subscription_period, subscription.length.toString(), period)
+            } else {
+                resources.getString(string.subscription_never_expire)
+            }
+
+            val properties = mapOf(
+                resources.getString(string.product_regular_price) to price,
+                resources.getString(string.subscription_expire) to expire
             )
 
             PropertyGroup(
