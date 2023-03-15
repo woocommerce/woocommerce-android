@@ -6,8 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.plans.trial.isFreeTrial
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.CurrentPlanInfo.NonUpgradeable
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.CurrentPlanInfo.Upgradeable
+import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Loading
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,16 +23,16 @@ class UpgradesViewModel @Inject constructor(
     val upgradesState: LiveData<UpgradesViewState> = _upgradesState
 
     init {
-        _upgradesState.value = UpgradesViewState()
+        _upgradesState.value = Loading
         viewModelScope.launch {
             selectedSite.observe().collect { site ->
-                val currentPlan = if (site.isFreeTrial) {
-                    Upgradeable(name = site?.planShortName.orEmpty())
+                val newState = if (site.isFreeTrial) {
+                    UpgradesViewState.Upgradeable(name = site?.planShortName.orEmpty(), 2, "todo", "todo")
                 } else {
-                    NonUpgradeable(name = site?.planShortName.orEmpty())
+                    UpgradesViewState.NonUpgradeable(name = site?.planShortName.orEmpty(), "todo")
                 }
 
-                _upgradesState.value = _upgradesState.value?.copy(currentPlan = currentPlan)
+                _upgradesState.value = newState
             }
         }
     }
@@ -42,15 +41,30 @@ class UpgradesViewModel @Inject constructor(
 
     fun onReportSubscriptionIssueClicked() = Unit
 
-    data class UpgradesViewState(
-        val currentPlan: CurrentPlanInfo = NonUpgradeable(name = "")
-    ) {
-        sealed class CurrentPlanInfo {
-            abstract val name: String
+    sealed interface UpgradesViewState {
 
-            data class Upgradeable(override val name: String) : CurrentPlanInfo()
-            data class NonUpgradeable(override val name: String) : CurrentPlanInfo()
+        sealed interface HasPlan : UpgradesViewState {
+            val name: String
         }
+
+        object Loading : UpgradesViewState
+
+        data class TrialEnded(
+            override val name: String,
+            val planToUpgrade: String = "eCommerce"
+        ) : HasPlan
+
+        data class Upgradeable(
+            override val name: String,
+            val daysLeftInCurrentPlan: Int,
+            val currentPlanEndDate: String,
+            val nextPlanMonthlyFee: String
+        ) : HasPlan
+
+        data class NonUpgradeable(
+            override val name: String,
+            val currentPlanEndDate: String
+        ) : HasPlan
     }
 
     sealed class UpgradesEvent : MultiLiveEvent.Event() {
