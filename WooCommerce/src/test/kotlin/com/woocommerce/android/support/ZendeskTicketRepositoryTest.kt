@@ -406,6 +406,70 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             assertThat(actualRequest.tags).contains(*expectedTags)
         }
 
+    @Test
+    fun `when createRequest is called with a WPCOM site, then the request is created with the expected tags`() =
+        testBlocking {
+            // Given
+            val site = mock<SiteModel> { on { isWPCom } doReturn true }
+            siteStore = mock { on { sites } doReturn listOf(site) }
+            createSUT()
+            val expectedTags = arrayOf(ZendeskTags.wpComTag)
+            val captor = argumentCaptor<CreateRequest>()
+
+            // When
+            val job = launch {
+                sut.createRequest(
+                    context = mock(),
+                    origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                    ticketType = TicketType.MobileApp,
+                    selectedSite = null,
+                    subject = "subject",
+                    description = "description",
+                    extraTags = emptyList()
+                ).first()
+            }
+
+            // Then
+            verify(requestProvider).createRequest(captor.capture(), any())
+            advanceUntilIdle()
+            job.cancel()
+
+            val actualRequest = captor.firstValue
+            assertThat(actualRequest.tags).contains(*expectedTags)
+        }
+
+    @Test
+    fun `when createRequest is called with a Jetpack connected site, then the request is created with the expected tags`() =
+        testBlocking {
+            // Given
+            val site = mock<SiteModel> { on { isJetpackConnected } doReturn true }
+            siteStore = mock { on { sites } doReturn listOf(site) }
+            createSUT()
+            val expectedTags = arrayOf(ZendeskTags.jetpackTag)
+            val captor = argumentCaptor<CreateRequest>()
+
+            // When
+            val job = launch {
+                sut.createRequest(
+                    context = mock(),
+                    origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                    ticketType = TicketType.MobileApp,
+                    selectedSite = null,
+                    subject = "subject",
+                    description = "description",
+                    extraTags = emptyList()
+                ).first()
+            }
+
+            // Then
+            verify(requestProvider).createRequest(captor.capture(), any())
+            advanceUntilIdle()
+            job.cancel()
+
+            val actualRequest = captor.firstValue
+            assertThat(actualRequest.tags).contains(*expectedTags)
+        }
+
     private fun createSUT() {
         sut = ZendeskTicketRepository(
             zendeskSettings = zendeskSettings,
