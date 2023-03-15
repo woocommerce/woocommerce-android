@@ -29,11 +29,9 @@ internal class UpgradesViewModelTest : BaseUnitTest() {
         }
         selectedSite = mock {
             on { observe() } doReturn flowOf(siteModel)
+            on { getIfExists() } doReturn siteModel
         }
-        sut = UpgradesViewModel(
-            savedState = SavedStateHandle(),
-            selectedSite = selectedSite
-        )
+        createSut()
     }
 
     @Test
@@ -61,6 +59,14 @@ internal class UpgradesViewModelTest : BaseUnitTest() {
     fun `when onReportSubscriptionIssueClicked is called without a free trial site, then trigger OpenSupportRequestForm with the expected values`() =
         testBlocking {
             // Given
+            val siteModel = mock<SiteModel> {
+                on { planId } doReturn 0
+            }
+            selectedSite = mock {
+                on { getIfExists() } doReturn siteModel
+            }
+            createSut()
+
             val events = mutableListOf<MultiLiveEvent.Event>()
             sut.event.observeForever {
                 events.add(it)
@@ -77,4 +83,11 @@ internal class UpgradesViewModelTest : BaseUnitTest() {
                 )
             )
         }
+
+    private fun createSut() {
+        sut = UpgradesViewModel(
+            savedState = SavedStateHandle(),
+            selectedSite = selectedSite
+        )
+    }
 }
