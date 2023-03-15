@@ -344,6 +344,7 @@
     <string name="login_jetpack_connection_enter_wpcom_password">Enter the password of your WordPress.com account to connect to Jetpack</string>
     <string name="login_jetpack_installation_enter_wpcom_password">Enter the password of your WordPress.com account to install Jetpack</string>
     <string name="login_jetpack_installation_continue_magic_link">Or continue using Magic Link</string>
+    <string name="login_jetpack_installation_magic_link_failure">An error occurred while fetching your website, please retry!</string>
 
     <!--
         My Store View
@@ -434,6 +435,11 @@
     <string name="analytics_conversion_subtitle">Conversion Rate</string>
     <string name="analytics_visitors_subtitle">Visitors</string>
 
+    <string name="analytics_wip_title">See your stats, revenue and more from your device!</string>
+    <string name="analytics_wip_message">We\'ve been working on making it possible to display significant store information from your device! Could it be better? Please help us improve this feature by sharing your feedback with us</string>
+
+    <string name="analytics_banner_title">Enjoying analytics?</string>
+    <string name="analytics_banner_message">Please rate your analytics experience</string>
     <!--
         Order List View
     -->
@@ -548,6 +554,7 @@
     <string name="domains_your_domains">Your site domains</string>
     <string name="domains_add_domain_button_title">Add a domain</string>
     <string name="domains_select_domain">Select domain</string>
+    <string name="domains_search_domains">Search domains</string>
     <string name="domains_redirect_notice">The domain purchased will redirect users to</string>
     <string name="domains_generic_error_title">Unable to load site domains</string>
     <string name="domains_access_error_title">Only store administrators can access domain settings</string>
@@ -1166,8 +1173,6 @@
     <!--
             Card Reader Type Selection
         -->
-    <string name="card_reader_type_selection_title">Select reader type</string>
-    <string name="card_reader_type_selection_description">Your phone can be used as a card reader, or you can connect to an external reader via bluetooth</string>
     <string name="card_reader_type_selection_tap_to_pay">Tap To Pay</string>
     <string name="card_reader_type_selection_bluetooth_reader">Bluetooth Reader</string>
 
@@ -1400,6 +1405,7 @@
 
     <string name="card_reader_onboarding_account_pending_requirements_header">Your account has pending requirements</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">There are pending requirements in your account. Please complete those requirements by %1$s to keep accepting In-Person Payments.</string>
+    <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">There are pending requirements in your account. Please complete those requirements to keep accepting In-Person Payments.</string>
     <string name="card_reader_onboarding_account_pending_requirements_dismiss_button" translatable="false">@string/dismiss</string>
 
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">In-Person Payments is currently unavailable</string>
@@ -3155,4 +3161,10 @@
     <string name="support_request_error_title">Something went wrong</string>
     <string name="support_request_error_message">Sorry, we cannot create support requests right now, please try again later.</string>
 
+    <!--
+    Free trial
+    -->
+    <string name="free_trial_trial_ended">Your trial has ended.</string>
+    <string name="free_trial_days_left">%1$d days left in your trial.</string>
+    <string name="free_trial_upgrade_now">Upgrade Now</string>
 </resources>
