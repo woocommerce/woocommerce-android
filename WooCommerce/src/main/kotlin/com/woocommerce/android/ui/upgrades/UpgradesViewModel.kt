@@ -1,14 +1,13 @@
 package com.woocommerce.android.ui.upgrades
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.support.help.HelpOrigin
-import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.plans.trial.isFreeTrial
+import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesEvent.OpenSubscribeNow
+import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesEvent.OpenSupportRequestForm
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.CurrentPlanInfo.NonUpgradeable
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.CurrentPlanInfo.Upgradeable
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -41,15 +40,9 @@ class UpgradesViewModel @Inject constructor(
         }
     }
 
-    fun onSubscribeNowClicked() = triggerEvent(UpgradesEvent.OpenSubscribeNow)
+    fun onSubscribeNowClicked() = triggerEvent(OpenSubscribeNow)
 
-    fun onReportSubscriptionIssueClicked(context: Context) {
-        SupportRequestFormActivity.createIntent(
-            context = context,
-            origin = HelpOrigin.UPGRADES,
-            extraTags = ArrayList()
-        ).let { context.startActivity(it) }
-    }
+    fun onReportSubscriptionIssueClicked() = triggerEvent(OpenSupportRequestForm)
 
     data class UpgradesViewState(
         val currentPlan: CurrentPlanInfo = NonUpgradeable(name = "")
@@ -64,5 +57,6 @@ class UpgradesViewModel @Inject constructor(
 
     sealed class UpgradesEvent : MultiLiveEvent.Event() {
         object OpenSubscribeNow : UpgradesEvent()
+        object OpenSupportRequestForm: UpgradesEvent()
     }
 }
