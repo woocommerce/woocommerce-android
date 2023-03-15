@@ -63,6 +63,6 @@ class UpgradesViewModel @Inject constructor(
         data class OpenSupportRequestForm(
             val origin: HelpOrigin,
             val extraTags: ArrayList<String>
-        ): UpgradesEvent()
+        ) : UpgradesEvent()
     }
 }

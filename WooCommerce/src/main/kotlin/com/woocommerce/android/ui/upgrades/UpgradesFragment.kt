@@ -55,7 +55,7 @@ class UpgradesFragment : BaseFragment() {
         }
     }
 
-    private fun startSupportRequestFormActivity(event : OpenSupportRequestForm) {
+    private fun startSupportRequestFormActivity(event: OpenSupportRequestForm) {
         SupportRequestFormActivity.createIntent(
             context = requireContext(),
             origin = event.origin,
