@@ -204,7 +204,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
     fun `when createRequest is called using MobileApp as ticketType, then the request is created with the expected tags`() =
         testBlocking {
             // Given
-            val expectedTags = arrayOf(ZendeskTags.mobileApp)
+            val expectedTags = arrayOf("mobile_app")
             val captor = argumentCaptor<CreateRequest>()
 
             // When
@@ -233,8 +233,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
         testBlocking {
             // Given
             val expectedTags = arrayOf(
-                ZendeskTags.woocommerceMobileApps,
-                ZendeskTags.productAreaAppsInPersonPayments
+                "woocommerce_mobile_apps",
+                "product_area_apps_in_person_payments"
             )
             val captor = argumentCaptor<CreateRequest>()
 
@@ -264,13 +264,13 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
         testBlocking {
             // Given
             val expectedTags = arrayOf(
-                ZendeskTags.paymentsProduct,
-                ZendeskTags.paymentsProductArea,
-                ZendeskTags.mobileAppWooTransfer,
-                ZendeskTags.supportCategoryTag,
-                ZendeskTags.paymentSubcategoryTag
+                "woocommerce_payments",
+                "product_area_woo_payment_gateway",
+                "mobile_app_woo_transfer",
+                "support",
+                "payment"
             )
-            val excludedTags = arrayOf(ZendeskTags.jetpackTag)
+            val excludedTags = arrayOf("jetpack")
             val captor = argumentCaptor<CreateRequest>()
 
             // When
@@ -300,11 +300,11 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
         testBlocking {
             // Given
             val expectedTags = arrayOf(
-                ZendeskTags.woocommerceCore,
-                ZendeskTags.mobileAppWooTransfer,
-                ZendeskTags.supportCategoryTag
+                "woocommerce_core",
+                "mobile_app_woo_transfer",
+                "support"
             )
-            val excludedTags = arrayOf(ZendeskTags.jetpackTag)
+            val excludedTags = arrayOf("jetpack")
             val captor = argumentCaptor<CreateRequest>()
 
             // When
@@ -334,12 +334,12 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
         testBlocking {
             // Given
             val expectedTags = arrayOf(
-                ZendeskTags.productAreaWooExtensions,
-                ZendeskTags.mobileAppWooTransfer,
-                ZendeskTags.supportCategoryTag,
-                ZendeskTags.storeSubcategoryTag
+                "product_area_woo_extensions",
+                "mobile_app_woo_transfer",
+                "support",
+                "store"
             )
-            val excludedTags = arrayOf(ZendeskTags.jetpackTag)
+            val excludedTags = arrayOf("jetpack")
             val captor = argumentCaptor<CreateRequest>()
 
             // When
@@ -371,7 +371,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             val selectedSite = mock<SiteModel> {
                 on { origin } doReturn SiteModel.ORIGIN_WPAPI
             }
-            val expectedTags = arrayOf(ZendeskTags.applicationPasswordAuthenticated)
+            val expectedTags = arrayOf("application_password_authenticated")
             val captor = argumentCaptor<CreateRequest>()
 
             // When
@@ -383,6 +383,135 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                     selectedSite = selectedSite,
                     subject = "subject",
                     description = "description"
+                ).first()
+            }
+
+            // Then
+            verify(requestProvider).createRequest(captor.capture(), any())
+            advanceUntilIdle()
+            job.cancel()
+
+            val actualRequest = captor.firstValue
+            assertThat(actualRequest.tags).contains(*expectedTags)
+        }
+
+    @Test
+    fun `when createRequest is called with a WPCOM site, then the request is created with the expected tags`() =
+        testBlocking {
+            // Given
+            val site = mock<SiteModel> { on { isWPCom } doReturn true }
+            siteStore = mock { on { sites } doReturn listOf(site) }
+            createSUT()
+            val expectedTags = arrayOf("wpcom")
+            val captor = argumentCaptor<CreateRequest>()
+
+            // When
+            val job = launch {
+                sut.createRequest(
+                    context = mock(),
+                    origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                    ticketType = TicketType.MobileApp,
+                    selectedSite = null,
+                    subject = "subject",
+                    description = "description",
+                    extraTags = emptyList()
+                ).first()
+            }
+
+            // Then
+            verify(requestProvider).createRequest(captor.capture(), any())
+            advanceUntilIdle()
+            job.cancel()
+
+            val actualRequest = captor.firstValue
+            assertThat(actualRequest.tags).contains(*expectedTags)
+        }
+
+    @Test
+    fun `when createRequest is called with a Jetpack connected site, then the request is created with the expected tags`() =
+        testBlocking {
+            // Given
+            val site = mock<SiteModel> { on { isJetpackConnected } doReturn true }
+            siteStore = mock { on { sites } doReturn listOf(site) }
+            createSUT()
+            val expectedTags = arrayOf("jetpack")
+            val captor = argumentCaptor<CreateRequest>()
+
+            // When
+            val job = launch {
+                sut.createRequest(
+                    context = mock(),
+                    origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                    ticketType = TicketType.MobileApp,
+                    selectedSite = null,
+                    subject = "subject",
+                    description = "description",
+                    extraTags = emptyList()
+                ).first()
+            }
+
+            // Then
+            verify(requestProvider).createRequest(captor.capture(), any())
+            advanceUntilIdle()
+            job.cancel()
+
+            val actualRequest = captor.firstValue
+            assertThat(actualRequest.tags).contains(*expectedTags)
+        }
+
+    @Test
+    fun `when createRequest is called with two sites, then the request is created with both planShortName as tags`() =
+        testBlocking {
+            // Given
+            val firstSite = mock<SiteModel> { on { planShortName } doReturn "First site plan" }
+            val secondSite = mock<SiteModel> { on { planShortName } doReturn "Second site plan" }
+            val thirdSite = mock<SiteModel> { on { planShortName } doReturn null }
+            val fourthSite = mock<SiteModel> { on { planShortName } doReturn "Second site plan" }
+            siteStore = mock { on { sites } doReturn listOf(firstSite, secondSite, thirdSite, fourthSite) }
+            createSUT()
+            val expectedTags = arrayOf("First site plan", "Second site plan")
+            val captor = argumentCaptor<CreateRequest>()
+
+            // When
+            val job = launch {
+                sut.createRequest(
+                    context = mock(),
+                    origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                    ticketType = TicketType.MobileApp,
+                    selectedSite = null,
+                    subject = "subject",
+                    description = "description",
+                    extraTags = emptyList()
+                ).first()
+            }
+
+            // Then
+            verify(requestProvider).createRequest(captor.capture(), any())
+            advanceUntilIdle()
+            job.cancel()
+
+            val actualRequest = captor.firstValue
+            assertThat(actualRequest.tags).contains(*expectedTags)
+        }
+
+    @Test
+    fun `when createRequest is called, then the request is created with the origin and platform tags`() =
+        testBlocking {
+            // Given
+            val helpOrigin = HelpOrigin.LOGIN_HELP_NOTIFICATION
+            val expectedTags = arrayOf(helpOrigin.toString(), "Android")
+            val captor = argumentCaptor<CreateRequest>()
+
+            // When
+            val job = launch {
+                sut.createRequest(
+                    context = mock(),
+                    origin = helpOrigin,
+                    ticketType = TicketType.MobileApp,
+                    selectedSite = null,
+                    subject = "subject",
+                    description = "description",
+                    extraTags = emptyList()
                 ).first()
             }
 
