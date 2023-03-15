@@ -56,4 +56,25 @@ internal class UpgradesViewModelTest : BaseUnitTest() {
                 )
             )
         }
+
+    @Test
+    fun `when onReportSubscriptionIssueClicked is called without a free trial site, then trigger OpenSupportRequestForm with the expected values`() =
+        testBlocking {
+            // Given
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            sut.event.observeForever {
+                events.add(it)
+            }
+
+            // When
+            sut.onReportSubscriptionIssueClicked()
+
+            // Then
+            assertThat(events).containsExactly(
+                UpgradesEvent.OpenSupportRequestForm(
+                    HelpOrigin.UPGRADES,
+                    emptyList()
+                )
+            )
+        }
 }
