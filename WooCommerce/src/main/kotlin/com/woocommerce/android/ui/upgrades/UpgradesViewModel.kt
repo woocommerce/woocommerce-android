@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.support.ZendeskTags
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.plans.trial.isFreeTrial
@@ -44,7 +45,7 @@ class UpgradesViewModel @Inject constructor(
     fun onSubscribeNowClicked() = triggerEvent(OpenSubscribeNow)
 
     fun onReportSubscriptionIssueClicked() = triggerEvent(
-        OpenSupportRequestForm(HelpOrigin.UPGRADES, ArrayList())
+        OpenSupportRequestForm(HelpOrigin.UPGRADES, listOf(ZendeskTags.freeTrialTag))
     )
 
     data class UpgradesViewState(
@@ -62,7 +63,7 @@ class UpgradesViewModel @Inject constructor(
         object OpenSubscribeNow : UpgradesEvent()
         data class OpenSupportRequestForm(
             val origin: HelpOrigin,
-            val extraTags: ArrayList<String>
+            val extraTags: List<String>
         ) : UpgradesEvent()
     }
 }

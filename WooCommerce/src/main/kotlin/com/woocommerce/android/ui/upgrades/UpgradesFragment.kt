@@ -59,7 +59,7 @@ class UpgradesFragment : BaseFragment() {
         SupportRequestFormActivity.createIntent(
             context = requireContext(),
             origin = event.origin,
-            extraTags = event.extraTags
+            extraTags = ArrayList(event.extraTags)
         ).let { activity?.startActivity(it) }
     }
 }
