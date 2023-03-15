@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.plans.trial.isFreeTrial
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesEvent.OpenSubscribeNow
@@ -42,7 +43,9 @@ class UpgradesViewModel @Inject constructor(
 
     fun onSubscribeNowClicked() = triggerEvent(OpenSubscribeNow)
 
-    fun onReportSubscriptionIssueClicked() = triggerEvent(OpenSupportRequestForm)
+    fun onReportSubscriptionIssueClicked() = triggerEvent(
+        OpenSupportRequestForm(HelpOrigin.UPGRADES, ArrayList())
+    )
 
     data class UpgradesViewState(
         val currentPlan: CurrentPlanInfo = NonUpgradeable(name = "")
@@ -57,6 +60,9 @@ class UpgradesViewModel @Inject constructor(
 
     sealed class UpgradesEvent : MultiLiveEvent.Event() {
         object OpenSubscribeNow : UpgradesEvent()
-        object OpenSupportRequestForm: UpgradesEvent()
+        data class OpenSupportRequestForm(
+            val origin: HelpOrigin,
+            val extraTags: ArrayList<String>
+        ): UpgradesEvent()
     }
 }
