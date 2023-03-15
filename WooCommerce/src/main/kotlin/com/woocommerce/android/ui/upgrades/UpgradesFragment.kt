@@ -9,7 +9,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -48,19 +47,19 @@ class UpgradesFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                OpenSubscribeNow -> {
+                is OpenSubscribeNow -> {
                     startUpgradeFlowFactory.create(navController = findNavController()).invoke()
                 }
-                OpenSupportRequestForm -> startSupportRequestFormActivity()
+                is OpenSupportRequestForm -> startSupportRequestFormActivity(event)
             }
         }
     }
 
-    private fun startSupportRequestFormActivity() {
+    private fun startSupportRequestFormActivity(event : OpenSupportRequestForm) {
         SupportRequestFormActivity.createIntent(
             context = requireContext(),
-            origin = HelpOrigin.UPGRADES,
-            extraTags = ArrayList()
+            origin = event.origin,
+            extraTags = event.extraTags
         ).let { activity?.startActivity(it) }
     }
 }
