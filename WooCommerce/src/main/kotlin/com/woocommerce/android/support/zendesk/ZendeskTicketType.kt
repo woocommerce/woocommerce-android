@@ -8,12 +8,12 @@ sealed class ZendeskTicketType(
     val categoryName: String,
     val subcategoryName: String,
     val mandatoryTags: List<String> = emptyList(),
-    val excludedTags: List<String> = emptyList(),
+    val forbiddenTags: List<String> = emptyList(),
     val additionalTags: List<String>
 ) : Parcelable {
     fun buildFullTagListWith(conditionalTags: List<String>) =
         (mandatoryTags + conditionalTags + additionalTags)
-            .filter { excludedTags.contains(it).not() }
+            .filter { forbiddenTags.contains(it).not() }
 
     @Parcelize
     data class MobileApp(
@@ -54,7 +54,7 @@ sealed class ZendeskTicketType(
             ZendeskTags.supportCategoryTag,
             ZendeskTags.paymentSubcategoryTag
         ),
-        excludedTags = listOf(ZendeskTags.jetpackTag),
+        forbiddenTags = listOf(ZendeskTags.jetpackTag),
         additionalTags = extraTags
     )
 
@@ -70,7 +70,7 @@ sealed class ZendeskTicketType(
             ZendeskTags.mobileAppWooTransfer,
             ZendeskTags.supportCategoryTag
         ),
-        excludedTags = listOf(ZendeskTags.jetpackTag),
+        forbiddenTags = listOf(ZendeskTags.jetpackTag),
         additionalTags = extraTags
     )
 
@@ -87,7 +87,7 @@ sealed class ZendeskTicketType(
             ZendeskTags.supportCategoryTag,
             ZendeskTags.storeSubcategoryTag
         ),
-        excludedTags = listOf(ZendeskTags.jetpackTag),
+        forbiddenTags = listOf(ZendeskTags.jetpackTag),
         additionalTags = extraTags
     )
 }
