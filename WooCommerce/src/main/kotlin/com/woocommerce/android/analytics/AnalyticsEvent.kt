@@ -813,5 +813,5 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     APPLICATION_PASSWORDS_GENERATION_FAILED,
 
     // Free Trial
-    FREE_TRIAL_UPGRADE_NOW
+    FREE_TRIAL_UPGRADE_NOW_TAPPED
 }
