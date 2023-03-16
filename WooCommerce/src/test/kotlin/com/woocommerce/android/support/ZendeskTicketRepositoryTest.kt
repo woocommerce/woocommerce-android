@@ -1,8 +1,6 @@
 package com.woocommerce.android.support
 
 import com.woocommerce.android.support.help.HelpOrigin
-import com.woocommerce.android.support.zendesk.ZendeskTicketType
-import com.woocommerce.android.support.zendesk.ZendeskTicketType.MobileApp
 import com.woocommerce.android.support.zendesk.ZendeskEnvironmentDataSource
 import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetException
 import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationFailedException
@@ -10,6 +8,8 @@ import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationT
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.support.zendesk.ZendeskTags
 import com.woocommerce.android.support.zendesk.ZendeskTicketRepository
+import com.woocommerce.android.support.zendesk.ZendeskTicketType
+import com.woocommerce.android.support.zendesk.ZendeskTicketType.MobileApp
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback

@@ -28,8 +28,8 @@ import com.woocommerce.android.support.help.HelpViewModel.ContactSupportEvent
 import com.woocommerce.android.support.help.HelpViewModel.ContactSupportEvent.CreateTicket
 import com.woocommerce.android.support.help.HelpViewModel.ContactSupportEvent.ShowLoading
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
-import com.woocommerce.android.support.zendesk.ZendeskTicketType
 import com.woocommerce.android.support.zendesk.ZendeskSettings
+import com.woocommerce.android.support.zendesk.ZendeskTicketType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
