@@ -4,7 +4,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STORE_LOADING_FAILED
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STORE_NOT_READY
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Failure
@@ -23,8 +23,7 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.network.UserAgent
-import org.wordpress.android.fluxc.utils.extensions.slashJoin
+import org.wordpress.android.fluxc.model.SiteModel
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -34,8 +33,7 @@ class InstallationViewModelTest : BaseUnitTest() {
     private val repository: StoreCreationRepository = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
-    private val authenticator: WPComWebViewAuthenticator = mock()
-    private val userAgent: UserAgent = mock()
+    private val selectedSite: SelectedSite = mock()
 
     private lateinit var viewModel: InstallationViewModel
 
@@ -49,12 +47,11 @@ class InstallationViewModelTest : BaseUnitTest() {
     private fun whenViewModelIsCreated() {
         viewModel = InstallationViewModel(
             savedState,
-            authenticator,
-            userAgent,
             repository,
             newStore,
             analyticsTrackerWrapper,
-            appPrefsWrapper
+            appPrefsWrapper,
+            selectedSite
         )
     }
 
@@ -71,6 +68,7 @@ class InstallationViewModelTest : BaseUnitTest() {
     @Test
     fun `when a Woo site is found after installation, a success state is displayed`() = testBlocking {
         whenever(repository.fetchSiteAfterCreation(newStore.data.siteId!!)).thenReturn(Success(Unit))
+        whenever(selectedSite.get()).thenReturn(SiteModel().apply { url = newStore.data.domain })
 
         whenViewModelIsCreated()
 
@@ -84,7 +82,7 @@ class InstallationViewModelTest : BaseUnitTest() {
 
         verify(repository, Times(1)).fetchSiteAfterCreation(newStore.data.siteId!!)
 
-        val expectedState = SuccessState("https://${newStore.data.domain!!.slashJoin("wp-admin")}")
+        val expectedState = SuccessState("https://${newStore.data.domain!!}")
 
         assertEquals(expectedState, observedState)
     }
