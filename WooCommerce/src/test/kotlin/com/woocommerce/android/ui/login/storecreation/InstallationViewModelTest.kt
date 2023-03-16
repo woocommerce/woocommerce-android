@@ -82,7 +82,7 @@ class InstallationViewModelTest : BaseUnitTest() {
 
         verify(repository, Times(1)).fetchSiteAfterCreation(newStore.data.siteId!!)
 
-        val expectedState = SuccessState("https://${newStore.data.domain!!}")
+        val expectedState = SuccessState(newStore.data.domain!!)
 
         assertEquals(expectedState, observedState)
     }
