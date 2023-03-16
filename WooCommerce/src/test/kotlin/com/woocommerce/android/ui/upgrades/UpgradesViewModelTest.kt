@@ -54,9 +54,7 @@ class UpgradesViewModelTest : BaseUnitTest() {
     fun `when onReportSubscriptionIssueClicked is called without a free trial site, then trigger OpenSupportRequestForm with the expected values`() =
         testBlocking {
             // Given
-            val siteModel = mock<SiteModel> {
-                on { planId } doReturn 0
-            }
+            val siteModel = SiteModel().apply { planId = 0 }
             createSut(siteModel)
 
             val events = mutableListOf<MultiLiveEvent.Event>()
