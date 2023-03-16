@@ -509,7 +509,7 @@
     <string name="order_creation_add_customer">Add customer details</string>
     <string name="order_creation_add_customer_note">Add note</string>
     <string name="order_creation_products">Products</string>
-    <string name="order_creation_add_products">Add product</string>
+    <string name="order_creation_add_products">Add products</string>
     <string name="order_creation_add_fee">Add fee</string>
     <string name="order_creation_customer_details">Customer details</string>
     <string name="order_creation_product_stock_quantity">%s in stock</string>
@@ -555,6 +555,7 @@
     <string name="domains_your_domains">Your site domains</string>
     <string name="domains_add_domain_button_title">Add a domain</string>
     <string name="domains_select_domain">Select domain</string>
+    <string name="domains_search_domains">Search domains</string>
     <string name="domains_redirect_notice">The domain purchased will redirect users to</string>
     <string name="domains_generic_error_title">Unable to load site domains</string>
     <string name="domains_access_error_title">Only store administrators can access domain settings</string>

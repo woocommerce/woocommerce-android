@@ -17,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState
@@ -74,25 +75,33 @@ fun UpgradesScreen(
                             Text(stringResource(R.string.upgrades_upgrade_now))
                         }
                     }
-                    Text(
-                        style = MaterialTheme.typography.caption,
-                        text = when (state) {
-                            Loading -> ""
-                            is NonUpgradeable -> stringResource(
-                                R.string.upgrades_non_upgradeable_caption,
-                                state.name,
-                                state.currentPlanEndDate
-                            )
+                    if (state is Loading) {
+                        SkeletonView(width = 132.dp, height = 24.dp)
+                    } else {
+                        Text(
+                            style = MaterialTheme.typography.caption,
+                            text = when (state) {
+                                Loading -> ""
+                                is NonUpgradeable -> stringResource(
+                                    R.string.upgrades_non_upgradeable_caption,
+                                    state.name,
+                                    state.currentPlanEndDate
+                                )
 
-                            is TrialEnded -> stringResource(R.string.upgrades_trial_ended_caption, state.planToUpgrade)
-                            is Upgradeable -> stringResource(
-                                R.string.upgrades_upgradeable_caption,
-                                state.daysLeftInCurrentPlan,
-                                state.currentPlanEndDate,
-                                state.nextPlanMonthlyFee
-                            )
-                        }
-                    )
+                                is TrialEnded -> stringResource(
+                                    R.string.upgrades_trial_ended_caption,
+                                    state.planToUpgrade
+                                )
+
+                                is Upgradeable -> stringResource(
+                                    R.string.upgrades_upgradeable_caption,
+                                    state.daysLeftInCurrentPlan,
+                                    state.currentPlanEndDate,
+                                    state.nextPlanMonthlyFee
+                                )
+                            }
+                        )
+                    }
                 }
             }
             Card(

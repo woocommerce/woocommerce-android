@@ -20,8 +20,15 @@
             android:id="@+id/action_orderCreationFragment_to_orderCreationCustomerNoteFragment"
             app:destination="@id/orderCreationCustomerNoteFragment" />
         <action
-            android:id="@+id/action_orderCreationFragment_to_orderCreationProductSelectionFragment"
-            app:destination="@id/orderCreationProductSelectionFragment" />
+            android:id="@+id/action_orderCreationFragment_to_productSelectorFragment"
+            app:destination="@id/nav_graph_product_selector" >
+            <argument
+                android:name="selectedItems"
+                app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectedItem[]" />
+            <argument
+                android:name="restrictions"
+                app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorRestriction[]" />
+        </action>
 
         <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationCustomerFragment"
@@ -90,19 +97,6 @@
         android:label="OrderCreationCustomerNoteFragment"
         tools:layout="@layout/fragment_order_create_edit_customer_note" />
     <fragment
-        android:id="@+id/orderCreationProductSelectionFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.products.OrderCreateEditProductSelectionFragment"
-        android:label="OrderCreationProductSelectionFragment"
-        tools:layout="@layout/fragment_order_create_edit_product_selection">
-        <action
-            android:id="@+id/action_orderCreationProductSelectionFragment_to_orderCreationVariationSelectionFragment"
-            app:destination="@id/orderCreationVariationSelectionFragment"
-            app:enterAnim="@anim/default_enter_anim"
-            app:exitAnim="@anim/default_exit_anim"
-            app:popEnterAnim="@anim/default_pop_enter_anim"
-            app:popExitAnim="@anim/default_pop_exit_anim" />
-    </fragment>
-    <fragment
         android:id="@+id/orderCreationCustomerFragment"
         android:name="com.woocommerce.android.ui.orders.creation.OrderCreateEditCustomerAddFragment"
         android:label="OrderCreationCustomerFragment"
@@ -141,15 +135,6 @@
             app:argType="com.woocommerce.android.model.Order$Item" />
     </fragment>
     <fragment
-        android:id="@+id/orderCreationVariationSelectionFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.variations.OrderCreateEditVariationSelectionFragment"
-        android:label="OrderCreationVariationSelectionFragment"
-        tools:layout="@layout/fragment_order_create_edit_product_selection">
-        <argument
-            android:name="productId"
-            app:argType="long" />
-    </fragment>
-    <fragment
         android:id="@+id/orderCreationShippingFragment"
         android:name="com.woocommerce.android.ui.orders.creation.shipping.OrderCreateEditShippingFragment"
         android:label="OrderCreationShippingFragment"
@@ -186,4 +171,6 @@
         android:name="com.woocommerce.android.ui.orders.creation.customerlist.CustomerListFragment"
         android:label="customerListFragment"
         tools:layout="@layout/fragment_customer_list" />
+
+    <include app:graph="@navigation/nav_graph_product_selector" />
 </navigation>
