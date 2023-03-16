@@ -41,6 +41,55 @@ class UpgradesViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when SitePlan is free trial with remaining time, then state is set to TrialInProgress`() =
+        testBlocking {
+            // Given
+            createSut(
+                type = SitePlan.Type.FREE_TRIAL,
+                remainingTrialPeriod = Period.ofDays(1)
+            )
+            var viewModelState: UpgradesViewModel.UpgradesViewState? = null
+            sut.upgradesState.observeForever {
+                viewModelState = it
+            }
+
+            // Then
+            assertThat(viewModelState).isNotNull
+            assertThat(viewModelState).isEqualTo(
+                TrialInProgress(
+                    name = FREE_TRIAL_TEST_SITE_NAME,
+                    freeTrialDuration = FREE_TRIAL_PERIOD,
+                    leftInFreeTrialDuration = Period.ofDays(1)
+                )
+            )
+        }
+
+    @Test
+    fun `when SitePlan is free trial with no remaining time, then state is set to TrialEnded`() =
+        testBlocking {
+            // Given
+            resourceProvider = mock {
+                on { getString(any()) } doReturn TRIAL_ENDED_TEST_SITE_NAME
+            }
+            createSut(
+                type = SitePlan.Type.FREE_TRIAL,
+                remainingTrialPeriod = Period.ZERO
+            )
+            var viewModelState: UpgradesViewModel.UpgradesViewState? = null
+            sut.upgradesState.observeForever {
+                viewModelState = it
+            }
+
+            // Then
+            assertThat(viewModelState).isNotNull
+            assertThat(viewModelState).isEqualTo(
+                TrialEnded(
+                    name = TRIAL_ENDED_TEST_SITE_NAME
+                )
+            )
+        }
+
+    @Test
     fun `when onReportSubscriptionIssueClicked is called with a free trial site, then trigger OpenSupportRequestForm with the expected values`() =
         testBlocking {
             // Given
