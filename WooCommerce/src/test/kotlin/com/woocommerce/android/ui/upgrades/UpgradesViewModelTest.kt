@@ -19,8 +19,6 @@ import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.T
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
-import java.time.Period
-import java.time.ZonedDateTime
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -29,6 +27,8 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.wordpress.android.fluxc.model.SiteModel
+import java.time.Period
+import java.time.ZonedDateTime
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class UpgradesViewModelTest : BaseUnitTest() {
