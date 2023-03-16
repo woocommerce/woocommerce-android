@@ -9,7 +9,10 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment.Companion.WEBVIEW_DISMISSED
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.plans.di.StartUpgradeFlowFactory
 import dagger.hilt.android.AndroidEntryPoint
@@ -48,6 +51,12 @@ class UpgradesFragment : BaseFragment() {
                     startUpgradeFlowFactory.create(navController = findNavController()).invoke()
                 }
             }
+        }
+        handleNotice(WPComWebViewFragment.WEBVIEW_RESULT) {
+            viewModel.onPlanUpgraded()
+        }
+        handleNotice(WEBVIEW_DISMISSED) {
+            // tracks event here
         }
     }
 }

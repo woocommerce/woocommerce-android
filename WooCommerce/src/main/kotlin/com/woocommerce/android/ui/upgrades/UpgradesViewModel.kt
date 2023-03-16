@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.upgrades
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.formatStyleFull
 import com.woocommerce.android.tools.SelectedSite
@@ -28,56 +27,58 @@ import javax.inject.Inject
 @HiltViewModel
 class UpgradesViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    selectedSite: SelectedSite,
-    planRepository: SitePlanRepository,
-    calculateRemainingTrialPeriod: CalculateRemainingTrialPeriod,
-    resourceProvider: ResourceProvider,
+    private val selectedSite: SelectedSite,
+    private val planRepository: SitePlanRepository,
+    private val calculateRemainingTrialPeriod: CalculateRemainingTrialPeriod,
+    private val resourceProvider: ResourceProvider,
 ) : ScopedViewModel(savedState) {
 
     private val _upgradesState = MutableLiveData<UpgradesViewState>()
     val upgradesState: LiveData<UpgradesViewState> = _upgradesState
 
     init {
-        _upgradesState.value = Loading
-        viewModelScope.launch {
-            selectedSite.observe().collect { site ->
+        loadSubscriptionState()
+    }
 
-                site?.let {
-                    val currentPlan = planRepository.fetchCurrentPlanDetails(site)?.prettifyName()
+    private fun loadSubscriptionState() {
+        launch {
+            _upgradesState.value = Loading
 
-                    val newState = if (currentPlan != null) {
+            val site = selectedSite.get()
+            val currentPlan = planRepository.fetchCurrentPlanDetails(site)?.prettifyName()
+            val newState = if (currentPlan != null) {
 
-                        val remainingTrialPeriod = calculateRemainingTrialPeriod(currentPlan.expirationDate)
+                val remainingTrialPeriod =
+                    calculateRemainingTrialPeriod(currentPlan.expirationDate)
 
-                        when (currentPlan.type) {
-                            SitePlan.Type.FREE_TRIAL -> {
-                                if (remainingTrialPeriod.isZero || remainingTrialPeriod.isNegative) {
-                                    TrialEnded(
-                                        name = resourceProvider.getString(R.string.free_trial_trial_ended)
-                                    )
-                                } else {
-                                    TrialInProgress(
-                                        name = currentPlan.name,
-                                        freeTrialDuration = FREE_TRIAL_PERIOD,
-                                        leftInFreeTrialDuration = remainingTrialPeriod,
-                                    )
-                                }
-                            }
-
-                            SitePlan.Type.OTHER -> {
-                                NonUpgradeable(
-                                    name = currentPlan.name,
-                                    currentPlanEndDate = currentPlan.expirationDate.toLocalDate().formatStyleFull()
-                                )
-                            }
+                when (currentPlan.type) {
+                    SitePlan.Type.FREE_TRIAL -> {
+                        if (remainingTrialPeriod.isZero || remainingTrialPeriod.isNegative) {
+                            TrialEnded(
+                                name = resourceProvider.getString(R.string.free_trial_trial_ended)
+                            )
+                        } else {
+                            TrialInProgress(
+                                name = currentPlan.name,
+                                freeTrialDuration = FREE_TRIAL_PERIOD,
+                                leftInFreeTrialDuration = remainingTrialPeriod,
+                            )
                         }
-                    } else {
-                        Error
                     }
 
-                    _upgradesState.value = newState
+                    SitePlan.Type.OTHER -> {
+                        NonUpgradeable(
+                            name = currentPlan.name,
+                            currentPlanEndDate = currentPlan.expirationDate.toLocalDate()
+                                .formatStyleFull()
+                        )
+                    }
                 }
+            } else {
+                Error
             }
+
+            _upgradesState.value = newState
         }
     }
 
@@ -88,6 +89,12 @@ class UpgradesViewModel @Inject constructor(
     fun onSubscribeNowClicked() = triggerEvent(UpgradesEvent.OpenSubscribeNow)
 
     fun onReportSubscriptionIssueClicked() = Unit
+
+    fun onPlanUpgraded() {
+        launch {
+            loadSubscriptionState()
+        }
+    }
 
     sealed interface UpgradesViewState {
 
