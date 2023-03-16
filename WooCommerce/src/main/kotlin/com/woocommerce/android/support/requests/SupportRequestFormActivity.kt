@@ -18,7 +18,7 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationFailed
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationSucceeded
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.ShowSupportIdentityInputDialog
-import com.woocommerce.android.support.zendesk.TicketType
+import com.woocommerce.android.support.zendesk.ZendeskTicketType
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
@@ -62,11 +62,11 @@ class SupportRequestFormActivity : AppCompatActivity() {
         binding.requestMessage.doOnTextChanged { text, _, _, _ -> viewModel.onMessageChanged(text.toString()) }
         binding.helpOptionsGroup.setOnCheckedChangeListener { _, selectionID ->
             when (selectionID) {
-                binding.mobileAppOption.id -> viewModel.onHelpOptionSelected(TicketType.MobileApp(extraTags))
-                binding.ippOption.id -> viewModel.onHelpOptionSelected(TicketType.InPersonPayments(extraTags))
-                binding.paymentsOption.id -> viewModel.onHelpOptionSelected(TicketType.Payments(extraTags))
-                binding.wooPluginOption.id -> viewModel.onHelpOptionSelected(TicketType.WooPlugin(extraTags))
-                binding.otherOption.id -> viewModel.onHelpOptionSelected(TicketType.OtherPlugins(extraTags))
+                binding.mobileAppOption.id -> viewModel.onHelpOptionSelected(ZendeskTicketType.MobileApp(extraTags))
+                binding.ippOption.id -> viewModel.onHelpOptionSelected(ZendeskTicketType.InPersonPayments(extraTags))
+                binding.paymentsOption.id -> viewModel.onHelpOptionSelected(ZendeskTicketType.Payments(extraTags))
+                binding.wooPluginOption.id -> viewModel.onHelpOptionSelected(ZendeskTicketType.WooPlugin(extraTags))
+                binding.otherOption.id -> viewModel.onHelpOptionSelected(ZendeskTicketType.OtherPlugins(extraTags))
             }
         }
         binding.submitRequestButton.setOnClickListener {

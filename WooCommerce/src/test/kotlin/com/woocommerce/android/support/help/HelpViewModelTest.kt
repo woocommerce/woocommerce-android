@@ -1,7 +1,7 @@
 package com.woocommerce.android.support.help
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.support.zendesk.TicketType
+import com.woocommerce.android.support.zendesk.ZendeskTicketType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -51,12 +51,12 @@ class HelpViewModelTest : BaseUnitTest() {
         whenever(selectedSite.exists()).thenReturn(false)
 
         // WHEN
-        viewModel.contactSupport(TicketType.MobileApp(emptyList()))
+        viewModel.contactSupport(ZendeskTicketType.MobileApp(emptyList()))
 
         // THEN
         assertThat(viewModel.event.value).isEqualTo(
             HelpViewModel.ContactSupportEvent.CreateTicket(
-                TicketType.MobileApp(emptyList()),
+                ZendeskTicketType.MobileApp(emptyList()),
                 emptyList(),
             )
         )
@@ -68,7 +68,7 @@ class HelpViewModelTest : BaseUnitTest() {
         whenever(selectedSite.exists()).thenReturn(true)
 
         // WHEN
-        viewModel.contactSupport(TicketType.MobileApp(emptyList()))
+        viewModel.contactSupport(ZendeskTicketType.MobileApp(emptyList()))
 
         // THEN
         assertThat(viewModel.event.value).isEqualTo(HelpViewModel.ContactSupportEvent.ShowLoading)
@@ -88,12 +88,12 @@ class HelpViewModelTest : BaseUnitTest() {
             )
 
             // WHEN
-            viewModel.contactSupport(TicketType.MobileApp(emptyList()))
+            viewModel.contactSupport(ZendeskTicketType.MobileApp(emptyList()))
 
             // THEN
             assertThat(viewModel.event.value).isEqualTo(
                 HelpViewModel.ContactSupportEvent.CreateTicket(
-                    TicketType.MobileApp(emptyList()),
+                    ZendeskTicketType.MobileApp(emptyList()),
                     listOf("woo_mobile_site_plugins_fetching_error")
                 )
             )
@@ -113,12 +113,12 @@ class HelpViewModelTest : BaseUnitTest() {
             )
 
             // WHEN
-            viewModel.contactSupport(TicketType.Payments(emptyList()))
+            viewModel.contactSupport(ZendeskTicketType.Payments(emptyList()))
 
             // THEN
             assertThat(viewModel.event.value).isEqualTo(
                 HelpViewModel.ContactSupportEvent.CreateTicket(
-                    TicketType.Payments(emptyList()),
+                    ZendeskTicketType.Payments(emptyList()),
                     listOf("woo_mobile_site_plugins_fetching_error")
                 )
             )
@@ -132,12 +132,12 @@ class HelpViewModelTest : BaseUnitTest() {
             whenever(wooStore.getSitePlugin(any(), any())).thenReturn(null)
 
             // WHEN
-            viewModel.contactSupport(TicketType.MobileApp(emptyList()))
+            viewModel.contactSupport(ZendeskTicketType.MobileApp(emptyList()))
 
             // THEN
             assertThat(viewModel.event.value).isEqualTo(
                 HelpViewModel.ContactSupportEvent.CreateTicket(
-                    TicketType.MobileApp(emptyList()),
+                    ZendeskTicketType.MobileApp(emptyList()),
                     listOf(
                         "woo_mobile_wcpay_not_installed",
                         "woo_mobile_stripe_not_installed",
@@ -155,12 +155,12 @@ class HelpViewModelTest : BaseUnitTest() {
                 .thenReturn(mock())
 
             // WHEN
-            viewModel.contactSupport(TicketType.MobileApp(emptyList()))
+            viewModel.contactSupport(ZendeskTicketType.MobileApp(emptyList()))
 
             // THEN
             assertThat(viewModel.event.value).isEqualTo(
                 HelpViewModel.ContactSupportEvent.CreateTicket(
-                    TicketType.MobileApp(emptyList()),
+                    ZendeskTicketType.MobileApp(emptyList()),
                     listOf(
                         "woo_mobile_wcpay_installed_and_not_activated",
                         "woo_mobile_stripe_not_installed",
@@ -181,12 +181,12 @@ class HelpViewModelTest : BaseUnitTest() {
                 .thenReturn(wcpayPluginModel)
 
             // WHEN
-            viewModel.contactSupport(TicketType.MobileApp(emptyList()))
+            viewModel.contactSupport(ZendeskTicketType.MobileApp(emptyList()))
 
             // THEN
             assertThat(viewModel.event.value).isEqualTo(
                 HelpViewModel.ContactSupportEvent.CreateTicket(
-                    TicketType.MobileApp(emptyList()),
+                    ZendeskTicketType.MobileApp(emptyList()),
                     listOf(
                         "woo_mobile_wcpay_installed_and_activated",
                         "woo_mobile_stripe_not_installed",
@@ -204,12 +204,12 @@ class HelpViewModelTest : BaseUnitTest() {
                 .thenReturn(mock())
 
             // WHEN
-            viewModel.contactSupport(TicketType.MobileApp(emptyList()))
+            viewModel.contactSupport(ZendeskTicketType.MobileApp(emptyList()))
 
             // THEN
             assertThat(viewModel.event.value).isEqualTo(
                 HelpViewModel.ContactSupportEvent.CreateTicket(
-                    TicketType.MobileApp(emptyList()),
+                    ZendeskTicketType.MobileApp(emptyList()),
                     listOf(
                         "woo_mobile_wcpay_not_installed",
                         "woo_mobile_stripe_installed_and_not_activated",
@@ -230,12 +230,12 @@ class HelpViewModelTest : BaseUnitTest() {
                 .thenReturn(stripePluginModel)
 
             // WHEN
-            viewModel.contactSupport(TicketType.MobileApp(emptyList()))
+            viewModel.contactSupport(ZendeskTicketType.MobileApp(emptyList()))
 
             // THEN
             assertThat(viewModel.event.value).isEqualTo(
                 HelpViewModel.ContactSupportEvent.CreateTicket(
-                    TicketType.MobileApp(emptyList()),
+                    ZendeskTicketType.MobileApp(emptyList()),
                     listOf(
                         "woo_mobile_wcpay_not_installed",
                         "woo_mobile_stripe_installed_and_activated",
@@ -257,12 +257,12 @@ class HelpViewModelTest : BaseUnitTest() {
                 .thenReturn(stripePluginModel)
 
             // WHEN
-            viewModel.contactSupport(TicketType.MobileApp(emptyList()))
+            viewModel.contactSupport(ZendeskTicketType.MobileApp(emptyList()))
 
             // THEN
             assertThat(viewModel.event.value).isEqualTo(
                 HelpViewModel.ContactSupportEvent.CreateTicket(
-                    TicketType.MobileApp(emptyList()),
+                    ZendeskTicketType.MobileApp(emptyList()),
                     listOf(
                         "woo_mobile_wcpay_installed_and_not_activated",
                         "woo_mobile_stripe_installed_and_not_activated",
@@ -286,12 +286,12 @@ class HelpViewModelTest : BaseUnitTest() {
                 .thenReturn(stripePluginModel)
 
             // WHEN
-            viewModel.contactSupport(TicketType.MobileApp(emptyList()))
+            viewModel.contactSupport(ZendeskTicketType.MobileApp(emptyList()))
 
             // THEN
             assertThat(viewModel.event.value).isEqualTo(
                 HelpViewModel.ContactSupportEvent.CreateTicket(
-                    TicketType.MobileApp(emptyList()),
+                    ZendeskTicketType.MobileApp(emptyList()),
                     listOf(
                         "woo_mobile_wcpay_installed_and_activated",
                         "woo_mobile_stripe_installed_and_not_activated",
@@ -315,12 +315,12 @@ class HelpViewModelTest : BaseUnitTest() {
                 .thenReturn(stripePluginModel)
 
             // WHEN
-            viewModel.contactSupport(TicketType.MobileApp(emptyList()))
+            viewModel.contactSupport(ZendeskTicketType.MobileApp(emptyList()))
 
             // THEN
             assertThat(viewModel.event.value).isEqualTo(
                 HelpViewModel.ContactSupportEvent.CreateTicket(
-                    TicketType.MobileApp(emptyList()),
+                    ZendeskTicketType.MobileApp(emptyList()),
                     listOf(
                         "woo_mobile_wcpay_installed_and_not_activated",
                         "woo_mobile_stripe_installed_and_activated",
@@ -346,12 +346,12 @@ class HelpViewModelTest : BaseUnitTest() {
                 .thenReturn(stripePluginModel)
 
             // WHEN
-            viewModel.contactSupport(TicketType.MobileApp(emptyList()))
+            viewModel.contactSupport(ZendeskTicketType.MobileApp(emptyList()))
 
             // THEN
             assertThat(viewModel.event.value).isEqualTo(
                 HelpViewModel.ContactSupportEvent.CreateTicket(
-                    TicketType.MobileApp(emptyList()),
+                    ZendeskTicketType.MobileApp(emptyList()),
                     listOf(
                         "woo_mobile_wcpay_installed_and_activated",
                         "woo_mobile_stripe_installed_and_activated",

@@ -28,7 +28,7 @@ import com.woocommerce.android.support.help.HelpViewModel.ContactSupportEvent
 import com.woocommerce.android.support.help.HelpViewModel.ContactSupportEvent.CreateTicket
 import com.woocommerce.android.support.help.HelpViewModel.ContactSupportEvent.ShowLoading
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
-import com.woocommerce.android.support.zendesk.TicketType
+import com.woocommerce.android.support.zendesk.ZendeskTicketType
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
@@ -71,10 +71,10 @@ class HelpActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         binding.contactContainer.setOnClickListener {
-            viewModel.contactSupport(TicketType.MobileApp(extraTagsFromExtras.toList()))
+            viewModel.contactSupport(ZendeskTicketType.MobileApp(extraTagsFromExtras.toList()))
         }
         binding.identityContainer.setOnClickListener {
-            showIdentityDialog(TicketType.MobileApp(extraTagsFromExtras.toList()))
+            showIdentityDialog(ZendeskTicketType.MobileApp(extraTagsFromExtras.toList()))
         }
         binding.faqContainer.setOnClickListener {
             val loginFlow = intent.extras?.getString(LOGIN_FLOW_KEY)
@@ -99,7 +99,7 @@ class HelpActivity : AppCompatActivity() {
         }
 
         if (originFromExtras == HelpOrigin.SITE_PICKER_JETPACK_TIMEOUT) {
-            viewModel.contactSupport(TicketType.MobileApp(extraTagsFromExtras.toList()))
+            viewModel.contactSupport(ZendeskTicketType.MobileApp(extraTagsFromExtras.toList()))
         }
 
         initObservers(binding)
@@ -150,7 +150,7 @@ class HelpActivity : AppCompatActivity() {
 
     private fun userIsLoggedIn() = accountRepository.isUserLoggedIn()
 
-    private fun createNewZendeskTicket(ticketType: TicketType, extraTags: List<String> = emptyList()) {
+    private fun createNewZendeskTicket(ticketType: ZendeskTicketType, extraTags: List<String> = emptyList()) {
         if (!AppPrefs.hasSupportEmail()) {
             showIdentityDialog(ticketType, extraTags, createNewTicket = true)
             return
@@ -161,7 +161,7 @@ class HelpActivity : AppCompatActivity() {
     }
 
     private fun showIdentityDialog(
-        ticketType: TicketType,
+        ticketType: ZendeskTicketType,
         extraTags: List<String> = emptyList(),
         createNewTicket: Boolean = false
     ) {

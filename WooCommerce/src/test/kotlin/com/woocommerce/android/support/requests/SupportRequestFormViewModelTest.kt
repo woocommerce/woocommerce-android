@@ -7,7 +7,7 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationFailed
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationSucceeded
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.ShowSupportIdentityInputDialog
-import com.woocommerce.android.support.zendesk.TicketType
+import com.woocommerce.android.support.zendesk.ZendeskTicketType
 import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetException
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.support.zendesk.ZendeskTicketRepository
@@ -54,7 +54,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // When
         sut.onSubjectChanged("subject")
         sut.onMessageChanged("message")
-        sut.onHelpOptionSelected(TicketType.MobileApp(emptyList()))
+        sut.onHelpOptionSelected(ZendeskTicketType.MobileApp(emptyList()))
 
         // Then
         assertThat(isSubmitButtonEnabled).hasSize(2)
@@ -73,7 +73,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // When
         sut.onSubjectChanged("")
         sut.onMessageChanged("")
-        sut.onHelpOptionSelected(TicketType.MobileApp(emptyList()))
+        sut.onHelpOptionSelected(ZendeskTicketType.MobileApp(emptyList()))
 
         // Then
         assertThat(isSubmitButtonEnabled).hasSize(1)
@@ -91,7 +91,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // When
         sut.onSubjectChanged("subject")
         sut.onMessageChanged("message")
-        sut.onHelpOptionSelected(TicketType.MobileApp(emptyList()))
+        sut.onHelpOptionSelected(ZendeskTicketType.MobileApp(emptyList()))
         sut.submitSupportRequest(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION)
 
         // Then
@@ -111,7 +111,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         }
 
         // When
-        sut.onHelpOptionSelected(TicketType.MobileApp(emptyList()))
+        sut.onHelpOptionSelected(ZendeskTicketType.MobileApp(emptyList()))
         sut.submitSupportRequest(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION)
 
         // Then
@@ -148,7 +148,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         }
 
         // When
-        sut.onHelpOptionSelected(TicketType.MobileApp(emptyList()))
+        sut.onHelpOptionSelected(ZendeskTicketType.MobileApp(emptyList()))
         sut.submitSupportRequest(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION)
 
         // Then
@@ -167,7 +167,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         }
 
         // When
-        sut.onHelpOptionSelected(TicketType.MobileApp(emptyList()))
+        sut.onHelpOptionSelected(ZendeskTicketType.MobileApp(emptyList()))
         sut.submitSupportRequest(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION)
 
         // Then
@@ -186,7 +186,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         }
 
         // When
-        sut.onHelpOptionSelected(TicketType.MobileApp(emptyList()))
+        sut.onHelpOptionSelected(ZendeskTicketType.MobileApp(emptyList()))
         sut.submitSupportRequest(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION)
 
         // Then
@@ -211,7 +211,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         val name = "test name"
 
         // When
-        sut.onHelpOptionSelected(TicketType.MobileApp(emptyList()))
+        sut.onHelpOptionSelected(ZendeskTicketType.MobileApp(emptyList()))
         sut.onUserIdentitySet(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, email, name)
 
         // Then

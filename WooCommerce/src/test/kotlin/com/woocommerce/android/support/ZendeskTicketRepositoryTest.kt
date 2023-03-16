@@ -1,8 +1,8 @@
 package com.woocommerce.android.support
 
 import com.woocommerce.android.support.help.HelpOrigin
-import com.woocommerce.android.support.zendesk.TicketType
-import com.woocommerce.android.support.zendesk.TicketType.MobileApp
+import com.woocommerce.android.support.zendesk.ZendeskTicketType
+import com.woocommerce.android.support.zendesk.ZendeskTicketType.MobileApp
 import com.woocommerce.android.support.zendesk.ZendeskEnvironmentDataSource
 import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetException
 import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationFailedException
@@ -244,7 +244,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                 sut.createRequest(
                     context = mock(),
                     origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
-                    ticketType = TicketType.InPersonPayments(emptyList()),
+                    ticketType = ZendeskTicketType.InPersonPayments(emptyList()),
                     selectedSite = null,
                     subject = "subject",
                     description = "description"
@@ -279,7 +279,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                 sut.createRequest(
                     context = mock(),
                     origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
-                    ticketType = TicketType.Payments(listOf(ZendeskTags.jetpackTag)),
+                    ticketType = ZendeskTicketType.Payments(listOf(ZendeskTags.jetpackTag)),
                     selectedSite = null,
                     subject = "subject",
                     description = "description"
@@ -313,7 +313,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                 sut.createRequest(
                     context = mock(),
                     origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
-                    ticketType = TicketType.WooPlugin(listOf(ZendeskTags.jetpackTag)),
+                    ticketType = ZendeskTicketType.WooPlugin(listOf(ZendeskTags.jetpackTag)),
                     selectedSite = null,
                     subject = "subject",
                     description = "description"
@@ -348,7 +348,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                 sut.createRequest(
                     context = mock(),
                     origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
-                    ticketType = TicketType.OtherPlugins(listOf(ZendeskTags.jetpackTag)),
+                    ticketType = ZendeskTicketType.OtherPlugins(listOf(ZendeskTags.jetpackTag)),
                     selectedSite = null,
                     subject = "subject",
                     description = "description"

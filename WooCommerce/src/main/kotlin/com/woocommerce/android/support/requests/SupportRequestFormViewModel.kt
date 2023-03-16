@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin
-import com.woocommerce.android.support.zendesk.TicketType
+import com.woocommerce.android.support.zendesk.ZendeskTicketType
 import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetException
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.support.zendesk.ZendeskTicketRepository
@@ -52,7 +52,7 @@ class SupportRequestFormViewModel @Inject constructor(
         tracks.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_VIEWED)
     }
 
-    fun onHelpOptionSelected(ticketType: TicketType) {
+    fun onHelpOptionSelected(ticketType: ZendeskTicketType) {
         viewState.update { it.copy(ticketType = ticketType) }
     }
 
@@ -132,7 +132,7 @@ class SupportRequestFormViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
-        val ticketType: TicketType?,
+        val ticketType: ZendeskTicketType?,
         val subject: String,
         val message: String,
         val isLoading: Boolean

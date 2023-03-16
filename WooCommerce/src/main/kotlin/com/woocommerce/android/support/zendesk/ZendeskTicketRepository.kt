@@ -38,7 +38,7 @@ class ZendeskTicketRepository(
     suspend fun createRequest(
         context: Context,
         origin: HelpOrigin,
-        ticketType: TicketType,
+        ticketType: ZendeskTicketType,
         selectedSite: SiteModel?,
         subject: String,
         description: String
@@ -86,7 +86,7 @@ class ZendeskTicketRepository(
      */
     private fun buildZendeskCustomFields(
         context: Context,
-        ticketType: TicketType,
+        ticketType: ZendeskTicketType,
         allSites: List<SiteModel>?,
         selectedSite: SiteModel?,
         ssr: String? = null
@@ -142,7 +142,7 @@ class ZendeskTicketRepository(
     }
 }
 
-sealed class TicketType(
+sealed class ZendeskTicketType(
     val form: Long,
     val categoryName: String,
     val subcategoryName: String,
@@ -157,7 +157,7 @@ sealed class TicketType(
     @Parcelize
     data class MobileApp(
         private val extraTags: List<String>
-    ) : TicketType(
+    ) : ZendeskTicketType(
         form = TicketCustomField.wooMobileFormID,
         categoryName = ZendeskConstants.mobileAppCategory,
         subcategoryName = ZendeskConstants.mobileSubcategoryValue,
@@ -168,7 +168,7 @@ sealed class TicketType(
     @Parcelize
     data class InPersonPayments(
         private val extraTags: List<String>
-    ) : TicketType(
+    ) : ZendeskTicketType(
         form = TicketCustomField.wooMobileFormID,
         categoryName = ZendeskConstants.mobileAppCategory,
         subcategoryName = ZendeskConstants.mobileSubcategoryValue,
@@ -182,7 +182,7 @@ sealed class TicketType(
     @Parcelize
     data class Payments(
         private val extraTags: List<String>
-    ) : TicketType(
+    ) : ZendeskTicketType(
         form = TicketCustomField.wooFormID,
         categoryName = ZendeskConstants.supportCategory,
         subcategoryName = ZendeskConstants.paymentsSubcategoryValue,
@@ -200,7 +200,7 @@ sealed class TicketType(
     @Parcelize
     data class WooPlugin(
         private val extraTags: List<String>
-    ) : TicketType(
+    ) : ZendeskTicketType(
         form = TicketCustomField.wooFormID,
         categoryName = ZendeskConstants.supportCategory,
         subcategoryName = "",
@@ -216,7 +216,7 @@ sealed class TicketType(
     @Parcelize
     data class OtherPlugins(
         private val extraTags: List<String>
-    ) : TicketType(
+    ) : ZendeskTicketType(
         form = TicketCustomField.wooFormID,
         categoryName = ZendeskConstants.supportCategory,
         subcategoryName = ZendeskConstants.storeSubcategoryValue,

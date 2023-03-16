@@ -2,7 +2,7 @@ package com.woocommerce.android.support.help
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.extensions.formatResult
-import com.woocommerce.android.support.zendesk.TicketType
+import com.woocommerce.android.support.zendesk.ZendeskTicketType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLogWrapper
@@ -44,7 +44,7 @@ class HelpViewModel @Inject constructor(
         }
     }
 
-    fun contactSupport(ticketType: TicketType) {
+    fun contactSupport(ticketType: ZendeskTicketType) {
         if (!selectedSite.exists()) {
             triggerEvent(ContactSupportEvent.CreateTicket(ticketType, emptyList()))
             return
@@ -87,7 +87,7 @@ class HelpViewModel @Inject constructor(
     sealed class ContactSupportEvent : MultiLiveEvent.Event() {
         object ShowLoading : ContactSupportEvent()
         data class CreateTicket(
-            val ticketType: TicketType,
+            val ticketType: ZendeskTicketType,
             val supportTags: List<String>,
         ) : ContactSupportEvent()
     }
