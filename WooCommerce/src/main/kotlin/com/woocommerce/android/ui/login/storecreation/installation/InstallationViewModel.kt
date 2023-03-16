@@ -7,6 +7,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
@@ -41,7 +42,8 @@ class InstallationViewModel @Inject constructor(
     private val repository: StoreCreationRepository,
     private val newStore: NewStore,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val appPrefsWrapper: AppPrefsWrapper
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val STORE_LOAD_RETRIES_LIMIT = 10
@@ -49,8 +51,8 @@ class InstallationViewModel @Inject constructor(
         private const val SITE_CHECK_DEBOUNCE = 5000L
     }
 
-    private val newStoreUrl = "https://${newStore.data.domain!!}"
-    private val newStoreWpAdminUrl = "https://${newStore.data.domain!!}".slashJoin("wp-admin")
+    private val newStoreUrl by lazy { selectedSite.get().url }
+    private val newStoreWpAdminUrl by lazy { selectedSite.get().url.slashJoin("wp-admin/") }
 
     private val _viewState = savedState.getStateFlow<ViewState>(this, InitialState)
     val viewState = _viewState
