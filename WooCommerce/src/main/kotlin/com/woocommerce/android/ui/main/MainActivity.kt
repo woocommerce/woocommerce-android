@@ -894,6 +894,20 @@ class MainActivity :
     }
 
     private fun showTapToPaySummary() {
+        /**
+         * set the intent data to null so that when the OS recreates the activity
+         * by redelivering the same intent, it won't redirect to the tap to pay summary screen.
+         *
+         * Example:
+         * 1. Open the Tap to pay summary screen via universal linking
+         * 2. Navigate back from the payments screen and go to the settings screen
+         * 3. Try to switch to any other store.
+         * 6. The OS redelivers the same intent with the intent data set to TTP URI and as a result
+         * the app redirects to the TTP summary screen as soon as the app restarts.
+         *
+         * Setting the intent data to null avoids this bug.
+         */
+        intent.data = null
         showPayments(CardReaderFlowParam.CardReadersHub.OpenInHub.TAP_TO_PAY_SUMMARY)
     }
 
