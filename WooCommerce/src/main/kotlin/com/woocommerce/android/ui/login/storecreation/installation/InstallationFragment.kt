@@ -17,10 +17,14 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.fluxc.network.UserAgent
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class InstallationFragment : BaseFragment() {
     private val viewModel: InstallationViewModel by viewModels()
+
+    @Inject lateinit var userAgent: UserAgent
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -30,7 +34,7 @@ class InstallationFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    InstallationScreen(viewModel = viewModel)
+                    InstallationScreen(viewModel, userAgent)
                 }
             }
         }
