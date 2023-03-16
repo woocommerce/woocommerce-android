@@ -6,9 +6,13 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.LinearProgressIndicator
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -16,15 +20,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.viewinterop.AndroidView
+import com.woocommerce.android.R.dimen
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.ui.compose.component.WebViewProgressIndicator.Circular
+import com.woocommerce.android.ui.compose.component.WebViewProgressIndicator.Linear
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.onCompletion
 import org.wordpress.android.fluxc.network.UserAgent
 
-@SuppressLint("SetJavaScriptEnabled")
+@SuppressLint("SetJavaScriptEnabled", "ClickableViewAccessibility")
 @Composable
 fun WCWebView(
     url: String,
@@ -33,7 +42,13 @@ fun WCWebView(
     modifier: Modifier = Modifier,
     captureBackPresses: Boolean = true,
     wpComAuthenticator: WPComWebViewAuthenticator? = null,
-    webViewNavigator: WebViewNavigator = rememberWebViewNavigator()
+    webViewNavigator: WebViewNavigator = rememberWebViewNavigator(),
+    loadWithOverviewMode: Boolean = false,
+    isJavaScriptEnabled: Boolean = true,
+    isDomStorageEnabled: Boolean = true,
+    isReadOnly: Boolean = false,
+    initialScale: Int = 0,
+    progressIndicator: WebViewProgressIndicator = Linear()
 ) {
     var webView by remember { mutableStateOf<WebView?>(null) }
     var progress by remember { mutableStateOf(0) }
@@ -50,13 +65,19 @@ fun WCWebView(
         }
     }
 
-    Column(modifier = modifier) {
-        LinearProgressIndicator(
-            progress = (progress / 100f),
-            modifier = Modifier
-                .fillMaxWidth()
-                .alpha(if (progress == 100) 0f else 1f)
-        )
+    Box(modifier = modifier) {
+        fun getWebViewAlpha(): Float {
+            return if (progressIndicator is Circular ||
+                progressIndicator is Linear && progressIndicator.message != null) {
+                if (progress == 100) 1f else 0f
+            } else {
+                1f
+            }
+        }
+
+        fun getProgressAlpha(): Float {
+            return if (progress == 100) 0f else 1f
+        }
 
         AndroidView(
             factory = { context ->
@@ -65,6 +86,7 @@ fun WCWebView(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT
                     )
+
                     this.webViewClient = object : WebViewClient() {
                         override fun doUpdateVisitedHistory(view: WebView?, url: String?, isReload: Boolean) {
                             url?.let { onUrlLoaded(it) }
@@ -79,23 +101,73 @@ fun WCWebView(
                             canGoBack = view?.canGoBack() ?: false
                         }
                     }
+
                     this.webChromeClient = object : WebChromeClient() {
                         override fun onProgressChanged(view: WebView?, newProgress: Int) {
                             progress = newProgress
                         }
                     }
-                    this.settings.javaScriptEnabled = true
-                    this.settings.domStorageEnabled = true
+
+                    if (isReadOnly) {
+                        this.setOnTouchListener { _, _ -> true }
+                    }
+
+                    this.setInitialScale(initialScale)
+                    this.settings.loadWithOverviewMode = loadWithOverviewMode
+                    this.settings.javaScriptEnabled = isJavaScriptEnabled
+                    this.settings.domStorageEnabled = isDomStorageEnabled
                     this.settings.userAgentString = userAgent.userAgent
                 }.also { webView = it }
-            }
+            },
+            modifier = Modifier
+                .alpha(getWebViewAlpha())
         ) { webView ->
             if (lastLoadedUrl == url) return@AndroidView
             lastLoadedUrl = url
             wpComAuthenticator?.authenticateAndLoadUrl(webView, url) ?: webView.loadUrl(url)
             canGoBack = webView.canGoBack()
         }
+
+        if (progressIndicator is Linear) {
+            LinearProgressIndicator(
+                progress = (progress / 100f),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .alpha(getProgressAlpha())
+            )
+
+            if (progressIndicator.message != null) {
+                Text(
+                    text = progressIndicator.message,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .alpha(getProgressAlpha())
+                )
+            }
+        } else if (progressIndicator is Circular) {
+            Column(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .alpha(getProgressAlpha())
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(dimensionResource(id = dimen.major_100)),
+                )
+                if (progressIndicator.message != null) {
+                    Text(text = progressIndicator.message)
+                }
+            }
+        }
+
     }
+}
+
+sealed class WebViewProgressIndicator {
+    object None : WebViewProgressIndicator()
+    data class Linear(val message: String? = null) : WebViewProgressIndicator()
+    data class Circular(val message: String? = null) : WebViewProgressIndicator()
 }
 
 @Stable
