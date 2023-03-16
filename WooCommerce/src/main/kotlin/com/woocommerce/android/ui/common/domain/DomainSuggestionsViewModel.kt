@@ -38,7 +38,8 @@ abstract class DomainSuggestionsViewModel constructor(
     private val currencyFormatter: CurrencyFormatter,
     initialQuery: String,
     private val searchOnlyFreeDomains: Boolean,
-    private val isFreeCreditAvailable: Boolean
+    private val isFreeCreditAvailable: Boolean,
+    private val freeUrl: String? = null
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val KEY_IS_FREE_CREDIT_AVAILABLE = "isFreeCreditAvailable"
@@ -70,7 +71,8 @@ abstract class DomainSuggestionsViewModel constructor(
                 selectedDomain,
                 products
             ),
-            selectedDomain = selectedDomain?.name.orEmpty()
+            selectedDomain = selectedDomain?.name.orEmpty(),
+            freeUrl = freeUrl
         )
     }.asLiveData()
 

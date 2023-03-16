@@ -34,46 +34,77 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:lineHeight="@dimen/text_major_50"
-            tools:text="Sales" />
+            tools:text="Sales"/>
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/analyticsItemsTitle"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/analyticsItems"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/major_100"
-            android:layout_marginBottom="@dimen/major_100"
-            android:text="@string/analytics_total_sales_title"
-            android:textSize="@dimen/text_minor_125"
-            app:layout_constraintStart_toStartOf="@+id/analyticsCardTitle"
+            app:layout_constrainedHeight="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:padding="@dimen/major_100"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/analyticsCardTitle"
-            app:lineHeight="@dimen/text_major_25"
-            tools:text="Items sold" />
+            android:screenReaderFocusable="true"
+            android:focusable="true"
+            tools:ignore="UnusedAttribute">
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/analyticsItemsValue"
-            style="@style/Woo.Card.Title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/minor_00"
-            android:text="@string/analytics_total_sales_title"
-            android:textSize="@dimen/text_major_50"
-            app:layout_constraintStart_toStartOf="@+id/analyticsItemsTitle"
-            app:layout_constraintTop_toBottomOf="@+id/analyticsItemsTitle"
-            app:lineHeight="@dimen/text_major_25"
-            tools:text="32" />
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/analyticsItemsTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/major_100"
+                android:focusable="false"
+                android:text="@string/analytics_total_sales_title"
+                android:textSize="@dimen/text_minor_125"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:lineHeight="@dimen/text_major_25"
+                tools:text="Items sold"
+                />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/analyticsItemsValue"
+                style="@style/Woo.Card.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/minor_00"
+                android:focusable="false"
+                android:text="@string/analytics_total_sales_title"
+                android:textSize="@dimen/text_major_50"
+                app:layout_constraintStart_toStartOf="@+id/analyticsItemsTitle"
+                app:layout_constraintTop_toBottomOf="@+id/analyticsItemsTitle"
+                app:lineHeight="@dimen/text_major_25"
+                tools:text="32" />
+
+            <com.woocommerce.android.widgets.tags.TagView
+                android:id="@+id/analyticsItemsTag"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/major_150"
+                android:focusable="false"
+                android:textSize="@dimen/text_minor_80"
+                app:layout_constraintBottom_toBottomOf="@+id/analyticsItemsValue"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/analyticsItemsValue"
+                app:tagTextColor="@color/woo_white"
+                tools:ignore="TextContrastCheck"
+                tools:tagColor="#69B56E"
+                tools:tagText="+23%" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/analyticsListLeftHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/major_100"
+            android:layout_marginStart="@dimen/major_100"
             android:layout_marginBottom="@dimen/major_100"
             android:text="@string/analytics_total_sales_title"
             android:textSize="@dimen/text_minor_125"
-            app:layout_constraintStart_toStartOf="@+id/analyticsItemsValue"
-            app:layout_constraintTop_toBottomOf="@+id/analyticsItemsValue"
+            app:layout_constraintStart_toStartOf="@+id/analyticsItems"
+            app:layout_constraintTop_toBottomOf="@+id/analyticsItems"
             app:lineHeight="@dimen/text_major_25"
-            tools:text="Products" />
+            tools:text="Products"/>
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/analyticsListRightHeader"
@@ -86,21 +117,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/analyticsListLeftHeader"
             app:lineHeight="@dimen/text_major_25"
-            tools:text="Items Sold" />
-
-        <com.woocommerce.android.widgets.tags.TagView
-            android:id="@+id/analyticsItemsTag"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/major_150"
-            android:layout_marginEnd="@dimen/major_100"
-            android:textSize="@dimen/text_minor_80"
-            app:layout_constraintBottom_toBottomOf="@+id/analyticsItemsValue"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/analyticsItemsValue"
-            app:tagTextColor="@color/woo_white"
-            tools:ignore="TextContrastCheck"
-            tools:tagColor="#69B56E"
-            tools:tagText="+23%" />
+            tools:text="Items Sold"
+            android:focusable="false"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/analyticsItemsList"

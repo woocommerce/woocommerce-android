@@ -509,7 +509,7 @@
     <string name="order_creation_add_customer">Add customer details</string>
     <string name="order_creation_add_customer_note">Add note</string>
     <string name="order_creation_products">Products</string>
-    <string name="order_creation_add_products">Add product</string>
+    <string name="order_creation_add_products">Add products</string>
     <string name="order_creation_add_fee">Add fee</string>
     <string name="order_creation_customer_details">Customer details</string>
     <string name="order_creation_product_stock_quantity">%s in stock</string>
@@ -555,6 +555,7 @@
     <string name="domains_your_domains">Your site domains</string>
     <string name="domains_add_domain_button_title">Add a domain</string>
     <string name="domains_select_domain">Select domain</string>
+    <string name="domains_search_domains">Search domains</string>
     <string name="domains_redirect_notice">The domain purchased will redirect users to</string>
     <string name="domains_generic_error_title">Unable to load site domains</string>
     <string name="domains_access_error_title">Only store administrators can access domain settings</string>
@@ -3164,7 +3165,8 @@
     <!--
     Free trial
     -->
-    <string name="free_trial_trial_ended">Your trial has ended.</string>
+    <string name="free_trial_your_trial_ended">Your trial has ended.</string>
+    <string name="free_trial_trial_ended">Trial ended</string>
     <string name="free_trial_days_left">%1$d days left in your trial.</string>
     <string name="free_trial_upgrade_now">Upgrade Now</string>
 
@@ -3172,9 +3174,13 @@
     Upgrades
     -->
     <string name="upgrades_report_subscription_issue">Report subscription issue</string>
-    <string name="upgrades_subscribe_now">Subscribe now</string>
+    <string name="upgrades_upgrade_now">Upgrade now</string>
     <string name="upgrades_current_plan">Current: %s</string>
     <string name="upgrades_troubleshooting">Troubleshooting</string>
     <string name="upgrades_title">Upgrades</string>
     <string name="upgrades_subscription_status">Subscription status</string>
+    <string name="upgrades_upgradeable_caption">You are in the %1$d-day free trial. The free trial will end in %2$d days. Upgrade to unlock new features and keep your store running..</string>
+    <string name="upgrades_trial_ended_caption">Your free trial has ended and have limited access to all the features. Subscribe to %1$s now.</string>
+    <string name="upgrades_non_upgradeable_caption">You are a %1$s subscriber! You have access to all our features until %2$s. </string>
+    <string name="upgrades_error_fetching_data">Error while fetching plan details</string>
 </resources>
