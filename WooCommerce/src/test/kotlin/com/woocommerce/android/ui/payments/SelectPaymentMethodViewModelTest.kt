@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.payments
 
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -107,6 +108,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         on { getStoreCountryCode(site) }.thenReturn(COUNTRY_CODE)
     }
     private val isTapToPayAvailable: IsTapToPayAvailable = mock()
+    private val appPrefs: AppPrefs = mock()
 
     @Test
     fun `given hub flow, when view model init, then navigate to hub flow emitted`() = testBlocking {
@@ -406,6 +408,19 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                     CardReaderType.BUILT_IN
                 )
             )
+        }
+
+    @Test
+    fun `when on tap too pay clicked, then app prefs stores ttp was used`() =
+        testBlocking {
+            // GIVEN
+            val viewModel = initViewModel(Payment(1L, SIMPLE))
+
+            // WHEN
+            viewModel.onTapToPayClicked()
+
+            // THEN
+            verify(appPrefs).setTTPWasUsedAtLeastOnce()
         }
 
     @Test
@@ -1205,6 +1220,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             cardReaderTracker,
             wooStore,
             isTapToPayAvailable,
+            appPrefs,
             selectPaymentUtmProvider,
         )
     }

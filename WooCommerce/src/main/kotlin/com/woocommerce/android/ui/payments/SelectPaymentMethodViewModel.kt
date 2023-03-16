@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -75,6 +76,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val cardReaderTracker: CardReaderTracker,
     private val wooStore: WooCommerceStore,
     private val isTapToPayAvailable: IsTapToPayAvailable,
+    private val appPrefs: AppPrefs = AppPrefs,
     @Named("select-payment") private val selectPaymentUtmProvider: UtmProvider,
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
@@ -271,6 +273,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     fun onTapToPayClicked() {
+        appPrefs.setTTPWasUsedAtLeastOnce()
         triggerEvent(NavigateToCardReaderPaymentFlow(cardReaderPaymentFlowParam, BUILT_IN))
     }
 
