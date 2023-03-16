@@ -24,7 +24,7 @@ class UpgradesViewModelTest : BaseUnitTest() {
     @Before
     fun setup() {
         val siteModel = SiteModel().apply {
-           planId = FREE_TRIAL_PLAN_ID
+            planId = FREE_TRIAL_PLAN_ID
         }
         createSut(siteModel)
     }
