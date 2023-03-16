@@ -1,7 +1,6 @@
 package com.woocommerce.android.support.zendesk
 
 import android.content.Context
-import android.os.Parcelable
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.zendesk.RequestConstants.requestCreationIdentityNotSetErrorMessage
 import com.woocommerce.android.support.zendesk.RequestConstants.requestCreationTimeoutErrorMessage
@@ -18,7 +17,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
 import zendesk.support.CreateRequest
@@ -142,96 +140,13 @@ class ZendeskTicketRepository(
     }
 }
 
-sealed class ZendeskTicketType(
-    val form: Long,
-    val categoryName: String,
-    val subcategoryName: String,
-    val mandatoryTags: List<String> = emptyList(),
-    val excludedTags: List<String> = emptyList(),
-    val additionalTags: List<String>
-) : Parcelable {
-    fun buildFullTagListWith(conditionalTags: List<String>) =
-        (mandatoryTags + conditionalTags + additionalTags)
-            .filter { excludedTags.contains(it).not() }
-
-    @Parcelize
-    data class MobileApp(
-        private val extraTags: List<String>
-    ) : ZendeskTicketType(
-        form = TicketCustomField.wooMobileFormID,
-        categoryName = ZendeskConstants.mobileAppCategory,
-        subcategoryName = ZendeskConstants.mobileSubcategoryValue,
-        mandatoryTags = listOf(ZendeskTags.mobileApp),
-        additionalTags = extraTags
-    )
-
-    @Parcelize
-    data class InPersonPayments(
-        private val extraTags: List<String>
-    ) : ZendeskTicketType(
-        form = TicketCustomField.wooMobileFormID,
-        categoryName = ZendeskConstants.mobileAppCategory,
-        subcategoryName = ZendeskConstants.mobileSubcategoryValue,
-        mandatoryTags = listOf(
-            ZendeskTags.woocommerceMobileApps,
-            ZendeskTags.productAreaAppsInPersonPayments
-        ),
-        additionalTags = extraTags
-    )
-
-    @Parcelize
-    data class Payments(
-        private val extraTags: List<String>
-    ) : ZendeskTicketType(
-        form = TicketCustomField.wooFormID,
-        categoryName = ZendeskConstants.supportCategory,
-        subcategoryName = ZendeskConstants.paymentsSubcategoryValue,
-        mandatoryTags = listOf(
-            ZendeskTags.paymentsProduct,
-            ZendeskTags.paymentsProductArea,
-            ZendeskTags.mobileAppWooTransfer,
-            ZendeskTags.supportCategoryTag,
-            ZendeskTags.paymentSubcategoryTag
-        ),
-        excludedTags = listOf(ZendeskTags.jetpackTag),
-        additionalTags = extraTags
-    )
-
-    @Parcelize
-    data class WooPlugin(
-        private val extraTags: List<String>
-    ) : ZendeskTicketType(
-        form = TicketCustomField.wooFormID,
-        categoryName = ZendeskConstants.supportCategory,
-        subcategoryName = "",
-        mandatoryTags = listOf(
-            ZendeskTags.woocommerceCore,
-            ZendeskTags.mobileAppWooTransfer,
-            ZendeskTags.supportCategoryTag
-        ),
-        excludedTags = listOf(ZendeskTags.jetpackTag),
-        additionalTags = extraTags
-    )
-
-    @Parcelize
-    data class OtherPlugins(
-        private val extraTags: List<String>
-    ) : ZendeskTicketType(
-        form = TicketCustomField.wooFormID,
-        categoryName = ZendeskConstants.supportCategory,
-        subcategoryName = ZendeskConstants.storeSubcategoryValue,
-        mandatoryTags = listOf(
-            ZendeskTags.productAreaWooExtensions,
-            ZendeskTags.mobileAppWooTransfer,
-            ZendeskTags.supportCategoryTag,
-            ZendeskTags.storeSubcategoryTag
-        ),
-        excludedTags = listOf(ZendeskTags.jetpackTag),
-        additionalTags = extraTags
-    )
+sealed class ZendeskException(message: String) : Exception(message) {
+    object IdentityNotSetException : ZendeskException(requestCreationTimeoutErrorMessage)
+    object RequestCreationTimeoutException : ZendeskException(requestCreationIdentityNotSetErrorMessage)
+    data class RequestCreationFailedException(private val errorMessage: String) : ZendeskException(errorMessage)
 }
 
-private object ZendeskConstants {
+object ZendeskConstants {
     const val supportCategory = "Support"
     const val mobileAppCategory = "Mobile App"
     const val mobileSubcategoryValue = "WooCommerce Mobile Apps"
@@ -239,7 +154,7 @@ private object ZendeskConstants {
     const val storeSubcategoryValue = "Store"
 }
 
-private object TicketCustomField {
+object TicketCustomField {
     const val appVersion = 360000086866L
     const val blogList = 360000087183L
     const val deviceFreeSpace = 360000089123L
@@ -272,12 +187,6 @@ object ZendeskTags {
     const val jetpackTag = "jetpack"
     const val platformTag = "Android"
     const val wpComTag = "wpcom"
-}
-
-sealed class ZendeskException(message: String) : Exception(message) {
-    object IdentityNotSetException : ZendeskException(requestCreationTimeoutErrorMessage)
-    object RequestCreationTimeoutException : ZendeskException(requestCreationIdentityNotSetErrorMessage)
-    data class RequestCreationFailedException(private val errorMessage: String) : ZendeskException(errorMessage)
 }
 
 private object RequestConstants {
