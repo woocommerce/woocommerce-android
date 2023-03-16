@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.upgrades
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.extensions.formatStyleFull
 import com.woocommerce.android.support.ZendeskTags
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
@@ -10,6 +11,9 @@ import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_PLAN_ID
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesEvent
+import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState
+import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Error
+import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.NonUpgradeable
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialEnded
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialInProgress
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -48,7 +52,7 @@ class UpgradesViewModelTest : BaseUnitTest() {
                 type = SitePlan.Type.FREE_TRIAL,
                 remainingTrialPeriod = Period.ofDays(1)
             )
-            var viewModelState: UpgradesViewModel.UpgradesViewState? = null
+            var viewModelState: UpgradesViewState? = null
             sut.upgradesState.observeForever {
                 viewModelState = it
             }
@@ -75,7 +79,7 @@ class UpgradesViewModelTest : BaseUnitTest() {
                 type = SitePlan.Type.FREE_TRIAL,
                 remainingTrialPeriod = Period.ZERO
             )
-            var viewModelState: UpgradesViewModel.UpgradesViewState? = null
+            var viewModelState: UpgradesViewState? = null
             sut.upgradesState.observeForever {
                 viewModelState = it
             }
@@ -87,6 +91,45 @@ class UpgradesViewModelTest : BaseUnitTest() {
                     name = TRIAL_ENDED_TEST_SITE_NAME
                 )
             )
+        }
+
+    @Test
+    fun `when SitePlan is NOT free trial, then state is set to NonUpgradeable`() =
+        testBlocking {
+            // Given
+            createSut(
+                type = SitePlan.Type.OTHER,
+                remainingTrialPeriod = Period.ZERO
+            )
+            var viewModelState: UpgradesViewState? = null
+            sut.upgradesState.observeForever {
+                viewModelState = it
+            }
+
+            // Then
+            assertThat(viewModelState).isNotNull
+            assertThat(viewModelState).isEqualTo(
+                NonUpgradeable(
+                    name = FREE_TRIAL_TEST_SITE_NAME,
+                    currentPlanEndDate = SITE_PLAN_EXPIRATION_DATE
+                        .toLocalDate().formatStyleFull()
+                )
+            )
+        }
+
+    @Test
+    fun `when SitePlan is null, then state is set to Error`() =
+        testBlocking {
+            // Given
+            createSutWithoutSitePlan()
+            var viewModelState: UpgradesViewState? = null
+            sut.upgradesState.observeForever {
+                viewModelState = it
+            }
+
+            // Then
+            assertThat(viewModelState).isNotNull
+            assertThat(viewModelState).isEqualTo(Error)
         }
 
     @Test
@@ -141,7 +184,7 @@ class UpgradesViewModelTest : BaseUnitTest() {
     ) {
         val sitePlan = SitePlan(
             name = "WordPress.com $FREE_TRIAL_TEST_SITE_NAME",
-            expirationDate = ZonedDateTime.now(),
+            expirationDate = SITE_PLAN_EXPIRATION_DATE,
             type = type
         )
 
@@ -167,8 +210,30 @@ class UpgradesViewModelTest : BaseUnitTest() {
         )
     }
 
+    private fun createSutWithoutSitePlan(
+        siteModel: SiteModel = SiteModel()
+    ) {
+        selectedSite = mock {
+            on { getIfExists() } doReturn siteModel
+            on { get() } doReturn siteModel
+        }
+
+        planRepository = mock {
+            onBlocking { fetchCurrentPlanDetails(siteModel) } doReturn null
+        }
+
+        sut = UpgradesViewModel(
+            SavedStateHandle(),
+            selectedSite,
+            planRepository,
+            remainingTrialPeriodUseCase,
+            resourceProvider
+        )
+    }
+
     companion object {
         private const val FREE_TRIAL_TEST_SITE_NAME = "Free Trial site"
         private const val TRIAL_ENDED_TEST_SITE_NAME = "Trial ended test site"
+        private val SITE_PLAN_EXPIRATION_DATE = ZonedDateTime.now()
     }
 }
