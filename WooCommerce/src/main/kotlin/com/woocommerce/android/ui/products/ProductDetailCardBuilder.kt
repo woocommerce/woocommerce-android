@@ -695,7 +695,8 @@ class ProductDetailCardBuilder(
                 showTitle = true,
                 onClick = {
                     viewModel.onEditProductCardClicked(
-                        ViewProductSubscription(subscription)
+                        ViewProductSubscription(subscription),
+                        AnalyticsEvent.PRODUCT_DETAILS_VIEW_SUBSCRIPTIONS_TAPPED
                     )
                 }
             )
