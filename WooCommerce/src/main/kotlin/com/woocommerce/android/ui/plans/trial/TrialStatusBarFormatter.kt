@@ -25,7 +25,7 @@ class TrialStatusBarFormatter @AssistedInject constructor(
         val statusMessage = if (daysLeftInTrial > 0) {
             resourceProvider.getString(R.string.free_trial_days_left, daysLeftInTrial)
         } else {
-            resourceProvider.getString(R.string.free_trial_trial_ended)
+            resourceProvider.getString(R.string.free_trial_your_trial_ended)
         }
 
         return SpannableStringBuilder()

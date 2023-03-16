@@ -25,7 +25,8 @@ import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.H
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Loading
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.NonUpgradeable
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialEnded
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Upgradeable
+import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialInProgress
+import java.time.Period
 
 @Composable
 fun UpgradesScreen(viewModel: UpgradesViewModel) {
@@ -66,7 +67,7 @@ fun UpgradesScreen(
                             text = stringResource(R.string.upgrades_current_plan, state.name),
                         )
                     }
-                    if (state is Upgradeable || state is TrialEnded) {
+                    if (state is TrialInProgress || state is TrialEnded) {
                         Divider()
                         WCOutlinedButton(
                             onClick = onUpgradeNowClicked,
@@ -93,11 +94,10 @@ fun UpgradesScreen(
                                     state.planToUpgrade
                                 )
 
-                                is Upgradeable -> stringResource(
+                                is TrialInProgress -> stringResource(
                                     R.string.upgrades_upgradeable_caption,
-                                    state.daysLeftInCurrentPlan,
-                                    state.currentPlanEndDate,
-                                    state.nextPlanMonthlyFee
+                                    state.freeTrialDuration.days,
+                                    state.leftInFreeTrialDuration.days,
                                 )
                             }
                         )
@@ -128,11 +128,11 @@ fun UpgradesScreen(
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun Upgradeable() {
+private fun TrialInProgress() {
     WooThemeWithBackground {
         UpgradesScreen(
             state =
-            Upgradeable("Free Trial", 14, "March 2, 2023", "$45"),
+            TrialInProgress("Free Trial", Period.ofDays(14), Period.ofDays(6)),
             {}, {}
         )
     }
@@ -144,7 +144,7 @@ private fun Upgradeable() {
 private fun TrialEnded() {
     WooThemeWithBackground {
         UpgradesScreen(
-            state = TrialEnded("Free Trial"), {}, {}
+            state = TrialEnded("Trial ended"), {}, {}
         )
     }
 }
