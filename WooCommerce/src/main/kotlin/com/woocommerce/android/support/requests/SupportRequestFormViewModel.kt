@@ -5,11 +5,10 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.TicketType
+import com.woocommerce.android.support.ZendeskException.IdentityNotSetException
 import com.woocommerce.android.support.ZendeskSettings
 import com.woocommerce.android.support.ZendeskTicketRepository
 import com.woocommerce.android.support.help.HelpOrigin
@@ -69,28 +68,21 @@ class SupportRequestFormViewModel @Inject constructor(
         context: Context,
         helpOrigin: HelpOrigin,
         extraTags: List<String>,
-        selectedEmail: String
+        selectedEmail: String,
+        selectedName: String
     ) {
         zendeskSettings.supportEmail = selectedEmail
-        AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
-        onSubmitRequestButtonClicked(
-            context = context,
-            helpOrigin = helpOrigin,
-            extraTags = extraTags
-        )
+        zendeskSettings.supportName = selectedName
+        tracks.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
+        submitSupportRequest(context = context, helpOrigin = helpOrigin, extraTags = extraTags)
     }
 
-    fun onSubmitRequestButtonClicked(
+    fun submitSupportRequest(
         context: Context,
         helpOrigin: HelpOrigin,
-        extraTags: List<String>,
-        verifyIdentity: Boolean = false
+        extraTags: List<String>
     ) {
         val ticketType = viewState.value.ticketType ?: return
-        if (verifyIdentity && AppPrefs.hasSupportEmail().not()) {
-            handleEmptyCredentials()
-            return
-        }
 
         viewState.update { it.copy(isLoading = true) }
         launch {
@@ -122,11 +114,16 @@ class SupportRequestFormViewModel @Inject constructor(
                 triggerEvent(RequestCreationSucceeded)
                 tracks.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_CREATED)
             },
-            onFailure = {
-                triggerEvent(RequestCreationFailed)
-                tracks.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_FAILED)
-            }
+            onFailure = ::handleRequestCreationFailure
         )
+    }
+
+    private fun handleRequestCreationFailure(error: Throwable) {
+        tracks.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_FAILED)
+        when (error) {
+            is IdentityNotSetException -> handleEmptyCredentials()
+            else -> triggerEvent(RequestCreationFailed)
+        }
     }
 
     object RequestCreationSucceeded : Event()

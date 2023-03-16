@@ -8,6 +8,10 @@ import android.telephony.TelephonyManager
 import android.text.TextUtils
 import com.woocommerce.android.extensions.logInformation
 import com.woocommerce.android.extensions.stateLogInformation
+import com.woocommerce.android.support.RequestConstants.requestCreationIdentityNotSetErrorMessage
+import com.woocommerce.android.support.RequestConstants.requestCreationTimeoutErrorMessage
+import com.woocommerce.android.support.ZendeskException.IdentityNotSetException
+import com.woocommerce.android.support.ZendeskException.RequestCreationTimeoutException
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
@@ -30,7 +34,6 @@ import org.wordpress.android.util.UrlUtils
 import zendesk.support.CreateRequest
 import zendesk.support.CustomField
 import zendesk.support.Request
-import zendesk.support.Support
 import java.util.Locale
 
 class ZendeskTicketRepository(
@@ -52,7 +55,7 @@ class ZendeskTicketRepository(
         extraTags: List<String>
     ) = callbackFlow {
         if (zendeskSettings.isIdentitySet.not()) {
-            trySend(Result.failure(Throwable(RequestConstants.requestCreationIdentityNotSetErrorMessage)))
+            trySend(Result.failure(IdentityNotSetException))
             close()
             return@callbackFlow
         }
@@ -87,19 +90,12 @@ class ZendeskTicketRepository(
         // Sets a timeout since the callback might not be called from Zendesk API
         launch {
             delay(RequestConstants.requestCreationTimeout)
-            trySend(Result.failure(Throwable(RequestConstants.requestCreationTimeoutErrorMessage)))
+            trySend(Result.failure(RequestCreationTimeoutException))
             close()
         }
 
         awaitClose()
     }.flowOn(dispatchers.io)
-
-    /**
-     * This function refreshes the Zendesk's request activity if it's currently being displayed. It'll return true if
-     * it's successful. We'll use the return value to decide whether to show a push notification or not.
-     */
-    fun refreshRequest(context: Context, requestId: String?): Boolean =
-        Support.INSTANCE.refreshRequest(requestId, context)
 
     private fun getHomeURLOrHostName(site: SiteModel): String {
         var homeURL = UrlUtils.removeScheme(site.url)
@@ -327,6 +323,11 @@ object ZendeskTags {
     const val supportCategoryTag = "support"
     const val paymentSubcategoryTag = "payment"
     const val jetpackTag = "jetpack"
+}
+
+sealed class ZendeskException(message: String) : Exception(message) {
+    object IdentityNotSetException : ZendeskException(requestCreationTimeoutErrorMessage)
+    object RequestCreationTimeoutException : ZendeskException(requestCreationIdentityNotSetErrorMessage)
 }
 
 private object RequestConstants {

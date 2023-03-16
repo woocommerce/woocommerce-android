@@ -93,8 +93,18 @@ class MoreMenuViewModel @Inject constructor(
             icon = R.drawable.ic_more_menu_inbox,
             isEnabled = moreMenuRepository.isInboxEnabled(),
             onClick = ::onInboxButtonClick
+        ),
+        MenuUiButton(
+            text = R.string.more_menu_button_upgrades,
+            icon = R.drawable.ic_more_menu_upgrades,
+            isEnabled = moreMenuRepository.isUpgradesEnabled(),
+            onClick = ::onUpgradesButtonClick
         )
     )
+
+    private fun onUpgradesButtonClick() {
+        triggerEvent(MoreMenuEvent.NavigateToSubscriptionsEvent)
+    }
 
     private fun buildUnseenReviewsBadgeState(unseenReviewsCount: Int) =
         if (unseenReviewsCount > 0) BadgeState(
@@ -186,6 +196,7 @@ class MoreMenuViewModel @Inject constructor(
 
     sealed class MoreMenuEvent : MultiLiveEvent.Event() {
         object NavigateToSettingsEvent : MoreMenuEvent()
+        object NavigateToSubscriptionsEvent : MoreMenuEvent()
         object StartSitePickerEvent : MoreMenuEvent()
         object ViewPayments : MoreMenuEvent()
         data class ViewAdminEvent(val url: String) : MoreMenuEvent()
