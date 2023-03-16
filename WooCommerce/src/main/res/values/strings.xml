@@ -3182,4 +3182,5 @@
     <string name="upgrades_upgradeable_caption">You are in the %1$d-day free trial. The free trial will end in %2$d days. Upgrade to unlock new features and keep your store running..</string>
     <string name="upgrades_trial_ended_caption">Your free trial has ended and have limited access to all the features. Subscribe to %1$s now.</string>
     <string name="upgrades_non_upgradeable_caption">You are a %1$s subscriber! You have access to all our features until %2$s. </string>
+    <string name="upgrades_error_fetching_data">Error while fetching plan details</string>
 </resources>

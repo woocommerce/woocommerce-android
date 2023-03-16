@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_PERIOD
 import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_UPGRADE_PLAN
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
+import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Error
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Loading
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.NonUpgradeable
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialEnded
@@ -71,7 +72,7 @@ class UpgradesViewModel @Inject constructor(
                             }
                         }
                     } else {
-                        Loading
+                        Error
                     }
 
                     _upgradesState.value = newState
@@ -95,6 +96,8 @@ class UpgradesViewModel @Inject constructor(
         }
 
         object Loading : UpgradesViewState
+
+        object Error : UpgradesViewState
 
         data class TrialEnded(
             override val name: String,
