@@ -8,6 +8,7 @@ import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -60,6 +61,7 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.MORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.MY_STORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
+import com.woocommerce.android.ui.main.MainActivityViewModel.BottomBarState
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForAppLink
@@ -79,9 +81,12 @@ import com.woocommerce.android.ui.mystore.MyStoreFragmentDirections
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState.TrialStatusBarState
+import com.woocommerce.android.ui.plans.trial.TrialStatusBarFormatterFactory
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -133,10 +138,10 @@ class MainActivity :
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var crashLogging: CrashLogging
     @Inject lateinit var appWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
+    @Inject lateinit var serviceFactory: TrialStatusBarFormatterFactory
 
     private val viewModel: MainActivityViewModel by viewModels()
 
-    private var isBottomNavShowing = true
     private var unfilledOrderCount: Int = 0
     private var restoreToolbarHeight = 0
     private var menu: Menu? = null
@@ -701,6 +706,21 @@ class MainActivity :
         }
 
         observeMoreMenuBadgeStateEvent()
+        if (FeatureFlag.FREE_TRIAL.isEnabled()) {
+            observeTrialStatus()
+        }
+        observeBottomBarState()
+    }
+
+    private fun observeBottomBarState() {
+        viewModel.bottomBarState.observe(this) { bottomBarState ->
+            val show = when (bottomBarState) {
+                BottomBarState.Hidden -> false
+                BottomBarState.Visible -> true
+            }
+
+            WooAnimUtils.animateBottomBar(binding.bottomNav, show, Duration.MEDIUM)
+        }
     }
 
     private fun observeMoreMenuBadgeStateEvent() {
@@ -709,6 +729,20 @@ class MainActivity :
                 is UnseenReviews -> binding.bottomNav.showMoreMenuUnseenReviewsBadge(moreMenuBadgeState.count)
                 Hidden -> binding.bottomNav.hideMoreMenuBadge()
             }.exhaustive
+        }
+    }
+
+    private fun observeTrialStatus() {
+        viewModel.trialStatusBarState.observe(this) { trialStatusBarState ->
+            when (trialStatusBarState) {
+                TrialStatusBarState.Hidden ->
+                    binding.trialBar.visibility = View.GONE
+                is TrialStatusBarState.Visible -> {
+                    binding.trialBar.text = serviceFactory.create(navController).format(trialStatusBarState.daysLeft)
+                    binding.trialBar.movementMethod = LinkMovementMethod.getInstance()
+                    binding.trialBar.visibility = View.VISIBLE
+                }
+            }
         }
     }
 
@@ -928,17 +962,11 @@ class MainActivity :
     }
 
     override fun hideBottomNav() {
-        if (isBottomNavShowing) {
-            isBottomNavShowing = false
-            WooAnimUtils.animateBottomBar(binding.bottomNav, false, Duration.MEDIUM)
-        }
+        viewModel.hideBottomNav()
     }
 
     override fun showBottomNav() {
-        if (!isBottomNavShowing) {
-            isBottomNavShowing = true
-            WooAnimUtils.animateBottomBar(binding.bottomNav, true, Duration.SHORT)
-        }
+        viewModel.showBottomNav()
     }
 
     /**

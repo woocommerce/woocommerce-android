@@ -5,13 +5,12 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.support.TicketType
-import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.support.ZendeskException.IdentityNotSetException
+import com.woocommerce.android.support.ZendeskSettings
+import com.woocommerce.android.support.ZendeskTicketRepository
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -23,15 +22,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.store.AccountStore
 import zendesk.support.Request
 import javax.inject.Inject
 
 @HiltViewModel
 class SupportRequestFormViewModel @Inject constructor(
-    private val accountStore: AccountStore,
-    private val zendeskHelper: ZendeskHelper,
-    private val supportHelper: SupportHelper,
+    private val zendeskTicketRepository: ZendeskTicketRepository,
+    private val zendeskSettings: ZendeskSettings,
     private val selectedSite: SelectedSite,
     private val tracks: AnalyticsTrackerWrapper,
     savedState: SavedStateHandle
@@ -71,32 +68,25 @@ class SupportRequestFormViewModel @Inject constructor(
         context: Context,
         helpOrigin: HelpOrigin,
         extraTags: List<String>,
-        selectedEmail: String
+        selectedEmail: String,
+        selectedName: String
     ) {
-        zendeskHelper.setSupportEmail(selectedEmail)
-        AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
-        onSubmitRequestButtonClicked(
-            context = context,
-            helpOrigin = helpOrigin,
-            extraTags = extraTags
-        )
+        zendeskSettings.supportEmail = selectedEmail
+        zendeskSettings.supportName = selectedName
+        tracks.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
+        submitSupportRequest(context = context, helpOrigin = helpOrigin, extraTags = extraTags)
     }
 
-    fun onSubmitRequestButtonClicked(
+    fun submitSupportRequest(
         context: Context,
         helpOrigin: HelpOrigin,
-        extraTags: List<String>,
-        verifyIdentity: Boolean = false
+        extraTags: List<String>
     ) {
         val ticketType = viewState.value.ticketType ?: return
-        if (verifyIdentity && AppPrefs.hasSupportEmail().not()) {
-            handleEmptyCredentials()
-            return
-        }
 
         viewState.update { it.copy(isLoading = true) }
         launch {
-            zendeskHelper.createRequest(
+            zendeskTicketRepository.createRequest(
                 context,
                 helpOrigin,
                 ticketType,
@@ -109,14 +99,12 @@ class SupportRequestFormViewModel @Inject constructor(
     }
 
     private fun handleEmptyCredentials() {
-        if (AppPrefs.hasSupportEmail()) {
-            AppPrefs.getSupportEmail()
-        } else {
-            supportHelper.getSupportEmailAndNameSuggestion(
-                accountStore.account,
-                selectedSite.getIfExists()
-            ).first
-        }.let { triggerEvent(ShowSupportIdentityInputDialog(it.orEmpty())) }
+        triggerEvent(
+            ShowSupportIdentityInputDialog(
+                emailSuggestion = zendeskSettings.supportEmail.orEmpty(),
+                nameSuggestion = zendeskSettings.supportName.orEmpty()
+            )
+        )
     }
 
     private fun Result<Request?>.handleCreateRequestResult() {
@@ -126,16 +114,24 @@ class SupportRequestFormViewModel @Inject constructor(
                 triggerEvent(RequestCreationSucceeded)
                 tracks.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_CREATED)
             },
-            onFailure = {
-                triggerEvent(RequestCreationFailed)
-                tracks.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_FAILED)
-            }
+            onFailure = ::handleRequestCreationFailure
         )
+    }
+
+    private fun handleRequestCreationFailure(error: Throwable) {
+        tracks.track(AnalyticsEvent.SUPPORT_NEW_REQUEST_FAILED)
+        when (error) {
+            is IdentityNotSetException -> handleEmptyCredentials()
+            else -> triggerEvent(RequestCreationFailed)
+        }
     }
 
     object RequestCreationSucceeded : Event()
     object RequestCreationFailed : Event()
-    data class ShowSupportIdentityInputDialog(val emailSuggestion: String) : Event()
+    data class ShowSupportIdentityInputDialog(
+        val emailSuggestion: String,
+        val nameSuggestion: String
+    ) : Event()
 
     @Parcelize
     data class ViewState(

@@ -21,6 +21,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.network.rest.wpcom.site.Domain
 import javax.inject.Inject
 
 @HiltViewModel
@@ -37,6 +38,7 @@ class DomainDashboardViewModel @Inject constructor(
     }
 
     private var hasFreeCredits = false
+    private lateinit var freeDomain: Domain
 
     private val _viewState = MutableStateFlow<ViewState>(LoadingState)
     val viewState = _viewState.asLiveData()
@@ -77,7 +79,7 @@ class DomainDashboardViewModel @Inject constructor(
         if (domainsResult.isFailure) {
             _viewState.update { ErrorState() }
         } else {
-            val freeDomain = domainsResult.getOrThrow().first { it.wpcomDomain }
+            freeDomain = domainsResult.getOrThrow().first { it.wpcomDomain }
             val paidDomains = domainsResult.getOrNull()
                 ?.filter { !it.wpcomDomain && it.domain != null } ?: emptyList()
             _viewState.update {
@@ -108,7 +110,7 @@ class DomainDashboardViewModel @Inject constructor(
     }
 
     fun onFindDomainButtonTapped() {
-        triggerEvent(NavigateToDomainSearch(hasFreeCredits))
+        triggerEvent(NavigateToDomainSearch(hasFreeCredits, freeDomain.domain))
     }
 
     fun onLearnMoreButtonTapped() {
@@ -138,6 +140,6 @@ class DomainDashboardViewModel @Inject constructor(
         }
     }
 
-    data class NavigateToDomainSearch(val hasFreeCredits: Boolean) : MultiLiveEvent.Event()
+    data class NavigateToDomainSearch(val hasFreeCredits: Boolean, val freeUrl: String?) : MultiLiveEvent.Event()
     data class ShowMoreAboutDomains(val url: String) : MultiLiveEvent.Event()
 }

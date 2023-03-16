@@ -130,7 +130,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     private fun showOnboardingState(state: CardReaderOnboardingState) {
         when (state) {
             is OnboardingCompleted -> {
-                continueFlow(state.countryCode)
+                continueFlow()
             }
             is StoreCountryNotSupported ->
                 viewState.value = Country(
@@ -196,7 +196,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 viewState.value = StripeAccountPendingRequirementsState(
                     onContactSupportActionClicked = ::onContactSupportClicked,
                     onLearnMoreActionClicked = ::onLearnMoreClicked,
-                    onButtonActionClicked = { onSkipPendingRequirementsClicked(state.countryCode) },
+                    onButtonActionClicked = { onSkipPendingRequirementsClicked() },
                     dueDate = formatDueDate(state)
                 )
             is StripeAccountOverdueRequirement ->
@@ -235,7 +235,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                         )
                     },
                     onCashOnDeliveryEnabledSuccessfully =
-                    { (::onCashOnDeliveryEnabledSuccessfully)(state.countryCode) },
+                    { (::onCashOnDeliveryEnabledSuccessfully)() },
                     onEnableCashOnDeliveryClicked = {
                         (::onEnableCashOnDeliveryClicked)(
                             state.countryCode,
@@ -267,11 +267,11 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 version
             )
         )
-        continueFlow(countryCode)
+        continueFlow()
     }
 
-    private fun onCashOnDeliveryEnabledSuccessfully(countryCode: String) {
-        continueFlow(countryCode)
+    private fun onCashOnDeliveryEnabledSuccessfully() {
+        continueFlow()
     }
 
     @Suppress("LongMethod")
@@ -295,7 +295,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     version
                 )
             },
-            onCashOnDeliveryEnabledSuccessfully = { (::onCashOnDeliveryEnabledSuccessfully)(countryCode) },
+            onCashOnDeliveryEnabledSuccessfully = { (::onCashOnDeliveryEnabledSuccessfully)() },
             onEnableCashOnDeliveryClicked = {
                 (::onEnableCashOnDeliveryClicked)(
                     countryCode,
@@ -328,7 +328,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                                 version
                             )
                         },
-                        onCashOnDeliveryEnabledSuccessfully = { (::onCashOnDeliveryEnabledSuccessfully)(countryCode) },
+                        onCashOnDeliveryEnabledSuccessfully = { (::onCashOnDeliveryEnabledSuccessfully)() },
                         onEnableCashOnDeliveryClicked = {
                             (::onEnableCashOnDeliveryClicked)(
                                 countryCode,
@@ -355,7 +355,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                                 version
                             )
                         },
-                        onCashOnDeliveryEnabledSuccessfully = { (::onCashOnDeliveryEnabledSuccessfully)(countryCode) },
+                        onCashOnDeliveryEnabledSuccessfully = { (::onCashOnDeliveryEnabledSuccessfully)() },
                         onEnableCashOnDeliveryClicked = {
                             (::onEnableCashOnDeliveryClicked)(
                                 countryCode,
@@ -393,17 +393,17 @@ class CardReaderOnboardingViewModel @Inject constructor(
         triggerEvent(NavigateToUrlInGenericWebView(learnMoreUrlProvider.provideLearnMoreUrlFor(IN_PERSON_PAYMENTS)))
     }
 
-    private fun onSkipPendingRequirementsClicked(storeCountryCode: String) {
-        continueFlow(storeCountryCode)
+    private fun onSkipPendingRequirementsClicked() {
+        continueFlow()
     }
 
-    private fun continueFlow(storeCountryCode: String) {
+    private fun continueFlow() {
         when (val params = arguments.cardReaderOnboardingParam.cardReaderFlowParam) {
             CardReaderFlowParam.CardReadersHub -> {
                 triggerEvent(OnboardingEvent.ContinueToHub(params))
             }
             is CardReaderFlowParam.PaymentOrRefund -> {
-                triggerEvent(OnboardingEvent.ContinueToConnection(params, storeCountryCode))
+                triggerEvent(OnboardingEvent.ContinueToConnection(params, requireNotNull(arguments.cardReaderType)))
             }
         }.exhaustive
     }
@@ -423,7 +423,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
         data class ContinueToHub(val cardReaderFlowParam: CardReaderFlowParam) : Event()
         data class ContinueToConnection(
             val cardReaderFlowParam: CardReaderFlowParam,
-            val countryCode: String,
+            val cardReaderType: CardReaderType,
         ) : Event()
     }
 
