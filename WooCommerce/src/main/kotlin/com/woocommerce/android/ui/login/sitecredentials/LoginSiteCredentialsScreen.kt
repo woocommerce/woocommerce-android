@@ -129,7 +129,12 @@ fun LoginSiteCredentialsScreen(
             onDismissRequest = onErrorDialogDismissed,
             buttons = {
                 Row(modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))) {
-                    WCTextButton(onClick = onHelpButtonClick) {
+                    WCTextButton(
+                        onClick = {
+                            onErrorDialogDismissed()
+                            onHelpButtonClick()
+                        }
+                    ) {
                         Text(text = stringResource(id = R.string.login_site_address_more_help))
                     }
                     Spacer(modifier = Modifier.weight(1f))
