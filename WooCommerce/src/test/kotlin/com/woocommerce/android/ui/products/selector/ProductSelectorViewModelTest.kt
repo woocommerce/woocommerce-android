@@ -18,9 +18,8 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
-
 @ExperimentalCoroutinesApi
-internal class ProductSelectorViewModelTest: BaseUnitTest() {
+internal class ProductSelectorViewModelTest : BaseUnitTest() {
     companion object {
         private val VALID_PRODUCT = ProductTestUtils.generateProduct(productId = 1L)
         private val DRAFT_PRODUCT = ProductTestUtils.generateProduct(productId = 2L, customStatus = "draft")
