@@ -35,6 +35,9 @@
             <argument
                 android:name="selectedItems"
                 app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$SelectedItem[]" />
+            <argument
+                android:name="restrictions"
+                app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorRestriction[]" />
         </action>
         <action
             android:id="@+id/action_editCouponFragment_to_couponRestrictionsFragment"
