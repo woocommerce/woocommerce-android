@@ -523,9 +523,15 @@ platform :android do
       project_url: GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL,
       target_files: files,
       locales: SUPPORTED_LOCALES.map { |hsh| [hsh[:glotpress], hsh[:google_play]] },
-      source_locale: "en-US",
       download_path: download_path
     )
+
+    # Copy the source `.txt` files (used as source of truth when we generated the `.po`) to the `fastlane/*metadata/android/en-US` dir,
+    # as `en-US` is the source language, and isn't exported from GlotPress during `gp_downloadmetadata`
+    files.each do |key, h|
+      source_file = key.to_s.start_with?('release_note_') ? 'release_notes.txt' : h[:desc]
+      FileUtils.cp(File.join(ORIGINALS_METADATA_DIR_PATH, source_file), File.join(download_path, 'en-US', h[:desc]))
+    end
 
     android_create_xml_release_notes(
       download_path: download_path,

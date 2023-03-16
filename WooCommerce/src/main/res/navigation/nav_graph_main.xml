@@ -169,6 +169,10 @@
         android:id="@+id/action_global_item_selector_dialog"
         app:destination="@id/itemSelectorDialog" />
     <fragment
+        android:id="@+id/subscriptions"
+        android:name="com.woocommerce.android.ui.upgrades.UpgradesFragment"
+        android:label="fragment_subscriptions" />
+    <fragment
         android:id="@+id/moreMenu"
         android:name="com.woocommerce.android.ui.moremenu.MoreMenuFragment"
         android:label="fragment_more_menu">
@@ -192,6 +196,9 @@
                 app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam"
                 app:nullable="false" />
         </action>
+        <action
+            android:id="@+id/action_moreMenu_to_subscriptions"
+            app:destination="@id/subscriptions"/>
     </fragment>
     <fragment
         android:id="@+id/feedbackSurveyFragment"

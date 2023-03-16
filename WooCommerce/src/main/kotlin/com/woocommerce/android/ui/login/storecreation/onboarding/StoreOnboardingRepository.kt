@@ -26,6 +26,7 @@ class StoreOnboardingRepository @Inject constructor(
             else -> {
                 val mobileSupportedTasks = result.model?.map { it.toOnboardingTask() }
                     ?.filter { it.type != MOBILE_UNSUPPORTED }
+                    ?.sortedBy { it.type.order }
                     ?.toMutableList()
                     ?: emptyList<OnboardingTask>().toMutableList()
 
@@ -78,12 +79,12 @@ class StoreOnboardingRepository @Inject constructor(
         val isVisited: Boolean,
     )
 
-    enum class OnboardingTaskType(val id: String) {
-        ABOUT_YOUR_STORE("store_details"),
-        ADD_FIRST_PRODUCT("products"),
-        LAUNCH_YOUR_STORE("launch_site"),
-        CUSTOMIZE_DOMAIN("add_domain"),
-        WC_PAYMENTS("woocommerce-payments"),
-        MOBILE_UNSUPPORTED("mobile-unsupported")
+    enum class OnboardingTaskType(val id: String, val order: Int) {
+        ABOUT_YOUR_STORE(id = "store_details", order = 1),
+        ADD_FIRST_PRODUCT(id = "products", order = 2),
+        LAUNCH_YOUR_STORE(id = "launch_site", order = 3),
+        CUSTOMIZE_DOMAIN(id = "add_domain", order = 4),
+        WC_PAYMENTS(id = "woocommerce-payments", order = 5),
+        MOBILE_UNSUPPORTED(id = "mobile-unsupported", order = -1)
     }
 }
