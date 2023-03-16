@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.transition.MaterialContainerTransform
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -20,7 +21,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class OnboardingFragment : BaseFragment() {
+class StoreOnboardingFragment : BaseFragment() {
     private val viewModel: StoreOnboardingViewModel by activityViewModels()
     private lateinit var rootView: ComposeView
 
@@ -62,6 +63,10 @@ class OnboardingFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
+                is StoreOnboardingViewModel.NavigateToLaunchStore ->
+                    findNavController().navigateSafely(
+                        directions = StoreOnboardingFragmentDirections.actionOnboardingFragmentToLaunchStoreFragment()
+                    )
             }
         }
     }

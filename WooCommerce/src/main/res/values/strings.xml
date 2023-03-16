@@ -3137,6 +3137,14 @@
     <string name="store_onboarding_full_screen_transition_name">Onboarding full screen</string>
     <string name="store_onboarding_collapsed_transition_name">Onboarding collapsed list</string>
     <string name="store_onboarding_menu_share_feedback">Share feedback</string>
+    <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">To launch your store, you need to upgrade to our plan. &lt;u&gt;Upgrade&lt;/u&gt;</string>
+    <string name="store_onboarding_launch_store_button">Publish my store</string>
+    <string name="store_onboarding_launch_store_share_url_button">Share URL</string>
+    <string name="store_onboarding_launch_store_back_to_store_button">Back to My Store</string>
+    <string name="store_onboarding_launch_preview_title">Preview</string>
+    <string name="store_onboarding_launched_title">Your store is live!</string>
+    <string name="store_onboarding_launch_store_task_private_tag">Private</string>
+    <string name="store_onboarding_share_url_error">Unable to share store url</string>
 
     <!--
     Support Request
