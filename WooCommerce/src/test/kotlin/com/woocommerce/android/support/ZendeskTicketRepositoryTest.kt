@@ -2,6 +2,7 @@ package com.woocommerce.android.support
 
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.zendesk.TicketType
+import com.woocommerce.android.support.zendesk.TicketType.MobileApp
 import com.woocommerce.android.support.zendesk.ZendeskEnvironmentDataSource
 import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetException
 import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationFailedException
@@ -64,7 +65,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             val result = sut.createRequest(
                 context = mock(),
                 origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
-                ticketType = TicketType.MobileApp(emptyList()),
+                ticketType = MobileApp(emptyList()),
                 selectedSite = mock(),
                 subject = "subject",
                 description = "description"
@@ -88,7 +89,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             result = sut.createRequest(
                 context = mock(),
                 origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
-                ticketType = TicketType.MobileApp(emptyList()),
+                ticketType = MobileApp(emptyList()),
                 selectedSite = null,
                 subject = "subject",
                 description = "description"
@@ -123,7 +124,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             result = sut.createRequest(
                 context = mock(),
                 origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
-                ticketType = TicketType.MobileApp(emptyList()),
+                ticketType = MobileApp(emptyList()),
                 selectedSite = null,
                 subject = "subject",
                 description = "description"
@@ -153,7 +154,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             result = sut.createRequest(
                 context = mock(),
                 origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
-                ticketType = TicketType.MobileApp(emptyList()),
+                ticketType = MobileApp(emptyList()),
                 selectedSite = null,
                 subject = "subject",
                 description = "description"
@@ -182,7 +183,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             sut.createRequest(
                 context = mock(),
                 origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
-                ticketType = TicketType.MobileApp(expectedTags.toList()),
+                ticketType = MobileApp(expectedTags.toList()),
                 selectedSite = null,
                 subject = expectedSubject,
                 description = expectedDescription
@@ -212,7 +213,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                 sut.createRequest(
                     context = mock(),
                     origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
-                    ticketType = TicketType.MobileApp(emptyList()),
+                    ticketType = MobileApp(emptyList()),
                     selectedSite = null,
                     subject = "subject",
                     description = "description"
@@ -379,7 +380,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                 sut.createRequest(
                     context = mock(),
                     origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
-                    ticketType = TicketType.MobileApp(emptyList()),
+                    ticketType = MobileApp(emptyList()),
                     selectedSite = selectedSite,
                     subject = "subject",
                     description = "description"
@@ -410,11 +411,10 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                 sut.createRequest(
                     context = mock(),
                     origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
-                    ticketType = TicketType.MobileApp,
+                    ticketType = MobileApp(emptyList()),
                     selectedSite = null,
                     subject = "subject",
-                    description = "description",
-                    extraTags = emptyList()
+                    description = "description"
                 ).first()
             }
 
@@ -442,11 +442,10 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                 sut.createRequest(
                     context = mock(),
                     origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
-                    ticketType = TicketType.MobileApp,
+                    ticketType = MobileApp(emptyList()),
                     selectedSite = null,
                     subject = "subject",
-                    description = "description",
-                    extraTags = emptyList()
+                    description = "description"
                 ).first()
             }
 
@@ -477,11 +476,10 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                 sut.createRequest(
                     context = mock(),
                     origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
-                    ticketType = TicketType.MobileApp,
+                    ticketType = MobileApp(emptyList()),
                     selectedSite = null,
                     subject = "subject",
-                    description = "description",
-                    extraTags = emptyList()
+                    description = "description"
                 ).first()
             }
 
@@ -507,11 +505,10 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                 sut.createRequest(
                     context = mock(),
                     origin = helpOrigin,
-                    ticketType = TicketType.MobileApp,
+                    ticketType = MobileApp(emptyList()),
                     selectedSite = null,
                     subject = "subject",
-                    description = "description",
-                    extraTags = emptyList()
+                    description = "description"
                 ).first()
             }
 
