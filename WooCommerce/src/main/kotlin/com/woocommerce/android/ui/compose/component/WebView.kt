@@ -34,12 +34,13 @@ import kotlinx.coroutines.flow.onCompletion
 import org.wordpress.android.fluxc.network.UserAgent
 
 @SuppressLint("SetJavaScriptEnabled", "ClickableViewAccessibility")
+@Suppress("ComplexMethod")
 @Composable
 fun WCWebView(
     url: String,
     userAgent: UserAgent,
-    onUrlLoaded: (String) -> Unit,
     modifier: Modifier = Modifier,
+    onUrlLoaded: (String) -> Unit = {},
     captureBackPresses: Boolean = true,
     wpComAuthenticator: WPComWebViewAuthenticator? = null,
     webViewNavigator: WebViewNavigator = rememberWebViewNavigator(),
@@ -68,7 +69,8 @@ fun WCWebView(
     Box(modifier = modifier) {
         fun getWebViewAlpha(): Float {
             return if (progressIndicator is Circular ||
-                progressIndicator is Linear && progressIndicator.message != null) {
+                progressIndicator is Linear && progressIndicator.message != null
+            ) {
                 if (progress == 100) 1f else 0f
             } else {
                 1f
