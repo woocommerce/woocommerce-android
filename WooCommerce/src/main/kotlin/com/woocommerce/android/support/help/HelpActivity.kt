@@ -18,13 +18,14 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_F
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_STEP
 import com.woocommerce.android.databinding.ActivityHelpBinding
 import com.woocommerce.android.extensions.exhaustive
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.support.SSRActivity
 import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.support.TicketType
 import com.woocommerce.android.support.WooLogViewerActivity
-import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.support.ZendeskSettings
 import com.woocommerce.android.support.help.HelpViewModel.ContactSupportEvent
 import com.woocommerce.android.support.help.HelpViewModel.ContactSupportEvent.CreateTicket
 import com.woocommerce.android.support.help.HelpViewModel.ContactSupportEvent.ShowLoading
@@ -35,7 +36,6 @@ import com.woocommerce.android.ui.login.localnotifications.LoginNotificationSche
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Inject
 
@@ -46,7 +46,7 @@ class HelpActivity : AppCompatActivity() {
     @Inject lateinit var accountRepository: AccountRepository
     @Inject lateinit var siteStore: SiteStore
     @Inject lateinit var supportHelper: SupportHelper
-    @Inject lateinit var zendeskHelper: ZendeskHelper
+    @Inject lateinit var zendeskSettings: ZendeskSettings
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var loginNotificationScheduler: LoginNotificationScheduler
 
@@ -122,7 +122,7 @@ class HelpActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        refreshContactEmailText()
+        refreshContactInfo()
         AnalyticsTracker.trackViewShown(this)
     }
 
@@ -161,37 +161,24 @@ class HelpActivity : AppCompatActivity() {
         extraTags: List<String> = emptyList(),
         createNewTicket: Boolean = false
     ) {
-        val emailSuggestion = if (AppPrefs.hasSupportEmail()) {
-            AppPrefs.getSupportEmail()
-        } else {
-            supportHelper
-                .getSupportEmailAndNameSuggestion(accountRepository.getUserAccount(), selectedSiteOrNull()).first
-        }
-
-        supportHelper.showSupportIdentityInputDialog(this, emailSuggestion) { email, _ ->
-            zendeskHelper.setSupportEmail(email)
+        supportHelper.showSupportIdentityInputDialog(
+            context = this,
+            email = zendeskSettings.supportEmail,
+            name = zendeskSettings.supportName
+        ) { email, name ->
+            zendeskSettings.supportEmail = email
+            zendeskSettings.supportName = name
+            refreshContactInfo()
             AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
             if (createNewTicket) createNewZendeskTicket(ticketType, extraTags)
         }
         AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_FORM_VIEWED)
     }
 
-    private fun refreshContactEmailText() {
-        val supportEmail = AppPrefs.getSupportEmail()
-        binding.identityContainer.optionValue = supportEmail.ifEmpty {
-            getString(R.string.support_contact_email_not_set)
-        }
-    }
-
-    /**
-     * Help activity may have been called during the login flow before the selected site has been set
-     */
-    private fun selectedSiteOrNull(): SiteModel? {
-        return if (selectedSite.exists()) {
-            selectedSite.get()
-        } else {
-            null
-        }
+    private fun refreshContactInfo() {
+        binding.identityContainer.optionValue = zendeskSettings.supportEmail
+            .takeIf { it.isNotNullOrEmpty() }
+            ?: getString(R.string.support_contact_email_not_set)
     }
 
     private fun showLoginHelpCenter(origin: HelpOrigin, loginFlow: String, loginStep: String) {

@@ -32,6 +32,7 @@ import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -509,6 +510,9 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 analyticsTrackerWrapper,
                 resolveAppLink,
                 unseenReviewsCountHandler,
+                mock {
+                    onBlocking { invoke(any()) } doReturn emptyFlow()
+                }
             )
         )
     }

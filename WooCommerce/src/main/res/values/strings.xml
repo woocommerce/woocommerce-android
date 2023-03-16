@@ -103,6 +103,7 @@
     <string name="more_menu_button_store">View Store</string>
     <string name="more_menu_button_coupons">Coupons</string>
     <string name="more_menu_button_reviews">Reviews</string>
+    <string name="more_menu_button_upgrades">Upgrades</string>
     <string name="more_menu_avatar">User profile picture</string>
     <string name="version_with_name_param">Version %s</string>
     <string name="share_store_button">Share your store</string>
@@ -345,6 +346,7 @@
     <string name="login_jetpack_connection_enter_wpcom_password">Enter the password of your WordPress.com account to connect to Jetpack</string>
     <string name="login_jetpack_installation_enter_wpcom_password">Enter the password of your WordPress.com account to install Jetpack</string>
     <string name="login_jetpack_installation_continue_magic_link">Or continue using Magic Link</string>
+    <string name="login_jetpack_installation_magic_link_failure">An error occurred while fetching your website, please retry!</string>
 
     <!--
         My Store View
@@ -554,6 +556,7 @@
     <string name="domains_your_domains">Your site domains</string>
     <string name="domains_add_domain_button_title">Add a domain</string>
     <string name="domains_select_domain">Select domain</string>
+    <string name="domains_search_domains">Search domains</string>
     <string name="domains_redirect_notice">The domain purchased will redirect users to</string>
     <string name="domains_generic_error_title">Unable to load site domains</string>
     <string name="domains_access_error_title">Only store administrators can access domain settings</string>
@@ -1173,8 +1176,6 @@
     <!--
             Card Reader Type Selection
         -->
-    <string name="card_reader_type_selection_title">Select reader type</string>
-    <string name="card_reader_type_selection_description">Your phone can be used as a card reader, or you can connect to an external reader via bluetooth</string>
     <string name="card_reader_type_selection_tap_to_pay">Tap To Pay</string>
     <string name="card_reader_type_selection_bluetooth_reader">Bluetooth Reader</string>
 
@@ -1407,6 +1408,7 @@
 
     <string name="card_reader_onboarding_account_pending_requirements_header">Your account has pending requirements</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">There are pending requirements in your account. Please complete those requirements by %1$s to keep accepting In-Person Payments.</string>
+    <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">There are pending requirements in your account. Please complete those requirements to keep accepting In-Person Payments.</string>
     <string name="card_reader_onboarding_account_pending_requirements_dismiss_button" translatable="false">@string/dismiss</string>
 
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">In-Person Payments is currently unavailable</string>
@@ -3162,4 +3164,23 @@
     <string name="support_request_error_title">Something went wrong</string>
     <string name="support_request_error_message">Sorry, we cannot create support requests right now, please try again later.</string>
 
+    <!--
+    Free trial
+    -->
+    <string name="free_trial_trial_ended">Your trial has ended.</string>
+    <string name="free_trial_days_left">%1$d days left in your trial.</string>
+    <string name="free_trial_upgrade_now">Upgrade Now</string>
+
+    <!--
+    Upgrades
+    -->
+    <string name="upgrades_report_subscription_issue">Report subscription issue</string>
+    <string name="upgrades_upgrade_now">Upgrade now</string>
+    <string name="upgrades_current_plan">Current: %s</string>
+    <string name="upgrades_troubleshooting">Troubleshooting</string>
+    <string name="upgrades_title">Upgrades</string>
+    <string name="upgrades_subscription_status">Subscription status</string>
+    <string name="upgrades_upgradeable_caption">You are in the %1$d-day trial. Starting %2$s, your plan will renew for %3$s/month until canceled.</string>
+    <string name="upgrades_trial_ended_caption">Your free trial has ended and have limited access to all the features. Subscribe to %1$s now.</string>
+    <string name="upgrades_non_upgradeable_caption">You are a %1$s subscriber! You have access to all our features until %2$s. </string>
 </resources>
