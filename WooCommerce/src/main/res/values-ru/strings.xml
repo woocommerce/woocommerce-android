@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-09 17:54:05+0000
+Translation-Revision-Date: 2023-03-15 09:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">Для вашей учётной записи есть требования на утверждении. Чтобы получать очные платежи, выполните эти требования.</string>
+    <string name="analytics_banner_message">Оцените ваши впечатления от работы с аналитикой</string>
+    <string name="analytics_banner_title">Нравится аналитика?</string>
+    <string name="analytics_wip_message">Мы работаем над возможностью отображать важные сведения о магазине на вашем устройстве! Можно что-то улучшить? Помогите улучшить эту функцию, отправив нам отзыв</string>
+    <string name="analytics_wip_title">Просматривайте статистику, выручку и многое другое на своём устройстве!</string>
+    <string name="login_jetpack_installation_magic_link_failure">Произошла ошибка при получении вашего веб-сайта, повторите попытку!</string>
     <string name="support_request_error_message">Не удалось создать запрос в службу поддержки. Повторите попытку позже.</string>
     <string name="support_request_error_title">Что-то пошло не так</string>
     <string name="support_request_dialog_action">Понятно!</string>
