@@ -4,6 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.formatStyleFull
 import com.woocommerce.android.support.ZendeskTags
 import com.woocommerce.android.support.help.HelpOrigin
@@ -36,6 +39,7 @@ class UpgradesViewModel @Inject constructor(
     private val planRepository: SitePlanRepository,
     private val calculateRemainingTrialPeriod: CalculateRemainingTrialPeriod,
     private val resourceProvider: ResourceProvider,
+    private val tracks: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
 
     private val _upgradesState = MutableLiveData<UpgradesViewState>()
@@ -91,9 +95,14 @@ class UpgradesViewModel @Inject constructor(
         return copy(name = this.name.removePrefix("WordPress.com "))
     }
 
-    fun onSubscribeNowClicked() = triggerEvent(OpenSubscribeNow)
+    fun onSubscribeNowClicked() {
+        tracks.track(AnalyticsEvent.FREE_TRIAL_UPGRADE_NOW_TAPPED, tracksProperties)
+        triggerEvent(OpenSubscribeNow)
+    }
 
     fun onReportSubscriptionIssueClicked() {
+        tracks.track(AnalyticsEvent.UPGRADES_REPORT_SUBSCRIPTION_ISSUE_TAPPED, tracksProperties)
+
         val tags = selectedSite.getIfExists()
             ?.takeIf { it.isFreeTrial }
             ?.let { listOf(ZendeskTags.freeTrialTag) }
@@ -102,9 +111,14 @@ class UpgradesViewModel @Inject constructor(
     }
 
     fun onPlanUpgraded() {
+        tracks.track(AnalyticsEvent.PLAN_UPGRADE_SUCCESS, tracksProperties)
         launch {
             loadSubscriptionState()
         }
+    }
+
+    fun onPlanUpgradeDismissed() {
+        tracks.track(AnalyticsEvent.PLAN_UPGRADE_ABANDONED, tracksProperties)
     }
 
     sealed interface UpgradesViewState {
@@ -140,5 +154,9 @@ class UpgradesViewModel @Inject constructor(
             val origin: HelpOrigin,
             val extraTags: List<String>
         ) : UpgradesEvent()
+    }
+
+    companion object {
+        private val tracksProperties = mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_UPGRADES_SCREEN)
     }
 }

@@ -5,7 +5,7 @@ import android.text.SpannableStringBuilder
 import android.text.style.UnderlineSpan
 import androidx.core.text.inSpans
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsEvent.FREE_TRIAL_UPGRADE_NOW
+import com.woocommerce.android.analytics.AnalyticsEvent.FREE_TRIAL_UPGRADE_NOW_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_BANNER
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -33,7 +33,7 @@ class TrialStatusBarFormatter @AssistedInject constructor(
             .append(" ")
             .inSpans(
                 WooClickableSpan(customLinkColor = resourceProvider.getColor(R.color.woo_purple_60)) {
-                    analyticsTrackerWrapper.track(FREE_TRIAL_UPGRADE_NOW, mapOf(KEY_SOURCE to VALUE_BANNER))
+                    analyticsTrackerWrapper.track(FREE_TRIAL_UPGRADE_NOW_TAPPED, mapOf(KEY_SOURCE to VALUE_BANNER))
                     startUpgradeFlow.invoke()
                 },
                 UnderlineSpan(),

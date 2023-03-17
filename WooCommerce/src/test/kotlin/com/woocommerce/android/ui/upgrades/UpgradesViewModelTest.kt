@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.upgrades
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.formatStyleFull
 import com.woocommerce.android.support.ZendeskTags
 import com.woocommerce.android.support.help.HelpOrigin
@@ -26,6 +29,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.model.SiteModel
 import java.time.Period
 import java.time.ZonedDateTime
@@ -37,6 +41,7 @@ class UpgradesViewModelTest : BaseUnitTest() {
     lateinit var planRepository: SitePlanRepository
     lateinit var remainingTrialPeriodUseCase: CalculateRemainingTrialPeriod
     var resourceProvider: ResourceProvider = mock()
+    var tracks: AnalyticsTrackerWrapper = mock()
 
     @Before
     fun setup() {
@@ -177,6 +182,54 @@ class UpgradesViewModelTest : BaseUnitTest() {
             )
         }
 
+    @Test
+    fun `when onPlanUpgraded is called, then the expected track event is called`() {
+        // When
+        sut.onPlanUpgraded()
+
+        // Then
+        verify(tracks).track(
+            AnalyticsEvent.PLAN_UPGRADE_SUCCESS,
+            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_UPGRADES_SCREEN)
+        )
+    }
+
+    @Test
+    fun `when onPlanUpgradeDismissed is called, then the expected track event is called`() {
+        // When
+        sut.onPlanUpgradeDismissed()
+
+        // Then
+        verify(tracks).track(
+            AnalyticsEvent.PLAN_UPGRADE_ABANDONED,
+            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_UPGRADES_SCREEN)
+        )
+    }
+
+    @Test
+    fun `when onReportSubscriptionIssueClicked is called, then the expected track event is called`() {
+        // When
+        sut.onReportSubscriptionIssueClicked()
+
+        // Then
+        verify(tracks).track(
+            AnalyticsEvent.UPGRADES_REPORT_SUBSCRIPTION_ISSUE_TAPPED,
+            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_UPGRADES_SCREEN)
+        )
+    }
+
+    @Test
+    fun `when onSubscribeNowClicked is called, then the expected track event is called`() {
+        // When
+        sut.onSubscribeNowClicked()
+
+        // Then
+        verify(tracks).track(
+            AnalyticsEvent.FREE_TRIAL_UPGRADE_NOW_TAPPED,
+            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_UPGRADES_SCREEN)
+        )
+    }
+
     private fun createSut(
         siteModel: SiteModel = SiteModel(),
         type: SitePlan.Type = SitePlan.Type.FREE_TRIAL,
@@ -206,7 +259,8 @@ class UpgradesViewModelTest : BaseUnitTest() {
             selectedSite,
             planRepository,
             remainingTrialPeriodUseCase,
-            resourceProvider
+            resourceProvider,
+            tracks
         )
     }
 
@@ -226,7 +280,8 @@ class UpgradesViewModelTest : BaseUnitTest() {
             selectedSite,
             planRepository,
             remainingTrialPeriodUseCase,
-            resourceProvider
+            resourceProvider,
+            tracks
         )
     }
 
