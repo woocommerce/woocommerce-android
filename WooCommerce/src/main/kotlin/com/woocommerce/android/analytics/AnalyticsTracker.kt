@@ -373,6 +373,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_MORE_MENU_INBOX = "inbox"
         const val VALUE_MORE_MENU_COUPONS = "coupons"
         const val VALUE_MORE_MENU_PAYMENTS = "payments"
+        const val VALUE_MORE_MENU_UPGRADES = "upgrades"
 
         const val VALUE_MORE_MENU_PAYMENTS_BADGE_VISIBLE = "badge_visible"
 

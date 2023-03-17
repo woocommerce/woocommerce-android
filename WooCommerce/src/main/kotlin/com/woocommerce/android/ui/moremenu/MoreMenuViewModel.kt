@@ -13,6 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_M
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_PAYMENTS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_PAYMENTS_BADGE_VISIBLE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_REVIEWS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_UPGRADES
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
 import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.push.UnseenReviewsCountHandler
@@ -102,11 +103,6 @@ class MoreMenuViewModel @Inject constructor(
         )
     )
 
-    private fun onUpgradesButtonClick() {
-        AnalyticsTracker.track(AnalyticsEvent.HUB_MENU_UPGRADES_TAPPED)
-        triggerEvent(MoreMenuEvent.NavigateToSubscriptionsEvent)
-    }
-
     private fun buildUnseenReviewsBadgeState(unseenReviewsCount: Int) =
         if (unseenReviewsCount > 0) BadgeState(
             badgeSize = R.dimen.major_150,
@@ -170,6 +166,11 @@ class MoreMenuViewModel @Inject constructor(
     private fun onInboxButtonClick() {
         trackMoreMenuOptionSelected(VALUE_MORE_MENU_INBOX)
         triggerEvent(MoreMenuEvent.ViewInboxEvent)
+    }
+
+    private fun onUpgradesButtonClick() {
+        trackMoreMenuOptionSelected(VALUE_MORE_MENU_UPGRADES)
+        triggerEvent(MoreMenuEvent.NavigateToSubscriptionsEvent)
     }
 
     private fun trackMoreMenuOptionSelected(
