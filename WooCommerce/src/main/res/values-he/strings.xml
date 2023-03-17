@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-09 23:54:04+0000
+Translation-Revision-Date: 2023-03-14 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">ישנן דרישות ממתינות בחשבון שלך. כדי להמשיך לקבל תשלומים באופן אישי, עליך להשלים את הדרישות הללו.</string>
+    <string name="analytics_banner_message">כדאי לדרג את חוויית השימוש שלך בנתונים האנליטיים</string>
+    <string name="analytics_banner_title">אהבת את השימוש בנתונים האנליטיים?</string>
+    <string name="analytics_wip_message">השקענו מאמצים כדי לאפשר תצוגה של מידע חשוב על החנות ישירות מהמכשיר! אפשר לשפר משהו לדעתך? נשמח לקבל משוב שיעזור לנו לשפר את האפשרות הזאת</string>
+    <string name="analytics_wip_title">לראות את הנתונים הסטטיסטיים, הרווחים ופרטים נוספים ישירות מהמכשיר שלך!</string>
+    <string name="login_jetpack_installation_magic_link_failure">אירעה שגיאה בעת הבאת האתר, יש לנסות שוב!</string>
     <string name="support_request_error_message">מצטערים, אין לנו אפשרות ליצור בקשות תמיכה כרגע. יש לנסות שוב מאוחר יותר.</string>
     <string name="support_request_error_title">משהו השתבש</string>
     <string name="support_request_dialog_action">הבנתי!</string>

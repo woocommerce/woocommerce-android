@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-09 11:54:24+0000
+Translation-Revision-Date: 2023-03-14 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">你的帳號中有待確認的要求。 請完成這些要求，以便繼續使用親自收款功能。</string>
+    <string name="analytics_banner_message">請為分析服務的使用體驗評分</string>
+    <string name="analytics_banner_title">喜歡分析服務嗎？</string>
+    <string name="analytics_wip_message">我們正努力讓你的裝置能夠顯示商店的重要資訊！ 還有哪些地方可以更好？ 請與我們分享你的意見，協助我們改善此功能</string>
+    <string name="analytics_wip_title">從你的裝置查看統計資料、營收和更多資訊！</string>
+    <string name="login_jetpack_installation_magic_link_failure">擷取網站時發生錯誤，請再試一次！</string>
     <string name="support_request_error_message">抱歉，我們目前無法建立支援請求，請稍後再試一次。</string>
     <string name="support_request_error_title">發生錯誤</string>
     <string name="support_request_dialog_action">瞭解！</string>
