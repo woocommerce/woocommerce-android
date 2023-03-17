@@ -486,6 +486,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         // -- Free Trial
         const val VALUE_BANNER = "banner"
+        const val VALUE_UPGRADES_SCREEN = "upgrades_screen"
 
         var sendUsageStats: Boolean = true
             set(value) {
