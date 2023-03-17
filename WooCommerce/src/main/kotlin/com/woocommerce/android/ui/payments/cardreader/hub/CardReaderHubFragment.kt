@@ -52,6 +52,7 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
         binding.cardReaderHubRv.adapter = CardReaderHubAdapter()
     }
 
+    @Suppress("LongMethod")
     private fun observeEvents() {
         viewModel.event.observe(
             viewLifecycleOwner
@@ -83,7 +84,7 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                     findNavController().navigate(
                         CardReaderHubFragmentDirections.actionCardReaderHubFragmentToCardReaderOnboardingFragment(
                             CardReaderOnboardingParams.Failed(
-                                cardReaderFlowParam = CardReaderFlowParam.CardReadersHub,
+                                cardReaderFlowParam = CardReaderFlowParam.CardReadersHub(),
                                 onboardingState = event.onboardingState
                             ),
                             cardReaderType = null
@@ -100,6 +101,9 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                 }
                 is CardReaderHubViewModel.CardReaderHubEvents.ShowToastString -> {
                     ToastUtils.showToast(context, event.message)
+                }
+                is CardReaderHubViewModel.CardReaderHubEvents.ShowToast -> {
+                    ToastUtils.showToast(context, getString(event.message))
                 }
                 is NavigateToTapTooPaySummaryScreen -> {
                     findNavController().navigate(
