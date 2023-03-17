@@ -6,8 +6,8 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.extensions.formatStyleFull
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.formatStyleFull
 import com.woocommerce.android.support.ZendeskTags
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
