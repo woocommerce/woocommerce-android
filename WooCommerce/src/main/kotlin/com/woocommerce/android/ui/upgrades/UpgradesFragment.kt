@@ -60,7 +60,7 @@ class UpgradesFragment : BaseFragment() {
             viewModel.onPlanUpgraded()
         }
         handleNotice(WEBVIEW_DISMISSED) {
-            // tracks event here
+            viewModel.onPlanUpgradeDismissed()
         }
     }
 
