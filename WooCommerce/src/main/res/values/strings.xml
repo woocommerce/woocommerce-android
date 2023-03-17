@@ -3151,6 +3151,10 @@
     <string name="store_onboarding_launched_title">Your store is live!</string>
     <string name="store_onboarding_launch_store_task_private_tag">Private</string>
     <string name="store_onboarding_share_url_error">Unable to share store url</string>
+    <string name="store_onboarding_store_already_launched_error_title">Could not launch your store</string>
+    <string name="store_onboarding_store_already_launched_error_description">We found that the store has already launched.</string>
+    <string name="store_onboarding_launch_store_generic_error_title">Unexpected error</string>
+    <string name="store_onboarding_launch_store_generic_error_description">Oops, some unexpected errors happened.</string>
 
     <!--
     Support Request

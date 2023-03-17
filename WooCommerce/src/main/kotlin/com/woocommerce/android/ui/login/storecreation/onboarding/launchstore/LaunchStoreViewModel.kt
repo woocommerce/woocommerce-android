@@ -2,11 +2,17 @@ package com.woocommerce.android.ui.login.storecreation.onboarding.launchstore
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isCurrentPlanEcommerceTrial
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.Error
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.LaunchStoreError.ALREADY_LAUNCHED
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.LaunchStoreError.GENERIC_ERROR
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.Success
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,12 +49,31 @@ class LaunchStoreViewModel @Inject constructor(
         _viewState.value = _viewState.value.copy(isLoading = true)
         launch {
             val result = launchStoreOnboardingRepository.launchStore()
-            when {
-                result.isFailure -> TODO()
-                result.isSuccess -> _viewState.value = _viewState.value.copy(isStoreLaunched = true)
+            when (result) {
+                Success -> _viewState.value = _viewState.value.copy(isStoreLaunched = true)
+                is Error -> {
+                    when (result.type) {
+                        ALREADY_LAUNCHED -> triggerEvent(
+                            ShowDialog(
+                                titleId = R.string.store_onboarding_store_already_launched_error_title,
+                                messageId = R.string.store_onboarding_store_already_launched_error_description,
+                                positiveButtonId = R.string.link_dialog_button_ok
+                            )
+                        )
+                        GENERIC_ERROR -> triggerEvent(
+                            ShowDialog(
+                                titleId = R.string.store_onboarding_launch_store_generic_error_title,
+                                messageId = R.string.store_onboarding_launch_store_generic_error_description,
+                                positiveButtonId = R.string.try_again,
+                                positiveBtnAction = { _, _ -> launchStore() },
+                                negativeButtonId = R.string.cancel
+                            )
+                        )
+                    }
+                }
             }
         }
-        _viewState.value = _viewState.value.copy(isLoading = true)
+        _viewState.value = _viewState.value.copy(isLoading = false)
     }
 
     fun onUpgradePlanBannerClicked() {
