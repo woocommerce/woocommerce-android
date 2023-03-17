@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-10 12:30:20+0000
+Translation-Revision-Date: 2023-03-14 17:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">Tu cuenta está pendiente de cumplir algunos requisitos. Para seguir aceptando Pagos en Persona, completa estos requisitos.</string>
+    <string name="analytics_banner_message">Califica tu experiencia con la función de análisis.</string>
+    <string name="analytics_banner_title">¿Te gusta la función de análisis?</string>
+    <string name="analytics_wip_message">Hemos trabajado para proporcionarte información relevante sobre tu tienda a través de tu dispositivo. ¿Hay algo que podamos mejorar? Ayúdanos a mejorar enviándonos tus comentarios.</string>
+    <string name="analytics_wip_title">Consulta datos sobre estadísticas, ingresos y mucho más desde tu dispositivo.</string>
+    <string name="login_jetpack_installation_magic_link_failure">Ha ocurrido un error al tratar de obtener tu sitio web. Vuelve a intentarlo.</string>
     <string name="support_request_error_message">Lo siento, en este momento no podemos crear solicitudes de soporte. Vuelve a intentarlo más tarde.</string>
     <string name="support_request_error_title">Se ha producido un error.</string>
     <string name="support_request_dialog_action">¡Lo tengo!</string>
