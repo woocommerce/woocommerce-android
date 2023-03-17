@@ -214,7 +214,6 @@ class UpgradesViewModelTest : BaseUnitTest() {
         siteModel: SiteModel = SiteModel()
     ) {
         selectedSite = mock {
-            on { getIfExists() } doReturn siteModel
             on { get() } doReturn siteModel
         }
 
