@@ -103,7 +103,7 @@ class MoreMenuViewModel @Inject constructor(
     )
 
     private fun onUpgradesButtonClick() {
-        AnalyticsTracker.track(AnalyticsEvent.UPGRADE_HUB_MENU_OPTION_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.HUB_MENU_UPGRADES_TAPPED)
         triggerEvent(MoreMenuEvent.NavigateToSubscriptionsEvent)
     }
 
