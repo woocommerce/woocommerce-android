@@ -44,6 +44,7 @@ import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.expand
+import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Notification
@@ -55,6 +56,7 @@ import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.MORE
@@ -218,6 +220,13 @@ class MainActivity :
                 showBottomNav()
             } else {
                 hideBottomNav()
+            }
+
+            f.handleNotice(WPComWebViewFragment.WEBVIEW_RESULT) {
+                presenter.onPlanUpgraded()
+            }
+            f.handleNotice(WPComWebViewFragment.WEBVIEW_DISMISSED) {
+                presenter.onPlanUpgradeDismissed()
             }
         }
     }

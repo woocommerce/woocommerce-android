@@ -12,8 +12,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment.Companion.WEBVIEW_DISMISSED
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment.Companion.WEBVIEW_RESULT
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.plans.di.StartUpgradeFlowFactory
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesEvent.OpenSubscribeNow
@@ -56,7 +56,7 @@ class UpgradesFragment : BaseFragment() {
                 is OpenSupportRequestForm -> startSupportRequestFormActivity(event)
             }
         }
-        handleNotice(WPComWebViewFragment.WEBVIEW_RESULT) {
+        handleNotice(WEBVIEW_RESULT) {
             viewModel.onPlanUpgraded()
         }
         handleNotice(WEBVIEW_DISMISSED) {
