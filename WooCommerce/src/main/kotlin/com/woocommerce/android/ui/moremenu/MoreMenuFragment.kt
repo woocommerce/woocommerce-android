@@ -88,7 +88,7 @@ class MoreMenuFragment : TopLevelFragment() {
 
     private fun navigateToPayments() {
         findNavController().navigateSafely(
-            MoreMenuFragmentDirections.actionMoreMenuToPaymentFlow(CardReaderFlowParam.CardReadersHub)
+            MoreMenuFragmentDirections.actionMoreMenuToPaymentFlow(CardReaderFlowParam.CardReadersHub())
         )
     }
 

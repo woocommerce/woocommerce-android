@@ -35,7 +35,10 @@
         </action>
         <action
             android:id="@+id/action_myStore_to_onboardingFragment"
-            app:destination="@id/onboardingFragment" />
+            app:destination="@id/storeOnboardingFragment" />
+        <action
+            android:id="@+id/action_myStore_to_launchStoreFragment"
+            app:destination="@id/launchStoreFragment" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -431,7 +434,16 @@
         android:id="@+id/action_global_simpleTextEditorFragment"
         app:destination="@id/simpleTextEditorFragment" />
     <fragment
-        android:id="@+id/onboardingFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.OnboardingFragment"
-        android:label="OnboardingFragment" />
+        android:id="@+id/storeOnboardingFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingFragment"
+        android:label="StoreOnboardingFragment">
+        <action
+            android:id="@+id/action_onboardingFragment_to_launchStoreFragment"
+            app:destination="@id/launchStoreFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/launchStoreFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.launchstore.LaunchStoreFragment"
+        android:label="LaunchStoreFragment" />
+
 </navigation>

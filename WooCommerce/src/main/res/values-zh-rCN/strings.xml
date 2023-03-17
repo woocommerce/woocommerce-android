@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-09 09:54:06+0000
+Translation-Revision-Date: 2023-03-14 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">您的帐户中存在待处理的要求。 请完成这些要求，以继续接受现场付款。</string>
+    <string name="analytics_banner_message">请对您的分析体验做出评价</string>
+    <string name="analytics_banner_title">喜欢分析？</string>
+    <string name="analytics_wip_message">我们一直在致力于能够在您的设备上显示重要的商店信息！ 这个功能还能更好吗？ 请与我们分享您的反馈，帮助我们改进此功能</string>
+    <string name="analytics_wip_title">在您的设备上查看您的统计数据、收入以及更多信息！</string>
+    <string name="login_jetpack_installation_magic_link_failure">在获取您的网站时发生错误，请重试！</string>
     <string name="support_request_error_message">很抱歉，我们现在无法创建支持请求，请稍后再试。</string>
     <string name="support_request_error_title">出错了</string>
     <string name="support_request_dialog_action">知道了！</string>

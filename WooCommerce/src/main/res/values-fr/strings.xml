@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-09 11:54:24+0000
+Translation-Revision-Date: 2023-03-14 11:54:20+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">Votre compte comporte des prérequis en attente. Veuillez effectuer les actions demandées afin de pouvoir continuer à accepter les paiements en personne.</string>
+    <string name="analytics_banner_message">Merci d’évaluer votre expérience statistique</string>
+    <string name="analytics_banner_title">Vous aimez les statistiques ?</string>
+    <string name="analytics_wip_message">Nous avons travaillé dur pour pouvoir récupérer des informations essentielles concernant votre boutique depuis votre appareil ! Cela pourrait-il être encore mieux ? Donnez-nous votre avis afin de nous aider à améliorer cette fonctionnalité.</string>
+    <string name="analytics_wip_title">Consultez vos statistiques, vos revenus et plus encore directement depuis votre appareil !</string>
+    <string name="login_jetpack_installation_magic_link_failure">Une erreur s’est produite lors de l’extraction des données depuis votre site Web. Veuillez réessayer.</string>
     <string name="support_request_error_message">Nous ne pouvons malheureusement pas créer de demande d’assistance pour le moment. Veuillez réessayer ultérieurement.</string>
     <string name="support_request_error_title">Un problème est survenu</string>
     <string name="support_request_dialog_action">Compris !</string>
