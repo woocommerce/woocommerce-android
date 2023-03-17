@@ -49,7 +49,7 @@ class WPApiSiteRepository @Inject constructor(
                         message = "Fetching site $url failed, error: ${result.error.type}, ${result.error.message}"
                     )
 
-                    Result.failure(OnChangedException(result.error))
+                    Result.failure(OnChangedException(result.error, message = result.error.message))
                 }
                 else -> {
                     WooLog.d(WooLog.T.LOGIN, "Site $url fetch succeeded")
