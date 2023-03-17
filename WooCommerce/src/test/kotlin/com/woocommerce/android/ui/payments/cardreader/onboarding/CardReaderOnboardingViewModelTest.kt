@@ -2341,7 +2341,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     private fun createVM(
         savedState: SavedStateHandle = CardReaderOnboardingFragmentArgs(
-            cardReaderOnboardingParam = CardReaderOnboardingParams.Check(CardReaderFlowParam.CardReadersHub),
+            cardReaderOnboardingParam = CardReaderOnboardingParams.Check(CardReaderFlowParam.CardReadersHub()),
             cardReaderType = CardReaderType.EXTERNAL
         ).initSavedStateHandle()
     ) = CardReaderOnboardingViewModel(

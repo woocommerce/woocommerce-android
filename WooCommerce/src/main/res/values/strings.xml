@@ -66,6 +66,7 @@
     <string name="refunds">Refunds</string>
     <string name="domain">Domain</string>
     <string name="domains">Domains</string>
+    <string name="something_went_wrong_try_again">Something went wrong, Please try again later.</string>
     <string name="shipping_labels">Shipping Labels</string>
     <string name="product_variations">Variations</string>
     <string name="product_variation_options">%1$s (%2$s options)</string>
@@ -1159,6 +1160,7 @@
     <string name="card_reader_onboarding_with_pending_requirements">There is an issue that requires your attention. Please &lt;a href=\'\'&gt;take a look&lt;/a&gt;</string>
     <string name="card_reader_tap_to_pay">Tap To Pay</string>
     <string name="card_reader_tap_to_pay_description">Use your phone to accept card payments</string>
+    <string name="card_reader_tap_to_pay_not_available_error">Tap to Pay is not available for your store or device</string>
 
     <!--
            Card Reader Tap To Pay Explanation

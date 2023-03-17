@@ -75,6 +75,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewTapToPay
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
 import com.woocommerce.android.ui.moremenu.MoreMenuFragmentDirections
 import com.woocommerce.android.ui.mystore.MyStoreFragmentDirections
@@ -687,6 +688,7 @@ class MainActivity :
     }
     // endregion
 
+    @Suppress("ComplexMethod")
     private fun setupObservers() {
         viewModel.event.observe(this) { event ->
             when (event) {
@@ -700,6 +702,7 @@ class MainActivity :
                 is RestartActivityForAppLink -> restartActivityForAppLink(event)
                 is ShowFeatureAnnouncement -> navigateToFeratureAnnouncement(event)
                 ViewPayments -> showPayments()
+                ViewTapToPay -> showTapToPaySummary()
                 ShortcutOpenPayments -> shortcutShowPayments()
                 ShortcutOpenOrderCreation -> shortcutOpenOrderCreation()
             }
@@ -878,12 +881,34 @@ class MainActivity :
         showPayments()
     }
 
-    private fun showPayments() {
+    private fun showPayments(
+        openInHub: CardReaderFlowParam.CardReadersHub.OpenInHub = CardReaderFlowParam.CardReadersHub.OpenInHub.NONE
+    ) {
         showBottomNav()
         binding.bottomNav.currentPosition = MORE
         binding.bottomNav.active(MORE.position)
-        val action = MoreMenuFragmentDirections.actionMoreMenuToPaymentFlow(CardReaderFlowParam.CardReadersHub)
+        val action = MoreMenuFragmentDirections.actionMoreMenuToPaymentFlow(
+            CardReaderFlowParam.CardReadersHub(openInHub)
+        )
         navController.navigateSafely(action)
+    }
+
+    private fun showTapToPaySummary() {
+        /**
+         * set the intent data to null so that when the OS recreates the activity
+         * by redelivering the same intent, it won't redirect to the tap to pay summary screen.
+         *
+         * Example:
+         * 1. Open the Tap to pay summary screen via universal linking
+         * 2. Navigate back from the payments screen and go to the settings screen
+         * 3. Try to switch to any other store.
+         * 6. The OS redelivers the same intent with the intent data set to TTP URI and as a result
+         * the app redirects to the TTP summary screen as soon as the app restarts.
+         *
+         * Setting the intent data to null avoids this bug.
+         */
+        intent.data = null
+        showPayments(CardReaderFlowParam.CardReadersHub.OpenInHub.TAP_TO_PAY_SUMMARY)
     }
 
     override fun showReviewDetailWithSharedTransition(

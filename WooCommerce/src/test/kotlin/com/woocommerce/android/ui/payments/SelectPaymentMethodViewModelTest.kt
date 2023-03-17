@@ -113,16 +113,16 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     @Test
     fun `given hub flow, when view model init, then navigate to hub flow emitted`() = testBlocking {
         // GIVEN & WHEN
-        val viewModel = initViewModel(CardReadersHub)
+        val viewModel = initViewModel(CardReadersHub())
 
         // THEN
-        assertThat(viewModel.event.value).isEqualTo(NavigateToCardReaderHubFlow(CardReadersHub))
+        assertThat(viewModel.event.value).isEqualTo(NavigateToCardReaderHubFlow(CardReadersHub()))
     }
 
     @Test
     fun `given hub flow, when view model init, then loading state emitted`() = testBlocking {
         // GIVEN & WHEN
-        val viewModel = initViewModel(CardReadersHub)
+        val viewModel = initViewModel(CardReadersHub())
 
         // THEN
         assertThat(viewModel.viewStateData.value).isEqualTo(Loading)
@@ -570,7 +570,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             advanceUntilIdle()
 
             // THEN
-            assertThat(viewModel.event.value).isEqualTo(NavigateBackToHub(CardReadersHub))
+            assertThat(viewModel.event.value).isEqualTo(NavigateBackToHub(CardReadersHub()))
         }
 
     @Test
