@@ -5,12 +5,17 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.formatStyleFull
+import com.woocommerce.android.support.ZendeskTags
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.plans.domain.CalculateRemainingTrialPeriod
 import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_PERIOD
 import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_UPGRADE_PLAN
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
+import com.woocommerce.android.ui.plans.trial.isFreeTrial
+import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesEvent.OpenSubscribeNow
+import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesEvent.OpenSupportRequestForm
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Error
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Loading
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.NonUpgradeable
@@ -86,9 +91,15 @@ class UpgradesViewModel @Inject constructor(
         return copy(name = this.name.removePrefix("WordPress.com "))
     }
 
-    fun onSubscribeNowClicked() = triggerEvent(UpgradesEvent.OpenSubscribeNow)
+    fun onSubscribeNowClicked() = triggerEvent(OpenSubscribeNow)
 
-    fun onReportSubscriptionIssueClicked() = Unit
+    fun onReportSubscriptionIssueClicked() {
+        val tags = selectedSite.getIfExists()
+            ?.takeIf { it.isFreeTrial }
+            ?.let { listOf(ZendeskTags.freeTrialTag) }
+            ?: emptyList()
+        triggerEvent(OpenSupportRequestForm(HelpOrigin.UPGRADES, tags))
+    }
 
     fun onPlanUpgraded() {
         launch {
@@ -125,5 +136,9 @@ class UpgradesViewModel @Inject constructor(
 
     sealed class UpgradesEvent : MultiLiveEvent.Event() {
         object OpenSubscribeNow : UpgradesEvent()
+        data class OpenSupportRequestForm(
+            val origin: HelpOrigin,
+            val extraTags: List<String>
+        ) : UpgradesEvent()
     }
 }

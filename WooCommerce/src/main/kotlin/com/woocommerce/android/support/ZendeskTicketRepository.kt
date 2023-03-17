@@ -323,6 +323,7 @@ object ZendeskTags {
     const val supportCategoryTag = "support"
     const val paymentSubcategoryTag = "payment"
     const val jetpackTag = "jetpack"
+    const val freeTrialTag = "trial"
 }
 
 sealed class ZendeskException(message: String) : Exception(message) {
