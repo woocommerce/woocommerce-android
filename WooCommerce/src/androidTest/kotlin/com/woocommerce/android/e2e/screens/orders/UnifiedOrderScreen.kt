@@ -93,10 +93,10 @@ class UnifiedOrderScreen : Screen(ORDER_CREATION) {
         return this
     }
 
-    fun addProductTap(): OrderSelectProductScreen {
+    fun addProductTap(): ProductSelectorScreen {
         waitForElementToBeDisplayed(PRODUCTS_SECTION)
         Espresso.onView(withText(R.string.order_creation_add_products)).perform(click())
-        return OrderSelectProductScreen()
+        return ProductSelectorScreen()
     }
 
     fun assertNewOrderScreen(): UnifiedOrderScreen {

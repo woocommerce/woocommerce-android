@@ -25,6 +25,10 @@
         <action
             android:id="@+id/action_domainSearchFragment_to_domainRegistrationCheckoutFragment"
             app:destination="@id/domainRegistrationCheckoutFragment" />
+        <argument
+            android:name="freeDomainUrl"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/purchaseSuccessfulFragment"
