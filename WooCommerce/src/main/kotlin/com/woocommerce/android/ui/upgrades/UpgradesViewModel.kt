@@ -95,7 +95,10 @@ class UpgradesViewModel @Inject constructor(
         return copy(name = this.name.removePrefix("WordPress.com "))
     }
 
-    fun onSubscribeNowClicked() = triggerEvent(OpenSubscribeNow)
+    fun onSubscribeNowClicked() {
+        tracks.track(AnalyticsEvent.FREE_TRIAL_UPGRADE_NOW_TAPPED, tracksProperties)
+        triggerEvent(OpenSubscribeNow)
+    }
 
     fun onReportSubscriptionIssueClicked() {
         tracks.track(AnalyticsEvent.UPGRADES_REPORT_SUBSCRIPTION_ISSUE_TAPPED, tracksProperties)
