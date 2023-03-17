@@ -218,6 +218,18 @@ class UpgradesViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `when onSubscribeNowClicked is called, then the expected track event is called`() {
+        // When
+        sut.onSubscribeNowClicked()
+
+        // Then
+        verify(tracks).track(
+            AnalyticsEvent.FREE_TRIAL_UPGRADE_NOW_TAPPED,
+            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_UPGRADES_SCREEN)
+        )
+    }
+
     private fun createSut(
         siteModel: SiteModel = SiteModel(),
         type: SitePlan.Type = SitePlan.Type.FREE_TRIAL,
