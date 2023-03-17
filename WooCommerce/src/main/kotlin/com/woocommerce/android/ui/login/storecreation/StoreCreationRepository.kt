@@ -146,7 +146,8 @@ class StoreCreationRepository @Inject constructor(
         languageWordPressId: String,
         timeZoneId: String,
         siteVisibility: SiteVisibility = PRIVATE,
-        dryRun: Boolean = false
+        dryRun: Boolean = false,
+        isComingSoon: Boolean = true
     ): StoreCreationResult<Long> {
         fun isWordPressComSubDomain(url: String) = url.endsWith(".wordpress.com")
 
@@ -168,14 +169,15 @@ class StoreCreationRepository @Inject constructor(
             else -> siteData.domain
         }
         val newSitePayload = NewSitePayload(
-            domain,
-            siteData.title,
-            languageWordPressId,
-            timeZoneId,
-            siteVisibility,
-            siteData.segmentId,
-            siteData.siteDesign,
-            dryRun
+            siteName = domain,
+            siteTitle = siteData.title,
+            language = languageWordPressId,
+            timeZoneId = timeZoneId,
+            visibility = siteVisibility,
+            segmentId = siteData.segmentId,
+            siteDesign = siteData.siteDesign,
+            dryRun = dryRun,
+            isComingSoon = isComingSoon
         )
 
         val result = dispatcher.dispatchAndAwait<NewSitePayload, OnNewSiteCreated>(
