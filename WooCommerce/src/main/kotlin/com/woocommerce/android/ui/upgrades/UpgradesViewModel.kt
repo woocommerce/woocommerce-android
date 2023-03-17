@@ -106,6 +106,10 @@ class UpgradesViewModel @Inject constructor(
     }
 
     fun onPlanUpgraded() {
+        tracks.track(
+            AnalyticsEvent.PLAN_UPGRADE_SUCCESS,
+            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_UPGRADES_SCREEN)
+        )
         launch {
             loadSubscriptionState()
         }
