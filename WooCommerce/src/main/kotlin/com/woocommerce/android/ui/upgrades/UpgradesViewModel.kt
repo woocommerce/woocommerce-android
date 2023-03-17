@@ -98,6 +98,8 @@ class UpgradesViewModel @Inject constructor(
     fun onSubscribeNowClicked() = triggerEvent(OpenSubscribeNow)
 
     fun onReportSubscriptionIssueClicked() {
+        tracks.track(AnalyticsEvent.UPGRADES_REPORT_SUBSCRIPTION_ISSUE_TAPPED, tracksProperties)
+
         val tags = selectedSite.getIfExists()
             ?.takeIf { it.isFreeTrial }
             ?.let { listOf(ZendeskTags.freeTrialTag) }
@@ -106,20 +108,14 @@ class UpgradesViewModel @Inject constructor(
     }
 
     fun onPlanUpgraded() {
-        tracks.track(
-            AnalyticsEvent.PLAN_UPGRADE_SUCCESS,
-            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_UPGRADES_SCREEN)
-        )
+        tracks.track(AnalyticsEvent.PLAN_UPGRADE_SUCCESS, tracksProperties)
         launch {
             loadSubscriptionState()
         }
     }
 
     fun onPlanUpgradeDismissed() {
-        tracks.track(
-            AnalyticsEvent.PLAN_UPGRADE_ABANDONED,
-            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_UPGRADES_SCREEN)
-        )
+        tracks.track(AnalyticsEvent.PLAN_UPGRADE_ABANDONED, tracksProperties)
     }
 
     sealed interface UpgradesViewState {
@@ -155,5 +151,9 @@ class UpgradesViewModel @Inject constructor(
             val origin: HelpOrigin,
             val extraTags: List<String>
         ) : UpgradesEvent()
+    }
+
+    companion object {
+        private val tracksProperties = mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_UPGRADES_SCREEN)
     }
 }
