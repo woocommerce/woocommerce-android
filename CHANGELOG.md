@@ -2,7 +2,7 @@
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
 ## 12.8
-This release includes a lot of improvements to the order creation functionality. It's possible to select multiple products at one go & an improved faster search & filter option. We also fixed a few bugs and made several enhancements for accessibility of the Analytics section.
+This release includes a lot of improvements to the order creation functionality. It's possible to select multiple products at one go & an improved faster search & filter option. We also fixed a few bugs and made several enhancements for accessibility of the Analytics section. Furthermore, WordPress.com users can now easily view the details of their plans by accessing the new 'Upgrades' screen in the Menu.
 
 ## 12.7
 This release has several fixes and improvements that makes it easier for you to manage your store from the app. Please continue to send us feedback – we are listening! 
