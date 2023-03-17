@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.formatStyleFull
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.ZendeskTags
@@ -107,6 +109,13 @@ class UpgradesViewModel @Inject constructor(
         launch {
             loadSubscriptionState()
         }
+    }
+
+    fun onPlanUpgradeDismissed() {
+        tracks.track(
+            AnalyticsEvent.PLAN_UPGRADE_ABANDONED,
+            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_UPGRADES_SCREEN)
+        )
     }
 
     sealed interface UpgradesViewState {
