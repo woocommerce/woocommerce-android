@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordGenerationException
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
+import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.LoggedIn
@@ -18,7 +19,6 @@ import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import org.assertj.core.api.Assertions.assertThat
@@ -60,7 +60,6 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         on { featureUnavailableEvents } doReturn applicationPasswordsUnavailableEvents
     }
     private val loginAnalyticsListener: LoginAnalyticsListener = mock()
-    private val resourceProvider: ResourceProvider = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private val appPrefs: AppPrefsWrapper = mock()
 
@@ -79,7 +78,6 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             wpApiSiteRepository = wpApiSiteRepository,
             selectedSite = selectedSite,
             loginAnalyticsListener = loginAnalyticsListener,
-            resourceProvider = resourceProvider,
             applicationPasswordsNotifier = applicationPasswordsNotifier,
             analyticsTracker = analyticsTracker,
             appPrefs = appPrefs
@@ -147,9 +145,17 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given incorrect credentials, when submitting, then show error`() = testBlocking {
+        val returnedErrorMessage = "Username or password incorrect"
         setup {
             whenever(wpApiSiteRepository.login(siteAddress, testUsername, testPassword)).thenReturn(
-                Result.failure(OnChangedException(SiteError(SiteErrorType.NOT_AUTHENTICATED)))
+                Result.failure(
+                    OnChangedException(
+                        SiteError(
+                            SiteErrorType.NOT_AUTHENTICATED,
+                            message = returnedErrorMessage
+                        )
+                    )
+                )
             )
         }
 
@@ -159,7 +165,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             viewModel.onContinueClick()
         }.last()
 
-        assertThat(state.errorMessage).isEqualTo(R.string.username_or_password_incorrect)
+        assertThat(state.errorDialogMessage).isEqualTo(UiStringText(returnedErrorMessage))
         verify(analyticsTracker).track(
             stat = eq(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_LOGIN_FAILED),
             properties = argThat {

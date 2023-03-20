@@ -58,3 +58,7 @@ val SiteModel.clock: Clock
 
         return Clock.system(zoneId)
     }
+
+const val ECOMMERCE_TRIAL_PLAN_ID = 1052L
+val SiteModel.isCurrentPlanEcommerceTrial
+    get() = planId == ECOMMERCE_TRIAL_PLAN_ID

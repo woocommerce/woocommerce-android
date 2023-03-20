@@ -66,6 +66,7 @@
     <string name="refunds">Refunds</string>
     <string name="domain">Domain</string>
     <string name="domains">Domains</string>
+    <string name="something_went_wrong_try_again">Something went wrong, Please try again later.</string>
     <string name="shipping_labels">Shipping Labels</string>
     <string name="product_variations">Variations</string>
     <string name="product_variation_options">%1$s (%2$s options)</string>
@@ -346,6 +347,10 @@
     <string name="login_jetpack_installation_enter_wpcom_password">Enter the password of your WordPress.com account to install Jetpack</string>
     <string name="login_jetpack_installation_continue_magic_link">Or continue using Magic Link</string>
     <string name="login_jetpack_installation_magic_link_failure">An error occurred while fetching your website, please retry!</string>
+    <string name="login_site_credentials_invalid_response">Login failed with an unexpected response from your site. We are working on fixing this issue.</string>
+    <string name="login_site_credentials_custom_login_url">Unable to login because we cannot identify your store\'s login URL</string>
+    <string name="login_site_credentials_custom_admin_url">Unable to login because we cannot identify your store\'s admin URL</string>
+    <string name="login_site_credentials_http_error">Login failed with status code %1$s</string>
 
     <!--
         My Store View
@@ -1159,6 +1164,7 @@
     <string name="card_reader_onboarding_with_pending_requirements">There is an issue that requires your attention. Please &lt;a href=\'\'&gt;take a look&lt;/a&gt;</string>
     <string name="card_reader_tap_to_pay">Tap To Pay</string>
     <string name="card_reader_tap_to_pay_description">Use your phone to accept card payments</string>
+    <string name="card_reader_tap_to_pay_not_available_error">Tap to Pay is not available for your store or device</string>
 
     <!--
            Card Reader Tap To Pay Explanation
@@ -3138,6 +3144,18 @@
     <string name="store_onboarding_full_screen_transition_name">Onboarding full screen</string>
     <string name="store_onboarding_collapsed_transition_name">Onboarding collapsed list</string>
     <string name="store_onboarding_menu_share_feedback">Share feedback</string>
+    <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">To launch your store, you need to upgrade to our plan. &lt;u&gt;Upgrade&lt;/u&gt;</string>
+    <string name="store_onboarding_launch_store_button">Publish my store</string>
+    <string name="store_onboarding_launch_store_share_url_button">Share URL</string>
+    <string name="store_onboarding_launch_store_back_to_store_button">Back to My Store</string>
+    <string name="store_onboarding_launch_preview_title">Preview</string>
+    <string name="store_onboarding_launched_title">Your store is live!</string>
+    <string name="store_onboarding_launch_store_task_private_tag">Private</string>
+    <string name="store_onboarding_share_url_error">Unable to share store url</string>
+    <string name="store_onboarding_store_already_launched_error_title">Could not launch your store</string>
+    <string name="store_onboarding_store_already_launched_error_description">We found that the store has already launched.</string>
+    <string name="store_onboarding_launch_store_generic_error_title">Unexpected error</string>
+    <string name="store_onboarding_launch_store_generic_error_description">Oops, some unexpected errors happened.</string>
 
     <!--
     Support Request
@@ -3166,7 +3184,8 @@
     <!--
     Free trial
     -->
-    <string name="free_trial_trial_ended">Your trial has ended.</string>
+    <string name="free_trial_your_trial_ended">Your trial has ended.</string>
+    <string name="free_trial_trial_ended">Trial ended</string>
     <string name="free_trial_days_left">%1$d days left in your trial.</string>
     <string name="free_trial_upgrade_now">Upgrade Now</string>
 
@@ -3179,7 +3198,8 @@
     <string name="upgrades_troubleshooting">Troubleshooting</string>
     <string name="upgrades_title">Upgrades</string>
     <string name="upgrades_subscription_status">Subscription status</string>
-    <string name="upgrades_upgradeable_caption">You are in the %1$d-day trial. Starting %2$s, your plan will renew for %3$s/month until canceled.</string>
+    <string name="upgrades_upgradeable_caption">You are in the %1$d-day free trial. The free trial will end in %2$d days. Upgrade to unlock new features and keep your store running..</string>
     <string name="upgrades_trial_ended_caption">Your free trial has ended and have limited access to all the features. Subscribe to %1$s now.</string>
     <string name="upgrades_non_upgradeable_caption">You are a %1$s subscriber! You have access to all our features until %2$s. </string>
+    <string name="upgrades_error_fetching_data">Error while fetching plan details</string>
 </resources>
