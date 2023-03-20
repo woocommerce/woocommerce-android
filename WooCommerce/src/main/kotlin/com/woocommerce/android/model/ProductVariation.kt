@@ -23,6 +23,7 @@ import java.math.BigDecimal
 import java.util.Date
 
 @Parcelize
+@Suppress("LongParameterList")
 open class ProductVariation(
     val remoteProductId: Long,
     val remoteVariationId: Long,

@@ -24,6 +24,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class VariationNavigator @Inject constructor() {
+    @Suppress("LongMethod")
     fun navigate(fragment: Fragment, target: VariationNavigationTarget) {
         when (target) {
             is ViewImageGallery -> {

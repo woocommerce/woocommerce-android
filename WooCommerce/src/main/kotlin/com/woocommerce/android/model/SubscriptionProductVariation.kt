@@ -10,6 +10,7 @@ import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
 
+@Suppress("LongParameterList")
 class SubscriptionProductVariation(
     val subscriptionDetails: SubscriptionDetails?,
     remoteProductId: Long,
@@ -69,8 +70,8 @@ class SubscriptionProductVariation(
     width = width,
     height = height,
     weight = weight
-){
-    constructor(model: WCProductVariationModel):
+) {
+    constructor(model: WCProductVariationModel) :
         this(
             subscriptionDetails = model.metadata?.let { SubscriptionDetailsMapper.toAppModel(it) },
             remoteProductId = model.remoteProductId,
@@ -112,4 +113,3 @@ class SubscriptionProductVariation(
             weight = model.weight.toFloatOrNull() ?: 0f
         )
 }
-
