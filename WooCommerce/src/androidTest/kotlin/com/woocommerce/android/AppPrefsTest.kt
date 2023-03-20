@@ -14,6 +14,7 @@ class AppPrefsTest {
     @Before
     fun setup() {
         AppPrefs.init(InstrumentationRegistry.getInstrumentation().targetContext.applicationContext)
+        AppPrefs.getPreferences().edit().clear().commit()
     }
 
     @Test
