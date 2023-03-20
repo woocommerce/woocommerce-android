@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
@@ -41,7 +42,8 @@ import org.wordpress.android.fluxc.network.UserAgent
 @Composable
 fun InstallationScreen(
     viewModel: InstallationViewModel,
-    userAgent: UserAgent
+    userAgent: UserAgent,
+    authenticator: WPComWebViewAuthenticator
 ) {
     viewModel.viewState.observeAsState(InitialState).value.let { state ->
         Crossfade(targetState = state) { viewState ->
@@ -50,7 +52,9 @@ fun InstallationScreen(
                     viewState.url,
                     viewModel::onManageStoreButtonClicked,
                     viewModel::onShowPreviewButtonClicked,
-                    userAgent
+                    viewModel::onUrlLoaded,
+                    userAgent,
+                    authenticator
                 )
                 is ErrorState -> StoreCreationErrorScreen(
                     viewState.errorType,
@@ -71,7 +75,9 @@ private fun InstallationSummary(
     url: String,
     onManageStoreButtonClicked: () -> Unit,
     onShowPreviewButtonClicked: () -> Unit,
-    userAgent: UserAgent
+    onUrlLoaded: (String) -> Unit,
+    userAgent: UserAgent,
+    authenticator: WPComWebViewAuthenticator
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -110,7 +116,9 @@ private fun InstallationSummary(
                         backgroundColor = colorResource(id = color.color_surface),
                         borderRadius = dimensionResource(id = dimen.major_100)
                     ),
-                userAgent = userAgent
+                userAgent = userAgent,
+                authenticator = authenticator,
+                onUrlLoaded = onUrlLoaded
             )
         }
 
@@ -153,7 +161,9 @@ private fun InstallationSummary(
 private fun PreviewWebView(
     url: String,
     modifier: Modifier = Modifier,
-    userAgent: UserAgent
+    userAgent: UserAgent,
+    authenticator: WPComWebViewAuthenticator,
+    onUrlLoaded: (String) -> Unit
 ) {
     Box(
         modifier = modifier
@@ -169,6 +179,7 @@ private fun PreviewWebView(
         WCWebView(
             url = url,
             userAgent = userAgent,
+            wpComAuthenticator = authenticator,
             captureBackPresses = false,
             loadWithOverviewMode = true,
             isReadOnly = true,
@@ -176,6 +187,7 @@ private fun PreviewWebView(
             progressIndicator = Circular(
                 stringResource(id = string.store_creation_installation_rendering_preview_label)
             ),
+            onUrlLoaded = onUrlLoaded,
             modifier = modifier.background(color = colorResource(id = color.color_surface))
         )
     }

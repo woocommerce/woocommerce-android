@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.NavigateToNewStore
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.OpenStore
@@ -25,6 +26,7 @@ class InstallationFragment : BaseFragment() {
     private val viewModel: InstallationViewModel by viewModels()
 
     @Inject lateinit var userAgent: UserAgent
+    @Inject lateinit var authenticator: WPComWebViewAuthenticator
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -34,7 +36,7 @@ class InstallationFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    InstallationScreen(viewModel, userAgent)
+                    InstallationScreen(viewModel, userAgent, authenticator)
                 }
             }
         }

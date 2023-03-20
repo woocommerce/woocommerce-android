@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import javax.inject.Inject
 
 @HiltViewModel
@@ -46,7 +47,10 @@ class InstallationViewModel @Inject constructor(
         private const val SITE_CHECK_DEBOUNCE = 5000L
     }
 
-    private val _viewState = savedState.getStateFlow<ViewState>(this, InitialState)
+    private val newStoreUrl by lazy { selectedSite.get().url }
+    private val newStoreWpAdminUrl by lazy { selectedSite.get().url.slashJoin("wp-admin/") }
+
+    private val _viewState = savedState.getStateFlow<ViewState>(this, SuccessState(newStoreWpAdminUrl))
     val viewState = _viewState
         .onEach {
             if (it is InitialState) {
@@ -75,7 +79,7 @@ class InstallationViewModel @Inject constructor(
                 )
                 analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SITE_CREATED, properties)
 
-                _viewState.update { SuccessState(selectedSite.get().url) }
+                _viewState.update { SuccessState(newStoreWpAdminUrl) }
             } else {
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.SITE_CREATION_FAILED,
@@ -113,13 +117,19 @@ class InstallationViewModel @Inject constructor(
         }
     }
 
+    fun onUrlLoaded(url: String) {
+        if (url.contains(newStoreWpAdminUrl)) {
+            _viewState.update { SuccessState(newStoreUrl) }
+        }
+    }
+
     fun onBackPressed() {
         triggerEvent(Exit)
     }
 
     fun onShowPreviewButtonClicked() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_SITE_PREVIEWED)
-        triggerEvent(OpenStore(selectedSite.get().url))
+        triggerEvent(OpenStore(newStoreUrl))
     }
 
     fun onManageStoreButtonClicked() {
