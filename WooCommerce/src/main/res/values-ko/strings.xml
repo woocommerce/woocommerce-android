@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-09 13:54:04+0000
+Translation-Revision-Date: 2023-03-14 15:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">계정에 대기 중인 요구 사항이 있습니다. 직접 결제 수락을 유지하려면 해당 요구 사항을 완료하세요.</string>
+    <string name="analytics_banner_message">회원님이 경험하신 분석에 대해 평가해 주세요.</string>
+    <string name="analytics_banner_title">분석이 마음에 드셨나요?</string>
+    <string name="analytics_wip_message">기기에 중요한 스토어 정보가 표시될 수 있도록 노력하고 있습니다. 개선할 점이 있나요? 피드백을 공유하여 이 기능 개선을 도와주세요.</string>
+    <string name="analytics_wip_title">기기에 통계, 수익 등이 표시됩니다.</string>
+    <string name="login_jetpack_installation_magic_link_failure">웹사이트를 가져오는 동안 오류가 발생했습니다. 다시 시도하세요.</string>
     <string name="support_request_error_message">죄송합니다. 지금은 지원 요청을 생성할 수 없습니다. 나중에 다시 시도해 주세요.</string>
     <string name="support_request_error_title">문제가 발생했습니다.</string>
     <string name="support_request_dialog_action">알겠습니다!</string>

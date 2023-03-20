@@ -15,6 +15,8 @@ interface MainContract {
         fun fetchSitesAfterDowngrade()
         fun isUserEligible(): Boolean
         fun updateStatsWidgets()
+        fun onPlanUpgraded()
+        fun onPlanUpgradeDismissed()
     }
 
     interface View : BaseView<Presenter> {

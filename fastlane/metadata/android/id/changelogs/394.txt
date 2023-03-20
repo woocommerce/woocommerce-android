@@ -1,0 +1,2 @@
+12.7:
+Rilis ini berisi beberapa perbaikan dan pengembangan yang memudahkan Anda untuk mengatur toko dari aplikasi. Terus berikan kami feedback. Kami senang menerimanya!
