@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-10 12:36:01+0000
+Translation-Revision-Date: 2023-03-14 11:54:20+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">Det finns krav som inväntar granskning i ditt konto. Slutför dessa krav för att fortsätta ta emot personliga betalningar.</string>
+    <string name="analytics_banner_message">Betygsätt gärna din analysupplevelse</string>
+    <string name="analytics_banner_title">Gillar du analysen?</string>
+    <string name="analytics_wip_message">Vi har jobbat på att göra det möjligt att visa viktig butiksinformation från din enhet. Skulle den kunna vara bättre? Hjälp oss att förbättra den här funktionen genom att dela din feedback med oss</string>
+    <string name="analytics_wip_title">Se din statistik, dina intäkter med mera från din enhet.</string>
+    <string name="login_jetpack_installation_magic_link_failure">Ett fel uppstod vid hämtningen av din webbplats. Försök igen.</string>
     <string name="support_request_error_message">Vi kan tyvärr inte skapa supportförfrågningar för tillfället. Försök igen senare.</string>
     <string name="support_request_error_title">Något gick fel</string>
     <string name="support_request_dialog_action">Jag förstår!</string>

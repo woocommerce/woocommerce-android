@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-09 11:54:25+0000
+Translation-Revision-Date: 2023-03-15 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">口座に保留中の要件があります。 引き続きオフラインで支払いを受け取る場合は、要件を完了してください。</string>
+    <string name="analytics_banner_message">分析の使い心地を評価してください</string>
+    <string name="analytics_banner_title">分析をお楽しみいただいていますか ?</string>
+    <string name="analytics_wip_message">端末から重要な店舗情報を表示できるように取り組んでいます。 もっと改善できますか ? フィードバックをお寄せいただき、本機能の改善にご協力ください</string>
+    <string name="analytics_wip_title">統計情報、収益などを端末から確認できます。</string>
+    <string name="login_jetpack_installation_magic_link_failure">サイトの取得中にエラーが発生しました。もう一度お試しください。</string>
     <string name="support_request_error_message">申し訳ありません。現在、サポートリクエストを作成できません。しばらくしてからもう一度お試しください。</string>
     <string name="support_request_error_title">エラーが発生しました</string>
     <string name="support_request_dialog_action">了解 !</string>
