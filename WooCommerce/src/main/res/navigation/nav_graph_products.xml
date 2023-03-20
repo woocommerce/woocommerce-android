@@ -562,6 +562,9 @@
                 app:argType="integer" />
         </action>
         <deepLink app:uri="wcandroid://variationDetail?remoteProductId={remoteProductId}&amp;remoteVariationId={remoteVariationId}" />
+        <action
+            android:id="@+id/action_variationDetailFragment_to_productSubscriptionFragment"
+            app:destination="@id/productSubscriptionFragment" />
     </fragment>
     <fragment
         android:id="@+id/productAddonsFragment"

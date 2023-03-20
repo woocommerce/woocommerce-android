@@ -78,6 +78,11 @@ class VariationNavigator @Inject constructor() {
                 val action = NavGraphProductsDirections.actionGlobalMediaUploadErrorsFragment(target.remoteId)
                 fragment.findNavController().navigateSafely(action)
             }
+            is VariationNavigationTarget.ViewSubscription -> {
+                val action = VariationDetailFragmentDirections
+                    .actionVariationDetailFragmentToProductSubscriptionFragment(target.subscription)
+                fragment.findNavController().navigateSafely(action)
+            }
         }
     }
 }
