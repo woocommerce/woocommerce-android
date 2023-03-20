@@ -37,7 +37,7 @@ class SubscriptionProductVariation(
     override val isVisible: Boolean,
     override val shippingClass: String,
     override val shippingClassId: Long,
-    override val  menuOrder: Int,
+    override val menuOrder: Int,
     override val attributes: Array<VariantOption>,
     override val length: Float,
     override val width: Float,
