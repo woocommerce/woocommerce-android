@@ -135,8 +135,6 @@ fun JetpackBenefitsScreen(
                 Text(text = stringResource(id = R.string.dismiss))
             }
         }
-
-
     }
 
     if (viewState.isLoadingDialogShown) {
