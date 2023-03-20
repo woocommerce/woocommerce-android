@@ -24,6 +24,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -82,7 +83,7 @@ class InstallationViewModelTest : BaseUnitTest() {
 
         verify(repository, Times(1)).fetchSiteAfterCreation(newStore.data.siteId!!)
 
-        val expectedState = SuccessState(newStore.data.domain!!)
+        val expectedState = SuccessState(newStore.data.domain!!.slashJoin("wp-admin/"))
 
         assertEquals(expectedState, observedState)
     }
