@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.login.jetpack.sitecredentials
 
 import android.os.Parcelable
-import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -9,12 +8,12 @@ import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
-import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.ui.login.WPApiSiteRepository
+import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -25,7 +24,6 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
-import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
 import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
@@ -98,27 +96,21 @@ class JetpackActivationSiteCredentialsViewModel @Inject constructor(
                 )
             },
             onFailure = { exception ->
+                val authenticationError = exception as? CookieNonceAuthenticationException
                 val siteError = (exception as? OnChangedException)?.error as? SiteError
 
-                if (siteError != null) {
-                    val errorMessage = if (siteError.type == SiteErrorType.NOT_AUTHENTICATED) {
-                        R.string.username_or_password_incorrect
-                    } else null
-                    if (errorMessage == null) {
-                        val message = siteError.message?.takeIf { it.isNotEmpty() }
-                            ?.let { UiStringText(it) } ?: UiStringRes(R.string.error_generic)
-                        triggerEvent(ShowUiStringSnackbar(message))
-                    }
-                    _viewState.update { state ->
-                        state.copy(errorMessage = errorMessage)
-                    }
-                } else {
-                    triggerEvent(ShowSnackbar(R.string.error_generic))
+                _viewState.update { state ->
+                    state.copy(errorMessage = authenticationError?.errorMessage)
                 }
+
+                if (authenticationError?.errorMessage == null) {
+                    triggerEvent(ShowUiStringSnackbar(UiStringRes(R.string.error_generic)))
+                }
+
                 analyticsTrackerWrapper.track(
                     stat = AnalyticsEvent.LOGIN_JETPACK_SITE_CREDENTIAL_DID_SHOW_ERROR_ALERT,
-                    errorContext = this@JetpackActivationSiteCredentialsViewModel.javaClass.simpleName,
-                    errorType = siteError?.type?.toString(),
+                    errorContext = exception.javaClass.simpleName,
+                    errorType = authenticationError?.errorType ?: siteError?.type?.name,
                     errorDescription = exception.message
                 )
             }
@@ -134,7 +126,7 @@ class JetpackActivationSiteCredentialsViewModel @Inject constructor(
         val username: String = "",
         val password: String = "",
         val isLoading: Boolean = false,
-        @StringRes val errorMessage: Int? = null
+        val errorMessage: UiString? = null
     ) : Parcelable {
         @IgnoredOnParcel
         val isValid = username.isNotBlank() && password.isNotBlank()
