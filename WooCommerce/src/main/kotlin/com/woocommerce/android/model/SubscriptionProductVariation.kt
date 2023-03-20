@@ -5,12 +5,14 @@ import com.woocommerce.android.extensions.parseFromIso8601DateFormat
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
 
 @Suppress("LongParameterList")
+@Parcelize
 class SubscriptionProductVariation(
     val subscriptionDetails: SubscriptionDetails?,
     remoteProductId: Long,
