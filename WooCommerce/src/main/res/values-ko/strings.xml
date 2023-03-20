@@ -1,11 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-02-28 15:54:04+0000
+Translation-Revision-Date: 2023-03-14 15:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">계정에 대기 중인 요구 사항이 있습니다. 직접 결제 수락을 유지하려면 해당 요구 사항을 완료하세요.</string>
+    <string name="analytics_banner_message">회원님이 경험하신 분석에 대해 평가해 주세요.</string>
+    <string name="analytics_banner_title">분석이 마음에 드셨나요?</string>
+    <string name="analytics_wip_message">기기에 중요한 스토어 정보가 표시될 수 있도록 노력하고 있습니다. 개선할 점이 있나요? 피드백을 공유하여 이 기능 개선을 도와주세요.</string>
+    <string name="analytics_wip_title">기기에 통계, 수익 등이 표시됩니다.</string>
+    <string name="login_jetpack_installation_magic_link_failure">웹사이트를 가져오는 동안 오류가 발생했습니다. 다시 시도하세요.</string>
+    <string name="support_request_error_message">죄송합니다. 지금은 지원 요청을 생성할 수 없습니다. 나중에 다시 시도해 주세요.</string>
+    <string name="support_request_error_title">문제가 발생했습니다.</string>
+    <string name="support_request_dialog_action">알겠습니다!</string>
+    <string name="support_request_success_message">회원님의 지원 요청이 받은 편지함에 수신되었습니다. 최대한 빨리 이메일로 회신하겠습니다.</string>
+    <string name="support_request_success_title">요청이 발송되었습니다!</string>
+    <string name="support_request_loading_message">기다려주세요…</string>
+    <string name="support_request_loading_title">요청 발송 중</string>
+    <string name="support_request_help_other">기타 확장 기능/플러그인</string>
+    <string name="support_request_help_plugins">우커머스 플러그인</string>
+    <string name="support_request_help_payments">우커머스 결제</string>
+    <string name="support_request_help_ipp">카드 리더/직접 결제</string>
+    <string name="support_request_help_app">모바일 앱</string>
+    <string name="support_request_message_hint">작성하기</string>
+    <string name="support_request_message">메시지</string>
+    <string name="support_request_submit">지원 요청 제출</string>
+    <string name="support_request_subject">제목</string>
+    <string name="support_request_description">사이트 주소(URL)를 알려주고 문제를 최대한 자세히 설명해 주시면 곧 연락드리겠습니다.</string>
+    <string name="support_request_title">상황 정리</string>
+    <string name="support_request_help_title">도움말이 필요한 영역</string>
+    <string name="support_request">지원 요청</string>
+    <string name="store_onboarding_menu_share_feedback">피드백 공유</string>
+    <string name="store_onboarding_collapsed_transition_name">축소한 목록 온보딩</string>
+    <string name="store_onboarding_full_screen_transition_name">전체 화면 온보딩</string>
+    <string name="store_onboarding_task_view_all">모두 보기(%1$d)</string>
+    <string name="store_onboarding_completed_tasks_full_screen_status">%1$d/%2$d개 작업 완료됨</string>
+    <string name="store_onboarding_task_payments_setup_description">고객에게 쉽고 편리한 결제 방법을 제공하세요!</string>
+    <string name="store_onboarding_task_payments_setup_title">결제받기</string>
+    <string name="store_onboarding_task_about_your_store_description">정보가 있으면 배송, 세금 및 결제 설정을 일찍 시작할 수 있습니다.</string>
+    <string name="store_onboarding_task_about_your_store_title">스토어에 대해 자세히 알려주세요.</string>
+    <string name="login_magic_links_email_sent_to_unknown_email">방금 계정의 이메일 주소로 매직 링크를 보내드렸습니다.</string>
+    <string name="jetpack_benefits_modal_login">계속하려면 로그인하세요.</string>
+    <string name="jetpack_benefits_modal_multiple_stores_subtitle">모든 우커머스 스토어에 대한 접근 권한을 받으세요.</string>
+    <string name="jetpack_benefits_modal_multiple_stores_title">여러 스토어</string>
+    <string name="jetpack_benefits_fetching_status">젯팩 상태를 가져오는 중</string>
+    <string name="card_reader_tap_to_pay_explanation_test_payment_error">문제가 발생했습니다. 나중에 다시 시도하세요.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_payment">결제 체험</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find"> Android에서는 Tap to Pay를 찾으려면\n메뉴 &gt; 결제 또는 결제 받기로 이동하고\nTap to Pay를 선택하면 됩니다.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund">카드를 사용하여 결제를 체험하고\n완료하면 환불하세요.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">회원님의 휴대폰에서 Tap to Pay가 준비되었습니다.\n고객이 회원님의 휴대폰에서 자신의 카드를\n눌러서 결제할 수 있습니다.</string>
+    <string name="card_reader_tap_to_pay_explanation_title">휴대폰으로\n카드 결제 받기</string>
+    <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
+    <string name="card_reader_tap_to_pay_description">회원님의 휴대폰을 사용하여 카드 결제 수락</string>
+    <string name="card_reader_tap_to_pay">Tap To Pay</string>
+    <string name="card_reader_hub_actions_category_header">작업</string>
+    <string name="domain_registration_generic_error">도메인 등록 중 오류 발생</string>
+    <string name="domain_registration_state_picker_dialog_title">주 선택</string>
+    <string name="domain_registration_country_picker_dialog_title">국가 선택</string>
+    <string name="domain_registration_registering_domain_name_progress_dialog_message">도메인 네임 등록 중…</string>
+    <string name="domain_contact_information_register_domain_button">도메인 등록</string>
+    <string name="domain_contact_information_postal_code_hint">우편번호</string>
+    <string name="domain_contact_information_state_not_available_hint">상태(사용할 수 없음)</string>
+    <string name="domain_contact_information_state_hint">주</string>
+    <string name="domain_contact_information_city_hint">도시</string>
+    <string name="domain_contact_information_address_hint_two">주소 2</string>
+    <string name="domain_contact_information_address_hint">주소</string>
+    <string name="domain_contact_information_country_hint">국가</string>
+    <string name="domain_contact_information_country_code_hint">국가 코드</string>
+    <string name="domain_contact_information_phone_number_hint">전화</string>
+    <string name="domain_contact_information_organization_hint">조직(선택사항)</string>
+    <string name="domain_contact_information_description">편의를 위해 워드프레스닷컴을 미리 채웠습니다.\n 연락처 정보 이 도메인에 사용하려는 정보가 정확한지 검토하여 확인하세요.</string>
+    <string name="domain_contact_information_title">도메인 연락처 정보</string>
+    <string name="domain_privacy_option_off_title">공개적으로 등록</string>
+    <string name="domain_privacy_option_on_title">개인정보 보호를 통해 비공개로 등록</string>
+    <string name="domain_registration_contact_form_input_error">유효한 %s(을)를 입력하세요.</string>
+    <string name="domain_registration_privacy_protection_tos">이 도메인을 등록하면 %1$s이용 약관%2$s에 동의하는 것입니다.</string>
+    <string name="domain_registration_privacy_protection_description">도메인 소유자는 모든 도메인의 공개 데이터베이스에 있는 연락처 정보를 공유해야 합니다.\n 개인정보 보호에 따라 회원님의 정보가 아닌 당사의 정보를 공개하며, 회원님이 받을 커뮤니케이션은 비공개적으로 전달합니다.</string>
+    <string name="domain_registration_privacy_protection_title">개인정보 보호</string>
+    <string name="domains_access_error_title">스토어 관리자만 도메인 설정에 접근할 수 있음</string>
+    <string name="login_jetpack_installation_continue_magic_link">또는 계속 매직 링크 사용</string>
+    <string name="login_jetpack_installation_enter_wpcom_password">워드프레스닷컴 계정 비밀번호를 입력하여 젯팩 설치</string>
+    <string name="login_jetpack_connection_enter_wpcom_password">워드프레스닷컴 계정 비밀번호를 입력하여 젯팩에 연결</string>
+    <string name="login_jetpack_installation_enter_wpcom_email">워드프레스닷컴 계정으로 로그인하여 젯팩 설치</string>
+    <string name="login_jetpack_connection_enter_wpcom_email">워드프레스닷컴 계정으로 로그인하여 젯팩 연결</string>
     <string name="domains_purchase_successful_settings_notice">설정 &gt; 도메인에서 도메인 설정을 찾을 수 있습니다.</string>
     <string name="domains_purchase_successful_delay_notice">사이트가 설정되고 있습니다. 도메인이 작동하기 시작하려면 최대 30분 정도 걸릴 수 있습니다.</string>
     <string name="domains_purchase_successful_heading">구매 축하</string>
@@ -1085,8 +1164,6 @@ Language: ko_KR
     <string name="ordered_add_ons_details_info_notice">웹 대시보드에서 애드온의 이름을 변경하는 경우 이전 주문에서는 앱 내에 해당 주문이 더는 표시되지 않습니다.</string>
     <string name="orderdetail_product_lineitem_view_addons_action">애드온 보기</string>
     <string name="save">저장</string>
-    <string name="support_contact_payments_detail">결제 관련 질문에 대한 답변을 도와드릴 수 있는 해피니스 엔지니어에게 연락하기</string>
-    <string name="support_contact_payments">결제 지원 문의</string>
     <string name="product_images_error_detail_title">상세 정보 업로드(%d)</string>
     <string name="product_image_service_error_uploading_multiple">%d개 파일을 업로드할 수 없음</string>
     <string name="product_image_service_error_uploading_single">%d개 파일을 업로드할 수 없음</string>
@@ -2388,8 +2465,6 @@ Language: ko_KR
     <string name="support_contact_email">연락처 이메일</string>
     <string name="support_application_log_detail">앱 상태를 검토하는 고급 도구</string>
     <string name="support_application_log">애플리케이션 로그</string>
-    <string name="support_my_tickets_detail">이전에 제출한 지원 티켓 보기</string>
-    <string name="support_my_tickets">내 티켓</string>
     <string name="support_contact_detail">해피니스 엔지니어에게 문의하여 어려운 질문에 대한 답변 받기</string>
     <string name="support_contact">지원팀에 문의</string>
     <string name="support_faq_detail">궁금한 질문에 대한 답변 보기</string>

@@ -86,7 +86,8 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                             CardReaderOnboardingParams.Failed(
                                 cardReaderFlowParam = CardReaderFlowParam.CardReadersHub(),
                                 onboardingState = event.onboardingState
-                            )
+                            ),
+                            cardReaderType = null
                         )
                     )
                 }

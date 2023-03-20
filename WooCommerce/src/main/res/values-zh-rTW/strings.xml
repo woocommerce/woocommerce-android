@@ -1,11 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-01 09:54:04+0000
+Translation-Revision-Date: 2023-03-14 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">你的帳號中有待確認的要求。 請完成這些要求，以便繼續使用親自收款功能。</string>
+    <string name="analytics_banner_message">請為分析服務的使用體驗評分</string>
+    <string name="analytics_banner_title">喜歡分析服務嗎？</string>
+    <string name="analytics_wip_message">我們正努力讓你的裝置能夠顯示商店的重要資訊！ 還有哪些地方可以更好？ 請與我們分享你的意見，協助我們改善此功能</string>
+    <string name="analytics_wip_title">從你的裝置查看統計資料、營收和更多資訊！</string>
+    <string name="login_jetpack_installation_magic_link_failure">擷取網站時發生錯誤，請再試一次！</string>
+    <string name="support_request_error_message">抱歉，我們目前無法建立支援請求，請稍後再試一次。</string>
+    <string name="support_request_error_title">發生錯誤</string>
+    <string name="support_request_dialog_action">瞭解！</string>
+    <string name="support_request_success_message">我們已收到你的支援請求， 並會盡快透過電子郵件回覆你。</string>
+    <string name="support_request_success_title">已傳送要求！</string>
+    <string name="support_request_loading_message">請稍候…</string>
+    <string name="support_request_loading_title">正在傳送要求</string>
+    <string name="support_request_help_other">其他擴充功能/外掛程式</string>
+    <string name="support_request_help_plugins">WooCommerce 外掛程式</string>
+    <string name="support_request_help_payments">WooCommerce Payments</string>
+    <string name="support_request_help_ipp">讀卡機/親自收款</string>
+    <string name="support_request_help_app">行動裝置應用程式</string>
+    <string name="support_request_message_hint">撰寫內容</string>
+    <string name="support_request_message">訊息</string>
+    <string name="support_request_submit">提交支援請求</string>
+    <string name="support_request_subject">主旨</string>
+    <string name="support_request_description">請告訴我們你的網站位址 (URL) ，並盡可能詳盡描述你的問題，我們會盡速與你聯絡。</string>
+    <string name="support_request_title">讓我們解決這個問題</string>
+    <string name="support_request_help_title">我需要協助處理</string>
+    <string name="support_request">支援要求</string>
+    <string name="store_onboarding_menu_share_feedback">分享意見反應</string>
+    <string name="store_onboarding_collapsed_transition_name">上線摺疊式清單</string>
+    <string name="store_onboarding_full_screen_transition_name">上線全螢幕</string>
+    <string name="store_onboarding_task_view_all">檢視全部 (%1$d)</string>
+    <string name="store_onboarding_completed_tasks_full_screen_status">已完成 %1$d 個工作，共 %2$d 個工作</string>
+    <string name="store_onboarding_task_payments_setup_description">為顧客提供簡單方便的付款方式！</string>
+    <string name="store_onboarding_task_payments_setup_title">收取付款</string>
+    <string name="store_onboarding_task_about_your_store_description">我們會使用該資訊預先幫你完成運送、稅務和付款設定。</string>
+    <string name="store_onboarding_task_about_your_store_title">請提供你商店的詳細資訊</string>
+    <string name="login_magic_links_email_sent_to_unknown_email">我們已將連結傳送到你帳號的電子郵件地址</string>
+    <string name="jetpack_benefits_modal_login">登入以繼續操作</string>
+    <string name="jetpack_benefits_modal_multiple_stores_subtitle">存取你所有的 WooCommerce 商店。</string>
+    <string name="jetpack_benefits_modal_multiple_stores_title">多家商店</string>
+    <string name="jetpack_benefits_fetching_status">擷取 Jetpack 狀態</string>
+    <string name="card_reader_tap_to_pay_explanation_test_payment_error">發生錯誤。 請稍後再試一次。</string>
+    <string name="card_reader_tap_to_pay_explanation_try_payment">嘗試付款</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find"> 若使用 Android 系統，可以在\n「選單」&gt;「付款」找到「點選支付」或「收款」\n，然後選擇「點選支付」。</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund">使用信用卡嘗試付款\n，完成後退款。</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">你的手機已可使用「點選支付」功能。\n你的顧客可以在手機上點選信用卡\n來付款。</string>
+    <string name="card_reader_tap_to_pay_explanation_title">使用手機\n收取信用卡款項</string>
+    <string name="card_reader_tap_to_pay_explanation_screen_title">點選支付</string>
+    <string name="card_reader_tap_to_pay_description">使用手機接受信用卡付款</string>
+    <string name="card_reader_tap_to_pay">點選支付</string>
+    <string name="card_reader_hub_actions_category_header">動作</string>
+    <string name="domain_registration_generic_error">註冊網域時發生錯誤</string>
+    <string name="domain_registration_state_picker_dialog_title">選取州/省</string>
+    <string name="domain_registration_country_picker_dialog_title">選取國家</string>
+    <string name="domain_registration_registering_domain_name_progress_dialog_message">正在註冊網域名稱…</string>
+    <string name="domain_contact_information_register_domain_button">註冊網域</string>
+    <string name="domain_contact_information_postal_code_hint">郵遞區號</string>
+    <string name="domain_contact_information_state_not_available_hint">州 (無法使用)</string>
+    <string name="domain_contact_information_state_hint">州</string>
+    <string name="domain_contact_information_city_hint">城市</string>
+    <string name="domain_contact_information_address_hint_two">地址 (二)</string>
+    <string name="domain_contact_information_address_hint">地址</string>
+    <string name="domain_contact_information_country_hint">國家/地區</string>
+    <string name="domain_contact_information_country_code_hint">國家代碼</string>
+    <string name="domain_contact_information_phone_number_hint">電話</string>
+    <string name="domain_contact_information_organization_hint">組織 (選填)</string>
+    <string name="domain_contact_information_description">為了方便起見，我們已預先填入你的 WordPress.com\n聯絡資訊。請檢視各項資訊，以確認這是你想要用於此網域的正確資訊。</string>
+    <string name="domain_contact_information_title">網域聯絡人資訊</string>
+    <string name="domain_privacy_option_off_title">公開註冊</string>
+    <string name="domain_privacy_option_on_title">透過隱私權保護私密註冊</string>
+    <string name="domain_registration_contact_form_input_error">請輸入有效的 %s</string>
+    <string name="domain_registration_privacy_protection_tos">註冊此網域，即表示你同意我們的%1$s條款與條件%2$s</string>
+    <string name="domain_registration_privacy_protection_description">網域擁有者必須在所有網域的公共資料庫中分享自己的聯絡資訊。\n基於隱私權保護，我們只會發佈自己的資訊而非你的資訊，並會將所有通訊內容私密轉寄給你。</string>
+    <string name="domain_registration_privacy_protection_title">隱私權保護</string>
+    <string name="domains_access_error_title">只有商店管理員可以存取網域設定</string>
+    <string name="login_jetpack_installation_continue_magic_link">或使用 Magic Link 繼續操作</string>
+    <string name="login_jetpack_installation_enter_wpcom_password">請輸入 WordPress.com 帳號的密碼以安裝 Jetpack</string>
+    <string name="login_jetpack_connection_enter_wpcom_password">請輸入 WordPress.com 帳號的密碼以連結至 Jetpack</string>
+    <string name="login_jetpack_installation_enter_wpcom_email">請使用 WordPress.com 帳號登入以安裝 Jetpack</string>
+    <string name="login_jetpack_connection_enter_wpcom_email">請使用 WordPress.com 帳號登入以連結至 Jetpack</string>
     <string name="domains_purchase_successful_settings_notice">你可以在「設定」&gt;「網域」中查看網域設定</string>
     <string name="domains_purchase_successful_delay_notice">你的網站位址正在設定中。 你的網域最多可能需要 30 分鐘才能開始運作。</string>
     <string name="domains_purchase_successful_heading">恭喜你購買完成</string>
@@ -1085,8 +1164,6 @@ Language: zh_TW
     <string name="ordered_add_ons_details_info_notice">請注意，如果你在網路控制台為附加元件重新命名，應用程式內將不再顯示先前訂單的附加元件。</string>
     <string name="orderdetail_product_lineitem_view_addons_action">檢視附加元件</string>
     <string name="save">儲存</string>
-    <string name="support_contact_payments_detail">請聯絡我們的 happiness engineer，他們很樂於協助解決有關付款的問題</string>
-    <string name="support_contact_payments">聯絡付款支援團隊</string>
     <string name="product_images_error_detail_title">上傳詳細資訊 (%d)</string>
     <string name="product_image_service_error_uploading_multiple">%d 個檔案無法上傳</string>
     <string name="product_image_service_error_uploading_single">%d 個檔案無法上傳</string>
@@ -2388,8 +2465,6 @@ Language: zh_TW
     <string name="support_contact_email">聯絡電子郵件</string>
     <string name="support_application_log_detail">檢視應用程式狀態的進階工具</string>
     <string name="support_application_log">應用程式記錄檔</string>
-    <string name="support_my_tickets_detail">檢視先前提交的支援票證</string>
-    <string name="support_my_tickets">我的票證</string>
     <string name="support_contact_detail">聯絡我們的 happiness engineer，他們很樂於協助解決疑難問題。</string>
     <string name="support_contact">聯絡支援團隊</string>
     <string name="support_faq_detail">取得問題的解答</string>

@@ -95,6 +95,7 @@
         </activity>
         <activity
             android:name=".ui.login.MagicLinkInterceptActivity"
+            android:theme="@style/LoginTheme"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

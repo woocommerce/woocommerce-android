@@ -31,6 +31,8 @@ class MoreMenuRepository @Inject constructor(
             currentWooCoreVersion.semverCompareTo(INBOX_MINIMUM_SUPPORTED_VERSION) >= 0
         }
 
+    fun isUpgradesEnabled(): Boolean = selectedSite.get().isWpComStore
+
     fun observeCouponBetaSwitch() = appPrefsWrapper.observePrefs()
         .onStart { emit(Unit) }
         .map { appPrefsWrapper.isCouponsEnabled }

@@ -2,6 +2,7 @@
 
 package com.woocommerce.android.e2e.tests.ui
 
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.rule.ActivityTestRule
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.e2e.helpers.InitializationRule
@@ -26,9 +27,12 @@ class OrdersUITest : TestBase() {
     val rule = HiltAndroidRule(this)
 
     @get:Rule(order = 1)
-    val initRule = InitializationRule()
+    val composeTestRule = createComposeRule()
 
     @get:Rule(order = 2)
+    val initRule = InitializationRule()
+
+    @get:Rule(order = 3)
     var activityRule = ActivityTestRule(LoginActivity::class.java)
 
     @Before
@@ -58,8 +62,8 @@ class OrdersUITest : TestBase() {
                 .assertNewOrderScreen()
                 .updateOrderStatus(status)
                 .addProductTap()
-                .assertOrderSelectProductScreen()
-                .selectProduct(orderData.productName)
+                .assertProductsSelectorScreen(composeTestRule)
+                .selectProduct(composeTestRule, orderData.productName)
                 .clickAddCustomerDetails()
                 .addCustomerDetails(firstName)
                 .addCustomerNotes(note)

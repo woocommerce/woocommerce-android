@@ -118,10 +118,9 @@ class LoginActivity :
     QrCodeLoginListener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
-        private const val MAGIC_LOGIN = "magic-login"
-        private const val TOKEN_PARAMETER = "token"
         private const val JETPACK_CONNECT_URL = "https://wordpress.com/jetpack/connect"
         private const val JETPACK_CONNECTED_REDIRECT_URL = "woocommerce://jetpack-connected"
+        private const val APPLICATION_PASSWORD_LOGIN_ZENDESK_TAG = "application_password_login_error"
 
         private const val KEY_UNIFIED_TRACKER_SOURCE = "KEY_UNIFIED_TRACKER_SOURCE"
         private const val KEY_UNIFIED_TRACKER_FLOW = "KEY_UNIFIED_TRACKER_FLOW"
@@ -193,9 +192,6 @@ class LoginActivity :
                 )
                 startLoginViaWPCom()
             }
-            hasMagicLinkLoginIntent() -> {
-                getAuthTokenFromIntent()?.let { showMagicLinkInterceptFragment(it) }
-            }
             !loginHelpNotification.isNullOrBlank() -> {
                 processLoginHelpNotification(loginHelpNotification)
             }
@@ -248,26 +244,6 @@ class LoginActivity :
         } else {
             showPrologueFragment()
         }
-    }
-
-    private fun hasMagicLinkLoginIntent(): Boolean {
-        val action = intent.action
-        val uri = intent.data
-        val host = uri?.host ?: ""
-        return Intent.ACTION_VIEW == action && host.contains(MAGIC_LOGIN)
-    }
-
-    private fun getAuthTokenFromIntent(): String? {
-        val uri = intent.data
-        return uri?.getQueryParameter(TOKEN_PARAMETER)
-    }
-
-    private fun showMagicLinkInterceptFragment(authToken: String) {
-        val fragment = MagicLinkInterceptFragment.newInstance(authToken)
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment, MagicLinkInterceptFragment.TAG)
-            .addToBackStack(null)
-            .commitAllowingStateLoss()
     }
 
     private fun hasJetpackConnectedIntent(): Boolean {
@@ -593,11 +569,11 @@ class LoginActivity :
         // TODO: Support self-signed SSL sites and show dialog (only needed when XML-RPC support is added)
     }
 
-    private fun viewHelpAndSupport(origin: HelpOrigin) {
+    private fun viewHelpAndSupport(origin: HelpOrigin, extraTags: ArrayList<String>? = null) {
         val flow = unifiedLoginTracker.getFlow()
         val step = unifiedLoginTracker.previousStepBeforeHelpStep
 
-        startActivity(HelpActivity.createIntent(this, origin, null, flow?.value, step?.value))
+        startActivity(HelpActivity.createIntent(this, origin, extraTags, flow?.value, step?.value))
     }
 
     override fun helpSiteAddress(url: String?) {
@@ -660,7 +636,10 @@ class LoginActivity :
     }
 
     override fun helpUsernamePassword(url: String?, username: String?, isWpcom: Boolean) {
-        viewHelpAndSupport(HelpOrigin.LOGIN_USERNAME_PASSWORD)
+        val extraSupportTags = if (!isWpcom) {
+            arrayListOf(APPLICATION_PASSWORD_LOGIN_ZENDESK_TAG)
+        } else null
+        viewHelpAndSupport(HelpOrigin.LOGIN_USERNAME_PASSWORD, extraTags = extraSupportTags)
     }
 
     override fun helpNoJetpackScreen(

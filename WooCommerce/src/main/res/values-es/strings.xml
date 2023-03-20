@@ -1,11 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-02 12:54:03+0000
+Translation-Revision-Date: 2023-03-14 17:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">Tu cuenta está pendiente de cumplir algunos requisitos. Para seguir aceptando Pagos en Persona, completa estos requisitos.</string>
+    <string name="analytics_banner_message">Califica tu experiencia con la función de análisis.</string>
+    <string name="analytics_banner_title">¿Te gusta la función de análisis?</string>
+    <string name="analytics_wip_message">Hemos trabajado para proporcionarte información relevante sobre tu tienda a través de tu dispositivo. ¿Hay algo que podamos mejorar? Ayúdanos a mejorar enviándonos tus comentarios.</string>
+    <string name="analytics_wip_title">Consulta datos sobre estadísticas, ingresos y mucho más desde tu dispositivo.</string>
+    <string name="login_jetpack_installation_magic_link_failure">Ha ocurrido un error al tratar de obtener tu sitio web. Vuelve a intentarlo.</string>
+    <string name="support_request_error_message">Lo siento, en este momento no podemos crear solicitudes de soporte. Vuelve a intentarlo más tarde.</string>
+    <string name="support_request_error_title">Se ha producido un error.</string>
+    <string name="support_request_dialog_action">¡Lo tengo!</string>
+    <string name="support_request_success_message">Hemos recibido correctamente tu solicitud de soporte. Te contestaremos por correo electrónico lo antes posible.</string>
+    <string name="support_request_success_title">¡Solicitud enviada!</string>
+    <string name="support_request_loading_message">Espera…</string>
+    <string name="support_request_loading_title">Enviando la solicitud</string>
+    <string name="support_request_help_other">Otra extensión/plugin</string>
+    <string name="support_request_help_plugins">Plugin de WooCommerce</string>
+    <string name="support_request_help_payments">WooCommerce Payments</string>
+    <string name="support_request_help_ipp">Lector de tarjetas/Pagos en persona</string>
+    <string name="support_request_help_app">Aplicación móvil</string>
+    <string name="support_request_message_hint">Escribe algo</string>
+    <string name="support_request_message">Mensaje</string>
+    <string name="support_request_submit">Enviar solicitud de asistencia</string>
+    <string name="support_request_subject">Asunto</string>
+    <string name="support_request_description">Indícanos la dirección de tu sitio web (URL) y facilítanos tanta información como puedas sobre el problema. Nos pondremos en contacto contigo en breve.</string>
+    <string name="support_request_title">¡Vamos a solucionarlo!</string>
+    <string name="support_request_help_title">Necesito ayuda con</string>
+    <string name="support_request">Solicitud de asistencia</string>
+    <string name="store_onboarding_menu_share_feedback">Compartir comentarios</string>
+    <string name="store_onboarding_collapsed_transition_name">Incorporación de lista contraída</string>
+    <string name="store_onboarding_full_screen_transition_name">Incorporación de pantalla completa</string>
+    <string name="store_onboarding_task_view_all">Ver todas (%1$d)</string>
+    <string name="store_onboarding_completed_tasks_full_screen_status">%1$d de %2$d tareas completadas</string>
+    <string name="store_onboarding_task_payments_setup_description">Ofrece a tus clientes una manera de pagar fácil y cómoda.</string>
+    <string name="store_onboarding_task_payments_setup_title">Recibe los pagos</string>
+    <string name="store_onboarding_task_about_your_store_description">Utilizaremos la información para empezar a configurar los envíos, impuestos y pagos.</string>
+    <string name="store_onboarding_task_about_your_store_title">Danos información sobre tu tienda</string>
+    <string name="login_magic_links_email_sent_to_unknown_email">Te acabamos de enviar un enlace mágico a la dirección de correo electrónico de tu cuenta.</string>
+    <string name="jetpack_benefits_modal_login">Accede para continuar</string>
+    <string name="jetpack_benefits_modal_multiple_stores_subtitle">Accede a todas tus tiendas de WooCommerce.</string>
+    <string name="jetpack_benefits_modal_multiple_stores_title">Varias tiendas</string>
+    <string name="jetpack_benefits_fetching_status">Obtención del estado de Jetpack</string>
+    <string name="card_reader_tap_to_pay_explanation_test_payment_error">Se ha producido un error. Inténtalo de nuevo más tarde.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_payment">Intentar un pago</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find"> Puedes encontrar Tocar para pagar en Android en\nMenú &gt; Pagos, o Recopilar pago y\nelegir Tocar para pagar.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Intenta realizar un pago con la tarjeta y\ndevuélvelo cuando hayas terminado.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">Tu teléfono está listo para Tocar para pagar.\nTu cliente puede tocar su tarjeta\nen su teléfono para pagar.</string>
+    <string name="card_reader_tap_to_pay_explanation_title">Recibe pagos con tarjeta\ncon tu teléfono</string>
+    <string name="card_reader_tap_to_pay_explanation_screen_title">Tocar para pagar</string>
+    <string name="card_reader_tap_to_pay_description">Utiliza tu teléfono para aceptar pagos con tarjeta</string>
+    <string name="card_reader_tap_to_pay">Tocar para pagar</string>
+    <string name="card_reader_hub_actions_category_header">ACCIONES</string>
+    <string name="domain_registration_generic_error">Se ha producido un error durante el registro del dominio</string>
+    <string name="domain_registration_state_picker_dialog_title">Selecciona la provincia</string>
+    <string name="domain_registration_country_picker_dialog_title">Selecciona el país</string>
+    <string name="domain_registration_registering_domain_name_progress_dialog_message">Registrando el nombre de dominio…</string>
+    <string name="domain_contact_information_register_domain_button">Registrar dominio</string>
+    <string name="domain_contact_information_postal_code_hint">Código postal</string>
+    <string name="domain_contact_information_state_not_available_hint">Estado (no disponible)</string>
+    <string name="domain_contact_information_state_hint">Provincia</string>
+    <string name="domain_contact_information_city_hint">Ciudad</string>
+    <string name="domain_contact_information_address_hint_two">Dirección 2</string>
+    <string name="domain_contact_information_address_hint">Dirección</string>
+    <string name="domain_contact_information_country_hint">País</string>
+    <string name="domain_contact_information_country_code_hint">Código del país</string>
+    <string name="domain_contact_information_phone_number_hint">Teléfono</string>
+    <string name="domain_contact_information_organization_hint">Organización (opcional)</string>
+    <string name="domain_contact_information_description">Para tu comodidad, hemos precompletado tu información de contacto\n de WordPress.com. Por favor, comprueba que es la información correcta que quieres usar para este dominio.</string>
+    <string name="domain_contact_information_title">Información de contacto del dominio</string>
+    <string name="domain_privacy_option_off_title">Registrar públicamente</string>
+    <string name="domain_privacy_option_on_title">Registrar privadamente con protección de privacidad</string>
+    <string name="domain_registration_contact_form_input_error">Por favor, introduce un %s válido</string>
+    <string name="domain_registration_privacy_protection_tos">Al registrar este dominio aceptas nuestros %1$stérminos y condiciones%2$s</string>
+    <string name="domain_registration_privacy_protection_description">Los propietarios de dominios tienen que compartir información en una base de datos pública de todos los dominios.\n   Con la protección de privacidad publicamos nuestra propia información en vez de la tuya, y te redirigiremos de forma privada cualquier comunicación dirigida a ti. </string>
+    <string name="domain_registration_privacy_protection_title">Protección de privacidad</string>
+    <string name="domains_access_error_title">Solo los administradores de la tienda pueden acceder a la configuración del dominio</string>
+    <string name="login_jetpack_installation_continue_magic_link">o seguir utilizando el enlace mágico</string>
+    <string name="login_jetpack_installation_enter_wpcom_password">Introduce la contraseña de tu cuenta en WordPress.com para instalar Jetpack</string>
+    <string name="login_jetpack_connection_enter_wpcom_password">Introduce la contraseña de tu cuenta en WordPress.com para conectarte a Jetpack</string>
+    <string name="login_jetpack_installation_enter_wpcom_email">Accede con tu cuenta de WordPress.com para instalar Jetpack</string>
+    <string name="login_jetpack_connection_enter_wpcom_email">Accede con tu cuenta de WordPress.com para conectar Jetpack.</string>
     <string name="domains_purchase_successful_settings_notice">Para acceder a la configuración del dominio, ve a Ajustes -&gt; Dominios</string>
     <string name="domains_purchase_successful_delay_notice">Se está configurando la dirección de tu sitio. El dominio puede tardar hasta 30 minutos en empezar a funcionar.</string>
     <string name="domains_purchase_successful_heading">Felicidades por tu compra</string>
@@ -1085,8 +1164,6 @@ Language: es
     <string name="ordered_add_ons_details_info_notice">Si cambias el nombre de un complemento en el escritorio web, recuerda que los pedidos anteriores no mostrarán el complemento en la aplicación.</string>
     <string name="orderdetail_product_lineitem_view_addons_action">Ver complementos</string>
     <string name="save">Guardar</string>
-    <string name="support_contact_payments_detail">Ponte en contacto con nuestros Happiness Engineers para que te ayuden a resolver tus dudas sobre los pagos</string>
-    <string name="support_contact_payments">Contactar con el equipo de soporte de pagos</string>
     <string name="product_images_error_detail_title">Subir datos (%d)</string>
     <string name="product_image_service_error_uploading_multiple">No se han podido subir %d archivos</string>
     <string name="product_image_service_error_uploading_single">No se ha podido subir %d archivo</string>
@@ -2388,8 +2465,6 @@ Language: es
     <string name="support_contact_email">Correo electrónico de contacto</string>
     <string name="support_application_log_detail">Herramienta avanzada para revisar el estado de la aplicación</string>
     <string name="support_application_log">Registro de solicitud</string>
-    <string name="support_my_tickets_detail">Consulta las peticiones de soporte enviadas previamente</string>
-    <string name="support_my_tickets">Mis peticiones</string>
     <string name="support_contact_detail">Ponte en contacto con nuestros Happiness Engineers y soluciona las cuestiones más complicadas.</string>
     <string name="support_contact">Ponte en contacto con el equipo de soporte.</string>
     <string name="support_faq_detail">Obtén respuestas a todas tus preguntas</string>

@@ -69,9 +69,9 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                 is CardReaderOnboardingViewModel.OnboardingEvent.ContinueToConnection -> {
                     findNavController().navigate(
                         CardReaderOnboardingFragmentDirections
-                            .actionCardReaderOnboardingFragmentToCardReaderTypeSelectionDialogFragment(
+                            .actionCardReaderOnboardingFragmentToCardReaderConnectDialogFragment(
                                 event.cardReaderFlowParam,
-                                event.countryCode
+                                event.cardReaderType
                             )
                     )
                 }

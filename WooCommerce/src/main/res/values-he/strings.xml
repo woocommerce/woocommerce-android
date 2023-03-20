@@ -1,17 +1,96 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-01 15:54:04+0000
+Translation-Revision-Date: 2023-03-14 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">ישנן דרישות ממתינות בחשבון שלך. כדי להמשיך לקבל תשלומים באופן אישי, עליך להשלים את הדרישות הללו.</string>
+    <string name="analytics_banner_message">כדאי לדרג את חוויית השימוש שלך בנתונים האנליטיים</string>
+    <string name="analytics_banner_title">אהבת את השימוש בנתונים האנליטיים?</string>
+    <string name="analytics_wip_message">השקענו מאמצים כדי לאפשר תצוגה של מידע חשוב על החנות ישירות מהמכשיר! אפשר לשפר משהו לדעתך? נשמח לקבל משוב שיעזור לנו לשפר את האפשרות הזאת</string>
+    <string name="analytics_wip_title">לראות את הנתונים הסטטיסטיים, הרווחים ופרטים נוספים ישירות מהמכשיר שלך!</string>
+    <string name="login_jetpack_installation_magic_link_failure">אירעה שגיאה בעת הבאת האתר, יש לנסות שוב!</string>
+    <string name="support_request_error_message">מצטערים, אין לנו אפשרות ליצור בקשות תמיכה כרגע. יש לנסות שוב מאוחר יותר.</string>
+    <string name="support_request_error_title">משהו השתבש</string>
+    <string name="support_request_dialog_action">הבנתי!</string>
+    <string name="support_request_success_message">בקשת התמיכה הגיעה בשלום אל תיבת הדואר שלנו. אנחנו נשלח מענה באימייל בהקדם האפשרי.</string>
+    <string name="support_request_success_title">הבקשה נשלחה!</string>
+    <string name="support_request_loading_message">רק רגע…</string>
+    <string name="support_request_loading_title">שולח בקשה</string>
+    <string name="support_request_help_other">הרחבה / תוסף שונה</string>
+    <string name="support_request_help_plugins">תוסף של WooCommerce</string>
+    <string name="support_request_help_payments">WooCommerce Payments</string>
+    <string name="support_request_help_ipp">קורא כרטיסים / תשלומים באופן אישי</string>
+    <string name="support_request_help_app">אפליקציה לנייד</string>
+    <string name="support_request_message_hint">יש לכתוב כאן משהו</string>
+    <string name="support_request_message">הודעה</string>
+    <string name="support_request_submit">לשלוח בקשת תמיכה</string>
+    <string name="support_request_subject">נושא</string>
+    <string name="support_request_description">אנחנו מבקשים לדעת את כתובת האתר שלך (כתובת ה-URL) וכמה שיותר פרטים לגבי הבעיה. לאחר שליחת הבקשה, ניצור קשר בהקדם.</string>
+    <string name="support_request_title">ננסה לתקן את הבעיה עכשיו</string>
+    <string name="support_request_help_title">דרושה לי עזרה לגבי</string>
+    <string name="support_request">בקשת תמיכה</string>
+    <string name="store_onboarding_menu_share_feedback">לשלוח משוב</string>
+    <string name="store_onboarding_collapsed_transition_name">רשימה פתוחה להצטרפות</string>
+    <string name="store_onboarding_full_screen_transition_name">תצוגה מלאה להצטרפות</string>
+    <string name="store_onboarding_task_view_all">להציג הכול (⁦%1$d⁩)</string>
+    <string name="store_onboarding_completed_tasks_full_screen_status">⁦%1$d⁩ מתוך ⁦%2$d⁩ משימות הושלמו</string>
+    <string name="store_onboarding_task_payments_setup_description">כדאי לאפשר ללקוחות שלך דרך נוספת לשלם בבטחה ובנוחות!</string>
+    <string name="store_onboarding_task_payments_setup_title">לקבל תשלום</string>
+    <string name="store_onboarding_task_about_your_store_description">אנחנו נשתמש במידע הזה כדאי להוסיף הגדרות ראשוניות במשלוח, במיסים ובתשלומים שלך.</string>
+    <string name="store_onboarding_task_about_your_store_title">נשמח לשמוע עוד פרטים על החנות שלך</string>
+    <string name="login_magic_links_email_sent_to_unknown_email">שלחנו כעת קישור ישיר אל כתובת האימייל המשויכת לחשבונך</string>
+    <string name="jetpack_benefits_modal_login">עליך להתחבר כדי להמשיך</string>
+    <string name="jetpack_benefits_modal_multiple_stores_subtitle">לקבל גישה לכל החנויות שלך ב-WooCommerce.</string>
+    <string name="jetpack_benefits_modal_multiple_stores_title">מספר חנויות</string>
+    <string name="jetpack_benefits_fetching_status">מביא את הסטטוסים של Jetpack</string>
+    <string name="card_reader_tap_to_pay_explanation_test_payment_error">משהו השתבש. יש לנסות שוב מאוחר יותר.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_payment">לנסות גביית תשלום</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find"> אפשר למצוא את האפשרות Tap to Pay ב-Android במקטע\nMenu (תפריט) &gt; ‏Payments (תשלומים) &gt; Collect Payment (לגבות תשלום) ואז\nלבחור Tap to Pay (להקיש לתשלום).</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund">ניתן לנסות גביית תשלום באמצעות הכרטיס שלך ואז\nלבצע החזר כספי כשסיימת.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">הטלפון שלך מוכן לשימוש באפשרות Tap to Pay.\nהלקוחות שלך יוכלו להצמיד את הכרטיס שלהם\nלטלפון שלך כדי לשלם.</string>
+    <string name="card_reader_tap_to_pay_explanation_title">לקבל תשלומים באמצעות כרטיס אשראי\nדרך הטלפון שלך</string>
+    <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
+    <string name="card_reader_tap_to_pay_description">להשתמש בטלפון שלך כדי לקבל תשלומים באמצעות כרטיס אשראי</string>
+    <string name="card_reader_tap_to_pay">Tap To Pay</string>
+    <string name="card_reader_hub_actions_category_header">פעולות</string>
+    <string name="domain_registration_generic_error">אירעה שגיאה במהלך ההרשמה של הדומיין</string>
+    <string name="domain_registration_state_picker_dialog_title">בחירת מדינה</string>
+    <string name="domain_registration_country_picker_dialog_title">בחירת ארץ</string>
+    <string name="domain_registration_registering_domain_name_progress_dialog_message">רושם את שם הדומיין…</string>
+    <string name="domain_contact_information_register_domain_button">רישום דומיין</string>
+    <string name="domain_contact_information_postal_code_hint">מיקוד</string>
+    <string name="domain_contact_information_state_not_available_hint">מדינה (לא זמין)</string>
+    <string name="domain_contact_information_state_hint">מדינה</string>
+    <string name="domain_contact_information_city_hint">עיר</string>
+    <string name="domain_contact_information_address_hint_two">שורת כתובת שנייה</string>
+    <string name="domain_contact_information_address_hint">כתובת</string>
+    <string name="domain_contact_information_country_hint">ארץ</string>
+    <string name="domain_contact_information_country_code_hint">קידומת טלפון בינלאומית</string>
+    <string name="domain_contact_information_phone_number_hint">טלפון</string>
+    <string name="domain_contact_information_organization_hint">ארגון (אופציונלי)</string>
+    <string name="domain_contact_information_description">לנוחותך, מילאנו מראש את הפרטים שלך ב-WordPress.com\n מידע ליצירת קשר. יש לבדוק את הפרטים ולוודא שהמידע נכון לדומיין שבו ברצונך להשתמש.</string>
+    <string name="domain_contact_information_title">פרטי יצירת קשר עם הדומיין</string>
+    <string name="domain_privacy_option_off_title">רישום ציבורי</string>
+    <string name="domain_privacy_option_on_title">הירשמות באופן פרטי עם הגנת פרטיות</string>
+    <string name="domain_registration_contact_form_input_error">יש להזין נתונים תקפים עבור %s</string>
+    <string name="domain_registration_privacy_protection_tos">הרשמה לדומיין מהווה הסכמה מצדך %1$sלתנאים ולהתניות שלנו%2$s</string>
+    <string name="domain_registration_privacy_protection_description">בעלי דומיינים מחויבים לשתף את פרטי הקשר שלהם בבסיס נתונים ציבורי של כל הדומיינים.\n בזכות הגנת פרטיות, אנחנו מפרסמים את הפרטים שלנו ולא את שלך ומעבירים אליך באופן פרטי כל התקשרות שתהיה.</string>
+    <string name="domain_registration_privacy_protection_title">הגנת פרטיות</string>
+    <string name="domains_access_error_title">הגישה להגדרות הדומיין מותרת רק למנהלי המערכת של החנות</string>
+    <string name="login_jetpack_installation_continue_magic_link">או להמשיך להשתמש בקישור הישיר</string>
+    <string name="login_jetpack_installation_enter_wpcom_password">עליך להזין את הסיסמה לחשבון שלך ב-WordPress.com כדי להתקין את Jetpack</string>
+    <string name="login_jetpack_connection_enter_wpcom_password">עליך להזין את הסיסמה לחשבון שלך ב-WordPress.com כדי לחבר את Jetpack</string>
+    <string name="login_jetpack_installation_enter_wpcom_email">עליך להתחבר עם החשבון שלך ב-WordPress.com כדי להתקין את Jetpack</string>
+    <string name="login_jetpack_connection_enter_wpcom_email">עליך להתחבר עם החשבון שלך ב-WordPress.com כדי לחבר את Jetpack</string>
     <string name="domains_purchase_successful_settings_notice">הגדרות הדומיין נמצאות במקטע \'הגדרות\' &gt; \'דומיינים\'</string>
     <string name="domains_purchase_successful_delay_notice">כתובת האתר שלך הוגדרה. יידרשו עד 30 דקות להתחלת הפעילות של הדומיין.</string>
     <string name="domains_purchase_successful_heading">ברכותינו על הרכישה החדשה שלך</string>
     <string name="domains_free_with_credits">ניתן בחינם לשנה הראשונה</string>
     <string name="settings_confirm_logout_site_credentials">ביקשת להתנתק מהחשבון - האם ההחלטה סופית?</string>
-    <string name="domains_generic_error_title">אין אפשרות לטעון את הדומיינים של האתר.</string>
+    <string name="domains_generic_error_title">אין אפשרות לטעון את הדומיינים של האתר</string>
     <string name="store_onboarding_completed_tasks_status">הושלמו ⁦%1$d⁩/%2$d</string>
     <string name="store_onboarding_task_change_domain_description">כתובת URL מותאמת אישית לאחסון החנות שלך.</string>
     <string name="store_onboarding_task_change_domain_title">להתאים אישית את הדומיין שלך</string>
@@ -1085,8 +1164,6 @@ Language: he_IL
     <string name="ordered_add_ons_details_info_notice">אם בחרת לשנות את שם ההרחבה בלוח הבקרה באתר האינטרנט, כדאי לשים לב שההזמנות הקודמות לא יציגו עוד את ההרחבה הזאת בתוך האפליקציה.</string>
     <string name="orderdetail_product_lineitem_view_addons_action">להציג הרחבות</string>
     <string name="save">לשמור</string>
-    <string name="support_contact_payments_detail">ניתן ליצור קשר עם נציגי התמיכה שישמחו לענות על שאלות לגבי תשלומים</string>
-    <string name="support_contact_payments">לפנות לתמיכת תשלומים</string>
     <string name="product_images_error_detail_title">להעלות פרטים (%d)</string>
     <string name="product_image_service_error_uploading_multiple">לא ניתן היה להעלות %d קבצים</string>
     <string name="product_image_service_error_uploading_single">לא ניתן היה להעלות קובץ %d</string>
@@ -2388,8 +2465,6 @@ Language: he_IL
     <string name="support_contact_email">אימייל ליצירת קשר</string>
     <string name="support_application_log_detail">כלי מתקדם לבדיקת מצב האפליקציה</string>
     <string name="support_application_log">יומן אפליקציה</string>
-    <string name="support_my_tickets_detail">הצגה של קריאות תמיכה שנשלחו בעבר</string>
-    <string name="support_my_tickets">הקריאות שלי</string>
     <string name="support_contact_detail">יצירת קשר עם נציגי התמיכה שלנו שיכולים לענות על שאלות קשות</string>
     <string name="support_contact">יצירת קשר עם התמיכה</string>
     <string name="support_faq_detail">קבלת מענה לשאלותיך</string>

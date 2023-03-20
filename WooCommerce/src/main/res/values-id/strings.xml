@@ -1,11 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-02-28 09:54:04+0000
+Translation-Revision-Date: 2023-03-14 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">Ada persyaratan yang tertunda di akun Anda. Penuhi persyaratan tersebut agar dapat tetap menerima Pembayaran Langsung.</string>
+    <string name="analytics_banner_message">Silakan beri nilai pengalaman analitik Anda</string>
+    <string name="analytics_banner_title">Puas dengan analitik?</string>
+    <string name="analytics_wip_message">Kami telah berupaya menampilkan informasi toko yang penting dari perangkat Anda. Anda ingin yang lebih baik lagi? Berikan feedback Anda agar kami dapat memperbaiki fitur ini</string>
+    <string name="analytics_wip_title">Lihat statistik, pendapatan, dan lain-lain dari perangkat Anda.</string>
+    <string name="login_jetpack_installation_magic_link_failure">Terjadi error saat memuat situs web Anda. Silakan coba lagi.</string>
+    <string name="support_request_error_message">Maaf, untuk saat ini permintaan dukungan tidak dapat dibuat, coba lagi nanti.</string>
+    <string name="support_request_error_title">Terjadi kesalahan</string>
+    <string name="support_request_dialog_action">Paham</string>
+    <string name="support_request_success_message">Permintaan dukungan Anda sudah masuk ke inbox kami. Kami akan mengirimkan email balasan secepatnya.</string>
+    <string name="support_request_success_title">Permintaan terkirim!</string>
+    <string name="support_request_loading_message">Harap tunggu…</string>
+    <string name="support_request_loading_title">Mengirim permintaan</string>
+    <string name="support_request_help_other">Ekstensi/Plugin lainnya</string>
+    <string name="support_request_help_plugins">Plugin WooCommerce</string>
+    <string name="support_request_help_payments">Pembayaran WooCommerce</string>
+    <string name="support_request_help_ipp">Pembaca Kartu/Pembayaran Langsung</string>
+    <string name="support_request_help_app">Aplikasi Seluler</string>
+    <string name="support_request_message_hint">Mulai menulis</string>
+    <string name="support_request_message">Pesan</string>
+    <string name="support_request_submit">Daftarkan Permohonan Dukungan</string>
+    <string name="support_request_subject">Subjek</string>
+    <string name="support_request_description">Uraikan masalah sedetail mungkin dan sertakan alamat situs (URL) Anda. Kami akan segera menindaklanjutinya.</string>
+    <string name="support_request_title">Mari atasi masalahnya</string>
+    <string name="support_request_help_title">Saya butuh bantuan untuk</string>
+    <string name="support_request">Permintaan Dukungan</string>
+    <string name="store_onboarding_menu_share_feedback">Bagikan feedback</string>
+    <string name="store_onboarding_collapsed_transition_name">Penyiapan dengan daftar diciutkan</string>
+    <string name="store_onboarding_full_screen_transition_name">Penyiapan dengan layar penuh</string>
+    <string name="store_onboarding_task_view_all">Lihat semua (%1$d)</string>
+    <string name="store_onboarding_completed_tasks_full_screen_status">%1$d dari %2$d langkah selesai</string>
+    <string name="store_onboarding_task_payments_setup_description">Hadirkan metode pembayaran yang praktis dan mudah untuk pelanggan!</string>
+    <string name="store_onboarding_task_payments_setup_title">Terima pembayaran</string>
+    <string name="store_onboarding_task_about_your_store_description">Kami akan menggunaakan data tersebut untuk menyetel pengaturan terkait pengiriman, pajak, dan pembayaran.</string>
+    <string name="store_onboarding_task_about_your_store_title">Bisa berikan info lebih lanjut tentang toko Anda?</string>
+    <string name="login_magic_links_email_sent_to_unknown_email">Tautan ajaib sudah berhasil dikirim ke alamat email yang terdaftar untuk akun Anda</string>
+    <string name="jetpack_benefits_modal_login">Login untuk Melanjutkan</string>
+    <string name="jetpack_benefits_modal_multiple_stores_subtitle">Akses semua toko WooCommerce Anda.</string>
+    <string name="jetpack_benefits_modal_multiple_stores_title">Banyak toko</string>
+    <string name="jetpack_benefits_fetching_status">Memuat Status Jetpack</string>
+    <string name="card_reader_tap_to_pay_explanation_test_payment_error">Ada yang salah! Silakan coba lagi nanti.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_payment">Uji coba pembayaran</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find"> Fitur Ketuk untuk Membayar di Android dapat ditemukan di\nMenu &gt; Pembayaran, atau Anda bisa memilih Terima Pembayaran dan\nmemilih Ketuk untuk Membayar.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Gunakan kartu Anda sendiri untuk uji coba pembayaran lalu\nkembalikan lagi dananya jika sudah selesai.</string>
+    <string name="card_reader_tap_to_pay_explanation_ready">Ketuk untuk Membayar sudah tersedia di ponsel Anda.\nPelanggan dapat menempelkan kartunya\nke ponsel Anda untuk membayar.</string>
+    <string name="card_reader_tap_to_pay_explanation_title">Terima pembayaran dengan kartu\nmenggunakan ponsel Anda</string>
+    <string name="card_reader_tap_to_pay_explanation_screen_title">Ketuk Untuk Membayar</string>
+    <string name="card_reader_tap_to_pay_description">Gunakan ponsel Anda untuk menerima pembayaran dengan kartu</string>
+    <string name="card_reader_tap_to_pay">Ketuk Untuk Membayar</string>
+    <string name="card_reader_hub_actions_category_header">TINDAKAN</string>
+    <string name="domain_registration_generic_error">Terjadi error saat registrasi domain</string>
+    <string name="domain_registration_state_picker_dialog_title">Pilih Provinsi</string>
+    <string name="domain_registration_country_picker_dialog_title">Pilih Negara</string>
+    <string name="domain_registration_registering_domain_name_progress_dialog_message">Mendaftarkan nama domain…</string>
+    <string name="domain_contact_information_register_domain_button">Daftarkan Domain</string>
+    <string name="domain_contact_information_postal_code_hint">Kode pos</string>
+    <string name="domain_contact_information_state_not_available_hint">Negara Bagian (Tidak Tersedia)</string>
+    <string name="domain_contact_information_state_hint">Provinsi</string>
+    <string name="domain_contact_information_city_hint">Kota</string>
+    <string name="domain_contact_information_address_hint_two">Alamat 2</string>
+    <string name="domain_contact_information_address_hint">Alamat</string>
+    <string name="domain_contact_information_country_hint">Negara</string>
+    <string name="domain_contact_information_country_code_hint">Kode negara</string>
+    <string name="domain_contact_information_phone_number_hint">Telepon</string>
+    <string name="domain_contact_information_organization_hint">Organisasi (opsional)</string>
+    <string name="domain_contact_information_description">Demi kenyamanan Anda, kami telah mengisi informasi kontak WordPress.com Anda\n terlebih dahulu. Harap tinjau kembali untuk memastikan informasi yang ingin Anda gunakan untuk domain ini sudah benar.</string>
+    <string name="domain_contact_information_title">Informasi kontak domain</string>
+    <string name="domain_privacy_option_off_title">Daftarkan secara publik</string>
+    <string name="domain_privacy_option_on_title">Daftarkan secara pribadi dengan Perlindungan Privasi</string>
+    <string name="domain_registration_contact_form_input_error">Masukkan %s yang valid</string>
+    <string name="domain_registration_privacy_protection_tos">Dengan mendaftarkan domain ini, Anda menyetujui %1$ssyarat dan ketentuan%2$s kami</string>
+    <string name="domain_registration_privacy_protection_description">Pemilik domain harus berbagi informasi kontak di database publik semua domain.\n Dengan Perlindungan Privasi, kami memublikasikan informasi kami sendiri, bukan informasi Anda, dan meneruskan segala komunikasi kepada Anda secara pribadi.</string>
+    <string name="domain_registration_privacy_protection_title">Perlindungan Privasi</string>
+    <string name="domains_access_error_title">Pengaturan domain hanya bisa diakses oleh administrator toko</string>
+    <string name="login_jetpack_installation_continue_magic_link">Atau lanjut dengan Tautan Ajaib</string>
+    <string name="login_jetpack_installation_enter_wpcom_password">Masukkan kata sandi akun WordPress.com Anda untuk memasang Jetpack</string>
+    <string name="login_jetpack_connection_enter_wpcom_password">Masukkan kata sandi akun WordPress.com Anda untuk menghubungkan Jetpack</string>
+    <string name="login_jetpack_installation_enter_wpcom_email">Login dengan akun WordPress.com Anda untuk memasang Jetpack</string>
+    <string name="login_jetpack_connection_enter_wpcom_email">Login dengan akun WordPress.com Anda untuk menghubungkan Jetpack</string>
     <string name="domains_purchase_successful_settings_notice">Pengaturan domain bisa ditemukan di Pengaturan -&gt; Domain</string>
     <string name="domains_purchase_successful_delay_notice">Alamat situs Anda sedang diatur. Perlu waktu hingga 30 menit bagi domain Anda untuk mulai berfungsi.</string>
     <string name="domains_purchase_successful_heading">Selamat atas pembelian Anda</string>
@@ -1085,8 +1164,6 @@ Language: id
     <string name="ordered_add_ons_details_info_notice">Jika ingin mengubah nama add-on pada dasbor web, harap perhatikan bahwa pesanan sebelumnya tidak akan menampilkan add-on tersebut dalam aplikasi.</string>
     <string name="orderdetail_product_lineitem_view_addons_action">Lihat Add-on</string>
     <string name="save">Simpan</string>
-    <string name="support_contact_payments_detail">Hubungi happiness engineers kami yang dapat membantu menjawab pertanyaan terkait pembayaran</string>
-    <string name="support_contact_payments">Hubungi Dukungan Pembayaran</string>
     <string name="product_images_error_detail_title">Unggah detail (%d)</string>
     <string name="product_image_service_error_uploading_multiple">File %d tidak dapat diunggah</string>
     <string name="product_image_service_error_uploading_single">File %d tidak dapat diunggah</string>
@@ -2388,8 +2465,6 @@ Language: id
     <string name="support_contact_email">Email kontak</string>
     <string name="support_application_log_detail">Alat canggih untuk meninjau status aplikasi</string>
     <string name="support_application_log">Log aplikasi</string>
-    <string name="support_my_tickets_detail">Lihat tiket dukungan yang dikirimkan sebelumnya</string>
-    <string name="support_my_tickets">Tiket saya</string>
     <string name="support_contact_detail">Hubungi Happiness Engineer kami yang dapat membantu menjawab pertanyaan sulit</string>
     <string name="support_contact">Hubungi dukungan</string>
     <string name="support_faq_detail">Dapatkan jawaban atas pertanyaan Anda</string>
