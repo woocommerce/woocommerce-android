@@ -118,17 +118,25 @@ fun JetpackBenefitsScreen(
             }
         }
 
-        WCColoredButton(onClick = onInstallClick, modifier = Modifier.fillMaxWidth()) {
-            Text(
-                text = stringResource(
-                    id = if (viewState.isUsingJetpackCP) R.string.jetpack_benefits_modal_install_jetpack
-                    else R.string.jetpack_benefits_modal_login
+        if (viewState.isRestAPIActivationAvailable) {
+            WCColoredButton(onClick = onInstallClick, modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = stringResource(
+                        id = if (viewState.isUsingJetpackCP) R.string.jetpack_benefits_modal_install_jetpack
+                        else R.string.jetpack_benefits_modal_login
+                    )
                 )
-            )
+            }
+            WCOutlinedButton(onClick = onDismssClick, modifier = Modifier.fillMaxWidth()) {
+                Text(text = stringResource(id = R.string.jetpack_benefits_modal_dismiss))
+            }
+        } else {
+            WCOutlinedButton(onClick = onDismssClick, modifier = Modifier.fillMaxWidth()) {
+                Text(text = stringResource(id = R.string.dismiss))
+            }
         }
-        WCOutlinedButton(onClick = onDismssClick, modifier = Modifier.fillMaxWidth()) {
-            Text(text = stringResource(id = R.string.jetpack_benefits_modal_dismiss))
-        }
+
+
     }
 
     if (viewState.isLoadingDialogShown) {
@@ -173,7 +181,22 @@ private fun JetpackBenefitsScreenPreview() {
         JetpackBenefitsScreen(
             viewState = JetpackBenefitsViewModel.ViewState(
                 isUsingJetpackCP = false,
-                isLoadingDialogShown = false
+                isLoadingDialogShown = false,
+                isRestAPIActivationAvailable = true
+            )
+        )
+    }
+}
+
+@Composable
+@Preview
+private fun JetpackBenefitsScreenWithoutCTAPreview() {
+    WooThemeWithBackground {
+        JetpackBenefitsScreen(
+            viewState = JetpackBenefitsViewModel.ViewState(
+                isUsingJetpackCP = false,
+                isLoadingDialogShown = false,
+                isRestAPIActivationAvailable = false
             )
         )
     }

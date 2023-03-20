@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -27,7 +28,8 @@ class JetpackBenefitsViewModel @Inject constructor(
     private val _viewState = MutableStateFlow(
         ViewState(
             isUsingJetpackCP = selectedSite.connectionType == SiteConnectionType.JetpackConnectionPackage,
-            isLoadingDialogShown = false
+            isLoadingDialogShown = false,
+            isRestAPIActivationAvailable = !FeatureFlag.REST_API_I2.isEnabled()
         )
     )
     val viewState = _viewState.asLiveData()
@@ -65,7 +67,8 @@ class JetpackBenefitsViewModel @Inject constructor(
 
     data class ViewState(
         val isUsingJetpackCP: Boolean,
-        val isLoadingDialogShown: Boolean
+        val isLoadingDialogShown: Boolean,
+        val isRestAPIActivationAvailable: Boolean
     )
 
     object StartJetpackActivationForJetpackCP : Event()
