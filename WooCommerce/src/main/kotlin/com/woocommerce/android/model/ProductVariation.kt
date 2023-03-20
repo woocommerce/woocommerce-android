@@ -23,7 +23,7 @@ import java.math.BigDecimal
 import java.util.Date
 
 @Parcelize
-data class ProductVariation(
+open class ProductVariation(
     val remoteProductId: Long,
     val remoteVariationId: Long,
     val sku: String,
@@ -161,6 +161,68 @@ data class ProductVariation(
             val option = attributes.firstOrNull { it.name == attribute.name }
             option?.option ?: "Any ${attribute.name}"
         } ?: attributes.filter { it.option != null }.joinToString(" - ") { o -> o.option!! }
+    }
+
+    fun copy(
+        remoteProductId: Long = this.remoteProductId,
+        remoteVariationId: Long = this.remoteVariationId,
+        sku: String = this.sku,
+        image: Image? = this.image,
+        price: BigDecimal? = this.price,
+        regularPrice: BigDecimal? = this.regularPrice,
+        salePrice: BigDecimal? = this.salePrice,
+        saleEndDateGmt: Date? = this.saleEndDateGmt,
+        saleStartDateGmt: Date? = this.saleStartDateGmt,
+        isSaleScheduled: Boolean = this.isSaleScheduled,
+        stockStatus: ProductStockStatus = this.stockStatus,
+        backorderStatus: ProductBackorderStatus = this.backorderStatus,
+        stockQuantity: Double = this.stockQuantity,
+        priceWithCurrency: String? = this.priceWithCurrency,
+        isPurchasable: Boolean = this.isPurchasable,
+        isVirtual: Boolean = this.isVirtual,
+        isDownloadable: Boolean = this.isDownloadable,
+        isStockManaged: Boolean = this.isStockManaged,
+        description: String = this.description,
+        isVisible: Boolean = this.isVisible,
+        shippingClass: String = this.shippingClass,
+        shippingClassId: Long = this.shippingClassId,
+        menuOrder: Int = this.menuOrder,
+        attributes: Array<VariantOption> = this.attributes,
+        length: Float = this.length,
+        width: Float = this.width,
+        height: Float = this.height,
+        weight: Float = this.weight
+    ): ProductVariation {
+        return ProductVariation(
+            remoteProductId = remoteProductId,
+            remoteVariationId = remoteVariationId,
+            sku = sku,
+            image = image,
+            price = price,
+            regularPrice = regularPrice,
+            salePrice = salePrice,
+            saleEndDateGmt = saleEndDateGmt,
+            saleStartDateGmt = saleStartDateGmt,
+            isSaleScheduled = isSaleScheduled,
+            stockStatus = stockStatus,
+            backorderStatus = backorderStatus,
+            stockQuantity = stockQuantity,
+            priceWithCurrency = priceWithCurrency,
+            isPurchasable = isPurchasable,
+            isVirtual = isVirtual,
+            isDownloadable = isDownloadable,
+            isStockManaged = isStockManaged,
+            description = description,
+            isVisible = isVisible,
+            shippingClass = shippingClass,
+            shippingClassId = shippingClassId,
+            menuOrder = menuOrder,
+            attributes = attributes,
+            length = length,
+            width = width,
+            height = height,
+            weight = weight
+        )
     }
 }
 
