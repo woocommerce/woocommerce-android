@@ -47,10 +47,13 @@ class InstallationViewModel @Inject constructor(
         private const val SITE_CHECK_DEBOUNCE = 5000L
     }
 
-    private val newStoreUrl by lazy { selectedSite.get().url }
-    private val newStoreWpAdminUrl by lazy { selectedSite.get().url.slashJoin("wp-admin/") }
+    private val newStoreUrl
+        get() = selectedSite.get().url
 
-    private val _viewState = savedState.getStateFlow<ViewState>(this, SuccessState(newStoreWpAdminUrl))
+    private val newStoreWpAdminUrl
+        get() = newStoreUrl.slashJoin("wp-admin/")
+
+    private val _viewState = savedState.getStateFlow<ViewState>(this, InitialState)
     val viewState = _viewState
         .onEach {
             if (it is InitialState) {
