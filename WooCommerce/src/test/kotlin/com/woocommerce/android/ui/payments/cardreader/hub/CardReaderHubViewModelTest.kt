@@ -1254,8 +1254,8 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).anyMatch {
                 it is NonToggleableListItem &&
                     it.icon == R.drawable.ic_baseline_contactless &&
-                    it.label == UiString.UiStringRes(R.string.card_reader_tap_to_pay) &&
-                    it.description == UiString.UiStringRes(R.string.card_reader_tap_to_pay_description_not_used) &&
+                    it.label == UiStringRes(R.string.card_reader_tap_to_pay) &&
+                    it.description == UiStringRes(R.string.card_reader_tap_to_pay_description_not_used) &&
                     it.index == 5
             }
         }
@@ -1305,7 +1305,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).anyMatch {
                 it is NonToggleableListItem &&
                     it.icon == R.drawable.ic_feedback_banner_logo &&
-                    it.label == UiString.UiStringRes(R.string.card_reader_tap_to_pay_share_feedback) &&
+                    it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback) &&
                     it.description == null &&
                     it.index == 6
             }
@@ -1325,7 +1325,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             // THEN
             assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).noneMatch {
                 it is NonToggleableListItem &&
-                    it.label == UiString.UiStringRes(R.string.card_reader_tap_to_pay_share_feedback)
+                    it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback)
             }
         }
 
@@ -1495,7 +1495,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         val rows = (viewModel.viewStateData.getOrAwaitValue()).rows
         assertThat(
             rows.filterIsInstance<NonToggleableListItem>()
-                .filter { it.label != UiString.UiStringRes(R.string.card_reader_tap_to_pay) }
+                .filter { it.label != UiStringRes(R.string.card_reader_tap_to_pay) }
                 .map { it.description }
         ).allMatch { it == null }
     }
