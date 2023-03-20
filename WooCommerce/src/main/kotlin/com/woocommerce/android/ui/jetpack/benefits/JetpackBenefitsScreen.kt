@@ -42,7 +42,7 @@ fun JetpackBenefitsScreen(viewModel: JetpackBenefitsViewModel) {
         JetpackBenefitsScreen(
             viewState = it,
             onInstallClick = viewModel::onInstallClick,
-            onDismssClick = viewModel::onDismiss
+            onDismissClick = viewModel::onDismiss
         )
     }
 }
@@ -51,7 +51,7 @@ fun JetpackBenefitsScreen(viewModel: JetpackBenefitsViewModel) {
 fun JetpackBenefitsScreen(
     viewState: JetpackBenefitsViewModel.ViewState,
     onInstallClick: () -> Unit = {},
-    onDismssClick: () -> Unit = {}
+    onDismissClick: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -127,11 +127,11 @@ fun JetpackBenefitsScreen(
                     )
                 )
             }
-            WCOutlinedButton(onClick = onDismssClick, modifier = Modifier.fillMaxWidth()) {
+            WCOutlinedButton(onClick = onDismissClick, modifier = Modifier.fillMaxWidth()) {
                 Text(text = stringResource(id = R.string.jetpack_benefits_modal_dismiss))
             }
         } else {
-            WCOutlinedButton(onClick = onDismssClick, modifier = Modifier.fillMaxWidth()) {
+            WCOutlinedButton(onClick = onDismissClick, modifier = Modifier.fillMaxWidth()) {
                 Text(text = stringResource(id = R.string.dismiss))
             }
         }
