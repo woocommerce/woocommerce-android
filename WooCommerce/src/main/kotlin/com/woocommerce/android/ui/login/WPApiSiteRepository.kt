@@ -60,38 +60,7 @@ class WPApiSiteRepository @Inject constructor(
                     message = "Authentication failed, " +
                         "error: ${authenticationResult.type}, ${authenticationResult.message}"
                 )
-
-                val networkStatusCode = authenticationResult.networkError?.volleyError?.networkResponse?.statusCode
-                val errorMessage = when {
-                    authenticationResult.type == Nonce.CookieNonceErrorType.NOT_AUTHENTICATED ->
-                        authenticationResult.message?.let { UiStringText(it) }
-                            ?: UiStringRes(string.username_or_password_incorrect)
-
-                    authenticationResult.type == Nonce.CookieNonceErrorType.INVALID_RESPONSE ->
-                        UiStringRes(string.login_site_credentials_invalid_response)
-
-                    authenticationResult.type == Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL ->
-                        UiStringRes(string.login_site_credentials_custom_login_url)
-
-                    authenticationResult.type == Nonce.CookieNonceErrorType.CUSTOM_ADMIN_URL ->
-                        UiStringRes(string.login_site_credentials_custom_admin_url)
-
-                    networkStatusCode != null -> {
-                        UiStringRes(
-                            string.login_site_credentials_http_error,
-                            listOf(UiStringText(networkStatusCode.toString()))
-                        )
-                    }
-
-                    else -> UiStringRes(string.error_generic)
-                }
-                Result.failure(
-                    CookieNonceAuthenticationException(
-                        errorMessage,
-                        authenticationResult.type.name,
-                        networkStatusCode
-                    )
-                )
+                Result.failure(authenticationResult.mapToException())
             }
         }
     }
@@ -157,6 +126,48 @@ class WPApiSiteRepository @Inject constructor(
 
     suspend fun getSiteByLocalId(id: Int): SiteModel? = withContext(Dispatchers.IO) {
         siteStore.getSiteByLocalId(id)
+    }
+
+    private fun CookieNonceAuthenticator.CookieNonceAuthenticationResult.Error.mapToException():
+        CookieNonceAuthenticationException {
+        val networkStatusCode = networkError?.volleyError?.networkResponse?.statusCode ?: run {
+            if (type == Nonce.CookieNonceErrorType.NOT_AUTHENTICATED ||
+                type == Nonce.CookieNonceErrorType.INVALID_RESPONSE
+            ) {
+                // If we don't have a network status code, and the error is either NOT_AUTHENTICATED or
+                // INVALID_RESPONSE, we can assume the response was 200
+                @Suppress("MagicNumber")
+                200
+            } else {
+                null
+            }
+        }
+        val errorMessage = when {
+            type == Nonce.CookieNonceErrorType.NOT_AUTHENTICATED ->
+                message?.let { UiStringText(it) } ?: UiStringRes(string.username_or_password_incorrect)
+
+            type == Nonce.CookieNonceErrorType.INVALID_RESPONSE ->
+                UiStringRes(string.login_site_credentials_invalid_response)
+
+            type == Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL ->
+                UiStringRes(string.login_site_credentials_custom_login_url)
+
+            type == Nonce.CookieNonceErrorType.CUSTOM_ADMIN_URL ->
+                UiStringRes(string.login_site_credentials_custom_admin_url)
+
+            networkStatusCode != null ->
+                UiStringRes(
+                    string.login_site_credentials_http_error,
+                    listOf(UiStringText(networkStatusCode.toString()))
+                )
+
+            else -> UiStringRes(string.error_generic)
+        }
+        return CookieNonceAuthenticationException(
+            errorMessage,
+            type.name,
+            networkStatusCode
+        )
     }
 
     data class CookieNonceAuthenticationException(
