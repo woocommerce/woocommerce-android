@@ -166,6 +166,9 @@ object AppPrefs {
 
         // Was the IPP feedback survey banner dismissed forever
         IPP_FEEDBACK_SURVEY_BANNER_DISMISSED_FOREVER,
+
+        // Was the Tap To Pay used at least once
+        TTP_WAS_USED_AT_LEAST_ONCE,
     }
 
     fun init(context: Context) {
@@ -870,6 +873,13 @@ object AppPrefs {
 
     fun setIPPFeedbackBannerDismissedForever(dismissedForever: Boolean) {
         setBoolean(UndeletablePrefKey.IPP_FEEDBACK_SURVEY_BANNER_DISMISSED_FOREVER, dismissedForever)
+    }
+
+    fun isTTPWasUsedAtLeastOnce() =
+        getBoolean(UndeletablePrefKey.TTP_WAS_USED_AT_LEAST_ONCE, false)
+
+    fun setTTPWasUsedAtLeastOnce() {
+        setBoolean(UndeletablePrefKey.TTP_WAS_USED_AT_LEAST_ONCE, true)
     }
 
     /**

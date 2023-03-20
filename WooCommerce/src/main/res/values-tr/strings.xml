@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-09 15:54:06+0000
+Translation-Revision-Date: 2023-03-14 22:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">Hesabınızda bekleyen gereksinimler var. Şahsen Ödemeleri kabul etmeye devam etmek için lütfen bu gereksinimleri karşılayın.</string>
+    <string name="analytics_banner_message">Lütfen analizler deneyiminizi değerlendirin</string>
+    <string name="analytics_banner_title">Analizlerden keyif alıyor musunuz?</string>
+    <string name="analytics_wip_message">Cihazınızdan önemli mağaza bilgilerinin görüntülenmesini mümkün hale getirmek için çalışıyoruz! Daha iyisi olabilir mi? Lütfen geri bildirimlerinizi bizimle paylaşarak bu özelliği geliştirmemize yardımcı olun.</string>
+    <string name="analytics_wip_title">Cihazınızdan istatistiklerinizi, gelirinizi ve daha fazlasını görün!</string>
+    <string name="login_jetpack_installation_magic_link_failure">Web siteniz getirilirken bir hata oluştu, lütfen tekrar deneyin!</string>
     <string name="support_request_error_message">Üzgünüz, şu anda destek talebi oluşturamıyoruz, lütfen daha sonra tekrar deneyin.</string>
     <string name="support_request_error_title">Bir sorun oluştu</string>
     <string name="support_request_dialog_action">Anladım!</string>

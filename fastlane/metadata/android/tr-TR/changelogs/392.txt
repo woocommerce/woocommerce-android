@@ -1,2 +1,0 @@
-12.6:
-Uygulamadan sipariş oluşturabileceğinizi biliyor muydunuz? Deneyiminizi daha sorunsuz hale getirmek için sipariş oluşturmayla ilgili birkaç iyileştirme yaptık. Lütfen geri bildirimlerinizi göndermeye devam edin! Her birini okuyoruz!

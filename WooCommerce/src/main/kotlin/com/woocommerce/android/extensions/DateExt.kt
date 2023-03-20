@@ -4,6 +4,9 @@ import android.content.Context
 import android.text.format.DateFormat
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -144,3 +147,5 @@ fun Date.formatAsRangeWith(other: Date, locale: Locale, calendar: Calendar): Str
 
 private const val THREE_MONTHS = 3
 private const val SEVEN_DAYS = 7
+
+fun LocalDate.formatStyleFull(): String = format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL))

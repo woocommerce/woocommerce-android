@@ -77,7 +77,8 @@ class MainPresenterTest : BaseUnitTest() {
                 appPrefs,
                 wcOrderStore,
                 clearCardReaderDataAction,
-                accountRepository
+                accountRepository,
+                mock()
             )
         )
         actionCaptor = argumentCaptor()
