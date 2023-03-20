@@ -83,7 +83,7 @@ class JetpackActivationSiteCredentialsViewModel @Inject constructor(
         _viewState.update { it.copy(isLoading = true) }
 
         val state = _viewState.value
-        wpApiSiteRepository.login(
+        wpApiSiteRepository.loginAndFetchSite(
             url = navArgs.siteUrl,
             username = state.username,
             password = state.password

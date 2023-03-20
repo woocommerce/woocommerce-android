@@ -50,7 +50,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     private val applicationPasswordsUnavailableEvents = MutableSharedFlow<WPAPINetworkError>(extraBufferCapacity = 1)
 
     private val wpApiSiteRepository: WPApiSiteRepository = mock {
-        onBlocking { login(eq(siteAddress), any(), any()) } doReturn Result.success(testSite)
+        onBlocking { loginAndFetchSite(eq(siteAddress), any(), any()) } doReturn Result.success(testSite)
         onBlocking { checkIfUserIsEligible(testSite) } doReturn Result.success(true)
         onBlocking { getSiteByLocalId(testSite.id) } doReturn testSite
     }
@@ -147,7 +147,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     fun `given incorrect credentials, when submitting, then show error`() = testBlocking {
         val returnedErrorMessage = "Username or password incorrect"
         setup {
-            whenever(wpApiSiteRepository.login(siteAddress, testUsername, testPassword)).thenReturn(
+            whenever(wpApiSiteRepository.loginAndFetchSite(siteAddress, testUsername, testPassword)).thenReturn(
                 Result.failure(
                     OnChangedException(
                         SiteError(
@@ -181,7 +181,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     @Test
     fun `given site without Woo, when submitting, then show error screen`() = testBlocking {
         setup {
-            whenever(wpApiSiteRepository.login(siteAddress, testUsername, testPassword))
+            whenever(wpApiSiteRepository.loginAndFetchSite(siteAddress, testUsername, testPassword))
                 .thenReturn(Result.success(testSite.apply { hasWooCommerce = false }))
         }
 
@@ -230,7 +230,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             viewModel.onWooInstallationAttempted()
         }
 
-        verify(wpApiSiteRepository).login(any(), any(), any())
+        verify(wpApiSiteRepository).loginAndFetchSite(any(), any(), any())
     }
 
     @Test
