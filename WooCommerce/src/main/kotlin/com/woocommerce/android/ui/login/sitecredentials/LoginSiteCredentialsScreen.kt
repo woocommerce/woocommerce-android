@@ -49,7 +49,7 @@ fun LoginSiteCredentialsScreen(viewModel: LoginSiteCredentialsViewModel) {
 
 @Composable
 fun LoginSiteCredentialsScreen(
-    viewState: LoginSiteCredentialsViewModel.ViewState.NativeLoginViewState,
+    viewState: LoginSiteCredentialsViewModel.ViewState,
     onUsernameChanged: (String) -> Unit,
     onPasswordChanged: (String) -> Unit,
     onContinueClick: () -> Unit,
@@ -67,58 +67,84 @@ fun LoginSiteCredentialsScreen(
             )
         }
     ) { paddingValues ->
+        when (viewState) {
+            is LoginSiteCredentialsViewModel.ViewState.NativeLoginViewState -> NativeLoginForm(
+                viewState = viewState,
+                onUsernameChanged = onUsernameChanged,
+                onPasswordChanged = onPasswordChanged,
+                onContinueClick = onContinueClick,
+                onResetPasswordClick = onResetPasswordClick,
+                onErrorDialogDismissed = onErrorDialogDismissed,
+                onHelpButtonClick = onHelpButtonClick,
+                modifier = Modifier.padding(paddingValues)
+            )
+
+            is LoginSiteCredentialsViewModel.ViewState.WebAuthorizationViewState -> TODO()
+        }
+    }
+}
+
+@Composable
+private fun NativeLoginForm(
+    viewState: LoginSiteCredentialsViewModel.ViewState.NativeLoginViewState,
+    onUsernameChanged: (String) -> Unit,
+    onPasswordChanged: (String) -> Unit,
+    onContinueClick: () -> Unit,
+    onResetPasswordClick: () -> Unit,
+    onErrorDialogDismissed: () -> Unit,
+    onHelpButtonClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .background(MaterialTheme.colors.surface)
+            .fillMaxSize(),
+    ) {
         Column(
             modifier = Modifier
-                .background(MaterialTheme.colors.surface)
-                .padding(paddingValues)
-                .fillMaxSize(),
+                .weight(1f)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(dimensionResource(id = R.dimen.major_100)),
         ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
-                    .padding(dimensionResource(id = R.dimen.major_100)),
-            ) {
-                Text(
-                    text = stringResource(id = R.string.enter_credentials_for_site, viewState.siteUrl),
-                    style = MaterialTheme.typography.body2
-                )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-                WCOutlinedTextField(
-                    value = viewState.username,
-                    onValueChange = onUsernameChanged,
-                    label = stringResource(id = R.string.username),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
-                )
-                WCPasswordField(
-                    value = viewState.password,
-                    onValueChange = onPasswordChanged,
-                    label = stringResource(id = R.string.password),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(
-                        onDone = { onContinueClick() }
-                    )
-                )
-                WCTextButton(onClick = onResetPasswordClick) {
-                    Text(text = stringResource(id = R.string.reset_your_password))
-                }
-            }
-
-            WCColoredButton(
-                onClick = onContinueClick,
-                enabled = viewState.isValid,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-            ) {
-                Text(
-                    text = stringResource(id = R.string.continue_button)
-                )
-            }
+            Text(
+                text = stringResource(id = R.string.enter_credentials_for_site, viewState.siteUrl),
+                style = MaterialTheme.typography.body2
+            )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+            WCOutlinedTextField(
+                value = viewState.username,
+                onValueChange = onUsernameChanged,
+                label = stringResource(id = R.string.username),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+            )
+            WCPasswordField(
+                value = viewState.password,
+                onValueChange = onPasswordChanged,
+                label = stringResource(id = R.string.password),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = { onContinueClick() }
+                )
+            )
+            WCTextButton(onClick = onResetPasswordClick) {
+                Text(text = stringResource(id = R.string.reset_your_password))
+            }
         }
+
+        WCColoredButton(
+            onClick = onContinueClick,
+            enabled = viewState.isValid,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+        ) {
+            Text(
+                text = stringResource(id = R.string.continue_button)
+            )
+        }
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
     }
 
     if (viewState.errorDialogMessage != null) {
