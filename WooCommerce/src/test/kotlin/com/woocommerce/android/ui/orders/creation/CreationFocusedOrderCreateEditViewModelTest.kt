@@ -14,16 +14,18 @@ import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateS
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.Creation
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.ViewState
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddProduct
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomerNote
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditFee
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditShipping
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
@@ -146,7 +148,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
-    fun `when hitting the add product button, then trigger the AddProduct event`() {
+    fun `when hitting the add product button, then trigger the SelectItems event`() {
         var lastReceivedEvent: Event? = null
         sut.event.observeForever {
             lastReceivedEvent = it
@@ -155,7 +157,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         sut.onAddProductClicked()
 
         assertThat(lastReceivedEvent).isNotNull
-        assertThat(lastReceivedEvent).isInstanceOf(AddProduct::class.java)
+        assertThat(lastReceivedEvent).isInstanceOf(SelectItems::class.java)
     }
 
     @Test
@@ -190,12 +192,12 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             addedProductItem = order.items.find { it.productId == 123L }
         }
 
-        sut.onProductSelected(123)
+        sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
 
         assertThat(addedProductItem).isNotNull
         val addedProductItemId = addedProductItem!!.itemId
+        assertThat(addedProductItem!!.quantity).isEqualTo(1F)
 
-        sut.onIncreaseProductsQuantity(addedProductItemId)
         sut.onDecreaseProductsQuantity(addedProductItemId)
 
         assertThat(lastReceivedEvent).isNotNull
@@ -225,12 +227,11 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             addedProductItem = order.items.find { it.variationId == 123L }
         }
 
-        sut.onProductSelected(123)
+        sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
 
         assertThat(addedProductItem).isNotNull
         val addedProductItemId = addedProductItem!!.itemId
 
-        sut.onIncreaseProductsQuantity(addedProductItemId)
         sut.onDecreaseProductsQuantity(addedProductItemId)
 
         assertThat(lastReceivedEvent).isNotNull
@@ -251,7 +252,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             addedProductItem = order.items.find { it.productId == 123L }
         }
 
-        sut.onProductSelected(123)
+        sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
 
         assertThat(addedProductItem).isNotNull
         val addedProductItemId = addedProductItem!!.itemId
@@ -263,8 +264,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         orderDraft?.items
             ?.takeIf { it.isNotEmpty() }
             ?.find { it.productId == 123L && it.itemId == addedProductItemId }
-            ?.let { assertThat(it.quantity).isEqualTo(1f) }
-            ?: fail("Expected an item with productId 123 with quantity as 1")
+            ?.let { assertThat(it.quantity).isEqualTo(2f) }
+            ?: fail("Expected an item with productId 123 with quantity as 2")
     }
 
     @Test
@@ -278,15 +279,12 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         sut.orderDraft.observeForever { order ->
             addedProductItem = order.items.find { it.productId == 123L }
         }
+        assertThat(products.size).isEqualTo(0)
 
-        sut.onProductSelected(123)
+        sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
 
         assertThat(addedProductItem).isNotNull
         val addedProductItemId = addedProductItem!!.itemId
-
-        assertThat(products).isEmpty()
-
-        sut.onIncreaseProductsQuantity(addedProductItemId)
 
         assertThat(products.size).isEqualTo(1)
         assertThat(products.first().item.productId).isEqualTo(123)
@@ -302,7 +300,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             addedProductItem = order.items.find { it.productId == 123L }
         }
 
-        sut.onProductSelected(123)
+        sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
 
         assertThat(addedProductItem).isNotNull
         val addedProductItemId = addedProductItem!!.itemId
@@ -318,22 +316,246 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
-    fun `when adding the very same product, then add a clone of the same product to the list`() {
+    fun `when adding the very same product, then do not add a clone of the same product to the list`() {
         var orderDraft: Order? = null
         sut.orderDraft.observeForever {
             orderDraft = it
         }
 
-        sut.onProductSelected(123)
-        sut.onProductSelected(123)
+        sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
+        sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
 
         orderDraft?.items
             ?.takeIf { it.isNotEmpty() }
             ?.filter { it.productId == 123L }
             ?.let { addedItemsList ->
-                assertThat(addedItemsList.size).isEqualTo(2)
+                assertThat(addedItemsList.size).isEqualTo(1)
             }
-            ?: fail("Expected two product items with productId 123")
+            ?: fail("Expected one product item with productId 123")
+    }
+
+    @Test
+    fun `when multiple products selected, should update order's items`() = testBlocking {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+
+        sut.onProductsSelected(
+            setOf(
+                ProductSelectorViewModel.SelectedItem.Product(123),
+                ProductSelectorViewModel.SelectedItem.Product(456)
+            )
+        )
+
+        orderDraft?.items
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { orderItems ->
+                assertThat(orderItems.size).isEqualTo(2)
+                orderItems.map { it.productId }.apply {
+                    assertTrue(contains(123))
+                    assertTrue(contains(456))
+                }
+            }
+            ?: fail("Expected two product items with productId 123 and 456")
+    }
+
+    @Test
+    fun `when regular product and variation selected, should update order's items`() = testBlocking {
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+
+        sut.onProductsSelected(
+            setOf(
+                ProductSelectorViewModel.SelectedItem.Product(123),
+                ProductSelectorViewModel.SelectedItem.ProductVariation(1, 2)
+            )
+        )
+
+        orderDraft?.items
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { orderItems ->
+                assertThat(orderItems.size).isEqualTo(2)
+                orderItems.first { it.isVariation }.let {
+                    assertThat(it.productId).isEqualTo(1)
+                    assertThat(it.variationId).isEqualTo(2)
+                }
+                orderItems.first { !it.isVariation }.let {
+                    assertThat(it.productId).isEqualTo(123)
+                }
+            }
+            ?: fail(
+                "Expected one product item with productId 123 " +
+                    "and one variation item with product id 1 and variation id 2"
+            )
+    }
+
+    @Test
+    fun `given order contains product item, when product is unselected, should be removed from order`() = testBlocking {
+        // given
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+
+        sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
+        orderDraft?.items?.find { it.productId == 123L }?.let { addedProductItem ->
+            assertThat(addedProductItem.quantity).isEqualTo(1F)
+        }
+
+        // when
+        sut.onProductsSelected(emptySet())
+
+        // then
+        orderDraft?.items?.find { it.productId == 123L }?.let { addedProductItem ->
+            assertThat(addedProductItem.quantity).isEqualTo(0F)
+        }
+    }
+
+    @Test
+    fun `when removing product, should make view not editable`() = testBlocking {
+        // given
+        val orderItemToRemove: Order.Item = mock()
+
+        // when
+        sut.onRemoveProduct(orderItemToRemove)
+
+        // then
+        sut.viewStateData.liveData.value?.let { viewState ->
+            assertThat(viewState.isEditable).isFalse
+        } ?: fail("Expected view state to be not null")
+    }
+
+    @Test
+    fun `when product is removed, should make view editable again`() = testBlocking {
+        // given
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+
+        sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
+        orderDraft?.items?.find { it.productId == 123L }?.let { addedProductItem ->
+            assertThat(addedProductItem.quantity).isEqualTo(1F)
+        }
+
+        // when
+        sut.onProductsSelected(emptySet())
+
+        // then
+        sut.viewStateData.liveData.value?.let { viewState ->
+            assertThat(viewState.isEditable).isTrue
+        } ?: fail("Expected view state to be not null")
+    }
+
+    @Test
+    fun `given order contains variation item, when variation is unselected, should be removed from order`() {
+        // given
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+
+        sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.ProductVariation(1, 2)))
+        orderDraft?.items?.find { it.productId == 1L && it.variationId == 2L }?.let { addedProductItem ->
+            assertThat(addedProductItem.quantity).isEqualTo(1F)
+        }
+
+        // when
+        sut.onProductsSelected(emptySet())
+
+        // then
+        orderDraft?.items?.find { it.productId == 1L && it.variationId == 2L }?.let { addedProductItem ->
+            assertThat(addedProductItem.quantity).isEqualTo(0F)
+        }
+    }
+
+    @Test
+    fun `given order contains product item, when other product is selected, order should contain both products`() {
+        // given
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+
+        sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
+        orderDraft?.items?.find { it.productId == 123L }?.let { addedProductItem ->
+            assertThat(addedProductItem.quantity).isEqualTo(1F)
+        }
+
+        // when
+        sut.onProductsSelected(
+            setOf(
+                ProductSelectorViewModel.SelectedItem.Product(123),
+                ProductSelectorViewModel.SelectedItem.Product(456)
+            )
+        )
+
+        // then
+        orderDraft?.items?.find { it.productId == 123L }?.let { addedProductItem ->
+            assertThat(addedProductItem.quantity).isEqualTo(1F)
+        }
+    }
+
+    @Test
+    fun `given order contains product item, when variation is selected, order should contain original product`() {
+        // given
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+
+        sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
+        orderDraft?.items?.find { it.productId == 123L }?.let { addedProductItem ->
+            assertThat(addedProductItem.quantity).isEqualTo(1F)
+        }
+
+        // when
+        sut.onProductsSelected(
+            setOf(
+                ProductSelectorViewModel.SelectedItem.Product(123),
+                ProductSelectorViewModel.SelectedItem.ProductVariation(1, 2)
+            )
+        )
+
+        // then
+        orderDraft?.items?.find { it.productId == 123L }?.let { addedProductItem ->
+            assertThat(addedProductItem.quantity).isEqualTo(1F)
+        }
+    }
+
+    @Test
+    fun `given order contains product item with custom quantity, when other product is selected, the quantity should be preserved`() {
+        // given
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+
+        sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
+        orderDraft?.items?.find { it.productId == 123L }?.let { addedProductItem ->
+            assertThat(addedProductItem.quantity).isEqualTo(1F)
+
+            sut.onIncreaseProductsQuantity(addedProductItem.itemId)
+            sut.onIncreaseProductsQuantity(addedProductItem.itemId)
+
+            assertThat(addedProductItem.quantity).isEqualTo(1F)
+        }
+
+        // when
+        sut.onProductsSelected(
+            setOf(
+                ProductSelectorViewModel.SelectedItem.Product(123),
+                ProductSelectorViewModel.SelectedItem.Product(456)
+            )
+        )
+
+        // then
+        orderDraft?.items?.find { it.productId == 123L }?.let { addedProductItem ->
+            assertThat(addedProductItem.quantity).isEqualTo(3F)
+        }
     }
 
     @Test
@@ -395,7 +617,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             addedProductItem = order.items.find { it.productId == 123L }
         }
 
-        sut.onProductSelected(123)
+        sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
 
         assertThat(addedProductItem).isNotNull
         val addedProductItemId = addedProductItem!!.itemId

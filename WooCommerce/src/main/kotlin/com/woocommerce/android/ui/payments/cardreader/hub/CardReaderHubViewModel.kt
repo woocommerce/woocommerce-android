@@ -13,6 +13,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
+import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -24,6 +25,7 @@ import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepo
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.CASH_ON_DELIVERY
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToast
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToastString
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.GapBetweenSections
@@ -33,6 +35,10 @@ import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.OnboardingErrorAction
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub.OpenInHub.NONE
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub.OpenInHub.TAP_TO_PAY_SUMMARY
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.OnboardingCompleted
@@ -109,6 +115,10 @@ class CardReaderHubViewModel @Inject constructor(
         .map { state ->
             state.copy(rows = state.rows.sortedBy { it.index })
         }
+
+    init {
+        handleOpenInHubParameter()
+    }
 
     private fun onLearnMoreClicked() {
         cardReaderTracker.trackCashOnDeliveryLearnMoreTapped()
@@ -202,7 +212,7 @@ class CardReaderHubViewModel @Inject constructor(
     }
 
     private fun MutableList<ListItem>.addTapToPay() {
-        if (storeCountryCode != null && isTapToPayAvailable(storeCountryCode) == Available) {
+        if (isTTPAvailable()) {
             add(GapBetweenSections(index = 4))
             add(
                 NonToggleableListItem(
@@ -382,7 +392,7 @@ class CardReaderHubViewModel @Inject constructor(
                     cashOnDeliveryState.value?.copy(isEnabled = true, isChecked = !isChecked)!!
                 )
                 if (result.error.message.isNullOrEmpty()) {
-                    triggerEvent(ShowToastString("Something went wrong, Please try again later."))
+                    triggerEvent(ShowToast(R.string.something_went_wrong_try_again))
                 } else {
                     triggerEvent(
                         ShowToastString(result.error.message!!)
@@ -395,6 +405,28 @@ class CardReaderHubViewModel @Inject constructor(
     private fun onOnboardingErrorClicked(state: CardReaderOnboardingState) {
         trackEvent(AnalyticsEvent.PAYMENTS_HUB_ONBOARDING_ERROR_TAPPED)
         triggerEvent(CardReaderHubEvents.NavigateToCardReaderOnboardingScreen(state))
+    }
+
+    private fun handleOpenInHubParameter() {
+        when (val params = arguments.cardReaderFlowParam) {
+            is CardReadersHub -> {
+                when (params.openInHub) {
+                    TAP_TO_PAY_SUMMARY -> {
+                        if (isTTPAvailable()) {
+                            triggerEvent(CardReaderHubEvents.NavigateToTapTooPaySummaryScreen)
+                        } else {
+                            triggerEvent(ShowToast(R.string.card_reader_tap_to_pay_not_available_error))
+                        }
+                    }
+                    NONE -> {
+                        // no-op
+                    }
+                }
+            }
+            is PaymentOrRefund -> {
+                // no-op
+            }
+        }.exhaustive
     }
 
     private fun trackEvent(event: AnalyticsEvent) {
@@ -417,6 +449,9 @@ class CardReaderHubViewModel @Inject constructor(
             remoteSiteId = selectedSite.get().siteId,
             selfHostedSiteId = selectedSite.get().selfHostedSiteId,
         )
+
+    private fun isTTPAvailable() = storeCountryCode != null &&
+        isTapToPayAvailable(storeCountryCode) == Available
 
     private val shouldShowTTPFeedbackRequest: Boolean
         get() = appPrefs.isTTPWasUsedAtLeastOnce() &&
@@ -442,6 +477,7 @@ class CardReaderHubViewModel @Inject constructor(
 
         data class OpenGenericWebView(val url: String) : CardReaderHubEvents()
         data class ShowToastString(val message: String) : CardReaderHubEvents()
+        data class ShowToast(@StringRes val message: Int) : CardReaderHubEvents()
     }
 
     data class CardReaderHubViewState(

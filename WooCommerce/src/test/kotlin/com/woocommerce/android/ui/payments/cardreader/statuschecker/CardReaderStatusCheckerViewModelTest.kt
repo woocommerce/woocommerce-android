@@ -35,7 +35,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
     @Test
     fun `given hub flow, when vm init, then navigates to onboarding`() = testBlocking {
         // GIVEN
-        val param = CardReaderFlowParam.CardReadersHub
+        val param = CardReaderFlowParam.CardReadersHub()
 
         // WHEN
         val vm = initViewModel(param)

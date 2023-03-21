@@ -14,6 +14,7 @@ class AppPrefsTest {
     @Before
     fun setup() {
         AppPrefs.init(InstrumentationRegistry.getInstrumentation().targetContext.applicationContext)
+        AppPrefs.getPreferences().edit().clear().commit()
     }
 
     @Test
@@ -613,12 +614,12 @@ class AppPrefsTest {
     }
 
     @Test
-    fun givenTTPWasUseAtLeastOnceNeverInvokeThenIsTTPWasUsedAtLeastOnceReturnsFalse() {
+    fun givenTTPWasUsedAtLeastOnceNeverInvokedThenIsTTPWasUsedAtLeastOnceReturnsFalse() {
         assertThat(AppPrefs.isTTPWasUsedAtLeastOnce()).isFalse
     }
 
     @Test
-    fun givenTTPWasUseAtLeastOnceInvokedThenIsTTPWasUsedAtLeastOnceReturnsTrue() {
+    fun givenTTPWasUsedAtLeastOnceInvokedThenIsTTPWasUsedAtLeastOnceReturnsTrue() {
         AppPrefs.setTTPWasUsedAtLeastOnce()
 
         assertThat(AppPrefs.isTTPWasUsedAtLeastOnce()).isTrue
