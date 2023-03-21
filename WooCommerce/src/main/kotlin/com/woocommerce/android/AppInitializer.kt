@@ -17,7 +17,7 @@ import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.push.RegisterDevice
 import com.woocommerce.android.push.RegisterDevice.Mode.IF_NEEDED
 import com.woocommerce.android.push.WooNotificationBuilder
-import com.woocommerce.android.support.ZendeskSettings
+import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.RateLimitedTask
 import com.woocommerce.android.tools.SelectedSite
