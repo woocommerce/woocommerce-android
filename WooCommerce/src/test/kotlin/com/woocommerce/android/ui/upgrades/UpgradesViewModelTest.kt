@@ -33,6 +33,7 @@ import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.model.SiteModel
 import java.time.Period
 import java.time.ZonedDateTime
+import org.mockito.kotlin.eq
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class UpgradesViewModelTest : BaseUnitTest() {
@@ -73,6 +74,34 @@ class UpgradesViewModelTest : BaseUnitTest() {
                     name = FREE_TRIAL_TEST_SITE_NAME,
                     freeTrialDuration = FREE_TRIAL_PERIOD,
                     daysLeftInFreeTrial = "1 day"
+                )
+            )
+        }
+
+    @Test
+    fun `when SitePlan is free trial with more than one day remaining, then state is set to TrialInProgress with expected daysLeftInFreeTrial value`() =
+        testBlocking {
+            // Given
+            resourceProvider = mock {
+                on { getString(any(), eq(10)) } doReturn "10 days"
+            }
+
+            createSut(
+                type = SitePlan.Type.FREE_TRIAL,
+                remainingTrialPeriod = Period.ofDays(10)
+            )
+            var viewModelState: UpgradesViewState? = null
+            sut.upgradesState.observeForever {
+                viewModelState = it
+            }
+
+            // Then
+            assertThat(viewModelState).isNotNull
+            assertThat(viewModelState).isEqualTo(
+                TrialInProgress(
+                    name = FREE_TRIAL_TEST_SITE_NAME,
+                    freeTrialDuration = FREE_TRIAL_PERIOD,
+                    daysLeftInFreeTrial = "10 days"
                 )
             )
         }
