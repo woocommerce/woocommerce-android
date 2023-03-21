@@ -12,10 +12,14 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.transition.MaterialContainerTransform
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.NavigateToAboutYourStore
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.NavigateToDomains
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.NavigateToLaunchStore
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -63,14 +67,20 @@ class StoreOnboardingFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                is StoreOnboardingViewModel.NavigateToLaunchStore ->
+                is NavigateToLaunchStore ->
                     findNavController().navigateSafely(
                         directions = StoreOnboardingFragmentDirections.actionOnboardingFragmentToLaunchStoreFragment()
                     )
-                is StoreOnboardingViewModel.NavigateToDomains ->
+                is NavigateToDomains ->
                     findNavController().navigateSafely(
                         directions = StoreOnboardingFragmentDirections
                             .actionStoreOnboardingFragmentToNavGraphDomainChange()
+                    )
+                is NavigateToAboutYourStore ->
+                    findNavController().navigateSafely(
+                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                            urlToLoad = event.url
+                        )
                     )
             }
         }

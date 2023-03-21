@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTask
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.ABOUT_YOUR_STORE
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.ADD_FIRST_PRODUCT
@@ -26,7 +27,8 @@ import javax.inject.Inject
 @HiltViewModel
 class StoreOnboardingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val onboardingRepository: StoreOnboardingRepository
+    private val onboardingRepository: StoreOnboardingRepository,
+    private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val NUMBER_ITEMS_IN_COLLAPSED_MODE = 3
@@ -80,7 +82,11 @@ class StoreOnboardingViewModel @Inject constructor(
 
     fun onTaskClicked(task: OnboardingTaskUi) {
         when (task.taskUiResources) {
-            AboutYourStoreTaskRes -> WooLog.d(ONBOARDING, "TODO")
+            AboutYourStoreTaskRes -> triggerEvent(
+                NavigateToAboutYourStore(
+                    url = selectedSite.get().url + "/wp-admin/admin.php?page=wc-settings&tab=general&tutorial=true"
+                )
+            )
             AddProductTaskRes -> WooLog.d(ONBOARDING, "TODO")
             CustomizeDomainTaskRes -> triggerEvent(NavigateToDomains)
             LaunchStoreTaskRes -> triggerEvent(NavigateToLaunchStore)
@@ -139,4 +145,5 @@ class StoreOnboardingViewModel @Inject constructor(
     object NavigateToSurvey : MultiLiveEvent.Event()
     object NavigateToLaunchStore : MultiLiveEvent.Event()
     object NavigateToDomains : MultiLiveEvent.Event()
+    data class NavigateToAboutYourStore(val url: String) : MultiLiveEvent.Event()
 }
