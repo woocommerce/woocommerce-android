@@ -212,7 +212,7 @@ class CardReaderHubViewModel @Inject constructor(
     }
 
     private fun MutableList<ListItem>.addTapToPay() {
-        if (isTTPAvailable()) {
+        if (isTTPAvailable) {
             add(GapBetweenSections(index = 4))
             add(
                 NonToggleableListItem(
@@ -412,7 +412,7 @@ class CardReaderHubViewModel @Inject constructor(
             is CardReadersHub -> {
                 when (params.openInHub) {
                     TAP_TO_PAY_SUMMARY -> {
-                        if (isTTPAvailable()) {
+                        if (isTTPAvailable) {
                             triggerEvent(CardReaderHubEvents.NavigateToTapTooPaySummaryScreen)
                         } else {
                             triggerEvent(ShowToast(R.string.card_reader_tap_to_pay_not_available_error))
@@ -450,8 +450,8 @@ class CardReaderHubViewModel @Inject constructor(
             selfHostedSiteId = selectedSite.get().selfHostedSiteId,
         )
 
-    private fun isTTPAvailable() = storeCountryCode != null &&
-        isTapToPayAvailable(storeCountryCode) == Available
+    private val isTTPAvailable
+        get() = storeCountryCode != null && isTapToPayAvailable(storeCountryCode) == Available
 
     private val shouldShowTTPFeedbackRequest: Boolean
         get() = appPrefs.isTTPWasUsedAtLeastOnce() &&

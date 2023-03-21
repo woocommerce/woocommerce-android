@@ -1336,7 +1336,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             // THEN
             assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).noneMatch {
                 it is NonToggleableListItem &&
-                    it.label == UiString.UiStringRes(R.string.card_reader_tap_to_pay_share_feedback)
+                    it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback)
             }
         }
 
@@ -1583,7 +1583,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         // WHEN
         initViewModel()
         (viewModel.viewStateData.getOrAwaitValue()).rows.find {
-            it.label == UiString.UiStringRes(R.string.card_reader_tap_to_pay_share_feedback)
+            it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback)
         }!!.onClick!!.invoke()
 
         // THEN
@@ -1605,7 +1605,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         // WHEN
         initViewModel()
         (viewModel.viewStateData.getOrAwaitValue()).rows.find {
-            it.label == UiString.UiStringRes(R.string.card_reader_tap_to_pay_share_feedback)
+            it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback)
         }!!.onClick!!.invoke()
 
         // THEN
