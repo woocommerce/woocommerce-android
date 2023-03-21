@@ -49,50 +49,6 @@ class UpgradesViewModel @Inject constructor(
         loadSubscriptionState()
     }
 
-    private fun loadSubscriptionState() {
-        launch {
-            _upgradesState.value = Loading
-
-            _upgradesState.value = planRepository
-                .fetchCurrentPlanDetails(selectedSite.get())
-                ?.asViewState()
-                ?: Error
-        }
-    }
-
-    private val SitePlan.prettifiedName
-        get() = name.removePrefix("WordPress.com ")
-
-    private fun SitePlan.asViewState() =
-        when (type) {
-            SitePlan.Type.FREE_TRIAL -> {
-                val remainingTrialPeriod = calculateRemainingTrialPeriod(expirationDate)
-                if (remainingTrialPeriod.isZero || remainingTrialPeriod.isNegative) {
-                    TrialEnded(
-                        name = resourceProvider.getString(R.string.free_trial_trial_ended)
-                    )
-                } else {
-                    TrialInProgress(
-                        name = prettifiedName,
-                        freeTrialDuration = FREE_TRIAL_PERIOD,
-                        leftInFreeTrialDuration = remainingTrialPeriod,
-                    )
-                }
-            }
-
-            SitePlan.Type.OTHER -> {
-                NonUpgradeable(
-                    name = prettifiedName,
-                    currentPlanEndDate = expirationDate.toLocalDate()
-                        .formatStyleFull()
-                )
-            }
-        }
-
-    private fun SitePlan.prettifyName(): SitePlan {
-        return copy(name = this.name.removePrefix("WordPress.com "))
-    }
-
     fun onSubscribeNowClicked() {
         tracks.track(AnalyticsEvent.FREE_TRIAL_UPGRADE_NOW_TAPPED, tracksProperties)
         triggerEvent(OpenSubscribeNow)
@@ -118,6 +74,44 @@ class UpgradesViewModel @Inject constructor(
     fun onPlanUpgradeDismissed() {
         tracks.track(AnalyticsEvent.PLAN_UPGRADE_ABANDONED, tracksProperties)
     }
+
+    private fun loadSubscriptionState() {
+        launch {
+            _upgradesState.value = Loading
+
+            _upgradesState.value = planRepository
+                .fetchCurrentPlanDetails(selectedSite.get())
+                ?.asViewState()
+                ?: Error
+        }
+    }
+
+    private fun SitePlan.asViewState() =
+        when (type) {
+            SitePlan.Type.FREE_TRIAL -> generateHasPlanViewState()
+            SitePlan.Type.OTHER -> NonUpgradeable(
+                name = prettifiedName,
+                currentPlanEndDate = expirationDate.toLocalDate().formatStyleFull()
+            )
+        }
+
+    private fun SitePlan.generateHasPlanViewState(): UpgradesViewState.HasPlan {
+        val remainingTrialPeriod = calculateRemainingTrialPeriod(expirationDate)
+        return if (remainingTrialPeriod.isZero || remainingTrialPeriod.isNegative) {
+            TrialEnded(
+                name = resourceProvider.getString(R.string.free_trial_trial_ended)
+            )
+        } else {
+            TrialInProgress(
+                name = prettifiedName,
+                freeTrialDuration = FREE_TRIAL_PERIOD,
+                leftInFreeTrialDuration = remainingTrialPeriod,
+            )
+        }
+    }
+
+    private val SitePlan.prettifiedName
+        get() = name.removePrefix("WordPress.com ")
 
     sealed interface UpgradesViewState {
 
