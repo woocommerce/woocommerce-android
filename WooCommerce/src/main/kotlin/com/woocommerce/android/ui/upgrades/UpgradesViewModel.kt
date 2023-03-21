@@ -9,8 +9,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.formatStyleFull
 import com.woocommerce.android.extensions.pluralizedDays
-import com.woocommerce.android.support.ZendeskTags
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.support.zendesk.ZendeskTags
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.plans.domain.CalculateRemainingTrialPeriod
 import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_PERIOD
