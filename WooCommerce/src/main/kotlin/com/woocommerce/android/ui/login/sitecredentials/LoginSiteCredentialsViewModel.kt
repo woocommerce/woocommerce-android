@@ -40,6 +40,7 @@ import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.util.UrlUtils
+import java.net.URI
 import javax.inject.Inject
 
 @HiltViewModel
@@ -60,6 +61,9 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         const val PASSWORD_KEY = "password"
         const val IS_JETPACK_CONNECTED_KEY = "is-jetpack-connected"
         private const val REDIRECTION_URL = "woocommerce://login"
+        private const val SUCCESS_PARAMETER = "success"
+        private const val USERNAME_PARAMETER = "user_login"
+        private const val PASSWORD_PARAMETER = "password"
     }
 
     private val siteAddress: String = savedStateHandle[SITE_ADDRESS_KEY]!!
@@ -131,6 +135,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     fun onBackClick() {
         if (state.value == State.WebAuthorization) {
+            fetchedSiteId.value = -1
             state.value = State.NativeLogin
         } else {
             triggerEvent(Exit)
@@ -148,8 +153,26 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     fun onWebAuthorizationUrlLoaded(url: String) {
-        println(url)
-        // TODO
+        if (url.startsWith(REDIRECTION_URL)) {
+            launch {
+                val uri = URI.create(url)
+                val params = uri.query!!.split("&")
+                    .map { it.split("=") }
+                    .associate { it[0] to it[1] }
+
+                val isSuccess = params[SUCCESS_PARAMETER]?.toBoolean() ?: true
+                if (!isSuccess) {
+                    // TODO: show a snackbar with an explanation of the dismissal state
+                    state.value = State.NativeLogin
+                    return@launch
+                }
+                val username = requireNotNull(params[USERNAME_PARAMETER])
+                val password = requireNotNull(params[PASSWORD_PARAMETER])
+
+                wpApiSiteRepository.saveApplicationPassword(fetchedSiteId.value, username, password)
+                fetchUserInfo()
+            }
+        }
     }
 
     fun onWooInstallationAttempted() = launch {
