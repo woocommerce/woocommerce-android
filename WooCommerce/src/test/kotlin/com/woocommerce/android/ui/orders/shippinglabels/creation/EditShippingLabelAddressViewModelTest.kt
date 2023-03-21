@@ -88,7 +88,7 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
             address = address,
             addressType = addressType,
             validationResult = validationResult,
-            requiresPhoneNumber = isPhoneRequired
+            isCustomsFormRequired = isPhoneRequired
         ).initSavedStateHandle()
 
     private lateinit var viewModel: EditShippingLabelAddressViewModel

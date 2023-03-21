@@ -100,7 +100,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                 val result = addressValidator.validateAddress(
                     address,
                     arguments.addressType,
-                    arguments.requiresPhoneNumber
+                    arguments.isCustomsFormRequired
                 )
                 handleValidationResult(address, result)
                 viewState = viewState.copy(isValidationProgressDialogVisible = false)
@@ -341,7 +341,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
             companyField = OptionalField(content = args.address.company),
             address1Field = Address1Field(args.address.address1),
             address2Field = OptionalField(args.address.address2),
-            phoneField = PhoneField(args.address.phone, args.requiresPhoneNumber, args.addressType),
+            phoneField = PhoneField(args.address.phone, args.isCustomsFormRequired, args.addressType),
             cityField = RequiredField(args.address.city),
             zipField = RequiredField(args.address.postcode),
             stateField = LocationField(args.address.state.asLocation()),
