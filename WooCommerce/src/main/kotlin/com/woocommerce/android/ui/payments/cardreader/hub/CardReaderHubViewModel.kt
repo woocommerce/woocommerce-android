@@ -224,7 +224,7 @@ class CardReaderHubViewModel @Inject constructor(
                         UiStringRes(R.string.card_reader_tap_to_pay_description_not_used)
                     },
                     index = 5,
-                    onClick = ::onTapTooPayClicked,
+                    onClick = ::onTapToPayClicked,
                     shortDivider = shouldShowTTPFeedbackRequest,
                 )
             )
@@ -234,7 +234,7 @@ class CardReaderHubViewModel @Inject constructor(
                         icon = R.drawable.ic_feedback_banner_logo,
                         label = UiStringRes(R.string.card_reader_tap_to_pay_share_feedback),
                         index = 6,
-                        onClick = ::onTapTooPayFeedbackClicked
+                        onClick = ::onTapToPayFeedbackClicked
                     )
                 )
             }
@@ -329,11 +329,13 @@ class CardReaderHubViewModel @Inject constructor(
         )
     }
 
-    private fun onTapTooPayClicked() {
+    private fun onTapToPayClicked() {
+        trackEvent(AnalyticsEvent.PAYMENTS_HUB_TAP_TO_PAY_TAPPED)
         triggerEvent(CardReaderHubEvents.NavigateToTapTooPaySummaryScreen)
     }
 
-    private fun onTapTooPayFeedbackClicked() {
+    private fun onTapToPayFeedbackClicked() {
+        trackEvent(AnalyticsEvent.PAYMENTS_HUB_TAP_TO_PAY_FEEDBACK_TAPPED)
         feedbackRepository.saveFeatureFeedback(
             FeatureFeedbackSettings.Feature.TAP_TO_PAY,
             FeatureFeedbackSettings.FeedbackState.GIVEN

@@ -1518,6 +1518,22 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given tpp available, when tap to pay clicked, then tap is tracked`() {
+        // GIVEN
+        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+        whenever(isTapToPayAvailable("US")).thenReturn(Available)
+
+        // WHEN
+        initViewModel()
+        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
+            it.label == UiStringRes(R.string.card_reader_tap_to_pay)
+        }!!.onClick!!.invoke()
+
+        // THEN
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.PAYMENTS_HUB_TAP_TO_PAY_TAPPED)
+    }
+
+    @Test
     fun `when view model initiated, then only ttp non toggleable item has description`() {
         // WHEN
         initViewModel()
@@ -1588,6 +1604,28 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(viewModel.event.value).isInstanceOf(NavigateToTapTooPaySurveyScreen::class.java)
+    }
+
+    @Test
+    fun `given ttp used and feedback not given, when on survey tapped, then navigate tap is tracked`() {
+        // GIVEN
+        whenever(feedbackRepository.getFeatureFeedback(FeatureFeedbackSettings.Feature.TAP_TO_PAY)).thenReturn(
+            FeatureFeedbackSettings.FeedbackState.UNANSWERED
+        )
+        whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
+        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+        whenever(isTapToPayAvailable("US")).thenReturn(Available)
+        whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US"))
+            .thenReturn(CardReaderConfigForUSA)
+
+        // WHEN
+        initViewModel()
+        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
+            it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback)
+        }!!.onClick!!.invoke()
+
+        // THEN
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.PAYMENTS_HUB_TAP_TO_PAY_FEEDBACK_TAPPED)
     }
 
     @Test
