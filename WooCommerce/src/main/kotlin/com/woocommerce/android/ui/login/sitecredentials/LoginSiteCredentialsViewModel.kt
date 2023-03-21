@@ -29,7 +29,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
@@ -37,6 +36,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.module.ApplicationPasswordsClientId
+import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.util.UrlUtils
@@ -51,6 +51,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     applicationPasswordsNotifier: ApplicationPasswordsNotifier,
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val appPrefs: AppPrefsWrapper,
+    private val userAgent: UserAgent,
     @ApplicationPasswordsClientId private val applicationPasswordsClientId: String
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
@@ -129,7 +130,11 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     fun onBackClick() {
-        triggerEvent(Exit)
+        if (state.value == State.WebAuthorization) {
+            state.value = State.NativeLogin
+        } else {
+            triggerEvent(Exit)
+        }
     }
 
     fun onHelpButtonClick() {
@@ -140,6 +145,11 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     fun onStartWebAuthorizationClick() {
         state.value = State.WebAuthorization
+    }
+
+    fun onWebAuthorizationUrlLoaded(url: String) {
+        println(url)
+        // TODO
     }
 
     fun onWooInstallationAttempted() = launch {
@@ -176,14 +186,14 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         return combine(
             isLoading,
             errorDialogMessage,
-            fetchedSiteId.filter { it != -1 }
-                .map { wpApiSiteRepository.getSiteByLocalId(it) }
+            fetchedSiteId.map { if (it == -1) null else wpApiSiteRepository.getSiteByLocalId(it) }
         ) { isLoading, errorDialogMessage, site ->
             val authorizationUrl = site?.applicationPasswordsAuthorizeUrl?.let { url ->
                 "$url?app_name=$applicationPasswordsClientId&success_url=$REDIRECTION_URL"
             }
             ViewState.WebAuthorizationViewState(
                 authorizationUrl = authorizationUrl,
+                userAgent = userAgent,
                 isLoading = isLoading,
                 errorDialogMessage = errorDialogMessage
             )
@@ -350,6 +360,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
         data class WebAuthorizationViewState(
             val authorizationUrl: String?,
+            val userAgent: UserAgent,
             val isLoading: Boolean = false,
             val errorDialogMessage: UiString? = null
         ) : ViewState

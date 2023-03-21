@@ -15,8 +15,12 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -28,6 +32,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.compose.component.WCWebView
 import com.woocommerce.android.ui.compose.component.getText
 
 @Composable
@@ -42,7 +47,8 @@ fun LoginSiteCredentialsScreen(viewModel: LoginSiteCredentialsViewModel) {
             onBackClick = viewModel::onBackClick,
             onHelpButtonClick = viewModel::onHelpButtonClick,
             onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
-            onStartWebAuthorizationClick = viewModel::onStartWebAuthorizationClick
+            onStartWebAuthorizationClick = viewModel::onStartWebAuthorizationClick,
+            onWebAuthorizationUrlLoaded = viewModel::onWebAuthorizationUrlLoaded
         )
     }
 }
@@ -57,14 +63,20 @@ fun LoginSiteCredentialsScreen(
     onBackClick: () -> Unit,
     onHelpButtonClick: () -> Unit,
     onErrorDialogDismissed: () -> Unit,
-    onStartWebAuthorizationClick: () -> Unit
+    onStartWebAuthorizationClick: () -> Unit,
+    onWebAuthorizationUrlLoaded: (String) -> Unit
 ) {
     Scaffold(
         topBar = {
             ToolbarWithHelpButton(
                 title = stringResource(id = R.string.log_in),
                 onNavigationButtonClick = onBackClick,
-                onHelpButtonClick = onHelpButtonClick
+                onHelpButtonClick = onHelpButtonClick,
+                navigationIcon = if (viewState is LoginSiteCredentialsViewModel.ViewState.WebAuthorizationViewState) {
+                    Icons.Filled.Clear
+                } else {
+                    Icons.Filled.ArrowBack
+                }
             )
         }
     ) { paddingValues ->
@@ -81,7 +93,15 @@ fun LoginSiteCredentialsScreen(
                 modifier = Modifier.padding(paddingValues)
             )
 
-            is LoginSiteCredentialsViewModel.ViewState.WebAuthorizationViewState -> TODO()
+            is LoginSiteCredentialsViewModel.ViewState.WebAuthorizationViewState -> WebAuthorizationScreen(
+                viewState = viewState,
+                onUrlLoaded = onWebAuthorizationUrlLoaded,
+                onErrorDialogDismissed = {
+                    onErrorDialogDismissed()
+                    onBackClick()
+                },
+                modifier = Modifier.padding(paddingValues)
+            )
         }
     }
 }
@@ -188,5 +208,49 @@ private fun NativeLoginForm(
 
     if (viewState.isLoading) {
         ProgressDialog(title = "", subtitle = stringResource(id = R.string.logging_in))
+    }
+}
+
+@Composable
+private fun WebAuthorizationScreen(
+    viewState: LoginSiteCredentialsViewModel.ViewState.WebAuthorizationViewState,
+    onUrlLoaded: (String) -> Unit,
+    onErrorDialogDismissed: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    when {
+        viewState.isLoading -> {
+            ProgressDialog(title = "", subtitle = stringResource(id = R.string.logging_in))
+        }
+
+        viewState.errorDialogMessage != null -> {
+            AlertDialog(
+                text = {
+                    Column {
+                        Text(text = viewState.errorDialogMessage.getText())
+                    }
+                },
+                onDismissRequest = onErrorDialogDismissed,
+                buttons = {
+                    Column(modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))) {
+                        WCTextButton(
+                            onClick = onErrorDialogDismissed
+                        ) {
+                            Text(text = stringResource(id = android.R.string.ok))
+                        }
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
+                }
+            )
+        }
+
+        viewState.authorizationUrl != null -> {
+            WCWebView(
+                url = viewState.authorizationUrl,
+                userAgent = viewState.userAgent,
+                onUrlLoaded = onUrlLoaded,
+                modifier = modifier
+            )
+        }
     }
 }
