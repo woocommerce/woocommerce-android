@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.formatStyleFull
+import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.zendesk.ZendeskTags
 import com.woocommerce.android.tools.SelectedSite
@@ -16,7 +17,6 @@ import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_PERIOD
 import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_UPGRADE_PLAN
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
-import com.woocommerce.android.ui.plans.trial.isFreeTrial
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesEvent.OpenSubscribeNow
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesEvent.OpenSupportRequestForm
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Error
