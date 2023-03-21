@@ -106,21 +106,18 @@ class UpgradesViewModel @Inject constructor(
             TrialInProgress(
                 name = prettifiedName,
                 freeTrialDuration = FREE_TRIAL_PERIOD,
-                daysLeftInFreeTrial = remainingTrialPeriod.pluralizedDaysText
+                daysLeftInFreeTrial = StringUtils.getQuantityString(
+                    resourceProvider = resourceProvider,
+                    quantity = remainingTrialPeriod.days,
+                    default = R.string.free_trial_days_left_plural,
+                    one = R.string.free_trial_one_day_left
+                )
             )
         }
     }
 
     private val SitePlan.prettifiedName
         get() = name.removePrefix("WordPress.com ")
-
-    private val Period.pluralizedDaysText
-        get() = StringUtils.getQuantityString(
-            resourceProvider = resourceProvider,
-            quantity = days,
-            default = R.string.free_trial_days_left_plural,
-            one = R.string.free_trial_one_day_left
-        )
 
     sealed interface UpgradesViewState {
 

@@ -55,7 +55,7 @@ class UpgradesViewModelTest : BaseUnitTest() {
         testBlocking {
             // Given
             resourceProvider = mock {
-                on { getString(any()) } doReturn "1 day"
+                on { getString(any(), eq(1)) } doReturn "1 day"
             }
 
             createSut(
