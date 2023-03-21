@@ -33,7 +33,7 @@ import com.woocommerce.android.ui.compose.component.getText
 
 @Composable
 fun LoginSiteCredentialsScreen(viewModel: LoginSiteCredentialsViewModel) {
-    viewModel.state.observeAsState().value?.let {
+    viewModel.viewState.observeAsState().value?.let {
         LoginSiteCredentialsScreen(
             viewState = it,
             onUsernameChanged = viewModel::onUsernameChanged,

@@ -25,12 +25,18 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.module.ApplicationPasswordsClientId
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.util.UrlUtils
@@ -38,23 +44,26 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginSiteCredentialsViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
     private val wpApiSiteRepository: WPApiSiteRepository,
     private val selectedSite: SelectedSite,
     private val loginAnalyticsListener: LoginAnalyticsListener,
     applicationPasswordsNotifier: ApplicationPasswordsNotifier,
     private val analyticsTracker: AnalyticsTrackerWrapper,
-    private val appPrefs: AppPrefsWrapper
+    private val appPrefs: AppPrefsWrapper,
+    @ApplicationPasswordsClientId private val applicationPasswordsClientId: String
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val SITE_ADDRESS_KEY = "site-address"
         const val USERNAME_KEY = "username"
         const val PASSWORD_KEY = "password"
         const val IS_JETPACK_CONNECTED_KEY = "is-jetpack-connected"
+        private const val REDIRECTION_URL = "woocommerce://login"
     }
 
     private val siteAddress: String = savedStateHandle[SITE_ADDRESS_KEY]!!
 
+    private val state = savedStateHandle.getStateFlow(viewModelScope, State.NativeLogin)
     private val errorDialogMessage = savedStateHandle.getNullableStateFlow(
         scope = viewModelScope,
         initialValue = null,
@@ -65,20 +74,16 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     private val isLoading = MutableStateFlow(false)
 
-    val state = combine(
-        flowOf(siteAddress.removeSchemeAndSuffix()),
-        savedStateHandle.getStateFlow(USERNAME_KEY, ""),
-        savedStateHandle.getStateFlow(PASSWORD_KEY, ""),
-        isLoading,
-        errorDialogMessage
-    ) { siteAddress, username, password, isLoading, errorDialog ->
-        ViewState.NativeLoginViewState(
-            siteUrl = siteAddress,
-            username = username,
-            password = password,
-            isLoading = isLoading,
-            errorDialogMessage = errorDialog
-        )
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val viewState = state.flatMapLatest {
+        // Reset loading and error state when the state changes
+        isLoading.value = false
+        errorDialogMessage.value = null
+
+        when (it) {
+            State.NativeLogin -> prepareNativeLoginViewState()
+            State.WebAuthorization -> prepareWebAuthorizationViewState()
+        }
     }.asLiveData()
 
     init {
@@ -128,8 +133,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     fun onHelpButtonClick() {
-        state.value?.let {
-            triggerEvent(ShowHelpScreen(siteAddress, it.username))
+        viewState.value?.let {
+            triggerEvent(ShowHelpScreen(siteAddress, (it as? ViewState.NativeLoginViewState)?.username.orEmpty()))
         }
     }
 
@@ -143,8 +148,46 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         fetchUserInfo()
     }
 
+    private fun prepareNativeLoginViewState(): Flow<ViewState.NativeLoginViewState> = combine(
+        flowOf(siteAddress.removeSchemeAndSuffix()),
+        savedStateHandle.getStateFlow(USERNAME_KEY, ""),
+        savedStateHandle.getStateFlow(PASSWORD_KEY, ""),
+        isLoading,
+        errorDialogMessage
+    ) { siteAddress, username, password, isLoading, errorDialog ->
+        ViewState.NativeLoginViewState(
+            siteUrl = siteAddress,
+            username = username,
+            password = password,
+            isLoading = isLoading,
+            errorDialogMessage = errorDialog
+        )
+    }
+
+    private fun prepareWebAuthorizationViewState(): Flow<ViewState.WebAuthorizationViewState> {
+        if (fetchedSiteId.value == -1) {
+            launch { fetchSite() }
+        }
+
+        return combine(
+            isLoading,
+            errorDialogMessage,
+            fetchedSiteId.filter { it != -1 }
+                .map { wpApiSiteRepository.getSiteByLocalId(it) }
+        ) { isLoading, errorDialogMessage, site ->
+            val authorizationUrl = site?.applicationPasswordsAuthorizeUrl?.let { url ->
+                "$url?app_name=$applicationPasswordsClientId&success_url=$REDIRECTION_URL"
+            }
+            ViewState.WebAuthorizationViewState(
+                authorizationUrl = authorizationUrl,
+                isLoading = isLoading,
+                errorDialogMessage = errorDialogMessage
+            )
+        }
+    }
+
     private suspend fun login() {
-        val state = requireNotNull(this@LoginSiteCredentialsViewModel.state.value)
+        val state = requireNotNull(this@LoginSiteCredentialsViewModel.viewState.value as ViewState.NativeLoginViewState)
         isLoading.value = true
         wpApiSiteRepository.loginAndFetchSite(
             url = siteAddress,
@@ -172,6 +215,46 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     errorType = authenticationError?.errorType ?: siteError?.type?.name,
                     errorDescription = exception.message,
                     statusCode = authenticationError?.networkStatusCode
+                )
+            }
+        )
+        isLoading.value = false
+    }
+
+    private suspend fun fetchSite() {
+        val viewState = viewState.value
+        isLoading.value = true
+        wpApiSiteRepository.fetchSite(
+            url = siteAddress,
+            username = (viewState as? ViewState.NativeLoginViewState)?.username,
+            password = (viewState as? ViewState.NativeLoginViewState)?.password
+        ).fold(
+            onSuccess = { site ->
+                if (site.hasWooCommerce) {
+                    fetchedSiteId.value = site.id
+                    // In case of the native login, then continue with the login flow
+                    // Otherwise, the web authorization flow will handle the login
+                    if (state.value == State.NativeLogin) {
+                        fetchUserInfo()
+                    } else if (site.applicationPasswordsAuthorizeUrl == null) {
+                        triggerEvent(ShowApplicationPasswordsUnavailableScreen(siteAddress, site.isJetpackConnected))
+                    }
+                } else {
+                    triggerEvent(ShowNonWooErrorScreen(siteAddress))
+                }
+            },
+            onFailure = { exception ->
+                val siteError = (exception as? OnChangedException)?.error as? SiteError
+
+                // TODO: Add specific error message
+                this.errorDialogMessage.value = UiStringRes(R.string.error_generic)
+
+                val error = (exception as? OnChangedException)?.error ?: exception
+                trackLoginFailure(
+                    step = Step.AUTHENTICATION,
+                    errorContext = error.javaClass.simpleName,
+                    errorType = siteError?.type?.name,
+                    errorDescription = exception.message
                 )
             }
         )
@@ -262,8 +345,9 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         }
 
         data class WebAuthorizationViewState(
-            val authorizationUrl: String,
-            val isLoading: Boolean = false
+            val authorizationUrl: String?,
+            val isLoading: Boolean = false,
+            val errorDialogMessage: UiString? = null
         ) : ViewState
     }
 

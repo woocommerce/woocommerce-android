@@ -87,7 +87,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     fun `when changing username, then update state`() = testBlocking {
         setup()
 
-        val state = viewModel.state.runAndCaptureValues {
+        val state = viewModel.viewState.runAndCaptureValues {
             viewModel.onUsernameChanged(testUsername)
         }.last()
 
@@ -98,7 +98,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     fun `when changing password, then update state`() = testBlocking {
         setup()
 
-        val state = viewModel.state.runAndCaptureValues {
+        val state = viewModel.viewState.runAndCaptureValues {
             viewModel.onUsernameChanged(testPassword)
         }.last()
 
@@ -109,7 +109,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     fun `when username is empty, then mark input as invalid`() = testBlocking {
         setup()
 
-        val state = viewModel.state.runAndCaptureValues {
+        val state = viewModel.viewState.runAndCaptureValues {
             viewModel.onUsernameChanged("")
         }.last()
 
@@ -120,7 +120,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     fun `when password is empty, then mark input as invalid`() = testBlocking {
         setup()
 
-        val state = viewModel.state.runAndCaptureValues {
+        val state = viewModel.viewState.runAndCaptureValues {
             viewModel.onPasswordChanged("")
         }.last()
 
@@ -131,7 +131,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     fun `given login successful, when submitting login, then log the user successfully`() = testBlocking {
         setup()
 
-        viewModel.state.observeForTesting {
+        viewModel.viewState.observeForTesting {
             viewModel.onUsernameChanged(testUsername)
             viewModel.onPasswordChanged(testPassword)
             viewModel.onContinueClick()
@@ -155,7 +155,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             )
         }
 
-        val state = viewModel.state.runAndCaptureValues {
+        val state = viewModel.viewState.runAndCaptureValues {
             viewModel.onUsernameChanged(testUsername)
             viewModel.onPasswordChanged(testPassword)
             viewModel.onContinueClick()
@@ -181,7 +181,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
                 .thenReturn(Result.success(testSite.apply { hasWooCommerce = false }))
         }
 
-        viewModel.state.observeForTesting {
+        viewModel.viewState.observeForTesting {
             viewModel.onUsernameChanged(testUsername)
             viewModel.onPasswordChanged(testPassword)
             viewModel.onContinueClick()
@@ -198,7 +198,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
                 .thenReturn(Result.failure(ApplicationPasswordGenerationException(networkError)))
         }
 
-        viewModel.state.observeForTesting {
+        viewModel.viewState.observeForTesting {
             viewModel.onUsernameChanged(testUsername)
             viewModel.onPasswordChanged(testPassword)
             viewModel.onContinueClick()
@@ -222,7 +222,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     fun `given site without Woo, when attempting Woo installation, then retry login`() = testBlocking {
         setup()
 
-        viewModel.state.observeForTesting {
+        viewModel.viewState.observeForTesting {
             viewModel.onWooInstallationAttempted()
         }
 
@@ -235,7 +235,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             whenever(wpApiSiteRepository.checkIfUserIsEligible(testSite)).thenReturn(Result.failure(Exception()))
         }
 
-        viewModel.state.observeForTesting {
+        viewModel.viewState.observeForTesting {
             viewModel.onUsernameChanged(testUsername)
             viewModel.onPasswordChanged(testPassword)
             viewModel.onContinueClick()
@@ -252,7 +252,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             whenever(wpApiSiteRepository.checkIfUserIsEligible(testSite)).thenReturn(Result.failure(Exception()))
         }
 
-        viewModel.state.observeForTesting {
+        viewModel.viewState.observeForTesting {
             viewModel.onUsernameChanged(testUsername)
             viewModel.onPasswordChanged(testPassword)
             viewModel.onContinueClick()
