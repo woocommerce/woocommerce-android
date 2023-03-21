@@ -114,7 +114,7 @@ fun UpgradesScreen(
                                 is TrialInProgress -> stringResource(
                                     R.string.upgrades_upgradeable_caption,
                                     state.freeTrialDuration.days,
-                                    state.leftInFreeTrialDuration.days,
+                                    state.daysLeftInFreeTrial,
                                 )
                             }
                         )
@@ -149,7 +149,7 @@ private fun TrialInProgress() {
     WooThemeWithBackground {
         UpgradesScreen(
             state =
-            TrialInProgress("Free Trial", Period.ofDays(14), Period.ofDays(6)),
+            TrialInProgress("Free Trial", Period.ofDays(14), "6 days"),
             {}, {}
         )
     }

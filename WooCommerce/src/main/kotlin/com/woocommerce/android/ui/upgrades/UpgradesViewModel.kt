@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.formatStyleFull
+import com.woocommerce.android.extensions.pluralizedDays
 import com.woocommerce.android.support.ZendeskTags
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
@@ -105,7 +106,7 @@ class UpgradesViewModel @Inject constructor(
             TrialInProgress(
                 name = prettifiedName,
                 freeTrialDuration = FREE_TRIAL_PERIOD,
-                leftInFreeTrialDuration = remainingTrialPeriod,
+                daysLeftInFreeTrial = remainingTrialPeriod.pluralizedDays(resourceProvider)
             )
         }
     }
@@ -131,7 +132,7 @@ class UpgradesViewModel @Inject constructor(
         data class TrialInProgress(
             override val name: String,
             val freeTrialDuration: Period,
-            val leftInFreeTrialDuration: Period,
+            val daysLeftInFreeTrial: String
         ) : HasPlan
 
         data class NonUpgradeable(
