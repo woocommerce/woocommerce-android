@@ -183,10 +183,10 @@ private fun PreviewWebView(
             isReadOnly = true,
             initialScale = 140,
             progressIndicator = Circular(
-                stringResource(id = string.store_creation_installation_rendering_preview_label)
+                stringResource(id = R.string.store_creation_installation_rendering_preview_label)
             ),
             onUrlLoaded = onUrlLoaded,
-            modifier = modifier.background(color = colorResource(id = color.color_surface))
+            modifier = modifier.background(color = colorResource(id = R.color.color_surface))
         )
     }
 }
