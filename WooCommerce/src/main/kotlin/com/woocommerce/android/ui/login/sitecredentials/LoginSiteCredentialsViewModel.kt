@@ -119,6 +119,30 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         errorDialogMessage.value = null
     }
 
+    fun onResetPasswordClick() {
+        triggerEvent(ShowResetPasswordScreen(siteAddress))
+    }
+
+    fun onBackClick() {
+        triggerEvent(Exit)
+    }
+
+    fun onHelpButtonClick() {
+        state.value?.let {
+            triggerEvent(ShowHelpScreen(siteAddress, it.username))
+        }
+    }
+
+    fun onWooInstallationAttempted() = launch {
+        // Retry login to re-fetch the site
+        login()
+    }
+
+    fun retryApplicationPasswordsCheck() = launch {
+        // Retry fetching user info, it will use Application Passwords
+        fetchUserInfo()
+    }
+
     private suspend fun login() {
         val state = requireNotNull(this@LoginSiteCredentialsViewModel.state.value)
         isLoading.value = true
@@ -195,30 +219,6 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             }
         )
         isLoading.value = false
-    }
-
-    fun onResetPasswordClick() {
-        triggerEvent(ShowResetPasswordScreen(siteAddress))
-    }
-
-    fun onBackClick() {
-        triggerEvent(Exit)
-    }
-
-    fun onHelpButtonClick() {
-        state.value?.let {
-            triggerEvent(ShowHelpScreen(siteAddress, it.username))
-        }
-    }
-
-    fun onWooInstallationAttempted() = launch {
-        // Retry login to re-fetch the site
-        login()
-    }
-
-    fun retryApplicationPasswordsCheck() = launch {
-        // Retry fetching user info, it will use Application Passwords
-        fetchUserInfo()
     }
 
     private fun trackLoginFailure(
