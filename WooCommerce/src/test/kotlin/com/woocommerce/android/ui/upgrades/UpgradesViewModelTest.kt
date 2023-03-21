@@ -50,9 +50,13 @@ class UpgradesViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when SitePlan is free trial with remaining time, then state is set to TrialInProgress`() =
+    fun `when SitePlan is free trial with one day remaining, then state is set to TrialInProgress with expected daysLeftInFreeTrial value`() =
         testBlocking {
             // Given
+            resourceProvider = mock {
+                on { getString(any()) } doReturn "1 day"
+            }
+
             createSut(
                 type = SitePlan.Type.FREE_TRIAL,
                 remainingTrialPeriod = Period.ofDays(1)
@@ -68,7 +72,7 @@ class UpgradesViewModelTest : BaseUnitTest() {
                 TrialInProgress(
                     name = FREE_TRIAL_TEST_SITE_NAME,
                     freeTrialDuration = FREE_TRIAL_PERIOD,
-                    leftInFreeTrialDuration = Period.ofDays(1)
+                    daysLeftInFreeTrial = "1 day"
                 )
             )
         }
