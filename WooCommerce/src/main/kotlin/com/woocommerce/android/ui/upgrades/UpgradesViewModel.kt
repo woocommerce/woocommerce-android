@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.L
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.NonUpgradeable
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialEnded
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialInProgress
+import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Upgradeable
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -86,15 +87,13 @@ class UpgradesViewModel @Inject constructor(
                 ?: Error
         }
     }
-
-    private fun createViewStateFrom(sitePlan: SitePlan) {
+    private fun createViewStateFrom(sitePlan: SitePlan) =
         when (sitePlan.type) {
             SitePlan.Type.FREE_TRIAL -> sitePlan.createFreeTrialViewState()
             SitePlan.Type.OTHER -> sitePlan.generateOtherPlansViewState()
         }
-    }
 
-    private fun SitePlan.generateOtherPlansViewState() {
+    private fun SitePlan.generateOtherPlansViewState() =
         asViewStateWhen(
             isNotExpired = {
                 NonUpgradeable(
@@ -103,22 +102,40 @@ class UpgradesViewModel @Inject constructor(
                 )
             },
             isExpired = {
-                UpgradesViewState.Upgradeable(
+                Upgradeable(
                     name = prettifiedName,
                     currentPlanEndDate = expirationDate.toLocalDate().formatStyleFull(),
                 )
             }
         )
-    }
+
+    private fun SitePlan.createFreeTrialViewState() =
+        asViewStateWhen(
+            isExpired = {
+                TrialEnded(name = resourceProvider.getString(R.string.free_trial_trial_ended))
+            },
+            isNotExpired = { remainingPeriod ->
+                TrialInProgress(
+                    name = prettifiedName,
+                    freeTrialDuration = FREE_TRIAL_PERIOD,
+                    daysLeftInFreeTrial = StringUtils.getQuantityString(
+                        resourceProvider = resourceProvider,
+                        quantity = remainingPeriod.days,
+                        default = R.string.free_trial_days_left_plural,
+                        one = R.string.free_trial_one_day_left
+                    )
+                )
+            }
+        )
 
     private fun SitePlan.asViewStateWhen(
-        isNotExpired: () -> UpgradesViewState,
-        isExpired: () -> UpgradesViewState
-    ) {
+        isNotExpired: (Period) -> UpgradesViewState.HasPlan,
+        isExpired: () -> UpgradesViewState.HasPlan
+    ): UpgradesViewState.HasPlan {
         val daysUntilExpiration = calculatePlanRemainingPeriod(expirationDate)
-        when {
+        return when {
             daysUntilExpiration.isZero || daysUntilExpiration.isNegative -> isExpired()
-            else -> isNotExpired()
+            else -> isNotExpired(daysUntilExpiration)
         }
     }
 
@@ -130,26 +147,6 @@ class UpgradesViewModel @Inject constructor(
                 currentPlanEndDate = expirationDate.toLocalDate().formatStyleFull()
             )
         }
-
-    private fun SitePlan.createFreeTrialViewState(): UpgradesViewState.HasPlan {
-        val remainingTrialPeriod = calculatePlanRemainingPeriod(expirationDate)
-        return if (remainingTrialPeriod.isZero || remainingTrialPeriod.isNegative) {
-            TrialEnded(
-                name = resourceProvider.getString(R.string.free_trial_trial_ended)
-            )
-        } else {
-            TrialInProgress(
-                name = prettifiedName,
-                freeTrialDuration = FREE_TRIAL_PERIOD,
-                daysLeftInFreeTrial = StringUtils.getQuantityString(
-                    resourceProvider = resourceProvider,
-                    quantity = remainingTrialPeriod.days,
-                    default = R.string.free_trial_days_left_plural,
-                    one = R.string.free_trial_one_day_left
-                )
-            )
-        }
-    }
 
     private val SitePlan.prettifiedName
         get() = name.removePrefix("WordPress.com ")
