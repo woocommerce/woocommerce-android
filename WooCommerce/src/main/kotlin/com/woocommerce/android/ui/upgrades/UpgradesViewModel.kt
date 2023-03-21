@@ -140,6 +140,11 @@ class UpgradesViewModel @Inject constructor(
             val daysLeftInFreeTrial: String
         ) : HasPlan
 
+        data class Upgradeable(
+            override val name: String,
+            val currentPlanEndDate: String,
+        ) : HasPlan
+
         data class NonUpgradeable(
             override val name: String,
             val currentPlanEndDate: String
