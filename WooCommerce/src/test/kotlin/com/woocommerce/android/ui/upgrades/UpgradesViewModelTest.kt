@@ -8,7 +8,7 @@ import com.woocommerce.android.extensions.formatStyleFull
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.zendesk.ZendeskTags
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.plans.domain.CalculateRemainingTrialPeriod
+import com.woocommerce.android.ui.plans.domain.CalculatePlanRemainingPeriod
 import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_PERIOD
 import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_PLAN_ID
 import com.woocommerce.android.ui.plans.domain.SitePlan
@@ -40,7 +40,7 @@ class UpgradesViewModelTest : BaseUnitTest() {
     lateinit var sut: UpgradesViewModel
     lateinit var selectedSite: SelectedSite
     lateinit var planRepository: SitePlanRepository
-    lateinit var remainingTrialPeriodUseCase: CalculateRemainingTrialPeriod
+    lateinit var remainingTrialPeriodUseCase: CalculatePlanRemainingPeriod
     var resourceProvider: ResourceProvider = mock()
     var tracks: AnalyticsTrackerWrapper = mock()
 

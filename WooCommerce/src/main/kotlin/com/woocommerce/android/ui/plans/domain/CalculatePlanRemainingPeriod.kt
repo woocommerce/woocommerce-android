@@ -6,7 +6,7 @@ import java.time.Period
 import java.time.ZonedDateTime
 import javax.inject.Inject
 
-class CalculateRemainingTrialPeriod @Inject constructor(
+class CalculatePlanRemainingPeriod @Inject constructor(
     private val selectedSite: SelectedSite
 ) {
 

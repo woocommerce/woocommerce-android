@@ -12,7 +12,7 @@ import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.zendesk.ZendeskTags
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.plans.domain.CalculateRemainingTrialPeriod
+import com.woocommerce.android.ui.plans.domain.CalculatePlanRemainingPeriod
 import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_PERIOD
 import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_UPGRADE_PLAN
 import com.woocommerce.android.ui.plans.domain.SitePlan
@@ -38,7 +38,7 @@ class UpgradesViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val selectedSite: SelectedSite,
     private val planRepository: SitePlanRepository,
-    private val calculateRemainingTrialPeriod: CalculateRemainingTrialPeriod,
+    private val calculatePlanRemainingPeriod: CalculatePlanRemainingPeriod,
     private val resourceProvider: ResourceProvider,
     private val tracks: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
@@ -115,9 +115,9 @@ class UpgradesViewModel @Inject constructor(
         isNotExpired: () -> UpgradesViewState,
         isExpired: () -> UpgradesViewState
     ) {
-        val remainingTrialPeriod = calculateRemainingTrialPeriod(expirationDate)
+        val daysUntilExpiration = calculatePlanRemainingPeriod(expirationDate)
         when {
-            remainingTrialPeriod.isZero || remainingTrialPeriod.isNegative -> isExpired()
+            daysUntilExpiration.isZero || daysUntilExpiration.isNegative -> isExpired()
             else -> isNotExpired()
         }
     }
@@ -132,7 +132,7 @@ class UpgradesViewModel @Inject constructor(
         }
 
     private fun SitePlan.createFreeTrialViewState(): UpgradesViewState.HasPlan {
-        val remainingTrialPeriod = calculateRemainingTrialPeriod(expirationDate)
+        val remainingTrialPeriod = calculatePlanRemainingPeriod(expirationDate)
         return if (remainingTrialPeriod.isZero || remainingTrialPeriod.isNegative) {
             TrialEnded(
                 name = resourceProvider.getString(R.string.free_trial_trial_ended)
