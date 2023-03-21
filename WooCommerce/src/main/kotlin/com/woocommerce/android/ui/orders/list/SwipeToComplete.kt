@@ -36,7 +36,7 @@ class SwipeToComplete(
     private val width = (displayMetrics.widthPixels / displayMetrics.density).toInt().dp
     private val completeIcon = ContextCompat.getDrawable(
         context,
-        org.wordpress.android.mediapicker.R.drawable.ic_checkmark_white_24dp
+        R.drawable.ic_menu_check_white
     )?.apply {
         setTint(Color.WHITE)
     }

@@ -67,6 +67,7 @@
     <string name="domain">Domain</string>
     <string name="domains">Domains</string>
     <string name="something_went_wrong_try_again">Something went wrong, Please try again later.</string>
+    <string name="loading">Loading…</string>
     <string name="shipping_labels">Shipping Labels</string>
     <string name="product_variations">Variations</string>
     <string name="product_variation_options">%1$s (%2$s options)</string>

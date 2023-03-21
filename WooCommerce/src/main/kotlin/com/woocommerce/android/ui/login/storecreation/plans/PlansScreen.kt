@@ -139,7 +139,7 @@ private fun PlanInformation(
                 Icon(
                     Icons.Filled.ArrowBack,
                     contentDescription = stringResource(id = R.string.back),
-                    tint = colorResource(id = org.wordpress.aztec.R.color.white)
+                    tint = colorResource(id = R.color.woo_white)
                 )
             }
 
@@ -157,7 +157,7 @@ private fun PlanInformation(
             Text(
                 text = planState.plan.name,
                 fontWeight = FontWeight.Bold,
-                color = colorResource(id = org.wordpress.aztec.R.color.white),
+                color = colorResource(id = R.color.woo_white),
                 fontSize = 20.sp,
                 modifier = Modifier
                     .constrainAs(title) {
@@ -169,7 +169,7 @@ private fun PlanInformation(
             )
             Text(
                 text = planState.plan.formattedPrice,
-                color = colorResource(id = org.wordpress.aztec.R.color.white),
+                color = colorResource(id = R.color.woo_white),
                 fontSize = 40.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
@@ -209,7 +209,7 @@ private fun PlanInformation(
                 Text(
                     fontWeight = FontWeight.Bold,
                     text = stringResource(id = R.string.store_creation_ecommerce_plan_features_tagline),
-                    color = colorResource(id = org.wordpress.aztec.R.color.white),
+                    color = colorResource(id = R.color.woo_white),
                     fontSize = 28.sp,
                     lineHeight = 36.sp
                 )
@@ -309,7 +309,7 @@ fun PlanFeatureRow(@DrawableRes iconId: Int, @StringRes textId: Int) {
         )
         Text(
             text = stringResource(id = textId),
-            color = colorResource(id = org.wordpress.aztec.R.color.white),
+            color = colorResource(id = R.color.woo_white),
             style = MaterialTheme.typography.body2
         )
     }

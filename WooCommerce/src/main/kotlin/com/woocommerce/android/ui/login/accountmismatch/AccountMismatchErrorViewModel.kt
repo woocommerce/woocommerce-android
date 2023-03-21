@@ -239,7 +239,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
             step.value = Step.SiteCredentials()
             return@launch
         }
-        _loadingDialogMessage.value = org.wordpress.android.mediapicker.R.string.loading
+        _loadingDialogMessage.value = R.string.loading
         accountMismatchRepository.fetchJetpackConnectionUrl(site).fold(
             onSuccess = {
                 _loadingDialogMessage.value = null

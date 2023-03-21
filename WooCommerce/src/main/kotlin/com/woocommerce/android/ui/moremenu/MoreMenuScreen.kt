@@ -353,7 +353,7 @@ private fun MoreMenuPreview() {
                 BadgeState(
                     badgeSize = R.dimen.major_110,
                     backgroundColor = R.color.color_secondary,
-                    textColor = org.wordpress.android.mediapicker.R.color.color_on_surface_inverted,
+                    textColor = R.color.color_on_primary,
                     textState = TextState("", R.dimen.text_minor_80),
                     animateAppearance = true
                 )
@@ -365,7 +365,7 @@ private fun MoreMenuPreview() {
                 BadgeState(
                     badgeSize = R.dimen.major_150,
                     backgroundColor = R.color.color_primary,
-                    textColor = org.wordpress.android.mediapicker.R.color.color_on_surface_inverted,
+                    textColor = R.color.color_on_primary,
                     textState = TextState("3", R.dimen.text_minor_80),
                     animateAppearance = false
                 )

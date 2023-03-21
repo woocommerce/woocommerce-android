@@ -89,7 +89,7 @@ class ProductImagesViewModel @Inject constructor(
 
     fun uploadProductImages(remoteProductId: Long, localUriList: List<Uri>) {
         if (!networkStatus.isConnected()) {
-            triggerEvent(ShowSnackbar(com.zendesk.sdk.R.string.network_activity_no_connectivity))
+            triggerEvent(ShowSnackbar(R.string.offline_error))
             return
         }
 
