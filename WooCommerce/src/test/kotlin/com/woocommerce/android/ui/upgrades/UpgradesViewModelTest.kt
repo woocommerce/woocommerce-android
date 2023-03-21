@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.E
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.NonUpgradeable
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialEnded
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialInProgress
+import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Upgradeable
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -132,7 +133,31 @@ class UpgradesViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when SitePlan is NOT free trial, then state is set to NonUpgradeable`() =
+    fun `when SitePlan is NOT free trial with remaining days, then state is set to NonUpgradeable`() =
+        testBlocking {
+            // Given
+            createSut(
+                type = SitePlan.Type.OTHER,
+                remainingTrialPeriod = Period.ofDays(1)
+            )
+            var viewModelState: UpgradesViewState? = null
+            sut.upgradesState.observeForever {
+                viewModelState = it
+            }
+
+            // Then
+            assertThat(viewModelState).isNotNull
+            assertThat(viewModelState).isEqualTo(
+                NonUpgradeable(
+                    name = FREE_TRIAL_TEST_SITE_NAME,
+                    currentPlanEndDate = SITE_PLAN_EXPIRATION_DATE
+                        .toLocalDate().formatStyleFull()
+                )
+            )
+        }
+
+    @Test
+    fun `when SitePlan is NOT free trial WITHOUT remaining days, then state is set to NonUpgradeable`() =
         testBlocking {
             // Given
             createSut(
@@ -147,7 +172,7 @@ class UpgradesViewModelTest : BaseUnitTest() {
             // Then
             assertThat(viewModelState).isNotNull
             assertThat(viewModelState).isEqualTo(
-                NonUpgradeable(
+                Upgradeable(
                     name = FREE_TRIAL_TEST_SITE_NAME,
                     currentPlanEndDate = SITE_PLAN_EXPIRATION_DATE
                         .toLocalDate().formatStyleFull()
