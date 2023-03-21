@@ -454,6 +454,9 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     PAYMENTS_HUB_TAP_TO_PAY_TAPPED,
     PAYMENTS_HUB_TAP_TO_PAY_FEEDBACK_TAPPED,
 
+    /// -- TAP TO PAY SUMMARY
+    TAP_TO_PAY_SUMMARY_TRY_PAYMENT_TAPPED,
+
     // -- Product list
     PRODUCT_LIST_LOADED,
     PRODUCT_LIST_LOAD_ERROR,

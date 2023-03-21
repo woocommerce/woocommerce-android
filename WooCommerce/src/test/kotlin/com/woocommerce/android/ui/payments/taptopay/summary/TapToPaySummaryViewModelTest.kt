@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.payments.taptopay.summary
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
 import com.woocommerce.android.util.captureValues
@@ -12,6 +14,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 
@@ -20,7 +23,13 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
 
     private val orderCreateEditRepository: OrderCreateEditRepository = mock()
-    private val viewModel = TapToPaySummaryViewModel(orderCreateEditRepository, savedStateHandle)
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+
+    private val viewModel = TapToPaySummaryViewModel(
+        orderCreateEditRepository,
+        analyticsTrackerWrapper,
+        savedStateHandle
+    )
 
     @Test
     fun `give order creation error, when onTryPaymentClicked, then show snackbar`() = testBlocking {
@@ -73,7 +82,23 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when onBackClicked, then exit emited`() {
+    fun `when onTryPaymentClicked, then ttp try payment tracked`() = testBlocking {
+        // GIVEN
+        whenever(orderCreateEditRepository.createSimplePaymentOrder(BigDecimal.valueOf(0.5))).thenReturn(
+            Result.failure(Exception())
+        )
+
+        // WHEN
+        viewModel.onTryPaymentClicked()
+
+        // THEN
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.TAP_TO_PAY_SUMMARY_TRY_PAYMENT_TAPPED
+        )
+    }
+
+    @Test
+    fun `when onBackClicked, then exit emitted`() {
         // WHEN
         viewModel.onBackClicked()
 
