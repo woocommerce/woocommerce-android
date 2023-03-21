@@ -49,7 +49,7 @@ fun LoginSiteCredentialsScreen(viewModel: LoginSiteCredentialsViewModel) {
 
 @Composable
 fun LoginSiteCredentialsScreen(
-    viewState: LoginSiteCredentialsViewModel.LoginSiteCredentialsViewState,
+    viewState: LoginSiteCredentialsViewModel.ViewState.NativeLoginViewState,
     onUsernameChanged: (String) -> Unit,
     onPasswordChanged: (String) -> Unit,
     onContinueClick: () -> Unit,

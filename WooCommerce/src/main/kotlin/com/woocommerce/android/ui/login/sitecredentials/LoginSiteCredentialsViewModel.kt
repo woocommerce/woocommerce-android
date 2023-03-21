@@ -72,7 +72,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         isLoading,
         errorDialogMessage
     ) { siteAddress, username, password, isLoading, errorDialog ->
-        LoginSiteCredentialsViewState(
+        ViewState.NativeLoginViewState(
             siteUrl = siteAddress,
             username = username,
             password = password,
@@ -246,14 +246,25 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     private fun String.removeSchemeAndSuffix() = UrlUtils.removeScheme(UrlUtils.removeXmlrpcSuffix(this))
 
-    data class LoginSiteCredentialsViewState(
-        val siteUrl: String,
-        val username: String = "",
-        val password: String = "",
-        val isLoading: Boolean = false,
-        val errorDialogMessage: UiString? = null
-    ) {
-        val isValid = username.isNotBlank() && password.isNotBlank()
+    private enum class State {
+        NativeLogin, WebAuthorization
+    }
+
+    sealed interface ViewState {
+        data class NativeLoginViewState(
+            val siteUrl: String,
+            val username: String = "",
+            val password: String = "",
+            val isLoading: Boolean = false,
+            val errorDialogMessage: UiString? = null
+        ) : ViewState {
+            val isValid = username.isNotBlank() && password.isNotBlank()
+        }
+
+        data class WebAuthorizationViewState(
+            val authorizationUrl: String,
+            val isLoading: Boolean = false
+        ) : ViewState
     }
 
     @VisibleForTesting
