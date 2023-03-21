@@ -29,11 +29,11 @@ class ShippingLabelAddressValidator @Inject constructor(
     suspend fun validateAddress(
         address: Address,
         type: AddressType,
-        requiresPhoneNumber: Boolean
+        isCustomsFormRequired: Boolean
     ): ValidationResult {
         return when {
             isNameMissing(address) -> ValidationResult.NameMissing
-            requiresPhoneNumber && !address.phone.isValidPhoneNumber(type) -> ValidationResult.PhoneInvalid
+            !address.phone.isValidPhoneNumber(type, isCustomsFormRequired) -> ValidationResult.PhoneInvalid
             else -> verifyAddress(address, type)
         }
     }
@@ -64,6 +64,7 @@ class ShippingLabelAddressValidator @Inject constructor(
 
                 ValidationResult.Error(GENERIC_ERROR)
             }
+
             is InvalidRequest -> {
                 AnalyticsTracker.track(
                     AnalyticsEvent.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
@@ -72,6 +73,7 @@ class ShippingLabelAddressValidator @Inject constructor(
 
                 ValidationResult.NotFound(validationResult.message)
             }
+
             is InvalidAddress -> {
                 AnalyticsTracker.track(
                     AnalyticsEvent.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
@@ -80,6 +82,7 @@ class ShippingLabelAddressValidator @Inject constructor(
 
                 ValidationResult.Invalid(validationResult.message)
             }
+
             is WCAddressVerificationResult.Valid -> {
                 AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_ADDRESS_VALIDATION_SUCCEEDED)
                 val suggestion =
@@ -144,9 +147,22 @@ class ShippingLabelAddressValidator @Inject constructor(
  * Source: https://github.com/Automattic/woocommerce-services/issues/1351
  */
 @Suppress("MagicNumber")
-fun String.isValidPhoneNumber(addressType: AddressType): Boolean {
+fun String.isValidPhoneNumber(addressType: AddressType, isCustomsFormRequired: Boolean): Boolean {
     return when (addressType) {
-        ORIGIN -> replace(Regex("^1|[^\\d]"), "").length == 10
-        DESTINATION -> contains(Regex("\\d"))
+        ORIGIN -> {
+            if (isCustomsFormRequired) {
+                replace(Regex("^1|[^\\d]"), "").length == 10
+            } else {
+                isNotBlank()
+            }
+        }
+
+        DESTINATION -> {
+            if (isCustomsFormRequired) {
+                contains(Regex("\\d"))
+            } else {
+                true
+            }
+        }
     }
 }

@@ -607,13 +607,13 @@ class ShippingLabelsStateMachine @Inject constructor() {
 
         private fun updateForInternationalRequirements(): StepsState {
             val originAddressStep = if (isCustomsFormRequired &&
-                !originAddressStep.data.phone.isValidPhoneNumber(ORIGIN)
+                !originAddressStep.data.phone.isValidPhoneNumber(ORIGIN, isCustomsFormRequired)
             ) {
                 originAddressStep.copy(status = READY)
             } else originAddressStep
 
             val shippingAddressStep = if (isCustomsFormRequired &&
-                !shippingAddressStep.data.phone.isValidPhoneNumber(DESTINATION)
+                !shippingAddressStep.data.phone.isValidPhoneNumber(DESTINATION, isCustomsFormRequired)
             ) {
                 shippingAddressStep.copy(status = READY)
             } else shippingAddressStep

@@ -145,6 +145,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                     )
                 )
             }
+
             is ValidationResult.SuggestedChanges -> {
                 if (result.isTrivial) {
                     triggerEvent(ExitWithResult(result.suggested))
@@ -152,6 +153,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                     triggerEvent(ShowSuggestedAddress(address, result.suggested, arguments.addressType))
                 }
             }
+
             is ValidationResult.NotFound -> {
                 viewState = viewState.copy(
                     bannerMessage = resourceProvider.getString(
@@ -163,9 +165,11 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                     triggerEvent(ShowSnackbar(getAddressErrorStringRes(result.message)))
                 }
             }
+
             is ValidationResult.Error -> if (showToastErrors) {
                 triggerEvent(ShowSnackbar(R.string.shipping_label_edit_address_validation_error))
             }
+
             is NameMissing -> {
                 viewState = viewState.copy(
                     nameField = viewState.nameField.validate()
@@ -174,6 +178,7 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                     triggerEvent(ShowSnackbar(R.string.shipping_label_address_data_invalid_snackbar_message))
                 }
             }
+
             is PhoneInvalid -> {
                 viewState = viewState.copy(
                     phoneField = viewState.phoneField.validate()
@@ -259,31 +264,39 @@ class EditShippingLabelAddressViewModel @Inject constructor(
                 Field.Name -> copy(
                     nameField = nameField.copy(content = content).validate()
                 )
+
                 Field.Company -> copy(
                     companyField = companyField.copy(content = content).validate(),
                     nameField = nameField.copy(companyContent = content).validate()
                 )
+
                 Field.Phone -> copy(
                     phoneField = phoneField.copy(content = content).validate()
                 )
+
                 Field.Address1 -> copy(
                     address1Field = address1Field.copy(content = content, validationError = null).validate()
                 )
+
                 Field.Address2 -> copy(
                     address2Field = address2Field.copy(content = content).validate()
                 )
+
                 Field.City -> copy(
                     cityField = cityField.copy(content = content).validate()
                 )
+
                 Field.State -> {
                     val state = states.firstOrNull { it.code == content } ?: Location(code = content, name = content)
                     copy(
                         stateField = stateField.copy(location = state).validate()
                     )
                 }
+
                 Field.Zip -> copy(
                     zipField = zipField.copy(content = content).validate()
                 )
+
                 Field.Country -> {
                     val country = countries.first { it.code == content }
                     val stateField = if (countryField.location != country) {
@@ -427,18 +440,22 @@ class EditShippingLabelAddressViewModel @Inject constructor(
     @Parcelize
     data class PhoneField(
         override val content: String,
-        val needsValidation: Boolean,
+        val isCustomsFormRequired: Boolean,
         val addressType: AddressType
     ) : InputField<PhoneField>(content) {
         override fun validateInternal(): UiString? {
-            if (!needsValidation) return null
-            return when {
-                content.isBlank() -> UiStringRes(R.string.shipping_label_address_phone_required)
-                addressType == ORIGIN && !content.isValidPhoneNumber(addressType) ->
-                    UiStringRes(R.string.shipping_label_origin_address_phone_invalid)
-                addressType == DESTINATION && !content.isValidPhoneNumber(addressType) ->
-                    UiStringRes(R.string.shipping_label_destination_address_phone_invalid)
-                else -> null
+            return if (content.isValidPhoneNumber(addressType, isCustomsFormRequired)) null
+            else {
+                when {
+                    content.isBlank() -> UiStringRes(R.string.shipping_label_address_phone_required)
+                    addressType == ORIGIN ->
+                        UiStringRes(R.string.shipping_label_origin_address_phone_invalid)
+
+                    addressType == DESTINATION ->
+                        UiStringRes(R.string.shipping_label_destination_address_phone_invalid)
+
+                    else -> null
+                }
             }
         }
     }
