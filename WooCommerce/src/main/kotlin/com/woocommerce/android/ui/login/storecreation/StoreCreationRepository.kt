@@ -216,7 +216,7 @@ class StoreCreationRepository @Inject constructor(
             siteData.segmentId,
             siteData.siteDesign,
             dryRun,
-            additionalOptions
+            additionalOptions = additionalOptions
         )
 
         val result = dispatcher.dispatchAndAwait<NewSitePayload, OnNewSiteCreated>(

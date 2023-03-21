@@ -86,7 +86,7 @@ class CountryPickerViewModel @Inject constructor(
 
     fun onContinueClicked() {
         launch {
-            if (FeatureFlag.FREE_TRIAL.isEnabled()) {
+            if (FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
                 creatingStoreInProgress.value = true
                 createFreeTrialSite().ifSuccessfulThen { siteId ->
                     newStore.update(siteId = siteId)

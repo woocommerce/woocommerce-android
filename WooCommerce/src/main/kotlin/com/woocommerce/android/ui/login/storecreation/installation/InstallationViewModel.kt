@@ -50,7 +50,7 @@ class InstallationViewModel @Inject constructor(
         .onEach {
             if (it is InitialState) {
                 loadNewStore()
-            } else if (it is SuccessState && FeatureFlag.FREE_TRIAL.isEnabled()) {
+            } else if (it is SuccessState && FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
                 triggerEvent(NavigateToNewStore)
             }
         }.asLiveData()
