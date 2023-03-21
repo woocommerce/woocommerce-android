@@ -8,7 +8,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.formatStyleFull
-import com.woocommerce.android.extensions.pluralizedDays
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.zendesk.ZendeskTags
 import com.woocommerce.android.tools.SelectedSite
@@ -25,6 +24,7 @@ import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.L
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.NonUpgradeable
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialEnded
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialInProgress
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -106,13 +106,21 @@ class UpgradesViewModel @Inject constructor(
             TrialInProgress(
                 name = prettifiedName,
                 freeTrialDuration = FREE_TRIAL_PERIOD,
-                daysLeftInFreeTrial = remainingTrialPeriod.pluralizedDays(resourceProvider)
+                daysLeftInFreeTrial = remainingTrialPeriod.pluralizedDaysText
             )
         }
     }
 
     private val SitePlan.prettifiedName
         get() = name.removePrefix("WordPress.com ")
+
+    private val Period.pluralizedDaysText
+        get() = StringUtils.getQuantityString(
+            resourceProvider = resourceProvider,
+            quantity = days,
+            default = R.string.free_trial_days_left_plural,
+            one = R.string.free_trial_one_day_left
+        )
 
     sealed interface UpgradesViewState {
 
