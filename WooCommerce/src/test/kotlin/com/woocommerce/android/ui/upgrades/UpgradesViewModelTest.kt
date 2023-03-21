@@ -72,7 +72,7 @@ class UpgradesViewModelTest : BaseUnitTest() {
             assertThat(viewModelState).isNotNull
             assertThat(viewModelState).isEqualTo(
                 TrialInProgress(
-                    name = FREE_TRIAL_TEST_SITE_NAME,
+                    name = TEST_SITE_NAME,
                     freeTrialDuration = FREE_TRIAL_PERIOD,
                     daysLeftInFreeTrial = "1 day"
                 )
@@ -100,7 +100,7 @@ class UpgradesViewModelTest : BaseUnitTest() {
             assertThat(viewModelState).isNotNull
             assertThat(viewModelState).isEqualTo(
                 TrialInProgress(
-                    name = FREE_TRIAL_TEST_SITE_NAME,
+                    name = TEST_SITE_NAME,
                     freeTrialDuration = FREE_TRIAL_PERIOD,
                     daysLeftInFreeTrial = "10 days"
                 )
@@ -149,7 +149,7 @@ class UpgradesViewModelTest : BaseUnitTest() {
             assertThat(viewModelState).isNotNull
             assertThat(viewModelState).isEqualTo(
                 NonUpgradeable(
-                    name = FREE_TRIAL_TEST_SITE_NAME,
+                    name = TEST_SITE_NAME,
                     currentPlanEndDate = SITE_PLAN_EXPIRATION_DATE
                         .toLocalDate().formatStyleFull()
                 )
@@ -160,6 +160,10 @@ class UpgradesViewModelTest : BaseUnitTest() {
     fun `when SitePlan is NOT free trial WITHOUT remaining days, then state is set to NonUpgradeable`() =
         testBlocking {
             // Given
+            resourceProvider = mock {
+                on { getString(any(), eq(TEST_SITE_NAME)) } doReturn "$TEST_SITE_NAME ended"
+            }
+
             createSut(
                 type = SitePlan.Type.OTHER,
                 remainingTrialPeriod = Period.ZERO
@@ -173,9 +177,7 @@ class UpgradesViewModelTest : BaseUnitTest() {
             assertThat(viewModelState).isNotNull
             assertThat(viewModelState).isEqualTo(
                 Upgradeable(
-                    name = FREE_TRIAL_TEST_SITE_NAME,
-                    currentPlanEndDate = SITE_PLAN_EXPIRATION_DATE
-                        .toLocalDate().formatStyleFull()
+                    name = "$TEST_SITE_NAME ended",
                 )
             )
         }
@@ -294,7 +296,7 @@ class UpgradesViewModelTest : BaseUnitTest() {
         remainingTrialPeriod: Period = Period.ofDays(10)
     ) {
         val sitePlan = SitePlan(
-            name = "WordPress.com $FREE_TRIAL_TEST_SITE_NAME",
+            name = "WordPress.com $TEST_SITE_NAME",
             expirationDate = SITE_PLAN_EXPIRATION_DATE,
             type = type
         )
@@ -344,7 +346,7 @@ class UpgradesViewModelTest : BaseUnitTest() {
     }
 
     companion object {
-        private const val FREE_TRIAL_TEST_SITE_NAME = "Free Trial site"
+        private const val TEST_SITE_NAME = "Free Trial site"
         private const val TRIAL_ENDED_TEST_SITE_NAME = "Trial ended test site"
         private val SITE_PLAN_EXPIRATION_DATE = ZonedDateTime.now()
     }
