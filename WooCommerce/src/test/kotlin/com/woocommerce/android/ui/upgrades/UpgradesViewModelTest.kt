@@ -28,6 +28,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.model.SiteModel
@@ -50,9 +51,13 @@ class UpgradesViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when SitePlan is free trial with remaining time, then state is set to TrialInProgress`() =
+    fun `when SitePlan is free trial with one day remaining, then state is set to TrialInProgress with expected daysLeftInFreeTrial value`() =
         testBlocking {
             // Given
+            resourceProvider = mock {
+                on { getString(any(), eq(1)) } doReturn "1 day"
+            }
+
             createSut(
                 type = SitePlan.Type.FREE_TRIAL,
                 remainingTrialPeriod = Period.ofDays(1)
@@ -68,7 +73,35 @@ class UpgradesViewModelTest : BaseUnitTest() {
                 TrialInProgress(
                     name = FREE_TRIAL_TEST_SITE_NAME,
                     freeTrialDuration = FREE_TRIAL_PERIOD,
-                    leftInFreeTrialDuration = Period.ofDays(1)
+                    daysLeftInFreeTrial = "1 day"
+                )
+            )
+        }
+
+    @Test
+    fun `when SitePlan is free trial with more than one day remaining, then state is set to TrialInProgress with expected daysLeftInFreeTrial value`() =
+        testBlocking {
+            // Given
+            resourceProvider = mock {
+                on { getString(any(), eq(10)) } doReturn "10 days"
+            }
+
+            createSut(
+                type = SitePlan.Type.FREE_TRIAL,
+                remainingTrialPeriod = Period.ofDays(10)
+            )
+            var viewModelState: UpgradesViewState? = null
+            sut.upgradesState.observeForever {
+                viewModelState = it
+            }
+
+            // Then
+            assertThat(viewModelState).isNotNull
+            assertThat(viewModelState).isEqualTo(
+                TrialInProgress(
+                    name = FREE_TRIAL_TEST_SITE_NAME,
+                    freeTrialDuration = FREE_TRIAL_PERIOD,
+                    daysLeftInFreeTrial = "10 days"
                 )
             )
         }
