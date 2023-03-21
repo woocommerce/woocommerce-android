@@ -5,7 +5,7 @@ import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.AppCoroutineScope
-import com.woocommerce.android.support.ZendeskSettings
+import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.util.WooLog

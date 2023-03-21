@@ -14,11 +14,11 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivitySupportRequestFormBinding
 import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.support.SupportHelper
-import com.woocommerce.android.support.TicketType
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationFailed
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationSucceeded
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.ShowSupportIdentityInputDialog
+import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
