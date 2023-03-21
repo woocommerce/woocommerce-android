@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.L
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.NonUpgradeable
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialEnded
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialInProgress
+import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Upgradeable
 import java.time.Period
 
 @Composable
@@ -103,6 +104,11 @@ fun UpgradesScreen(
                             style = MaterialTheme.typography.caption,
                             text = when (state) {
                                 Loading, Error -> ""
+                                is Upgradeable -> stringResource(
+                                    R.string.upgrades_current_plan_ended_caption,
+                                    state.name,
+                                    state.currentPlanEndDate
+                                )
                                 is NonUpgradeable -> stringResource(
                                     R.string.upgrades_non_upgradeable_caption,
                                     state.name,
