@@ -146,6 +146,7 @@ fun UpgradesScreen(
 }
 
 @Preview(name = "Light mode")
+@Preview(name = "RTL mode", locale = "ar")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun TrialInProgress() {
@@ -159,6 +160,7 @@ private fun TrialInProgress() {
 }
 
 @Preview(name = "Light mode")
+@Preview(name = "RTL mode", locale = "ar")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun TrialEnded() {
@@ -170,6 +172,7 @@ private fun TrialEnded() {
 }
 
 @Preview(name = "Light mode")
+@Preview(name = "RTL mode", locale = "ar")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun NonUpgradeable() {
@@ -183,6 +186,7 @@ private fun NonUpgradeable() {
 }
 
 @Preview(name = "Light mode")
+@Preview(name = "RTL mode", locale = "ar")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun Loading() {
@@ -192,6 +196,7 @@ private fun Loading() {
 }
 
 @Preview(name = "Light mode")
+@Preview(name = "RTL mode", locale = "ar")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun Error() {
