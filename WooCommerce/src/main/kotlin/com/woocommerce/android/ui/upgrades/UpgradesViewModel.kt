@@ -99,8 +99,7 @@ class UpgradesViewModel @Inject constructor(
         sitePlan.mapAsViewState(
             isExpired = {
                 Upgradeable(
-                    name = prettifiedName,
-                    currentPlanEndDate = expirationDate.toLocalDate().formatStyleFull(),
+                    name = resourceProvider.getString(R.string.upgrades_plan_ended_name, prettifiedName)
                 )
             },
             isNotExpired = {
@@ -130,9 +129,9 @@ class UpgradesViewModel @Inject constructor(
             }
         )
 
-    private fun SitePlan.mapAsViewState(
-        isNotExpired: SitePlan.(Period) -> UpgradesViewState.HasPlan,
-        isExpired: SitePlan.() -> UpgradesViewState.HasPlan
+    private inline fun SitePlan.mapAsViewState(
+        crossinline isNotExpired: SitePlan.(Period) -> UpgradesViewState.HasPlan,
+        crossinline isExpired: SitePlan.() -> UpgradesViewState.HasPlan
     ): UpgradesViewState.HasPlan {
         val daysUntilExpiration = calculatePlanRemainingPeriod(expirationDate)
         return when {
@@ -166,8 +165,7 @@ class UpgradesViewModel @Inject constructor(
         ) : HasPlan
 
         data class Upgradeable(
-            override val name: String,
-            val currentPlanEndDate: String,
+            override val name: String
         ) : HasPlan
 
         data class NonUpgradeable(

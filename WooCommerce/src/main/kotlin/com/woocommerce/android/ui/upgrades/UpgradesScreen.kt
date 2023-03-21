@@ -106,8 +106,7 @@ fun UpgradesScreen(
                                 Loading, Error -> ""
                                 is Upgradeable -> stringResource(
                                     R.string.upgrades_current_plan_ended_caption,
-                                    state.name,
-                                    state.currentPlanEndDate
+                                    state.name
                                 )
                                 is NonUpgradeable -> stringResource(
                                     R.string.upgrades_non_upgradeable_caption,
@@ -188,6 +187,16 @@ private fun NonUpgradeable() {
             NonUpgradeable("eCommerce", "March 2, 2023"),
             {}, {}
         )
+    }
+}
+
+@Preview(name = "Light mode")
+@Preview(name = "RTL mode", locale = "ar")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun Upgradeable() {
+    WooThemeWithBackground {
+        UpgradesScreen(state = Upgradeable("eCommerce ended"), {}, {})
     }
 }
 
