@@ -347,7 +347,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             verify(analyticsTrackerWrapper).track(
                 AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
                 mapOf(
-                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
+                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_BT_CARD,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
                 )
             )
@@ -366,7 +366,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             verify(analyticsTrackerWrapper).track(
                 AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
                 mapOf(
-                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
+                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_BT_CARD,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
                 )
             )
@@ -406,6 +406,44 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 SelectPaymentMethodViewModel.NavigateToCardReaderPaymentFlow(
                     cardReaderFlowParam,
                     CardReaderType.BUILT_IN
+                )
+            )
+        }
+
+    @Test
+    fun `given simple payments flow, when on tap too pay clicked, then collect tracked with simple payment flow`() =
+        testBlocking {
+            // GIVEN
+            val viewModel = initViewModel(Payment(1L, SIMPLE))
+
+            // WHEN
+            viewModel.onTapToPayClicked()
+
+            // THEN
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
+                mapOf(
+                    "payment_method" to "bi_card",
+                    "flow" to "simple_payment",
+                )
+            )
+        }
+
+    @Test
+    fun `given order payments flow, when on tap too pay clicked, then collect tracked with order flow`() =
+        testBlocking {
+            // GIVEN
+            val viewModel = initViewModel(Payment(1L, ORDER))
+
+            // WHEN
+            viewModel.onTapToPayClicked()
+
+            // THEN
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
+                mapOf(
+                    "payment_method" to "bi_card",
+                    "flow" to "order_payment",
                 )
             )
         }
@@ -476,7 +514,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
                 mapOf(
                     AnalyticsTracker.KEY_AMOUNT to "100$",
-                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
+                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_BT_CARD,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
                 )
             )
@@ -497,7 +535,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
                 mapOf(
                     AnalyticsTracker.KEY_AMOUNT to "100$",
-                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
+                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_BT_CARD,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
                 )
             )
@@ -640,7 +678,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
                 mapOf(
                     AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK,
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
+                    AnalyticsTracker.KEY_FLOW to "ttp_test_payment",
                 )
             )
         }
