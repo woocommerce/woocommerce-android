@@ -138,6 +138,10 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         }
     }
 
+    fun onStartWebAuthorizationClick() {
+        state.value = State.WebAuthorization
+    }
+
     fun onWooInstallationAttempted() = launch {
         // Retry login to re-fetch the site
         login()

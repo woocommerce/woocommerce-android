@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.login.sitecredentials
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -42,7 +41,8 @@ fun LoginSiteCredentialsScreen(viewModel: LoginSiteCredentialsViewModel) {
             onResetPasswordClick = viewModel::onResetPasswordClick,
             onBackClick = viewModel::onBackClick,
             onHelpButtonClick = viewModel::onHelpButtonClick,
-            onErrorDialogDismissed = viewModel::onErrorDialogDismissed
+            onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
+            onStartWebAuthorizationClick = viewModel::onStartWebAuthorizationClick
         )
     }
 }
@@ -56,7 +56,8 @@ fun LoginSiteCredentialsScreen(
     onResetPasswordClick: () -> Unit,
     onBackClick: () -> Unit,
     onHelpButtonClick: () -> Unit,
-    onErrorDialogDismissed: () -> Unit
+    onErrorDialogDismissed: () -> Unit,
+    onStartWebAuthorizationClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -76,6 +77,7 @@ fun LoginSiteCredentialsScreen(
                 onResetPasswordClick = onResetPasswordClick,
                 onErrorDialogDismissed = onErrorDialogDismissed,
                 onHelpButtonClick = onHelpButtonClick,
+                onStartWebAuthorizationClick = onStartWebAuthorizationClick,
                 modifier = Modifier.padding(paddingValues)
             )
 
@@ -93,6 +95,7 @@ private fun NativeLoginForm(
     onResetPasswordClick: () -> Unit,
     onErrorDialogDismissed: () -> Unit,
     onHelpButtonClick: () -> Unit,
+    onStartWebAuthorizationClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -154,7 +157,22 @@ private fun NativeLoginForm(
             },
             onDismissRequest = onErrorDialogDismissed,
             buttons = {
-                Row(modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))) {
+                Column(
+                    horizontalAlignment = Alignment.End,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                ) {
+                    WCTextButton(
+                        onClick = onErrorDialogDismissed
+                    ) {
+                        Text(text = stringResource(id = android.R.string.ok))
+                    }
+                    WCTextButton(
+                        onClick = onStartWebAuthorizationClick
+                    ) {
+                        Text(text = stringResource(id = R.string.login_site_credentials_use_web_authorization))
+                    }
                     WCTextButton(
                         onClick = {
                             onErrorDialogDismissed()
@@ -162,12 +180,6 @@ private fun NativeLoginForm(
                         }
                     ) {
                         Text(text = stringResource(id = R.string.login_site_address_more_help))
-                    }
-                    Spacer(modifier = Modifier.weight(1f))
-                    WCTextButton(
-                        onClick = onErrorDialogDismissed
-                    ) {
-                        Text(text = stringResource(id = android.R.string.ok))
                     }
                 }
             }
