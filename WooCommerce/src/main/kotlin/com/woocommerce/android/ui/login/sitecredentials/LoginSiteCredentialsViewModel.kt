@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.login.sitecredentials
 
-import android.os.Parcelable
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
@@ -32,8 +31,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.IgnoredOnParcel
-import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.util.UrlUtils
@@ -249,15 +246,13 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     private fun String.removeSchemeAndSuffix() = UrlUtils.removeScheme(UrlUtils.removeXmlrpcSuffix(this))
 
-    @Parcelize
     data class LoginSiteCredentialsViewState(
         val siteUrl: String,
         val username: String = "",
         val password: String = "",
         val isLoading: Boolean = false,
         val errorDialogMessage: UiString? = null
-    ) : Parcelable {
-        @IgnoredOnParcel
+    ) {
         val isValid = username.isNotBlank() && password.isNotBlank()
     }
 
