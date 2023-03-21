@@ -87,16 +87,51 @@ class UpgradesViewModel @Inject constructor(
         }
     }
 
+    private fun createViewStateFrom(sitePlan: SitePlan) {
+        when (sitePlan.type) {
+            SitePlan.Type.FREE_TRIAL -> sitePlan.createFreeTrialViewState()
+            SitePlan.Type.OTHER -> sitePlan.generateOtherPlansViewState()
+        }
+    }
+
+    private fun SitePlan.generateOtherPlansViewState() {
+        asViewStateWhen(
+            isNotExpired = {
+                NonUpgradeable(
+                    name = prettifiedName,
+                    currentPlanEndDate = expirationDate.toLocalDate().formatStyleFull()
+                )
+            },
+            isExpired = {
+                UpgradesViewState.Upgradeable(
+                    name = prettifiedName,
+                    currentPlanEndDate = expirationDate.toLocalDate().formatStyleFull(),
+                )
+            }
+        )
+    }
+
+    private fun SitePlan.asViewStateWhen(
+        isNotExpired: () -> UpgradesViewState,
+        isExpired: () -> UpgradesViewState
+    ) {
+        val remainingTrialPeriod = calculateRemainingTrialPeriod(expirationDate)
+        when {
+            remainingTrialPeriod.isZero || remainingTrialPeriod.isNegative -> isExpired()
+            else -> isNotExpired()
+        }
+    }
+
     private fun SitePlan.asViewState() =
         when (type) {
-            SitePlan.Type.FREE_TRIAL -> generateHasPlanViewState()
+            SitePlan.Type.FREE_TRIAL -> createFreeTrialViewState()
             SitePlan.Type.OTHER -> NonUpgradeable(
                 name = prettifiedName,
                 currentPlanEndDate = expirationDate.toLocalDate().formatStyleFull()
             )
         }
 
-    private fun SitePlan.generateHasPlanViewState(): UpgradesViewState.HasPlan {
+    private fun SitePlan.createFreeTrialViewState(): UpgradesViewState.HasPlan {
         val remainingTrialPeriod = calculateRemainingTrialPeriod(expirationDate)
         return if (remainingTrialPeriod.isZero || remainingTrialPeriod.isNegative) {
             TrialEnded(
