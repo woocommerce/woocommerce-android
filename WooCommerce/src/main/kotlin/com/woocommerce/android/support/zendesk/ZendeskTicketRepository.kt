@@ -248,6 +248,7 @@ object ZendeskTags {
     const val jetpackTag = "jetpack"
     const val platformTag = "Android"
     const val wpComTag = "wpcom"
+    const val freeTrialTag = "trial"
 }
 
 sealed class ZendeskException(message: String) : Exception(message) {

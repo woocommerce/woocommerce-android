@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.login.sitecredentials
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -22,11 +24,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProgressDialog
-import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.compose.component.getText
 
 @Composable
 fun LoginSiteCredentialsScreen(viewModel: LoginSiteCredentialsViewModel) {
@@ -37,7 +40,9 @@ fun LoginSiteCredentialsScreen(viewModel: LoginSiteCredentialsViewModel) {
             onPasswordChanged = viewModel::onPasswordChanged,
             onContinueClick = viewModel::onContinueClick,
             onResetPasswordClick = viewModel::onResetPasswordClick,
-            onBackClick = viewModel::onBackClick
+            onBackClick = viewModel::onBackClick,
+            onHelpButtonClick = viewModel::onHelpButtonClick,
+            onErrorDialogDismissed = viewModel::onErrorDialogDismissed
         )
     }
 }
@@ -49,13 +54,16 @@ fun LoginSiteCredentialsScreen(
     onPasswordChanged: (String) -> Unit,
     onContinueClick: () -> Unit,
     onResetPasswordClick: () -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onHelpButtonClick: () -> Unit,
+    onErrorDialogDismissed: () -> Unit
 ) {
     Scaffold(
         topBar = {
-            Toolbar(
+            ToolbarWithHelpButton(
                 title = stringResource(id = R.string.log_in),
-                onNavigationButtonClick = onBackClick
+                onNavigationButtonClick = onBackClick,
+                onHelpButtonClick = onHelpButtonClick
             )
         }
     ) { paddingValues ->
@@ -81,7 +89,6 @@ fun LoginSiteCredentialsScreen(
                     value = viewState.username,
                     onValueChange = onUsernameChanged,
                     label = stringResource(id = R.string.username),
-                    isError = viewState.errorMessage != null,
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
                 )
@@ -89,8 +96,6 @@ fun LoginSiteCredentialsScreen(
                     value = viewState.password,
                     onValueChange = onPasswordChanged,
                     label = stringResource(id = R.string.password),
-                    isError = viewState.errorMessage != null,
-                    helperText = viewState.errorMessage?.let { stringResource(id = it) },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(
                         onDone = { onContinueClick() }
@@ -114,6 +119,33 @@ fun LoginSiteCredentialsScreen(
             }
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         }
+    }
+
+    if (viewState.errorDialogMessage != null) {
+        AlertDialog(
+            text = {
+                Text(text = viewState.errorDialogMessage.getText())
+            },
+            onDismissRequest = onErrorDialogDismissed,
+            buttons = {
+                Row(modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))) {
+                    WCTextButton(
+                        onClick = {
+                            onErrorDialogDismissed()
+                            onHelpButtonClick()
+                        }
+                    ) {
+                        Text(text = stringResource(id = R.string.login_site_address_more_help))
+                    }
+                    Spacer(modifier = Modifier.weight(1f))
+                    WCTextButton(
+                        onClick = onErrorDialogDismissed
+                    ) {
+                        Text(text = stringResource(id = android.R.string.ok))
+                    }
+                }
+            }
+        )
     }
 
     if (viewState.isLoading) {

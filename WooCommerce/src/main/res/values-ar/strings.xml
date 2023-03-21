@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-08 18:54:03+0000
+Translation-Revision-Date: 2023-03-14 20:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">توجد متطلبات معلقة في حسابك. يرجى إكمال هذه المتطلبات للاستمرار في قبول المدفوعات الشخصية.</string>
+    <string name="analytics_banner_message">يرجى تقييم خبرة التحليلات الخاصة بك</string>
+    <string name="analytics_banner_title">هل تستمتع بالتحليلات؟</string>
+    <string name="analytics_wip_message">لقد عملنا على إتاحة إمكانية عرض معلومات المتجر المهمة الواردة من جهازك! هل يمكن أن يكون أفضل؟ ترجى مساعدتنا على تحسين هذه الميزة عن طريق مشاركة ملاحظاتك معنا</string>
+    <string name="analytics_wip_title">راجع إحصاءاتك وإيراداتك والمزيد من جهازك!</string>
+    <string name="login_jetpack_installation_magic_link_failure">حدث خطأ في أثناء إحضار موقعك على الويب، ترجى إعادة المحاولة!</string>
     <string name="support_request_error_message">عذرًا، يتعذر علينا إنشاء طلبات الدعم الآن، ترجى المحاولة مجددًا في وقت لاحق.</string>
     <string name="support_request_error_title">حدث خطأ</string>
     <string name="support_request_dialog_action">فهمت!</string>

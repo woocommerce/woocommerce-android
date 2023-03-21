@@ -4,6 +4,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STORE_LOADING_FAILED
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STORE_NOT_READY
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Failure
@@ -22,6 +23,8 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -31,6 +34,7 @@ class InstallationViewModelTest : BaseUnitTest() {
     private val repository: StoreCreationRepository = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val selectedSite: SelectedSite = mock()
 
     private lateinit var viewModel: InstallationViewModel
 
@@ -47,7 +51,8 @@ class InstallationViewModelTest : BaseUnitTest() {
             repository,
             newStore,
             analyticsTrackerWrapper,
-            appPrefsWrapper
+            appPrefsWrapper,
+            selectedSite
         )
     }
 
@@ -64,6 +69,7 @@ class InstallationViewModelTest : BaseUnitTest() {
     @Test
     fun `when a Woo site is found after installation, a success state is displayed`() = testBlocking {
         whenever(repository.fetchSiteAfterCreation(newStore.data.siteId!!)).thenReturn(Success(Unit))
+        whenever(selectedSite.get()).thenReturn(SiteModel().apply { url = newStore.data.domain })
 
         whenViewModelIsCreated()
 
@@ -77,7 +83,7 @@ class InstallationViewModelTest : BaseUnitTest() {
 
         verify(repository, Times(1)).fetchSiteAfterCreation(newStore.data.siteId!!)
 
-        val expectedState = SuccessState("https://${newStore.data.domain!!}")
+        val expectedState = SuccessState(newStore.data.domain!!.slashJoin("wp-admin/"))
 
         assertEquals(expectedState, observedState)
     }

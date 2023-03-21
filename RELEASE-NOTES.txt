@@ -1,8 +1,15 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+12.9
+-----
+
+
 12.8
 -----
 - [*][Internal] Do not show full screen input for the payment amount for simple payments flow. [https://github.com/woocommerce/woocommerce-android/pull/8517]
 - [*][Internal] Fix the wording for the cases when we don't have due date on stripe pending requirements state for IPP [https://github.com/woocommerce/woocommerce-android/pull/8516]
+- [**] Added product multi-selection in order creation flow [https://github.com/woocommerce/woocommerce-android/pull/8557]
+- [*] Improved product selector component to allow filtering out redundant products [https://github.com/woocommerce/woocommerce-android/pull/8557]
+- [**] Added local search feature in the products selector component (available in orders creation and coupon edition flows) [https://github.com/woocommerce/woocommerce-android/pull/8391]
 - [*] Analytics Hub: Improved Accessibility
 
 12.7

@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-09 11:54:23+0000
+Translation-Revision-Date: 2023-03-14 09:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">Ci sono requisiti in sospeso sull\'account. Completa i requisiti per continuare ad accettare Pagamenti di persona.</string>
+    <string name="analytics_banner_message">Valuta la tua esperienza con l\'analisi</string>
+    <string name="analytics_banner_title">Ti piace l\'analisi?</string>
+    <string name="analytics_wip_message">Abbiamo lavorato per rendere possibile la visualizzazione di informazioni significative sul negozio dal tuo dispositivo. Potrebbe essere migliore? Aiutaci a migliorare questa funzionalità condividendo con noi il tuo feedback</string>
+    <string name="analytics_wip_title">Visualizza statistiche, entrate e molto altro dal tuo dispositivo.</string>
+    <string name="login_jetpack_installation_magic_link_failure">Si è verificato un errore durante  il recupero del sito web, prova di nuovo.</string>
     <string name="support_request_error_message">Spiacenti, al momento non è possibile creare richieste di supporto, riprova più tardi.</string>
     <string name="support_request_error_title">Si è verificato un problema</string>
     <string name="support_request_dialog_action">OK!</string>
