@@ -46,7 +46,7 @@ class ZendeskEnvironmentDataSource {
     fun generateHostData(selectedSite: SiteModel?) =
         selectedSite?.let {
             "${selectedSite.hostURL} (${selectedSite.stateLogInformation})"
-        } ?: "not_selected"
+        } ?: unknownHostValue
 
     private val SiteModel.hostURL: String
         get() = UrlUtils.removeScheme(url)
@@ -72,7 +72,6 @@ class ZendeskEnvironmentDataSource {
 
     companion object Constants {
         // Platform
-        const val platformTag = "Android"
         const val sourcePlatform = "Mobile_-_Woo_Android"
 
         // Network
@@ -82,6 +81,7 @@ class ZendeskEnvironmentDataSource {
         const val networkCarrierLabel = "Carrier:"
         const val networkCountryCodeLabel = "Country Code:"
         const val unknownValue = "unknown"
+        const val unknownHostValue = "not_selected"
 
         // URL
         const val blogSeparator = "\n----------\n"
