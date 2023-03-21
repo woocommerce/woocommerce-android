@@ -16,6 +16,8 @@ import com.woocommerce.android.ui.plans.domain.CalculatePlanRemainingPeriod
 import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_PERIOD
 import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_UPGRADE_PLAN
 import com.woocommerce.android.ui.plans.domain.SitePlan
+import com.woocommerce.android.ui.plans.domain.SitePlan.Type.FREE_TRIAL
+import com.woocommerce.android.ui.plans.domain.SitePlan.Type.OTHER
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesEvent.OpenSubscribeNow
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesEvent.OpenSupportRequestForm
@@ -83,18 +85,17 @@ class UpgradesViewModel @Inject constructor(
 
             _upgradesState.value = planRepository
                 .fetchCurrentPlanDetails(selectedSite.get())
-                ?.asViewState()
-                ?: Error
+                ?.let {
+                    when (it.type) {
+                        FREE_TRIAL -> it.asFreeTrialViewState()
+                        OTHER -> it.asOtherPlansViewState()
+                    }
+                } ?: Error
         }
     }
-    private fun createViewStateFrom(sitePlan: SitePlan) =
-        when (sitePlan.type) {
-            SitePlan.Type.FREE_TRIAL -> sitePlan.createFreeTrialViewState()
-            SitePlan.Type.OTHER -> sitePlan.generateOtherPlansViewState()
-        }
 
-    private fun SitePlan.generateOtherPlansViewState() =
-        asViewStateWhen(
+    private fun SitePlan.asOtherPlansViewState() =
+        foldAsViewState(
             isNotExpired = {
                 NonUpgradeable(
                     name = prettifiedName,
@@ -109,8 +110,8 @@ class UpgradesViewModel @Inject constructor(
             }
         )
 
-    private fun SitePlan.createFreeTrialViewState() =
-        asViewStateWhen(
+    private fun SitePlan.asFreeTrialViewState() =
+        foldAsViewState(
             isExpired = {
                 TrialEnded(name = resourceProvider.getString(R.string.free_trial_trial_ended))
             },
@@ -128,7 +129,7 @@ class UpgradesViewModel @Inject constructor(
             }
         )
 
-    private fun SitePlan.asViewStateWhen(
+    private fun SitePlan.foldAsViewState(
         isNotExpired: (Period) -> UpgradesViewState.HasPlan,
         isExpired: () -> UpgradesViewState.HasPlan
     ): UpgradesViewState.HasPlan {
@@ -138,15 +139,6 @@ class UpgradesViewModel @Inject constructor(
             else -> isNotExpired(daysUntilExpiration)
         }
     }
-
-    private fun SitePlan.asViewState() =
-        when (type) {
-            SitePlan.Type.FREE_TRIAL -> createFreeTrialViewState()
-            SitePlan.Type.OTHER -> NonUpgradeable(
-                name = prettifiedName,
-                currentPlanEndDate = expirationDate.toLocalDate().formatStyleFull()
-            )
-        }
 
     private val SitePlan.prettifiedName
         get() = name.removePrefix("WordPress.com ")
