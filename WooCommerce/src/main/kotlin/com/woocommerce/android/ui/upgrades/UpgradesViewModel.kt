@@ -85,33 +85,34 @@ class UpgradesViewModel @Inject constructor(
 
             _upgradesState.value = planRepository
                 .fetchCurrentPlanDetails(selectedSite.get())
-                ?.let {
-                    when (it.type) {
-                        FREE_TRIAL -> it.asFreeTrialViewState()
-                        OTHER -> it.asOtherPlansViewState()
-                    }
-                } ?: Error
+                ?.let { createViewStateFrom(it) }
+                ?: Error
         }
     }
 
-    private fun SitePlan.asOtherPlansViewState() =
-        foldAsViewState(
-            isNotExpired = {
-                NonUpgradeable(
-                    name = prettifiedName,
-                    currentPlanEndDate = expirationDate.toLocalDate().formatStyleFull()
-                )
-            },
+    private fun createViewStateFrom(sitePlan: SitePlan) = when (sitePlan.type) {
+        FREE_TRIAL -> createFreeTrialViewStateFrom(sitePlan)
+        OTHER -> createOtherPlansViewStateFrom(sitePlan)
+    }
+
+    private fun createOtherPlansViewStateFrom(sitePlan: SitePlan) =
+        sitePlan.mapAsViewState(
             isExpired = {
                 Upgradeable(
                     name = prettifiedName,
                     currentPlanEndDate = expirationDate.toLocalDate().formatStyleFull(),
                 )
+            },
+            isNotExpired = {
+                NonUpgradeable(
+                    name = prettifiedName,
+                    currentPlanEndDate = expirationDate.toLocalDate().formatStyleFull()
+                )
             }
         )
 
-    private fun SitePlan.asFreeTrialViewState() =
-        foldAsViewState(
+    private fun createFreeTrialViewStateFrom(sitePlan: SitePlan) =
+        sitePlan.mapAsViewState(
             isExpired = {
                 TrialEnded(name = resourceProvider.getString(R.string.free_trial_trial_ended))
             },
@@ -129,9 +130,9 @@ class UpgradesViewModel @Inject constructor(
             }
         )
 
-    private fun SitePlan.foldAsViewState(
-        isNotExpired: (Period) -> UpgradesViewState.HasPlan,
-        isExpired: () -> UpgradesViewState.HasPlan
+    private fun SitePlan.mapAsViewState(
+        isNotExpired: SitePlan.(Period) -> UpgradesViewState.HasPlan,
+        isExpired: SitePlan.() -> UpgradesViewState.HasPlan
     ): UpgradesViewState.HasPlan {
         val daysUntilExpiration = calculatePlanRemainingPeriod(expirationDate)
         return when {
