@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.login.storecreation.onboarding
 
-import com.woocommerce.android.extensions.isCurrentPlanEcommerceTrial
+import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.LAUNCH_YOUR_STORE
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
@@ -34,7 +34,7 @@ class StoreOnboardingRepository @Inject constructor(
                     ?: emptyList<OnboardingTask>().toMutableList()
 
                 if (
-                    selectedSite.get().isCurrentPlanEcommerceTrial &&
+                    selectedSite.get().isFreeTrial &&
                     !mobileSupportedTasks.any { it.type == LAUNCH_YOUR_STORE }
                 ) {
                     mobileSupportedTasks.add(

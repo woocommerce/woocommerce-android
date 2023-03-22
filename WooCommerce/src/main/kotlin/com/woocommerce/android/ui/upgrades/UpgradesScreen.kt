@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -53,6 +55,7 @@ fun UpgradesScreen(
         Column(
             modifier = Modifier
                 .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
         ) {
             Card(
                 modifier = Modifier
@@ -114,7 +117,7 @@ fun UpgradesScreen(
                                 is TrialInProgress -> stringResource(
                                     R.string.upgrades_upgradeable_caption,
                                     state.freeTrialDuration.days,
-                                    state.leftInFreeTrialDuration.days,
+                                    state.daysLeftInFreeTrial,
                                 )
                             }
                         )
@@ -143,19 +146,21 @@ fun UpgradesScreen(
 }
 
 @Preview(name = "Light mode")
+@Preview(name = "RTL mode", locale = "ar")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun TrialInProgress() {
     WooThemeWithBackground {
         UpgradesScreen(
             state =
-            TrialInProgress("Free Trial", Period.ofDays(14), Period.ofDays(6)),
+            TrialInProgress("Free Trial", Period.ofDays(14), "6 days"),
             {}, {}
         )
     }
 }
 
 @Preview(name = "Light mode")
+@Preview(name = "RTL mode", locale = "ar")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun TrialEnded() {
@@ -167,6 +172,7 @@ private fun TrialEnded() {
 }
 
 @Preview(name = "Light mode")
+@Preview(name = "RTL mode", locale = "ar")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun NonUpgradeable() {
@@ -180,6 +186,7 @@ private fun NonUpgradeable() {
 }
 
 @Preview(name = "Light mode")
+@Preview(name = "RTL mode", locale = "ar")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun Loading() {
@@ -189,6 +196,7 @@ private fun Loading() {
 }
 
 @Preview(name = "Light mode")
+@Preview(name = "RTL mode", locale = "ar")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun Error() {

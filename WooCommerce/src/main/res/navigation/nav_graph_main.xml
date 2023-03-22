@@ -39,6 +39,9 @@
         <action
             android:id="@+id/action_myStore_to_launchStoreFragment"
             app:destination="@id/launchStoreFragment" />
+        <action
+            android:id="@+id/action_dashboard_to_nav_graph_domain_change"
+            app:destination="@id/nav_graph_domain_change" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -440,10 +443,14 @@
         <action
             android:id="@+id/action_onboardingFragment_to_launchStoreFragment"
             app:destination="@id/launchStoreFragment" />
+        <action
+            android:id="@+id/action_storeOnboardingFragment_to_nav_graph_domain_change"
+            app:destination="@id/nav_graph_domain_change" />
     </fragment>
     <fragment
         android:id="@+id/launchStoreFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.onboarding.launchstore.LaunchStoreFragment"
         android:label="LaunchStoreFragment" />
+    <include app:graph="@navigation/nav_graph_domain_change" />
 
 </navigation>
