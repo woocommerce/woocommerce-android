@@ -33,7 +33,6 @@ import org.wordpress.android.fluxc.store.SiteStore.OnNewSiteCreated
 import org.wordpress.android.fluxc.store.SiteStore.SiteFilter.WPCOM
 import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility
 import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility.COMING_SOON
-import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility.PRIVATE
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.login.util.SiteUtils
 import org.wordpress.android.util.UrlUtils
