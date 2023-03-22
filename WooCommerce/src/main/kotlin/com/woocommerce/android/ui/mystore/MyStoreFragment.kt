@@ -139,7 +139,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
         binding.myStoreRefreshLayout.setOnRefreshListener {
             binding.myStoreRefreshLayout.isRefreshing = false
-            myStoreViewModel.onSwipeToRefresh()
+            myStoreViewModel.onPullToRefresh()
             storeOnboardingViewModel.onPullToRefresh()
             binding.myStoreStats.clearStatsHeaderValues()
             binding.myStoreStats.clearChartData()
