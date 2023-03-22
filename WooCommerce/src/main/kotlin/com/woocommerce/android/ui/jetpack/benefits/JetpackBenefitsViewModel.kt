@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.jetpack.benefits
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_BENEFITS_DIALOG_WPADMIN_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_INSTALL_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.JetpackStatus
@@ -71,6 +72,11 @@ class JetpackBenefitsViewModel @Inject constructor(
     fun onDismiss() = triggerEvent(Exit)
 
     fun onOpenWpAdminJetpackActivationClicked() {
+        AnalyticsTracker.track(
+            stat = JETPACK_BENEFITS_DIALOG_WPADMIN_BUTTON_TAPPED,
+            properties = mapOf(AnalyticsTracker.KEY_JETPACK_INSTALLATION_SOURCE to "benefits_modal")
+        )
+
         val url = "$JETPACK_CONNECT_URL?url=${selectedSite.get().url}" +
             "&mobile_redirect=$JETPACK_CONNECTED_REDIRECT_URL&from=mobile"
         triggerEvent(OpenWpAdminJetpackActivation(url))
