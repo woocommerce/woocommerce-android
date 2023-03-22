@@ -128,6 +128,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         lifecycle.addObserver(myStoreViewModel.performanceObserver)
+        lifecycle.addObserver(storeOnboardingViewModel)
         super.onCreate(savedInstanceState)
     }
 
@@ -404,6 +405,11 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         _tabLayout = null
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onDestroy() {
+        lifecycle.removeObserver(storeOnboardingViewModel)
+        super.onDestroy()
     }
 
     private fun showStats(revenueStatsModel: RevenueStatsUiModel?) {

@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.login.storecreation.onboarding
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
@@ -26,7 +28,7 @@ import javax.inject.Inject
 class StoreOnboardingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val onboardingRepository: StoreOnboardingRepository
-) : ScopedViewModel(savedStateHandle) {
+) : ScopedViewModel(savedStateHandle), DefaultLifecycleObserver {
     companion object {
         const val NUMBER_ITEMS_IN_COLLAPSED_MODE = 3
     }
@@ -45,6 +47,12 @@ class StoreOnboardingViewModel @Inject constructor(
                         tasks = tasks.map { mapToOnboardingTaskState(it) },
                     )
                 }
+        }
+    }
+
+    override fun onResume(owner: LifecycleOwner) {
+        launch {
+            onboardingRepository.fetchOnboardingTasks()
         }
     }
 
