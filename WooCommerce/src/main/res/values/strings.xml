@@ -3156,6 +3156,8 @@
     <string name="store_onboarding_store_already_launched_error_description">We found that the store has already launched.</string>
     <string name="store_onboarding_launch_store_generic_error_title">Unexpected error</string>
     <string name="store_onboarding_launch_store_generic_error_description">Oops, some unexpected errors happened.</string>
+    <string name="store_onboarding_get_paid_title">Payments Setup</string>
+    <string name="store_onboarding_get_paid_loading_label">Loading…</string>
 
     <!--
     Support Request
