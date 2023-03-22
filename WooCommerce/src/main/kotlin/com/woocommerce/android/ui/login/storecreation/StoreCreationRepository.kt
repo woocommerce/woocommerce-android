@@ -34,8 +34,8 @@ import org.wordpress.android.fluxc.store.SiteStore.NewSitePayload
 import org.wordpress.android.fluxc.store.SiteStore.OnNewSiteCreated
 import org.wordpress.android.fluxc.store.SiteStore.SiteFilter.WPCOM
 import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility
+import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility.COMING_SOON
 import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility.PRIVATE
-import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility.PUBLIC
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.login.util.SiteUtils
 import org.wordpress.android.util.UrlUtils
@@ -52,13 +52,6 @@ class StoreCreationRepository @Inject constructor(
     private val sitePlanRestClient: SitePlanRestClient,
     private val newStore: NewStore
 ) {
-
-    companion object {
-        private val FREE_TRIAL_SPECIFIC_STORE_CREATION_OPTIONS = mapOf(
-            "site_creation_flow" to "wooexpress",
-            "wpcom_public_coming_soon" to "1"
-        )
-    }
 
     fun selectSite(site: SiteModel) {
         selectedSite.set(site)
@@ -166,8 +159,7 @@ class StoreCreationRepository @Inject constructor(
             siteData,
             languageWordPressId,
             timeZoneId,
-            PUBLIC,
-            additionalOptions = FREE_TRIAL_SPECIFIC_STORE_CREATION_OPTIONS
+            COMING_SOON,
         )
 
         if (result is Success) {
@@ -186,7 +178,6 @@ class StoreCreationRepository @Inject constructor(
         timeZoneId: String,
         siteVisibility: SiteVisibility = PRIVATE,
         dryRun: Boolean = false,
-        additionalOptions: Map<String, String> = emptyMap()
     ): StoreCreationResult<Long> {
         fun isWordPressComSubDomain(url: String) = url.endsWith(".wordpress.com")
 
@@ -216,7 +207,6 @@ class StoreCreationRepository @Inject constructor(
             siteData.segmentId,
             siteData.siteDesign,
             dryRun,
-            additionalOptions = additionalOptions
         )
 
         val result = dispatcher.dispatchAndAwait<NewSitePayload, OnNewSiteCreated>(

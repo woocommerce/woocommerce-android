@@ -110,7 +110,7 @@ class SitePlanRestClient @Inject constructor(
         ZonedDateTime.parse(it, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
     }
 
-    suspend fun addEcommercePlanTrial(siteRemoteId: Long): WPComGsonRequestBuilder.Response<Unit> {
+    suspend fun addEcommercePlanTrial(siteRemoteId: Long): Response<Unit> {
         val url = WPCOMREST.sites.site(siteRemoteId)
             .ecommerce_trial
             .add
