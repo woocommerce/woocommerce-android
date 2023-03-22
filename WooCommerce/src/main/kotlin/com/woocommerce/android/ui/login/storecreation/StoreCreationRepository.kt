@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Parcelable
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
+import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.FREE_TRIAL_ASSIGNMENT_FAILED
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.PLAN_PURCHASE_FAILED
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_ADDRESS_ALREADY_EXISTS
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_CREATION_FAILED
@@ -24,6 +25,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.plans.full.Plan
+import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.storecreation.ShoppingCartRestClient.ShoppingCart.CartProduct
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.storecreation.ShoppingCartStore
 import org.wordpress.android.fluxc.store.PlansStore
@@ -155,21 +157,34 @@ class StoreCreationRepository @Inject constructor(
         languageWordPressId: String,
         timeZoneId: String,
     ): StoreCreationResult<Long> {
-        val result = createNewSite(
+        val createSiteResult = createNewSite(
             siteData,
             languageWordPressId,
             timeZoneId,
             COMING_SOON,
         )
 
-        if (result is Success) {
-            val site = siteStore.getSiteBySiteId(result.data)
-            val domain = Uri.parse(site?.url.orEmpty()).host.orEmpty()
-            newStore.update(domain = domain)
-            sitePlanRestClient.addEcommercePlanTrial(result.data)
-        }
+        return when (createSiteResult) {
+            is Success -> {
+                val site = siteStore.getSiteBySiteId(createSiteResult.data)
+                val domain = Uri.parse(site?.url.orEmpty()).host.orEmpty()
+                newStore.update(domain = domain)
+                sitePlanRestClient.addEcommercePlanTrial(createSiteResult.data)
+                    .let { addTrialResult ->
+                        return when (addTrialResult) {
+                            is WPComGsonRequestBuilder.Response.Success -> {
+                                Success(createSiteResult.data)
+                            }
 
-        return result
+                            is WPComGsonRequestBuilder.Response.Error -> {
+                                Failure(FREE_TRIAL_ASSIGNMENT_FAILED)
+                            }
+                        }
+                    }
+            }
+
+            is Failure -> createSiteResult
+        }
     }
 
     suspend fun createNewSite(
