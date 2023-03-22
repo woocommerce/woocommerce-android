@@ -177,8 +177,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     fun onWooInstallationAttempted() = launch {
-        // Retry login to re-fetch the site
-        login()
+        // Retry fetching the site to check if WooCommerce was installed
+        fetchSite()
     }
 
     fun retryApplicationPasswordsCheck() = launch {
@@ -232,30 +232,23 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     private suspend fun login() {
         val state = requireNotNull(this@LoginSiteCredentialsViewModel.viewState.value as ViewState.NativeLoginViewState)
         isLoading.value = true
-        wpApiSiteRepository.loginAndFetchSite(
+        wpApiSiteRepository.login(
             url = siteAddress,
             username = state.username,
             password = state.password
         ).fold(
-            onSuccess = { site ->
-                if (site.hasWooCommerce) {
-                    fetchedSiteId.value = site.id
-                    fetchUserInfo()
-                } else {
-                    triggerEvent(ShowNonWooErrorScreen(siteAddress))
-                }
+            onSuccess = {
+                fetchSite()
             },
             onFailure = { exception ->
                 val authenticationError = exception as? CookieNonceAuthenticationException
-                val siteError = (exception as? OnChangedException)?.error as? SiteError
 
                 this.errorDialogMessage.value = authenticationError?.errorMessage ?: UiStringRes(R.string.error_generic)
 
-                val error = (exception as? OnChangedException)?.error ?: exception
                 trackLoginFailure(
                     step = Step.AUTHENTICATION,
-                    errorContext = error.javaClass.simpleName,
-                    errorType = authenticationError?.errorType ?: siteError?.type?.name,
+                    errorContext = exception.javaClass.simpleName,
+                    errorType = authenticationError?.errorType,
                     errorDescription = exception.message,
                     statusCode = authenticationError?.networkStatusCode
                 )
@@ -289,8 +282,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             onFailure = { exception ->
                 val siteError = (exception as? OnChangedException)?.error as? SiteError
 
-                // TODO: Add specific error message
-                this.errorDialogMessage.value = UiStringRes(R.string.error_generic)
+                this.errorDialogMessage.value = UiStringRes(R.string.login_site_credentials_fetching_site_failed)
 
                 val error = (exception as? OnChangedException)?.error ?: exception
                 trackLoginFailure(

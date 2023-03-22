@@ -39,12 +39,15 @@ class WPApiSiteRepository @Inject constructor(
     private val cookieManager: CookieManager,
     private val applicationPasswordsStore: ApplicationPasswordsStore
 ) {
+    suspend fun loginAndFetchSite(url: String, username: String, password: String): Result<SiteModel> {
+        return login(url, username, password)
+            .mapCatching { fetchSite(url, username, password).getOrThrow() }
+    }
+
     /**
      * Handles authentication to the given [url] using wp-admin credentials.
-     * After calling this, and if the authentication is successful, a [SiteModel] matching this site will be persisted
-     * in the DB.
      */
-    suspend fun loginAndFetchSite(url: String, username: String, password: String): Result<SiteModel> {
+    suspend fun login(url: String, username: String, password: String): Result<Unit> {
         WooLog.d(WooLog.T.LOGIN, "Authenticating in to site $url using site credentials")
 
         // Clear cookies to make sure the new credentials are correctly checked
@@ -59,7 +62,7 @@ class WPApiSiteRepository @Inject constructor(
         return when (authenticationResult) {
             is CookieNonceAuthenticator.CookieNonceAuthenticationResult.Success -> {
                 WooLog.d(WooLog.T.LOGIN, "Authentication succeeded")
-                fetchSite(url, username, password)
+                Result.success(Unit)
             }
 
             is CookieNonceAuthenticator.CookieNonceAuthenticationResult.Error -> {

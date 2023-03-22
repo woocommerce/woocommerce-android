@@ -352,6 +352,7 @@
     <string name="login_site_credentials_custom_admin_url">Unable to login because we cannot identify your store\'s admin URL</string>
     <string name="login_site_credentials_http_error">Login failed with status code %1$s</string>
     <string name="login_site_credentials_use_web_authorization">Login in a browser instead</string>
+    <string name="login_site_credentials_fetching_site_failed">An error occurred while fetching your website</string>
 
     <!--
         My Store View
