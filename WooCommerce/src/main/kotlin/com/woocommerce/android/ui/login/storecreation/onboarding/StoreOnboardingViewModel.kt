@@ -82,7 +82,7 @@ class StoreOnboardingViewModel @Inject constructor(
             AddProductTaskRes -> WooLog.d(ONBOARDING, "TODO")
             CustomizeDomainTaskRes -> triggerEvent(NavigateToDomains)
             LaunchStoreTaskRes -> triggerEvent(NavigateToLaunchStore)
-            SetupPaymentsTaskRes -> WooLog.d(ONBOARDING, "TODO")
+            SetupPaymentsTaskRes -> triggerEvent(NavigateToSetupPayments)
         }
     }
 
@@ -147,4 +147,5 @@ class StoreOnboardingViewModel @Inject constructor(
     object NavigateToSurvey : MultiLiveEvent.Event()
     object NavigateToLaunchStore : MultiLiveEvent.Event()
     object NavigateToDomains : MultiLiveEvent.Event()
+    object NavigateToSetupPayments : MultiLiveEvent.Event()
 }

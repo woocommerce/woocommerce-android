@@ -240,6 +240,10 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                     findNavController().navigateSafely(
                         directions = MyStoreFragmentDirections.actionDashboardToNavGraphDomainChange()
                     )
+                is StoreOnboardingViewModel.NavigateToSetupPayments ->
+                    findNavController().navigateSafely(
+                        directions = MyStoreFragmentDirections.actionDashboardToGetPaidFragment()
+                    )
             }
         }
     }
