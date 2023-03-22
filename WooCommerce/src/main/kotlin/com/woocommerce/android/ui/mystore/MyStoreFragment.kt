@@ -236,7 +236,11 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                     )
                 is StoreOnboardingViewModel.NavigateToDomains ->
                     findNavController().navigateSafely(
-                        directions = MyStoreFragmentDirections.actionDashboardToNavGraphDomainChange()
+                        directions = MyStoreFragmentDirections.actionMyStoreToNavGraphDomainChange()
+                    )
+                is StoreOnboardingViewModel.NavigateToAddProduct ->
+                    findNavController().navigateSafely(
+                        directions = MyStoreFragmentDirections.actionMyStoreToProductList()
                     )
             }
         }
