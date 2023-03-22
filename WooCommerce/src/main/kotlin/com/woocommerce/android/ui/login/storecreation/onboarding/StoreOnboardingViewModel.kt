@@ -51,9 +51,7 @@ class StoreOnboardingViewModel @Inject constructor(
     }
 
     override fun onResume(owner: LifecycleOwner) {
-        launch {
-            onboardingRepository.fetchOnboardingTasks()
-        }
+        refreshOnboardingList()
     }
 
     private fun mapToOnboardingTaskState(task: OnboardingTask) =
@@ -85,6 +83,16 @@ class StoreOnboardingViewModel @Inject constructor(
             CustomizeDomainTaskRes -> triggerEvent(NavigateToDomains)
             LaunchStoreTaskRes -> triggerEvent(NavigateToLaunchStore)
             SetupPaymentsTaskRes -> WooLog.d(ONBOARDING, "TODO")
+        }
+    }
+
+    fun onPullToRefresh() {
+        refreshOnboardingList()
+    }
+
+    private fun refreshOnboardingList() {
+        launch {
+            onboardingRepository.fetchOnboardingTasks()
         }
     }
 
