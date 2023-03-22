@@ -182,8 +182,13 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     fun retryApplicationPasswordsCheck() = launch {
-        // Retry fetching user info, it will use Application Passwords
-        fetchUserInfo()
+        if (state.value == State.NativeLogin) {
+            // When using native login, retry fetching user info
+            fetchUserInfo()
+        } else {
+            // When using web authorization, retry fetching the site
+            fetchSite()
+        }
     }
 
     private fun prepareNativeLoginViewState(): Flow<ViewState.NativeLoginViewState> = combine(
