@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.plans.trial
 
+import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivityViewModel.BottomBarState
 import com.woocommerce.android.ui.plans.domain.CalculateRemainingTrialPeriod

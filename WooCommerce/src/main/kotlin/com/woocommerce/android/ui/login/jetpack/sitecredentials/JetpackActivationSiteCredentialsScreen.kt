@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
 import com.woocommerce.android.ui.login.jetpack.sitecredentials.JetpackActivationSiteCredentialsViewModel.JetpackActivationSiteCredentialsViewState
@@ -117,7 +118,7 @@ fun JetpackActivationSiteCredentialsScreen(
                     onValueChange = onPasswordChanged,
                     label = stringResource(id = R.string.password),
                     isError = viewState.errorMessage != null,
-                    helperText = viewState.errorMessage?.let { stringResource(id = it) },
+                    helperText = viewState.errorMessage?.getText(),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(
                         onDone = { onContinueClick() }

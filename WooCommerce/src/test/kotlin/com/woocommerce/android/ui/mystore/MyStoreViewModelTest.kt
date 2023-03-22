@@ -184,7 +184,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
             givenNetworkConnectivity(connected = true)
 
-            sut.onSwipeToRefresh()
+            sut.onPullToRefresh()
 
             verify(getStats).invoke(refresh = true, DEFAULT_STATS_GRANULARITY)
             verify(getTopPerformers).fetchTopPerformers(
@@ -200,7 +200,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
             givenNetworkConnectivity(connected = true)
 
-            sut.onSwipeToRefresh()
+            sut.onPullToRefresh()
 
             verify(analyticsTrackerWrapper).track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
         }
@@ -445,7 +445,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenViewModelIsCreated()
 
-            sut.onSwipeToRefresh()
+            sut.onPullToRefresh()
 
             // called twice, on view model init and on pull to refresh
             verify(jitmStore, times(2)).fetchJitmMessage(any(), any(), any())

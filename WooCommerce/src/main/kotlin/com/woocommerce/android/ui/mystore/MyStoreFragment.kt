@@ -128,6 +128,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         lifecycle.addObserver(myStoreViewModel.performanceObserver)
+        lifecycle.addObserver(storeOnboardingViewModel)
         super.onCreate(savedInstanceState)
     }
 
@@ -138,7 +139,8 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
         binding.myStoreRefreshLayout.setOnRefreshListener {
             binding.myStoreRefreshLayout.isRefreshing = false
-            myStoreViewModel.onSwipeToRefresh()
+            myStoreViewModel.onPullToRefresh()
+            storeOnboardingViewModel.onPullToRefresh()
             binding.myStoreStats.clearStatsHeaderValues()
             binding.myStoreStats.clearChartData()
         }
@@ -233,6 +235,10 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                 is StoreOnboardingViewModel.NavigateToLaunchStore ->
                     findNavController().navigateSafely(
                         directions = MyStoreFragmentDirections.actionMyStoreToLaunchStoreFragment()
+                    )
+                is StoreOnboardingViewModel.NavigateToDomains ->
+                    findNavController().navigateSafely(
+                        directions = MyStoreFragmentDirections.actionDashboardToNavGraphDomainChange()
                     )
             }
         }
@@ -400,6 +406,11 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         _tabLayout = null
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onDestroy() {
+        lifecycle.removeObserver(storeOnboardingViewModel)
+        super.onDestroy()
     }
 
     private fun showStats(revenueStatsModel: RevenueStatsUiModel?) {
