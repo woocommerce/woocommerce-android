@@ -291,8 +291,10 @@ class MainActivity :
             checkForAppUpdates()
         }
 
-        viewModel.handleIncomingAppLink(intent?.data)
-        viewModel.handleShortcutAction(intent?.action?.toLowerCase())
+        if (savedInstanceState == null) {
+            viewModel.handleIncomingAppLink(intent?.data)
+            viewModel.handleShortcutAction(intent?.action?.toLowerCase())
+        }
     }
 
     override fun hideProgressDialog() {
