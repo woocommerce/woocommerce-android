@@ -127,13 +127,12 @@ fun JetpackBenefitsScreen(
                     )
                 )
             }
-            WCOutlinedButton(onClick = onDismissClick, modifier = Modifier.fillMaxWidth()) {
-                Text(text = stringResource(id = R.string.jetpack_benefits_modal_dismiss))
-            }
         } else {
-            WCOutlinedButton(onClick = onDismissClick, modifier = Modifier.fillMaxWidth()) {
-                Text(text = stringResource(id = R.string.dismiss))
-            }
+            TODO("Add button to open wp-admin")
+        }
+
+        WCOutlinedButton(onClick = onDismissClick, modifier = Modifier.fillMaxWidth()) {
+            Text(text = stringResource(id = R.string.jetpack_benefits_modal_dismiss))
         }
     }
 
