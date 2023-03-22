@@ -32,6 +32,7 @@ class StoreOnboardingViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val NUMBER_ITEMS_IN_COLLAPSED_MODE = 3
+        const val ABOUT_STORE_SETTINGS_SECTION = "/wp-admin/admin.php?page=wc-settings&tab=general&tutorial=true"
     }
 
     private val _viewState = MutableStateFlow(
@@ -84,7 +85,7 @@ class StoreOnboardingViewModel @Inject constructor(
         when (task.taskUiResources) {
             AboutYourStoreTaskRes -> triggerEvent(
                 NavigateToAboutYourStore(
-                    url = selectedSite.get().url + "/wp-admin/admin.php?page=wc-settings&tab=general&tutorial=true"
+                    url = selectedSite.get().url + ABOUT_STORE_SETTINGS_SECTION
                 )
             )
             AddProductTaskRes -> WooLog.d(ONBOARDING, "TODO")
