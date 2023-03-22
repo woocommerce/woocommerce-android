@@ -207,8 +207,8 @@ private fun NativeLoginForm(
         )
     }
 
-    if (viewState.isLoading) {
-        ProgressDialog(title = "", subtitle = stringResource(id = R.string.logging_in))
+    if (viewState.loadingMessage != null) {
+        ProgressDialog(title = "", subtitle = stringResource(id = viewState.loadingMessage))
     }
 }
 
@@ -220,8 +220,8 @@ private fun WebAuthorizationScreen(
     modifier: Modifier = Modifier
 ) {
     when {
-        viewState.isLoading -> {
-            ProgressDialog(title = "", subtitle = stringResource(id = R.string.logging_in))
+        viewState.loadingMessage != null -> {
+            ProgressDialog(title = "", subtitle = stringResource(id = viewState.loadingMessage))
         }
 
         viewState.errorDialogMessage != null -> {

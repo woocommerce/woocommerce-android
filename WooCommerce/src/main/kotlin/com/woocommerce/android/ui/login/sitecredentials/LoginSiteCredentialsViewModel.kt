@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.sitecredentials
 
+import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
@@ -27,7 +28,6 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -77,12 +77,12 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     )
     private val fetchedSiteId = savedStateHandle.getStateFlow(viewModelScope, -1, "site-id")
 
-    private val isLoading = MutableStateFlow(false)
+    private val loadingMessage = savedStateHandle.getStateFlow(viewModelScope, 0, "loading-message")
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val viewState = state.flatMapLatest {
         // Reset loading and error state when the state changes
-        isLoading.value = false
+        loadingMessage.value = 0
         errorDialogMessage.value = null
 
         when (it) {
@@ -195,14 +195,14 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         flowOf(siteAddress.removeSchemeAndSuffix()),
         savedStateHandle.getStateFlow(USERNAME_KEY, ""),
         savedStateHandle.getStateFlow(PASSWORD_KEY, ""),
-        isLoading,
+        loadingMessage.map { message -> message.takeIf { it != 0 } },
         errorDialogMessage
-    ) { siteAddress, username, password, isLoading, errorDialog ->
+    ) { siteAddress, username, password, loadingMessage, errorDialog ->
         ViewState.NativeLoginViewState(
             siteUrl = siteAddress,
             username = username,
             password = password,
-            isLoading = isLoading,
+            loadingMessage = loadingMessage,
             errorDialogMessage = errorDialog
         )
     }
@@ -213,17 +213,17 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         }
 
         return combine(
-            isLoading,
+            loadingMessage.map { message -> message.takeIf { it != 0 } },
             errorDialogMessage,
             fetchedSiteId.map { if (it == -1) null else wpApiSiteRepository.getSiteByLocalId(it) }
-        ) { isLoading, errorDialogMessage, site ->
+        ) { loadingMessage, errorDialogMessage, site ->
             val authorizationUrl = site?.applicationPasswordsAuthorizeUrl?.let { url ->
                 "$url?app_name=$applicationPasswordsClientId&success_url=$REDIRECTION_URL"
             }
             ViewState.WebAuthorizationViewState(
                 authorizationUrl = authorizationUrl,
                 userAgent = userAgent,
-                isLoading = isLoading,
+                loadingMessage = loadingMessage,
                 errorDialogMessage = errorDialogMessage
             )
         }
@@ -231,7 +231,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     private suspend fun login() {
         val state = requireNotNull(this@LoginSiteCredentialsViewModel.viewState.value as ViewState.NativeLoginViewState)
-        isLoading.value = true
+        loadingMessage.value = R.string.logging_in
         wpApiSiteRepository.login(
             url = siteAddress,
             username = state.username,
@@ -254,12 +254,16 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 )
             }
         )
-        isLoading.value = false
+        loadingMessage.value = 0
     }
 
     private suspend fun fetchSite() {
         val viewState = viewState.value
-        isLoading.value = true
+        loadingMessage.value = if (state.value == State.WebAuthorization) {
+            R.string.login_site_credentials_fetching_site
+        } else {
+            R.string.logging_in
+        }
         wpApiSiteRepository.fetchSite(
             url = siteAddress,
             username = (viewState as? ViewState.NativeLoginViewState)?.username,
@@ -293,11 +297,11 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 )
             }
         )
-        isLoading.value = false
+        loadingMessage.value = 0
     }
 
     private suspend fun fetchUserInfo() {
-        isLoading.value = true
+        loadingMessage.value = R.string.logging_in
         val site = requireNotNull(wpApiSiteRepository.getSiteByLocalId(fetchedSiteId.value)) {
             "Site credentials login: Site not found in DB after login"
         }
@@ -336,7 +340,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 }
             }
         )
-        isLoading.value = false
+        loadingMessage.value = 0
     }
 
     private fun trackLoginFailure(
@@ -373,7 +377,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             val siteUrl: String,
             val username: String = "",
             val password: String = "",
-            val isLoading: Boolean = false,
+            @StringRes val loadingMessage: Int? = null,
             val errorDialogMessage: UiString? = null
         ) : ViewState {
             val isValid = username.isNotBlank() && password.isNotBlank()
@@ -382,7 +386,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         data class WebAuthorizationViewState(
             val authorizationUrl: String?,
             val userAgent: UserAgent,
-            val isLoading: Boolean = false,
+            @StringRes val loadingMessage: Int? = null,
             val errorDialogMessage: UiString? = null
         ) : ViewState
     }
