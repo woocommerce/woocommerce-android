@@ -183,6 +183,7 @@ private fun NativeLoginForm(
                         .fillMaxWidth()
                         .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                 ) {
+                    // TODO validate the placement of the button in the dialog and the design
                     WCTextButton(
                         onClick = onErrorDialogDismissed
                     ) {
