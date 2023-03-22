@@ -42,7 +42,8 @@ fun JetpackBenefitsScreen(viewModel: JetpackBenefitsViewModel) {
         JetpackBenefitsScreen(
             viewState = it,
             onInstallClick = viewModel::onInstallClick,
-            onDismissClick = viewModel::onDismiss
+            onDismissClick = viewModel::onDismiss,
+            onOpenWPAdminJetpackActivationClick = viewModel::onOpenWpAdminJetpackActivationClicked
         )
     }
 }
@@ -51,7 +52,8 @@ fun JetpackBenefitsScreen(viewModel: JetpackBenefitsViewModel) {
 fun JetpackBenefitsScreen(
     viewState: JetpackBenefitsViewModel.ViewState,
     onInstallClick: () -> Unit = {},
-    onDismissClick: () -> Unit = {}
+    onDismissClick: () -> Unit = {},
+    onOpenWPAdminJetpackActivationClick: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -128,7 +130,9 @@ fun JetpackBenefitsScreen(
                 )
             }
         } else {
-            TODO("Add button to open wp-admin")
+            WCColoredButton(onClick = onOpenWPAdminJetpackActivationClick, modifier = Modifier.fillMaxWidth()) {
+                Text(text = stringResource(R.string.jetpack_benefits_open_wpadmin))
+            }
         }
 
         WCOutlinedButton(onClick = onDismissClick, modifier = Modifier.fillMaxWidth()) {
