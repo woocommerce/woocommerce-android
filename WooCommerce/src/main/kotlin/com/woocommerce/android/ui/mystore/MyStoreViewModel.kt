@@ -20,7 +20,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
-import com.woocommerce.android.ui.jitm.JitmClickHandler
 import com.woocommerce.android.ui.jitm.JitmTracker
 import com.woocommerce.android.ui.jitm.QueryParamsEncoder
 import com.woocommerce.android.ui.mystore.domain.GetStats
@@ -87,7 +86,6 @@ class MyStoreViewModel @Inject constructor(
     private val jitmTracker: JitmTracker,
     private val myStoreUtmProvider: MyStoreUtmProvider,
     private val queryParamsEncoder: QueryParamsEncoder,
-    private val jitmClickHandler: JitmClickHandler,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
@@ -211,14 +209,15 @@ class MyStoreViewModel @Inject constructor(
             id,
             featureClass
         )
-
-        jitmClickHandler.onJitmCtaClicked(
-            url = myStoreUtmProvider.getUrlWithUtmParams(
-                source = UTM_SOURCE,
-                id = id,
-                featureClass = featureClass,
-                siteId = selectedSite.getIfExists()?.siteId,
-                url = url
+        triggerEvent(
+            MyStoreEvent.OpenJITMAction(
+                myStoreUtmProvider.getUrlWithUtmParams(
+                    source = UTM_SOURCE,
+                    id = id,
+                    featureClass = featureClass,
+                    siteId = selectedSite.getIfExists()?.siteId,
+                    url = url
+                )
             )
         )
     }
@@ -525,5 +524,7 @@ class MyStoreViewModel @Inject constructor(
         ) : MyStoreEvent()
 
         data class OpenAnalytics(val analyticsPeriod: SelectionType) : MyStoreEvent()
+
+        data class OpenJITMAction(val url: String) : MyStoreEvent()
     }
 }

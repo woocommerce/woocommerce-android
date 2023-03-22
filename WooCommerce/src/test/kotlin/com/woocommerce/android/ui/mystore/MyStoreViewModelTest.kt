@@ -12,7 +12,6 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
-import com.woocommerce.android.ui.jitm.JitmClickHandler
 import com.woocommerce.android.ui.jitm.JitmTracker
 import com.woocommerce.android.ui.jitm.QueryParamsEncoder
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.Companion.UTM_SOURCE
@@ -70,7 +69,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val jitmTracker: JitmTracker = mock()
     private val utmProvider: MyStoreUtmProvider = mock()
     private val queryParamsEncoder: QueryParamsEncoder = mock()
-    private val jitmClickHandler: JitmClickHandler = mock()
 
     private lateinit var sut: MyStoreViewModel
 
@@ -615,7 +613,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given jitm displayed, when jitm cta clicked, then jitm click handler invoked`() {
+    fun `given jitm displayed, when jitm cta clicked, then jitm click event emitted`() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
@@ -642,12 +640,12 @@ class MyStoreViewModelTest : BaseUnitTest() {
                 (sut.bannerState.value as BannerState) as BannerState.DisplayBannerState
                 ).onPrimaryActionClicked.invoke()
 
-            verify(jitmClickHandler).onJitmCtaClicked(any())
+            assertThat(sut.event.value).isInstanceOf(MyStoreViewModel.MyStoreEvent.OpenJITMAction::class.java)
         }
     }
 
     @Test
-    fun `given jitm displayed, when jitm cta clicked, then proper url is passed`() {
+    fun `given jitm displayed, when jitm cta clicked, then proper url is passedto OpenJITM event`() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
@@ -682,8 +680,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
                 (sut.bannerState.value as BannerState) as BannerState.DisplayBannerState
                 ).onPrimaryActionClicked.invoke()
 
-            verify(jitmClickHandler).onJitmCtaClicked(
-                eq("${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US")
+            assertThat(sut.event.value as MyStoreViewModel.MyStoreEvent.OpenJITMAction).isEqualTo(
+                MyStoreViewModel.MyStoreEvent.OpenJITMAction(
+                    "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
+                )
             )
         }
     }
@@ -1330,7 +1330,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
             jitmTracker,
             utmProvider,
             queryParamsEncoder,
-            jitmClickHandler,
         )
     }
 
