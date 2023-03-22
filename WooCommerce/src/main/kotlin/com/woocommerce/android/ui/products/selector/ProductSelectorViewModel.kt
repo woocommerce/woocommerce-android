@@ -138,8 +138,12 @@ class ProductSelectorViewModel @Inject constructor(
                 if (productType == VARIABLE) {
                     resourceProvider.getString(string.product_stock_status_instock_with_variations, numVariations)
                 } else {
-                    val quantity = if (stockQuantity.isInteger()) stockQuantity.toInt() else stockQuantity
-                    resourceProvider.getString(string.product_stock_status_instock_quantified, quantity.toString())
+                    if (isStockManaged) {
+                        val quantity = if (stockQuantity.isInteger()) stockQuantity.toInt() else stockQuantity
+                        resourceProvider.getString(string.product_stock_status_instock_quantified, quantity.toString())
+                    } else {
+                        resourceProvider.getString(string.product_stock_status_instock)
+                    }
                 }
             }
             NotAvailable, is Custom -> null
