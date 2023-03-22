@@ -2937,6 +2937,7 @@
     <string name="store_creation_installation_success">Your store has been created!</string>
     <string name="store_creation_installation_manage_store_button">Manage my store</string>
     <string name="store_creation_installation_show_preview_button">Store preview</string>
+    <string name="store_creation_installation_rendering_preview_label">Rendering preview…</string>
     <string name="store_creation_store_name_caption">About your store</string>
     <string name="store_creation_store_name_title">What’s your store name?</string>
     <string name="store_creation_store_name_subtitle">Don’t worry you can always change it later. </string>
@@ -3187,6 +3188,8 @@
     <string name="free_trial_trial_ended">Trial ended</string>
     <string name="free_trial_days_left">%1$d days left in your trial.</string>
     <string name="free_trial_upgrade_now">Upgrade Now</string>
+    <string name="free_trial_one_day_left">1 day</string>
+    <string name="free_trial_days_left_plural">%1$d days</string>
 
     <!--
     Upgrades
@@ -3197,7 +3200,7 @@
     <string name="upgrades_troubleshooting">Troubleshooting</string>
     <string name="upgrades_title">Upgrades</string>
     <string name="upgrades_subscription_status">Subscription status</string>
-    <string name="upgrades_upgradeable_caption">You are in the %1$d-day free trial. The free trial will end in %2$d days. Upgrade to unlock new features and keep your store running..</string>
+    <string name="upgrades_upgradeable_caption">You are in the %1$d-day free trial. The free trial will end in %2$s. Upgrade to unlock new features and keep your store running.</string>
     <string name="upgrades_trial_ended_caption">Your free trial has ended and have limited access to all the features. Subscribe to %1$s now.</string>
     <string name="upgrades_non_upgradeable_caption">You are a %1$s subscriber! You have access to all our features until %2$s. </string>
     <string name="upgrades_error_fetching_data">Error while fetching plan details</string>

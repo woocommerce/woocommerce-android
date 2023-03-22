@@ -1,9 +1,10 @@
-package com.woocommerce.android.support
+package com.woocommerce.android.support.zendesk
 
 import android.content.Context
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.extensions.isNotNullOrEmpty
+import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.PackageUtils
 import com.zendesk.logger.Logger
