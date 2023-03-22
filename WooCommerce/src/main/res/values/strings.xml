@@ -3157,6 +3157,7 @@
     <string name="store_onboarding_store_already_launched_error_description">We found that the store has already launched.</string>
     <string name="store_onboarding_launch_store_generic_error_title">Unexpected error</string>
     <string name="store_onboarding_launch_store_generic_error_description">Oops, some unexpected errors happened.</string>
+    <string name="store_onboarding_launch_store_ok">OK</string>
 
     <!--
     Support Request
