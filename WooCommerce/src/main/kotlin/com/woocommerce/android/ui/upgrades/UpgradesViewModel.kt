@@ -26,7 +26,7 @@ import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.L
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.NonUpgradeable
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialEnded
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialInProgress
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Upgradeable
+import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.PlanEnded
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -98,9 +98,7 @@ class UpgradesViewModel @Inject constructor(
     private fun createOtherPlansViewStateFrom(sitePlan: SitePlan) =
         sitePlan.mapAsViewState(
             isExpired = {
-                Upgradeable(
-                    name = resourceProvider.getString(R.string.upgrades_plan_ended_name, prettifiedName)
-                )
+                PlanEnded(name = resourceProvider.getString(R.string.upgrades_plan_ended_name, prettifiedName))
             },
             isNotExpired = {
                 NonUpgradeable(
@@ -164,7 +162,7 @@ class UpgradesViewModel @Inject constructor(
             val daysLeftInFreeTrial: String
         ) : HasPlan
 
-        data class Upgradeable(
+        data class PlanEnded(
             override val name: String
         ) : HasPlan
 

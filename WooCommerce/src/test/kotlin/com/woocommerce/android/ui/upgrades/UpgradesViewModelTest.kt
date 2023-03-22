@@ -17,9 +17,9 @@ import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesEvent
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Error
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.NonUpgradeable
+import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.PlanEnded
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialEnded
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialInProgress
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Upgradeable
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -176,7 +176,7 @@ class UpgradesViewModelTest : BaseUnitTest() {
             // Then
             assertThat(viewModelState).isNotNull
             assertThat(viewModelState).isEqualTo(
-                Upgradeable(
+                PlanEnded(
                     name = "$TEST_SITE_NAME ended",
                 )
             )
