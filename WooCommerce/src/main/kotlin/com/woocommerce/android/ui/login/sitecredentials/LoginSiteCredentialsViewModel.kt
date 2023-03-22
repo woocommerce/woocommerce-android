@@ -16,9 +16,9 @@ import com.woocommerce.android.applicationpasswords.ApplicationPasswordGeneratio
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
-import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.WPApiSiteRepository
+import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -35,8 +35,6 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
-import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
-import org.wordpress.android.fluxc.store.SiteStore.WPAPIErrorType
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
@@ -127,7 +125,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     private suspend fun login() {
         val state = requireNotNull(this@LoginSiteCredentialsViewModel.state.value)
         isLoading.value = true
-        wpApiSiteRepository.login(
+        wpApiSiteRepository.loginAndFetchSite(
             url = siteAddress,
             username = state.username,
             password = state.password
@@ -141,42 +139,18 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 }
             },
             onFailure = { exception ->
+                val authenticationError = exception as? CookieNonceAuthenticationException
                 val siteError = (exception as? OnChangedException)?.error as? SiteError
-                this.errorDialogMessage.value = if (siteError != null) {
-                    when {
-                        siteError.type == SiteErrorType.NOT_AUTHENTICATED ->
-                            UiStringText(siteError.message!!)
 
-                        siteError.type == SiteErrorType.INVALID_RESPONSE ->
-                            UiStringRes(R.string.login_site_credentials_invalid_response)
-
-                        siteError.wpApiError?.errorType == WPAPIErrorType.CUSTOM_LOGIN_URL ->
-                            UiStringRes(R.string.login_site_credentials_custom_login_url)
-
-                        siteError.wpApiError?.errorType == WPAPIErrorType.CUSTOM_ADMIN_URL ->
-                            UiStringRes(R.string.login_site_credentials_custom_admin_url)
-
-                        siteError.wpApiError?.statusCode != null -> {
-                            val statusCode = siteError.wpApiError!!.statusCode
-                            UiStringRes(
-                                R.string.login_site_credentials_http_error,
-                                listOf(UiStringText(statusCode.toString()))
-                            )
-                        }
-
-                        else -> UiStringRes(R.string.error_generic)
-                    }
-                } else {
-                    UiStringRes(R.string.error_generic)
-                }
+                this.errorDialogMessage.value = authenticationError?.errorMessage ?: UiStringRes(R.string.error_generic)
 
                 val error = (exception as? OnChangedException)?.error ?: exception
                 trackLoginFailure(
                     step = Step.AUTHENTICATION,
                     errorContext = error.javaClass.simpleName,
-                    errorType = siteError?.wpApiError?.errorType?.name ?: siteError?.type?.name,
+                    errorType = authenticationError?.errorType ?: siteError?.type?.name,
                     errorDescription = exception.message,
-                    statusCode = siteError?.wpApiError?.statusCode
+                    statusCode = authenticationError?.networkStatusCode
                 )
             }
         )
@@ -289,7 +263,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     @VisibleForTesting
     enum class Step {
-        AUTHENTICATION, APPLICATION_PASSWORD_GENERATION, WOO_STATUS, USER_ROLE
+        AUTHENTICATION, APPLICATION_PASSWORD_GENERATION, USER_ROLE
     }
 
     data class LoggedIn(val localSiteId: Int) : MultiLiveEvent.Event()
