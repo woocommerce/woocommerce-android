@@ -454,9 +454,15 @@ class CardReaderHubViewModel @Inject constructor(
         get() = storeCountryCode != null && isTapToPayAvailable(storeCountryCode) == Available
 
     private val shouldShowTTPFeedbackRequest: Boolean
-        get() = appPrefs.isTTPWasUsedAtLeastOnce() &&
-            feedbackRepository.getFeatureFeedback(FeatureFeedbackSettings.Feature.TAP_TO_PAY) ==
-            FeatureFeedbackSettings.FeedbackState.UNANSWERED
+        get() {
+            val featureFeedbackSetting = feedbackRepository.getFeatureFeedbackSetting(
+                FeatureFeedbackSettings.Feature.TAP_TO_PAY
+            )
+            return appPrefs.isTTPWasUsedAtLeastOnce() && (
+                featureFeedbackSetting.feedbackState == FeatureFeedbackSettings.FeedbackState.UNANSWERED ||
+                    !featureFeedbackSetting.isFeedbackGivenMoreThanDaysAgo(SHOW_FEEDBACK_AFTER_USAGE_DAYS)
+                )
+        }
 
     sealed class CardReaderHubEvents : MultiLiveEvent.Event() {
         data class NavigateToCardReaderDetail(val cardReaderFlowParam: CardReaderFlowParam) : CardReaderHubEvents()
@@ -552,5 +558,7 @@ class CardReaderHubViewModel @Inject constructor(
         const val UTM_CAMPAIGN = "payments_menu_item"
         const val UTM_SOURCE = "payments_menu"
         const val LEARN_MORE_SOURCE = "payments_menu"
+
+        private const val SHOW_FEEDBACK_AFTER_USAGE_DAYS = 30
     }
 }
