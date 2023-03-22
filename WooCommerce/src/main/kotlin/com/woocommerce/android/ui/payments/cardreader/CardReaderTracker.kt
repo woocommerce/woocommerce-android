@@ -11,6 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAY
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_CONNECTION_LEARN_MORE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_CTA_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_AUTOMATIC_DISCONNECT
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_STEP_SKIPPED
@@ -467,6 +468,10 @@ class CardReaderTracker @Inject constructor(
             CARD_PRESENT_TAP_TO_PAY_NOT_AVAILABLE,
             properties = mutableMapOf(AnalyticsTracker.KEY_REASON to reason::class.java.simpleName)
         )
+    }
+
+    fun trackAutomaticReadDisconnectWhenConnectedAnotherType() {
+        track(CARD_READER_AUTOMATIC_DISCONNECT)
     }
 
     private fun getAndResetFlowsDuration(): MutableMap<String, Any> {

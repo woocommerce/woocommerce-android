@@ -98,11 +98,36 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given error creating order, when onTryPaymentClicked, then card reader failed tracked`() = testBlocking {
+        // GIVEN
+        whenever(orderCreateEditRepository.createSimplePaymentOrder(BigDecimal.valueOf(0.5))).thenReturn(
+            Result.failure(Exception())
+        )
+
+        // WHEN
+        viewModel.onTryPaymentClicked()
+
+        // THEN
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.PAYMENTS_FLOW_FAILED,
+            mapOf(
+                "source" to "tap_to_pay_try_a_payment_prompt",
+                "flow" to "tap_to_pay_try_a_payment",
+            )
+        )
+    }
+
+    @Test
     fun `when onBackClicked, then exit emitted`() {
         // WHEN
         viewModel.onBackClicked()
 
         // THEN
         assertThat(viewModel.event.value).isEqualTo(Exit)
+    }
+
+    @Test
+    fun `when view model started, then view shown tracked`() {
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.TAP_TO_PAY_SUMMARY_SHOWN)
     }
 }

@@ -292,16 +292,17 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_SIMPLE_PAYMENTS_FLOW = "simple_payment"
         const val VALUE_SIMPLE_PAYMENTS_FEEDBACK = "simple_payments"
         const val VALUE_TAP_TO_PAY_FEEDBACK = "tap_to_pay"
-        const val VALUE_SIMPLE_PAYMENTS_COLLECT_BT_CARD = "bt_card"
-        const val VALUE_SIMPLE_PAYMENTS_COLLECT_BI_CARD = "bi_card"
+        const val VALUE_SIMPLE_PAYMENTS_COLLECT_CARD = "card"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_CASH = "cash"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_LINK = "payment_link"
         const val VALUE_SIMPLE_PAYMENTS_SOURCE_AMOUNT = "amount"
         const val VALUE_SIMPLE_PAYMENTS_SOURCE_SUMMARY = "summary"
         const val VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD = "payment_method"
 
+        const val VALUE_TAP_TO_PAY_SOURCE_TRY_PAYMENT_PROMPT = "tap_to_pay_try_a_payment_prompt"
+
         const val VALUE_ORDER_PAYMENTS_FLOW = "order_payment"
-        const val VALUE_TTP_TEST_PAYMENTS_FLOW = "ttp_test_payment"
+        const val VALUE_TTP_TRY_PAYMENT_FLOW = "tap_to_pay_try_a_payment"
 
         const val KEY_JITM = "jitm"
         const val KEY_JITM_COUNT = "count"

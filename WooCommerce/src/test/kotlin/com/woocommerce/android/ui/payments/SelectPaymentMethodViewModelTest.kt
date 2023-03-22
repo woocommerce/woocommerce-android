@@ -347,7 +347,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             verify(analyticsTrackerWrapper).track(
                 AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
                 mapOf(
-                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_BT_CARD,
+                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
                 )
             )
@@ -366,7 +366,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             verify(analyticsTrackerWrapper).track(
                 AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
                 mapOf(
-                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_BT_CARD,
+                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
                 )
             )
@@ -423,7 +423,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             verify(analyticsTrackerWrapper).track(
                 AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
                 mapOf(
-                    "payment_method" to "bi_card",
+                    "payment_method" to "card",
                     "flow" to "simple_payment",
                 )
             )
@@ -442,7 +442,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             verify(analyticsTrackerWrapper).track(
                 AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
                 mapOf(
-                    "payment_method" to "bi_card",
+                    "payment_method" to "card",
                     "flow" to "order_payment",
                 )
             )
@@ -514,7 +514,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
                 mapOf(
                     AnalyticsTracker.KEY_AMOUNT to "100$",
-                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_BT_CARD,
+                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
                 )
             )
@@ -535,7 +535,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
                 mapOf(
                     AnalyticsTracker.KEY_AMOUNT to "100$",
-                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_BT_CARD,
+                    AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
                 )
             )
@@ -678,7 +678,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
                 mapOf(
                     AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK,
-                    AnalyticsTracker.KEY_FLOW to "ttp_test_payment",
+                    AnalyticsTracker.KEY_FLOW to "tap_to_pay_try_a_payment",
                 )
             )
         }

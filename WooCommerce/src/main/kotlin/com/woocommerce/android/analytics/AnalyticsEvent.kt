@@ -378,6 +378,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     CARD_READER_AUTO_CONNECTION_STARTED,
     CARD_PRESENT_CONNECTION_LEARN_MORE_TAPPED,
     MANAGE_CARD_READERS_AUTOMATIC_DISCONNECT_BUILT_IN_READER,
+    CARD_READER_AUTOMATIC_DISCONNECT,
 
     // -- Card Reader - software update
     CARD_READER_SOFTWARE_UPDATE_STARTED,
@@ -456,6 +457,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
 
     // -- TAP TO PAY SUMMARY
     TAP_TO_PAY_SUMMARY_TRY_PAYMENT_TAPPED,
+    TAP_TO_PAY_SUMMARY_SHOWN,
 
     // -- Product list
     PRODUCT_LIST_LOADED,
