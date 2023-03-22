@@ -32,6 +32,7 @@ import org.wordpress.android.fluxc.store.SiteStore.NewSitePayload
 import org.wordpress.android.fluxc.store.SiteStore.OnNewSiteCreated
 import org.wordpress.android.fluxc.store.SiteStore.SiteFilter.WPCOM
 import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility
+import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility.COMING_SOON
 import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility.PRIVATE
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.login.util.SiteUtils
@@ -145,9 +146,9 @@ class StoreCreationRepository @Inject constructor(
         siteData: SiteCreationData,
         languageWordPressId: String,
         timeZoneId: String,
-        siteVisibility: SiteVisibility = PRIVATE,
+        siteVisibility: SiteVisibility = COMING_SOON,
         dryRun: Boolean = false,
-        isComingSoon: Boolean = true
+        siteCreationFlow: String? = null
     ): StoreCreationResult<Long> {
         fun isWordPressComSubDomain(url: String) = url.endsWith(".wordpress.com")
 
@@ -177,7 +178,7 @@ class StoreCreationRepository @Inject constructor(
             segmentId = siteData.segmentId,
             siteDesign = siteData.siteDesign,
             dryRun = dryRun,
-            isComingSoon = isComingSoon
+            siteCreationFlow = siteCreationFlow
         )
 
         val result = dispatcher.dispatchAndAwait<NewSitePayload, OnNewSiteCreated>(
