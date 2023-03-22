@@ -25,6 +25,11 @@ class JetpackBenefitsViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val fetchJetpackStatus: FetchJetpackStatus
 ) : ScopedViewModel(savedStateHandle) {
+    companion object {
+        private const val JETPACK_CONNECT_URL = "https://wordpress.com/jetpack/connect"
+        private const val JETPACK_CONNECTED_REDIRECT_URL = "woocommerce://jetpack-connected"
+    }
+
     private val _viewState = MutableStateFlow(
         ViewState(
             isUsingJetpackCP = selectedSite.connectionType == SiteConnectionType.JetpackConnectionPackage,
@@ -65,6 +70,12 @@ class JetpackBenefitsViewModel @Inject constructor(
 
     fun onDismiss() = triggerEvent(Exit)
 
+    fun onOpenWpAdminJetpackActivationClicked() {
+        val url = "$JETPACK_CONNECT_URL?url=${selectedSite.get().url}" +
+            "&mobile_redirect=$JETPACK_CONNECTED_REDIRECT_URL&from=mobile"
+        triggerEvent(OpenWpAdminJetpackActivation(url))
+    }
+
     data class ViewState(
         val isUsingJetpackCP: Boolean,
         val isLoadingDialogShown: Boolean,
@@ -76,4 +87,5 @@ class JetpackBenefitsViewModel @Inject constructor(
         val siteUrl: String,
         val jetpackStatus: JetpackStatus
     ) : Event()
+    data class OpenWpAdminJetpackActivation(val activationUrl: String) : Event()
 }
