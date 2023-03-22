@@ -42,9 +42,6 @@
         <action
             android:id="@+id/action_myStore_to_nav_graph_domain_change"
             app:destination="@id/nav_graph_domain_change" />
-        <action
-            android:id="@+id/action_myStore_to_productList"
-            app:destination="@id/products" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -449,9 +446,6 @@
         <action
             android:id="@+id/action_storeOnboardingFragment_to_nav_graph_domain_change"
             app:destination="@id/nav_graph_domain_change" />
-        <action
-            android:id="@+id/action_storeOnboardingFragment_to_productList"
-            app:destination="@id/products" />
     </fragment>
     <fragment
         android:id="@+id/launchStoreFragment"

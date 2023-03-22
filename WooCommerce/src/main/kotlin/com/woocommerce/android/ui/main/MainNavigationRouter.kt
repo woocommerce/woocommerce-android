@@ -52,4 +52,6 @@ interface MainNavigationRouter {
     fun showSettingsScreen()
 
     fun showAnalytics(targetPeriod: StatsTimeRangeSelection.SelectionType)
+
+    fun showProductTypeBottomSheet()
 }

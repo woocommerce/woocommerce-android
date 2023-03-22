@@ -17,6 +17,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -73,9 +74,7 @@ class StoreOnboardingFragment : BaseFragment() {
                             .actionStoreOnboardingFragmentToNavGraphDomainChange()
                     )
                 is StoreOnboardingViewModel.NavigateToAddProduct ->
-                    findNavController().navigateSafely(
-                        directions = StoreOnboardingFragmentDirections.actionStoreOnboardingFragmentToProductList()
-                    )
+                    (activity as? MainNavigationRouter)?.showProductTypeBottomSheet()
             }
         }
     }

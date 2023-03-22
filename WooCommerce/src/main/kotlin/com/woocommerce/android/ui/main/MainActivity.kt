@@ -969,6 +969,15 @@ class MainActivity :
         navController.navigateSafely(action)
     }
 
+    override fun showProductTypeBottomSheet() {
+        binding.bottomNav.currentPosition = PRODUCTS
+        binding.bottomNav.active(PRODUCTS.position)
+        val action = ProductListFragmentDirections.actionProductListFragmentToProductTypesBottomSheet(
+            isAddProduct = true
+        )
+        navController.navigateSafely(action)
+    }
+
     override fun showOrderDetailWithSharedTransition(
         orderId: Long,
         remoteNoteId: Long,
