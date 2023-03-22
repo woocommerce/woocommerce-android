@@ -55,6 +55,10 @@ class StoreCreationRepository @Inject constructor(
     private val newStore: NewStore
 ) {
 
+    companion object {
+        private const val FREE_TRIAL_SITE_CREATION_FLOW = "wooexpress"
+    }
+
     fun selectSite(site: SiteModel) {
         selectedSite.set(site)
     }
@@ -122,7 +126,11 @@ class StoreCreationRepository @Inject constructor(
         it?.origin == SiteModel.ORIGIN_WPCOM_REST
     }
 
-    suspend fun addPlanToCart(planProductId: Int?, planPathSlug: String?, siteId: Long?): StoreCreationResult<Unit> {
+    suspend fun addPlanToCart(
+        planProductId: Int?,
+        planPathSlug: String?,
+        siteId: Long?
+    ): StoreCreationResult<Unit> {
         if (planProductId == null || planPathSlug == null || siteId == null) {
             WooLog.e(
                 tag = LOGIN,
@@ -141,7 +149,10 @@ class StoreCreationRepository @Inject constructor(
             shoppingCartStore.addProductToCart(siteId, eCommerceProduct).let { result ->
                 return when {
                     result.isError -> {
-                        WooLog.e(LOGIN, "Error adding eCommerce plan to cart: ${result.error.message}")
+                        WooLog.e(
+                            LOGIN,
+                            "Error adding eCommerce plan to cart: ${result.error.message}"
+                        )
                         Failure(PLAN_PURCHASE_FAILED, result.error.message)
                     }
 
@@ -162,6 +173,8 @@ class StoreCreationRepository @Inject constructor(
             languageWordPressId,
             timeZoneId,
             COMING_SOON,
+            siteCreationFlow = FREE_TRIAL_SITE_CREATION_FLOW,
+            shouldFindAvailableUrl = true
         )
 
         return when (createSiteResult) {
@@ -193,6 +206,8 @@ class StoreCreationRepository @Inject constructor(
         timeZoneId: String,
         siteVisibility: SiteVisibility = PRIVATE,
         dryRun: Boolean = false,
+        siteCreationFlow: String? = null,
+        shouldFindAvailableUrl: Boolean? = null,
     ): StoreCreationResult<Long> {
         fun isWordPressComSubDomain(url: String) = url.endsWith(".wordpress.com")
 
@@ -222,6 +237,8 @@ class StoreCreationRepository @Inject constructor(
             siteData.segmentId,
             siteData.siteDesign,
             dryRun,
+            siteCreationFlow = siteCreationFlow,
+            findAvailableUrl = shouldFindAvailableUrl
         )
 
         val result = dispatcher.dispatchAndAwait<NewSitePayload, OnNewSiteCreated>(
