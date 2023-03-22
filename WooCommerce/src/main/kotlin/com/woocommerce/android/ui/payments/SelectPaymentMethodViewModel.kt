@@ -10,6 +10,9 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TIME_ELAPSED_SINCE_ADD_NEW_ORDER_IN_MILLIS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CARD_READER_TYPE_EXTERNAL
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CARD_READER_TYPE_BUILT_IN
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PAYMENT_CARD_READER_TYPE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_CASH
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -245,12 +248,12 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     fun onBtReaderClicked() {
         OrderDurationRecorder.recordCardPaymentStarted()
-        trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_CARD)
+        trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_CARD, VALUE_CARD_READER_TYPE_EXTERNAL)
         triggerEvent(NavigateToCardReaderPaymentFlow(cardReaderPaymentFlowParam, EXTERNAL))
     }
 
     fun onTapToPayClicked() {
-        trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_CARD)
+        trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_CARD, VALUE_CARD_READER_TYPE_BUILT_IN)
         appPrefs.setTTPWasUsedAtLeastOnce()
         triggerEvent(NavigateToCardReaderPaymentFlow(cardReaderPaymentFlowParam, BUILT_IN))
     }
@@ -306,13 +309,14 @@ class SelectPaymentMethodViewModel @Inject constructor(
         }
     }
 
-    private fun trackPaymentMethodSelection(paymentMethodType: String) {
+    private fun trackPaymentMethodSelection(paymentMethodType: String, cardReaderType: String? = null) {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
             mutableMapOf(
                 AnalyticsTracker.KEY_PAYMENT_METHOD to paymentMethodType,
                 cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
             ).also { mutableMap ->
+                cardReaderType?.let { mutableMap[KEY_PAYMENT_CARD_READER_TYPE] = it }
                 OrderDurationRecorder.millisecondsSinceOrderAddNew().getOrNull()?.let { timeElapsed ->
                     mutableMap[KEY_TIME_ELAPSED_SINCE_ADD_NEW_ORDER_IN_MILLIS] = timeElapsed.toString()
                 }

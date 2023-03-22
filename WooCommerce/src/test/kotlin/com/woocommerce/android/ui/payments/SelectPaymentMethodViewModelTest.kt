@@ -349,6 +349,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 mapOf(
                     AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
+                    "card_reader_type" to "external"
                 )
             )
         }
@@ -368,6 +369,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 mapOf(
                     AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
+                    "card_reader_type" to "external"
                 )
             )
         }
@@ -425,6 +427,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 mapOf(
                     "payment_method" to "card",
                     "flow" to "simple_payment",
+                    "card_reader_type" to "built_in",
                 )
             )
         }
@@ -444,6 +447,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 mapOf(
                     "payment_method" to "card",
                     "flow" to "order_payment",
+                    "card_reader_type" to "built_in",
                 )
             )
         }
