@@ -112,11 +112,16 @@ class ProductSelectorViewModel @Inject constructor(
     }.asLiveData()
 
     init {
+        loadPopularProducts()
         monitorSearchQuery()
         monitorProductFilters()
         viewModelScope.launch {
             fetchProducts(forceRefresh = true)
         }
+    }
+
+    private fun loadPopularProducts() {
+
     }
 
     private fun Product.toUiModel(selectedItems: Set<SelectedItem>): ProductListItem {
