@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.plans.trial
 
+import android.content.Context
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.UnderlineSpan
@@ -21,7 +22,7 @@ class TrialStatusBarFormatter @AssistedInject constructor(
     @Assisted private val startUpgradeFlow: StartUpgradeFlow,
 ) {
 
-    fun format(daysLeftInTrial: Int): Spannable {
+    fun format(daysLeftInTrial: Int, context: Context): Spannable {
         val statusMessage = if (daysLeftInTrial > 0) {
             resourceProvider.getString(R.string.free_trial_days_left, daysLeftInTrial)
         } else {
@@ -32,7 +33,7 @@ class TrialStatusBarFormatter @AssistedInject constructor(
             .append(statusMessage)
             .append(" ")
             .inSpans(
-                WooClickableSpan(customLinkColor = resourceProvider.getColor(R.color.woo_purple_60)) {
+                WooClickableSpan(customLinkColor = context.getColor(R.color.free_trial_banner_link_text)) {
                     analyticsTrackerWrapper.track(FREE_TRIAL_UPGRADE_NOW_TAPPED, mapOf(KEY_SOURCE to VALUE_BANNER))
                     startUpgradeFlow.invoke()
                 },
