@@ -3186,7 +3186,7 @@
     -->
     <string name="free_trial_your_trial_ended">Your trial has ended.</string>
     <string name="free_trial_trial_ended">Trial ended</string>
-    <string name="free_trial_days_left">%1$d days left in your trial.</string>
+    <string name="free_trial_days_left">%1$s left in your trial.</string>
     <string name="free_trial_upgrade_now">Upgrade Now</string>
     <string name="free_trial_one_day_left">1 day</string>
     <string name="free_trial_days_left_plural">%1$d days</string>
