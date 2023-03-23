@@ -271,7 +271,7 @@ class MyStoreViewModel @Inject constructor(
         }
     }
 
-    fun onSwipeToRefresh() {
+    fun onPullToRefresh() {
         fetchJitms()
         usageTracksEventEmitter.interacted()
         analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)

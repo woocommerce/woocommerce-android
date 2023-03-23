@@ -12,9 +12,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -33,25 +35,35 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorScreen
+import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
 import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerViewModel.CountryPickerState
 import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerViewModel.StoreCreationCountry
 
 @Composable
 fun CountryPickerScreen(viewModel: CountryPickerViewModel) {
     viewModel.countryPickerState.observeAsState().value?.let { countryPickerContent ->
-        Scaffold(topBar = {
-            ToolbarWithHelpButton(
-                onNavigationButtonClick = viewModel::onArrowBackPressed,
-                onHelpButtonClick = viewModel::onHelpPressed
-            )
-        }) { padding ->
-            CountryPickerForm(
-                countryPickerState = countryPickerContent,
-                onContinueClicked = viewModel::onContinueClicked,
-                onCountrySelected = viewModel::onCountrySelected,
-                modifier = Modifier
-                    .background(MaterialTheme.colors.surface)
-                    .padding(padding)
+        when (countryPickerContent) {
+            is CountryPickerState.Contentful -> {
+                Scaffold(topBar = {
+                    ToolbarWithHelpButton(
+                        onNavigationButtonClick = viewModel::onArrowBackPressed,
+                        onHelpButtonClick = viewModel::onHelpPressed
+                    )
+                }) { padding ->
+                    CountryPickerForm(
+                        countryPickerState = countryPickerContent,
+                        onContinueClicked = viewModel::onContinueClicked,
+                        onCountrySelected = viewModel::onCountrySelected,
+                        modifier = Modifier
+                            .background(MaterialTheme.colors.surface)
+                            .padding(padding)
+                    )
+                }
+            }
+            is CountryPickerState.Error -> StoreCreationErrorScreen(
+                errorType = StoreCreationErrorType.FREE_TRIAL_ASSIGNMENT_FAILED,
+                onArrowBackPressed = viewModel::onExitTriggered
             )
         }
     }
@@ -59,7 +71,7 @@ fun CountryPickerScreen(viewModel: CountryPickerViewModel) {
 
 @Composable
 private fun CountryPickerForm(
-    countryPickerState: CountryPickerState,
+    countryPickerState: CountryPickerState.Contentful,
     onContinueClicked: () -> Unit,
     onCountrySelected: (StoreCreationCountry) -> Unit,
     modifier: Modifier = Modifier,
@@ -105,13 +117,20 @@ private fun CountryPickerForm(
                 .padding(dimensionResource(id = R.dimen.major_100)),
             onClick = onContinueClicked,
         ) {
-            Text(text = stringResource(id = R.string.continue_button))
+            if (countryPickerState.creatingStoreInProgress) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(size = dimensionResource(id = R.dimen.major_150)),
+                    color = colorResource(id = R.color.color_on_primary_surface),
+                )
+            } else {
+                Text(text = stringResource(id = R.string.continue_button))
+            }
         }
     }
 }
 
 @Composable
-private fun CountryPickerHeaderContent(countryPickerState: CountryPickerState) {
+private fun CountryPickerHeaderContent(countryPickerState: CountryPickerState.Contentful) {
     Column {
         Text(
             text = countryPickerState.storeName.uppercase(),
@@ -208,7 +227,7 @@ private fun CountryItem(
 fun CountryPickerPreview() {
     WooThemeWithBackground {
         CountryPickerForm(
-            countryPickerState = CountryPickerState(
+            countryPickerState = CountryPickerState.Contentful(
                 storeName = "White Christmas Tree",
                 countries = listOf(
                     StoreCreationCountry(
@@ -235,7 +254,8 @@ fun CountryPickerPreview() {
                         emojiFlag = "\uD83C\uDDEE\uD83C\uDDF9",
                         isSelected = false
                     )
-                )
+                ),
+                creatingStoreInProgress = false
             ),
             onContinueClicked = {},
             onCountrySelected = {},
