@@ -820,4 +820,5 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
 
     // Store onboarding
     STORE_ONBOARDING_SHOWN,
+    STORE_ONBOARDING_TASK_TAPPED,
 }

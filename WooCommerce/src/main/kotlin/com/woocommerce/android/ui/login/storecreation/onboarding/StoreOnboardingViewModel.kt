@@ -7,6 +7,14 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ADD_DOMAIN
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_LAUNCH_SITE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PAYMENTS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCTS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STORE_DETAILS
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTask
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.ABOUT_YOUR_STORE
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.ADD_FIRST_PRODUCT
@@ -29,6 +37,7 @@ import javax.inject.Inject
 class StoreOnboardingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val onboardingRepository: StoreOnboardingRepository,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle), DefaultLifecycleObserver {
     companion object {
         const val NUMBER_ITEMS_IN_COLLAPSED_MODE = 3
@@ -85,7 +94,20 @@ class StoreOnboardingViewModel @Inject constructor(
             LaunchStoreTaskRes -> triggerEvent(NavigateToLaunchStore)
             SetupPaymentsTaskRes -> WooLog.d(ONBOARDING, "TODO")
         }
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.STORE_ONBOARDING_TASK_TAPPED,
+            properties = mapOf(AnalyticsTracker.ONBOARDING_TASK_KEY to getTaskTrackingKey(task))
+        )
     }
+
+    private fun getTaskTrackingKey(task: OnboardingTaskUi) =
+        when (task.taskUiResources) {
+            AboutYourStoreTaskRes -> VALUE_STORE_DETAILS
+            AddProductTaskRes -> VALUE_PRODUCTS
+            CustomizeDomainTaskRes -> VALUE_ADD_DOMAIN
+            LaunchStoreTaskRes -> VALUE_LAUNCH_SITE
+            SetupPaymentsTaskRes -> VALUE_PAYMENTS
+        }
 
     fun onPullToRefresh() {
         refreshOnboardingList()
