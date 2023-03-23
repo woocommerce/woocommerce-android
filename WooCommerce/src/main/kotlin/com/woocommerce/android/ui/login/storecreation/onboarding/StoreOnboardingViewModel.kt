@@ -94,6 +94,8 @@ class StoreOnboardingViewModel @Inject constructor(
             launch {
                 onboardingRepository.fetchOnboardingTasksIfNotCompleted()
             }
+        } else {
+            _viewState.value = _viewState.value?.copy(show = false)
         }
     }
 
