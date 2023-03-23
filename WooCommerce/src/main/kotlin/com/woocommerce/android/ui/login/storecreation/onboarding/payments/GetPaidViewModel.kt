@@ -24,9 +24,8 @@ class GetPaidViewModel @Inject constructor(
     private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
     private val allPaymentsUrl = selectedSite.get().url
-        .slashJoin("/wp-admin/admin.php?page=wc-settings&tab=checkout")
-    private val wooPaymentsUrl = "$allPaymentsUrl&section=woocommerce_payments"
-
+        .slashJoin("/wp-admin/admin.php?page=wc-admin&task=payments")
+    private val wooPaymentsUrl = "/wp-admin/admin.php?page=wc-settings&tab=checkout&section=woocommerce_payments"
     private val _viewState = MutableStateFlow<ViewState>(LoadingState)
     val viewState = _viewState.asLiveData()
 
