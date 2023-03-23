@@ -86,7 +86,7 @@ class StoreOnboardingViewModel @Inject constructor(
                     url = selectedSite.get().url + ABOUT_STORE_SETTINGS_SECTION
                 )
             )
-            AddProductTaskRes -> WooLog.d(ONBOARDING, "TODO")
+            AddProductTaskRes -> triggerEvent(NavigateToAddProduct)
             CustomizeDomainTaskRes -> triggerEvent(NavigateToDomains)
             LaunchStoreTaskRes -> triggerEvent(NavigateToLaunchStore)
             SetupPaymentsTaskRes -> WooLog.d(ONBOARDING, "TODO")
@@ -155,4 +155,5 @@ class StoreOnboardingViewModel @Inject constructor(
     object NavigateToLaunchStore : MultiLiveEvent.Event()
     object NavigateToDomains : MultiLiveEvent.Event()
     data class NavigateToAboutYourStore(val url: String) : MultiLiveEvent.Event()
+    object NavigateToAddProduct : MultiLiveEvent.Event()
 }

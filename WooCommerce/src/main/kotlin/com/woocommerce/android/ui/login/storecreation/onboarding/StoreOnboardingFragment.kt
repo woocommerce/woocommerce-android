@@ -82,6 +82,13 @@ class StoreOnboardingFragment : BaseFragment() {
                             urlToLoad = event.url
                         )
                     )
+                is StoreOnboardingViewModel.NavigateToAddProduct ->
+                    findNavController().navigateSafely(
+                        directions = StoreOnboardingFragmentDirections
+                            .actionStoreOnboardingFragmentToProductTypesBottomSheet(
+                                isAddProduct = true
+                            )
+                    )
             }
         }
     }
