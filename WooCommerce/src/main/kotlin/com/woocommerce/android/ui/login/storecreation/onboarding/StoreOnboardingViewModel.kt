@@ -79,7 +79,7 @@ class StoreOnboardingViewModel @Inject constructor(
     fun onTaskClicked(task: OnboardingTaskUi) {
         when (task.taskUiResources) {
             AboutYourStoreTaskRes -> WooLog.d(ONBOARDING, "TODO")
-            AddProductTaskRes -> WooLog.d(ONBOARDING, "TODO")
+            AddProductTaskRes -> triggerEvent(NavigateToAddProduct)
             CustomizeDomainTaskRes -> triggerEvent(NavigateToDomains)
             LaunchStoreTaskRes -> triggerEvent(NavigateToLaunchStore)
             SetupPaymentsTaskRes -> WooLog.d(ONBOARDING, "TODO")
@@ -147,4 +147,5 @@ class StoreOnboardingViewModel @Inject constructor(
     object NavigateToSurvey : MultiLiveEvent.Event()
     object NavigateToLaunchStore : MultiLiveEvent.Event()
     object NavigateToDomains : MultiLiveEvent.Event()
+    object NavigateToAddProduct : MultiLiveEvent.Event()
 }

@@ -72,6 +72,13 @@ class StoreOnboardingFragment : BaseFragment() {
                         directions = StoreOnboardingFragmentDirections
                             .actionStoreOnboardingFragmentToNavGraphDomainChange()
                     )
+                is StoreOnboardingViewModel.NavigateToAddProduct ->
+                    findNavController().navigateSafely(
+                        directions = StoreOnboardingFragmentDirections
+                            .actionStoreOnboardingFragmentToProductTypesBottomSheet(
+                                isAddProduct = true
+                            )
+                    )
             }
         }
     }
