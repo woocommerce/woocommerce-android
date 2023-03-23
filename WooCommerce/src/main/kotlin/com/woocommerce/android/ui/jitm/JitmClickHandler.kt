@@ -16,7 +16,9 @@ class JitmClickHandler @Inject constructor(
             Intent(
                 Intent.ACTION_VIEW,
                 Uri.parse(url)
-            )
+            ).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
         )
     }
 }
