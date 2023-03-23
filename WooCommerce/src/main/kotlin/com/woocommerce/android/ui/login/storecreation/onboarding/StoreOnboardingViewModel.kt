@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.STORE_ONBOARDING_COMPLETED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ADD_DOMAIN
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_LAUNCH_SITE
@@ -119,6 +120,7 @@ class StoreOnboardingViewModel @Inject constructor(
                 onboardingRepository.fetchOnboardingTasksIfNotCompleted()
             }
         } else {
+            analyticsTrackerWrapper.track(stat = STORE_ONBOARDING_COMPLETED)
             _viewState.value = _viewState.value?.copy(show = false)
         }
     }
