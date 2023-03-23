@@ -11,6 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_BANNER
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.plans.domain.StartUpgradeFlow
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.assisted.Assisted
@@ -24,7 +25,12 @@ class TrialStatusBarFormatter @AssistedInject constructor(
 
     fun format(daysLeftInTrial: Int, context: Context): Spannable {
         val statusMessage = if (daysLeftInTrial > 0) {
-            resourceProvider.getString(R.string.free_trial_days_left, daysLeftInTrial)
+            StringUtils.getQuantityString(
+                resourceProvider = resourceProvider,
+                quantity = daysLeftInTrial,
+                default = R.string.free_trial_days_left_plural,
+                one = R.string.free_trial_one_day_left
+            ).let { resourceProvider.getString(R.string.free_trial_days_left, it) }
         } else {
             resourceProvider.getString(R.string.free_trial_your_trial_ended)
         }
