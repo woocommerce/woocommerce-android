@@ -42,6 +42,18 @@
         <action
             android:id="@+id/action_myStore_to_nav_graph_domain_change"
             app:destination="@id/nav_graph_domain_change" />
+        <action
+            android:id="@+id/action_myStore_to_productTypesBottomSheet"
+            app:destination="@id/productTypesBottomSheetFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out">
+            <argument
+                android:name="isAddProduct"
+                android:defaultValue="false"
+                app:argType="boolean" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -446,6 +458,18 @@
         <action
             android:id="@+id/action_storeOnboardingFragment_to_nav_graph_domain_change"
             app:destination="@id/nav_graph_domain_change" />
+        <action
+            android:id="@+id/action_storeOnboardingFragment_to_productTypesBottomSheet"
+            app:destination="@id/productTypesBottomSheetFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out">
+            <argument
+                android:name="isAddProduct"
+                android:defaultValue="false"
+                app:argType="boolean" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/launchStoreFragment"

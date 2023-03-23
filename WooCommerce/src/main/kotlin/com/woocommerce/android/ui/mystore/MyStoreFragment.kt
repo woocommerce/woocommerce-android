@@ -239,7 +239,11 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                         directions = MyStoreFragmentDirections.actionMyStoreToNavGraphDomainChange()
                     )
                 is StoreOnboardingViewModel.NavigateToAddProduct ->
-                    (activity as? MainNavigationRouter)?.showProductTypeBottomSheet()
+                    findNavController().navigateSafely(
+                        directions = MyStoreFragmentDirections.actionMyStoreToProductTypesBottomSheet(
+                            isAddProduct = true
+                        )
+                    )
             }
         }
     }
