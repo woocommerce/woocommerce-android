@@ -194,7 +194,7 @@ private fun NonUpgradeable() {
 @Preview(name = "RTL mode", locale = "ar")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun Upgradeable() {
+private fun PlanEnded() {
     WooThemeWithBackground {
         UpgradesScreen(state = PlanEnded("eCommerce ended"), {}, {})
     }
