@@ -59,12 +59,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/imageView"
-        app:layout_constraintBottom_toTopOf="@id/loginButtons"
+        app:layout_constraintBottom_toTopOf="@id/standardLoginButtons"
         android:visibility="visible"
         app:layout_constraintWidth_percent="0.85" />
 
     <LinearLayout
-        android:id="@+id/loginButtons"
+        android:id="@+id/standardLoginButtons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -119,6 +119,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <com.google.android.material.button.MaterialButton
