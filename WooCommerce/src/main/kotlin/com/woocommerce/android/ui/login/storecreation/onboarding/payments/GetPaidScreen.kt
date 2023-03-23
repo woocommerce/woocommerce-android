@@ -36,8 +36,9 @@ fun GetPaidScreen(
         }) { padding ->
             when (state) {
                 is LoadingState -> {
-                    ProgressIndicator(modifier = Modifier
-                        .padding(padding)
+                    ProgressIndicator(
+                        modifier = Modifier
+                            .padding(padding)
                     )
                 }
                 is WebViewState -> {
@@ -58,9 +59,11 @@ fun GetPaidScreen(
 
 @Composable
 private fun ProgressIndicator(modifier: Modifier) {
-    Box(modifier = Modifier
-        .background(MaterialTheme.colors.surface)
-        .fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .background(MaterialTheme.colors.surface)
+            .fillMaxSize()
+    ) {
         CircularProgressIndicator(
             modifier = modifier
                 .align(Alignment.Center)
