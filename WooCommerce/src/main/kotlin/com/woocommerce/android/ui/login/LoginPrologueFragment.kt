@@ -12,6 +12,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentLoginPrologueBinding
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
+import com.woocommerce.android.util.FeatureFlag
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -36,28 +37,47 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
     private var prologueFinishedListener: PrologueFinishedListener? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val binding = FragmentLoginPrologueBinding.bind(view)
+        with(FragmentLoginPrologueBinding.bind(view)) {
+            if (FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
+                freeTrialLoginButtons?.visibility = View.VISIBLE
+                bindFreeTrialView()
+            } else {
+                standardLoginButtons?.visibility = View.VISIBLE
+                bindStandardView()
+            }
+        }
 
-        binding.buttonLoginStore.setOnClickListener {
+        if (savedInstanceState == null) {
+            unifiedLoginTracker.track(Flow.PROLOGUE, Step.PROLOGUE)
+        }
+    }
+
+    private fun FragmentLoginPrologueBinding.bindStandardView() {
+        buttonLoginStore.setOnClickListener {
             // Login with site address
             AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
             prologueFinishedListener?.onPrimaryButtonClicked()
         }
 
-        binding.buttonLoginWpcom.setOnClickListener {
+        buttonLoginWpcom.setOnClickListener {
             // Login with WordPress.com account
             AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
             prologueFinishedListener?.onSecondaryButtonClicked()
         }
 
-        binding.buttonGetStarted.setOnClickListener {
+        buttonGetStarted.setOnClickListener {
             AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
             AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED)
             prologueFinishedListener?.onGetStartedClicked()
         }
+    }
 
-        if (savedInstanceState == null) {
-            unifiedLoginTracker.track(Flow.PROLOGUE, Step.PROLOGUE)
+    private fun FragmentLoginPrologueBinding.bindFreeTrialView() {
+        startFreeTrialButton?.setOnClickListener {  }
+        loginButton?.setOnClickListener {
+            AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
+            AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED)
+            prologueFinishedListener?.onGetStartedClicked()
         }
     }
 
