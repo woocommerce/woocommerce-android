@@ -2,8 +2,10 @@ package com.woocommerce.android.ui.login.storecreation.onboarding
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTask
@@ -19,8 +21,7 @@ import com.woocommerce.android.util.WooLog.T.ONBOARDING
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,34 +30,31 @@ class StoreOnboardingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val onboardingRepository: StoreOnboardingRepository,
     private val selectedSite: SelectedSite
-) : ScopedViewModel(savedStateHandle) {
+) : ScopedViewModel(savedStateHandle), DefaultLifecycleObserver {
     companion object {
         const val NUMBER_ITEMS_IN_COLLAPSED_MODE = 3
         const val ABOUT_STORE_SETTINGS_SECTION = "/wp-admin/admin.php?page=wc-settings&tab=general&tutorial=true"
     }
 
-    private val _viewState = MutableStateFlow(
-        OnboardingState(
-            show = false,
-            title = R.string.store_onboarding_title,
-            tasks = emptyList(),
-        )
-    )
-    val viewState = _viewState.asLiveData()
+    private val _viewState = MutableLiveData<OnboardingState>()
+    val viewState = _viewState
 
     init {
         launch {
-            val result = onboardingRepository.fetchOnboardingTasks()
-            if (result.isNotEmpty()) {
-                _viewState.update { currentUiState ->
-                    currentUiState.copy(
-                        show = result.any { !it.isComplete } && FeatureFlag.STORE_CREATION_ONBOARDING.isEnabled(),
+            onboardingRepository.fetchOnboardingTasks()
+            onboardingRepository.onboardingTasksCacheFlow
+                .collectLatest { tasks ->
+                    _viewState.value = OnboardingState(
+                        show = tasks.any { !it.isComplete } && FeatureFlag.STORE_CREATION_ONBOARDING.isEnabled(),
                         title = R.string.store_onboarding_title,
-                        tasks = result.map { mapToOnboardingTaskState(it) }
+                        tasks = tasks.map { mapToOnboardingTaskState(it) },
                     )
                 }
-            }
         }
+    }
+
+    override fun onResume(owner: LifecycleOwner) {
+        refreshOnboardingList()
     }
 
     private fun mapToOnboardingTaskState(task: OnboardingTask) =
@@ -92,6 +90,16 @@ class StoreOnboardingViewModel @Inject constructor(
             CustomizeDomainTaskRes -> triggerEvent(NavigateToDomains)
             LaunchStoreTaskRes -> triggerEvent(NavigateToLaunchStore)
             SetupPaymentsTaskRes -> WooLog.d(ONBOARDING, "TODO")
+        }
+    }
+
+    fun onPullToRefresh() {
+        refreshOnboardingList()
+    }
+
+    private fun refreshOnboardingList() {
+        launch {
+            onboardingRepository.fetchOnboardingTasks()
         }
     }
 
