@@ -104,6 +104,8 @@ class ProductSelectorViewModel @Inject constructor(
         ViewState(
             loadingState = loadingState,
             products = products.map { it.toUiModel(selectedIds) },
+            popularProducts = emptyList(),
+            recentlySoldProducts = emptyList(),
             selectedItemsCount = selectedIds.size,
             filterState = filterState,
             searchQuery = searchQuery
@@ -318,6 +320,8 @@ class ProductSelectorViewModel @Inject constructor(
     data class ViewState(
         val loadingState: LoadingState,
         val products: List<ProductListItem>,
+        val popularProducts: List<ProductListItem>,
+        val recentlySoldProducts: List<ProductListItem>,
         val selectedItemsCount: Int,
         val filterState: FilterState,
         val searchQuery: String
