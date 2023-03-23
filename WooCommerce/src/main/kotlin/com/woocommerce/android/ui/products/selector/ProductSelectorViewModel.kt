@@ -75,7 +75,11 @@ class ProductSelectorViewModel @Inject constructor(
 
     private val searchQuery = savedState.getStateFlow(this, "")
     private val loadingState = MutableStateFlow(IDLE)
-    private val selectedItems = savedState.getStateFlow(viewModelScope, navArgs.selectedItems.toList())
+    private val selectedItems = savedState.getStateFlow(
+        viewModelScope,
+        navArgs.selectedItems.toList(),
+        "key_selected_items"
+    )
     private val filterState = savedState.getStateFlow(viewModelScope, FilterState())
     private val productsRestrictions = navArgs.restrictions
     private val products = listHandler.productsFlow.map { products ->
