@@ -41,10 +41,22 @@
             android:id="@+id/action_myStore_to_launchStoreFragment"
             app:destination="@id/launchStoreFragment" />
         <action
-            android:id="@+id/action_dashboard_to_nav_graph_domain_change"
+            android:id="@+id/action_myStore_to_nav_graph_domain_change"
             app:destination="@id/nav_graph_domain_change" />
         <action
-            android:id="@+id/action_dashboard_to_getPaidFragment"
+            android:id="@+id/action_myStore_to_productTypesBottomSheet"
+            app:destination="@id/productTypesBottomSheetFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out">
+            <argument
+                android:name="isAddProduct"
+                android:defaultValue="false"
+                app:argType="boolean" />
+        </action>
+        <action
+            android:id="@+id/action_myStore_to_getPaidFragment"
             app:destination="@id/getPaidFragment" />
     </fragment>
     <fragment
@@ -205,7 +217,7 @@
         </action>
         <action
             android:id="@+id/action_moreMenu_to_subscriptions"
-            app:destination="@id/subscriptions"/>
+            app:destination="@id/subscriptions" />
     </fragment>
     <fragment
         android:id="@+id/feedbackSurveyFragment"
@@ -450,6 +462,18 @@
         <action
             android:id="@+id/action_storeOnboardingFragment_to_nav_graph_domain_change"
             app:destination="@id/nav_graph_domain_change" />
+        <action
+            android:id="@+id/action_storeOnboardingFragment_to_productTypesBottomSheet"
+            app:destination="@id/productTypesBottomSheetFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out">
+            <argument
+                android:name="isAddProduct"
+                android:defaultValue="false"
+                app:argType="boolean" />
+        </action>
         <action
             android:id="@+id/action_storeOnboardingFragment_to_getPaidFragment"
             app:destination="@id/getPaidFragment" />

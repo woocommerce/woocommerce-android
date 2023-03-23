@@ -76,6 +76,13 @@ class StoreOnboardingFragment : BaseFragment() {
                     findNavController().navigateSafely(
                         directions = StoreOnboardingFragmentDirections.actionStoreOnboardingFragmentToGetPaidFragment()
                     )
+                is StoreOnboardingViewModel.NavigateToAddProduct ->
+                    findNavController().navigateSafely(
+                        directions = StoreOnboardingFragmentDirections
+                            .actionStoreOnboardingFragmentToProductTypesBottomSheet(
+                                isAddProduct = true
+                            )
+                    )
             }
         }
     }
