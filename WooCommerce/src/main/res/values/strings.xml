@@ -1183,7 +1183,9 @@
             Card Reader Type Selection
         -->
     <string name="card_reader_type_selection_tap_to_pay">Tap To Pay</string>
-    <string name="card_reader_type_selection_bluetooth_reader">Bluetooth Reader</string>
+    <string name="card_reader_type_selection_tap_to_pay_description">Securely accept contactless payments directly from your phone.</string>
+    <string name="card_reader_type_selection_bluetooth_reader">Card Reader</string>
+    <string name="card_reader_type_selection_bluetooth_reader_description">Card reader accepts tap, chip, and swipe payments with debit and credit cards.</string>
 
     <!--
             Card Reader Interac refund
