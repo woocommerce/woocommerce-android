@@ -4,11 +4,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.login.storecreation.onboarding.payments.GetPaidViewModel.ViewState.LoadingState
+import com.woocommerce.android.ui.login.storecreation.onboarding.payments.GetPaidViewModel.ViewState.WebViewState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -23,32 +23,29 @@ class GetPaidViewModel @Inject constructor(
     private val wooStore: WooCommerceStore,
     private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
-    private val wpAdminSetupUrl = selectedSite.get().url.slashJoin("/wp-admin")
-    private val pluginSetupUrl = selectedSite.get().url
-        .slashJoin("/wp-admin/admin.php?page=wc-admin&task=payments")
-    private val pluginPurchaseUrl = selectedSite.get().url
+    private val allPaymentsUrl = selectedSite.get().url
         .slashJoin("/wp-admin/admin.php?page=wc-settings&tab=checkout")
+    private val wooPaymentsUrl = "$allPaymentsUrl&section=woocommerce_payments"
 
-    private val _viewState = MutableStateFlow(ViewState(wpAdminSetupUrl, true))
+    private val _viewState = MutableStateFlow<ViewState>(LoadingState)
     val viewState = _viewState.asLiveData()
 
-    private val webViewUrl: Deferred<String>
-
     init {
-        webViewUrl = getWebViewUrlAsync()
+        viewModelScope.launch {
+            val webViewUrl = if (hasWCPayPlugin()) wooPaymentsUrl else allPaymentsUrl
+            val shouldAuthenticate = selectedSite.get().isWPComAtomic
+            _viewState.update {
+                WebViewState(webViewUrl, shouldAuthenticate)
+            }
+        }
     }
 
-    private fun getWebViewUrlAsync() = async {
+    private suspend fun hasWCPayPlugin(): Boolean {
         val fetchSitePluginsResult = wooStore.fetchSitePlugins(selectedSite.get())
-        if (fetchSitePluginsResult.isError) {
-            return@async pluginPurchaseUrl
+        return if (fetchSitePluginsResult.isError) {
+            false
         } else {
-            val wcPayPluginInfo = wooStore.getSitePlugin(selectedSite.get(), WOO_PAYMENTS)
-            if (wcPayPluginInfo != null) {
-                return@async pluginSetupUrl
-            } else {
-                return@async pluginPurchaseUrl
-            }
+            wooStore.getSitePlugin(selectedSite.get(), WOO_PAYMENTS) != null
         }
     }
 
@@ -56,13 +53,8 @@ class GetPaidViewModel @Inject constructor(
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
-    fun onUrlLoaded(url: String) {
-        if (url.contains("wordpress.com/wp-admin/")) {
-            viewModelScope.launch {
-                _viewState.update { ViewState(webViewUrl.await(), false) }
-            }
-        }
+    sealed class ViewState {
+        object LoadingState : ViewState()
+        data class WebViewState(val url: String, val shouldAuthenticate: Boolean) : ViewState()
     }
-
-    data class ViewState(val url: String, val showSpinner: Boolean)
 }
