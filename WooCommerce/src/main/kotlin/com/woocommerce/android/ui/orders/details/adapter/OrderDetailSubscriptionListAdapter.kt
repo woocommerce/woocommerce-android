@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.details.adapter
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,10 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailSubscriptionListItemBinding
 import com.woocommerce.android.model.Subscription
-import com.woocommerce.android.model.Subscription.Period
 import com.woocommerce.android.ui.orders.SubscriptionStatusTag
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.StringUtils
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
@@ -81,7 +78,7 @@ class OrderDetailSubscriptionListAdapter(private val currencyFormatter: Currency
                 )
             }
             with(viewBinding.subscriptionPeriod) {
-                val period = getBillingPeriod(context, subscription.billingPeriod, subscription.billingInterval)
+                val period = subscription.billingPeriod.getPeriodString(context, subscription.billingInterval)
                 text = if (subscription.billingInterval > 1) {
                     context.getString(
                         R.string.subscription_period_interval_multiple,
@@ -91,40 +88,6 @@ class OrderDetailSubscriptionListAdapter(private val currencyFormatter: Currency
                 } else {
                     context.getString(R.string.subscription_period_interval_single, period)
                 }
-            }
-        }
-
-        private fun getBillingPeriod(
-            context: Context,
-            billingPeriod: Period,
-            billingInterval: Int
-        ): String {
-            return when (billingPeriod) {
-                Period.Day -> StringUtils.getQuantityString(
-                    context = context,
-                    quantity = billingInterval,
-                    default = R.string.subscription_period_multiple_days,
-                    one = R.string.subscription_period_day
-                )
-                Period.Week -> StringUtils.getQuantityString(
-                    context = context,
-                    quantity = billingInterval,
-                    default = R.string.subscription_period_multiple_weeks,
-                    one = R.string.subscription_period_week
-                )
-                Period.Month -> StringUtils.getQuantityString(
-                    context = context,
-                    quantity = billingInterval,
-                    default = R.string.subscription_period_multiple_months,
-                    one = R.string.subscription_period_month
-                )
-                Period.Year -> StringUtils.getQuantityString(
-                    context = context,
-                    quantity = billingInterval,
-                    default = R.string.subscription_period_multiple_years,
-                    one = R.string.subscription_period_year
-                )
-                is Period.Custom -> billingPeriod.value
             }
         }
     }

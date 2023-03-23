@@ -9,7 +9,7 @@ import java.time.LocalDate
 data class Subscription(
     val id: Long,
     val status: Status,
-    val billingPeriod: Period,
+    val billingPeriod: SubscriptionPeriod,
     val billingInterval: Int,
     val total: BigDecimal,
     val startDate: LocalDate,
@@ -42,29 +42,5 @@ data class Subscription(
         object PendingCancellation : Status("pending_cancellation")
         @Parcelize
         data class Custom(private val customValue: String) : Status(customValue)
-    }
-    @Parcelize
-    sealed class Period(val value: String) : Parcelable {
-        companion object {
-            fun fromValue(value: String): Period {
-                return when (value) {
-                    Day.value -> Day
-                    Week.value -> Week
-                    Month.value -> Month
-                    Year.value -> Year
-                    else -> Custom(value)
-                }
-            }
-        }
-        @Parcelize
-        object Day : Period("day")
-        @Parcelize
-        object Week : Period("week")
-        @Parcelize
-        object Month : Period("month")
-        @Parcelize
-        object Year : Period("year")
-        @Parcelize
-        data class Custom(private val customValue: String) : Period(customValue)
     }
 }

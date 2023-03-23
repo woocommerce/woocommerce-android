@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPr
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductReviews
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscription
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTypes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
@@ -38,6 +39,7 @@ import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.OTHER
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
+import com.woocommerce.android.ui.products.ProductType.SUBSCRIPTION
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.models.ProductProperty
@@ -78,7 +80,8 @@ class ProductDetailCardBuilder(
             VARIABLE -> cards.addIfNotEmpty(getVariableProductCard(product))
             GROUPED -> cards.addIfNotEmpty(getGroupedProductCard(product))
             EXTERNAL -> cards.addIfNotEmpty(getExternalProductCard(product))
-            OTHER -> cards.addIfNotEmpty(getOtherProductCard(product))
+            SUBSCRIPTION -> cards.addIfNotEmpty(getSubscriptionProductCard(product))
+            else -> cards.addIfNotEmpty(getOtherProductCard(product))
         }
 
         return cards
@@ -159,6 +162,23 @@ class ProductDetailCardBuilder(
                 product.inventory(VARIABLE),
                 product.addons(),
                 product.shipping(),
+                product.categories(),
+                product.tags(),
+                product.shortDescription(),
+                product.linkedProducts(),
+                product.productType()
+            ).filterNotEmpty()
+        )
+    }
+
+    private suspend fun getSubscriptionProductCard(product: Product): ProductPropertyCard {
+        return ProductPropertyCard(
+            type = SECONDARY,
+            properties = listOf(
+                if (viewModel.isProductUnderCreation) null else product.productReviews(),
+                product.subscription(),
+                product.inventory(SIMPLE),
+                product.addons(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
@@ -389,7 +409,8 @@ class ProductDetailCardBuilder(
             VARIABLE -> resources.getString(string.product_type_variable)
             GROUPED -> resources.getString(string.product_type_grouped)
             EXTERNAL -> resources.getString(string.product_type_external)
-            OTHER -> this.type.capitalize() // show the actual product type string for unsupported products
+            SUBSCRIPTION -> resources.getString(string.product_type_subscription)
+            else -> this.type.capitalize() // show the actual product type string for unsupported products
         }
     }
 
@@ -640,6 +661,41 @@ class ProductDetailCardBuilder(
                     viewModel.onEditProductCardClicked(
                         ViewProductAddonsDetails,
                         AnalyticsEvent.PRODUCT_ADDONS_PRODUCT_DETAIL_VIEW_PRODUCT_ADDONS_TAPPED
+                    )
+                }
+            )
+        }
+
+    private fun Product.subscription(): ProductProperty? =
+        this.subscription?.let { subscription ->
+
+            val period = subscription.period.getPeriodString(resources, subscription.periodInterval)
+            val price = resources.getString(
+                string.product_subscription_description,
+                currencyFormatter.formatCurrency(subscription.price, viewModel.currencyCode, true),
+                subscription.periodInterval.toString(),
+                period
+            )
+
+            val expire = if (subscription.length != null) {
+                resources.getString(string.subscription_period, subscription.length.toString(), period)
+            } else {
+                resources.getString(string.subscription_never_expire)
+            }
+
+            val properties = mapOf(
+                resources.getString(string.product_regular_price) to price,
+                resources.getString(string.subscription_expire) to expire
+            )
+
+            PropertyGroup(
+                title = string.product_subscription_title,
+                icon = drawable.ic_gridicons_money,
+                properties = properties,
+                showTitle = true,
+                onClick = {
+                    viewModel.onEditProductCardClicked(
+                        ViewProductSubscription(subscription)
                     )
                 }
             )

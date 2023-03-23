@@ -1713,6 +1713,7 @@
     <string name="edit_products_button">Edit products</string>
     <string name="empty_product_add_product_button">Add product</string>
     <string name="empty_product_message">Start selling today by adding your first product to the store.</string>
+    <string name="product_subscription_title">Subscription</string>
     <string name="product_add_ons_title">Product Add-ons</string>
     <string name="product_add_ons_details_info_notice">You can edit product add-ons in the web dashboard.</string>
     <string name="product_count_one">%d product</string>
@@ -2168,6 +2169,7 @@
     <string name="product_type_physical">Physical</string>
     <string name="product_type_virtual">Virtual</string>
     <string name="product_type_downloadable">Downloadable</string>
+    <string name="product_type_subscription">Subscription</string>
 
     <!-- Product type bottom sheets -->
     <string name="product_type_list_header">Select a product type</string>
@@ -3160,10 +3162,16 @@
     -->
     <string name="order_subscription">Subscription</string>
     <string name="subscription_id">Subscription #%1$d</string>
-    <string name="subscription_total">%1$s /</string>
+    <string name="subscription_total" translatable="false">%1$s /</string>
     <string name="subscription_period_interval_single">Every %1$s</string>
     <string name="subscription_period_interval_multiple">Every %1$d %2$s</string>
-    <string name="subscription_end_date">&#160;- %1$s</string>
+    <string name="subscription_end_date" translatable="false">&#160;- %1$s</string>
+    <string name="product_subscription_description">%1$s every %2$s %3$s</string>
+    <string name="subscription_period" translatable="false">%1$s %2$s</string>
+    <string name="subscription_never_expire">Never expire</string>
+    <string name="subscription_no_sign_up_fee">No sign up fee</string>
+    <string name="subscription_no_trial">No trial period</string>
+    <string name="subscription_details_info_notice">You can edit product subscriptions in the web dashboard.</string>
     <!--
     Subscription status
     -->
@@ -3185,6 +3193,12 @@
     <string name="subscription_period_multiple_weeks">weeks</string>
     <string name="subscription_period_multiple_months">months</string>
     <string name="subscription_period_multiple_years">years</string>
-
+    <!--
+    Subscription details
+    -->
+    <string name="subscription_price">Subscription price</string>
+    <string name="subscription_expire">Expire after</string>
+    <string name="subscription_sign_up_fee">Sign up fee</string>
+    <string name="subscription_free_trial">Free trial</string>
 
 </resources>

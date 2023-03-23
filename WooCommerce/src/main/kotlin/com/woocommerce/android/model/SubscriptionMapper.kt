@@ -15,7 +15,7 @@ class SubscriptionMapper @Inject constructor() {
         return Subscription(
             id = dto.id ?: 0L,
             status = Subscription.Status.fromValue(dto.status ?: ""),
-            billingPeriod = Subscription.Period.fromValue(dto.billing_period ?: ""),
+            billingPeriod = SubscriptionPeriod.fromValue(dto.billing_period ?: ""),
             billingInterval = dto.billing_interval?.toIntOrNull() ?: 0,
             total = dto.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
             startDate = formatGmtAsUtcLocalDate(dto.start_date_gmt) ?: LocalDate.now(),
