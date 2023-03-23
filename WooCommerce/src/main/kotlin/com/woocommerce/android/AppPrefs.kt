@@ -179,7 +179,7 @@ object AppPrefs {
         // Was the Tap To Pay used at least once
         TTP_WAS_USED_AT_LEAST_ONCE,
 
-        //Whether onboarding tasks have been completed or not for a given site
+        // Whether onboarding tasks have been completed or not for a given site
         STORE_ONBOARDING_TASKS_COMPLETED,
     }
 
