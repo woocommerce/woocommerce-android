@@ -94,7 +94,7 @@ class StoreOnboardingViewModel @Inject constructor(
     private fun refreshOnboardingList() {
         if (!onboardingRepository.isOnboardingCompleted()) {
             launch {
-                onboardingRepository.fetchOnboardingTasksIfNotCompleted()
+                onboardingRepository.fetchOnboardingTasks()
             }
         } else {
             _viewState.value = _viewState.value?.copy(show = false)

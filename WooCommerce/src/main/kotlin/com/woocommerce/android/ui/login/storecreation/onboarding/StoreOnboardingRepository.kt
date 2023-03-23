@@ -27,7 +27,7 @@ class StoreOnboardingRepository @Inject constructor(
 
     var onboardingTasksCacheFlow: MutableStateFlow<List<OnboardingTask>> = MutableStateFlow(emptyList())
 
-    suspend fun fetchOnboardingTasksIfNotCompleted() {
+    suspend fun fetchOnboardingTasks() {
         WooLog.d(WooLog.T.ONBOARDING, "Fetching onboarding tasks")
         val result = onboardingStore.fetchOnboardingTasks(selectedSite.get())
         return when {
