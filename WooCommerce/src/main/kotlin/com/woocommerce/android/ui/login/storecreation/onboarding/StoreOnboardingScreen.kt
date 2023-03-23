@@ -250,10 +250,12 @@ private fun TaskItem(
                 style = MaterialTheme.typography.body1,
             )
         }
-        Image(
-            painter = painterResource(R.drawable.ic_arrow_right),
-            contentDescription = ""
-        )
+        if (!task.isCompleted) {
+            Image(
+                painter = painterResource(R.drawable.ic_arrow_right),
+                contentDescription = ""
+            )
+        }
     }
 }
 
