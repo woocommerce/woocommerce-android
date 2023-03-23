@@ -112,6 +112,7 @@ class StoreOnboardingRepository @Inject constructor(
         LAUNCH_YOUR_STORE(id = "launch_site", order = 3),
         CUSTOMIZE_DOMAIN(id = "add_domain", order = 4),
         WC_PAYMENTS(id = "woocommerce-payments", order = 5),
+        PAYMENTS(id = "payments", order = 5), // WC_PAYMENT and PAYMENTS are considered the same task on mobile
         MOBILE_UNSUPPORTED(id = "mobile-unsupported", order = -1)
     }
 
