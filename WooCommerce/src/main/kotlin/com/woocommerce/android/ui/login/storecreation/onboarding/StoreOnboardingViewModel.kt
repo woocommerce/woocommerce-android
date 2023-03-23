@@ -27,7 +27,7 @@ import javax.inject.Inject
 @HiltViewModel
 class StoreOnboardingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val onboardingRepository: StoreOnboardingRepository
+    private val onboardingRepository: StoreOnboardingRepository,
 ) : ScopedViewModel(savedStateHandle), DefaultLifecycleObserver {
     companion object {
         const val NUMBER_ITEMS_IN_COLLAPSED_MODE = 3
@@ -38,7 +38,6 @@ class StoreOnboardingViewModel @Inject constructor(
 
     init {
         launch {
-            onboardingRepository.fetchOnboardingTasks()
             onboardingRepository.onboardingTasksCacheFlow
                 .collectLatest { tasks ->
                     _viewState.value = OnboardingState(
@@ -91,8 +90,10 @@ class StoreOnboardingViewModel @Inject constructor(
     }
 
     private fun refreshOnboardingList() {
-        launch {
-            onboardingRepository.fetchOnboardingTasks()
+        if (!onboardingRepository.isOnboardingCompleted()) {
+            launch {
+                onboardingRepository.fetchOnboardingTasksIfNotCompleted()
+            }
         }
     }
 
