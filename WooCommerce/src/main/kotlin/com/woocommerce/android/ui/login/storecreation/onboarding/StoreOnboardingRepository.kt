@@ -103,7 +103,8 @@ class StoreOnboardingRepository @Inject constructor(
         ADD_FIRST_PRODUCT(id = "products", order = 2),
         LAUNCH_YOUR_STORE(id = "launch_site", order = 3),
         CUSTOMIZE_DOMAIN(id = "add_domain", order = 4),
-        WC_PAYMENTS(id = "payments", order = 5),
+        PAYMENTS(id = "payments", order = 5),
+        WC_PAYMENTS(id = "woocommerce-payments", order = 6),
         MOBILE_UNSUPPORTED(id = "mobile-unsupported", order = -1)
     }
 
