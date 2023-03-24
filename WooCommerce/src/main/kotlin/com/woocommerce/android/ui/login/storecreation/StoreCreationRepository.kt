@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.login.storecreation
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.os.Parcelable
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
+import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.FREE_TRIAL_ASSIGNMENT_FAILED
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.PLAN_PURCHASE_FAILED
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_ADDRESS_ALREADY_EXISTS
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_CREATION_FAILED
@@ -12,6 +14,7 @@ import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STO
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Failure
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Success
 import com.woocommerce.android.ui.login.storecreation.plans.BillingPeriod
+import com.woocommerce.android.ui.plans.networking.SitePlanRestClient
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.LOGIN
 import com.woocommerce.android.util.dispatchAndAwait
@@ -22,6 +25,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.plans.full.Plan
+import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.storecreation.ShoppingCartRestClient.ShoppingCart.CartProduct
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.storecreation.ShoppingCartStore
 import org.wordpress.android.fluxc.store.PlansStore
@@ -45,8 +49,15 @@ class StoreCreationRepository @Inject constructor(
     private val shoppingCartStore: ShoppingCartStore,
     private val dispatcher: Dispatcher,
     private val plansStore: PlansStore,
-    private val userEligibilityFetcher: UserEligibilityFetcher
+    private val userEligibilityFetcher: UserEligibilityFetcher,
+    private val sitePlanRestClient: SitePlanRestClient,
+    private val newStore: NewStore
 ) {
+
+    companion object {
+        private const val FREE_TRIAL_SITE_CREATION_FLOW = "wooexpress"
+    }
+
     fun selectSite(site: SiteModel) {
         selectedSite.set(site)
     }
@@ -97,10 +108,12 @@ class StoreCreationRepository @Inject constructor(
                 WooLog.e(LOGIN, "Error fetching plans: ${fetchResult.error.message}")
                 null
             }
+
             fetchResult.plans == null -> {
                 WooLog.e(LOGIN, "Error fetching plans: null response")
                 null
             }
+
             else -> {
                 fetchResult.plans!!.firstOrNull { it.productSlug == period.slug }
             }
@@ -112,7 +125,11 @@ class StoreCreationRepository @Inject constructor(
         it?.origin == SiteModel.ORIGIN_WPCOM_REST
     }
 
-    suspend fun addPlanToCart(planProductId: Int?, planPathSlug: String?, siteId: Long?): StoreCreationResult<Unit> {
+    suspend fun addPlanToCart(
+        planProductId: Int?,
+        planPathSlug: String?,
+        siteId: Long?
+    ): StoreCreationResult<Unit> {
         if (planProductId == null || planPathSlug == null || siteId == null) {
             WooLog.e(
                 tag = LOGIN,
@@ -131,13 +148,54 @@ class StoreCreationRepository @Inject constructor(
             shoppingCartStore.addProductToCart(siteId, eCommerceProduct).let { result ->
                 return when {
                     result.isError -> {
-                        WooLog.e(LOGIN, "Error adding eCommerce plan to cart: ${result.error.message}")
+                        WooLog.e(
+                            LOGIN,
+                            "Error adding eCommerce plan to cart: ${result.error.message}"
+                        )
                         Failure(PLAN_PURCHASE_FAILED, result.error.message)
                     }
+
                     result.model != null -> Success(Unit)
                     else -> Failure(PLAN_PURCHASE_FAILED, "Null response")
                 }
             }
+        }
+    }
+
+    suspend fun createNewFreeTrialSite(
+        siteData: SiteCreationData,
+        languageWordPressId: String,
+        timeZoneId: String,
+    ): StoreCreationResult<Long> {
+        val createSiteResult = createNewSite(
+            siteData,
+            languageWordPressId,
+            timeZoneId,
+            COMING_SOON,
+            siteCreationFlow = FREE_TRIAL_SITE_CREATION_FLOW,
+            shouldFindAvailableUrl = true
+        )
+
+        return when (createSiteResult) {
+            is Success -> {
+                val site = siteStore.getSiteBySiteId(createSiteResult.data)
+                val domain = Uri.parse(site?.url.orEmpty()).host.orEmpty()
+                newStore.update(domain = domain)
+                sitePlanRestClient.addEcommercePlanTrial(createSiteResult.data)
+                    .let { addTrialResult ->
+                        return when (addTrialResult) {
+                            is WPComGsonRequestBuilder.Response.Success -> {
+                                Success(createSiteResult.data)
+                            }
+
+                            is WPComGsonRequestBuilder.Response.Error -> {
+                                Failure(FREE_TRIAL_ASSIGNMENT_FAILED)
+                            }
+                        }
+                    }
+            }
+
+            is Failure -> createSiteResult
         }
     }
 
@@ -147,7 +205,8 @@ class StoreCreationRepository @Inject constructor(
         timeZoneId: String,
         siteVisibility: SiteVisibility = COMING_SOON,
         dryRun: Boolean = false,
-        siteCreationFlow: String? = null
+        siteCreationFlow: String? = null,
+        shouldFindAvailableUrl: Boolean? = null,
     ): StoreCreationResult<Long> {
         fun isWordPressComSubDomain(url: String) = url.endsWith(".wordpress.com")
 
@@ -177,7 +236,8 @@ class StoreCreationRepository @Inject constructor(
             segmentId = siteData.segmentId,
             siteDesign = siteData.siteDesign,
             dryRun = dryRun,
-            siteCreationFlow = siteCreationFlow
+            siteCreationFlow = siteCreationFlow,
+            findAvailableUrl = shouldFindAvailableUrl
         )
 
         val result = dispatcher.dispatchAndAwait<NewSitePayload, OnNewSiteCreated>(
@@ -193,6 +253,7 @@ class StoreCreationRepository @Inject constructor(
                     Failure(SITE_CREATION_FAILED, result.error.message)
                 }
             }
+
             else -> Success(result.newSiteRemoteId)
         }
     }

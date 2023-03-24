@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.BuildConfig
-import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -16,7 +15,6 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.jitm.JitmTracker
 import com.woocommerce.android.ui.jitm.QueryParamsEncoder
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.Companion.UTM_SOURCE
-import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OnJitmCtaClicked
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
@@ -615,7 +613,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given jitm displayed, when jitm cta clicked, then proper event is triggered`() {
+    fun `given jitm displayed, when jitm cta clicked, then jitm click event emitted`() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
@@ -642,16 +640,12 @@ class MyStoreViewModelTest : BaseUnitTest() {
                 (sut.bannerState.value as BannerState) as BannerState.DisplayBannerState
                 ).onPrimaryActionClicked.invoke()
 
-            assertThat(
-                sut.event.value
-            ).isInstanceOf(
-                OnJitmCtaClicked::class.java
-            )
+            assertThat(sut.event.value).isInstanceOf(MyStoreViewModel.MyStoreEvent.OpenJITMAction::class.java)
         }
     }
 
     @Test
-    fun `given jitm displayed, when jitm cta clicked, then proper url is passed`() {
+    fun `given jitm displayed, when jitm cta clicked, then proper url is passedto OpenJITM event`() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
@@ -686,48 +680,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
                 (sut.bannerState.value as BannerState) as BannerState.DisplayBannerState
                 ).onPrimaryActionClicked.invoke()
 
-            assertThat(
-                (sut.event.value as OnJitmCtaClicked).url
-            ).isEqualTo(
-                "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
-            )
-        }
-    }
-
-    @Test
-    fun `given jitm displayed, when jitm cta clicked, then proper title is passed`() {
-        testBlocking {
-            givenNetworkConnectivity(connected = true)
-            whenever(selectedSite.get()).thenReturn(SiteModel())
-            whenever(selectedSite.getIfExists()).thenReturn(SiteModel())
-            whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any())
-            ).thenReturn(
-                WooResult(
-                    model = arrayOf(provideJitmApiResponse())
+            assertThat(sut.event.value as MyStoreViewModel.MyStoreEvent.OpenJITMAction).isEqualTo(
+                MyStoreViewModel.MyStoreEvent.OpenJITMAction(
+                    "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
                 )
-            )
-            whenever(
-                utmProvider.getUrlWithUtmParams(
-                    anyString(),
-                    anyString(),
-                    anyString(),
-                    any(),
-                    anyString(),
-                )
-            ).thenReturn(
-                ""
-            )
-
-            whenViewModelIsCreated()
-            (
-                (sut.bannerState.value as BannerState) as BannerState.DisplayBannerState
-                ).onPrimaryActionClicked.invoke()
-
-            assertThat(
-                (sut.event.value as OnJitmCtaClicked).titleRes
-            ).isEqualTo(
-                R.string.card_reader_purchase_card_reader
             )
         }
     }
@@ -1373,7 +1329,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             jitmStore,
             jitmTracker,
             utmProvider,
-            queryParamsEncoder
+            queryParamsEncoder,
         )
     }
 

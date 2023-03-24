@@ -12,16 +12,19 @@ import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.zendesk.ZendeskTags
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.plans.domain.CalculateRemainingTrialPeriod
+import com.woocommerce.android.ui.plans.domain.CalculatePlanRemainingPeriod
 import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_PERIOD
 import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_UPGRADE_PLAN
 import com.woocommerce.android.ui.plans.domain.SitePlan
+import com.woocommerce.android.ui.plans.domain.SitePlan.Type.FREE_TRIAL
+import com.woocommerce.android.ui.plans.domain.SitePlan.Type.OTHER
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesEvent.OpenSubscribeNow
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesEvent.OpenSupportRequestForm
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Error
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Loading
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.NonUpgradeable
+import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.PlanEnded
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialEnded
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialInProgress
 import com.woocommerce.android.util.StringUtils
@@ -38,7 +41,7 @@ class UpgradesViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val selectedSite: SelectedSite,
     private val planRepository: SitePlanRepository,
-    private val calculateRemainingTrialPeriod: CalculateRemainingTrialPeriod,
+    private val calculatePlanRemainingPeriod: CalculatePlanRemainingPeriod,
     private val resourceProvider: ResourceProvider,
     private val tracks: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
@@ -82,37 +85,56 @@ class UpgradesViewModel @Inject constructor(
 
             _upgradesState.value = planRepository
                 .fetchCurrentPlanDetails(selectedSite.get())
-                ?.asViewState()
+                ?.let { createViewStateFrom(it) }
                 ?: Error
         }
     }
 
-    private fun SitePlan.asViewState() =
-        when (type) {
-            SitePlan.Type.FREE_TRIAL -> generateHasPlanViewState()
-            SitePlan.Type.OTHER -> NonUpgradeable(
-                name = prettifiedName,
-                currentPlanEndDate = expirationDate.toLocalDate().formatStyleFull()
-            )
-        }
+    private fun createViewStateFrom(sitePlan: SitePlan) = when (sitePlan.type) {
+        FREE_TRIAL -> createFreeTrialViewStateFrom(sitePlan)
+        OTHER -> createOtherPlansViewStateFrom(sitePlan)
+    }
 
-    private fun SitePlan.generateHasPlanViewState(): UpgradesViewState.HasPlan {
-        val remainingTrialPeriod = calculateRemainingTrialPeriod(expirationDate)
-        return if (remainingTrialPeriod.isZero || remainingTrialPeriod.isNegative) {
-            TrialEnded(
-                name = resourceProvider.getString(R.string.free_trial_trial_ended)
-            )
-        } else {
-            TrialInProgress(
-                name = prettifiedName,
-                freeTrialDuration = FREE_TRIAL_PERIOD,
-                daysLeftInFreeTrial = StringUtils.getQuantityString(
-                    resourceProvider = resourceProvider,
-                    quantity = remainingTrialPeriod.days,
-                    default = R.string.free_trial_days_left_plural,
-                    one = R.string.free_trial_one_day_left
+    private fun createOtherPlansViewStateFrom(sitePlan: SitePlan) =
+        sitePlan.mapAsViewState(
+            isExpired = {
+                PlanEnded(name = resourceProvider.getString(R.string.upgrades_plan_ended_name, prettifiedName))
+            },
+            isNotExpired = {
+                NonUpgradeable(
+                    name = prettifiedName,
+                    currentPlanEndDate = expirationDate.toLocalDate().formatStyleFull()
                 )
-            )
+            }
+        )
+
+    private fun createFreeTrialViewStateFrom(sitePlan: SitePlan) =
+        sitePlan.mapAsViewState(
+            isExpired = {
+                TrialEnded(name = resourceProvider.getString(R.string.free_trial_trial_ended))
+            },
+            isNotExpired = { remainingPeriod ->
+                TrialInProgress(
+                    name = prettifiedName,
+                    freeTrialDuration = FREE_TRIAL_PERIOD,
+                    daysLeftInFreeTrial = StringUtils.getQuantityString(
+                        resourceProvider = resourceProvider,
+                        quantity = remainingPeriod.days,
+                        default = R.string.free_trial_days_left_plural,
+                        one = R.string.free_trial_one_day_left
+                    )
+                )
+            }
+        )
+
+    private inline fun SitePlan.mapAsViewState(
+        crossinline isNotExpired: SitePlan.(Period) -> UpgradesViewState.HasPlan,
+        crossinline isExpired: SitePlan.() -> UpgradesViewState.HasPlan
+    ): UpgradesViewState.HasPlan {
+        val daysUntilExpiration = calculatePlanRemainingPeriod(expirationDate)
+        return when {
+            daysUntilExpiration.isZero || daysUntilExpiration.isNegative -> isExpired()
+            else -> isNotExpired(daysUntilExpiration)
         }
     }
 
@@ -138,6 +160,10 @@ class UpgradesViewModel @Inject constructor(
             override val name: String,
             val freeTrialDuration: Period,
             val daysLeftInFreeTrial: String
+        ) : HasPlan
+
+        data class PlanEnded(
+            override val name: String
         ) : HasPlan
 
         data class NonUpgradeable(
