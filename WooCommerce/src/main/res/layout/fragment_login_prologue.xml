@@ -73,7 +73,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/start_free_trial_button"
-            style="@style/Woo.Button.Colored.Circle"
+            style="@style/Woo.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
@@ -85,7 +85,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_login_wpcom"
-            style="@style/Woo.Button.Colored.Circle"
+            style="@style/Woo.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
@@ -96,7 +96,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_login_store"
-            style="@style/Woo.Button.Colored.Circle"
+            style="@style/Woo.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
@@ -113,7 +113,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_get_started"
-            style="@style/Woo.Button.Colored.Circle.White"
+            style="@style/Woo.Button.Colored.White"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
