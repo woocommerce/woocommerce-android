@@ -32,20 +32,19 @@
         app:layout_constraintTop_toBottomOf="@+id/image_prologue"
         app:srcCompat="@drawable/img_prologue_bg" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_centerHorizontal="true"
-        android:importantForAccessibility="no"
-        android:scaleType="fitCenter"
-        app:layout_constraintHeight_percent="0.3"
-        app:layout_constraintWidth_percent="0.3"
-        app:layout_constraintTop_toBottomOf="@+id/image_prologue"
-        app:layout_constraintBottom_toTopOf="@+id/prologueTitle"
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/prologueIntro"
+        style="@style/Woo.TextView.Headline6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="@dimen/major_200"
+        android:text="@string/simplified_login_prologue_intro"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:src="@drawable/img_prologue" />
+        app:layout_constraintTop_toBottomOf="@id/image_prologue"
+        app:layout_constraintBottom_toTopOf="@id/prologueTitle" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/prologueTitle"
@@ -55,7 +54,7 @@
         android:layout_gravity="center_horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imageView"
+        app:layout_constraintTop_toBottomOf="@id/prologueIntro"
         app:layout_constraintBottom_toTopOf="@+id/loginButtons"
         android:gravity="center"
         android:textStyle="bold"
