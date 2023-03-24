@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.login.storecreation.onboarding
 
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent.STORE_ONBOARDING_COMPLETED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.LAUNCH_YOUR_STORE
@@ -22,7 +24,8 @@ class StoreOnboardingRepository @Inject constructor(
     private val onboardingStore: OnboardingStore,
     private val selectedSite: SelectedSite,
     private val siteStore: SiteStore,
-    private val appPrefsWrapper: AppPrefsWrapper
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) {
 
     var onboardingTasksCacheFlow: MutableStateFlow<List<OnboardingTask>> = MutableStateFlow(emptyList())
@@ -60,6 +63,7 @@ class StoreOnboardingRepository @Inject constructor(
                         "All onboarding tasks are completed for siteId: ${selectedSite.getSelectedSiteId()}"
                     )
                     appPrefsWrapper.markAllOnboardingTasksCompleted(selectedSite.getSelectedSiteId())
+                    analyticsTrackerWrapper.track(stat = STORE_ONBOARDING_COMPLETED)
                 }
                 onboardingTasksCacheFlow.emit(mobileSupportedTasks)
             }
