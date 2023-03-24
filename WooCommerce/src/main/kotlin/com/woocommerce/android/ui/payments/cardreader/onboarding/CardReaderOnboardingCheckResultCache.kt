@@ -6,16 +6,16 @@ import javax.inject.Singleton
 @Singleton
 class CardReaderOnboardingCheckResultCache @Inject constructor() {
     @Volatile
-    var value: CacheResult = CacheResult.NotCached
+    var value: Result = Result.NotCached
         @Synchronized get
         @Synchronized set
 
     fun invalidate() {
-        value = CacheResult.NotCached
+        value = Result.NotCached
     }
 
-    sealed class CacheResult {
-        data class Cached(val state: CardReaderOnboardingState.OnboardingCompleted) : CacheResult()
-        object NotCached : CacheResult()
+    sealed class Result {
+        data class Cached(val state: CardReaderOnboardingState.OnboardingCompleted) : Result()
+        object NotCached : Result()
     }
 }

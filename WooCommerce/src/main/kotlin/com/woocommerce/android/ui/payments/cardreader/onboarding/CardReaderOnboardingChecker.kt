@@ -80,7 +80,7 @@ class CardReaderOnboardingChecker @Inject constructor(
         if (!networkStatus.isConnected()) return NoConnectionError
 
         cardReaderOnboardingCheckResultCache.value.run {
-            if (this is CardReaderOnboardingCheckResultCache.CacheResult.Cached) return state
+            if (this is CardReaderOnboardingCheckResultCache.Result.Cached) return state
         }
 
         return fetchOnboardingState(pluginType)
@@ -88,7 +88,7 @@ class CardReaderOnboardingChecker @Inject constructor(
                 val (status, version) = when (state) {
                     is OnboardingCompleted -> {
                         cardReaderOnboardingCheckResultCache.value =
-                            CardReaderOnboardingCheckResultCache.CacheResult.Cached(state)
+                            CardReaderOnboardingCheckResultCache.Result.Cached(state)
                         CARD_READER_ONBOARDING_COMPLETED to state.version
                     }
                     is CashOnDeliveryDisabled -> CARD_READER_ONBOARDING_PENDING to state.version
@@ -114,6 +114,10 @@ class CardReaderOnboardingChecker @Inject constructor(
         val wcPayPluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_PAYMENTS)
         val stripePluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY)
         return PreferredPluginResult.Success(getPreferredPlugin(stripePluginInfo, wcPayPluginInfo).type)
+    }
+
+    fun invalidateCache() {
+        cardReaderOnboardingCheckResultCache.invalidate()
     }
 
     @Suppress("ReturnCount", "ComplexMethod", "LongMethod")

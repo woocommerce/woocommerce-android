@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.appwidgets.getWidgetName
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
@@ -103,6 +104,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var prefs: AppPrefs
 
     @Inject @AppCoroutineScope lateinit var appCoroutineScope: CoroutineScope
+
+    @Inject lateinit var cardReaderOnboardingChecker: CardReaderOnboardingChecker
 
     private var connectionReceiverRegistered = false
 
@@ -231,6 +234,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                             restartMainActivity()
                         }
                     }
+
+                    cardReaderOnboardingChecker.invalidateCache()
+                    cardReaderOnboardingChecker.getOnboardingState()
                 }
             }
         }
