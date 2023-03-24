@@ -2756,7 +2756,7 @@
     <string name="enter_account_info_for_site">Enter your account information for %1$s.</string>
     <string name="get_started">Get Started</string>
     <string name="lets_get_started">Let\'s get started!</string>
-    <string name="simplified_login_prologue_title">WooCommerce is a customizable, open-source eCommerce platform built on WordPress.</string>
+    <string name="simplified_login_prologue_title">From your first sale to millions in revenue, Woo is with you. See why merchants trust us to power 3.4 million online stores.</string>
     <string name="check_email">Check email</string>
     <string name="login_text_otp">Text me a code instead</string>
     <string name="login_text_otp_another">Text me another code instead</string>
@@ -3190,9 +3190,7 @@
     <string name="free_trial_upgrade_now">Upgrade Now</string>
     <string name="free_trial_one_day_left">1 day</string>
     <string name="free_trial_days_left_plural">%1$d days</string>
-    <string name="free_trial_login_button">Log in</string>
     <string name="free_trial_login_start_button">Start your free trial</string>
-    <string name="free_trial_login_content_message">From your first sale to millions in revenue, Woo is with you. See why merchants trust us to power 3.4 million online stores.</string>
 
     <!--
     Upgrades
