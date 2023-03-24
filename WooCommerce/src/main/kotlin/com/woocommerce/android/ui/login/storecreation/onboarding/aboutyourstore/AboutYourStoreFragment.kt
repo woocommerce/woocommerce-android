@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.name
+package com.woocommerce.android.ui.login.storecreation.onboarding.aboutyourstore
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,17 +8,21 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.fluxc.network.UserAgent
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class StoreNamePickerFragment : BaseFragment() {
-    private val viewModel: StoreNamePickerViewModel by viewModels()
+class AboutYourStoreFragment : BaseFragment() {
+    private val viewModel: AboutYourStoreViewModel by viewModels()
+
+    @Inject lateinit var userAgent: UserAgent
+    @Inject lateinit var authenticator: WPComWebViewAuthenticator
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -28,7 +32,7 @@ class StoreNamePickerFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    StoreNamePickerScreen(viewModel)
+                    AboutYourStoreScreen(viewModel, userAgent, authenticator)
                 }
             }
         }
@@ -42,13 +46,7 @@ class StoreNamePickerFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
-                is StoreNamePickerViewModel.NavigateToNextStep -> findNavController().navigateSafely(
-                    StoreNamePickerFragmentDirections.actionStoreNamePickerFragmentToDomainPickerFragment(
-                        event.domainInitialQuery
-                    )
-                )
+                is Exit -> findNavController().popBackStack()
             }
         }
     }

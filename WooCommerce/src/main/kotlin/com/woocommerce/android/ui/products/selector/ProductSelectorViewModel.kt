@@ -142,8 +142,7 @@ class ProductSelectorViewModel @Inject constructor(
                 if (productType == VARIABLE) {
                     resourceProvider.getString(string.product_stock_status_instock_with_variations, numVariations)
                 } else {
-                    val quantity = if (stockQuantity.isInteger()) stockQuantity.toInt() else stockQuantity
-                    resourceProvider.getString(string.product_stock_status_instock_quantified, quantity.toString())
+                    getStockStatusLabel()
                 }
             }
             NotAvailable, is Custom -> null
@@ -165,6 +164,16 @@ class ProductSelectorViewModel @Inject constructor(
             selectedVariationIds = variationIds.intersect(selectedItems.variationIds.toSet()),
             selectionState = getProductSelection()
         )
+    }
+
+    private fun Product.getStockStatusLabel() = if (isStockManaged) {
+        val quantity = if (stockQuantity.isInteger()) stockQuantity.toInt() else stockQuantity
+        resourceProvider.getString(
+            string.product_stock_status_instock_quantified,
+            quantity.toString()
+        )
+    } else {
+        resourceProvider.getString(string.product_stock_status_instock)
     }
 
     fun onClearButtonClick() {

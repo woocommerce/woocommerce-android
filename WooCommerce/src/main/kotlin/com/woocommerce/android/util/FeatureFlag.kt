@@ -37,12 +37,13 @@ enum class FeatureFlag {
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
-            IAP_FOR_STORE_CREATION,
             IPP_TAP_TO_PAY,
             STORE_CREATION_ONBOARDING,
             FREE_TRIAL_M2,
             REST_API_I2,
             ANALYTICS_HUB_FEEDBACK_BANNER -> PackageUtils.isDebugBuild()
+
+            IAP_FOR_STORE_CREATION -> false
         }
     }
 }

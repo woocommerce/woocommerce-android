@@ -16,6 +16,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.NavigateToAboutYourStore
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.NavigateToDomains
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.NavigateToLaunchStore
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -63,11 +66,11 @@ class StoreOnboardingFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                is StoreOnboardingViewModel.NavigateToLaunchStore ->
+                is NavigateToLaunchStore ->
                     findNavController().navigateSafely(
                         directions = StoreOnboardingFragmentDirections.actionOnboardingFragmentToLaunchStoreFragment()
                     )
-                is StoreOnboardingViewModel.NavigateToDomains ->
+                is NavigateToDomains ->
                     findNavController().navigateSafely(
                         directions = StoreOnboardingFragmentDirections
                             .actionStoreOnboardingFragmentToNavGraphDomainChange()
@@ -75,6 +78,10 @@ class StoreOnboardingFragment : BaseFragment() {
                 is StoreOnboardingViewModel.NavigateToSetupPayments ->
                     findNavController().navigateSafely(
                         directions = StoreOnboardingFragmentDirections.actionStoreOnboardingFragmentToGetPaidFragment()
+                    )
+                is NavigateToAboutYourStore ->
+                    findNavController().navigateSafely(
+                        StoreOnboardingFragmentDirections.actionStoreOnboardingFragmentToAboutYourStoreFragment()
                     )
                 is StoreOnboardingViewModel.NavigateToAddProduct ->
                     findNavController().navigateSafely(

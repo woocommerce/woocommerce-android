@@ -56,8 +56,8 @@ class StoreNamePickerViewModel @Inject constructor(
 
     fun onContinueClicked() {
         newStore.update(name = storeName.value)
-        triggerEvent(NavigateToNextStep)
+        triggerEvent(NavigateToNextStep(storeName.value!!))
     }
 
-    object NavigateToNextStep : MultiLiveEvent.Event()
+    data class NavigateToNextStep(val domainInitialQuery: String) : MultiLiveEvent.Event()
 }
