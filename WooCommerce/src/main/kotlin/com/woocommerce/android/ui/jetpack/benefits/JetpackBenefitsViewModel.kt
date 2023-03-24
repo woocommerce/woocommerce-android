@@ -35,7 +35,7 @@ class JetpackBenefitsViewModel @Inject constructor(
         ViewState(
             isUsingJetpackCP = selectedSite.connectionType == SiteConnectionType.JetpackConnectionPackage,
             isLoadingDialogShown = false,
-            isRestAPIActivationAvailable = !FeatureFlag.REST_API_I2.isEnabled()
+            isNativeJetpackActivationAvailable = FeatureFlag.REST_API_I2.isEnabled()
         )
     )
     val viewState = _viewState.asLiveData()
@@ -85,7 +85,7 @@ class JetpackBenefitsViewModel @Inject constructor(
     data class ViewState(
         val isUsingJetpackCP: Boolean,
         val isLoadingDialogShown: Boolean,
-        val isRestAPIActivationAvailable: Boolean
+        val isNativeJetpackActivationAvailable: Boolean
     )
 
     object StartJetpackActivationForJetpackCP : Event()

@@ -120,7 +120,7 @@ fun JetpackBenefitsScreen(
             }
         }
 
-        if (viewState.isRestAPIActivationAvailable) {
+        if (viewState.isNativeJetpackActivationAvailable) {
             WCColoredButton(onClick = onInstallClick, modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = stringResource(
@@ -129,10 +129,10 @@ fun JetpackBenefitsScreen(
                     )
                 )
             }
-        } else {
-            WCColoredButton(onClick = onOpenWPAdminJetpackActivationClick, modifier = Modifier.fillMaxWidth()) {
-                Text(text = stringResource(R.string.jetpack_benefits_open_wpadmin))
-            }
+        }
+
+        WCColoredButton(onClick = onOpenWPAdminJetpackActivationClick, modifier = Modifier.fillMaxWidth()) {
+            Text(text = stringResource(R.string.jetpack_benefits_open_wpadmin))
         }
 
         WCOutlinedButton(onClick = onDismissClick, modifier = Modifier.fillMaxWidth()) {
@@ -183,7 +183,7 @@ private fun JetpackBenefitsScreenPreview() {
             viewState = JetpackBenefitsViewModel.ViewState(
                 isUsingJetpackCP = false,
                 isLoadingDialogShown = false,
-                isRestAPIActivationAvailable = true
+                isNativeJetpackActivationAvailable = true
             )
         )
     }
@@ -191,13 +191,13 @@ private fun JetpackBenefitsScreenPreview() {
 
 @Composable
 @Preview
-private fun JetpackBenefitsScreenWithoutCTAPreview() {
+private fun JetpackBenefitsScreenWithoutNativeInstallPreview() {
     WooThemeWithBackground {
         JetpackBenefitsScreen(
             viewState = JetpackBenefitsViewModel.ViewState(
                 isUsingJetpackCP = false,
                 isLoadingDialogShown = false,
-                isRestAPIActivationAvailable = false
+                isNativeJetpackActivationAvailable = false
             )
         )
     }
