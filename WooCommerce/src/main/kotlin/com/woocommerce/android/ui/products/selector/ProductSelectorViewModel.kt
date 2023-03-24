@@ -97,7 +97,8 @@ class ProductSelectorViewModel @Inject constructor(
 
     val viewState = combine(
         flow = products,
-        flow2 = loadingState.withIndex()
+        flow2 = popularProducts,
+        flow3 = loadingState.withIndex()
             .debounce {
                 if (it.index != 0 && it.value == IDLE) {
                     // When resetting to IDLE, wait a bit to make sure the list has been fetched from DB
@@ -105,14 +106,14 @@ class ProductSelectorViewModel @Inject constructor(
                 } else 0L
             }
             .map { it.value },
-        flow3 = selectedItems,
-        flow4 = filterState,
-        flow5 = searchQuery
-    ) { products, loadingState, selectedIds, filterState, searchQuery ->
+        flow4 = selectedItems,
+        flow5 = filterState,
+        flow6 = searchQuery
+    ) { products, popularProducts, loadingState, selectedIds, filterState, searchQuery ->
         ViewState(
             loadingState = loadingState,
             products = products.map { it.toUiModel(selectedIds) },
-            popularProducts = emptyList(),
+            popularProducts = popularProducts.map { it.toUiModel(selectedIds) },
             selectedItemsCount = selectedIds.size,
             filterState = filterState,
             searchQuery = searchQuery
