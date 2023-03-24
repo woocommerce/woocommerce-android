@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.login.sitecredentials
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -12,6 +11,7 @@ import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.WPApiSiteRepository
+import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.LoggedIn
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowApplicationPasswordsUnavailableScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowNonWooErrorScreen
@@ -34,9 +34,8 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
-import org.wordpress.android.fluxc.store.SiteStore.SiteError
-import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
 import org.wordpress.android.login.LoginAnalyticsListener
 
 @ExperimentalCoroutinesApi
@@ -50,7 +49,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     private val applicationPasswordsUnavailableEvents = MutableSharedFlow<WPAPINetworkError>(extraBufferCapacity = 1)
 
     private val wpApiSiteRepository: WPApiSiteRepository = mock {
-        onBlocking { login(eq(siteAddress), any(), any()) } doReturn Result.success(testSite)
+        onBlocking { loginAndFetchSite(eq(siteAddress), any(), any()) } doReturn Result.success(testSite)
         onBlocking { checkIfUserIsEligible(testSite) } doReturn Result.success(true)
         onBlocking { getSiteByLocalId(testSite.id) } doReturn testSite
     }
@@ -145,17 +144,14 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given incorrect credentials, when submitting, then show error`() = testBlocking {
-        val returnedErrorMessage = "Username or password incorrect"
+        val expectedError = CookieNonceAuthenticationException(
+            errorMessage = UiStringText("Username or password incorrect"),
+            errorType = Nonce.CookieNonceErrorType.NOT_AUTHENTICATED.name,
+            networkStatusCode = null
+        )
         setup {
-            whenever(wpApiSiteRepository.login(siteAddress, testUsername, testPassword)).thenReturn(
-                Result.failure(
-                    OnChangedException(
-                        SiteError(
-                            SiteErrorType.NOT_AUTHENTICATED,
-                            message = returnedErrorMessage
-                        )
-                    )
-                )
+            whenever(wpApiSiteRepository.loginAndFetchSite(siteAddress, testUsername, testPassword)).thenReturn(
+                Result.failure(expectedError)
             )
         }
 
@@ -165,15 +161,15 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             viewModel.onContinueClick()
         }.last()
 
-        assertThat(state.errorDialogMessage).isEqualTo(UiStringText(returnedErrorMessage))
+        assertThat(state.errorDialogMessage).isEqualTo(expectedError.errorMessage)
         verify(analyticsTracker).track(
             stat = eq(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_LOGIN_FAILED),
             properties = argThat {
                 get(AnalyticsTracker.KEY_STEP) == LoginSiteCredentialsViewModel.Step.AUTHENTICATION.name.lowercase()
             },
             errorContext = anyOrNull(),
-            errorType = anyOrNull(),
-            errorDescription = anyOrNull()
+            errorType = eq(expectedError.errorType),
+            errorDescription = eq((expectedError.errorMessage as UiStringText).text)
         )
         verify(loginAnalyticsListener).trackFailure(anyOrNull())
     }
@@ -181,7 +177,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     @Test
     fun `given site without Woo, when submitting, then show error screen`() = testBlocking {
         setup {
-            whenever(wpApiSiteRepository.login(siteAddress, testUsername, testPassword))
+            whenever(wpApiSiteRepository.loginAndFetchSite(siteAddress, testUsername, testPassword))
                 .thenReturn(Result.success(testSite.apply { hasWooCommerce = false }))
         }
 
@@ -230,7 +226,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             viewModel.onWooInstallationAttempted()
         }
 
-        verify(wpApiSiteRepository).login(any(), any(), any())
+        verify(wpApiSiteRepository).loginAndFetchSite(any(), any(), any())
     }
 
     @Test

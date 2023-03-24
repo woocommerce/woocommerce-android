@@ -5,10 +5,10 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.formatStyleFull
-import com.woocommerce.android.support.ZendeskTags
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.support.zendesk.ZendeskTags
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.plans.domain.CalculateRemainingTrialPeriod
+import com.woocommerce.android.ui.plans.domain.CalculatePlanRemainingPeriod
 import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_PERIOD
 import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_PLAN_ID
 import com.woocommerce.android.ui.plans.domain.SitePlan
@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesEvent
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Error
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.NonUpgradeable
+import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.PlanEnded
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialEnded
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialInProgress
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -28,6 +29,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.model.SiteModel
@@ -39,7 +41,7 @@ class UpgradesViewModelTest : BaseUnitTest() {
     lateinit var sut: UpgradesViewModel
     lateinit var selectedSite: SelectedSite
     lateinit var planRepository: SitePlanRepository
-    lateinit var remainingTrialPeriodUseCase: CalculateRemainingTrialPeriod
+    lateinit var remainingTrialPeriodUseCase: CalculatePlanRemainingPeriod
     var resourceProvider: ResourceProvider = mock()
     var tracks: AnalyticsTrackerWrapper = mock()
 
@@ -50,9 +52,13 @@ class UpgradesViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when SitePlan is free trial with remaining time, then state is set to TrialInProgress`() =
+    fun `when SitePlan is free trial with one day remaining, then state is set to TrialInProgress with expected daysLeftInFreeTrial value`() =
         testBlocking {
             // Given
+            resourceProvider = mock {
+                on { getString(any(), eq(1)) } doReturn "1 day"
+            }
+
             createSut(
                 type = SitePlan.Type.FREE_TRIAL,
                 remainingTrialPeriod = Period.ofDays(1)
@@ -66,9 +72,37 @@ class UpgradesViewModelTest : BaseUnitTest() {
             assertThat(viewModelState).isNotNull
             assertThat(viewModelState).isEqualTo(
                 TrialInProgress(
-                    name = FREE_TRIAL_TEST_SITE_NAME,
+                    name = TEST_SITE_NAME,
                     freeTrialDuration = FREE_TRIAL_PERIOD,
-                    leftInFreeTrialDuration = Period.ofDays(1)
+                    daysLeftInFreeTrial = "1 day"
+                )
+            )
+        }
+
+    @Test
+    fun `when SitePlan is free trial with more than one day remaining, then state is set to TrialInProgress with expected daysLeftInFreeTrial value`() =
+        testBlocking {
+            // Given
+            resourceProvider = mock {
+                on { getString(any(), eq(10)) } doReturn "10 days"
+            }
+
+            createSut(
+                type = SitePlan.Type.FREE_TRIAL,
+                remainingTrialPeriod = Period.ofDays(10)
+            )
+            var viewModelState: UpgradesViewState? = null
+            sut.upgradesState.observeForever {
+                viewModelState = it
+            }
+
+            // Then
+            assertThat(viewModelState).isNotNull
+            assertThat(viewModelState).isEqualTo(
+                TrialInProgress(
+                    name = TEST_SITE_NAME,
+                    freeTrialDuration = FREE_TRIAL_PERIOD,
+                    daysLeftInFreeTrial = "10 days"
                 )
             )
         }
@@ -99,9 +133,37 @@ class UpgradesViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when SitePlan is NOT free trial, then state is set to NonUpgradeable`() =
+    fun `when SitePlan is NOT free trial with remaining days, then state is set to NonUpgradeable`() =
         testBlocking {
             // Given
+            createSut(
+                type = SitePlan.Type.OTHER,
+                remainingTrialPeriod = Period.ofDays(1)
+            )
+            var viewModelState: UpgradesViewState? = null
+            sut.upgradesState.observeForever {
+                viewModelState = it
+            }
+
+            // Then
+            assertThat(viewModelState).isNotNull
+            assertThat(viewModelState).isEqualTo(
+                NonUpgradeable(
+                    name = TEST_SITE_NAME,
+                    currentPlanEndDate = SITE_PLAN_EXPIRATION_DATE
+                        .toLocalDate().formatStyleFull()
+                )
+            )
+        }
+
+    @Test
+    fun `when SitePlan is NOT free trial WITHOUT remaining days, then state is set to NonUpgradeable`() =
+        testBlocking {
+            // Given
+            resourceProvider = mock {
+                on { getString(any(), eq(TEST_SITE_NAME)) } doReturn "$TEST_SITE_NAME ended"
+            }
+
             createSut(
                 type = SitePlan.Type.OTHER,
                 remainingTrialPeriod = Period.ZERO
@@ -114,10 +176,8 @@ class UpgradesViewModelTest : BaseUnitTest() {
             // Then
             assertThat(viewModelState).isNotNull
             assertThat(viewModelState).isEqualTo(
-                NonUpgradeable(
-                    name = FREE_TRIAL_TEST_SITE_NAME,
-                    currentPlanEndDate = SITE_PLAN_EXPIRATION_DATE
-                        .toLocalDate().formatStyleFull()
+                PlanEnded(
+                    name = "$TEST_SITE_NAME ended",
                 )
             )
         }
@@ -236,7 +296,7 @@ class UpgradesViewModelTest : BaseUnitTest() {
         remainingTrialPeriod: Period = Period.ofDays(10)
     ) {
         val sitePlan = SitePlan(
-            name = "WordPress.com $FREE_TRIAL_TEST_SITE_NAME",
+            name = "WordPress.com $TEST_SITE_NAME",
             expirationDate = SITE_PLAN_EXPIRATION_DATE,
             type = type
         )
@@ -286,7 +346,7 @@ class UpgradesViewModelTest : BaseUnitTest() {
     }
 
     companion object {
-        private const val FREE_TRIAL_TEST_SITE_NAME = "Free Trial site"
+        private const val TEST_SITE_NAME = "Free Trial site"
         private const val TRIAL_ENDED_TEST_SITE_NAME = "Trial ended test site"
         private val SITE_PLAN_EXPIRATION_DATE = ZonedDateTime.now()
     }

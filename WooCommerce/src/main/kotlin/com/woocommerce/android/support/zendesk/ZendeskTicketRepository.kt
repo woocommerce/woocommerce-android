@@ -1,23 +1,16 @@
-package com.woocommerce.android.support
+package com.woocommerce.android.support.zendesk
 
 import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.os.Parcelable
-import android.telephony.TelephonyManager
-import android.text.TextUtils
-import com.woocommerce.android.extensions.logInformation
-import com.woocommerce.android.extensions.stateLogInformation
-import com.woocommerce.android.support.RequestConstants.requestCreationIdentityNotSetErrorMessage
-import com.woocommerce.android.support.RequestConstants.requestCreationTimeoutErrorMessage
-import com.woocommerce.android.support.ZendeskException.IdentityNotSetException
-import com.woocommerce.android.support.ZendeskException.RequestCreationTimeoutException
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.support.zendesk.RequestConstants.requestCreationIdentityNotSetErrorMessage
+import com.woocommerce.android.support.zendesk.RequestConstants.requestCreationTimeoutErrorMessage
+import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetException
+import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationFailedException
+import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationTimeoutException
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.PackageUtils
-import com.woocommerce.android.util.WooLog
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
 import kotlinx.coroutines.channels.awaitClose
@@ -28,16 +21,13 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
-import org.wordpress.android.util.DeviceUtils
-import org.wordpress.android.util.StringUtils
-import org.wordpress.android.util.UrlUtils
 import zendesk.support.CreateRequest
 import zendesk.support.CustomField
 import zendesk.support.Request
-import java.util.Locale
 
 class ZendeskTicketRepository(
     private val zendeskSettings: ZendeskSettings,
+    private val envDataSource: ZendeskEnvironmentDataSource,
     private val siteStore: SiteStore,
     private val dispatchers: CoroutineDispatchers
 ) {
@@ -60,11 +50,7 @@ class ZendeskTicketRepository(
             return@callbackFlow
         }
 
-        val siteConnectionTag = if (selectedSite?.connectionType == SiteConnectionType.ApplicationPasswords) {
-            ZendeskTags.applicationPasswordAuthenticated
-        } else null
-
-        val tags = (ticketType.tags + extraTags + siteConnectionTag).filterNotNull()
+        val tags = (ticketType.tags + extraTags)
 
         val requestCallback = object : ZendeskCallback<Request>() {
             override fun onSuccess(result: Request?) {
@@ -73,7 +59,7 @@ class ZendeskTicketRepository(
             }
 
             override fun onError(error: ErrorResponse) {
-                trySend(Result.failure(Throwable(error.reason)))
+                trySend(Result.failure(RequestCreationFailedException(error.reason)))
                 close()
             }
         }
@@ -82,7 +68,7 @@ class ZendeskTicketRepository(
             this.ticketFormId = ticketType.form
             this.subject = subject
             this.description = description
-            this.tags = buildZendeskTags(siteStore.sites, origin, tags)
+            this.tags = buildZendeskTags(selectedSite, siteStore.sites, origin, tags)
                 .filter { ticketType.excludedTags.contains(it).not() }
             this.customFields = buildZendeskCustomFields(context, ticketType, siteStore.sites, selectedSite)
         }.let { request -> zendeskSettings.requestProvider?.createRequest(request, requestCallback) }
@@ -97,14 +83,6 @@ class ZendeskTicketRepository(
         awaitClose()
     }.flowOn(dispatchers.io)
 
-    private fun getHomeURLOrHostName(site: SiteModel): String {
-        var homeURL = UrlUtils.removeScheme(site.url)
-        homeURL = StringUtils.removeTrailingSlash(homeURL)
-        return if (TextUtils.isEmpty(homeURL)) {
-            UrlUtils.getHost(site.xmlRpcUrl)
-        } else homeURL
-    }
-
     /**
      * This is a helper function which builds a list of `CustomField`s which will be used during ticket creation. They
      * will be used to fill the custom fields we have setup in Zendesk UI for Happiness Engineers.
@@ -116,34 +94,19 @@ class ZendeskTicketRepository(
         selectedSite: SiteModel?,
         ssr: String? = null
     ): List<CustomField> {
-        val currentSiteInformation = if (selectedSite != null) {
-            "${getHomeURLOrHostName(selectedSite)} (${selectedSite.stateLogInformation})"
-        } else {
-            "not_selected"
-        }
         return listOf(
-            CustomField(TicketFieldIds.appVersion, PackageUtils.getVersionName(context)),
-            CustomField(TicketFieldIds.deviceFreeSpace, DeviceUtils.getTotalAvailableMemorySize()),
-            CustomField(TicketFieldIds.networkInformation, getNetworkInformation(context)),
-            CustomField(TicketFieldIds.logs, WooLog.toString().takeLast(ZendeskConstants.maxLogfileLength)),
-            CustomField(TicketFieldIds.ssr, ssr),
-            CustomField(TicketFieldIds.currentSite, currentSiteInformation),
-            CustomField(TicketFieldIds.sourcePlatform, ZendeskConstants.sourcePlatform),
-            CustomField(TicketFieldIds.appLanguage, Locale.getDefault().language),
-            CustomField(TicketFieldIds.categoryId, ticketType.categoryName),
-            CustomField(TicketFieldIds.subcategoryId, ticketType.subcategoryName),
-            CustomField(TicketFieldIds.blogList, getCombinedLogInformationOfSites(allSites))
+            CustomField(TicketCustomField.appVersion, envDataSource.generateVersionName(context)),
+            CustomField(TicketCustomField.deviceFreeSpace, envDataSource.totalAvailableMemorySize),
+            CustomField(TicketCustomField.networkInformation, envDataSource.generateNetworkInformation(context)),
+            CustomField(TicketCustomField.logs, envDataSource.deviceLogs),
+            CustomField(TicketCustomField.ssr, ssr),
+            CustomField(TicketCustomField.currentSite, envDataSource.generateHostData(selectedSite)),
+            CustomField(TicketCustomField.sourcePlatform, ZendeskEnvironmentDataSource.sourcePlatform),
+            CustomField(TicketCustomField.appLanguage, envDataSource.deviceLanguage),
+            CustomField(TicketCustomField.categoryId, ticketType.categoryName),
+            CustomField(TicketCustomField.subcategoryId, ticketType.subcategoryName),
+            CustomField(TicketCustomField.blogList, envDataSource.generateCombinedLogInformationOfSites(allSites))
         )
-    }
-
-    /**
-     * This is a small helper function which just joins the `logInformation` of all the sites passed in with a separator.
-     */
-    private fun getCombinedLogInformationOfSites(allSites: List<SiteModel>?): String {
-        allSites?.let { it ->
-            return it.joinToString(separator = ZendeskConstants.blogSeparator) { it.logInformation }
-        }
-        return ZendeskConstants.noneValue
     }
 
     /**
@@ -151,21 +114,25 @@ class ZendeskTicketRepository(
      * custom tags to be added for special cases.
      */
     private fun buildZendeskTags(
+        selectedSite: SiteModel?,
         allSites: List<SiteModel>?,
         origin: HelpOrigin,
         extraTags: List<String>
     ): List<String> {
         val tags = ArrayList<String>()
+        if (selectedSite?.connectionType == SiteConnectionType.ApplicationPasswords) {
+            tags.add(ZendeskTags.applicationPasswordAuthenticated)
+        }
         allSites?.let { it ->
             // Add wpcom tag if at least one site is WordPress.com site
             if (it.any { it.isWPCom }) {
-                tags.add(ZendeskConstants.wpComTag)
+                tags.add(ZendeskTags.wpComTag)
             }
 
             // Add Jetpack tag if at least one site is Jetpack connected. Even if a site is Jetpack connected,
             // it does not necessarily mean that user is connected with the REST API, but we don't care about that here
             if (it.any { it.isJetpackConnected }) {
-                tags.add(ZendeskConstants.jetpackTag)
+                tags.add(ZendeskTags.jetpackTag)
             }
 
             // Find distinct plans and add them
@@ -173,39 +140,11 @@ class ZendeskTicketRepository(
             tags.addAll(plans)
         }
         tags.add(origin.toString())
-        // Add Android tag to make it easier to filter tickets by platform
-        tags.add(ZendeskConstants.platformTag)
+        // We rely on this platform tag to filter tickets in Zendesk
+        tags.add(ZendeskTags.platformTag)
         tags.addAll(extraTags)
         return tags
     }
-
-    /**
-     * This is a helper function which returns information about the network state of the app to be sent to Zendesk, which
-     * could prove useful for the Happiness Engineers while debugging the users' issues.
-     */
-    private fun getNetworkInformation(context: Context): String {
-        val networkType = generateNetworkType(context)
-        val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?
-        val carrierName = telephonyManager?.networkOperatorName ?: ZendeskConstants.unknownValue
-        val countryCodeLabel = telephonyManager?.networkCountryIso ?: ZendeskConstants.unknownValue
-        return listOf(
-            "${ZendeskConstants.networkTypeLabel} $networkType",
-            "${ZendeskConstants.networkCarrierLabel} $carrierName",
-            "${ZendeskConstants.networkCountryCodeLabel} ${countryCodeLabel.uppercase(Locale.getDefault())}"
-        ).joinToString(separator = "\n")
-    }
-
-    private fun generateNetworkType(context: Context) =
-        context.getSystemService(Context.CONNECTIVITY_SERVICE)
-            .run { this as? ConnectivityManager }
-            ?.let { it.getNetworkCapabilities(it.activeNetwork) }
-            ?.let {
-                when {
-                    it.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> ZendeskConstants.networkWifi
-                    it.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> ZendeskConstants.networkWWAN
-                    else -> ZendeskConstants.unknownValue
-                }
-            } ?: ZendeskConstants.unknownValue
 }
 
 sealed class TicketType(
@@ -216,13 +155,13 @@ sealed class TicketType(
     val excludedTags: List<String> = emptyList()
 ) : Parcelable {
     @Parcelize object MobileApp : TicketType(
-        form = TicketFieldIds.wooMobileFormID,
+        form = TicketCustomField.wooMobileFormID,
         categoryName = ZendeskConstants.mobileAppCategory,
         subcategoryName = ZendeskConstants.mobileSubcategoryValue,
         tags = listOf(ZendeskTags.mobileApp)
     )
     @Parcelize object InPersonPayments : TicketType(
-        form = TicketFieldIds.wooMobileFormID,
+        form = TicketCustomField.wooMobileFormID,
         categoryName = ZendeskConstants.mobileAppCategory,
         subcategoryName = ZendeskConstants.mobileSubcategoryValue,
         tags = listOf(
@@ -231,7 +170,7 @@ sealed class TicketType(
         )
     )
     @Parcelize object Payments : TicketType(
-        form = TicketFieldIds.wooFormID,
+        form = TicketCustomField.wooFormID,
         categoryName = ZendeskConstants.supportCategory,
         subcategoryName = ZendeskConstants.paymentsSubcategoryValue,
         tags = listOf(
@@ -244,7 +183,7 @@ sealed class TicketType(
         excludedTags = listOf(ZendeskTags.jetpackTag)
     )
     @Parcelize object WooPlugin : TicketType(
-        form = TicketFieldIds.wooFormID,
+        form = TicketCustomField.wooFormID,
         categoryName = ZendeskConstants.supportCategory,
         subcategoryName = "",
         tags = listOf(
@@ -255,7 +194,7 @@ sealed class TicketType(
         excludedTags = listOf(ZendeskTags.jetpackTag)
     )
     @Parcelize object OtherPlugins : TicketType(
-        form = TicketFieldIds.wooFormID,
+        form = TicketCustomField.wooFormID,
         categoryName = ZendeskConstants.supportCategory,
         subcategoryName = ZendeskConstants.storeSubcategoryValue,
         tags = listOf(
@@ -269,30 +208,14 @@ sealed class TicketType(
 }
 
 private object ZendeskConstants {
-    const val blogSeparator = "\n----------\n"
-    const val jetpackTag = "jetpack"
     const val supportCategory = "Support"
     const val mobileAppCategory = "Mobile App"
     const val mobileSubcategoryValue = "WooCommerce Mobile Apps"
     const val paymentsSubcategoryValue = "Payment"
     const val storeSubcategoryValue = "Store"
-    const val networkWifi = "WiFi"
-    const val networkWWAN = "Mobile"
-    const val networkTypeLabel = "Network Type:"
-    const val networkCarrierLabel = "Carrier:"
-    const val networkCountryCodeLabel = "Country Code:"
-    const val noneValue = "none"
-
-    // We rely on this platform tag to filter tickets in Zendesk, so should be kept separate from the `articleLabel`
-    const val platformTag = "Android"
-    const val sourcePlatform = "Mobile_-_Woo_Android"
-    const val wpComTag = "wpcom"
-    const val unknownValue = "unknown"
-
-    const val maxLogfileLength: Int = 63000 // Max characters allowed in the system status report field
 }
 
-private object TicketFieldIds {
+private object TicketCustomField {
     const val appVersion = 360000086866L
     const val blogList = 360000087183L
     const val deviceFreeSpace = 360000089123L
@@ -323,12 +246,15 @@ object ZendeskTags {
     const val supportCategoryTag = "support"
     const val paymentSubcategoryTag = "payment"
     const val jetpackTag = "jetpack"
+    const val platformTag = "Android"
+    const val wpComTag = "wpcom"
     const val freeTrialTag = "trial"
 }
 
 sealed class ZendeskException(message: String) : Exception(message) {
     object IdentityNotSetException : ZendeskException(requestCreationTimeoutErrorMessage)
     object RequestCreationTimeoutException : ZendeskException(requestCreationIdentityNotSetErrorMessage)
+    data class RequestCreationFailedException(private val errorMessage: String) : ZendeskException(errorMessage)
 }
 
 private object RequestConstants {
