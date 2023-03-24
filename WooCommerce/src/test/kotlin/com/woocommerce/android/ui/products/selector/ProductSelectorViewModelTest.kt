@@ -190,6 +190,49 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `given popular products, when view model created, then only filter popular products from the orders that are already paid`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+            ).initSavedStateHandle()
+            val popularOrdersList = generatePopularOrders()
+            val popularOrdersThatAreNotPaidYet = mutableListOf<OrderEntity>()
+            repeat(10) {
+                popularOrdersThatAreNotPaidYet.add(
+                    OrderTestUtils.generateOrder(
+                        lineItems = generateLineItems(
+                            name = "ACME Bike",
+                            productId = "1111"
+                        ),
+                        datePaid = ""
+                    ),
+                )
+            }
+            val ordersList = generateTestOrders()
+            val totalOrders = popularOrdersList + popularOrdersThatAreNotPaidYet + ordersList
+            whenever(orderStore.getOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+            val argumentCaptor = argumentCaptor<List<Long>>()
+
+            ProductSelectorViewModel(
+                navArgs,
+                currencyFormatter,
+                wooCommerceStore,
+                orderStore,
+                selectedSite,
+                listHandler,
+                variationSelectorRepository,
+                resourceProvider,
+                productsMapper,
+            )
+
+            verify(productsMapper).mapProductIdsToProduct(argumentCaptor.capture())
+            assertThat(argumentCaptor.firstValue).isEqualTo(
+                listOf(2445L, 2448L, 2447L, 2444L, 2446L)
+            )
+        }
+    }
 
     //endregion
 
