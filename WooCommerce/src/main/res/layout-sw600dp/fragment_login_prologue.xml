@@ -33,12 +33,10 @@
         app:layout_constraintTop_toBottomOf="@+id/image_prologue"
         app:srcCompat="@drawable/img_prologue_bg" />
 
-
-
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginTop="@dimen/major_400"
         android:adjustViewBounds="true"
         android:importantForAccessibility="no"
@@ -47,7 +45,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/image_prologue"
         app:layout_constraintBottom_toTopOf="@id/prologueIntro"
-        app:layout_constraintWidth_percent="0.8"/>
+        app:layout_constraintWidth_percent="0.6"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/prologueIntro"
@@ -83,6 +81,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/major_400"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/prologueTitle"
         app:layout_constraintBottom_toBottomOf="parent">
