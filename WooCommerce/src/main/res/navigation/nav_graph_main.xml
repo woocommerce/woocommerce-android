@@ -54,6 +54,9 @@
                 android:defaultValue="false"
                 app:argType="boolean" />
         </action>
+        <action
+            android:id="@+id/action_myStore_to_aboutYourStoreFragment"
+            app:destination="@id/aboutYourStoreFragment" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -459,6 +462,9 @@
             android:id="@+id/action_storeOnboardingFragment_to_nav_graph_domain_change"
             app:destination="@id/nav_graph_domain_change" />
         <action
+            android:id="@+id/action_storeOnboardingFragment_to_aboutYourStoreFragment"
+            app:destination="@id/aboutYourStoreFragment" />
+        <action
             android:id="@+id/action_storeOnboardingFragment_to_productTypesBottomSheet"
             app:destination="@id/productTypesBottomSheetFragment"
             app:enterAnim="@anim/activity_fade_in"
@@ -475,6 +481,10 @@
         android:id="@+id/launchStoreFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.onboarding.launchstore.LaunchStoreFragment"
         android:label="LaunchStoreFragment" />
+    <fragment
+        android:id="@+id/aboutYourStoreFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.aboutyourstore.AboutYourStoreFragment"
+        android:label="AboutYourStoreFragment" />
     <include app:graph="@navigation/nav_graph_domain_change" />
 
 </navigation>

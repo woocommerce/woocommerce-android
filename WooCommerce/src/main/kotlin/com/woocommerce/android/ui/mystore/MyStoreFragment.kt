@@ -249,6 +249,10 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                             isAddProduct = true
                         )
                     )
+                is StoreOnboardingViewModel.NavigateToAboutYourStore ->
+                    findNavController().navigateSafely(
+                        MyStoreFragmentDirections.actionMyStoreToAboutYourStoreFragment()
+                    )
             }
         }
     }
