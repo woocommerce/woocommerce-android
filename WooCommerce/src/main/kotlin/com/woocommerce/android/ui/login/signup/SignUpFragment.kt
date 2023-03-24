@@ -109,6 +109,7 @@ class SignUpFragment : BaseFragment() {
 
     enum class NextStep {
         STORE_CREATION,
-        SITE_PICKER
+        SITE_PICKER,
+        FREE_TRIAL
     }
 }
