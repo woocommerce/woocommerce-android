@@ -15,8 +15,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -152,6 +155,43 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             )
         }
     }
+
+    // region Sort by popularity and recently sold products
+
+    @Test
+    fun `given popular products, when view model created, then verify popular products are sorted in descending order`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+            ).initSavedStateHandle()
+            val popularOrdersList = generatePopularOrders()
+            val ordersList = generateTestOrders()
+            val totalOrders = popularOrdersList + ordersList
+            whenever(orderStore.getOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+            val argumentCaptor = argumentCaptor<List<Long>>()
+
+            ProductSelectorViewModel(
+                navArgs,
+                currencyFormatter,
+                wooCommerceStore,
+                orderStore,
+                selectedSite,
+                listHandler,
+                variationSelectorRepository,
+                resourceProvider,
+                productsMapper,
+            )
+
+            verify(productsMapper).mapProductIdsToProduct(argumentCaptor.capture())
+            assertThat(argumentCaptor.firstValue).isEqualTo(
+                listOf(2445L, 2448L, 2447L, 2444L, 2446L)
+            )
+        }
+    }
+
+
+    //endregion
 
     private fun generateLineItems(
         name: String,
