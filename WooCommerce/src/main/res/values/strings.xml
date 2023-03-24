@@ -3128,6 +3128,7 @@
     Store onboarding
     -->
     <string name="store_onboarding_title">Store setup</string>
+    <string name="store_onboarding_task_about_your_store_toolbar_title">About your store</string>
     <string name="store_onboarding_task_about_your_store_title">Tell us more about your store</string>
     <string name="store_onboarding_task_about_your_store_description">We’ll use the info to get a head start on your shipping, tax, and payments settings.</string>
     <string name="store_onboarding_task_add_product_title">Add your first product </string>

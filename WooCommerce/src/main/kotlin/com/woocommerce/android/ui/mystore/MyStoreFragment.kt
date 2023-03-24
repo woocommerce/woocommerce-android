@@ -248,9 +248,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                     )
                 is StoreOnboardingViewModel.NavigateToAboutYourStore ->
                     findNavController().navigateSafely(
-                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                            urlToLoad = event.url
-                        )
+                        MyStoreFragmentDirections.actionMyStoreToAboutYourStoreFragment()
                     )
             }
         }

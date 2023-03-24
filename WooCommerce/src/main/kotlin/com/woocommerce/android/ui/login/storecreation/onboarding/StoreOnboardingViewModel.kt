@@ -7,7 +7,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTask
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.ABOUT_YOUR_STORE
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.ADD_FIRST_PRODUCT
@@ -28,12 +27,10 @@ import javax.inject.Inject
 @HiltViewModel
 class StoreOnboardingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val onboardingRepository: StoreOnboardingRepository,
-    private val selectedSite: SelectedSite
+    private val onboardingRepository: StoreOnboardingRepository
 ) : ScopedViewModel(savedStateHandle), DefaultLifecycleObserver {
     companion object {
         const val NUMBER_ITEMS_IN_COLLAPSED_MODE = 3
-        const val ABOUT_STORE_SETTINGS_SECTION = "/wp-admin/admin.php?page=wc-settings&tab=general&tutorial=true"
     }
 
     private val _viewState = MutableLiveData<OnboardingState>()
@@ -81,11 +78,7 @@ class StoreOnboardingViewModel @Inject constructor(
 
     fun onTaskClicked(task: OnboardingTaskUi) {
         when (task.taskUiResources) {
-            AboutYourStoreTaskRes -> triggerEvent(
-                NavigateToAboutYourStore(
-                    url = selectedSite.get().url + ABOUT_STORE_SETTINGS_SECTION
-                )
-            )
+            AboutYourStoreTaskRes -> triggerEvent(NavigateToAboutYourStore)
             AddProductTaskRes -> triggerEvent(NavigateToAddProduct)
             CustomizeDomainTaskRes -> triggerEvent(NavigateToDomains)
             LaunchStoreTaskRes -> triggerEvent(NavigateToLaunchStore)
@@ -154,6 +147,6 @@ class StoreOnboardingViewModel @Inject constructor(
     object NavigateToSurvey : MultiLiveEvent.Event()
     object NavigateToLaunchStore : MultiLiveEvent.Event()
     object NavigateToDomains : MultiLiveEvent.Event()
-    data class NavigateToAboutYourStore(val url: String) : MultiLiveEvent.Event()
+    object NavigateToAboutYourStore : MultiLiveEvent.Event()
     object NavigateToAddProduct : MultiLiveEvent.Event()
 }
