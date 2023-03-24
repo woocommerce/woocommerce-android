@@ -818,6 +818,9 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     PLAN_UPGRADE_SUCCESS,
     PLAN_UPGRADE_ABANDONED,
     UPGRADES_REPORT_SUBSCRIPTION_ISSUE_TAPPED,
+    START_FREE_TRIAL_TAPPED,
+    FREE_TRIAL_STORE_CREATED,
+
 
     // Store onboarding
     STORE_ONBOARDING_SHOWN,
