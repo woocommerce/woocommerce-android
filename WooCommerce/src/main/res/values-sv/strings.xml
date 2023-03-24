@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-14 11:54:20+0000
+Translation-Revision-Date: 2023-03-21 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="upgrades_error_fetching_data">Det gick inte att hämta paketinformationen</string>
+    <string name="upgrades_non_upgradeable_caption">Du är %1$s-prenumerant. Du har tillgång till alla våra funktioner fram till %2$s. </string>
+    <string name="upgrades_trial_ended_caption">Din kostnadsfria provperiod har avslutats och du har begränsad åtkomst till alla funktionerna. Prenumerera på %1$s nu.</string>
+    <string name="upgrades_upgradeable_caption">Du har en kostnadsfri provperiod på %1$d dagar. Den kostnadsfria provperioden löper ut om %2$d dagar. Uppgradera för att låsa upp nya funktioner och hålla igång din butik.</string>
+    <string name="upgrades_subscription_status">Prenumerationsstatus</string>
+    <string name="upgrades_title">Uppgraderingar</string>
+    <string name="upgrades_troubleshooting">Felsökning</string>
+    <string name="upgrades_current_plan">Nuvarande: %s</string>
+    <string name="upgrades_upgrade_now">Uppgradera nu</string>
+    <string name="upgrades_report_subscription_issue">Rapportera prenumerationsproblem</string>
+    <string name="free_trial_upgrade_now">Uppgradera nu</string>
+    <string name="free_trial_days_left">%1$d dagar kvar av din provperiod.</string>
+    <string name="free_trial_trial_ended">Provperioden avslutades</string>
+    <string name="free_trial_your_trial_ended">Din provperiod har avslutats.</string>
+    <string name="store_onboarding_launch_store_generic_error_description">Hoppsan, det uppstod några oväntade fel.</string>
+    <string name="store_onboarding_launch_store_generic_error_title">Oväntat fel</string>
+    <string name="store_onboarding_store_already_launched_error_description">Vi upptäckte att butiken redan har lanserats.</string>
+    <string name="store_onboarding_store_already_launched_error_title">Det gick inte att lansera din butik</string>
+    <string name="store_onboarding_share_url_error">Det gick inte att dela butiks-URL:en</string>
+    <string name="store_onboarding_launch_store_task_private_tag">Privat</string>
+    <string name="store_onboarding_launched_title">Din butik är live!</string>
+    <string name="store_onboarding_launch_preview_title">Förhandsgranska</string>
+    <string name="store_onboarding_launch_store_back_to_store_button">Tillbaka till min butik</string>
+    <string name="store_onboarding_launch_store_share_url_button">Dela URL</string>
+    <string name="store_onboarding_launch_store_button">Publicera min butik</string>
+    <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">För att lansera din butik behöver du uppgradera till vårt paket. &lt;u&gt;Uppgradera&lt;/u&gt;</string>
+    <string name="card_reader_tap_to_pay_not_available_error">Tryck för att betala är inte tillgängligt för din butik eller enhet</string>
+    <string name="domains_search_domains">Sök domäner</string>
+    <string name="login_site_credentials_http_error">Inloggning misslyckades med statuskod %1$s</string>
+    <string name="login_site_credentials_custom_admin_url">Det gick inte att logga in, eftersom vi inte kan identifiera admin-URL:en för din butik</string>
+    <string name="login_site_credentials_custom_login_url">Det gick inte att logga in, eftersom vi inte kan identifiera inloggnings-URL:en för din butik</string>
+    <string name="login_site_credentials_invalid_response">Inloggningen misslyckades med ett oväntat svar från din webbplats. Vi jobbar på att lösa det här problemet.</string>
+    <string name="more_menu_button_upgrades">Uppgraderingar</string>
+    <string name="something_went_wrong_try_again">Något gick fel. Försök igen senare.</string>
     <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">Det finns krav som inväntar granskning i ditt konto. Slutför dessa krav för att fortsätta ta emot personliga betalningar.</string>
     <string name="analytics_banner_message">Betygsätt gärna din analysupplevelse</string>
     <string name="analytics_banner_title">Gillar du analysen?</string>
@@ -305,8 +339,6 @@ Language: sv_SE
     <string name="card_reader_payment_collect_payment_built_in_state">Den inbyggda läsaren är redo</string>
     <string name="card_reader_type_selection_bluetooth_reader">Bluetooth-läsare</string>
     <string name="card_reader_type_selection_tap_to_pay">Tryck för att betala</string>
-    <string name="card_reader_type_selection_description">Din telefon kan användas som en kortläsare, eller så kan du ansluta en extern läsare via Bluetooth</string>
-    <string name="card_reader_type_selection_title">Välj läsartyp</string>
     <string name="analytics_conversion_subtitle">Omvandlingsfrekvens</string>
     <string name="analytics_session_card_title">Sessioner</string>
     <string name="analytics_session_no_data">Inga sessioner denna period</string>
@@ -957,7 +989,7 @@ Language: sv_SE
     <string name="order_creation_new_customer_add_different_shipping_address">Lägg till en annan leveransadress</string>
     <string name="order_creation_product_instock">I lager</string>
     <string name="order_creation_product_stock_quantity">%s i lager</string>
-    <string name="order_creation_add_products">Lägg till produkt</string>
+    <string name="order_creation_add_products">Lägg till produkter</string>
     <string name="order_creation_products">Produkter</string>
     <string name="order_creation_add_customer">Lägg till kunddetaljer</string>
     <string name="order_creation_customer">Kund</string>

@@ -889,7 +889,7 @@
     <string name="shipping_label_address_suggestion_banner">We have slightly modified the address entered. If correct, please use the suggested address to ensure accurate delivery.</string>
     <string name="shipping_label_address_suggestion_entered_address">Entered address</string>
     <string name="shipping_label_address_suggestion_suggested_address">Suggested address</string>
-    <string name="shipping_label_address_phone_required">A phone number is required because this shipment requires a customs form</string>
+    <string name="shipping_label_address_phone_required">A phone number is required</string>
     <string name="shipping_label_origin_address_phone_invalid">Customs forms require a 10-digit phone number</string>
     <string name="shipping_label_destination_address_phone_invalid">Please enter a valid phone number</string>
     <string name="shipping_label_address_data_invalid_snackbar_message">Certain required fields are blank.</string>

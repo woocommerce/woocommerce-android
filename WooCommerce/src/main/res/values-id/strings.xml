@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-14 09:54:04+0000
+Translation-Revision-Date: 2023-03-21 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="upgrades_error_fetching_data">Error saat mengambil detail paket</string>
+    <string name="upgrades_non_upgradeable_caption">Sekarang Anda menjadi pelanggan %1$s! Anda memiliki akses ke semua fitur kami hingga %2$s. </string>
+    <string name="upgrades_trial_ended_caption">Masa percobaan gratis Anda telah berakhir, menyisakan akses fitur secara terbatas. Berlangganan %1$s sekarang.</string>
+    <string name="upgrades_upgradeable_caption">Anda dalam masa percobaan gratis %1$d hari. Masa percobaan gratis akan berakhir dalam %2$d hari. Upgrade untuk membuka fitur-fitur baru dan menjaga toko Anda tetap berjalan.</string>
+    <string name="upgrades_subscription_status">Status langganan</string>
+    <string name="upgrades_title">Upgrade</string>
+    <string name="upgrades_troubleshooting">Pemecahan Masalah</string>
+    <string name="upgrades_current_plan">Saat ini: %s</string>
+    <string name="upgrades_upgrade_now">Upgrade sekarang</string>
+    <string name="upgrades_report_subscription_issue">Laporkan masalah langganan</string>
+    <string name="free_trial_upgrade_now">Upgrade Sekarang</string>
+    <string name="free_trial_days_left">Masa percobaan Anda tersisa %1$d hari.</string>
+    <string name="free_trial_trial_ended">Masa percobaan berakhir</string>
+    <string name="free_trial_your_trial_ended">Masa percobaan Anda telah berakhir.</string>
+    <string name="store_onboarding_launch_store_generic_error_description">Waduh, terjadi error tak terduga.</string>
+    <string name="store_onboarding_launch_store_generic_error_title">Error tak terduga</string>
+    <string name="store_onboarding_store_already_launched_error_description">Kami mendapati bahwa toko telah diluncurkan.</string>
+    <string name="store_onboarding_store_already_launched_error_title">Tidak dapat meluncurkan toko Anda</string>
+    <string name="store_onboarding_share_url_error">Tidak dapat membagikan url toko</string>
+    <string name="store_onboarding_launch_store_task_private_tag">Pribadi</string>
+    <string name="store_onboarding_launched_title">Toko Anda telah aktif!</string>
+    <string name="store_onboarding_launch_preview_title">Pratinjau</string>
+    <string name="store_onboarding_launch_store_back_to_store_button">Kembali ke Toko Saya</string>
+    <string name="store_onboarding_launch_store_share_url_button">Bagikan URL</string>
+    <string name="store_onboarding_launch_store_button">Publikasikan toko saya</string>
+    <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">Untuk meluncurkan toko, Anda perlu upgrade ke paket kami. &lt;u&gt;Upgrade&lt;/u&gt;</string>
+    <string name="card_reader_tap_to_pay_not_available_error">Ketuk untuk Membayar tidak tersedia di toko atau perangkat Anda</string>
+    <string name="domains_search_domains">Cari domain</string>
+    <string name="login_site_credentials_http_error">Login gagal dengan kode status %1$s</string>
+    <string name="login_site_credentials_custom_admin_url">Tidak dapat login karena kami tidak dapat mengidentifikasi URL admin toko Anda</string>
+    <string name="login_site_credentials_custom_login_url">Tidak dapat login karena kami tidak dapat mengidentifikasi URL login toko Anda</string>
+    <string name="login_site_credentials_invalid_response">Login gagal dengan respons tak terduga dari situs Anda. Kami sedang berupaya mengatasi masalah ini.</string>
+    <string name="more_menu_button_upgrades">Upgrade</string>
+    <string name="something_went_wrong_try_again">Terjadi masalah. Silakan coba lagi nanti.</string>
     <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">Ada persyaratan yang tertunda di akun Anda. Penuhi persyaratan tersebut agar dapat tetap menerima Pembayaran Langsung.</string>
     <string name="analytics_banner_message">Silakan beri nilai pengalaman analitik Anda</string>
     <string name="analytics_banner_title">Puas dengan analitik?</string>
@@ -305,8 +339,6 @@ Language: id
     <string name="card_reader_payment_collect_payment_built_in_state">Pembaca bawaan telah siap</string>
     <string name="card_reader_type_selection_bluetooth_reader">Pembaca Bluetooth</string>
     <string name="card_reader_type_selection_tap_to_pay">Ketuk Untuk Membayar</string>
-    <string name="card_reader_type_selection_description">Ponsel dapat digunakan sebagai pembaca kartu, atau Anda dapat menghubungkan pembaca eksternal via bluetooth</string>
-    <string name="card_reader_type_selection_title">Pilih tipe pembaca</string>
     <string name="analytics_conversion_subtitle">Angka Konversi</string>
     <string name="analytics_session_card_title">Sesi</string>
     <string name="analytics_session_no_data">Tidak ada sesi dalam periode ini</string>
@@ -957,7 +989,7 @@ Language: id
     <string name="order_creation_new_customer_add_different_shipping_address">Tambahkan alamat pengiriman lain</string>
     <string name="order_creation_product_instock">Tersedia</string>
     <string name="order_creation_product_stock_quantity">%s tersedia</string>
-    <string name="order_creation_add_products">Tambahkan Produk</string>
+    <string name="order_creation_add_products">Tambahkan produk</string>
     <string name="order_creation_products">Produk</string>
     <string name="order_creation_add_customer">Tambahkan Detail Pelanggan</string>
     <string name="order_creation_customer">Pelanggan</string>

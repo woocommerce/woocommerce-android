@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-14 09:54:04+0000
+Translation-Revision-Date: 2023-03-21 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="upgrades_error_fetching_data">擷取計畫詳細資料時發生錯誤</string>
+    <string name="upgrades_non_upgradeable_caption">你是第 %1$s 名訂閱者！ 你可存取我們的所有功能，直到 %2$s 為止。 </string>
+    <string name="upgrades_trial_ended_caption">你的免費試用已結束，且對於功能的存取受限。 歡迎立即訂閱 %1$s。</string>
+    <string name="upgrades_upgradeable_caption">你正在使用 %1$d 天免費試用。 免費試用將於 %2$d 天內結束， 升級以便解鎖新功能並維持你的商店運作…</string>
+    <string name="upgrades_subscription_status">訂購項目狀態</string>
+    <string name="upgrades_title">升級</string>
+    <string name="upgrades_troubleshooting">疑難排解</string>
+    <string name="upgrades_current_plan">目前：%s</string>
+    <string name="upgrades_upgrade_now">立即升級</string>
+    <string name="upgrades_report_subscription_issue">回報訂閱問題</string>
+    <string name="free_trial_upgrade_now">立即升級</string>
+    <string name="free_trial_days_left">試用期尚餘 %1$d 天</string>
+    <string name="free_trial_trial_ended">試用結束</string>
+    <string name="free_trial_your_trial_ended">你的試用已結束。</string>
+    <string name="store_onboarding_launch_store_generic_error_description">糟糕，發生了一些未預期的錯誤。</string>
+    <string name="store_onboarding_launch_store_generic_error_title">未預期的錯誤</string>
+    <string name="store_onboarding_store_already_launched_error_description">我們發現商店已經推出。</string>
+    <string name="store_onboarding_store_already_launched_error_title">無法推出你的商店</string>
+    <string name="store_onboarding_share_url_error">無法分享商店 URL</string>
+    <string name="store_onboarding_launch_store_task_private_tag">私人</string>
+    <string name="store_onboarding_launched_title">你的商店已上線！</string>
+    <string name="store_onboarding_launch_preview_title">預覽</string>
+    <string name="store_onboarding_launch_store_back_to_store_button">返回我的商店</string>
+    <string name="store_onboarding_launch_store_share_url_button">分享 URL</string>
+    <string name="store_onboarding_launch_store_button">發表我的商店</string>
+    <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">若要推出商店，你需要升級我們的計畫。 &lt;u&gt;升級&lt;/u&gt;</string>
+    <string name="card_reader_tap_to_pay_not_available_error">「Tap to Pay」不適用於你的商店或裝置。</string>
+    <string name="domains_search_domains">搜尋網域</string>
+    <string name="login_site_credentials_http_error">登入失敗，狀態代碼為 %1$s</string>
+    <string name="login_site_credentials_custom_admin_url">無法登入，因為我們無法識別你商店的管理 URL。</string>
+    <string name="login_site_credentials_custom_login_url">無法登入，因為我們無法識別你商店的登入 URL。</string>
+    <string name="login_site_credentials_invalid_response">登入失敗，你的網站傳回了未預期的回應。 我們正在努力修復這個問題。</string>
+    <string name="more_menu_button_upgrades">升級</string>
+    <string name="something_went_wrong_try_again">發生錯誤，請稍後再試一次。</string>
     <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">你的帳號中有待確認的要求。 請完成這些要求，以便繼續使用親自收款功能。</string>
     <string name="analytics_banner_message">請為分析服務的使用體驗評分</string>
     <string name="analytics_banner_title">喜歡分析服務嗎？</string>
@@ -305,8 +339,6 @@ Language: zh_TW
     <string name="card_reader_payment_collect_payment_built_in_state">內建閱讀器已準備就緒</string>
     <string name="card_reader_type_selection_bluetooth_reader">藍牙閱讀器</string>
     <string name="card_reader_type_selection_tap_to_pay">點選支付</string>
-    <string name="card_reader_type_selection_description">你的手機可以做為閱讀器，也可以透過藍牙連接到外部閱讀器</string>
-    <string name="card_reader_type_selection_title">選取閱讀器類型</string>
     <string name="analytics_conversion_subtitle">轉換率</string>
     <string name="analytics_session_card_title">帳號登入狀態</string>
     <string name="analytics_session_no_data">此段期間沒有工作階段</string>
