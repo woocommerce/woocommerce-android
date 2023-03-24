@@ -25,7 +25,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -34,6 +36,7 @@ import com.woocommerce.android.ui.compose.component.WCPasswordField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.component.WCWebView
 import com.woocommerce.android.ui.compose.component.getText
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun LoginSiteCredentialsScreen(viewModel: LoginSiteCredentialsViewModel) {
@@ -253,5 +256,44 @@ private fun WebAuthorizationScreen(
                 modifier = modifier
             )
         }
+    }
+}
+
+@Preview
+@Composable
+private fun NativeLoginFormPreview() {
+    WooThemeWithBackground {
+        NativeLoginForm(
+            viewState = LoginSiteCredentialsViewModel.ViewState.NativeLoginViewState(
+                siteUrl = "https://wordpress.com"
+            ),
+            onUsernameChanged = {},
+            onPasswordChanged = {},
+            onContinueClick = {},
+            onResetPasswordClick = {},
+            onErrorDialogDismissed = {},
+            onHelpButtonClick = {},
+            onStartWebAuthorizationClick = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun NativeLoginFormWithErrorDialogPreview() {
+    WooThemeWithBackground {
+        NativeLoginForm(
+            viewState = LoginSiteCredentialsViewModel.ViewState.NativeLoginViewState(
+                siteUrl = "https://wordpress.com",
+                errorDialogMessage = UiString.UiStringRes(R.string.login_site_credentials_fetching_site_failed)
+            ),
+            onUsernameChanged = {},
+            onPasswordChanged = {},
+            onContinueClick = {},
+            onResetPasswordClick = {},
+            onErrorDialogDismissed = {},
+            onHelpButtonClick = {},
+            onStartWebAuthorizationClick = {}
+        )
     }
 }
