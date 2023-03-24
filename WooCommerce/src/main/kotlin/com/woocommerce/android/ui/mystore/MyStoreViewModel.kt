@@ -34,7 +34,6 @@ import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -343,7 +342,7 @@ class MyStoreViewModel @Inject constructor(
             System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()
         )
         val supportsJetpackInstallation = connectionType == SiteConnectionType.JetpackConnectionPackage ||
-            (connectionType == SiteConnectionType.ApplicationPasswords && FeatureFlag.REST_API_I2.isEnabled())
+            connectionType == SiteConnectionType.ApplicationPasswords
         val showBanner = supportsJetpackInstallation && daysSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER
         val benefitsBanner = JetpackBenefitsBannerUiModel(
             show = showBanner,

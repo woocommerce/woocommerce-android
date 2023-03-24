@@ -2263,6 +2263,7 @@
     <string name="jetpack_benefits_modal_multiple_stores_title">Multiple stores</string>
     <string name="jetpack_benefits_modal_multiple_stores_subtitle">Get access to all of your WooCommerce stores.</string>
     <string name="jetpack_benefits_modal_login">Log In to Continue</string>
+    <string name="jetpack_benefits_open_wpadmin">Open wp-admin</string>
 
     <string name="jetpack_install_start_title">Install Jetpack</string>
     <string name="jetpack_install_start_subtitle">Install the free Jetpack plugin to &lt;strong&gt;%s&lt;/strong&gt; to experience the best mobile experience.</string>
