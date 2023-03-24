@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products.selector
 
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorRestriction.NoVariableProductsWithNoVariations
@@ -159,5 +160,38 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             "\"product_id\":$productId,\"quantity\":1.0,\"sku\":\"ACBI\"," +
             "\"subtotal\":\"88.60\",\"total\":\"88.60\",\"total_tax\":\"0.00\",\"variation_id\":0}]"
     }
+
+    private fun generateTestOrders() = listOf(
+        OrderTestUtils.generateOrder(
+            lineItems = generateLineItems(
+                name = "ACME Bike",
+                productId = "2444"
+            )
+        ),
+        OrderTestUtils.generateOrder(
+            lineItems = generateLineItems(
+                name = "Variation Product",
+                productId = "2446"
+            )
+        ),
+        OrderTestUtils.generateOrder(
+            lineItems = generateLineItems(
+                name = "Lorry",
+                productId = "2449"
+            )
+        ),
+        OrderTestUtils.generateOrder(
+            lineItems = generateLineItems(
+                name = "Bus",
+                productId = "2450"
+            )
+        ),
+        OrderTestUtils.generateOrder(
+            lineItems = generateLineItems(
+                name = "TVS",
+                productId = "2451"
+            )
+        ),
+    )
 
 }
