@@ -366,7 +366,8 @@ fun ProductListPreview() {
             selectedItemsCount = 3,
             loadingState = IDLE,
             filterState = FilterState(),
-            searchQuery = ""
+            searchQuery = "",
+            popularProducts = emptyList()
         ),
         {},
         {},
@@ -385,7 +386,8 @@ fun ProductListEmptyPreview() {
             selectedItemsCount = 3,
             loadingState = IDLE,
             filterState = FilterState(),
-            searchQuery = ""
+            searchQuery = "",
+            popularProducts = emptyList(),
         ),
         {}
     )
