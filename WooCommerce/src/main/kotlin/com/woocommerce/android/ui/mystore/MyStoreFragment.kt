@@ -210,7 +210,8 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                 false -> binding.storeOnboardingView.hide()
                 else -> {
                     binding.storeOnboardingView.apply {
-                        binding.storeOnboardingView.show()
+                        show()
+                        AnalyticsTracker.track(stat = AnalyticsEvent.STORE_ONBOARDING_SHOWN)
                         // Dispose of the Composition when the view's LifecycleOwner is destroyed
                         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                         setContent {
