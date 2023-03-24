@@ -162,9 +162,9 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
                 val isSuccess = params[SUCCESS_PARAMETER]?.toBoolean() ?: true
                 if (!isSuccess) {
-                    // TODO: show a snackbar with an explanation of the dismissal state
                     fetchedSiteId.value = -1
                     state.value = State.NativeLogin
+                    triggerEvent(ShowSnackbar(R.string.login_site_credentials_web_authorization_connection_rejected))
                     return@launch
                 }
                 val username = requireNotNull(params[USERNAME_PARAMETER])
