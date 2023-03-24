@@ -33,10 +33,12 @@
         app:layout_constraintTop_toBottomOf="@+id/image_prologue"
         app:srcCompat="@drawable/img_prologue_bg" />
 
+
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/major_400"
         android:adjustViewBounds="true"
         android:importantForAccessibility="no"
@@ -44,25 +46,36 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/image_prologue"
-        app:layout_constraintBottom_toTopOf="@id/prologueTitle"
-        app:layout_constraintWidth_percent="0.6"/>
+        app:layout_constraintBottom_toTopOf="@id/prologueIntro"
+        app:layout_constraintWidth_percent="0.8"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/prologueIntro"
+        style="@style/Woo.TextView.Headline6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="@string/simplified_login_prologue_intro"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageView"
+        app:layout_constraintBottom_toTopOf="@id/prologueTitle" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/prologueTitle"
         style="@style/Woo.TextView.Subtitle1"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:textAlignment="gravity"
-        android:layout_marginTop="@dimen/major_100"
         android:text="@string/simplified_login_prologue_title"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imageView"
+        app:layout_constraintTop_toBottomOf="@id/prologueIntro"
         app:layout_constraintBottom_toTopOf="@id/loginButtons"
-        android:visibility="visible"
-        app:layout_constraintWidth_percent="0.5" />
+        app:layout_constraintWidth_percent="0.55" />
 
     <LinearLayout
         android:id="@+id/loginButtons"
