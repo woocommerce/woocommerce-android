@@ -347,6 +347,10 @@ class LoginActivity :
         changeFragment(SignUpFragment.newInstance(STORE_CREATION), true, SignUpFragment.TAG)
     }
 
+    override fun onStartFreeTrialClicked() {
+        TODO("Not yet implemented")
+    }
+
     private fun showMainActivityAndFinish() {
         experimentTracker.log(ExperimentTracker.LOGIN_SUCCESSFUL_EVENT)
         loginNotificationScheduler.onLoginSuccess()
