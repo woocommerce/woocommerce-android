@@ -17,6 +17,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
@@ -194,4 +195,38 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         ),
     )
 
+    private fun generatePopularOrders(): MutableList<OrderEntity> {
+        val ordersList = mutableListOf<OrderEntity>()
+        repeat(4) {
+            ordersList.add(
+                OrderTestUtils.generateOrder(
+                    lineItems = generateLineItems(
+                        name = "Bicycle",
+                        productId = "2445"
+                    )
+                )
+            )
+        }
+        repeat(3) {
+            ordersList.add(
+                OrderTestUtils.generateOrder(
+                    lineItems = generateLineItems(
+                        name = "Toys",
+                        productId = "2448"
+                    )
+                )
+            )
+        }
+        repeat(2) {
+            ordersList.add(
+                OrderTestUtils.generateOrder(
+                    lineItems = generateLineItems(
+                        name = "Car",
+                        productId = "2447"
+                    )
+                )
+            )
+        }
+        return ordersList
+    }
 }
