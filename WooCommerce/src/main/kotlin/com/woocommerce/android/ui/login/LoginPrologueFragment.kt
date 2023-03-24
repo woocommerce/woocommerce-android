@@ -69,16 +69,16 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
         prologueFinishedListener = null
     }
 
-    private fun FragmentLoginPrologueBinding.bindFreeTrialLoginButtons(): Unit? {
-        standardButtons?.visibility = View.GONE
-        freeTrialButtons?.visibility = View.VISIBLE
+    private fun FragmentLoginPrologueBinding.bindFreeTrialLoginButtons() {
+        standardButtons.visibility = View.GONE
+        freeTrialButtons.visibility = View.VISIBLE
 
-        buttonFreeTrialModeLoginStore?.setOnClickListener {
+        buttonFreeTrialModeLoginStore.setOnClickListener {
             AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
             prologueFinishedListener?.onPrimaryButtonClicked()
         }
 
-        return buttonFreeTrialModeStartYourTrial?.setOnClickListener {
+        return buttonFreeTrialModeStartYourTrial.setOnClickListener {
             AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
             AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED)
             prologueFinishedListener?.onGetStartedClicked()
