@@ -48,6 +48,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
@@ -58,6 +59,7 @@ class ProductSelectorViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val currencyFormatter: CurrencyFormatter,
     private val wooCommerceStore: WooCommerceStore,
+    private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite,
     private val listHandler: ProductListHandler,
     private val variationSelectorRepository: VariationSelectorRepository,
