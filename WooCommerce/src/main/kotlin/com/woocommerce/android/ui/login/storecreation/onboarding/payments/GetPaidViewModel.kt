@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.common.PluginRepository
 import com.woocommerce.android.ui.login.storecreation.onboarding.payments.GetPaidViewModel.ViewState.LoadingState
 import com.woocommerce.android.ui.login.storecreation.onboarding.payments.GetPaidViewModel.ViewState.WebViewState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -12,7 +13,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_PAYMENTS
 import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import javax.inject.Inject
@@ -20,8 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class GetPaidViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val wooStore: WooCommerceStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val pluginRepository: PluginRepository
 ) : ScopedViewModel(savedStateHandle) {
     private val wooPaymentsUrl = selectedSite.get().url
         .slashJoin("/wp-admin/admin.php?page=wc-settings&tab=checkout")
@@ -41,12 +41,8 @@ class GetPaidViewModel @Inject constructor(
     }
 
     private suspend fun hasWCPayPlugin(): Boolean {
-        val fetchSitePluginsResult = wooStore.fetchSitePlugins(selectedSite.get())
-        return if (fetchSitePluginsResult.isError) {
-            false
-        } else {
-            wooStore.getSitePlugin(selectedSite.get(), WOO_PAYMENTS) != null
-        }
+        val wooPayPlugin = pluginRepository.fetchPlugin(selectedSite.get(), WOO_PAYMENTS.pluginName)
+        return wooPayPlugin.getOrNull() != null
     }
 
     fun onBackPressed() {
