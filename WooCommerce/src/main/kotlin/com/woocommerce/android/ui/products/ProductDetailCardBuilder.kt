@@ -41,6 +41,7 @@ import com.woocommerce.android.ui.products.ProductType.OTHER
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.SUBSCRIPTION
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
@@ -77,7 +78,7 @@ class ProductDetailCardBuilder(
 
         when (product.productType) {
             SIMPLE -> cards.addIfNotEmpty(getSimpleProductCard(product))
-            VARIABLE -> cards.addIfNotEmpty(getVariableProductCard(product))
+            VARIABLE, VARIABLE_SUBSCRIPTION -> cards.addIfNotEmpty(getVariableProductCard(product))
             GROUPED -> cards.addIfNotEmpty(getGroupedProductCard(product))
             EXTERNAL -> cards.addIfNotEmpty(getExternalProductCard(product))
             SUBSCRIPTION -> cards.addIfNotEmpty(getSubscriptionProductCard(product))
@@ -695,7 +696,8 @@ class ProductDetailCardBuilder(
                 showTitle = true,
                 onClick = {
                     viewModel.onEditProductCardClicked(
-                        ViewProductSubscription(subscription)
+                        ViewProductSubscription(subscription),
+                        AnalyticsEvent.PRODUCT_DETAILS_VIEW_SUBSCRIPTIONS_TAPPED
                     )
                 }
             )

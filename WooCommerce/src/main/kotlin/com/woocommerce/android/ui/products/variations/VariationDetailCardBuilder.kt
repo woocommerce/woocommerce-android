@@ -15,6 +15,7 @@ import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.model.SubscriptionProductVariation
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
@@ -65,10 +66,31 @@ class VariationDetailCardBuilder(
     }
 
     private fun getSecondaryCard(variation: ProductVariation): ProductPropertyCard {
+        return when (variation) {
+            is SubscriptionProductVariation -> getVariableSubscriptionSecondaryCards(variation)
+            else -> getDefaultSecondaryCards(variation)
+        }
+    }
+
+    private fun getDefaultSecondaryCards(variation: ProductVariation): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
                 variation.price(),
+                variation.warning(),
+                variation.attributes(),
+                variation.visibility(),
+                variation.inventory(),
+                variation.shipping()
+            ).filterNotEmpty()
+        )
+    }
+
+    private fun getVariableSubscriptionSecondaryCards(variation: SubscriptionProductVariation): ProductPropertyCard {
+        return ProductPropertyCard(
+            type = SECONDARY,
+            properties = listOf(
+                variation.subscription(),
                 variation.warning(),
                 variation.attributes(),
                 variation.visibility(),
@@ -296,4 +318,44 @@ class VariationDetailCardBuilder(
             )
         }
     }
+
+    private fun SubscriptionProductVariation.subscription(): ProductProperty? =
+        this.subscriptionDetails?.let { subscription ->
+
+            val period = subscription.period.getPeriodString(resources, subscription.periodInterval)
+            val formattedPrice = parameters.currencyCode?.let {
+                currencyFormatter.formatCurrency(subscription.price, it, true)
+            } ?: subscription.price.toString()
+
+            val price = resources.getString(
+                string.product_subscription_description,
+                formattedPrice,
+                subscription.periodInterval.toString(),
+                period
+            )
+
+            val expire = if (subscription.length != null) {
+                resources.getString(string.subscription_period, subscription.length.toString(), period)
+            } else {
+                resources.getString(string.subscription_never_expire)
+            }
+
+            val properties = mapOf(
+                resources.getString(string.product_regular_price) to price,
+                resources.getString(string.subscription_expire) to expire
+            )
+
+            PropertyGroup(
+                title = string.product_subscription_title,
+                icon = drawable.ic_gridicons_money,
+                properties = properties,
+                showTitle = true,
+                onClick = {
+                    viewModel.onEditVariationCardClicked(
+                        VariationNavigationTarget.ViewSubscription(subscription),
+                        AnalyticsEvent.PRODUCT_DETAILS_VIEW_SUBSCRIPTIONS_TAPPED
+                    )
+                }
+            )
+        }
 }

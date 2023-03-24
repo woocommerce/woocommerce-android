@@ -656,11 +656,15 @@ class OrderDetailViewModel @Inject constructor(
         }
         orderDetailsTransactionLauncher.onShippingLabelFetchingCompleted()
     }
+
     private suspend fun fetchOrderSubscriptions() {
         val plugin = pluginsInformation[WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName]
         if (plugin == null || plugin.isOperational) {
-            orderDetailRepository.getOrderSubscriptions(navArgs.orderId).getOrNull()?.let {
-                _subscriptions.value = it
+            orderDetailRepository.getOrderSubscriptions(navArgs.orderId).getOrNull()?.let { subscription ->
+                _subscriptions.value = subscription
+                if (subscription.isNotEmpty()) {
+                    trackerWrapper.track(AnalyticsEvent.ORDER_DETAILS_SUBSCRIPTIONS_SHOWN)
+                }
             }
         }
     }
