@@ -38,46 +38,33 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         with(FragmentLoginPrologueBinding.bind(view)) {
+            buttonLoginStore.setOnClickListener {
+                // Login with site address
+                AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
+                prologueFinishedListener?.onPrimaryButtonClicked()
+            }
+
+            buttonLoginWpcom.setOnClickListener {
+                // Login with WordPress.com account
+                AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
+                prologueFinishedListener?.onSecondaryButtonClicked()
+            }
+
+            buttonGetStarted.setOnClickListener {
+                AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
+                AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED)
+                prologueFinishedListener?.onGetStartedClicked()
+            }
+
+
             if (FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
-                freeTrialLoginButtons?.visibility = View.VISIBLE
-                bindFreeTrialView()
-            } else {
-                standardLoginButtons?.visibility = View.VISIBLE
-                bindStandardView()
+                startFreeTrialButton?.visibility = View.VISIBLE
+                startFreeTrialButton?.setOnClickListener {}
             }
         }
 
         if (savedInstanceState == null) {
             unifiedLoginTracker.track(Flow.PROLOGUE, Step.PROLOGUE)
-        }
-    }
-
-    private fun FragmentLoginPrologueBinding.bindStandardView() {
-        buttonLoginStore.setOnClickListener {
-            // Login with site address
-            AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
-            prologueFinishedListener?.onPrimaryButtonClicked()
-        }
-
-        buttonLoginWpcom.setOnClickListener {
-            // Login with WordPress.com account
-            AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
-            prologueFinishedListener?.onSecondaryButtonClicked()
-        }
-
-        buttonGetStarted.setOnClickListener {
-            AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
-            AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED)
-            prologueFinishedListener?.onGetStartedClicked()
-        }
-    }
-
-    private fun FragmentLoginPrologueBinding.bindFreeTrialView() {
-        startFreeTrialButton?.setOnClickListener {  }
-        loginButton?.setOnClickListener {
-            AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
-            AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED)
-            prologueFinishedListener?.onGetStartedClicked()
         }
     }
 
