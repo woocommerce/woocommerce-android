@@ -59,12 +59,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/imageView"
-        app:layout_constraintBottom_toTopOf="@id/standardLoginButtons"
+        app:layout_constraintBottom_toTopOf="@id/loginButtons"
         android:visibility="visible"
         app:layout_constraintWidth_percent="0.85" />
 
     <LinearLayout
-        android:id="@+id/standardLoginButtons"
+        android:id="@+id/loginButtons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -78,7 +78,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginEnd="@dimen/major_100"
-            android:layout_marginBottom="@dimen/major_100"
+            android:layout_marginBottom="@dimen/minor_25"
             android:text="@string/free_trial_login_start_button"
             android:visibility="gone"
             android:textAllCaps="false" />
