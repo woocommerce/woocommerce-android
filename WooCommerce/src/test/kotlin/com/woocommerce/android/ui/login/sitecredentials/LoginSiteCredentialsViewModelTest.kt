@@ -34,6 +34,7 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -49,7 +50,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     private val applicationPasswordsUnavailableEvents = MutableSharedFlow<WPAPINetworkError>(extraBufferCapacity = 1)
 
     private val wpApiSiteRepository: WPApiSiteRepository = mock {
-        onBlocking { loginAndFetchSite(eq(siteAddress), any(), any()) } doReturn Result.success(testSite)
+        onBlocking { fetchSite(eq(siteAddress), any(), any()) } doReturn Result.success(testSite)
         onBlocking { checkIfUserIsEligible(testSite) } doReturn Result.success(true)
         onBlocking { getSiteByLocalId(testSite.id) } doReturn testSite
     }
@@ -61,6 +62,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     private val loginAnalyticsListener: LoginAnalyticsListener = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private val appPrefs: AppPrefsWrapper = mock()
+    private val userAgent: UserAgent = mock()
 
     private lateinit var viewModel: LoginSiteCredentialsViewModel
 
@@ -79,7 +81,9 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             loginAnalyticsListener = loginAnalyticsListener,
             applicationPasswordsNotifier = applicationPasswordsNotifier,
             analyticsTracker = analyticsTracker,
-            appPrefs = appPrefs
+            appPrefs = appPrefs,
+            userAgent = userAgent,
+            applicationPasswordsClientId = "client_id"
         )
     }
 
@@ -89,7 +93,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
 
         val state = viewModel.viewState.runAndCaptureValues {
             viewModel.onUsernameChanged(testUsername)
-        }.last()
+        }.last() as LoginSiteCredentialsViewModel.ViewState.NativeLoginViewState
 
         assertThat(state.username).isEqualTo(testUsername)
     }
@@ -100,7 +104,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
 
         val state = viewModel.viewState.runAndCaptureValues {
             viewModel.onUsernameChanged(testPassword)
-        }.last()
+        }.last() as LoginSiteCredentialsViewModel.ViewState.NativeLoginViewState
 
         assertThat(state.username).isEqualTo(testPassword)
     }
@@ -111,7 +115,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
 
         val state = viewModel.viewState.runAndCaptureValues {
             viewModel.onUsernameChanged("")
-        }.last()
+        }.last() as LoginSiteCredentialsViewModel.ViewState.NativeLoginViewState
 
         assertThat(state.isValid).isFalse()
     }
@@ -122,7 +126,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
 
         val state = viewModel.viewState.runAndCaptureValues {
             viewModel.onPasswordChanged("")
-        }.last()
+        }.last() as LoginSiteCredentialsViewModel.ViewState.NativeLoginViewState
 
         assertThat(state.isValid).isFalse()
     }
@@ -150,7 +154,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             networkStatusCode = null
         )
         setup {
-            whenever(wpApiSiteRepository.loginAndFetchSite(siteAddress, testUsername, testPassword)).thenReturn(
+            whenever(wpApiSiteRepository.login(siteAddress, testUsername, testPassword)).thenReturn(
                 Result.failure(expectedError)
             )
         }
@@ -159,7 +163,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             viewModel.onUsernameChanged(testUsername)
             viewModel.onPasswordChanged(testPassword)
             viewModel.onContinueClick()
-        }.last()
+        }.last() as LoginSiteCredentialsViewModel.ViewState.NativeLoginViewState
 
         assertThat(state.errorDialogMessage).isEqualTo(expectedError.errorMessage)
         verify(analyticsTracker).track(
@@ -177,7 +181,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     @Test
     fun `given site without Woo, when submitting, then show error screen`() = testBlocking {
         setup {
-            whenever(wpApiSiteRepository.loginAndFetchSite(siteAddress, testUsername, testPassword))
+            whenever(wpApiSiteRepository.fetchSite(siteAddress, testUsername, testPassword))
                 .thenReturn(Result.success(testSite.apply { hasWooCommerce = false }))
         }
 
@@ -219,14 +223,14 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given site without Woo, when attempting Woo installation, then retry login`() = testBlocking {
+    fun `given site without Woo, when attempting Woo installation, then retry fetching site`() = testBlocking {
         setup()
 
         viewModel.viewState.observeForTesting {
             viewModel.onWooInstallationAttempted()
         }
 
-        verify(wpApiSiteRepository).loginAndFetchSite(any(), any(), any())
+        verify(wpApiSiteRepository).fetchSite(any(), any(), any())
     }
 
     @Test
