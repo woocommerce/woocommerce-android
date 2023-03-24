@@ -154,12 +154,14 @@ class PlansViewModelTest : BaseUnitTest() {
     @Test
     fun `when a site is created, a plan is added to site's checkout cart and a WebView is launched`() =
         testBlocking {
-            whenever(repository.createNewSite(
-                siteData = siteData,
-                languageWordPressId = PlansViewModel.NEW_SITE_LANGUAGE_ID,
-                timeZoneId = TimeZone.getDefault().id,
-                siteCreationFlow = newStore.data.planPathSlug
-            )).thenReturn(StoreCreationResult.Success(SITE_ID))
+            whenever(
+                repository.createNewSite(
+                    siteData = siteData,
+                    languageWordPressId = PlansViewModel.NEW_SITE_LANGUAGE_ID,
+                    timeZoneId = TimeZone.getDefault().id,
+                    siteCreationFlow = newStore.data.planPathSlug
+                )
+            ).thenReturn(StoreCreationResult.Success(SITE_ID))
 
             whenever(repository.addPlanToCart(newStore.data.planProductId, newStore.data.planPathSlug, SITE_ID))
                 .thenReturn(StoreCreationResult.Success(Unit))
@@ -182,12 +184,14 @@ class PlansViewModelTest : BaseUnitTest() {
         testBlocking {
             givenIsIAPEnabled()
             whenever(repository.fetchPlan(ECOMMERCE_MONTHLY)).thenReturn(plan)
-            whenever(repository.createNewSite(
-                siteData = siteData,
-                languageWordPressId = PlansViewModel.NEW_SITE_LANGUAGE_ID,
-                timeZoneId = TimeZone.getDefault().id,
-                siteCreationFlow = newStore.data.planPathSlug
-            )).thenReturn(StoreCreationResult.Success(SITE_ID))
+            whenever(
+                repository.createNewSite(
+                    siteData = siteData,
+                    languageWordPressId = PlansViewModel.NEW_SITE_LANGUAGE_ID,
+                    timeZoneId = TimeZone.getDefault().id,
+                    siteCreationFlow = newStore.data.planPathSlug
+                )
+            ).thenReturn(StoreCreationResult.Success(SITE_ID))
 
             whenViewModelIsCreated()
             viewModel.onConfirmClicked(iapActivityWrapper)
@@ -204,12 +208,14 @@ class PlansViewModelTest : BaseUnitTest() {
     @Test
     fun `when a site already exists and belongs to the user, the flow is successfully recovered`() =
         testBlocking {
-            whenever(repository.createNewSite(
-                siteData = siteData,
-                languageWordPressId = PlansViewModel.NEW_SITE_LANGUAGE_ID,
-                timeZoneId = TimeZone.getDefault().id,
-                siteCreationFlow = newStore.data.planPathSlug
-            )).thenReturn(StoreCreationResult.Failure(SITE_ADDRESS_ALREADY_EXISTS))
+            whenever(
+                repository.createNewSite(
+                    siteData = siteData,
+                    languageWordPressId = PlansViewModel.NEW_SITE_LANGUAGE_ID,
+                    timeZoneId = TimeZone.getDefault().id,
+                    siteCreationFlow = newStore.data.planPathSlug
+                )
+            ).thenReturn(StoreCreationResult.Failure(SITE_ADDRESS_ALREADY_EXISTS))
 
             whenever(repository.getSiteByUrl(newStore.data.domain!!))
                 .thenReturn(SiteModel().apply { siteId = SITE_ID })
@@ -233,12 +239,14 @@ class PlansViewModelTest : BaseUnitTest() {
     @Test
     fun `when a site already exists and and it doesn't belong to the user, the flow fails`() =
         testBlocking {
-            whenever(repository.createNewSite(
-                siteData = siteData,
-                languageWordPressId = PlansViewModel.NEW_SITE_LANGUAGE_ID,
-                timeZoneId = TimeZone.getDefault().id,
-                siteCreationFlow = newStore.data.planPathSlug
-            )).thenReturn(StoreCreationResult.Failure(SITE_ADDRESS_ALREADY_EXISTS))
+            whenever(
+                repository.createNewSite(
+                    siteData = siteData,
+                    languageWordPressId = PlansViewModel.NEW_SITE_LANGUAGE_ID,
+                    timeZoneId = TimeZone.getDefault().id,
+                    siteCreationFlow = newStore.data.planPathSlug
+                )
+            ).thenReturn(StoreCreationResult.Failure(SITE_ADDRESS_ALREADY_EXISTS))
 
             whenever(repository.getSiteByUrl(newStore.data.domain!!))
                 .thenReturn(null)
