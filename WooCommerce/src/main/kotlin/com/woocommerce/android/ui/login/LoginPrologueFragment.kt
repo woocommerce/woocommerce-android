@@ -58,8 +58,17 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
 
 
             if (FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
-                startFreeTrialButton?.visibility = View.VISIBLE
-                startFreeTrialButton?.setOnClickListener {
+                standardButtons?.visibility = View.GONE
+                freeTrialButtons?.visibility = View.VISIBLE
+
+                buttonFreeTrialModeLoginStore?.setOnClickListener {
+                    AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
+                    prologueFinishedListener?.onPrimaryButtonClicked()
+                }
+
+                buttonFreeTrialModeStartYourTrial?.setOnClickListener {
+                    AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
+                    AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED)
                     prologueFinishedListener?.onGetStartedClicked()
                 }
             }
