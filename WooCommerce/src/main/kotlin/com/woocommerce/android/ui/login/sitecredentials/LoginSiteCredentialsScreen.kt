@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
@@ -186,12 +187,6 @@ private fun NativeLoginForm(
                         .fillMaxWidth()
                         .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                 ) {
-                    // TODO validate the placement of the button in the dialog and the design
-                    WCTextButton(
-                        onClick = onErrorDialogDismissed
-                    ) {
-                        Text(text = stringResource(id = android.R.string.ok))
-                    }
                     WCTextButton(
                         onClick = onStartWebAuthorizationClick
                     ) {
@@ -204,6 +199,14 @@ private fun NativeLoginForm(
                         }
                     ) {
                         Text(text = stringResource(id = R.string.login_site_address_more_help))
+                    }
+                    WCTextButton(
+                        onClick = onErrorDialogDismissed
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.cancel),
+                            textAlign = TextAlign.End
+                        )
                     }
                 }
             }
