@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-14 17:54:04+0000
+Translation-Revision-Date: 2023-03-21 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="upgrades_error_fetching_data">Error al obtener los detalles de tu plan</string>
+    <string name="upgrades_non_upgradeable_caption">¡Ya te has suscrito a %1$s! Tienes acceso a todas las funciones hasta el %2$s. </string>
+    <string name="upgrades_trial_ended_caption">Tu prueba gratuita ha finalizado, por lo que solo tienes acceso limitado a las funciones. Suscríbete a %1$s ahora.</string>
+    <string name="upgrades_upgradeable_caption">Estás en el día %1$d de tu prueba gratuita. Tu prueba gratuita termina en %2$d días. Mejora tu plan para descubrir nuevas funciones y mantener tu tienda en funcionamiento.</string>
+    <string name="upgrades_subscription_status">Estado de la suscripción</string>
+    <string name="upgrades_title">Mejoras</string>
+    <string name="upgrades_troubleshooting">Solución de problemas</string>
+    <string name="upgrades_current_plan">Actual: %s</string>
+    <string name="upgrades_upgrade_now">Mejora tu plan ahora</string>
+    <string name="upgrades_report_subscription_issue">Notificar un problema de suscripción</string>
+    <string name="free_trial_upgrade_now">Mejora tu plan ahora</string>
+    <string name="free_trial_days_left">El período de prueba finaliza en %1$d días.</string>
+    <string name="free_trial_trial_ended">Período de prueba finalizado</string>
+    <string name="free_trial_your_trial_ended">Tu período de prueba ha finalizado.</string>
+    <string name="store_onboarding_launch_store_generic_error_description">Ups, han ocurrido algunos errores inesperados.</string>
+    <string name="store_onboarding_launch_store_generic_error_title">Error inesperado</string>
+    <string name="store_onboarding_store_already_launched_error_description">Hemos detectado que la tienda ya se ha publicado.</string>
+    <string name="store_onboarding_store_already_launched_error_title">No se ha podido publicar tu tienda.</string>
+    <string name="store_onboarding_share_url_error">No se ha podido compartir la URL de la tienda.</string>
+    <string name="store_onboarding_launch_store_task_private_tag">Privado</string>
+    <string name="store_onboarding_launched_title">Tu tienda ya está abierta.</string>
+    <string name="store_onboarding_launch_preview_title">Vista previa</string>
+    <string name="store_onboarding_launch_store_back_to_store_button">Volver a mi tienda</string>
+    <string name="store_onboarding_launch_store_share_url_button">URL para compartir</string>
+    <string name="store_onboarding_launch_store_button">Publicar mi tienda</string>
+    <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">Para publicar tu tienda, debes mejorar tu plan. &lt;u&gt;Mejorar&lt;/u&gt;</string>
+    <string name="card_reader_tap_to_pay_not_available_error">La función Tocar para pagar no está disponible para tu tienda o dispositivo.</string>
+    <string name="domains_search_domains">Buscar dominios</string>
+    <string name="login_site_credentials_http_error">No se ha podido acceder con el código de estado %1$s.</string>
+    <string name="login_site_credentials_custom_admin_url">No puedes acceder porque no hemos conseguido identificar la URL de administración de tu tienda.</string>
+    <string name="login_site_credentials_custom_login_url">No puedes acceder porque no hemos conseguido identificar la URL de acceso de tu tienda.</string>
+    <string name="login_site_credentials_invalid_response">No se ha podido acceder al sitio debido a una respuesta inesperada. Estamos trabajando para resolver este problema.</string>
+    <string name="more_menu_button_upgrades">Mejoras</string>
+    <string name="something_went_wrong_try_again">Se ha producido un error. Inténtalo de nuevo más tarde.</string>
     <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">Tu cuenta está pendiente de cumplir algunos requisitos. Para seguir aceptando Pagos en Persona, completa estos requisitos.</string>
     <string name="analytics_banner_message">Califica tu experiencia con la función de análisis.</string>
     <string name="analytics_banner_title">¿Te gusta la función de análisis?</string>
@@ -305,8 +339,6 @@ Language: es
     <string name="card_reader_payment_collect_payment_built_in_state">El lector integrado está listo</string>
     <string name="card_reader_type_selection_bluetooth_reader">Lector con Bluetooth</string>
     <string name="card_reader_type_selection_tap_to_pay">Tocar para pagar</string>
-    <string name="card_reader_type_selection_description">Tu teléfono se puede usar como lector de tarjetas o puedes conectarlo a un lector externo a través de Bluetooth</string>
-    <string name="card_reader_type_selection_title">Elige un tipo de lector</string>
     <string name="analytics_conversion_subtitle">Tasa de conversión</string>
     <string name="analytics_session_card_title">Sesiones</string>
     <string name="analytics_session_no_data">No hay sesiones este período</string>
@@ -957,7 +989,7 @@ Language: es
     <string name="order_creation_new_customer_add_different_shipping_address">Añadir una dirección de envío diferente</string>
     <string name="order_creation_product_instock">Hay existencias</string>
     <string name="order_creation_product_stock_quantity">%s hay existencias</string>
-    <string name="order_creation_add_products">Añadir producto</string>
+    <string name="order_creation_add_products">Añadir productos</string>
     <string name="order_creation_products">Productos</string>
     <string name="order_creation_add_customer">Añadir detalles del cliente</string>
     <string name="order_creation_customer">Cliente</string>

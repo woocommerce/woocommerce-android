@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-14 09:54:04+0000
+Translation-Revision-Date: 2023-03-21 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="upgrades_error_fetching_data">获取套餐详细信息时出现错误</string>
+    <string name="upgrades_non_upgradeable_caption">您已订阅 %1$s！ %2$s前，您可以访问我们的所有功能。 </string>
+    <string name="upgrades_trial_ended_caption">您的免费试用已结束，已被限制访问所有功能。 立即订阅 %1$s。</string>
+    <string name="upgrades_upgradeable_caption">您的免费试用版还剩 %1$d 天。 您的免费试用版将于 %2$d 天后到期。 升级套餐，解锁新功能并持续运营商店。</string>
+    <string name="upgrades_subscription_status">订阅状态</string>
+    <string name="upgrades_title">升级</string>
+    <string name="upgrades_troubleshooting">故障排除</string>
+    <string name="upgrades_current_plan">当前：%s</string>
+    <string name="upgrades_upgrade_now">立即升级</string>
+    <string name="upgrades_report_subscription_issue">报告订阅问题</string>
+    <string name="free_trial_upgrade_now">立即升级</string>
+    <string name="free_trial_days_left">%1$d 天后免费试用结束。</string>
+    <string name="free_trial_trial_ended">试用已结束</string>
+    <string name="free_trial_your_trial_ended">您的试用已结束。</string>
+    <string name="store_onboarding_launch_store_generic_error_description">糟糕，发生意外错误。</string>
+    <string name="store_onboarding_launch_store_generic_error_title">意外错误</string>
+    <string name="store_onboarding_store_already_launched_error_description">我们发现此商店已启动。</string>
+    <string name="store_onboarding_store_already_launched_error_title">无法启动您的商店</string>
+    <string name="store_onboarding_share_url_error">无法共享商店 URL</string>
+    <string name="store_onboarding_launch_store_task_private_tag">私人</string>
+    <string name="store_onboarding_launched_title">您的商店已上线！</string>
+    <string name="store_onboarding_launch_preview_title">预览</string>
+    <string name="store_onboarding_launch_store_back_to_store_button">返回我的商店</string>
+    <string name="store_onboarding_launch_store_share_url_button">分享 URL</string>
+    <string name="store_onboarding_launch_store_button">发布我的商店</string>
+    <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">要启动商店，您需要升级套餐。 &lt;u&gt;升级&lt;/u&gt;</string>
+    <string name="card_reader_tap_to_pay_not_available_error">“点按付款”目前不适用于您的商店或设备</string>
+    <string name="domains_search_domains">搜索域</string>
+    <string name="login_site_credentials_http_error">登陆失败，状态代码为 %1$s</string>
+    <string name="login_site_credentials_custom_admin_url">由于我们无法识别您商店的管理员 URL，无法登录</string>
+    <string name="login_site_credentials_custom_login_url">由于我们无法识别您商店的登录 URL，无法登录</string>
+    <string name="login_site_credentials_invalid_response">由于您的站点出现意外响应，登录失败。 我们正在努力修复此问题。</string>
+    <string name="more_menu_button_upgrades">升级</string>
+    <string name="something_went_wrong_try_again">出错了，请稍后重试。</string>
     <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">您的帐户中存在待处理的要求。 请完成这些要求，以继续接受现场付款。</string>
     <string name="analytics_banner_message">请对您的分析体验做出评价</string>
     <string name="analytics_banner_title">喜欢分析？</string>
@@ -305,8 +339,6 @@ Language: zh_CN
     <string name="card_reader_payment_collect_payment_built_in_state">内置读卡器已经准备就绪</string>
     <string name="card_reader_type_selection_bluetooth_reader">蓝牙读卡器</string>
     <string name="card_reader_type_selection_tap_to_pay">点按付款</string>
-    <string name="card_reader_type_selection_description">您的电话可以作为读卡器使用，或者您也可以通过蓝牙连接至外部读卡器</string>
-    <string name="card_reader_type_selection_title">请选择读卡器类型</string>
     <string name="analytics_conversion_subtitle">转化率</string>
     <string name="analytics_session_card_title">会话</string>
     <string name="analytics_session_no_data">此期间没有会话</string>

@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-14 15:54:04+0000
+Translation-Revision-Date: 2023-03-21 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="upgrades_error_fetching_data">שגיאה בהבאת הפרטים של התוכנית.</string>
+    <string name="upgrades_non_upgradeable_caption">נרשמת למינוי על ⁦%1$s⁩ בהצלחה! יש לך גישה לכל האפשרויות עד ⁦%2$s⁩. </string>
+    <string name="upgrades_trial_ended_caption">תקופת ההתנסות שלך הסתיימה ולכן הגישה שלך לכל האפשרויות הוגבלה. כדאי להירשם למינוי על ⁦%1$s⁩ עכשיו.</string>
+    <string name="upgrades_upgradeable_caption">התחלת תקופת ניסיון בחינם של ⁦%1$d⁩ ימים. תקופת הניסיון תסתיים בעוד ⁦%2$d⁩ ימים. כדאי לשדרג כדי להשתמש באפשרויות חדשות ולהמשיך להפעיל את החנות שלך…</string>
+    <string name="upgrades_subscription_status">סטטוס מינוי</string>
+    <string name="upgrades_title">שדרוגים</string>
+    <string name="upgrades_troubleshooting">פתרון בעיות</string>
+    <string name="upgrades_current_plan">כרגע: %s</string>
+    <string name="upgrades_upgrade_now">זה הזמן לשדרג</string>
+    <string name="upgrades_report_subscription_issue">לדווח על בעיה במינוי</string>
+    <string name="free_trial_upgrade_now">זה הזמן לשדרג</string>
+    <string name="free_trial_days_left">נותרו ⁦%1$d⁩ ימים בתקופת הניסיון שלך.</string>
+    <string name="free_trial_trial_ended">תקופת הניסיון הסתיימה</string>
+    <string name="free_trial_your_trial_ended">תקופת הניסיון שלך הסתיימה.</string>
+    <string name="store_onboarding_launch_store_generic_error_description">אופס, אירעו כמה שגיאות לא צפויות.</string>
+    <string name="store_onboarding_launch_store_generic_error_title">שגיאה לא צפויה</string>
+    <string name="store_onboarding_store_already_launched_error_description">בדקנו וראינו שהחנות כבר הושקה.</string>
+    <string name="store_onboarding_store_already_launched_error_title">לא ניתן היה להשיק את החנות שלך</string>
+    <string name="store_onboarding_share_url_error">לא ניתן לשתף את כתובת ה-URL של החנות</string>
+    <string name="store_onboarding_launch_store_task_private_tag">פרטי</string>
+    <string name="store_onboarding_launched_title">החנות שלך פורסמה!</string>
+    <string name="store_onboarding_launch_preview_title">תצוגה מקדימה</string>
+    <string name="store_onboarding_launch_store_back_to_store_button">חזרה אל \'החנות שלי\'</string>
+    <string name="store_onboarding_launch_store_share_url_button">כתובת URL לשיתוף</string>
+    <string name="store_onboarding_launch_store_button">לפרסם את החנות שלי</string>
+    <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">כדי להשיק את החנות שלך, עליך לשדרג לתוכנית שלנו. &lt;u&gt;לשדרג&lt;/u&gt;</string>
+    <string name="card_reader_tap_to_pay_not_available_error">האפשרות Tap To Pay לא זמינה בחנות או במכשיר שלך</string>
+    <string name="domains_search_domains">לחפש דומיינים</string>
+    <string name="login_site_credentials_http_error">הכניסה נכשלה עם קוד סטטוס ⁦%1$s⁩</string>
+    <string name="login_site_credentials_custom_admin_url">לא ניתן להתחבר מאחר שלא הצלחנו לזהות את כתובת ה-URL למנהל המערכת של החנות שלך</string>
+    <string name="login_site_credentials_custom_login_url">לא ניתן להתחבר מאחר שלא הצלחנו לזהות את כתובת ה-URL לכניסה לחנות שלך</string>
+    <string name="login_site_credentials_invalid_response">הכניסה נכשלה עם תגובה לא צפויה מהאתר שלך. אנחנו מנסים כעת לפתור את הבעיה.</string>
+    <string name="more_menu_button_upgrades">שדרוגים</string>
+    <string name="something_went_wrong_try_again">משהו השתבש, יש לנסות שוב מאוחר יותר.</string>
     <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">ישנן דרישות ממתינות בחשבון שלך. כדי להמשיך לקבל תשלומים באופן אישי, עליך להשלים את הדרישות הללו.</string>
     <string name="analytics_banner_message">כדאי לדרג את חוויית השימוש שלך בנתונים האנליטיים</string>
     <string name="analytics_banner_title">אהבת את השימוש בנתונים האנליטיים?</string>
@@ -305,8 +339,6 @@ Language: he_IL
     <string name="card_reader_payment_collect_payment_built_in_state">קורא הכרטיסים המובנה מוכן</string>
     <string name="card_reader_type_selection_bluetooth_reader">קורא Bluetooth</string>
     <string name="card_reader_type_selection_tap_to_pay">יש להצמיד את הכרטיס לביצוע תשלום</string>
-    <string name="card_reader_type_selection_description">הטלפון שלך יכול לשמש כקורא כרטיסים. לחלופין, אפשר לחבר קורא חיצוני דרך Bluetooth</string>
-    <string name="card_reader_type_selection_title">בחירת סוג קורא</string>
     <string name="analytics_conversion_subtitle">שיעור המרה</string>
     <string name="analytics_session_card_title">הפעלות</string>
     <string name="analytics_session_no_data">אין הפעלות בתקופה זאת</string>
@@ -957,7 +989,7 @@ Language: he_IL
     <string name="order_creation_new_customer_add_different_shipping_address">להוסיף כתובת שונה למשלוח</string>
     <string name="order_creation_product_instock">במלאי</string>
     <string name="order_creation_product_stock_quantity">%s במלאי</string>
-    <string name="order_creation_add_products">להוסיף מוצר</string>
+    <string name="order_creation_add_products">להוסיף מוצרים</string>
     <string name="order_creation_products">מוצרים</string>
     <string name="order_creation_add_customer">להוסיף את פרטי הלקוח</string>
     <string name="order_creation_customer">לקוח</string>
