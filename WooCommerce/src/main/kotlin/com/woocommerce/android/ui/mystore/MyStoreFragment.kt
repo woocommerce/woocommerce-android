@@ -187,7 +187,8 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     }
 
     private fun applyBannerComposeUI(state: BannerState) {
-        if (state is BannerState.DisplayBannerState) {
+        // Show banners only if onboarding list is not displayed
+        if (state is BannerState.DisplayBannerState && !binding.storeOnboardingView.isVisible) {
             binding.jitmView.apply {
                 binding.jitmView.show()
                 // Dispose of the Composition when the view's LifecycleOwner is destroyed

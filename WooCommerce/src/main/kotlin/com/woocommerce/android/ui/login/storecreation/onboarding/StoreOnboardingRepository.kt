@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.login.storecreation.onboarding
 
-import com.woocommerce.android.WooException
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.LAUNCH_YOUR_STORE
@@ -21,19 +21,18 @@ import javax.inject.Singleton
 class StoreOnboardingRepository @Inject constructor(
     private val onboardingStore: OnboardingStore,
     private val selectedSite: SelectedSite,
-    private val siteStore: SiteStore
+    private val siteStore: SiteStore,
+    private val appPrefsWrapper: AppPrefsWrapper
 ) {
 
     var onboardingTasksCacheFlow: MutableStateFlow<List<OnboardingTask>> = MutableStateFlow(emptyList())
 
-    suspend fun fetchOnboardingTasks(): Result<Unit> {
+    suspend fun fetchOnboardingTasks() {
         WooLog.d(WooLog.T.ONBOARDING, "Fetching onboarding tasks")
         val result = onboardingStore.fetchOnboardingTasks(selectedSite.get())
         return when {
-            result.isError -> {
+            result.isError ->
                 WooLog.i(WooLog.T.ONBOARDING, "Error fetching onboarding tasks: ${result.error}")
-                Result.failure(WooException(result.error))
-            }
             else -> {
                 WooLog.d(WooLog.T.ONBOARDING, "Success fetching onboarding tasks")
                 val mobileSupportedTasks = result.model?.map { it.toOnboardingTask() }
@@ -55,11 +54,20 @@ class StoreOnboardingRepository @Inject constructor(
                         )
                     )
                 }
+                if (mobileSupportedTasks.all { it.isComplete }) {
+                    WooLog.d(
+                        WooLog.T.ONBOARDING,
+                        "All onboarding tasks are completed for siteId: ${selectedSite.getSelectedSiteId()}"
+                    )
+                    appPrefsWrapper.markAllOnboardingTasksCompleted(selectedSite.getSelectedSiteId())
+                }
                 onboardingTasksCacheFlow.emit(mobileSupportedTasks)
-                Result.success(Unit)
             }
         }
     }
+
+    fun isOnboardingCompleted(): Boolean =
+        appPrefsWrapper.isOnboardingCompleted(selectedSite.getSelectedSiteId())
 
     suspend fun launchStore(): LaunchStoreResult {
         WooLog.d(WooLog.T.ONBOARDING, "Launching store")
@@ -104,6 +112,7 @@ class StoreOnboardingRepository @Inject constructor(
         LAUNCH_YOUR_STORE(id = "launch_site", order = 3),
         CUSTOMIZE_DOMAIN(id = "add_domain", order = 4),
         WC_PAYMENTS(id = "woocommerce-payments", order = 5),
+        PAYMENTS(id = "payments", order = 5), // WC_PAYMENT and PAYMENTS are considered the same task on mobile
         MOBILE_UNSUPPORTED(id = "mobile-unsupported", order = -1)
     }
 

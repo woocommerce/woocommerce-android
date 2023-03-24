@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboarding
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.CUSTOMIZE_DOMAIN
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.LAUNCH_YOUR_STORE
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.PAYMENTS
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.WC_PAYMENTS
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
@@ -27,7 +28,7 @@ import javax.inject.Inject
 @HiltViewModel
 class StoreOnboardingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val onboardingRepository: StoreOnboardingRepository
+    private val onboardingRepository: StoreOnboardingRepository,
 ) : ScopedViewModel(savedStateHandle), DefaultLifecycleObserver {
     companion object {
         const val NUMBER_ITEMS_IN_COLLAPSED_MODE = 3
@@ -38,7 +39,6 @@ class StoreOnboardingViewModel @Inject constructor(
 
     init {
         launch {
-            onboardingRepository.fetchOnboardingTasks()
             onboardingRepository.onboardingTasksCacheFlow
                 .collectLatest { tasks ->
                     _viewState.value = OnboardingState(
@@ -60,7 +60,8 @@ class StoreOnboardingViewModel @Inject constructor(
             ADD_FIRST_PRODUCT -> OnboardingTaskUi(AddProductTaskRes, isCompleted = task.isComplete)
             LAUNCH_YOUR_STORE -> OnboardingTaskUi(LaunchStoreTaskRes, isCompleted = task.isComplete)
             CUSTOMIZE_DOMAIN -> OnboardingTaskUi(CustomizeDomainTaskRes, isCompleted = task.isComplete)
-            WC_PAYMENTS -> OnboardingTaskUi(SetupPaymentsTaskRes, isCompleted = task.isComplete)
+            WC_PAYMENTS,
+            PAYMENTS -> OnboardingTaskUi(SetupPaymentsTaskRes, isCompleted = task.isComplete)
             MOBILE_UNSUPPORTED -> error("Unknown task type is not allowed in UI layer")
         }
 
@@ -91,8 +92,12 @@ class StoreOnboardingViewModel @Inject constructor(
     }
 
     private fun refreshOnboardingList() {
-        launch {
-            onboardingRepository.fetchOnboardingTasks()
+        if (!onboardingRepository.isOnboardingCompleted()) {
+            launch {
+                onboardingRepository.fetchOnboardingTasks()
+            }
+        } else {
+            _viewState.value = _viewState.value?.copy(show = false)
         }
     }
 
