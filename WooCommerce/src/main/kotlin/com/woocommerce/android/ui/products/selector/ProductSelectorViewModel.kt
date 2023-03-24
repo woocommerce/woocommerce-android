@@ -117,16 +117,16 @@ class ProductSelectorViewModel @Inject constructor(
     }.asLiveData()
 
     init {
-        loadPopularProducts()
         monitorSearchQuery()
         monitorProductFilters()
         viewModelScope.launch {
+            loadPopularProducts()
             fetchProducts(forceRefresh = true)
         }
     }
 
-    private fun loadPopularProducts() {
-
+    private suspend fun loadPopularProducts() {
+        val recentlySoldOrders = getRecentlySoldOrders()
     }
 
     private suspend fun getRecentlySoldOrders() =
