@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.isInteger
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToProductFilter
@@ -127,6 +128,9 @@ class ProductSelectorViewModel @Inject constructor(
     private fun loadPopularProducts() {
 
     }
+
+    private suspend fun getRecentlySoldOrders() =
+        orderStore.getOrdersForSiteDesc(selectedSite.get()).filter { it.datePaid.isNotNullOrEmpty() }
 
     private fun Product.toUiModel(selectedItems: Set<SelectedItem>): ProductListItem {
         fun getProductSelection(): SelectionState {
