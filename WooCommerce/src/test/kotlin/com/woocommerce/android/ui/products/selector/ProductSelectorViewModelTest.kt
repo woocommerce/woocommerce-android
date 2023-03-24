@@ -150,4 +150,14 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             )
         }
     }
+
+    private fun generateLineItems(
+        name: String,
+        productId: String,
+    ): String {
+        return "[{\"id\":1121,\"meta_data\":[],\"name\":\"$name\",\"price\":\"88.6\"," +
+            "\"product_id\":$productId,\"quantity\":1.0,\"sku\":\"ACBI\"," +
+            "\"subtotal\":\"88.60\",\"total\":\"88.60\",\"total_tax\":\"0.00\",\"variation_id\":0}]"
+    }
+
 }
