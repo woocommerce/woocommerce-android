@@ -16,6 +16,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
@@ -38,6 +39,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     }
     private val variationSelectorRepository: VariationSelectorRepository = mock()
     private val resourceProvider: ResourceProvider = mock()
+    private val orderStore: WCOrderStore = mock()
+    private val productsMapper: ProductsMapper = mock()
 
     @Test
     fun `given published products restriction, when view model created, should not show draft products`() {
@@ -50,10 +53,12 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             navArgs,
             currencyFormatter,
             wooCommerceStore,
+            orderStore,
             selectedSite,
             listHandler,
             variationSelectorRepository,
             resourceProvider,
+            productsMapper,
         )
 
         sut.viewState.observeForever { state ->
@@ -73,10 +78,12 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             navArgs,
             currencyFormatter,
             wooCommerceStore,
+            orderStore,
             selectedSite,
             listHandler,
             variationSelectorRepository,
             resourceProvider,
+            productsMapper,
         )
 
         sut.viewState.observeForever { state ->
@@ -98,10 +105,12 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             navArgs,
             currencyFormatter,
             wooCommerceStore,
+            orderStore,
             selectedSite,
             listHandler,
             variationSelectorRepository,
             resourceProvider,
+            productsMapper,
         )
 
         sut.viewState.observeForever { state ->
@@ -124,10 +133,12 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             navArgs,
             currencyFormatter,
             wooCommerceStore,
+            orderStore,
             selectedSite,
             listHandler,
             variationSelectorRepository,
             resourceProvider,
+            productsMapper,
         )
 
         sut.viewState.observeForever { state ->
