@@ -135,7 +135,7 @@ fun StoreOnboardingCollapsed(
                     .padding(top = dimensionResource(id = R.dimen.major_100))
                     .fillMaxWidth()
             )
-            if (onboardingState.tasks.size > NUMBER_ITEMS_IN_COLLAPSED_MODE) {
+            if (onboardingState.tasks.size > NUMBER_ITEMS_IN_COLLAPSED_MODE || taskToDisplay.size == 1) {
                 Text(
                     modifier = Modifier
                         .clickable { onViewAllClicked() }
