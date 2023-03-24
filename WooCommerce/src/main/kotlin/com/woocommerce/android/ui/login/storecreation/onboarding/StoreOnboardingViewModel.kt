@@ -24,8 +24,6 @@ import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboarding
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.PAYMENTS
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.WC_PAYMENTS
 import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T.ONBOARDING
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -92,7 +90,7 @@ class StoreOnboardingViewModel @Inject constructor(
             AddProductTaskRes -> triggerEvent(NavigateToAddProduct)
             CustomizeDomainTaskRes -> triggerEvent(NavigateToDomains)
             LaunchStoreTaskRes -> triggerEvent(NavigateToLaunchStore)
-            SetupPaymentsTaskRes -> WooLog.d(ONBOARDING, "TODO")
+            SetupPaymentsTaskRes -> triggerEvent(NavigateToSetupPayments)
         }
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.STORE_ONBOARDING_TASK_TAPPED,
@@ -174,6 +172,7 @@ class StoreOnboardingViewModel @Inject constructor(
     object NavigateToSurvey : MultiLiveEvent.Event()
     object NavigateToLaunchStore : MultiLiveEvent.Event()
     object NavigateToDomains : MultiLiveEvent.Event()
+    object NavigateToSetupPayments : MultiLiveEvent.Event()
     object NavigateToAboutYourStore : MultiLiveEvent.Event()
     object NavigateToAddProduct : MultiLiveEvent.Event()
 }
