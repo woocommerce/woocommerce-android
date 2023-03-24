@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewTapToPay
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewUrlInWebView
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
@@ -417,6 +418,22 @@ class MainActivityViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(viewModel.event.value).isInstanceOf(ViewTapToPay::class.java)
+        }
+    }
+
+    @Test
+    fun `given view url in web view, when app opened, then trigger ViewUrlInWebView event`() {
+        testBlocking {
+            // GIVEN
+            val url = "https://woocommerce.com"
+            whenever(resolveAppLink.invoke(any())).thenReturn(ResolveAppLink.Action.ViewUrlInWebView(url))
+            createViewModel()
+
+            // WHEN
+            viewModel.handleIncomingAppLink(mock())
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(ViewUrlInWebView(url))
         }
     }
 

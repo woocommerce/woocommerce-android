@@ -37,7 +37,6 @@ import org.wordpress.android.fluxc.store.SiteStore.OnNewSiteCreated
 import org.wordpress.android.fluxc.store.SiteStore.SiteFilter.WPCOM
 import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility
 import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility.COMING_SOON
-import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility.PRIVATE
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.login.util.SiteUtils
 import org.wordpress.android.util.UrlUtils
@@ -204,7 +203,7 @@ class StoreCreationRepository @Inject constructor(
         siteData: SiteCreationData,
         languageWordPressId: String,
         timeZoneId: String,
-        siteVisibility: SiteVisibility = PRIVATE,
+        siteVisibility: SiteVisibility = COMING_SOON,
         dryRun: Boolean = false,
         siteCreationFlow: String? = null,
         shouldFindAvailableUrl: Boolean? = null,
@@ -229,14 +228,14 @@ class StoreCreationRepository @Inject constructor(
             else -> siteData.domain
         }
         val newSitePayload = NewSitePayload(
-            domain,
-            siteData.title,
-            languageWordPressId,
-            timeZoneId,
-            siteVisibility,
-            siteData.segmentId,
-            siteData.siteDesign,
-            dryRun,
+            siteName = domain,
+            siteTitle = siteData.title,
+            language = languageWordPressId,
+            timeZoneId = timeZoneId,
+            visibility = siteVisibility,
+            segmentId = siteData.segmentId,
+            siteDesign = siteData.siteDesign,
+            dryRun = dryRun,
             siteCreationFlow = siteCreationFlow,
             findAvailableUrl = shouldFindAvailableUrl
         )

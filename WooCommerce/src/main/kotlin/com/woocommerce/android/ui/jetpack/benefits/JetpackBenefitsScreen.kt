@@ -42,7 +42,8 @@ fun JetpackBenefitsScreen(viewModel: JetpackBenefitsViewModel) {
         JetpackBenefitsScreen(
             viewState = it,
             onInstallClick = viewModel::onInstallClick,
-            onDismssClick = viewModel::onDismiss
+            onDismissClick = viewModel::onDismiss,
+            onOpenWPAdminJetpackActivationClick = viewModel::onOpenWpAdminJetpackActivationClicked
         )
     }
 }
@@ -51,7 +52,8 @@ fun JetpackBenefitsScreen(viewModel: JetpackBenefitsViewModel) {
 fun JetpackBenefitsScreen(
     viewState: JetpackBenefitsViewModel.ViewState,
     onInstallClick: () -> Unit = {},
-    onDismssClick: () -> Unit = {}
+    onDismissClick: () -> Unit = {},
+    onOpenWPAdminJetpackActivationClick: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -118,15 +120,22 @@ fun JetpackBenefitsScreen(
             }
         }
 
-        WCColoredButton(onClick = onInstallClick, modifier = Modifier.fillMaxWidth()) {
-            Text(
-                text = stringResource(
-                    id = if (viewState.isUsingJetpackCP) R.string.jetpack_benefits_modal_install_jetpack
-                    else R.string.jetpack_benefits_modal_login
+        if (viewState.isNativeJetpackActivationAvailable) {
+            WCColoredButton(onClick = onInstallClick, modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = stringResource(
+                        id = if (viewState.isUsingJetpackCP) R.string.jetpack_benefits_modal_install_jetpack
+                        else R.string.jetpack_benefits_modal_login
+                    )
                 )
-            )
+            }
         }
-        WCOutlinedButton(onClick = onDismssClick, modifier = Modifier.fillMaxWidth()) {
+
+        WCColoredButton(onClick = onOpenWPAdminJetpackActivationClick, modifier = Modifier.fillMaxWidth()) {
+            Text(text = stringResource(R.string.jetpack_benefits_open_wpadmin))
+        }
+
+        WCOutlinedButton(onClick = onDismissClick, modifier = Modifier.fillMaxWidth()) {
             Text(text = stringResource(id = R.string.jetpack_benefits_modal_dismiss))
         }
     }
@@ -173,7 +182,22 @@ private fun JetpackBenefitsScreenPreview() {
         JetpackBenefitsScreen(
             viewState = JetpackBenefitsViewModel.ViewState(
                 isUsingJetpackCP = false,
-                isLoadingDialogShown = false
+                isLoadingDialogShown = false,
+                isNativeJetpackActivationAvailable = true
+            )
+        )
+    }
+}
+
+@Composable
+@Preview
+private fun JetpackBenefitsScreenWithoutNativeInstallPreview() {
+    WooThemeWithBackground {
+        JetpackBenefitsScreen(
+            viewState = JetpackBenefitsViewModel.ViewState(
+                isUsingJetpackCP = false,
+                isLoadingDialogShown = false,
+                isNativeJetpackActivationAvailable = false
             )
         )
     }
