@@ -49,6 +49,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -127,10 +128,25 @@ class ProductSelectorViewModel @Inject constructor(
 
     private suspend fun loadPopularProducts() {
         val recentlySoldOrders = getRecentlySoldOrders()
+        val popularProductsMap = filterPopularProductsFrom(recentlySoldOrders)
     }
 
     private suspend fun getRecentlySoldOrders() =
         orderStore.getOrdersForSiteDesc(selectedSite.get()).filter { it.datePaid.isNotNullOrEmpty() }
+
+    private fun filterPopularProductsFrom(
+        recentlySoldOrdersList: List<OrderEntity>
+    ): MutableMap<Long, Int> {
+        val popularProductsMap: MutableMap<Long, Int> = mutableMapOf()
+        recentlySoldOrdersList.forEach { orderEntity ->
+            orderEntity.getLineItemList().forEach { lineItem ->
+                lineItem.productId?.let { productId ->
+                    popularProductsMap[productId] = popularProductsMap[productId]?.plus(1) ?: 1
+                }
+            }
+        }
+        return popularProductsMap
+    }
 
     private fun Product.toUiModel(selectedItems: Set<SelectedItem>): ProductListItem {
         fun getProductSelection(): SelectionState {
