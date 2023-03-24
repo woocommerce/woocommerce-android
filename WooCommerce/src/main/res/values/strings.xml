@@ -2756,6 +2756,7 @@
     <string name="enter_account_info_for_site">Enter your account information for %1$s.</string>
     <string name="get_started">Get Started</string>
     <string name="lets_get_started">Let\'s get started!</string>
+    <string name="simplified_login_prologue_intro">Sell anything, anywhere</string>
     <string name="simplified_login_prologue_title">From your first sale to millions in revenue, Woo is with you. See why merchants trust us to power 3.4 million online stores.</string>
     <string name="check_email">Check email</string>
     <string name="login_text_otp">Text me a code instead</string>
