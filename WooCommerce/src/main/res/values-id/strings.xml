@@ -9,7 +9,6 @@ Language: id
     <string name="upgrades_error_fetching_data">Error saat mengambil detail paket</string>
     <string name="upgrades_non_upgradeable_caption">Sekarang Anda menjadi pelanggan %1$s! Anda memiliki akses ke semua fitur kami hingga %2$s. </string>
     <string name="upgrades_trial_ended_caption">Masa percobaan gratis Anda telah berakhir, menyisakan akses fitur secara terbatas. Berlangganan %1$s sekarang.</string>
-    <string name="upgrades_upgradeable_caption">Anda dalam masa percobaan gratis %1$d hari. Masa percobaan gratis akan berakhir dalam %2$d hari. Upgrade untuk membuka fitur-fitur baru dan menjaga toko Anda tetap berjalan.</string>
     <string name="upgrades_subscription_status">Status langganan</string>
     <string name="upgrades_title">Upgrade</string>
     <string name="upgrades_troubleshooting">Pemecahan Masalah</string>

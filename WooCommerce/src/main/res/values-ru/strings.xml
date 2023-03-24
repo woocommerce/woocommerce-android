@@ -9,7 +9,6 @@ Language: ru
     <string name="upgrades_error_fetching_data">Ошибка при получении сведений о плане</string>
     <string name="upgrades_non_upgradeable_caption">Вы оформили подписку на %1$s! У вас есть доступ ко всем функциям до %2$s. </string>
     <string name="upgrades_trial_ended_caption">У вас закончился пробный период, доступ к функциям ограничен. Подпишитесь на %1$s прямо сейчас.</string>
-    <string name="upgrades_upgradeable_caption">У вас идет %1$d-дневный пробный период. Бесплатный пробный период заканчивается через %2$d дн. Перейдите на платный тарифный план, чтобы получить доступ к новым функциям и использовать их в магазине.</string>
     <string name="upgrades_subscription_status">Статус подписки</string>
     <string name="upgrades_title">Платные услуги</string>
     <string name="upgrades_troubleshooting">Устранение неполадок</string>

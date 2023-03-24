@@ -9,7 +9,6 @@ Language: sv_SE
     <string name="upgrades_error_fetching_data">Det gick inte att hämta paketinformationen</string>
     <string name="upgrades_non_upgradeable_caption">Du är %1$s-prenumerant. Du har tillgång till alla våra funktioner fram till %2$s. </string>
     <string name="upgrades_trial_ended_caption">Din kostnadsfria provperiod har avslutats och du har begränsad åtkomst till alla funktionerna. Prenumerera på %1$s nu.</string>
-    <string name="upgrades_upgradeable_caption">Du har en kostnadsfri provperiod på %1$d dagar. Den kostnadsfria provperioden löper ut om %2$d dagar. Uppgradera för att låsa upp nya funktioner och hålla igång din butik.</string>
     <string name="upgrades_subscription_status">Prenumerationsstatus</string>
     <string name="upgrades_title">Uppgraderingar</string>
     <string name="upgrades_troubleshooting">Felsökning</string>

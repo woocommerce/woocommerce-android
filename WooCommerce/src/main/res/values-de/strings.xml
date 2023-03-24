@@ -9,7 +9,6 @@ Language: de
     <string name="upgrades_error_fetching_data">Fehler beim Abrufen der Tarifdetails</string>
     <string name="upgrades_non_upgradeable_caption">Du hast %1$s abonniert! Bis zum %2$s kannst du auf alle Funktionen zugreifen. </string>
     <string name="upgrades_trial_ended_caption">Dein Gratis-Test ist abgelaufen und du hast nun eingeschränkten Zugriff auf alle Funktionen. Abonniere jetzt %1$s.</string>
-    <string name="upgrades_upgradeable_caption">Du nutzt gerade den %1$d-tägigen Gratis-Test. Der Gratis-Test endet in %2$d Tagen. Führe ein Upgrade durch, um von neuen Funktionen zu profitieren und deinen Shop weiterhin erfolgreich zu betreiben.</string>
     <string name="upgrades_subscription_status">Abonnement-Status</string>
     <string name="upgrades_title">Upgrades</string>
     <string name="upgrades_troubleshooting">Problembehandlung</string>

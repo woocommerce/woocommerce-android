@@ -9,7 +9,6 @@ Language: it
     <string name="upgrades_error_fetching_data">Errore durante il recupero dei dettagli del piano.</string>
     <string name="upgrades_non_upgradeable_caption">Ora sei un abbonato %1$s. Hai accesso a tutte le nostre funzionalità fino al giorno %2$s. </string>
     <string name="upgrades_trial_ended_caption">La tua prova gratuita è terminata e hai accesso limitato a tutte le funzionalità. Abbonati a %1$s ora.</string>
-    <string name="upgrades_upgradeable_caption">Ti trovi nel periodo di prova gratuita di %1$d giorni. La prova gratuita terminerà tra %2$d giorni. Aggiorna per sbloccare le nuove funzionalità e mantenere operativo il tuo negozio..</string>
     <string name="upgrades_subscription_status">Stato dell\'abbonamento</string>
     <string name="upgrades_title">Miglioramenti</string>
     <string name="upgrades_troubleshooting">Risoluzione dei problemi</string>

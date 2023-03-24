@@ -9,7 +9,6 @@ Language: zh_CN
     <string name="upgrades_error_fetching_data">获取套餐详细信息时出现错误</string>
     <string name="upgrades_non_upgradeable_caption">您已订阅 %1$s！ %2$s前，您可以访问我们的所有功能。 </string>
     <string name="upgrades_trial_ended_caption">您的免费试用已结束，已被限制访问所有功能。 立即订阅 %1$s。</string>
-    <string name="upgrades_upgradeable_caption">您的免费试用版还剩 %1$d 天。 您的免费试用版将于 %2$d 天后到期。 升级套餐，解锁新功能并持续运营商店。</string>
     <string name="upgrades_subscription_status">订阅状态</string>
     <string name="upgrades_title">升级</string>
     <string name="upgrades_troubleshooting">故障排除</string>
