@@ -120,12 +120,12 @@
 
         </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/freeTrialButtons"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/freeTrialButtons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_free_trial_mode_start_your_trial"
@@ -133,8 +133,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
-            android:layout_marginEnd="@dimen/major_100"
             android:layout_marginTop="@dimen/minor_25"
+            android:layout_marginEnd="@dimen/major_100"
             android:layout_marginBottom="@dimen/major_100"
             android:text="@string/free_trial_login_start_button"
             android:textAllCaps="false"
