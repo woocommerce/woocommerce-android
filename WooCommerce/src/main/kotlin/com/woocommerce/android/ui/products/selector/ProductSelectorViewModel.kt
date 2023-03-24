@@ -84,6 +84,7 @@ class ProductSelectorViewModel @Inject constructor(
             productsRestrictions.map { restriction -> restriction(product) }.fold(true) { acc, result -> acc && result }
         }
     }
+    private val popularProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
 
     private var fetchProductsJob: Job? = null
     private var loadMoreJob: Job? = null
