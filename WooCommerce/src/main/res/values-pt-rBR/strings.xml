@@ -9,7 +9,6 @@ Language: pt_BR
     <string name="upgrades_error_fetching_data">Erro ao buscar detalhes do plano</string>
     <string name="upgrades_non_upgradeable_caption">Você é um assinante %1$s! Você tem acesso a todos as nossas funcionalidades até %2$s. </string>
     <string name="upgrades_trial_ended_caption">Seu teste gratuito terminou e agora você tem acesso limitado a todas as funcionalidades. Assine o %1$s agora mesmo.</string>
-    <string name="upgrades_upgradeable_caption">Você está no teste gratuito de %1$d dias. O teste gratuito terminará em %2$d dias. Faça upgrade para desbloquear novas funcionalidades e manter sua loja na ativa.</string>
     <string name="upgrades_subscription_status">Status da assinatura</string>
     <string name="upgrades_title">Upgrades</string>
     <string name="upgrades_troubleshooting">Solução de problemas</string>

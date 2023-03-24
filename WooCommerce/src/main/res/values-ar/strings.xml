@@ -9,7 +9,6 @@ Language: ar
     <string name="upgrades_error_fetching_data">حدث خطأ في أثناء إحضار تفاصيل الخطة</string>
     <string name="upgrades_non_upgradeable_caption">أنت أحد المشتركين في ⁦%1$s⁩! لقد وصلت إلى كل ميزاتنا حتى ⁦%2$s⁩. </string>
     <string name="upgrades_trial_ended_caption">انتهى الإصدار التجريبي المجاني الخاص بك وأصبح لديك وصول محدود إلى كل الميزات. اشترك في ⁦%1$s⁩ الآن.</string>
-    <string name="upgrades_upgradeable_caption">أنت في الإصدار التجريبي المجاني الذي تبلغ مدته ⁦%1$d⁩. سينتهي الإصدار التجريبي المجاني في غضون ⁦%2$d⁩ من الأيام. يمكنك الترقية لفتح ميزات جديدة والاستمرار في تشغيل متجرك.</string>
     <string name="upgrades_subscription_status">حالة الاشتراك</string>
     <string name="upgrades_title">ترقيات</string>
     <string name="upgrades_troubleshooting">حل المشكلات</string>

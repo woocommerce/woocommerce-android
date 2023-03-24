@@ -9,7 +9,6 @@ Language: tr
     <string name="upgrades_error_fetching_data">Paket ayrıntıları getirilirken hata oluştu</string>
     <string name="upgrades_non_upgradeable_caption">%1$s abonesisiniz! %2$s tarihine kadar tüm özelliklerimize erişebilirsiniz. </string>
     <string name="upgrades_trial_ended_caption">Ücretsiz deneme süreniz sona erdi ve tüm özelliklere erişiminiz sınırlandırıldı. Şimdi %1$s abonesi olun.</string>
-    <string name="upgrades_upgradeable_caption">%1$d günlük ücretsiz deneme süresindesiniz. Ücretsiz deneme süresi %2$d gün sonra sona erecek. Yeni özelliklerin kilidini açmak ve mağazanızın çalışmaya devam etmesini sağlamak için yükseltin.</string>
     <string name="upgrades_subscription_status">Abonelik durumu</string>
     <string name="upgrades_title">Yükseltmeler</string>
     <string name="upgrades_troubleshooting">Sorun giderme</string>

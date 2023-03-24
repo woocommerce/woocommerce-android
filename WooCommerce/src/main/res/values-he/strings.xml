@@ -9,7 +9,6 @@ Language: he_IL
     <string name="upgrades_error_fetching_data">שגיאה בהבאת הפרטים של התוכנית.</string>
     <string name="upgrades_non_upgradeable_caption">נרשמת למינוי על ⁦%1$s⁩ בהצלחה! יש לך גישה לכל האפשרויות עד ⁦%2$s⁩. </string>
     <string name="upgrades_trial_ended_caption">תקופת ההתנסות שלך הסתיימה ולכן הגישה שלך לכל האפשרויות הוגבלה. כדאי להירשם למינוי על ⁦%1$s⁩ עכשיו.</string>
-    <string name="upgrades_upgradeable_caption">התחלת תקופת ניסיון בחינם של ⁦%1$d⁩ ימים. תקופת הניסיון תסתיים בעוד ⁦%2$d⁩ ימים. כדאי לשדרג כדי להשתמש באפשרויות חדשות ולהמשיך להפעיל את החנות שלך…</string>
     <string name="upgrades_subscription_status">סטטוס מינוי</string>
     <string name="upgrades_title">שדרוגים</string>
     <string name="upgrades_troubleshooting">פתרון בעיות</string>

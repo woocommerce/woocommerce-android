@@ -9,7 +9,6 @@ Language: nl
     <string name="upgrades_error_fetching_data">Fout bij het ophalen van de abonnementsgegevens</string>
     <string name="upgrades_non_upgradeable_caption">Je bent een %1$s abonnee! Tot %2$s heb je toegang tot al onze functies. </string>
     <string name="upgrades_trial_ended_caption">Je proefversie is verlopen waardoor je nu maar beperkt toegang hebt tot alle functies. Nu abonneren op %1$s.</string>
-    <string name="upgrades_upgradeable_caption">Je gebruikt de gratis proefversie van %1$d dagen. Je gratis proefversie loopt af over %2$d dagen. Meld je aan voor een abonnement om nieuwe functies te ontgrendelen en je winkel draaiende te houden.</string>
     <string name="upgrades_subscription_status">Abonnementsstatus</string>
     <string name="upgrades_title">Upgrades</string>
     <string name="upgrades_troubleshooting">Probleemoplossing</string>

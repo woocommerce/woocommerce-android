@@ -9,7 +9,6 @@ Language: ja_JP
     <string name="upgrades_error_fetching_data">プラン詳細を取得中にエラーが発生しました</string>
     <string name="upgrades_non_upgradeable_caption">%1$s を購読しています。 %2$s まですべての機能をご利用いただけます。 </string>
     <string name="upgrades_trial_ended_caption">お試し期間が終了したため、ご利用いただける機能に制限がかかります。 今すぐ %1$s を購読しましょう。</string>
-    <string name="upgrades_upgradeable_caption">%1$d日間のお試し期間が開始しました。 お試し期間は%2$d日後に終了します。 アップグレードして新しい機能を追加し、ストアの運営を継続しましょう。</string>
     <string name="upgrades_subscription_status">定期購入ステータス</string>
     <string name="upgrades_title">アップグレード</string>
     <string name="upgrades_troubleshooting">トラブルシューティング</string>

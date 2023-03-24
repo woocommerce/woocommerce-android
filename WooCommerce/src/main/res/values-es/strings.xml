@@ -9,7 +9,6 @@ Language: es
     <string name="upgrades_error_fetching_data">Error al obtener los detalles de tu plan</string>
     <string name="upgrades_non_upgradeable_caption">¡Ya te has suscrito a %1$s! Tienes acceso a todas las funciones hasta el %2$s. </string>
     <string name="upgrades_trial_ended_caption">Tu prueba gratuita ha finalizado, por lo que solo tienes acceso limitado a las funciones. Suscríbete a %1$s ahora.</string>
-    <string name="upgrades_upgradeable_caption">Estás en el día %1$d de tu prueba gratuita. Tu prueba gratuita termina en %2$d días. Mejora tu plan para descubrir nuevas funciones y mantener tu tienda en funcionamiento.</string>
     <string name="upgrades_subscription_status">Estado de la suscripción</string>
     <string name="upgrades_title">Mejoras</string>
     <string name="upgrades_troubleshooting">Solución de problemas</string>
