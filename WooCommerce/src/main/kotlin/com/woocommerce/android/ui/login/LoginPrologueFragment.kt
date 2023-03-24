@@ -27,7 +27,6 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
         fun onSecondaryButtonClicked()
         fun onNewToWooButtonClicked()
         fun onGetStartedClicked()
-        fun onStartFreeTrialClicked()
     }
 
     constructor() : this(R.layout.fragment_login_prologue)
@@ -61,7 +60,7 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
             if (FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
                 startFreeTrialButton?.visibility = View.VISIBLE
                 startFreeTrialButton?.setOnClickListener {
-                    prologueFinishedListener?.onStartFreeTrialClicked()
+                    prologueFinishedListener?.onGetStartedClicked()
                 }
             }
         }

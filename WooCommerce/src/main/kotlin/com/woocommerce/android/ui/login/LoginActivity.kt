@@ -59,7 +59,6 @@ import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.login.qrcode.QrCodeLoginListener
 import com.woocommerce.android.ui.login.qrcode.ValidateScannedValue
 import com.woocommerce.android.ui.login.signup.SignUpFragment
-import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.FREE_TRIAL
 import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.SITE_PICKER
 import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.STORE_CREATION
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFragment
@@ -346,10 +345,6 @@ class LoginActivity :
 
     override fun onGetStartedClicked() {
         changeFragment(SignUpFragment.newInstance(STORE_CREATION), true, SignUpFragment.TAG)
-    }
-
-    override fun onStartFreeTrialClicked() {
-        changeFragment(SignUpFragment.newInstance(FREE_TRIAL), true, SignUpFragment.TAG)
     }
 
     private fun showMainActivityAndFinish() {
