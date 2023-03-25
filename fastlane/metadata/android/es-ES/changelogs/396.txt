@@ -1,0 +1,2 @@
+12.8:
+Esta versión cuenta con numerosas mejoras en la función Creación de pedidos. Ahora es posible elegir varios productos de una vez y aplicar la opción de búsqueda y filtro mejorada y más rápida. También hemos corregido algunos errores e introducido varias mejoras de accesibilidad en la sección Análisis. Hemos añadido una nueva sección Mejoras al perfil de usuario de WordPress.com.

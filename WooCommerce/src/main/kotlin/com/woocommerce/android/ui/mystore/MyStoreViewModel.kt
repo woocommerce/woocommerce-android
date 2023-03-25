@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.mystore
 
-import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
@@ -35,7 +34,6 @@ import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -86,7 +84,7 @@ class MyStoreViewModel @Inject constructor(
     private val jitmStore: JitmStore,
     private val jitmTracker: JitmTracker,
     private val myStoreUtmProvider: MyStoreUtmProvider,
-    private val queryParamsEncoder: QueryParamsEncoder
+    private val queryParamsEncoder: QueryParamsEncoder,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
@@ -211,7 +209,7 @@ class MyStoreViewModel @Inject constructor(
             featureClass
         )
         triggerEvent(
-            MyStoreEvent.OnJitmCtaClicked(
+            MyStoreEvent.OpenJITMAction(
                 myStoreUtmProvider.getUrlWithUtmParams(
                     source = UTM_SOURCE,
                     id = id,
@@ -271,7 +269,7 @@ class MyStoreViewModel @Inject constructor(
         }
     }
 
-    fun onSwipeToRefresh() {
+    fun onPullToRefresh() {
         fetchJitms()
         usageTracksEventEmitter.interacted()
         analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
@@ -344,7 +342,7 @@ class MyStoreViewModel @Inject constructor(
             System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()
         )
         val supportsJetpackInstallation = connectionType == SiteConnectionType.JetpackConnectionPackage ||
-            (connectionType == SiteConnectionType.ApplicationPasswords && FeatureFlag.REST_API_I2.isEnabled())
+            connectionType == SiteConnectionType.ApplicationPasswords
         val showBanner = supportsJetpackInstallation && daysSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER
         val benefitsBanner = JetpackBenefitsBannerUiModel(
             show = showBanner,
@@ -525,9 +523,7 @@ class MyStoreViewModel @Inject constructor(
         ) : MyStoreEvent()
 
         data class OpenAnalytics(val analyticsPeriod: SelectionType) : MyStoreEvent()
-        data class OnJitmCtaClicked(
-            val url: String,
-            @StringRes val titleRes: Int = R.string.card_reader_purchase_card_reader
-        ) : MyStoreEvent()
+
+        data class OpenJITMAction(val url: String) : MyStoreEvent()
     }
 }

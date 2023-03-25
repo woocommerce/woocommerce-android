@@ -122,6 +122,9 @@ class MainActivityViewModel @Inject constructor(
             ResolveAppLink.Action.ViewTapToPay -> {
                 triggerEvent(ViewTapToPay)
             }
+            is ResolveAppLink.Action.ViewUrlInWebView -> {
+                triggerEvent(ViewUrlInWebView(event.url))
+            }
             ResolveAppLink.Action.DoNothing -> {
                 // no-op
             }
@@ -213,6 +216,7 @@ class MainActivityViewModel @Inject constructor(
     object ViewZendeskTickets : Event()
     object ViewPayments : Event()
     object ViewTapToPay : Event()
+    data class ViewUrlInWebView(val url: String) : Event()
     object ShortcutOpenPayments : Event()
     object ShortcutOpenOrderCreation : Event()
     data class RestartActivityForNotification(val pushId: Int, val notification: Notification) : Event()

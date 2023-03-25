@@ -181,7 +181,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                                 sideEffect.address,
                                 sideEffect.type,
                                 sideEffect.validationResult,
-                                sideEffect.requiresPhoneNumber
+                                sideEffect.isCustomsFormRequired
                             )
                         )
                         is SideEffect.ShowAddressSuggestion -> triggerEvent(

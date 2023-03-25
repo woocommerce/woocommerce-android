@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-14 22:54:04+0000
+Translation-Revision-Date: 2023-03-22 19:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="upgrades_error_fetching_data">Paket ayrıntıları getirilirken hata oluştu</string>
+    <string name="upgrades_non_upgradeable_caption">%1$s abonesisiniz! %2$s tarihine kadar tüm özelliklerimize erişebilirsiniz. </string>
+    <string name="upgrades_trial_ended_caption">Ücretsiz deneme süreniz sona erdi ve tüm özelliklere erişiminiz sınırlandırıldı. Şimdi %1$s abonesi olun.</string>
+    <string name="upgrades_subscription_status">Abonelik durumu</string>
+    <string name="upgrades_title">Yükseltmeler</string>
+    <string name="upgrades_troubleshooting">Sorun giderme</string>
+    <string name="upgrades_current_plan">Şu anda: %s</string>
+    <string name="upgrades_upgrade_now">Hemen yükseltin</string>
+    <string name="upgrades_report_subscription_issue">Abonelik sorunu bildir</string>
+    <string name="free_trial_upgrade_now">Hemen Yükseltin</string>
+    <string name="free_trial_days_left">Deneme sürenizin %1$d günü kaldı.</string>
+    <string name="free_trial_trial_ended">Deneme süresi sonu</string>
+    <string name="free_trial_your_trial_ended">Deneme süreniz sona erdi.</string>
+    <string name="store_onboarding_launch_store_generic_error_description">Hay aksi, beklenmeyen bazı hatalar oluştu.</string>
+    <string name="store_onboarding_launch_store_generic_error_title">Beklenmedik hata</string>
+    <string name="store_onboarding_store_already_launched_error_description">Mağazanızın zaten yayınlanmış olduğunu fark ettik.</string>
+    <string name="store_onboarding_store_already_launched_error_title">Mağazanız yayınlanamadı</string>
+    <string name="store_onboarding_share_url_error">Mağaza URL\'si paylaşılamıyor</string>
+    <string name="store_onboarding_launch_store_task_private_tag">Gizli</string>
+    <string name="store_onboarding_launched_title">Mağazanız yayında!</string>
+    <string name="store_onboarding_launch_preview_title">Önizleme</string>
+    <string name="store_onboarding_launch_store_back_to_store_button">Mağazama Dön</string>
+    <string name="store_onboarding_launch_store_share_url_button">URL paylaş</string>
+    <string name="store_onboarding_launch_store_button">Mağazamı yayınla</string>
+    <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">Mağazanızı yayınlamak için paketimize yükseltmeniz gerekiyor. &lt;u&gt;Yükselt&lt;/u&gt;</string>
+    <string name="card_reader_tap_to_pay_not_available_error">Tap to Pay, mağazanız veya cihazınız için kullanılamıyor</string>
+    <string name="domains_search_domains">Alan adı ara</string>
+    <string name="login_site_credentials_http_error">Durum kodu %1$s ile giriş başarısız oldu</string>
+    <string name="login_site_credentials_custom_admin_url">Mağazanızın yönetici URL\'sini belirleyemediğimiz için giriş yapılamıyor</string>
+    <string name="login_site_credentials_custom_login_url">Mağazanızın giriş URL\'sini belirleyemediğimiz için giriş yapılamıyor</string>
+    <string name="login_site_credentials_invalid_response">Giriş, sitenizden beklenmeyen bir yanıtla başarısız oldu. Bu sorunu düzeltmek için çalışıyoruz.</string>
+    <string name="more_menu_button_upgrades">Yükseltmeler</string>
+    <string name="something_went_wrong_try_again">Bir yanlışlık oldu, lütfen daha sonra tekrar deneyin.</string>
     <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">Hesabınızda bekleyen gereksinimler var. Şahsen Ödemeleri kabul etmeye devam etmek için lütfen bu gereksinimleri karşılayın.</string>
     <string name="analytics_banner_message">Lütfen analizler deneyiminizi değerlendirin</string>
     <string name="analytics_banner_title">Analizlerden keyif alıyor musunuz?</string>
@@ -305,8 +338,6 @@ Language: tr
     <string name="card_reader_payment_collect_payment_built_in_state">Yerleşik okuyucu hazır</string>
     <string name="card_reader_type_selection_bluetooth_reader">Bluetooth Okuyucu</string>
     <string name="card_reader_type_selection_tap_to_pay">Ödemek İçin Dokunun</string>
-    <string name="card_reader_type_selection_description">Telefonunuz kart okuyucu olarak kullanılabilir veya Bluetooth üzerinden harici bir okuyucuya bağlanabilirsiniz</string>
-    <string name="card_reader_type_selection_title">Okuyucu türünü seçin</string>
     <string name="analytics_conversion_subtitle">Dönüşüm Oranı</string>
     <string name="analytics_session_card_title">Oturumlar</string>
     <string name="analytics_session_no_data">Bu oturumda seans yok</string>
@@ -957,7 +988,7 @@ Language: tr
     <string name="order_creation_new_customer_add_different_shipping_address">Farklı bir gönderim adresi ekle</string>
     <string name="order_creation_product_instock">Stokta</string>
     <string name="order_creation_product_stock_quantity">%s stokta</string>
-    <string name="order_creation_add_products">Ürün Ekle</string>
+    <string name="order_creation_add_products">Ürünleri ekle</string>
     <string name="order_creation_products">Ürünler</string>
     <string name="order_creation_add_customer">Müşteri bilgilerini ekle</string>
     <string name="order_creation_customer">Müşteri</string>
