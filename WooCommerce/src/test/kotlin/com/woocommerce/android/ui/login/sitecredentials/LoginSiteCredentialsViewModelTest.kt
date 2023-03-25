@@ -198,12 +198,6 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     @Test
     fun `given successful webview login, when user is eligible, then log the user successfully`() = testBlocking {
         setup {
-            whenever(wpApiSiteRepository.fetchSite(siteAddress, testUsername, testPassword))
-                .thenReturn(
-                    Result.success(
-                        testSite.apply { applicationPasswordsAuthorizeUrl = urlAuthBase }
-                    )
-                )
             whenever(wpApiSiteRepository.getSiteByLocalId(any())).thenReturn(testSite)
             whenever(wpApiSiteRepository.checkIfUserIsEligible(testSite)).thenReturn(Result.success(true))
         }
@@ -218,14 +212,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given webview login, when user rejected application password creation, then show error`() = testBlocking {
-        setup {
-            whenever(wpApiSiteRepository.fetchSite(siteAddress, testUsername, testPassword))
-                .thenReturn(
-                    Result.success(
-                        testSite.apply { applicationPasswordsAuthorizeUrl = urlAuthBase }
-                    )
-                )
-        }
+        setup()
 
         viewModel.viewState.observeForTesting {
             viewModel.onWebAuthorizationUrlLoaded(urlRejectedRedirect)
