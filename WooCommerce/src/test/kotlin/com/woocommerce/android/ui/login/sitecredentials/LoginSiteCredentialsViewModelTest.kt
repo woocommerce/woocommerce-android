@@ -44,7 +44,13 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     private val testUsername = "username"
     private val testPassword = "password"
     private val siteAddress: String = "http://site.com"
-    private val siteAddressWithoutSchemeAndSuffix: String = "site.com"
+    private val siteAddressWithoutSchemeAndSuffix = "site.com"
+    private val clientId = "woo_android"
+    private val applicationPasswordAuthBaseUrl = "$siteAddress/wp-admin/authorize-application.php"
+    private val applicationPasswordAuthLoginUrl
+        = "$applicationPasswordAuthBaseUrl?app_name=$clientId&success_url=woocommerce://login"
+
+
     private val testSite = SiteModel().apply {
         hasWooCommerce = true
     }
@@ -84,7 +90,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             analyticsTracker = analyticsTracker,
             appPrefs = appPrefs,
             userAgent = userAgent,
-            applicationPasswordsClientId = "client_id"
+            applicationPasswordsClientId = clientId
         )
     }
 
@@ -101,6 +107,30 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
                 siteUrl = siteAddressWithoutSchemeAndSuffix,
                 username = "",
                 password = ""
+            )
+        )
+    }
+
+    @Test
+    fun `given shown login error dialog, when user chooses wp-admin login, then show login webview`() = testBlocking {
+        setup {
+            whenever(wpApiSiteRepository.fetchSite(siteAddress, testUsername, testPassword))
+                .thenReturn(Result.success(
+                    testSite.apply {
+                        applicationPasswordsAuthorizeUrl = applicationPasswordAuthBaseUrl
+                    }
+                )
+            )
+        }
+
+        val state = viewModel.viewState.runAndCaptureValues {
+            viewModel.onStartWebAuthorizationClick()
+        }.last()
+
+        assertThat(state).isEqualTo(
+            LoginSiteCredentialsViewModel.ViewState.WebAuthorizationViewState(
+                authorizationUrl = applicationPasswordAuthLoginUrl,
+                userAgent = userAgent
             )
         )
     }
