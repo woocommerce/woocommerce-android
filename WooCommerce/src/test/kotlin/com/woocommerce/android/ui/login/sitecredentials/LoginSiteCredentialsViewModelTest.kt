@@ -47,9 +47,13 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     private val siteAddressWithoutSchemeAndSuffix = "site.com"
     private val clientId = "woo_android"
     private val applicationPasswordAuthBaseUrl = "$siteAddress/wp-admin/authorize-application.php"
+    private val applicationPasswordRedirectUrl = "woocommerce://login"
     private val applicationPasswordAuthLoginUrl =
-        "$applicationPasswordAuthBaseUrl?app_name=$clientId&success_url=woocommerce://login"
-    private val successfulWebviewLoginUrl = "woocommerce://login?user_login=$testUsername&password=$testPassword"
+        "$applicationPasswordAuthBaseUrl?app_name=$clientId&success_url=$applicationPasswordRedirectUrl"
+    private val successfulWebviewLoginUrl =
+        "$applicationPasswordRedirectUrl?user_login=$testUsername&password=$testPassword"
+    private val rejectedWebviewLoginUrl =
+        "$applicationPasswordRedirectUrl?success=false"
 
     private val testSite = SiteModel().apply {
         hasWooCommerce = true
@@ -212,6 +216,26 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.event.value).isEqualTo(LoggedIn(testSite.id))
         verify(loginAnalyticsListener).trackAnalyticsSignIn(false)
+    }
+
+    @Test
+    fun `given webview login, when user rejected application password creation, then show error`() = testBlocking {
+        setup {
+            whenever(wpApiSiteRepository.fetchSite(siteAddress, testUsername, testPassword))
+                .thenReturn(
+                    Result.success(
+                        testSite.apply { applicationPasswordsAuthorizeUrl = applicationPasswordAuthBaseUrl }
+                    )
+                )
+        }
+
+        viewModel.viewState.observeForTesting {
+            viewModel.onWebAuthorizationUrlLoaded(rejectedWebviewLoginUrl)
+        }
+
+        assertThat(viewModel.event.value).isEqualTo(
+            ShowSnackbar(R.string.login_site_credentials_web_authorization_connection_rejected)
+        )
     }
 
     @Test
