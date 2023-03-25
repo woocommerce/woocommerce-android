@@ -44,6 +44,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     private val testUsername = "username"
     private val testPassword = "password"
     private val siteAddress: String = "http://site.com"
+    private val siteAddressWithoutSchemeAndSuffix: String = "site.com"
     private val testSite = SiteModel().apply {
         hasWooCommerce = true
     }
@@ -84,6 +85,23 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             appPrefs = appPrefs,
             userAgent = userAgent,
             applicationPasswordsClientId = "client_id"
+        )
+    }
+
+    @Test
+    fun `when displaying site credentials, then show native login form`() = testBlocking {
+        setup()
+
+        val state = viewModel.viewState.runAndCaptureValues {
+            // Do nothing, this is just to ensure the viewState is initialized
+        }.last()
+
+        assertThat(state).isEqualTo(
+            LoginSiteCredentialsViewModel.ViewState.NativeLoginViewState(
+                siteUrl = siteAddressWithoutSchemeAndSuffix,
+                username = "",
+                password = ""
+            )
         )
     }
 
