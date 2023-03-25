@@ -46,14 +46,12 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     private val siteAddress: String = "http://site.com"
     private val siteAddressWithoutSchemeAndSuffix = "site.com"
     private val clientId = "woo_android"
-    private val applicationPasswordAuthBaseUrl = "$siteAddress/wp-admin/authorize-application.php"
-    private val applicationPasswordRedirectUrl = "woocommerce://login"
-    private val applicationPasswordAuthLoginUrl =
-        "$applicationPasswordAuthBaseUrl?app_name=$clientId&success_url=$applicationPasswordRedirectUrl"
-    private val successfulWebviewLoginUrl =
-        "$applicationPasswordRedirectUrl?user_login=$testUsername&password=$testPassword"
-    private val rejectedWebviewLoginUrl =
-        "$applicationPasswordRedirectUrl?success=false"
+
+    private val urlAuthBase = "$siteAddress/wp-admin/authorize-application.php"
+    private val urlRedirectBase = "woocommerce://login"
+    private val urlAuthFull = "$urlAuthBase?app_name=$clientId&success_url=$urlRedirectBase"
+    private val urlSuccessRedirect = "$urlRedirectBase?user_login=$testUsername&password=$testPassword"
+    private val urlRejectedRedirect = "$urlRedirectBase?success=false"
 
     private val testSite = SiteModel().apply {
         hasWooCommerce = true
@@ -121,7 +119,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             whenever(wpApiSiteRepository.fetchSite(siteAddress, testUsername, testPassword))
                 .thenReturn(
                     Result.success(
-                        testSite.apply { applicationPasswordsAuthorizeUrl = applicationPasswordAuthBaseUrl }
+                        testSite.apply { applicationPasswordsAuthorizeUrl = urlAuthBase }
                     )
                 )
         }
@@ -132,7 +130,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
 
         assertThat(state).isEqualTo(
             LoginSiteCredentialsViewModel.ViewState.WebAuthorizationViewState(
-                authorizationUrl = applicationPasswordAuthLoginUrl,
+                authorizationUrl = urlAuthFull,
                 userAgent = userAgent
             )
         )
@@ -203,7 +201,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             whenever(wpApiSiteRepository.fetchSite(siteAddress, testUsername, testPassword))
                 .thenReturn(
                     Result.success(
-                        testSite.apply { applicationPasswordsAuthorizeUrl = applicationPasswordAuthBaseUrl }
+                        testSite.apply { applicationPasswordsAuthorizeUrl = urlAuthBase }
                     )
                 )
             whenever(wpApiSiteRepository.getSiteByLocalId(any())).thenReturn(testSite)
@@ -211,7 +209,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         }
 
         viewModel.viewState.observeForTesting {
-            viewModel.onWebAuthorizationUrlLoaded(successfulWebviewLoginUrl)
+            viewModel.onWebAuthorizationUrlLoaded(urlSuccessRedirect)
         }
 
         assertThat(viewModel.event.value).isEqualTo(LoggedIn(testSite.id))
@@ -224,13 +222,13 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             whenever(wpApiSiteRepository.fetchSite(siteAddress, testUsername, testPassword))
                 .thenReturn(
                     Result.success(
-                        testSite.apply { applicationPasswordsAuthorizeUrl = applicationPasswordAuthBaseUrl }
+                        testSite.apply { applicationPasswordsAuthorizeUrl = urlAuthBase }
                     )
                 )
         }
 
         viewModel.viewState.observeForTesting {
-            viewModel.onWebAuthorizationUrlLoaded(rejectedWebviewLoginUrl)
+            viewModel.onWebAuthorizationUrlLoaded(urlRejectedRedirect)
         }
 
         assertThat(viewModel.event.value).isEqualTo(
