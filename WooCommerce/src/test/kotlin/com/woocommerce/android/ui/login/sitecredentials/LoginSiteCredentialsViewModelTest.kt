@@ -49,6 +49,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     private val applicationPasswordAuthBaseUrl = "$siteAddress/wp-admin/authorize-application.php"
     private val applicationPasswordAuthLoginUrl =
         "$applicationPasswordAuthBaseUrl?app_name=$clientId&success_url=woocommerce://login"
+    private val successfulWebviewLoginUrl = "woocommerce://login?user_login=$testUsername&password=$testPassword"
 
     private val testSite = SiteModel().apply {
         hasWooCommerce = true
@@ -189,6 +190,27 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.event.value).isEqualTo(LoggedIn(testSite.id))
         verify(loginAnalyticsListener).trackSubmitClicked()
+        verify(loginAnalyticsListener).trackAnalyticsSignIn(false)
+    }
+
+    @Test
+    fun `given successful webview login, when user is eligible, then log the user successfully`() = testBlocking {
+        setup {
+            whenever(wpApiSiteRepository.fetchSite(siteAddress, testUsername, testPassword))
+                .thenReturn(
+                    Result.success(
+                        testSite.apply { applicationPasswordsAuthorizeUrl = applicationPasswordAuthBaseUrl }
+                    )
+                )
+            whenever(wpApiSiteRepository.getSiteByLocalId(any())).thenReturn(testSite)
+            whenever(wpApiSiteRepository.checkIfUserIsEligible(testSite)).thenReturn(Result.success(true))
+        }
+
+        viewModel.viewState.observeForTesting {
+            viewModel.onWebAuthorizationUrlLoaded(successfulWebviewLoginUrl)
+        }
+
+        assertThat(viewModel.event.value).isEqualTo(LoggedIn(testSite.id))
         verify(loginAnalyticsListener).trackAnalyticsSignIn(false)
     }
 
