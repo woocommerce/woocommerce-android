@@ -116,12 +116,9 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     @Test
     fun `given shown login error dialog, when user chooses wp-admin login, then show login webview`() = testBlocking {
         setup {
-            whenever(wpApiSiteRepository.fetchSite(siteAddress, testUsername, testPassword))
-                .thenReturn(
-                    Result.success(
-                        testSite.apply { applicationPasswordsAuthorizeUrl = urlAuthBase }
-                    )
-                )
+            whenever(wpApiSiteRepository.getSiteByLocalId(testSite.id)).thenReturn(
+                testSite.apply { applicationPasswordsAuthorizeUrl = urlAuthBase }
+            )
         }
 
         val state = viewModel.viewState.runAndCaptureValues {
