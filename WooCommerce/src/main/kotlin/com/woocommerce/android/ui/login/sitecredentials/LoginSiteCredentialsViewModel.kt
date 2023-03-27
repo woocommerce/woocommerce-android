@@ -9,6 +9,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.LOGIN_SITE_CREDENTIALS_LOGIN_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -220,6 +221,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             val authorizationUrl = site?.applicationPasswordsAuthorizeUrl?.let { url ->
                 "$url?app_name=$applicationPasswordsClientId&success_url=$REDIRECTION_URL"
             }
+
+            analyticsTracker.track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_WEB_VIEW_SHOWN)
             ViewState.WebAuthorizationViewState(
                 authorizationUrl = authorizationUrl,
                 userAgent = userAgent,
