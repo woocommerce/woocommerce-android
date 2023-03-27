@@ -222,11 +222,6 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             errorDialogMessage,
             fetchedSiteId.map { if (it == -1) null else wpApiSiteRepository.getSiteByLocalId(it) }
         ) { loadingMessage, errorDialogMessage, site ->
-
-            if (site?.applicationPasswordsAuthorizeUrl == null) {
-                analyticsTracker.track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_URL_NOT_AVAILABLE)
-            }
-
             val authorizationUrl = site?.applicationPasswordsAuthorizeUrl?.let { url ->
                 "$url?app_name=$applicationPasswordsClientId&success_url=$REDIRECTION_URL"
             }
@@ -289,6 +284,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     if (state.value == State.NativeLogin) {
                         fetchUserInfo()
                     } else if (site.applicationPasswordsAuthorizeUrl == null) {
+                        analyticsTracker.track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_URL_NOT_AVAILABLE)
                         triggerEvent(ShowApplicationPasswordsUnavailableScreen(siteAddress, site.isJetpackConnected))
                     }
                 } else {
