@@ -308,7 +308,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given application passwords disabled, when submitting login, then show error screen`() = testBlocking {
+    fun `given application pwd disabled and wp-login-php accessible, when submitting native login, then show error screen`() = testBlocking {
         setup {
             whenever(wpApiSiteRepository.checkIfUserIsEligible(testSite)).thenReturn(Result.failure(Exception()))
         }
@@ -323,6 +323,21 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         assertThat(viewModel.event.value)
             .isEqualTo(ShowApplicationPasswordsUnavailableScreen(siteAddress, isJetpackConnected))
     }
+
+    @Test
+    fun `given application pwd disabled and wp-login-php inaccessible, when choosing webview login, then show error`() = testBlocking {
+        setup()
+
+        viewModel.viewState.observeForTesting {
+            viewModel.onStartWebAuthorizationClick()
+            applicationPasswordsUnavailableEvents.tryEmit(mock())
+        }
+
+        assertThat(viewModel.event.value)
+            .isEqualTo(ShowApplicationPasswordsUnavailableScreen(siteAddress, isJetpackConnected))
+
+    }
+
 
     @Test
     fun `give user role fetch fails, when submitting login, then show a snackbar`() = testBlocking {
