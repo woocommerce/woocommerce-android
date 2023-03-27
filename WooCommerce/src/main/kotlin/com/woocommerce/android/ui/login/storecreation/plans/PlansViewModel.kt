@@ -239,14 +239,15 @@ class PlansViewModel @Inject constructor(
         }
 
         return repository.createNewSite(
-            SiteCreationData(
+            siteData = SiteCreationData(
                 siteDesign = NEW_SITE_THEME,
                 domain = newStore.data.domain,
                 title = newStore.data.name,
                 segmentId = null
             ),
-            NEW_SITE_LANGUAGE_ID,
-            TimeZone.getDefault().id
+            languageWordPressId = NEW_SITE_LANGUAGE_ID,
+            timeZoneId = TimeZone.getDefault().id,
+            siteCreationFlow = newStore.data.planPathSlug
         ).recoverIfSiteExists()
     }
 

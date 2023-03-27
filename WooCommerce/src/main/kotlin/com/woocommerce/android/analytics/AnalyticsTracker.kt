@@ -477,6 +477,14 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_BANNER = "banner"
         const val VALUE_UPGRADES_SCREEN = "upgrades_screen"
 
+        // -- Store Onboarding
+        const val ONBOARDING_TASK_KEY = "task"
+        const val VALUE_STORE_DETAILS = "store_details"
+        const val VALUE_PRODUCTS = "products"
+        const val VALUE_ADD_DOMAIN = "add_domain"
+        const val VALUE_LAUNCH_SITE = "launch_site"
+        const val VALUE_PAYMENTS = "payments"
+
         var sendUsageStats: Boolean = true
             set(value) {
                 if (value != field) {

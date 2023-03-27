@@ -59,8 +59,8 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorRestriction
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem.Product
 import com.woocommerce.android.ui.products.selector.variationIds
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -243,7 +243,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    fun onProductsSelected(selectedItems: Set<ProductSelectorViewModel.SelectedItem>) {
+    fun onProductsSelected(selectedItems: Collection<SelectedItem>) {
         tracker.track(
             ORDER_PRODUCT_ADD,
             mapOf(KEY_FLOW to flow)
@@ -266,13 +266,13 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
 
                 val itemsToAdd = selectedItems.filter { selectedItem ->
-                    if (selectedItem is ProductSelectorViewModel.SelectedItem.ProductVariation) {
+                    if (selectedItem is SelectedItem.ProductVariation) {
                         none { it.variationId == selectedItem.variationId }
                     } else {
                         none { it.productId == selectedItem.id }
                     }
                 }.map {
-                    if (it is ProductSelectorViewModel.SelectedItem.ProductVariation) {
+                    if (it is SelectedItem.ProductVariation) {
                         createOrderItem(it.productId, it.variationId)
                     } else {
                         createOrderItem(it.id)
@@ -331,7 +331,7 @@ class OrderCreateEditViewModel @Inject constructor(
     fun onAddProductClicked() {
         val selectedItems = orderDraft.value?.items?.map { item ->
             if (item.isVariation) {
-                ProductSelectorViewModel.SelectedItem.ProductVariation(item.productId, item.variationId)
+                SelectedItem.ProductVariation(item.productId, item.variationId)
             } else {
                 Product(item.productId)
             }
