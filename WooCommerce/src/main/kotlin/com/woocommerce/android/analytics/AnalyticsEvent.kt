@@ -821,7 +821,6 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     START_FREE_TRIAL_TAPPED,
     FREE_TRIAL_STORE_CREATED,
 
-
     // Store onboarding
     STORE_ONBOARDING_SHOWN,
     STORE_ONBOARDING_TASK_TAPPED,
