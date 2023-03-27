@@ -168,7 +168,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val popularOrdersList = generatePopularOrders()
             val ordersList = generateTestOrders()
             val totalOrders = popularOrdersList + ordersList
-            whenever(orderStore.getOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
             val argumentCaptor = argumentCaptor<List<Long>>()
 
             ProductSelectorViewModel(
@@ -212,7 +212,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             }
             val ordersList = generateTestOrders()
             val totalOrders = popularOrdersList + popularOrdersThatAreNotPaidYet + ordersList
-            whenever(orderStore.getOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
             val argumentCaptor = argumentCaptor<List<Long>>()
 
             ProductSelectorViewModel(

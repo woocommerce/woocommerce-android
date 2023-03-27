@@ -143,7 +143,7 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     private suspend fun getRecentlySoldOrders() =
-        orderStore.getOrdersForSiteDesc(selectedSite.get()).filter { it.datePaid.isNotNullOrEmpty() }
+        orderStore.getPaidOrdersForSiteDesc(selectedSite.get()).filter { it.datePaid.isNotNullOrEmpty() }
 
     private fun filterPopularProductsFrom(
         recentlySoldOrdersList: List<OrderEntity>
