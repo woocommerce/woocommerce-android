@@ -76,7 +76,7 @@ sealed class ProductNavigationTarget : Event() {
     ) : ProductNavigationTarget()
 
     data class ViewProductReviews(val remoteId: Long) : ProductNavigationTarget()
-    object ViewProductAdd : ProductNavigationTarget()
+    data class ViewProductAdd(val source: AddProductSource) : ProductNavigationTarget()
     data class ViewGroupedProducts(val remoteId: Long, val groupedProductIds: List<Long>) : ProductNavigationTarget()
     data class ViewLinkedProducts(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductSelectionList(

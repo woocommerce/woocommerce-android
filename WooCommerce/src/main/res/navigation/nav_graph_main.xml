@@ -54,6 +54,10 @@
                 android:name="isAddProduct"
                 android:defaultValue="false"
                 app:argType="boolean" />
+            <argument
+                android:name="source"
+                android:defaultValue="PRODUCT_TAB"
+                app:argType="com.woocommerce.android.ui.products.AddProductSource" />
         </action>
         <action
             android:id="@+id/action_myStore_to_getPaidFragment"
@@ -269,6 +273,10 @@
             android:name="isTrashEnabled"
             android:defaultValue="false"
             app:argType="boolean" />
+        <argument
+            android:name="source"
+            android:defaultValue="PRODUCT_TAB"
+            app:argType="com.woocommerce.android.ui.products.AddProductSource" />
     </action>
     <action
         android:id="@+id/action_global_reviewDetailFragment"
@@ -404,6 +412,10 @@
             android:name="isCurrentProductVirtual"
             android:defaultValue="false"
             app:argType="boolean" />
+        <argument
+            android:name="source"
+            android:defaultValue="PRODUCT_TAB"
+            app:argType="com.woocommerce.android.ui.products.AddProductSource" />
     </dialog>
     <dialog
         android:id="@+id/featureAnnouncementDialogFragmentOnMain"
@@ -479,6 +491,10 @@
                 android:name="isAddProduct"
                 android:defaultValue="false"
                 app:argType="boolean" />
+            <argument
+                android:name="source"
+                android:defaultValue="PRODUCT_TAB"
+                app:argType="com.woocommerce.android.ui.products.AddProductSource" />
         </action>
         <action
             android:id="@+id/action_storeOnboardingFragment_to_getPaidFragment"

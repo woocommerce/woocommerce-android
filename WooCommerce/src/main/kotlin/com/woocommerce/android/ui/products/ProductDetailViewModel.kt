@@ -17,6 +17,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_SUCCES
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_LINKED_PRODUCTS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCTS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.addNewItem
 import com.woocommerce.android.extensions.clearList
@@ -45,6 +46,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
+import com.woocommerce.android.ui.products.AddProductSource.STORE_ONBOARDING
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
@@ -832,6 +834,12 @@ class ProductDetailViewModel @Inject constructor(
                 val snackbarMessage = pickAddProductRequestSnackbarText(isSuccess, productStatus)
                 triggerEvent(ShowSnackbar(snackbarMessage))
                 if (isSuccess) {
+                    if (navArgs.source == STORE_ONBOARDING) {
+                        tracker.track(
+                            stat = AnalyticsEvent.STORE_ONBOARDING_TASK_COMPLETED,
+                            properties = mapOf(AnalyticsTracker.ONBOARDING_TASK_KEY to VALUE_PRODUCTS)
+                        )
+                    }
                     tracker.track(AnalyticsEvent.ADD_PRODUCT_SUCCESS)
                     if (product.remoteId != newProductId) {
                         // Assign the current uploads to the new product id

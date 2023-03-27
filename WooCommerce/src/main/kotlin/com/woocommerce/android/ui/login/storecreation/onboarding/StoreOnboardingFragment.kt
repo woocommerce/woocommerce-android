@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboarding
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.NavigateToDomains
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.NavigateToLaunchStore
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.products.AddProductSource.STORE_ONBOARDING
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -87,7 +88,8 @@ class StoreOnboardingFragment : BaseFragment() {
                     findNavController().navigateSafely(
                         directions = StoreOnboardingFragmentDirections
                             .actionStoreOnboardingFragmentToProductTypesBottomSheet(
-                                isAddProduct = true
+                                isAddProduct = true,
+                                source = STORE_ONBOARDING
                             )
                     )
             }

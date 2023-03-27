@@ -54,6 +54,7 @@ import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.VisitorStatsViewState
 import com.woocommerce.android.ui.payments.banner.Banner
 import com.woocommerce.android.ui.payments.banner.BannerState
+import com.woocommerce.android.ui.products.AddProductSource.STORE_ONBOARDING
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -247,7 +248,8 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                 is StoreOnboardingViewModel.NavigateToAddProduct ->
                     findNavController().navigateSafely(
                         directions = MyStoreFragmentDirections.actionMyStoreToProductTypesBottomSheet(
-                            isAddProduct = true
+                            isAddProduct = true,
+                            source = STORE_ONBOARDING
                         )
                     )
                 is StoreOnboardingViewModel.NavigateToSetupPayments ->

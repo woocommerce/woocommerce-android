@@ -20,6 +20,10 @@
             android:name="isTrashEnabled"
             android:defaultValue="false"
             app:argType="boolean" />
+        <argument
+            android:name="source"
+            android:defaultValue="PRODUCT_TAB"
+            app:argType="com.woocommerce.android.ui.products.AddProductSource" />
         <action
             android:id="@+id/action_productDetailFragment_to_variationListFragment"
             app:destination="@id/variationListFragment" />
@@ -37,7 +41,7 @@
             app:destination="@id/productReviewsFragment" />
         <action
             android:id="@+id/action_productDetailFragment_to_attributeListFragment"
-            app:destination="@id/attributeListFragment"/>
+            app:destination="@id/attributeListFragment" />
         <action
             android:id="@+id/action_productDetailFragment_to_productTypesBottomSheetFragment"
             app:destination="@id/productTypesBottomSheetFragment">
@@ -84,7 +88,7 @@
         </action>
         <action
             android:id="@+id/action_productDetailFragment_to_productAddonsFragment"
-            app:destination="@id/productAddonsFragment"/>
+            app:destination="@id/productAddonsFragment" />
     </fragment>
     <fragment
         android:id="@+id/variationListFragment"
@@ -109,7 +113,7 @@
         </action>
         <action
             android:id="@+id/action_variationListFragment_to_variationsBulkUpdateAttrPickerFragment"
-            app:destination="@id/variationsBulkUpdateAttrPickerFragment" >
+            app:destination="@id/variationsBulkUpdateAttrPickerFragment">
             <argument
                 android:name="variationsToUpdate"
                 app:argType="com.woocommerce.android.model.ProductVariation[]" />
@@ -413,14 +417,16 @@
         <argument
             android:name="currentProductType"
             android:defaultValue="null"
-            app:nullable="true"
             app:argType="string"
-            />
+            app:nullable="true" />
         <argument
             android:name="isCurrentProductVirtual"
             android:defaultValue="false"
-            app:argType="boolean"
-            />
+            app:argType="boolean" />
+        <argument
+            android:name="source"
+            android:defaultValue="PRODUCT_TAB"
+            app:argType="com.woocommerce.android.ui.products.AddProductSource" />
     </dialog>
     <fragment
         android:id="@+id/productReviewsFragment"
