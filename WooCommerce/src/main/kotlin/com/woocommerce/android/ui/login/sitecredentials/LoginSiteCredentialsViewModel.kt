@@ -165,6 +165,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 if (!isSuccess) {
                     fetchedSiteId.value = -1
                     state.value = State.NativeLogin
+
+                    analyticsTracker.track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_REJECTED)
                     triggerEvent(ShowSnackbar(R.string.login_site_credentials_web_authorization_connection_rejected))
                     return@launch
                 }
