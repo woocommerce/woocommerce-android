@@ -367,7 +367,8 @@ fun ProductListPreview() {
             loadingState = IDLE,
             filterState = FilterState(),
             searchQuery = "",
-            popularProducts = emptyList()
+            popularProducts = emptyList(),
+            recentProducts = emptyList(),
         ),
         {},
         {},
@@ -388,6 +389,7 @@ fun ProductListEmptyPreview() {
             filterState = FilterState(),
             searchQuery = "",
             popularProducts = emptyList(),
+            recentProducts = emptyList(),
         ),
         {}
     )
