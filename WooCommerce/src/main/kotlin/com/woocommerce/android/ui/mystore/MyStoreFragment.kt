@@ -187,7 +187,8 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     }
 
     private fun applyBannerComposeUI(state: BannerState) {
-        if (state is BannerState.DisplayBannerState) {
+        // Show banners only if onboarding list is not displayed
+        if (state is BannerState.DisplayBannerState && !binding.storeOnboardingView.isVisible) {
             binding.jitmView.apply {
                 binding.jitmView.show()
                 // Dispose of the Composition when the view's LifecycleOwner is destroyed
@@ -209,7 +210,8 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                 false -> binding.storeOnboardingView.hide()
                 else -> {
                     binding.storeOnboardingView.apply {
-                        binding.storeOnboardingView.show()
+                        show()
+                        AnalyticsTracker.track(stat = AnalyticsEvent.STORE_ONBOARDING_SHOWN)
                         // Dispose of the Composition when the view's LifecycleOwner is destroyed
                         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                         setContent {
@@ -247,6 +249,14 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                         directions = MyStoreFragmentDirections.actionMyStoreToProductTypesBottomSheet(
                             isAddProduct = true
                         )
+                    )
+                is StoreOnboardingViewModel.NavigateToSetupPayments ->
+                    findNavController().navigateSafely(
+                        directions = MyStoreFragmentDirections.actionMyStoreToGetPaidFragment()
+                    )
+                is StoreOnboardingViewModel.NavigateToAboutYourStore ->
+                    findNavController().navigateSafely(
+                        MyStoreFragmentDirections.actionMyStoreToAboutYourStoreFragment()
                     )
             }
         }

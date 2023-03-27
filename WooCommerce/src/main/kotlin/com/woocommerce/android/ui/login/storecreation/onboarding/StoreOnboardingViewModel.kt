@@ -7,16 +7,23 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ADD_DOMAIN
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_LAUNCH_SITE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PAYMENTS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCTS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STORE_DETAILS
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTask
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.ABOUT_YOUR_STORE
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.ADD_FIRST_PRODUCT
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.CUSTOMIZE_DOMAIN
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.LAUNCH_YOUR_STORE
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.PAYMENTS
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.WC_PAYMENTS
 import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T.ONBOARDING
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,7 +34,8 @@ import javax.inject.Inject
 @HiltViewModel
 class StoreOnboardingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val onboardingRepository: StoreOnboardingRepository
+    private val onboardingRepository: StoreOnboardingRepository,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle), DefaultLifecycleObserver {
     companion object {
         const val NUMBER_ITEMS_IN_COLLAPSED_MODE = 3
@@ -38,7 +46,6 @@ class StoreOnboardingViewModel @Inject constructor(
 
     init {
         launch {
-            onboardingRepository.fetchOnboardingTasks()
             onboardingRepository.onboardingTasksCacheFlow
                 .collectLatest { tasks ->
                     _viewState.value = OnboardingState(
@@ -60,7 +67,8 @@ class StoreOnboardingViewModel @Inject constructor(
             ADD_FIRST_PRODUCT -> OnboardingTaskUi(AddProductTaskRes, isCompleted = task.isComplete)
             LAUNCH_YOUR_STORE -> OnboardingTaskUi(LaunchStoreTaskRes, isCompleted = task.isComplete)
             CUSTOMIZE_DOMAIN -> OnboardingTaskUi(CustomizeDomainTaskRes, isCompleted = task.isComplete)
-            WC_PAYMENTS -> OnboardingTaskUi(SetupPaymentsTaskRes, isCompleted = task.isComplete)
+            WC_PAYMENTS,
+            PAYMENTS -> OnboardingTaskUi(SetupPaymentsTaskRes, isCompleted = task.isComplete)
             MOBILE_UNSUPPORTED -> error("Unknown task type is not allowed in UI layer")
         }
 
@@ -78,21 +86,38 @@ class StoreOnboardingViewModel @Inject constructor(
 
     fun onTaskClicked(task: OnboardingTaskUi) {
         when (task.taskUiResources) {
-            AboutYourStoreTaskRes -> WooLog.d(ONBOARDING, "TODO")
+            AboutYourStoreTaskRes -> triggerEvent(NavigateToAboutYourStore)
             AddProductTaskRes -> triggerEvent(NavigateToAddProduct)
             CustomizeDomainTaskRes -> triggerEvent(NavigateToDomains)
             LaunchStoreTaskRes -> triggerEvent(NavigateToLaunchStore)
-            SetupPaymentsTaskRes -> WooLog.d(ONBOARDING, "TODO")
+            SetupPaymentsTaskRes -> triggerEvent(NavigateToSetupPayments)
         }
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.STORE_ONBOARDING_TASK_TAPPED,
+            properties = mapOf(AnalyticsTracker.ONBOARDING_TASK_KEY to getTaskTrackingKey(task))
+        )
     }
+
+    private fun getTaskTrackingKey(task: OnboardingTaskUi) =
+        when (task.taskUiResources) {
+            AboutYourStoreTaskRes -> VALUE_STORE_DETAILS
+            AddProductTaskRes -> VALUE_PRODUCTS
+            CustomizeDomainTaskRes -> VALUE_ADD_DOMAIN
+            LaunchStoreTaskRes -> VALUE_LAUNCH_SITE
+            SetupPaymentsTaskRes -> VALUE_PAYMENTS
+        }
 
     fun onPullToRefresh() {
         refreshOnboardingList()
     }
 
     private fun refreshOnboardingList() {
-        launch {
-            onboardingRepository.fetchOnboardingTasks()
+        if (!onboardingRepository.isOnboardingCompleted()) {
+            launch {
+                onboardingRepository.fetchOnboardingTasks()
+            }
+        } else {
+            _viewState.value = _viewState.value?.copy(show = false)
         }
     }
 
@@ -147,5 +172,7 @@ class StoreOnboardingViewModel @Inject constructor(
     object NavigateToSurvey : MultiLiveEvent.Event()
     object NavigateToLaunchStore : MultiLiveEvent.Event()
     object NavigateToDomains : MultiLiveEvent.Event()
+    object NavigateToSetupPayments : MultiLiveEvent.Event()
+    object NavigateToAboutYourStore : MultiLiveEvent.Event()
     object NavigateToAddProduct : MultiLiveEvent.Event()
 }

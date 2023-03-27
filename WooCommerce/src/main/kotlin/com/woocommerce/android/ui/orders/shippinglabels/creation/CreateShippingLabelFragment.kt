@@ -206,7 +206,7 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                             address = event.address,
                             addressType = event.type,
                             validationResult = event.validationResult,
-                            requiresPhoneNumber = event.requiresPhoneNumber
+                            isCustomsFormRequired = event.isCustomsFormRequired
                         )
                     findNavController().navigateSafely(action)
                 }

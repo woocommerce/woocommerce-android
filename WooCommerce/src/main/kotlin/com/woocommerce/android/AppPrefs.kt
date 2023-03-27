@@ -27,6 +27,7 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.PRODUCT_SORTING_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.UPDATE_SIMULATED_READER_OPTION
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED
+import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_TASKS_COMPLETED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.extensions.packageInfo
@@ -176,6 +177,9 @@ object AppPrefs {
 
         // Was the Tap To Pay used at least once
         TTP_WAS_USED_AT_LEAST_ONCE,
+
+        // Whether onboarding tasks have been completed or not for a given site
+        STORE_ONBOARDING_TASKS_COMPLETED,
 
         // Time when the last successful payment was made with a card reader
         CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME,
@@ -935,12 +939,27 @@ object AppPrefs {
         setBoolean(UndeletablePrefKey.TTP_WAS_USED_AT_LEAST_ONCE, true)
     }
 
+    fun markOnboardingTaskCompletedFor(siteId: Int) {
+        setBoolean(
+            key = getStoreOnboardingKeyFor(siteId),
+            value = true
+        )
+    }
+
+    fun areOnboardingTaskCompletedFor(siteId: Int) = getBoolean(
+        key = getStoreOnboardingKeyFor(siteId),
+        default = false
+    )
+
     fun getCardReaderLastSuccessfulPaymentTime() =
         getLong(UndeletablePrefKey.CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME, 0L)
 
     fun setCardReaderSuccessfulPaymentTime() {
         setLong(UndeletablePrefKey.CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME, System.currentTimeMillis())
     }
+
+    private fun getStoreOnboardingKeyFor(siteId: Int) =
+        PrefKeyString("$STORE_ONBOARDING_TASKS_COMPLETED:$siteId")
 
     /**
      * Remove all user and site-related preferences.
