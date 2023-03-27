@@ -80,7 +80,7 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
 
         return buttonFreeTrialModeStartYourTrial.setOnClickListener {
             AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
-            AnalyticsTracker.track(stat = AnalyticsEvent.START_FREE_TRIAL_TAPPED)
+            AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED)
             prologueFinishedListener?.onGetStartedClicked()
         }
     }
