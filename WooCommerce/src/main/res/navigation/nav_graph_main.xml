@@ -2,7 +2,8 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph_main">
+    android:id="@+id/nav_graph_main"
+    app:startDestination="@id/getPaidFragment">
 
     <include app:graph="@navigation/nav_graph_orders" />
     <include app:graph="@navigation/nav_graph_order_filters" />
@@ -39,6 +40,27 @@
         <action
             android:id="@+id/action_myStore_to_launchStoreFragment"
             app:destination="@id/launchStoreFragment" />
+        <action
+            android:id="@+id/action_myStore_to_nav_graph_domain_change"
+            app:destination="@id/nav_graph_domain_change" />
+        <action
+            android:id="@+id/action_myStore_to_productTypesBottomSheet"
+            app:destination="@id/productTypesBottomSheetFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out">
+            <argument
+                android:name="isAddProduct"
+                android:defaultValue="false"
+                app:argType="boolean" />
+        </action>
+        <action
+            android:id="@+id/action_myStore_to_getPaidFragment"
+            app:destination="@id/getPaidFragment" />
+        <action
+            android:id="@+id/action_myStore_to_aboutYourStoreFragment"
+            app:destination="@id/aboutYourStoreFragment" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -198,7 +220,7 @@
         </action>
         <action
             android:id="@+id/action_moreMenu_to_subscriptions"
-            app:destination="@id/subscriptions"/>
+            app:destination="@id/subscriptions" />
     </fragment>
     <fragment
         android:id="@+id/feedbackSurveyFragment"
@@ -440,10 +462,40 @@
         <action
             android:id="@+id/action_onboardingFragment_to_launchStoreFragment"
             app:destination="@id/launchStoreFragment" />
+        <action
+            android:id="@+id/action_storeOnboardingFragment_to_nav_graph_domain_change"
+            app:destination="@id/nav_graph_domain_change" />
+        <action
+            android:id="@+id/action_storeOnboardingFragment_to_aboutYourStoreFragment"
+            app:destination="@id/aboutYourStoreFragment" />
+        <action
+            android:id="@+id/action_storeOnboardingFragment_to_productTypesBottomSheet"
+            app:destination="@id/productTypesBottomSheetFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out">
+            <argument
+                android:name="isAddProduct"
+                android:defaultValue="false"
+                app:argType="boolean" />
+        </action>
+        <action
+            android:id="@+id/action_storeOnboardingFragment_to_getPaidFragment"
+            app:destination="@id/getPaidFragment" />
     </fragment>
     <fragment
         android:id="@+id/launchStoreFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.onboarding.launchstore.LaunchStoreFragment"
         android:label="LaunchStoreFragment" />
+    <fragment
+        android:id="@+id/getPaidFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.GetPaidFragment"
+        android:label="GetPaidFragment" />
+    <fragment
+        android:id="@+id/aboutYourStoreFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.aboutyourstore.AboutYourStoreFragment"
+        android:label="AboutYourStoreFragment" />
+    <include app:graph="@navigation/nav_graph_domain_change" />
 
 </navigation>

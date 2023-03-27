@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-14 09:54:05+0000
+Translation-Revision-Date: 2023-03-21 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="upgrades_error_fetching_data">Errore durante il recupero dei dettagli del piano.</string>
+    <string name="upgrades_non_upgradeable_caption">Ora sei un abbonato %1$s. Hai accesso a tutte le nostre funzionalità fino al giorno %2$s. </string>
+    <string name="upgrades_trial_ended_caption">La tua prova gratuita è terminata e hai accesso limitato a tutte le funzionalità. Abbonati a %1$s ora.</string>
+    <string name="upgrades_subscription_status">Stato dell\'abbonamento</string>
+    <string name="upgrades_title">Miglioramenti</string>
+    <string name="upgrades_troubleshooting">Risoluzione dei problemi</string>
+    <string name="upgrades_current_plan">Attuale: %s</string>
+    <string name="upgrades_upgrade_now">Aggiorna ora</string>
+    <string name="upgrades_report_subscription_issue">Segnala il problema con l\'abbonamento</string>
+    <string name="free_trial_upgrade_now">Aggiorna ora</string>
+    <string name="free_trial_days_left">%1$d giorni di prova rimasti.</string>
+    <string name="free_trial_trial_ended">Prova terminata</string>
+    <string name="free_trial_your_trial_ended">La tua prova è terminata.</string>
+    <string name="store_onboarding_launch_store_generic_error_description">Ops, si sono verificati alcuni errori imprevisti.</string>
+    <string name="store_onboarding_launch_store_generic_error_title">Errore imprevisto</string>
+    <string name="store_onboarding_store_already_launched_error_description">Abbiamo notato che il negozio è già stato lanciato.</string>
+    <string name="store_onboarding_store_already_launched_error_title">Impossibile lanciare il tuo negozio</string>
+    <string name="store_onboarding_share_url_error">Impossibile condividere l\'URL del negozio</string>
+    <string name="store_onboarding_launch_store_task_private_tag">Privato</string>
+    <string name="store_onboarding_launched_title">Il tuo negozio è attivo.</string>
+    <string name="store_onboarding_launch_preview_title">Anteprima</string>
+    <string name="store_onboarding_launch_store_back_to_store_button">Torna al mio negozio</string>
+    <string name="store_onboarding_launch_store_share_url_button">Condividi URL</string>
+    <string name="store_onboarding_launch_store_button">Pubblica il mio negozio</string>
+    <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">Per lanciare il tuo negozio, hai bisogno di eseguire l\'aggiornamento al nostro piano. &lt;u&gt;Aggiorna&lt;/u&gt;</string>
+    <string name="card_reader_tap_to_pay_not_available_error">L\'opzione Tocca per pagare non è disponibile per il tuo negozio o il tuo dispositivo.</string>
+    <string name="domains_search_domains">Cerca domini</string>
+    <string name="login_site_credentials_http_error">Accesso non riuscito con codice dello stato %1$s</string>
+    <string name="login_site_credentials_custom_admin_url">Impossibile accedere perché non possiamo identificare l\'URL di amministrazione del negozio</string>
+    <string name="login_site_credentials_custom_login_url">Impossibile accedere perché non possiamo identificare l\'URL di accesso del negozio</string>
+    <string name="login_site_credentials_invalid_response">Accesso non riuscito con una risposta imprevista dal tuo sito. Stiamo lavorando per risolvere il problema</string>
+    <string name="more_menu_button_upgrades">Miglioramenti</string>
+    <string name="something_went_wrong_try_again">Si è verificato un problema. Riprova più tardi.</string>
     <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">Ci sono requisiti in sospeso sull\'account. Completa i requisiti per continuare ad accettare Pagamenti di persona.</string>
     <string name="analytics_banner_message">Valuta la tua esperienza con l\'analisi</string>
     <string name="analytics_banner_title">Ti piace l\'analisi?</string>
@@ -305,8 +338,6 @@ Language: it
     <string name="card_reader_payment_collect_payment_built_in_state">Il lettore integrato è pronto</string>
     <string name="card_reader_type_selection_bluetooth_reader">Lettore Bluetooth</string>
     <string name="card_reader_type_selection_tap_to_pay">Tocca per pagare</string>
-    <string name="card_reader_type_selection_description">Il tuo telefono può essere usato come lettore di carte o puoi connettere un lettore esterno tramite Bluetooth.</string>
-    <string name="card_reader_type_selection_title">Seleziona il tipo di lettore</string>
     <string name="analytics_conversion_subtitle">Tasso di conversione</string>
     <string name="analytics_session_card_title">Sessioni</string>
     <string name="analytics_session_no_data">Nessuna sessione in questo periodo</string>
@@ -957,7 +988,7 @@ Language: it
     <string name="order_creation_new_customer_add_different_shipping_address">Aggiungi un indirizzo di spedizione differente</string>
     <string name="order_creation_product_instock">In magazzino</string>
     <string name="order_creation_product_stock_quantity">%s in magazzino</string>
-    <string name="order_creation_add_products">Aggiungi prodotto</string>
+    <string name="order_creation_add_products">Aggiungi prodotti</string>
     <string name="order_creation_products">Prodotti</string>
     <string name="order_creation_add_customer">Aggiungi dettagli del cliente</string>
     <string name="order_creation_customer">Cliente</string>

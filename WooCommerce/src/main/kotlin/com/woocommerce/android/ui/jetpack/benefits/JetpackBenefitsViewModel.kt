@@ -3,11 +3,13 @@ package com.woocommerce.android.ui.jetpack.benefits
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_BENEFITS_DIALOG_WPADMIN_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_INSTALL_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -24,10 +26,16 @@ class JetpackBenefitsViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val fetchJetpackStatus: FetchJetpackStatus
 ) : ScopedViewModel(savedStateHandle) {
+    companion object {
+        private const val JETPACK_CONNECT_URL = "https://wordpress.com/jetpack/connect"
+        private const val JETPACK_CONNECTED_REDIRECT_URL = "woocommerce://jetpack-connected"
+    }
+
     private val _viewState = MutableStateFlow(
         ViewState(
             isUsingJetpackCP = selectedSite.connectionType == SiteConnectionType.JetpackConnectionPackage,
-            isLoadingDialogShown = false
+            isLoadingDialogShown = false,
+            isNativeJetpackActivationAvailable = FeatureFlag.REST_API_I2.isEnabled()
         )
     )
     val viewState = _viewState.asLiveData()
@@ -63,9 +71,21 @@ class JetpackBenefitsViewModel @Inject constructor(
 
     fun onDismiss() = triggerEvent(Exit)
 
+    fun onOpenWpAdminJetpackActivationClicked() {
+        AnalyticsTracker.track(
+            stat = JETPACK_BENEFITS_DIALOG_WPADMIN_BUTTON_TAPPED,
+            properties = mapOf(AnalyticsTracker.KEY_JETPACK_INSTALLATION_SOURCE to "benefits_modal")
+        )
+
+        val url = "$JETPACK_CONNECT_URL?url=${selectedSite.get().url}" +
+            "&mobile_redirect=$JETPACK_CONNECTED_REDIRECT_URL&from=mobile"
+        triggerEvent(OpenWpAdminJetpackActivation(url))
+    }
+
     data class ViewState(
         val isUsingJetpackCP: Boolean,
-        val isLoadingDialogShown: Boolean
+        val isLoadingDialogShown: Boolean,
+        val isNativeJetpackActivationAvailable: Boolean
     )
 
     object StartJetpackActivationForJetpackCP : Event()
@@ -73,4 +93,5 @@ class JetpackBenefitsViewModel @Inject constructor(
         val siteUrl: String,
         val jetpackStatus: JetpackStatus
     ) : Event()
+    data class OpenWpAdminJetpackActivation(val activationUrl: String) : Event()
 }

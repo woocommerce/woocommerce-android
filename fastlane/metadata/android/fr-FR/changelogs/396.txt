@@ -1,0 +1,2 @@
+12.8:
+Cette version comprend de nombreuses améliorations de la fonctionnalité de création de commande. Il est possible de sélectionner plusieurs produits simultanément, et l’option de recherche et de filtrage a été améliorée et est à présent plus rapide. Nous avons également corrigé quelques bogues et apporté plusieurs améliorations pour accéder à la section Statistiques. Nous avons ajouté une nouvelle section Options payantes pour les utilisateurs de WordPress.com.

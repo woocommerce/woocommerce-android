@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.login.storecreation.onboarding.launchstore
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.isCurrentPlanEcommerceTrial
+import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository
@@ -36,7 +36,7 @@ class LaunchStoreViewModel @Inject constructor(
 
     private val _viewState = MutableStateFlow(
         LaunchStoreState(
-            isTrialPlan = selectedSite.get().isCurrentPlanEcommerceTrial,
+            isTrialPlan = selectedSite.get().isFreeTrial,
             isStoreLaunched = false,
             isLoading = false,
             siteUrl = selectedSite.get().url,
