@@ -422,6 +422,7 @@ val Set<ProductSelectorViewModel.SelectedItem>.variationIds: List<Long>
             filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductVariation>().map { it.variationId }
     }
 
+@Suppress("LongParameterList")
 inline fun <T1, T2, T3, T4, T5, T6, R> combine(
     flow: Flow<T1>,
     flow2: Flow<T2>,
@@ -432,7 +433,7 @@ inline fun <T1, T2, T3, T4, T5, T6, R> combine(
     crossinline transform: suspend (T1, T2, T3, T4, T5, T6) -> R
 ): Flow<R> {
     return combine(flow, flow2, flow3, flow4, flow5, flow6) { args: Array<*> ->
-        @Suppress("UNCHECKED_CAST")
+        @Suppress("UNCHECKED_CAST", "MagicNumber")
         transform(
             args[0] as T1,
             args[1] as T2,
@@ -443,4 +444,3 @@ inline fun <T1, T2, T3, T4, T5, T6, R> combine(
         )
     }
 }
-
