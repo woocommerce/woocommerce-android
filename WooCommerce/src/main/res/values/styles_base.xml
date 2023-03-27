@@ -151,7 +151,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:paddingStart">@dimen/major_100</item>
         <item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
         <item name="android:drawableEnd">@drawable/card_expander_selector</item>
-        <item name="drawableTint">@color/color_on_surface_medium</item>
+        <item name="drawableTint">@color/color_primary</item>
         <item name="drawableTintMode">src_atop</item>
         <item name="android:drawablePadding">@dimen/major_100</item>
         <item name="android:textAllCaps">false</item>
