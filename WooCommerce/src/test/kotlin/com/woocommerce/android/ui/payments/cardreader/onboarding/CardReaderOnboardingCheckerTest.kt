@@ -57,6 +57,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider = mock()
     private val cashOnDeliverySettingsRepository: CashOnDeliverySettingsRepository = mock()
+    private val cardReaderOnboardingCheckResultCache: CardReaderOnboardingCheckResultCache = mock()
 
     private val site = SiteModel()
 
@@ -76,7 +77,8 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             networkStatus,
             cardReaderTrackingInfoKeeper,
             cardReaderCountryConfigProvider,
-            cashOnDeliverySettingsRepository
+            cashOnDeliverySettingsRepository,
+            cardReaderOnboardingCheckResultCache,
         )
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(selectedSite.get()).thenReturn(site)
@@ -684,24 +686,33 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given wcpay installed, when onboarding completed, then onboarding completed status saved`() = testBlocking {
-        whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
-        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-            .thenReturn(buildWCPayPluginInfo(isActive = true))
-        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-            .thenReturn(null)
+    fun `given wcpay installed, when onboarding completed, then onboarding completed status saved and cached`() =
+        testBlocking {
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(isActive = true))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(null)
 
-        checker.getOnboardingState()
+            checker.getOnboardingState()
 
-        val captor = argumentCaptor<PersistentOnboardingData>()
-        verify(appPrefsWrapper).setCardReaderOnboardingData(
-            anyInt(),
-            anyLong(),
-            anyLong(),
-            captor.capture(),
-        )
-        assertThat(captor.firstValue.status).isEqualTo(CARD_READER_ONBOARDING_COMPLETED)
-    }
+            val captor = argumentCaptor<PersistentOnboardingData>()
+            verify(appPrefsWrapper).setCardReaderOnboardingData(
+                anyInt(),
+                anyLong(),
+                anyLong(),
+                captor.capture(),
+            )
+            assertThat(captor.firstValue.status).isEqualTo(CARD_READER_ONBOARDING_COMPLETED)
+            verify(cardReaderOnboardingCheckResultCache).value =
+                CardReaderOnboardingCheckResultCache.Result.Cached(
+                    CardReaderOnboardingState.OnboardingCompleted(
+                        PluginType.WOOCOMMERCE_PAYMENTS,
+                        wcPayPluginVersion,
+                        countryCode,
+                    )
+                )
+        }
 
     @Test
     fun `given wcpay installed, when onboarding pending, then onboarding pending status saved`() = testBlocking {
@@ -1419,6 +1430,18 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         val result = checker.getOnboardingState()
 
         assertThat(result).isInstanceOf(CardReaderOnboardingState.CashOnDeliveryDisabled::class.java)
+    }
+
+    @Test
+    fun `given value in cache, when get onboarding state, then return cached value`() = testBlocking {
+        val state = mock<CardReaderOnboardingState.OnboardingCompleted>()
+        whenever(cardReaderOnboardingCheckResultCache.value).thenReturn(
+            CardReaderOnboardingCheckResultCache.Result.Cached(state)
+        )
+
+        val result = checker.getOnboardingState()
+
+        assertThat(result).isEqualTo(state)
     }
 
     private fun buildPaymentAccountResult(

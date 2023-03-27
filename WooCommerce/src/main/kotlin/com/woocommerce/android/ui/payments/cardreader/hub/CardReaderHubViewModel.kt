@@ -22,7 +22,6 @@ import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepo
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.CASH_ON_DELIVERY
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.NavigateToTapTooPaySummaryScreen
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToast
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToastString
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem
@@ -317,6 +316,7 @@ class CardReaderHubViewModel @Inject constructor(
     }
 
     private fun onCardReaderPaymentProviderClicked() {
+        cardReaderChecker.invalidateCache()
         trackEvent(AnalyticsEvent.SETTINGS_CARD_PRESENT_SELECT_PAYMENT_GATEWAY_TAPPED)
         clearPluginExplicitlySelectedFlag()
         triggerEvent(
@@ -383,7 +383,7 @@ class CardReaderHubViewModel @Inject constructor(
                 when (params.openInHub) {
                     TAP_TO_PAY_SUMMARY -> {
                         if (isTTPAvailable()) {
-                            triggerEvent(NavigateToTapTooPaySummaryScreen)
+                            triggerEvent(CardReaderHubEvents.NavigateToTapTooPaySummaryScreen)
                         } else {
                             triggerEvent(ShowToast(R.string.card_reader_tap_to_pay_not_available_error))
                         }

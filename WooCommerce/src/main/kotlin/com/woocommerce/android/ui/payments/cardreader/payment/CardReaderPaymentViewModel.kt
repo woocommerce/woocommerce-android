@@ -52,6 +52,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderCollectPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderFailedPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.CollectRefundState
@@ -108,6 +109,7 @@ class CardReaderPaymentViewModel
     private val cardReaderPaymentReaderTypeStateProvider: CardReaderPaymentReaderTypeStateProvider,
     private val cardReaderPaymentOrderHelper: CardReaderPaymentOrderHelper,
     private val cardReaderPaymentReceiptHelper: CardReaderPaymentReceiptHelper,
+    private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogFragmentArgs by savedState.navArgs()
 
@@ -438,6 +440,7 @@ class CardReaderPaymentViewModel
         error: InteracRefundFailure
     ) {
         WooLog.e(WooLog.T.CARD_READER, "Refund failed: ${error.errorMessage}")
+        cardReaderOnboardingChecker.invalidateCache()
         val onRetryClicked = { retryInteracRefund() }
         val errorType = interacRefundErrorMapper.mapRefundErrorToUiError(error.type)
         if (errorType is InteracRefundFlowError.NonRetryableError) {
@@ -464,6 +467,7 @@ class CardReaderPaymentViewModel
 
     private fun emitFailedPaymentState(orderId: Long, billingEmail: String, error: PaymentFailed, amountLabel: String) {
         WooLog.e(WooLog.T.CARD_READER, error.errorMessage)
+        cardReaderOnboardingChecker.invalidateCache()
         val onRetryClicked = error.paymentDataForRetry?.let {
             { retry(orderId, billingEmail, it, amountLabel) }
         } ?: { initPaymentFlow(isRetry = true) }
