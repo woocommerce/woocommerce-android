@@ -170,6 +170,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     triggerEvent(ShowSnackbar(R.string.login_site_credentials_web_authorization_connection_rejected))
                     return@launch
                 }
+
+                analyticsTracker.track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_APPROVED)
                 val username = requireNotNull(params[USERNAME_PARAMETER])
                 val password = requireNotNull(params[PASSWORD_PARAMETER])
 
