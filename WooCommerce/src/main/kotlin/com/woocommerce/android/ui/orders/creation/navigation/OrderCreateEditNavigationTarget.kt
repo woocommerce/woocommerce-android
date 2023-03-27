@@ -1,5 +1,9 @@
 package com.woocommerce.android.ui.orders.creation.navigation
 
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_ITEM_SELECTED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_ITEM_UNSELECTED
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
@@ -11,7 +15,10 @@ sealed class OrderCreateEditNavigationTarget : Event() {
     object EditCustomerNote : OrderCreateEditNavigationTarget()
     data class SelectItems(
         val selectedItems: List<ProductSelectorViewModel.SelectedItem>,
-        val restrictions: List<ProductSelectorViewModel.ProductSelectorRestriction>
+        val restrictions: List<ProductSelectorViewModel.ProductSelectorRestriction>,
+        val productSelectedAnalyticsEvent: AnalyticsEvent = ORDER_CREATION_PRODUCT_SELECTOR_ITEM_SELECTED,
+        val productUnselectedAnalyticsEvent: AnalyticsEvent = ORDER_CREATION_PRODUCT_SELECTOR_ITEM_UNSELECTED,
+        val confirmButtonTappedAnalyticsEvent: AnalyticsEvent = ORDER_CREATION_PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED
     ) : OrderCreateEditNavigationTarget()
     data class ShowProductDetails(val item: Order.Item) : OrderCreateEditNavigationTarget()
     data class ShowCreatedOrder(val orderId: Long) : OrderCreateEditNavigationTarget()

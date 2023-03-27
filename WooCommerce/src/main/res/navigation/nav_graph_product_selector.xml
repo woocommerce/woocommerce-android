@@ -13,6 +13,14 @@
         <argument
             android:name="variationIds"
             app:argType="long[]" />
+        <argument
+            android:name="variation_selected_analytics_event"
+            app:argType="com.woocommerce.android.analytics.AnalyticsEvent"
+            app:nullable="true" />
+        <argument
+            android:name="variation_unselected_analytics_event"
+            app:argType="com.woocommerce.android.analytics.AnalyticsEvent"
+            app:nullable="true" />
     </fragment>
 
     <fragment
@@ -25,6 +33,18 @@
         <argument
             android:name="restrictions"
             app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorRestriction[]" />
+        <argument
+            android:name="product_selected_analytics_event"
+            app:argType="com.woocommerce.android.analytics.AnalyticsEvent"
+            app:nullable="true" />
+        <argument
+            android:name="product_unselected_analytics_event"
+            app:argType="com.woocommerce.android.analytics.AnalyticsEvent"
+            app:nullable="true" />
+        <argument
+            android:name="confirm_button_tapped_analytics_event"
+            app:argType="com.woocommerce.android.analytics.AnalyticsEvent"
+            app:nullable="true" />
         <action
             android:id="@+id/action_productSelectorFragment_to_variationSelectorFragment"
             app:destination="@id/variationSelectorFragment" />

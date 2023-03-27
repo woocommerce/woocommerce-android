@@ -23,7 +23,10 @@ object OrderCreateEditNavigator {
             is SelectItems ->
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToProductSelectorFragment(
                     selectedItems = target.selectedItems.toTypedArray(),
-                    restrictions = target.restrictions.toTypedArray()
+                    restrictions = target.restrictions.toTypedArray(),
+                    productSelectedAnalyticsEvent = target.productSelectedAnalyticsEvent,
+                    productUnselectedAnalyticsEvent = target.productUnselectedAnalyticsEvent,
+                    confirmButtonTappedAnalyticsEvent = target.confirmButtonTappedAnalyticsEvent
                 )
             is EditFee ->
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationEditFeeFragment(
