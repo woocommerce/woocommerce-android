@@ -82,7 +82,11 @@ class ProductSelectorViewModel @Inject constructor(
 
     private val searchQuery = savedState.getStateFlow(this, "")
     private val loadingState = MutableStateFlow(IDLE)
-    private val selectedItems = savedState.getStateFlow(viewModelScope, navArgs.selectedItems.toSet())
+    private val selectedItems = savedState.getStateFlow(
+        viewModelScope,
+        navArgs.selectedItems.toList(),
+        "key_selected_items"
+    )
     private val filterState = savedState.getStateFlow(viewModelScope, FilterState())
     private val productsRestrictions = navArgs.restrictions
     private val products = listHandler.productsFlow.map { products ->
@@ -159,7 +163,7 @@ class ProductSelectorViewModel @Inject constructor(
         return popularProductsMap
     }
 
-    private fun Product.toUiModel(selectedItems: Set<SelectedItem>): ProductListItem {
+    private fun Product.toUiModel(selectedItems: Collection<SelectedItem>): ProductListItem {
         fun getProductSelection(): SelectionState {
             return if (productType == VARIABLE && numVariations > 0) {
                 val intersection = variationIds.intersect(selectedItems.variationIds.toSet())
@@ -179,8 +183,7 @@ class ProductSelectorViewModel @Inject constructor(
                 if (productType == VARIABLE) {
                     resourceProvider.getString(string.product_stock_status_instock_with_variations, numVariations)
                 } else {
-                    val quantity = if (stockQuantity.isInteger()) stockQuantity.toInt() else stockQuantity
-                    resourceProvider.getString(string.product_stock_status_instock_quantified, quantity.toString())
+                    getStockStatusLabel()
                 }
             }
             NotAvailable, is Custom -> null
@@ -204,10 +207,20 @@ class ProductSelectorViewModel @Inject constructor(
         )
     }
 
+    private fun Product.getStockStatusLabel() = if (isStockManaged) {
+        val quantity = if (stockQuantity.isInteger()) stockQuantity.toInt() else stockQuantity
+        resourceProvider.getString(
+            string.product_stock_status_instock_quantified,
+            quantity.toString()
+        )
+    } else {
+        resourceProvider.getString(string.product_stock_status_instock)
+    }
+
     fun onClearButtonClick() {
         launch {
             delay(STATE_UPDATE_DELAY) // let the animation play out before hiding the button
-            selectedItems.value = emptySet()
+            selectedItems.value = emptyList()
         }
     }
 
@@ -416,7 +429,7 @@ class ProductSelectorViewModel @Inject constructor(
     }
 }
 
-val Set<ProductSelectorViewModel.SelectedItem>.variationIds: List<Long>
+val Collection<ProductSelectorViewModel.SelectedItem>.variationIds: List<Long>
     get() {
         return filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductOrVariation>().map { it.id } +
             filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductVariation>().map { it.variationId }

@@ -98,8 +98,12 @@ class VariationSelectorViewModel @Inject constructor(
     private suspend fun ProductVariation.toUiModel(selectedIds: Set<Long>): VariationListItem {
         val stockStatus = when (stockStatus) {
             InStock -> {
-                val quantity = if (stockQuantity.isInteger()) stockQuantity.toInt() else stockQuantity
-                resourceProvider.getString(string.product_stock_status_instock_quantified, quantity.toString())
+                if (isStockManaged) {
+                    val quantity = if (stockQuantity.isInteger()) stockQuantity.toInt() else stockQuantity
+                    resourceProvider.getString(string.product_stock_status_instock_quantified, quantity.toString())
+                } else {
+                    resourceProvider.getString(string.product_stock_status_instock)
+                }
             }
             NotAvailable, is Custom -> null
             else -> resourceProvider.getString(stockStatus.stringResource)

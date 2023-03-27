@@ -1,0 +1,2 @@
+12.8:
+Questo rilascio include molti miglioramenti alla funzionalità di creazione degli ordini. È possibile selezionare più prodotti in una volta e un'opzione migliorata di ricerca più veloce e filtro. Abbiamo anche corretto alcuni bug e apportato vari miglioramenti all'accessibilità della sezione Analisi. Abbiamo aggiunto una nuova sezione Miglioramenti al profilo degli utenti WordPress.com.

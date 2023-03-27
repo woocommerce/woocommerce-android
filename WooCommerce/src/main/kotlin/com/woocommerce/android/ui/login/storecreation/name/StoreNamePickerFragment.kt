@@ -43,15 +43,13 @@ class StoreNamePickerFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                is StoreNamePickerViewModel.NavigateToNextStep -> navigateToStoreProfilerCategoryFragment()
                 is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
+                is StoreNamePickerViewModel.NavigateToNextStep -> findNavController().navigateSafely(
+                    StoreNamePickerFragmentDirections.actionStoreNamePickerFragmentToDomainPickerFragment(
+                        event.domainInitialQuery
+                    )
+                )
             }
         }
-    }
-
-    private fun navigateToStoreProfilerCategoryFragment() {
-        findNavController().navigateSafely(
-            StoreNamePickerFragmentDirections.actionStoreNamePickerFragmentToStoreProfilerCategoryFragment()
-        )
     }
 }
