@@ -103,7 +103,8 @@ class ProductSelectorViewModel @Inject constructor(
     val viewState = combine(
         flow = products,
         flow2 = popularProducts,
-        flow3 = loadingState.withIndex()
+        flow3 = recentProducts,
+        flow4 = loadingState.withIndex()
             .debounce {
                 if (it.index != 0 && it.value == IDLE) {
                     // When resetting to IDLE, wait a bit to make sure the list has been fetched from DB
@@ -111,14 +112,15 @@ class ProductSelectorViewModel @Inject constructor(
                 } else 0L
             }
             .map { it.value },
-        flow4 = selectedItems,
-        flow5 = filterState,
-        flow6 = searchQuery
-    ) { products, popularProducts, loadingState, selectedIds, filterState, searchQuery ->
+        flow5 = selectedItems,
+        flow6 = filterState,
+        flow7 = searchQuery
+    ) { products, popularProducts, recentProducts, loadingState, selectedIds, filterState, searchQuery ->
         ViewState(
             loadingState = loadingState,
             products = products.map { it.toUiModel(selectedIds) },
             popularProducts = popularProducts.map { it.toUiModel(selectedIds) },
+            recentProducts = recentProducts.map { it.toUiModel(selectedIds) },
             selectedItemsCount = selectedIds.size,
             filterState = filterState,
             searchQuery = searchQuery
@@ -137,6 +139,11 @@ class ProductSelectorViewModel @Inject constructor(
 
     private suspend fun loadRecentProducts() {
         val recentlySoldOrders = getRecentlySoldOrders().take(5)
+        recentProducts.value = productsMapper.mapProductIdsToProduct(
+            getProductIdFromRecentlySoldOrders(
+                recentlySoldOrders
+            )
+        )
     }
 
     private suspend fun loadPopularProducts() {
@@ -167,6 +174,20 @@ class ProductSelectorViewModel @Inject constructor(
             }
         }
         return popularProductsMap
+    }
+
+    private fun getProductIdFromRecentlySoldOrders(
+        recentlySoldOrdersList: List<OrderEntity>
+    ): List<Long> {
+        val productIds = mutableListOf<Long>()
+        recentlySoldOrdersList.forEach { orderEntity ->
+            orderEntity.getLineItemList().forEach { lineItem ->
+                lineItem.productId?.let { productId ->
+                    productIds.add(productId)
+                }
+            }
+        }
+        return productIds
     }
 
     private fun Product.toUiModel(selectedItems: Collection<SelectedItem>): ProductListItem {
@@ -379,6 +400,7 @@ class ProductSelectorViewModel @Inject constructor(
         val loadingState: LoadingState,
         val products: List<ProductListItem>,
         val popularProducts: List<ProductListItem>,
+        val recentProducts: List<ProductListItem>,
         val selectedItemsCount: Int,
         val filterState: FilterState,
         val searchQuery: String
@@ -442,16 +464,17 @@ val Collection<ProductSelectorViewModel.SelectedItem>.variationIds: List<Long>
     }
 
 @Suppress("LongParameterList")
-inline fun <T1, T2, T3, T4, T5, T6, R> combine(
+inline fun <T1, T2, T3, T4, T5, T6, T7, R> combine(
     flow: Flow<T1>,
     flow2: Flow<T2>,
     flow3: Flow<T3>,
     flow4: Flow<T4>,
     flow5: Flow<T5>,
     flow6: Flow<T6>,
-    crossinline transform: suspend (T1, T2, T3, T4, T5, T6) -> R
+    flow7: Flow<T7>,
+    crossinline transform: suspend (T1, T2, T3, T4, T5, T6, T7) -> R
 ): Flow<R> {
-    return combine(flow, flow2, flow3, flow4, flow5, flow6) { args: Array<*> ->
+    return combine(flow, flow2, flow3, flow4, flow5, flow6, flow7) { args: Array<*> ->
         @Suppress("UNCHECKED_CAST", "MagicNumber")
         transform(
             args[0] as T1,
@@ -460,6 +483,7 @@ inline fun <T1, T2, T3, T4, T5, T6, R> combine(
             args[3] as T4,
             args[4] as T5,
             args[5] as T6,
+            args[6] as T7,
         )
     }
 }
