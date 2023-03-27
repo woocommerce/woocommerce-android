@@ -21,6 +21,16 @@ class SubscriptionRestClient @Inject constructor(private val wooNetwork: WooNetw
         ).toWooPayload()
     }
 
+    suspend fun fetchSubscriptionsById(site: SiteModel, subscriptionId: Long): WooPayload<SubscriptionDto> {
+        val url = WOOCOMMERCE.subscriptions.id(subscriptionId).pathV3
+
+        return wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = url,
+            clazz = SubscriptionDto::class.java
+        ).toWooPayload()
+    }
+
     @Suppress("PropertyName", "VariableNaming")
     class SubscriptionDto : Response {
         val id: Long? = null
