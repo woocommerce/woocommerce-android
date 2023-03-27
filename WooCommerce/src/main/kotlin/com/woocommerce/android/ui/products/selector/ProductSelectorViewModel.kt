@@ -138,7 +138,7 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     private suspend fun loadRecentProducts() {
-        val recentlySoldOrders = getRecentlySoldOrders().take(5)
+        val recentlySoldOrders = getRecentlySoldOrders().take(NO_OF_PRODUCTS)
         recentProducts.value = productsMapper.mapProductIdsToProduct(
             getProductIdFromRecentlySoldOrders(
                 recentlySoldOrders
