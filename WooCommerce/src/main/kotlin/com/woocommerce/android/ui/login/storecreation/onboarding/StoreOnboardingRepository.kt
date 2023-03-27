@@ -1,11 +1,15 @@
 package com.woocommerce.android.ui.login.storecreation.onboarding
 
+import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent.STORE_ONBOARDING_COMPLETED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.LAUNCH_YOUR_STORE
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.values
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.onboarding.TaskDto
 import org.wordpress.android.fluxc.store.OnboardingStore
 import org.wordpress.android.fluxc.store.SiteStore
@@ -13,20 +17,27 @@ import org.wordpress.android.fluxc.store.SiteStore.LaunchSiteErrorType.ALREADY_L
 import org.wordpress.android.fluxc.store.SiteStore.LaunchSiteErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.SiteStore.LaunchSiteErrorType.UNAUTHORIZED
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class StoreOnboardingRepository @Inject constructor(
     private val onboardingStore: OnboardingStore,
     private val selectedSite: SelectedSite,
-    private val siteStore: SiteStore
+    private val siteStore: SiteStore,
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) {
-    suspend fun fetchOnboardingTasks(): List<OnboardingTask> {
+
+    var onboardingTasksCacheFlow: MutableStateFlow<List<OnboardingTask>> = MutableStateFlow(emptyList())
+
+    suspend fun fetchOnboardingTasks() {
+        WooLog.d(WooLog.T.ONBOARDING, "Fetching onboarding tasks")
         val result = onboardingStore.fetchOnboardingTasks(selectedSite.get())
         return when {
-            result.isError -> {
-                WooLog.i(WooLog.T.ONBOARDING, "TODO ERROR HANDLING fetchOnboardingTasks")
-                emptyList()
-            }
+            result.isError ->
+                WooLog.i(WooLog.T.ONBOARDING, "Error fetching onboarding tasks: ${result.error}")
             else -> {
+                WooLog.d(WooLog.T.ONBOARDING, "Success fetching onboarding tasks")
                 val mobileSupportedTasks = result.model?.map { it.toOnboardingTask() }
                     ?.filter { it.type != MOBILE_UNSUPPORTED }
                     ?.sortedBy { it.type.order }
@@ -46,11 +57,21 @@ class StoreOnboardingRepository @Inject constructor(
                         )
                     )
                 }
-
-                return mobileSupportedTasks
+                if (mobileSupportedTasks.all { it.isComplete }) {
+                    WooLog.d(
+                        WooLog.T.ONBOARDING,
+                        "All onboarding tasks are completed for siteId: ${selectedSite.getSelectedSiteId()}"
+                    )
+                    appPrefsWrapper.markAllOnboardingTasksCompleted(selectedSite.getSelectedSiteId())
+                    analyticsTrackerWrapper.track(stat = STORE_ONBOARDING_COMPLETED)
+                }
+                onboardingTasksCacheFlow.emit(mobileSupportedTasks)
             }
         }
     }
+
+    fun isOnboardingCompleted(): Boolean =
+        appPrefsWrapper.isOnboardingCompleted(selectedSite.getSelectedSiteId())
 
     suspend fun launchStore(): LaunchStoreResult {
         WooLog.d(WooLog.T.ONBOARDING, "Launching store")
@@ -95,6 +116,7 @@ class StoreOnboardingRepository @Inject constructor(
         LAUNCH_YOUR_STORE(id = "launch_site", order = 3),
         CUSTOMIZE_DOMAIN(id = "add_domain", order = 4),
         WC_PAYMENTS(id = "woocommerce-payments", order = 5),
+        PAYMENTS(id = "payments", order = 5), // WC_PAYMENT and PAYMENTS are considered the same task on mobile
         MOBILE_UNSUPPORTED(id = "mobile-unsupported", order = -1)
     }
 

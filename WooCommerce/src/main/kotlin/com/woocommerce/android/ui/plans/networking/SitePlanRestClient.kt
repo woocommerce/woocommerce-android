@@ -110,6 +110,22 @@ class SitePlanRestClient @Inject constructor(
         ZonedDateTime.parse(it, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
     }
 
+    suspend fun addEcommercePlanTrial(siteRemoteId: Long): Response<Unit> {
+        val url = WPCOMREST.sites.site(siteRemoteId)
+            .ecommerce_trial
+            .add
+            .plan_slug("ecommerce-trial-bundle-monthly")
+            .urlV1_1
+
+        return wpComGsonRequestBuilder.syncPostRequest<Unit>(
+            this,
+            url,
+            emptyMap(),
+            body = emptyMap(),
+            Unit::class.java
+        )
+    }
+
     data class SitePlanDto(
         @SerializedName("product_name") val name: String,
         @SerializedName("expiry") val expirationDate: String?,

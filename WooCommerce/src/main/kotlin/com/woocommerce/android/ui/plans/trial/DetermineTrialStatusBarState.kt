@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.plans.trial
 import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivityViewModel.BottomBarState
-import com.woocommerce.android.ui.plans.domain.CalculateRemainingTrialPeriod
+import com.woocommerce.android.ui.plans.domain.CalculatePlanRemainingPeriod
 import com.woocommerce.android.ui.plans.domain.FreeTrialExpiryDateResult.Error
 import com.woocommerce.android.ui.plans.domain.FreeTrialExpiryDateResult.ExpiryAt
 import com.woocommerce.android.ui.plans.domain.FreeTrialExpiryDateResult.NotTrial
@@ -15,7 +15,7 @@ import javax.inject.Inject
 class DetermineTrialStatusBarState @Inject constructor(
     private val sitePlanRepository: SitePlanRepository,
     private val selectedSite: SelectedSite,
-    private val calculateRemainingTrialPeriod: CalculateRemainingTrialPeriod,
+    private val calculatePlanRemainingPeriod: CalculatePlanRemainingPeriod,
 ) {
 
     operator fun invoke(bottomBarState: Flow<BottomBarState>): Flow<TrialStatusBarState> =
@@ -34,7 +34,7 @@ class DetermineTrialStatusBarState @Inject constructor(
     private suspend fun fetchFreeTrialDetails(): TrialStatusBarState {
         return when (val result = sitePlanRepository.fetchFreeTrialExpiryDate(selectedSite.get())) {
             is ExpiryAt -> {
-                val expireIn = calculateRemainingTrialPeriod(result.date)
+                val expireIn = calculatePlanRemainingPeriod(result.date)
                 TrialStatusBarState.Visible(expireIn.days)
             }
             NotTrial, is Error -> TrialStatusBarState.Hidden

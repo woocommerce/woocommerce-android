@@ -31,6 +31,7 @@ import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.E
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.HasPlan
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Loading
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.NonUpgradeable
+import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.PlanEnded
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialEnded
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialInProgress
 import java.time.Period
@@ -103,6 +104,10 @@ fun UpgradesScreen(
                             style = MaterialTheme.typography.caption,
                             text = when (state) {
                                 Loading, Error -> ""
+                                is PlanEnded -> stringResource(
+                                    R.string.upgrades_current_plan_ended_caption,
+                                    state.name
+                                )
                                 is NonUpgradeable -> stringResource(
                                     R.string.upgrades_non_upgradeable_caption,
                                     state.name,
@@ -182,6 +187,16 @@ private fun NonUpgradeable() {
             NonUpgradeable("eCommerce", "March 2, 2023"),
             {}, {}
         )
+    }
+}
+
+@Preview(name = "Light mode")
+@Preview(name = "RTL mode", locale = "ar")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun PlanEnded() {
+    WooThemeWithBackground {
+        UpgradesScreen(state = PlanEnded("eCommerce ended"), {}, {})
     }
 }
 
