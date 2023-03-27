@@ -140,7 +140,7 @@ class ProductSelectorViewModel @Inject constructor(
     private suspend fun loadRecentProducts() {
         val recentlySoldOrders = getRecentlySoldOrders().take(NO_OF_PRODUCTS)
         recentProducts.value = productsMapper.mapProductIdsToProduct(
-            getProductIdFromRecentlySoldOrders(
+            getProductIdsFromRecentlySoldOrders(
                 recentlySoldOrders
             )
         )
@@ -176,7 +176,7 @@ class ProductSelectorViewModel @Inject constructor(
         return popularProductsMap
     }
 
-    private fun getProductIdFromRecentlySoldOrders(
+    private fun getProductIdsFromRecentlySoldOrders(
         recentlySoldOrdersList: List<OrderEntity>
     ): List<Long> {
         val productIds = mutableListOf<Long>()
