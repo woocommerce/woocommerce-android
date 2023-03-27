@@ -13,6 +13,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
 import com.woocommerce.android.di.AppCoroutineScope
+import com.woocommerce.android.extensions.lesserThan
+import com.woocommerce.android.extensions.pastTimeDeltaFromNowInDays
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.push.RegisterDevice
 import com.woocommerce.android.push.RegisterDevice.Mode.IF_NEEDED
@@ -62,6 +64,7 @@ import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
+import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -71,6 +74,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     companion object {
         private const val SECONDS_BETWEEN_SITE_UPDATE = 60 * 60 // 1 hour
         private const val UNAUTHORIZED_STATUS_CODE = 401
+        private const val CARD_READER_USAGE_THIRTY_DAYS = 30
     }
 
     @Inject lateinit var crashLogging: CrashLogging
@@ -235,8 +239,14 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                         }
                     }
 
-                    cardReaderOnboardingChecker.invalidateCache()
-                    cardReaderOnboardingChecker.getOnboardingState()
+                    val isIPPUser = Date(
+                        prefs.getCardReaderLastSuccessfulPaymentTime()
+                    ).pastTimeDeltaFromNowInDays lesserThan CARD_READER_USAGE_THIRTY_DAYS
+
+                    if (isIPPUser) {
+                        cardReaderOnboardingChecker.invalidateCache()
+                        cardReaderOnboardingChecker.getOnboardingState()
+                    }
                 }
             }
         }

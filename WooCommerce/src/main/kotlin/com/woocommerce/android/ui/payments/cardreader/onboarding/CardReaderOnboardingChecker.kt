@@ -77,13 +77,13 @@ class CardReaderOnboardingChecker @Inject constructor(
     private val cardReaderOnboardingCheckResultCache: CardReaderOnboardingCheckResultCache,
 ) {
     suspend fun getOnboardingState(pluginType: PluginType? = null): CardReaderOnboardingState {
-        if (!networkStatus.isConnected()) return NoConnectionError
+        val cachedValue = cardReaderOnboardingCheckResultCache.value
 
-        cardReaderOnboardingCheckResultCache.value.run {
-            if (this is CardReaderOnboardingCheckResultCache.Result.Cached) return state
-        }
-
-        return fetchOnboardingState(pluginType)
+        return if (!networkStatus.isConnected()) {
+            NoConnectionError
+        } else if (cachedValue is CardReaderOnboardingCheckResultCache.Result.Cached) {
+            cachedValue.state
+        } else fetchOnboardingState(pluginType)
             .also { state ->
                 val (status, version) = when (state) {
                     is OnboardingCompleted -> {

@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
@@ -95,7 +95,7 @@ class CardReaderPaymentViewModel
     private val cardReaderManager: CardReaderManager,
     private val orderRepository: OrderDetailRepository,
     private val selectedSite: SelectedSite,
-    private val appPrefsWrapper: AppPrefsWrapper,
+    private val appPrefs: AppPrefs = AppPrefs,
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
     private val interacRefundableChecker: CardReaderInteracRefundableChecker,
     private val tracker: CardReaderTracker,
@@ -254,7 +254,7 @@ class CardReaderPaymentViewModel
         val customerEmail = order.billingAddress.email
         val site = selectedSite.get()
         val countryCode = getStoreCountryCode()
-        val rawStatementDescriptor = appPrefsWrapper.getCardReaderStatementDescriptor(
+        val rawStatementDescriptor = appPrefs.getCardReaderStatementDescriptor(
             localSiteId = site.id,
             remoteSiteId = site.siteId,
             selfHostedSiteId = site.selfHostedSiteId
@@ -413,6 +413,7 @@ class CardReaderPaymentViewModel
         orderId: Long,
     ) {
         cardReaderPaymentReceiptHelper.storeReceiptUrl(orderId, paymentStatus.receiptUrl)
+        appPrefs.setCardReaderSuccessfulPaymentTime()
         triggerEvent(PlayChaChing)
         showPaymentSuccessfulState()
         reFetchOrder()
