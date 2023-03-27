@@ -335,9 +335,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.event.value)
             .isEqualTo(ShowApplicationPasswordsUnavailableScreen(siteAddress, isJetpackConnected))
-
     }
-
 
     @Test
     fun `give user role fetch fails, when submitting login, then show a snackbar`() = testBlocking {
