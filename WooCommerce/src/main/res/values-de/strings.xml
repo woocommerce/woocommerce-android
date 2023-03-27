@@ -1,11 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-09 13:54:04+0000
+Translation-Revision-Date: 2023-03-20 16:54:23+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="upgrades_error_fetching_data">Fehler beim Abrufen der Tarifdetails</string>
+    <string name="upgrades_non_upgradeable_caption">Du hast %1$s abonniert! Bis zum %2$s kannst du auf alle Funktionen zugreifen. </string>
+    <string name="upgrades_trial_ended_caption">Dein Gratis-Test ist abgelaufen und du hast nun eingeschränkten Zugriff auf alle Funktionen. Abonniere jetzt %1$s.</string>
+    <string name="upgrades_subscription_status">Abonnement-Status</string>
+    <string name="upgrades_title">Upgrades</string>
+    <string name="upgrades_troubleshooting">Problembehandlung</string>
+    <string name="upgrades_current_plan">Aktuell: %s</string>
+    <string name="upgrades_upgrade_now">Jetzt Upgrade durchführen</string>
+    <string name="upgrades_report_subscription_issue">Problem mit Abonnement melden</string>
+    <string name="free_trial_upgrade_now">Jetzt Upgrade durchführen</string>
+    <string name="free_trial_days_left">Noch %1$d Tage bis zum Ablauf deines Gratis-Tests.</string>
+    <string name="free_trial_trial_ended">Gratis-Test abgelaufen</string>
+    <string name="free_trial_your_trial_ended">Dein Gratis-Test ist abgelaufen.</string>
+    <string name="store_onboarding_launch_store_generic_error_description">Ups, es sind unerwartete Fehler aufgetreten.</string>
+    <string name="store_onboarding_launch_store_generic_error_title">Unerwarteter Fehler</string>
+    <string name="store_onboarding_store_already_launched_error_description">Wir haben festgestellt, dass dein Shop bereits gestartet wurde.</string>
+    <string name="store_onboarding_store_already_launched_error_title">Dein Shop konnte nicht gestartet werden</string>
+    <string name="store_onboarding_share_url_error">Shop-URL konnte nicht geteilt werden</string>
+    <string name="store_onboarding_launch_store_task_private_tag">Privat</string>
+    <string name="store_onboarding_launched_title">Dein Shop ist live!</string>
+    <string name="store_onboarding_launch_preview_title">Vorschau</string>
+    <string name="store_onboarding_launch_store_back_to_store_button">Zurück zu „Mein Shop“</string>
+    <string name="store_onboarding_launch_store_share_url_button">URL teilen</string>
+    <string name="store_onboarding_launch_store_button">Meinen Shop veröffentlichen</string>
+    <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">Bitte aktualisiere deinen Tarif, um deinen Shop zu starten. &lt;u&gt;Upgrade durchführen&lt;/u&gt;</string>
+    <string name="card_reader_tap_to_pay_not_available_error">Tap to Pay ist für deinen Shop oder dein Gerät nicht verfügbar</string>
+    <string name="domains_search_domains">Domains durchsuchen</string>
+    <string name="login_site_credentials_http_error">Die Anmeldung ist fehlgeschlagen: Statuscode %1$s</string>
+    <string name="login_site_credentials_custom_admin_url">Die Anmeldung ist fehlgeschlagen, da die Admin-URL deines Shops nicht ermitteln werden konnte</string>
+    <string name="login_site_credentials_custom_login_url">Die Anmeldung ist fehlgeschlagen, da die Anmelde-URL deines Shops nicht ermittelt werden konnte</string>
+    <string name="login_site_credentials_invalid_response">Die Anmeldung ist fehlgeschlagen: unerwartete Antwort von deiner Website. Wir arbeiten daran, das Problem zu beheben.</string>
+    <string name="more_menu_button_upgrades">Upgrades</string>
+    <string name="something_went_wrong_try_again">Es ist ein Fehler aufgetreten. Bitte versuche es später erneut.</string>
+    <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">Dein Konto weist ausstehende Anforderungen auf. Bitte erfülle diese Anforderungen, um weiterhin persönliche Zahlungen zu erhalten.</string>
+    <string name="analytics_banner_message">Bitte bewerte deine Analyse-Erfahrung</string>
+    <string name="analytics_banner_title">Gefallen dir Analysen?</string>
+    <string name="analytics_wip_message">Wir haben daran gearbeitet, das Anzeigen wichtiger Shop-Informationen auf deinem Gerät zu ermöglichen! Hast du Verbesserungsvorschläge? Bitte hilf mit, diese Funktion zu verbessern, indem du uns dein Feedback mitteilst</string>
+    <string name="analytics_wip_title">Sieh dir deine Statistiken, Einnahmen und vieles mehr auf deinem Gerät an!</string>
+    <string name="login_jetpack_installation_magic_link_failure">Beim Abrufen deiner Website ist ein Fehler aufgetreten. Bitte versuche es erneut!</string>
     <string name="support_request_error_message">Entschuldigung, wir können derzeit keine Supportanfragen erstellen. Bitte versuche es später erneut.</string>
     <string name="support_request_error_title">Es ist ein Fehler aufgetreten</string>
     <string name="support_request_dialog_action">Alles klar!</string>
@@ -299,8 +338,6 @@ Language: de
     <string name="card_reader_payment_collect_payment_built_in_state">Der integrierte Kartenleser ist bereit</string>
     <string name="card_reader_type_selection_bluetooth_reader">Bluetooth-Lesegerät</string>
     <string name="card_reader_type_selection_tap_to_pay">Tap To Pay</string>
-    <string name="card_reader_type_selection_description">Du kannst dein Smartphone als Kartenlesegerät nutzen oder per Bluetooth eine Verbindung zu einem externen Lesegerät herstellen</string>
-    <string name="card_reader_type_selection_title">Art des Lesegeräts auswählen</string>
     <string name="analytics_conversion_subtitle">Umrechnungskurs</string>
     <string name="analytics_session_card_title">Sitzungen</string>
     <string name="analytics_session_no_data">Keine Sitzungen für diesen Zeitraum</string>
@@ -951,7 +988,7 @@ Language: de
     <string name="order_creation_new_customer_add_different_shipping_address">Abweichende Versandadresse hinzufügen</string>
     <string name="order_creation_product_instock">Vorrätig</string>
     <string name="order_creation_product_stock_quantity">%s vorrätig</string>
-    <string name="order_creation_add_products">Produkt hinzufügen</string>
+    <string name="order_creation_add_products">Produkte hinzufügen</string>
     <string name="order_creation_products">Produkte</string>
     <string name="order_creation_add_customer">Kundendaten hinzufügen</string>
     <string name="order_creation_customer">Kunde</string>

@@ -11,6 +11,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToProductFilter
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToVariationSelector
+import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus.Custom
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.NotAvailable
@@ -74,14 +75,24 @@ class ProductSelectorViewModel @Inject constructor(
 
     private val searchQuery = savedState.getStateFlow(this, "")
     private val loadingState = MutableStateFlow(IDLE)
-    private val selectedItems = savedState.getStateFlow(viewModelScope, navArgs.selectedItems.toSet())
+    private val selectedItems = savedState.getStateFlow(
+        viewModelScope,
+        navArgs.selectedItems.toList(),
+        "key_selected_items"
+    )
     private val filterState = savedState.getStateFlow(viewModelScope, FilterState())
+    private val productsRestrictions = navArgs.restrictions
+    private val products = listHandler.productsFlow.map { products ->
+        products.filter { product ->
+            productsRestrictions.map { restriction -> restriction(product) }.fold(true) { acc, result -> acc && result }
+        }
+    }
 
     private var fetchProductsJob: Job? = null
     private var loadMoreJob: Job? = null
 
     val viewState = combine(
-        flow = listHandler.productsFlow,
+        flow = products,
         flow2 = loadingState.withIndex()
             .debounce {
                 if (it.index != 0 && it.value == IDLE) {
@@ -111,7 +122,7 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
 
-    private fun Product.toUiModel(selectedItems: Set<SelectedItem>): ProductListItem {
+    private fun Product.toUiModel(selectedItems: Collection<SelectedItem>): ProductListItem {
         fun getProductSelection(): SelectionState {
             return if (productType == VARIABLE && numVariations > 0) {
                 val intersection = variationIds.intersect(selectedItems.variationIds.toSet())
@@ -131,8 +142,7 @@ class ProductSelectorViewModel @Inject constructor(
                 if (productType == VARIABLE) {
                     resourceProvider.getString(string.product_stock_status_instock_with_variations, numVariations)
                 } else {
-                    val quantity = if (stockQuantity.isInteger()) stockQuantity.toInt() else stockQuantity
-                    resourceProvider.getString(string.product_stock_status_instock_quantified, quantity.toString())
+                    getStockStatusLabel()
                 }
             }
             NotAvailable, is Custom -> null
@@ -156,10 +166,20 @@ class ProductSelectorViewModel @Inject constructor(
         )
     }
 
+    private fun Product.getStockStatusLabel() = if (isStockManaged) {
+        val quantity = if (stockQuantity.isInteger()) stockQuantity.toInt() else stockQuantity
+        resourceProvider.getString(
+            string.product_stock_status_instock_quantified,
+            quantity.toString()
+        )
+    } else {
+        resourceProvider.getString(string.product_stock_status_instock)
+    }
+
     fun onClearButtonClick() {
         launch {
             delay(STATE_UPDATE_DELAY) // let the animation play out before hiding the button
-            selectedItems.value = emptySet()
+            selectedItems.value = emptyList()
         }
     }
 
@@ -350,9 +370,25 @@ class ProductSelectorViewModel @Inject constructor(
         data class ProductVariation(val productId: Long, val variationId: Long) : SelectedItem(variationId)
     }
 
-    private val Set<SelectedItem>.variationIds: List<Long>
-        get() {
-            return filterIsInstance<SelectedItem.ProductOrVariation>().map { it.id } +
-                filterIsInstance<SelectedItem.ProductVariation>().map { it.variationId }
+    @Parcelize
+    sealed class ProductSelectorRestriction : (Product) -> Boolean, Parcelable {
+        @Parcelize
+        object OnlyPublishedProducts : ProductSelectorRestriction() {
+            override fun invoke(product: Product): Boolean {
+                return product.status == ProductStatus.PUBLISH
+            }
         }
+        @Parcelize
+        object NoVariableProductsWithNoVariations : ProductSelectorRestriction() {
+            override fun invoke(product: Product): Boolean {
+                return !(product.productType == VARIABLE && product.numVariations == 0)
+            }
+        }
+    }
 }
+
+val Collection<ProductSelectorViewModel.SelectedItem>.variationIds: List<Long>
+    get() {
+        return filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductOrVariation>().map { it.id } +
+            filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductVariation>().map { it.variationId }
+    }

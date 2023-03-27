@@ -53,7 +53,7 @@ class CardReaderWelcomeViewModelTest : BaseUnitTest() {
     private fun initVM(cardReaderType: CardReaderType) {
         viewModel = CardReaderWelcomeViewModel(
             CardReaderWelcomeDialogFragmentArgs(
-                cardReaderFlowParam = CardReaderFlowParam.CardReadersHub,
+                cardReaderFlowParam = CardReaderFlowParam.CardReadersHub(),
                 cardReaderType = cardReaderType,
             ).initSavedStateHandle(),
             appPrefsWrapper

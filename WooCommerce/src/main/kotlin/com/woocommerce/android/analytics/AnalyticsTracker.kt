@@ -373,6 +373,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_MORE_MENU_INBOX = "inbox"
         const val VALUE_MORE_MENU_COUPONS = "coupons"
         const val VALUE_MORE_MENU_PAYMENTS = "payments"
+        const val VALUE_MORE_MENU_UPGRADES = "upgrades"
 
         const val VALUE_MORE_MENU_PAYMENTS_BADGE_VISIBLE = "badge_visible"
 
@@ -483,6 +484,18 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_STEP_CONTACT_INFO = "contact_info"
         const val VALUE_STEP_PURCHASE_SUCCESS = "purchase_success"
         const val KEY_USE_DOMAIN_CREDIT = "use_domain_credit"
+
+        // -- Free Trial
+        const val VALUE_BANNER = "banner"
+        const val VALUE_UPGRADES_SCREEN = "upgrades_screen"
+
+        // -- Store Onboarding
+        const val ONBOARDING_TASK_KEY = "task"
+        const val VALUE_STORE_DETAILS = "store_details"
+        const val VALUE_PRODUCTS = "products"
+        const val VALUE_ADD_DOMAIN = "add_domain"
+        const val VALUE_LAUNCH_SITE = "launch_site"
+        const val VALUE_PAYMENTS = "payments"
 
         var sendUsageStats: Boolean = true
             set(value) {

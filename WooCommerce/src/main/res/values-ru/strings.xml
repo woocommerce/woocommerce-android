@@ -1,11 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-09 17:54:05+0000
+Translation-Revision-Date: 2023-03-21 15:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="upgrades_error_fetching_data">Ошибка при получении сведений о плане</string>
+    <string name="upgrades_non_upgradeable_caption">Вы оформили подписку на %1$s! У вас есть доступ ко всем функциям до %2$s. </string>
+    <string name="upgrades_trial_ended_caption">У вас закончился пробный период, доступ к функциям ограничен. Подпишитесь на %1$s прямо сейчас.</string>
+    <string name="upgrades_subscription_status">Статус подписки</string>
+    <string name="upgrades_title">Платные услуги</string>
+    <string name="upgrades_troubleshooting">Устранение неполадок</string>
+    <string name="upgrades_current_plan">Текущий: %s</string>
+    <string name="upgrades_upgrade_now">Перейти на платную подписку</string>
+    <string name="upgrades_report_subscription_issue">Сообщить о проблеме с подпиской</string>
+    <string name="free_trial_upgrade_now">Перейти на платную подписку</string>
+    <string name="free_trial_days_left">Осталось %1$d дн. до окончания пробного периода.</string>
+    <string name="free_trial_trial_ended">Конец пробного периода</string>
+    <string name="free_trial_your_trial_ended">Пробный период закончился.</string>
+    <string name="store_onboarding_launch_store_generic_error_description">Произошли неожиданные ошибки.</string>
+    <string name="store_onboarding_launch_store_generic_error_title">Неожиданная ошибка</string>
+    <string name="store_onboarding_store_already_launched_error_description">Оказалось, что магазин уже запущен.</string>
+    <string name="store_onboarding_store_already_launched_error_title">Не удалось запустить ваш магазин</string>
+    <string name="store_onboarding_share_url_error">Не удалось поделиться URL-адресом магазина</string>
+    <string name="store_onboarding_launch_store_task_private_tag">Статус «Закрытый»</string>
+    <string name="store_onboarding_launched_title">Ваш магазин работает!</string>
+    <string name="store_onboarding_launch_preview_title">Предварительный просмотр</string>
+    <string name="store_onboarding_launch_store_back_to_store_button">Назад в Мой магазин</string>
+    <string name="store_onboarding_launch_store_share_url_button">URL-адрес рекомендации</string>
+    <string name="store_onboarding_launch_store_button">Опубликовать мой магазин</string>
+    <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">Чтобы запустить магазин, необходимо перейти на платный тарифный план. &lt;u&gt;Перейти&lt;/u&gt;</string>
+    <string name="card_reader_tap_to_pay_not_available_error">Ваш магазин или устройство не поддерживают функцию «Tap to Pay»</string>
+    <string name="domains_search_domains">Поиск доменов</string>
+    <string name="login_site_credentials_http_error">Не удалось войти. Код состояния: %1$s</string>
+    <string name="login_site_credentials_custom_admin_url">Не удалось войти, так как не удается найти URL-адрес администратора магазина</string>
+    <string name="login_site_credentials_custom_login_url">Не удалось войти, так как не удается найти URL-адрес входа в магазин</string>
+    <string name="login_site_credentials_invalid_response">Не удалось войти из-за неожиданного ответа сайта. Мы работаем над этой проблемой.</string>
+    <string name="more_menu_button_upgrades">Платные услуги</string>
+    <string name="something_went_wrong_try_again">Произошла ошибка. Повторите попытку позже.</string>
+    <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">Для вашей учётной записи есть требования на утверждении. Чтобы получать очные платежи, выполните эти требования.</string>
+    <string name="analytics_banner_message">Оцените ваши впечатления от работы с аналитикой</string>
+    <string name="analytics_banner_title">Нравится аналитика?</string>
+    <string name="analytics_wip_message">Мы работаем над возможностью отображать важные сведения о магазине на вашем устройстве! Можно что-то улучшить? Помогите улучшить эту функцию, отправив нам отзыв</string>
+    <string name="analytics_wip_title">Просматривайте статистику, выручку и многое другое на своём устройстве!</string>
+    <string name="login_jetpack_installation_magic_link_failure">Произошла ошибка при получении вашего веб-сайта, повторите попытку!</string>
     <string name="support_request_error_message">Не удалось создать запрос в службу поддержки. Повторите попытку позже.</string>
     <string name="support_request_error_title">Что-то пошло не так</string>
     <string name="support_request_dialog_action">Понятно!</string>
@@ -299,8 +338,6 @@ Language: ru
     <string name="card_reader_payment_collect_payment_built_in_state">Приложение для чтения карт готово к работе</string>
     <string name="card_reader_type_selection_bluetooth_reader">Устройство чтения Bluetooth</string>
     <string name="card_reader_type_selection_tap_to_pay">Оплата в касание</string>
-    <string name="card_reader_type_selection_description">Используйте телефон для чтения карт или подключите внешнее устройство чтения по Bluetooth</string>
-    <string name="card_reader_type_selection_title">Выберите тип устройства чтения</string>
     <string name="analytics_conversion_subtitle">Коэффициент конверсии</string>
     <string name="analytics_session_card_title">Сессии</string>
     <string name="analytics_session_no_data">Нет сессий за этот период</string>
@@ -951,7 +988,7 @@ Language: ru
     <string name="order_creation_new_customer_add_different_shipping_address">Добавить другой адрес доставки</string>
     <string name="order_creation_product_instock">В наличии</string>
     <string name="order_creation_product_stock_quantity">%s в наличии</string>
-    <string name="order_creation_add_products">Добавить товар</string>
+    <string name="order_creation_add_products">Добавить товары</string>
     <string name="order_creation_products">Товары</string>
     <string name="order_creation_add_customer">Добавить сведения о клиенте</string>
     <string name="order_creation_customer">Клиент</string>

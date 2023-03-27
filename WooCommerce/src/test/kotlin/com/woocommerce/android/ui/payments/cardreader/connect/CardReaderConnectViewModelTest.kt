@@ -1583,7 +1583,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     private fun initVM(
-        cardReaderFlowParam: CardReaderFlowParam = CardReaderFlowParam.CardReadersHub,
+        cardReaderFlowParam: CardReaderFlowParam = CardReaderFlowParam.CardReadersHub(),
         cardReaderType: CardReaderType = EXTERNAL
     ): CardReaderConnectViewModel {
         val savedState = CardReaderConnectDialogFragmentArgs(cardReaderFlowParam, cardReaderType).initSavedStateHandle()

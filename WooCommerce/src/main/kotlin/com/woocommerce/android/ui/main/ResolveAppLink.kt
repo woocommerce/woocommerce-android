@@ -17,43 +17,22 @@ class ResolveAppLink @Inject constructor(
 
     operator fun invoke(uri: Uri?): Action {
         return when {
-            uri?.path?.contains("orders/details") == true -> {
-                prepareOrderDetailsAction(uri)
-            }
-            uri?.path?.contains("payments") == true -> {
-                preparePaymentsAction(uri)
-            }
+            uri endsWith "mobile/orders/details" -> prepareOrderDetailsAction(uri!!)
+            uri endsWith "mobile/payments" -> preparePaymentsAction(uri!!)
+            uri endsWith "mobile/payments/tap-to-pay" -> prepareTapToPayAction(uri!!)
+            uri startsWith "/products/hardware" -> prepareUrlInWebViewAction(uri!!)
             else -> Action.DoNothing
         }
     }
 
-    private fun preparePaymentsAction(data: Uri): Action {
-        val blogId = try {
-            data.getParamOrNull("blog_id")
-        } catch (e: NumberFormatException) {
-            trackLinkFailure(data)
-            crashLogging.recordException(e, REPORT_CATEGORY)
-            return Action.ViewStats
-        }
+    private fun prepareTapToPayAction(data: Uri) = handleUriWithOptionalBlogId(data, Action.ViewTapToPay)
 
-        return when {
-            blogId == null -> {
-                trackLinkSuccess(data)
-                Action.ViewPayments
-            }
-            !selectedSite.exists() -> {
-                trackLinkFailure(data)
-                Action.ViewStats
-            }
-            selectedSite.getIfExists()?.siteId != blogId -> {
-                Action.ChangeSiteAndRestart(siteId = blogId, uri = data)
-            }
-            else -> {
-                trackLinkSuccess(data)
-                Action.ViewPayments
-            }
-        }
-    }
+    private fun preparePaymentsAction(data: Uri) = handleUriWithOptionalBlogId(data, Action.ViewPayments)
+
+    private fun prepareUrlInWebViewAction(data: Uri) = handleUriWithOptionalBlogId(
+        data,
+        Action.ViewUrlInWebView(data.toString())
+    )
 
     private fun prepareOrderDetailsAction(data: Uri): Action {
         val (blogId, orderId) = try {
@@ -84,11 +63,42 @@ class ResolveAppLink @Inject constructor(
         }
     }
 
+    private fun handleUriWithOptionalBlogId(data: Uri, actionToReturnOnSuccess: Action): Action {
+        val blogId = try {
+            data.getParamOrNull("blog_id")
+        } catch (e: NumberFormatException) {
+            trackLinkFailure(data)
+            crashLogging.recordException(e, REPORT_CATEGORY)
+            return Action.ViewStats
+        }
+
+        fun handleSuccess(): Action {
+            trackLinkSuccess(data)
+            return actionToReturnOnSuccess
+        }
+
+        return when {
+            blogId == null -> handleSuccess()
+            !selectedSite.exists() -> {
+                trackLinkFailure(data)
+                Action.ViewStats
+            }
+            selectedSite.getIfExists()?.siteId != blogId -> {
+                Action.ChangeSiteAndRestart(siteId = blogId, uri = data)
+            }
+            else -> handleSuccess()
+        }
+    }
+
     private fun trackLinkSuccess(data: Uri) =
         tracker.track(AnalyticsEvent.UNIVERSAL_LINK_OPENED, properties = mapOf(KEY_PATH to data.path.orEmpty()))
 
     private fun trackLinkFailure(data: Uri) =
         tracker.track(AnalyticsEvent.UNIVERSAL_LINK_FAILED, properties = mapOf(KEY_URL to data.toString()))
+
+    private infix fun Uri?.endsWith(suffix: String) = this?.path?.endsWith(suffix, ignoreCase = true) == true
+
+    private infix fun Uri?.startsWith(prefix: String) = this?.path?.startsWith(prefix, ignoreCase = true) == true
 
     private fun Uri.getParamOrNull(key: String) = getQueryParameter(key)?.toLong()
 
@@ -97,6 +107,8 @@ class ResolveAppLink @Inject constructor(
         data class ChangeSiteAndRestart(val siteId: Long, val uri: Uri) : Action()
         object ViewStats : Action()
         object ViewPayments : Action()
+        object ViewTapToPay : Action()
+        data class ViewUrlInWebView(val url: String) : Action()
         object DoNothing : Action()
     }
 

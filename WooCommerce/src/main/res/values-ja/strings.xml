@@ -1,11 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-09 11:54:25+0000
+Translation-Revision-Date: 2023-03-23 09:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="upgrades_error_fetching_data">プラン詳細を取得中にエラーが発生しました</string>
+    <string name="upgrades_non_upgradeable_caption">%1$s を購読しています。 %2$s まですべての機能をご利用いただけます。 </string>
+    <string name="upgrades_trial_ended_caption">お試し期間が終了したため、ご利用いただける機能に制限がかかります。 今すぐ %1$s を購読しましょう。</string>
+    <string name="upgrades_subscription_status">定期購入ステータス</string>
+    <string name="upgrades_title">アップグレード</string>
+    <string name="upgrades_troubleshooting">トラブルシューティング</string>
+    <string name="upgrades_current_plan">現在: %s</string>
+    <string name="upgrades_upgrade_now">今すぐアップグレード</string>
+    <string name="upgrades_report_subscription_issue">購読に関する問題を報告</string>
+    <string name="free_trial_upgrade_now">今すぐアップグレード</string>
+    <string name="free_trial_days_left">お試し期間はあと%1$d日です。</string>
+    <string name="free_trial_trial_ended">お試し期間終了</string>
+    <string name="free_trial_your_trial_ended">お試し期間が終了しました。</string>
+    <string name="store_onboarding_launch_store_generic_error_description">予期しないエラーが発生しました。</string>
+    <string name="store_onboarding_launch_store_generic_error_title">予期しないエラー</string>
+    <string name="store_onboarding_store_already_launched_error_description">このストアはすでに公開済みです。</string>
+    <string name="store_onboarding_store_already_launched_error_title">ストアを公開できません</string>
+    <string name="store_onboarding_share_url_error">ストアの URL をシェアできません</string>
+    <string name="store_onboarding_launch_store_task_private_tag">非公開</string>
+    <string name="store_onboarding_launched_title">ストアが公開されました。</string>
+    <string name="store_onboarding_launch_preview_title">プレビュー</string>
+    <string name="store_onboarding_launch_store_back_to_store_button">ストアに戻る</string>
+    <string name="store_onboarding_launch_store_share_url_button">共有 URL</string>
+    <string name="store_onboarding_launch_store_button">ストアを公開</string>
+    <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">ストアを公開するには、プランのアップグレードが必要です。 &lt;u&gt;アップグレード&lt;/u&gt;</string>
+    <string name="card_reader_tap_to_pay_not_available_error">Tap to Pay はあなたのストアまたはお使いのデバイスでご利用いただけません</string>
+    <string name="domains_search_domains">ドメインを検索</string>
+    <string name="login_site_credentials_http_error">ステータスコード%1$sのためログインに失敗しました</string>
+    <string name="login_site_credentials_custom_admin_url">ストアの管理 URL を識別できないためログインできません</string>
+    <string name="login_site_credentials_custom_login_url">ストアのログイン URL を識別できないためログインできません</string>
+    <string name="login_site_credentials_invalid_response">サイトからの予期しない応答のためログインに失敗しました。 この問題を修復中です。</string>
+    <string name="more_menu_button_upgrades">アップグレード</string>
+    <string name="something_went_wrong_try_again">エラーが発生しました。後ほどもう一度お試しください。</string>
+    <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">口座に保留中の要件があります。 引き続きオフラインで支払いを受け取る場合は、要件を完了してください。</string>
+    <string name="analytics_banner_message">分析の使い心地を評価してください</string>
+    <string name="analytics_banner_title">分析をお楽しみいただいていますか ?</string>
+    <string name="analytics_wip_message">端末から重要な店舗情報を表示できるように取り組んでいます。 もっと改善できますか ? フィードバックをお寄せいただき、本機能の改善にご協力ください</string>
+    <string name="analytics_wip_title">統計情報、収益などを端末から確認できます。</string>
+    <string name="login_jetpack_installation_magic_link_failure">サイトの取得中にエラーが発生しました。もう一度お試しください。</string>
     <string name="support_request_error_message">申し訳ありません。現在、サポートリクエストを作成できません。しばらくしてからもう一度お試しください。</string>
     <string name="support_request_error_title">エラーが発生しました</string>
     <string name="support_request_dialog_action">了解 !</string>
@@ -299,8 +338,6 @@ Language: ja_JP
     <string name="card_reader_payment_collect_payment_built_in_state">内蔵リーダーの準備が整いました</string>
     <string name="card_reader_type_selection_bluetooth_reader">Bluetooth リーダー</string>
     <string name="card_reader_type_selection_tap_to_pay">タップして支払う</string>
-    <string name="card_reader_type_selection_description">スマートフォンをカードリーダーとして使用するか、Bluetooth 経由で外付けリーダーに接続できます。</string>
-    <string name="card_reader_type_selection_title">リーダーの種類を選択</string>
     <string name="analytics_conversion_subtitle">コンバージョン率</string>
     <string name="analytics_session_card_title">セッション</string>
     <string name="analytics_session_no_data">この期間にはセッションがありません</string>
@@ -951,7 +988,7 @@ Language: ja_JP
     <string name="order_creation_new_customer_add_different_shipping_address">別の配送先住所を追加</string>
     <string name="order_creation_product_instock">在庫あり</string>
     <string name="order_creation_product_stock_quantity">在庫%s件</string>
-    <string name="order_creation_add_products">商品を追加</string>
+    <string name="order_creation_add_products">商品追加</string>
     <string name="order_creation_products">商品</string>
     <string name="order_creation_add_customer">お客様の詳細を追加</string>
     <string name="order_creation_customer">お客様</string>

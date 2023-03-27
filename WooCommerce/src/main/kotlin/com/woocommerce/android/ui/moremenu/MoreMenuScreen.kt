@@ -52,6 +52,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -242,6 +243,7 @@ private fun MoreMenuUserAvatar(avatarUrl: String) {
     bitmapState.value?.let {
         Image(
             bitmap = it.asImageBitmap(),
+            contentScale = ContentScale.Crop,
             contentDescription = stringResource(id = string.more_menu_avatar),
             modifier = circledModifier
         )
@@ -372,6 +374,7 @@ private fun MoreMenuPreview() {
                 )
             ),
             MenuUiButton(string.more_menu_button_coupons, drawable.ic_more_menu_coupons),
+            MenuUiButton(string.more_menu_button_upgrades, drawable.ic_more_menu_upgrades),
         ),
         siteName = "Example Site",
         siteUrl = "woocommerce.com",

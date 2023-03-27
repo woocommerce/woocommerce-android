@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.payments
 
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -107,20 +108,21 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         on { getStoreCountryCode(site) }.thenReturn(COUNTRY_CODE)
     }
     private val isTapToPayAvailable: IsTapToPayAvailable = mock()
+    private val appPrefs: AppPrefs = mock()
 
     @Test
     fun `given hub flow, when view model init, then navigate to hub flow emitted`() = testBlocking {
         // GIVEN & WHEN
-        val viewModel = initViewModel(CardReadersHub)
+        val viewModel = initViewModel(CardReadersHub())
 
         // THEN
-        assertThat(viewModel.event.value).isEqualTo(NavigateToCardReaderHubFlow(CardReadersHub))
+        assertThat(viewModel.event.value).isEqualTo(NavigateToCardReaderHubFlow(CardReadersHub()))
     }
 
     @Test
     fun `given hub flow, when view model init, then loading state emitted`() = testBlocking {
         // GIVEN & WHEN
-        val viewModel = initViewModel(CardReadersHub)
+        val viewModel = initViewModel(CardReadersHub())
 
         // THEN
         assertThat(viewModel.viewStateData.value).isEqualTo(Loading)
@@ -409,6 +411,19 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when on tap too pay clicked, then app prefs stores ttp was used`() =
+        testBlocking {
+            // GIVEN
+            val viewModel = initViewModel(Payment(1L, SIMPLE))
+
+            // WHEN
+            viewModel.onTapToPayClicked()
+
+            // THEN
+            verify(appPrefs).setTTPWasUsedAtLeastOnce()
+        }
+
+    @Test
     fun `given simple payment flow, when on connect to reader result, then failed tracked with simple payment flow`() =
         testBlocking {
             // GIVEN
@@ -555,7 +570,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             advanceUntilIdle()
 
             // THEN
-            assertThat(viewModel.event.value).isEqualTo(NavigateBackToHub(CardReadersHub))
+            assertThat(viewModel.event.value).isEqualTo(NavigateBackToHub(CardReadersHub()))
         }
 
     @Test
@@ -1205,6 +1220,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             cardReaderTracker,
             wooStore,
             isTapToPayAvailable,
+            appPrefs,
             selectPaymentUtmProvider,
         )
     }

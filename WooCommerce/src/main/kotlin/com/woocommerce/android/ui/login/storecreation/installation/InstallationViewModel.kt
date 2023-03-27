@@ -7,6 +7,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STORE_LOADING_FAILED
@@ -18,6 +19,7 @@ import com.woocommerce.android.ui.login.storecreation.installation.InstallationV
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.InitialState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.LoadingState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.SuccessState
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -28,6 +30,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,7 +39,8 @@ class InstallationViewModel @Inject constructor(
     private val repository: StoreCreationRepository,
     private val newStore: NewStore,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val appPrefsWrapper: AppPrefsWrapper
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val STORE_LOAD_RETRIES_LIMIT = 10
@@ -44,11 +48,19 @@ class InstallationViewModel @Inject constructor(
         private const val SITE_CHECK_DEBOUNCE = 5000L
     }
 
+    private val newStoreUrl
+        get() = selectedSite.get().url
+
+    private val newStoreWpAdminUrl
+        get() = newStoreUrl.slashJoin("wp-admin/")
+
     private val _viewState = savedState.getStateFlow<ViewState>(this, InitialState)
     val viewState = _viewState
         .onEach {
             if (it is InitialState) {
                 loadNewStore()
+            } else if (it is SuccessState && FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
+                triggerEvent(NavigateToNewStore)
             }
         }.asLiveData()
 
@@ -73,7 +85,7 @@ class InstallationViewModel @Inject constructor(
                 )
                 analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SITE_CREATED, properties)
 
-                _viewState.update { SuccessState("https://${newStore.data.domain!!}") }
+                _viewState.update { SuccessState(newStoreWpAdminUrl) }
             } else {
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.SITE_CREATION_FAILED,
@@ -111,13 +123,19 @@ class InstallationViewModel @Inject constructor(
         }
     }
 
+    fun onUrlLoaded(url: String) {
+        if (url.contains(newStoreWpAdminUrl)) {
+            _viewState.update { SuccessState(newStoreUrl) }
+        }
+    }
+
     fun onBackPressed() {
         triggerEvent(Exit)
     }
 
     fun onShowPreviewButtonClicked() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_SITE_PREVIEWED)
-        triggerEvent(OpenStore("https://${newStore.data.domain!!}"))
+        triggerEvent(OpenStore(newStoreUrl))
     }
 
     fun onManageStoreButtonClicked() {

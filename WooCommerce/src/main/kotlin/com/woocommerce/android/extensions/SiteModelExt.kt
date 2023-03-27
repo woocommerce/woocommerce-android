@@ -1,8 +1,13 @@
 package com.woocommerce.android.extensions
 
 import android.text.TextUtils
+import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_PLAN_ID
+import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.utils.SiteUtils.getNormalizedTimezone
 import org.wordpress.android.fluxc.utils.extensions.slashJoin
+import java.time.Clock
+import java.time.ZoneId
 
 val SiteModel.logInformation: String
     get() {
@@ -39,3 +44,21 @@ val SiteModel.isSimpleWPComSite
 
 val SiteModel.adminUrlOrDefault
     get() = adminUrl ?: url.slashJoin("wp-admin")
+
+val SiteModel.clock: Clock
+    @Suppress("TooGenericExceptionCaught")
+    get() {
+        val javaUtilsTimeZone = getNormalizedTimezone(timezone)
+
+        val zoneId = try {
+            ZoneId.of(javaUtilsTimeZone.id)
+        } catch (e: Exception) {
+            WooLog.e(WooLog.T.UTILS, e)
+            ZoneId.systemDefault()
+        }
+
+        return Clock.system(zoneId)
+    }
+
+val SiteModel?.isFreeTrial: Boolean
+    get() = this?.planId == FREE_TRIAL_PLAN_ID

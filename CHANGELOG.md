@@ -1,6 +1,12 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 12.9
+For this release, we focused on making your experience smoother when managing products. Additionally, it's now possible to install Jetpack from the app if you would like additional functionality such as push notifications and visitor stats. Keep your feedback coming!
+
+## 12.8
+This release includes a lot of improvements to the order creation functionality. It's possible to select multiple products at one go & an improved faster search & filter option. We also fixed a few bugs and made several enhancements for accessibility of the Analytics section. We’ve added a new Upgrades section to WordPress.com users.
+
 ## 12.7
 This release has several fixes and improvements that makes it easier for you to manage your store from the app. Please continue to send us feedback – we are listening! 
 

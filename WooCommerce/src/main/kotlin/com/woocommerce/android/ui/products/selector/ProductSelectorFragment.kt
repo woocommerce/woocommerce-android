@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.products.ProductFilterResult
 import com.woocommerce.android.ui.products.ProductListFragment.Companion.PRODUCT_FILTER_RESULT_KEY
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductNavigator
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorFragment
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.VariationSelectionResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -41,6 +42,8 @@ class ProductSelectorFragment : BaseFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
+            id = R.id.product_selector_compose_view
+
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
@@ -65,7 +68,7 @@ class ProductSelectorFragment : BaseFragment() {
                 is ExitWithResult<*> -> {
                     navigateBackWithResult(
                         PRODUCT_SELECTOR_RESULT,
-                        event.data as Set<ProductSelectorViewModel.SelectedItem>
+                        event.data as Collection<SelectedItem>
                     )
                 }
                 is ProductNavigationTarget -> navigator.navigate(this, event)
