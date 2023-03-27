@@ -8,8 +8,10 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.e2e.helpers.InitializationRule
 import com.woocommerce.android.e2e.helpers.TestBase
 import com.woocommerce.android.e2e.helpers.useMockedAPI
+import com.woocommerce.android.e2e.helpers.util.ProductData
 import com.woocommerce.android.e2e.screens.TabNavComponent
 import com.woocommerce.android.e2e.screens.login.WelcomeScreen
+import com.woocommerce.android.e2e.screens.products.ProductListScreen
 import com.woocommerce.android.ui.login.LoginActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -21,7 +23,7 @@ import org.junit.Rule
 import org.junit.Test
 
 @HiltAndroidTest
-class RealAPISandbox : TestBase() {
+class ProductsRealAPI : TestBase() {
     @get:Rule(order = 0)
     val rule = HiltAndroidRule(this)
 
@@ -60,14 +62,53 @@ class RealAPISandbox : TestBase() {
 
     @After
     fun tearDown() {
+        ProductListScreen()
+            .leaveSearchMode()
+
         WelcomeScreen
             .logoutIfNeeded(composeTestRule)
     }
 
     @Test
-    fun e2eRealAPIAssertStoreTitle() {
+    fun e2eRealApiProductsSearchUsual() {
+        val productCappuccino = ProductData(
+            name = "Cappuccino",
+            stockStatusRaw = "instock",
+            variations = " • 6 variations",
+            priceDiscountedRaw = "2",
+        )
+
+        val productSalad = ProductData(
+            name = "Chicken Teriyaki Salad",
+            stockStatusRaw = "instock",
+            priceDiscountedRaw = "7",
+            sku = "SKU: SLD-CHK-TRK"
+        )
+
         TabNavComponent()
-            .gotoMoreMenuScreen()
-            .assertStoreTitle(composeTestRule, "Real API Woo Store")
+            // Make sure all products are listed
+            .gotoProductsScreen()
+            .assertProductCard(productCappuccino)
+            .assertProductCard(productSalad)
+            .assertProductsCount(2)
+            // Start search
+            .openSearchPane()
+            .tapSearchAllProducts()
+            // Search for 'productCappuccino'
+            .enterSearchTerm(productCappuccino.name)
+            .assertProductCard(productCappuccino)
+            .assertProductsCount(1)
+            // Search for 'productSalad'
+            .enterSearchTerm(productSalad.name)
+            .assertProductCard(productSalad)
+            .assertProductsCount(1)
+            // Search for non-existing product
+            .enterSearchTerm("Unexisting Product")
+            .assertProductsCount(0)
+            // Leave search and make sure all products are listed
+            .leaveSearchMode()
+            .assertProductCard(productCappuccino)
+            .assertProductCard(productSalad)
+            .assertProductsCount(2)
     }
 }
