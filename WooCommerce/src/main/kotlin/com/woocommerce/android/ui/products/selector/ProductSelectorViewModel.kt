@@ -95,6 +95,7 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
     private val popularProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
+    private val recentProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
 
     private var fetchProductsJob: Job? = null
     private var loadMoreJob: Job? = null
@@ -129,8 +130,13 @@ class ProductSelectorViewModel @Inject constructor(
         monitorProductFilters()
         viewModelScope.launch {
             loadPopularProducts()
+            loadRecentProducts()
             fetchProducts(forceRefresh = true)
         }
+    }
+
+    private suspend fun loadRecentProducts() {
+        val recentlySoldOrders = getRecentlySoldOrders().take(5)
     }
 
     private suspend fun loadPopularProducts() {
