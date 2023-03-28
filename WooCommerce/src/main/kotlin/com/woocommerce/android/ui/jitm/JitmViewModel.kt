@@ -2,8 +2,8 @@ package com.woocommerce.android.ui.jitm
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.MyStoreUtmProvider
@@ -11,40 +11,45 @@ import com.woocommerce.android.ui.mystore.MyStoreViewModel
 import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
-import kotlinx.coroutines.CoroutineScope
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
 import org.wordpress.android.fluxc.store.JitmStore
 import javax.inject.Inject
 
-interface JitmStateProvider {
-    val bannerState: LiveData<BannerState>
-    val jitmCtaClickedEvent: MutableLiveData<CtaClick>
-
-    data class CtaClick(val url: String) : MultiLiveEvent.Event()
-}
-
-class JitmStateProviderImpl @Inject constructor(
+@HiltViewModel
+class JitmViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     private val jitmStore: JitmStore,
     private val jitmTracker: JitmTracker,
     private val myStoreUtmProvider: MyStoreUtmProvider,
     private val queryParamsEncoder: QueryParamsEncoder,
     private val selectedSite: SelectedSite,
-    @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
-) : JitmStateProvider {
-    private val _bannerState: MutableLiveData<BannerState> = MutableLiveData()
-    override val bannerState: LiveData<BannerState> = _bannerState
+) : ScopedViewModel(savedState) {
+    private val _jitmState: MutableLiveData<BannerState> = MutableLiveData()
+    val jitmState: LiveData<BannerState> = _jitmState
 
-    override val jitmCtaClickedEvent: MutableLiveData<JitmStateProvider.CtaClick> = MultiLiveEvent()
+    val jitmCtaClickedEvent: MutableLiveData<CtaClick> = MultiLiveEvent()
 
-    suspend fun fetchJitms(jitmMessagePath: String) {
-        val response = jitmStore.fetchJitmMessage(
-            selectedSite.get(),
-            jitmMessagePath,
-            queryParamsEncoder.getEncodedQueryParams(),
-        )
-        populateResultToUI(response, jitmMessagePath)
+    init {
+        fetchJitms()
+    }
+
+    fun fetchJitms() {
+        fetchJitms(savedState.get<String>(JITM_MESSAGE_PATH_KEY)!!)
+    }
+
+    private fun fetchJitms(jitmMessagePath: String) {
+        launch {
+            val response = jitmStore.fetchJitmMessage(
+                selectedSite.get(),
+                jitmMessagePath,
+                queryParamsEncoder.getEncodedQueryParams(),
+            )
+            populateResultToUI(response, jitmMessagePath)
+        }
     }
 
     private fun populateResultToUI(response: WooResult<Array<JITMApiResponse>>, jitmMessagePath: String) {
@@ -65,7 +70,7 @@ class JitmStateProviderImpl @Inject constructor(
                 model.id,
                 model.featureClass
             )
-            _bannerState.value = BannerState.DisplayBannerState(
+            _jitmState.value = BannerState.DisplayBannerState(
                 onPrimaryActionClicked = {
                     onJitmCtaClicked(
                         id = model.id,
@@ -85,7 +90,7 @@ class JitmStateProviderImpl @Inject constructor(
                 chipLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
             )
         } ?: run {
-            _bannerState.value = BannerState.HideBannerState
+            _jitmState.value = BannerState.HideBannerState
             WooLog.i(WooLog.T.JITM, "No JITM Campaign in progress")
         }
     }
@@ -101,7 +106,7 @@ class JitmStateProviderImpl @Inject constructor(
             featureClass
         )
         jitmCtaClickedEvent.value =
-            JitmStateProvider.CtaClick(
+            CtaClick(
                 myStoreUtmProvider.getUrlWithUtmParams(
                     source = MyStoreViewModel.UTM_SOURCE,
                     id = id,
@@ -113,9 +118,9 @@ class JitmStateProviderImpl @Inject constructor(
     }
 
     private fun onJitmDismissClicked(jitmId: String, featureClass: String) {
-        _bannerState.value = BannerState.HideBannerState
+        _jitmState.value = BannerState.HideBannerState
         jitmTracker.trackJitmDismissTapped(MyStoreViewModel.UTM_SOURCE, jitmId, featureClass)
-        appCoroutineScope.launch {
+        launch {
             jitmStore.dismissJitmMessage(selectedSite.get(), jitmId, featureClass).also { response ->
                 when {
                     response.model != null && response.model!! -> {
@@ -135,6 +140,12 @@ class JitmStateProviderImpl @Inject constructor(
                 }
             }
         }
+    }
+
+    data class CtaClick(val url: String) : MultiLiveEvent.Event()
+
+    companion object {
+        const val JITM_MESSAGE_PATH_KEY = "jitm_message_path_key"
     }
 }
 

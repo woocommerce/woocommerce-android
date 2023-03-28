@@ -19,8 +19,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
-import com.woocommerce.android.ui.jitm.JitmStateProvider
-import com.woocommerce.android.ui.jitm.JitmStateProviderImpl
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.HasOrders
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.PluginNotActive
@@ -75,11 +73,9 @@ class MyStoreViewModel @Inject constructor(
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher,
-    private val jitmStateProvider: JitmStateProviderImpl,
-) : ScopedViewModel(savedState), JitmStateProvider by jitmStateProvider {
+) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
-        private const val JITM_MESSAGE_PATH = "woomobile:my_store:admin_notices"
         const val UTM_SOURCE = "my_store"
     }
 
@@ -116,8 +112,6 @@ class MyStoreViewModel @Inject constructor(
         _topPerformersState.value = TopPerformersState(isLoading = true)
 
         viewModelScope.launch {
-            jitmStateProvider.fetchJitms(JITM_MESSAGE_PATH)
-
             combine(
                 _activeStatsGranularity,
                 refreshTrigger.onStart { emit(Unit) }
@@ -157,7 +151,6 @@ class MyStoreViewModel @Inject constructor(
     }
 
     fun onPullToRefresh() {
-        viewModelScope.launch { jitmStateProvider.fetchJitms(JITM_MESSAGE_PATH) }
         usageTracksEventEmitter.interacted()
         analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
         resetForceRefresh()

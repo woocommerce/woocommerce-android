@@ -32,8 +32,8 @@
                     android:descendantFocusability="blocksDescendants"
                     android:orientation="vertical">
 
-                    <com.woocommerce.android.ui.jitm.JitmBannerView
-                        android:id="@+id/jitmView"
+                    <androidx.fragment.app.FragmentContainerView
+                        android:id="@+id/jitmFragment"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/minor_100" />
