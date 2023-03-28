@@ -5,9 +5,9 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentMeth
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-object CardReaderConfigForUK : CardReaderConfigForSupportedCountry(
+object CardReaderConfigForGB : CardReaderConfigForSupportedCountry(
     currency = "GBP",
-    countryCode = "UK",
+    countryCode = "GB",
     supportedReaders = listOf(ReaderType.ExternalReader.StripeM2),
     paymentMethodTypes = listOf(PaymentMethodType.CARD_PRESENT),
     supportedExtensions = listOf(
