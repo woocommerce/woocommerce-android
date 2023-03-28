@@ -104,8 +104,4 @@ open class NumberPickerDialog : DialogFragment(), DialogInterface.OnClickListene
         resultIntent.putExtra(CUR_VALUE_KEY, numberPicker.value)
         target?.onActivityResult(targetRequestCode, Activity.RESULT_OK, resultIntent)
     }
-
-    fun setNumberFormat(format: Formatter) {
-        this.format = format
-    }
 }

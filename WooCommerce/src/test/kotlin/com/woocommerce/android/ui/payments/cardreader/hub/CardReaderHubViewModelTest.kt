@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.payments.cardreader.hub
 
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY
@@ -22,6 +23,7 @@ import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToast
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToastString
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.GapBetweenSections
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
@@ -81,6 +83,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     private val cardReaderTracker: CardReaderTracker = mock()
     private val paymentMenuUtmProvider: UtmProvider = mock()
     private val isTapToPayAvailable: IsTapToPayAvailable = mock()
+    private val appPrefs: AppPrefs = mock()
 
     @Before
     fun setUp() {
@@ -137,7 +140,6 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given supported country, when screen shown, then manual card reader row is present`() {
-
         val supportedCountry: CardReaderConfig = CardReaderConfigForUSA
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US")).thenReturn(supportedCountry)
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
@@ -1235,23 +1237,97 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given ttp available, when view model started, then show ttp row`() = testBlocking {
-        // GIVEN
-        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(isTapToPayAvailable("US")).thenReturn(Available)
+    fun `given ttp available and not used, when view model started, then show ttp row with not used description`() =
+        testBlocking {
+            // GIVEN
+            whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+            whenever(isTapToPayAvailable("US")).thenReturn(Available)
+            whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(false)
 
-        // WHEN
-        initViewModel()
+            // WHEN
+            initViewModel()
 
-        // THEN
-        assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).anyMatch {
-            it is NonToggleableListItem &&
-                it.icon == R.drawable.ic_baseline_contactless &&
-                it.label == UiStringRes(R.string.card_reader_tap_to_pay) &&
-                it.description == UiStringRes(R.string.card_reader_tap_to_pay_description) &&
-                it.index == 2
+            // THEN
+            assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).anyMatch {
+                it is GapBetweenSections && it.index == 4
+            }
+            assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).anyMatch {
+                it is NonToggleableListItem &&
+                    it.icon == R.drawable.ic_baseline_contactless &&
+                    it.label == UiStringRes(R.string.card_reader_tap_to_pay) &&
+                    it.description == UiStringRes(R.string.card_reader_tap_to_pay_description_not_used) &&
+                    it.index == 5
+            }
         }
-    }
+
+    @Test
+    fun `given ttp available and used, when view model started, then show ttp row with used description`() =
+        testBlocking {
+            // GIVEN
+            whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+            whenever(isTapToPayAvailable("US")).thenReturn(Available)
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+                mock<CardReaderOnboardingState.OnboardingCompleted>()
+            )
+            whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
+
+            // WHEN
+            initViewModel()
+
+            // THEN
+            assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).anyMatch {
+                it is GapBetweenSections && it.index == 4
+            }
+            assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).anyMatch {
+                it is NonToggleableListItem &&
+                    it.icon == R.drawable.ic_baseline_contactless &&
+                    it.label == UiStringRes(R.string.card_reader_tap_to_pay) &&
+                    it.description == UiStringRes(R.string.card_reader_tap_to_pay_description_used) &&
+                    it.index == 5
+            }
+        }
+
+    @Test
+    fun `given ttp available and used, when view model started, then show feedback row`() =
+        testBlocking {
+            // GIVEN
+            whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+            whenever(isTapToPayAvailable("US")).thenReturn(Available)
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+                mock<CardReaderOnboardingState.OnboardingCompleted>()
+            )
+            whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
+
+            // WHEN
+            initViewModel()
+
+            // THEN
+            assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).anyMatch {
+                it is NonToggleableListItem &&
+                    it.icon == R.drawable.ic_feedback_banner_logo &&
+                    it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback) &&
+                    it.description == null &&
+                    it.index == 6
+            }
+        }
+
+    @Test
+    fun `given ttp available and not used, when view model started, then dont show feedback row`() =
+        testBlocking {
+            // GIVEN
+            whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+            whenever(isTapToPayAvailable("US")).thenReturn(Available)
+            whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(false)
+
+            // WHEN
+            initViewModel()
+
+            // THEN
+            assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).noneMatch {
+                it is NonToggleableListItem &&
+                    it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback)
+            }
+        }
 
     @Test
     fun `given ttp available and multiple plugin, when view model started, then rows shows sorted by index`() =
@@ -1262,6 +1338,8 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(
                 mock<CardReaderOnboardingState.OnboardingCompleted>()
             )
+            whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US"))
+                .thenReturn(CardReaderConfigForUSA)
             val site = selectedSite.get()
             whenever(
                 appPrefsWrapper.isCardReaderPluginExplicitlySelected(
@@ -1270,13 +1348,14 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
                     selfHostedSiteId = site.selfHostedSiteId
                 )
             ).thenReturn(true)
+            whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
 
             // WHEN
             initViewModel()
 
             // THEN
             val rows = (viewModel.viewStateData.getOrAwaitValue()).rows
-            assertThat(rows.map { it.index }).containsExactly(0, 1, 2, 3, 4, 5, 6, 7)
+            assertThat(rows.map { it.index }).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
         }
 
     @Test
@@ -1497,6 +1576,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             cardReaderTracker,
             paymentMenuUtmProvider,
             isTapToPayAvailable,
+            appPrefs,
         )
         viewModel.onViewVisible()
     }
