@@ -3198,7 +3198,7 @@
     <string name="free_trial_upgrade_now">Upgrade Now</string>
     <string name="free_trial_one_day_left">1 day</string>
     <string name="free_trial_days_left_plural">%1$d days</string>
-    <string name="free_trial_login_start_button">Start free trial</string>
+    <string name="free_trial_login_start_button">Start Free Trial</string>
 
     <!--
     Upgrades
