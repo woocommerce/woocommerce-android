@@ -209,7 +209,7 @@
     <string name="login_no_jetpack_username">Signed in as \@%1$s\nWrong account? %2$s</string>
     <string name="login_jetpack_required">This app requires Jetpack to connect to your store.</string>
     <string name="login_wpcom">Continue with WordPress.com</string>
-    <string name="login_store_address">Enter your store address</string>
+    <string name="login_store_address">Log In</string>
     <string name="login_with_store_address">Log in with your store address</string>
     <string name="login_configure_link">Read the %1$sconfiguration instructions%2$s.</string>
     <string name="login_with_qr_code">Scan QR code to login</string>
@@ -387,7 +387,7 @@
     <!--
         Sign Up Flow
     -->
-    <string name="signup_get_started_button">Get started</string>
+    <string name="signup_get_started_button">Get Started</string>
     <string name="signup_get_started_label">Get started in minutes</string>
     <string name="signup_already_registered">First, let’s create your account. Already registered? &lt;a href=\'login\'&gt;&lt;u&gt;Log in&lt;/u&gt;&lt;/a&gt;</string>
     <string name="signup_email_address_hint">Your email address</string>
