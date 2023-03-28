@@ -32,7 +32,7 @@
                     android:descendantFocusability="blocksDescendants"
                     android:orientation="vertical">
 
-                    <androidx.compose.ui.platform.ComposeView
+                    <com.woocommerce.android.ui.jitm.JitmBannerView
                         android:id="@+id/jitmView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

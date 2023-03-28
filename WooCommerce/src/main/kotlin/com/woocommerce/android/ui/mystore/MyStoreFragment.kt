@@ -47,13 +47,10 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenAnalytics
-import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenJITMAction
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.OrderState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.VisitorStatsViewState
-import com.woocommerce.android.ui.payments.banner.Banner
-import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -184,24 +181,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
         setupStateObservers()
         setupOnboardingView()
-    }
-
-    private fun applyBannerComposeUI(state: BannerState) {
-        // Show banners only if onboarding list is not displayed
-        if (state is BannerState.DisplayBannerState && !binding.storeOnboardingView.isVisible) {
-            binding.jitmView.apply {
-                binding.jitmView.show()
-                // Dispose of the Composition when the view's LifecycleOwner is destroyed
-                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-                setContent {
-                    WooThemeWithBackground {
-                        Banner(bannerState = state)
-                    }
-                }
-            }
-        } else {
-            binding.jitmView.hide()
-        }
     }
 
     private fun setupOnboardingView() {
