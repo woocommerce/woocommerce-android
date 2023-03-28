@@ -52,11 +52,11 @@
             app:popExitAnim="@anim/activity_fade_out">
             <argument
                 android:name="isAddProduct"
-                android:defaultValue="false"
+                android:defaultValue="true"
                 app:argType="boolean" />
             <argument
                 android:name="source"
-                android:defaultValue="PRODUCT_TAB"
+                android:defaultValue="STORE_ONBOARDING"
                 app:argType="com.woocommerce.android.ui.products.AddProductSource" />
         </action>
         <action
@@ -489,11 +489,11 @@
             app:popExitAnim="@anim/activity_fade_out">
             <argument
                 android:name="isAddProduct"
-                android:defaultValue="false"
+                android:defaultValue="true"
                 app:argType="boolean" />
             <argument
                 android:name="source"
-                android:defaultValue="PRODUCT_TAB"
+                android:defaultValue="STORE_ONBOARDING"
                 app:argType="com.woocommerce.android.ui.products.AddProductSource" />
         </action>
         <action
