@@ -226,7 +226,6 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 "$url?app_name=$applicationPasswordsClientId&success_url=$REDIRECTION_URL"
             }
 
-            analyticsTracker.track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_WEB_VIEW_SHOWN)
             ViewState.WebAuthorizationViewState(
                 authorizationUrl = authorizationUrl,
                 userAgent = userAgent,
@@ -234,6 +233,13 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 errorDialogMessage = errorDialogMessage
             )
         }
+    }
+
+    fun onWebViewShown(url: String) {
+        val properties = mapOf(
+            "auth_url" to url
+        )
+        analyticsTracker.track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_WEB_VIEW_SHOWN, properties)
     }
 
     private suspend fun login() {
