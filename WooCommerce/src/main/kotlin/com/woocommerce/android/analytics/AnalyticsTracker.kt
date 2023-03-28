@@ -144,7 +144,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_ERROR_TYPE = "error_type"
         const val KEY_ERROR_CODE = "error_code"
         const val KEY_NETWORK_STATUS_CODE = "network_status_code"
-        const val KEY_ERROR_MESSAGE = "error_message"
         const val KEY_FROM = "from"
         const val KEY_HAS_UNFULFILLED_ORDERS = "has_unfulfilled_orders"
         const val KEY_ID = "id"
@@ -208,9 +207,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_API_FAILED = "failed"
         const val VALUE_SHIPMENT_TRACK = "track"
         const val VALUE_SHIPMENT_COPY = "copy"
-        const val VALUE_ORDER = "order"
         const val VALUE_REVIEW = "review"
-        const val VALUE_ORDER_DETAIL = "order_detail"
         const val VALUE_STARTED = "started"
         const val VALUE_PURCHASE_INITIATED = "purchase_initiated"
         const val VALUE_ORIGIN_ADDRESS_STARTED = "origin_address_started"
@@ -246,12 +243,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         const val KEY_HAS_MULTIPLE_SHIPPING_LINES = "has_multiple_shipping_lines"
         const val KEY_HAS_MULTIPLE_FEE_LINES = "has_multiple_fee_lines"
-
-        const val KEY_CARD = "card"
-        const val VALUE_REVENUE_CARD_SELECTED = "revenue"
-        const val VALUE_ORDERS_CARD_SELECTED = "orders"
-        const val VALUE_PRODUCTS_CARD_SELECTED = "products"
-        const val VALUE_VISITORS_CARD_SELECTED = "visitors"
 
         const val JITM_ID = "jitm_id"
         const val JITM_FEATURE_CLASS = "feature_class"
@@ -423,9 +414,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Cash on Delivery
         const val KEY_IS_ENABLED = "is_enabled"
         const val KEY_CASH_ON_DELIVERY_SOURCE = "source"
-
-        // -- Experiments
-        const val KEY_EXPERIMENT_VARIANT = "experiment_variant"
 
         // -- Help Center
         const val KEY_SOURCE_FLOW = "source_flow"

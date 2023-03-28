@@ -73,7 +73,6 @@ class OrderListFragment :
         const val STATE_KEY_SEARCH_QUERY = "search-query"
         const val STATE_KEY_IS_SEARCHING = "is_searching"
         const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
-        const val SWIPE_GLANCE_ANIMATION_DURATION_MILLIS = 300L
     }
 
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver
@@ -564,7 +563,6 @@ class OrderListFragment :
     }
 
     private fun disableSearchListeners() {
-        orderListMenu?.findItem(R.id.menu_settings)?.isVisible = true
         binding.orderListViewRoot.visibility = View.VISIBLE
         searchMenuItem?.setOnActionExpandListener(null)
         searchView?.setOnQueryTextListener(null)
@@ -580,7 +578,6 @@ class OrderListFragment :
     private fun enableSearchListeners() {
         hideEmptyView()
 
-        orderListMenu?.findItem(R.id.menu_settings)?.isVisible = false
         searchMenuItem?.setOnActionExpandListener(this)
         searchView?.setOnQueryTextListener(this)
 
