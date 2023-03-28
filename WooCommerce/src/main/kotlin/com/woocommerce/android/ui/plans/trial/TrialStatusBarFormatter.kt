@@ -12,27 +12,26 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_BANNER
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.plans.domain.StartUpgradeFlow
 import com.woocommerce.android.util.StringUtils
-import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
 class TrialStatusBarFormatter @AssistedInject constructor(
-    private val resourceProvider: ResourceProvider,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    @Assisted private val context: Context,
     @Assisted private val startUpgradeFlow: StartUpgradeFlow,
 ) {
 
     fun format(daysLeftInTrial: Int, context: Context): Spannable {
         val statusMessage = if (daysLeftInTrial > 0) {
             StringUtils.getQuantityString(
-                resourceProvider = resourceProvider,
+                context = context,
                 quantity = daysLeftInTrial,
                 default = R.string.free_trial_days_left_plural,
                 one = R.string.free_trial_one_day_left
-            ).let { resourceProvider.getString(R.string.free_trial_days_left, it) }
+            ).let { context.getString(R.string.free_trial_days_left, it) }
         } else {
-            resourceProvider.getString(R.string.free_trial_your_trial_ended)
+            context.getString(R.string.free_trial_your_trial_ended)
         }
 
         return SpannableStringBuilder()
@@ -45,7 +44,7 @@ class TrialStatusBarFormatter @AssistedInject constructor(
                 },
                 UnderlineSpan(),
             ) {
-                append(resourceProvider.getString(R.string.free_trial_upgrade_now))
+                append(context.getString(R.string.free_trial_upgrade_now))
             }
     }
 }
