@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.core.view.isInvisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.Slide
 import androidx.transition.TransitionManager
@@ -46,9 +45,6 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
 
     private fun initViews(binding: FragmentCardReaderHubBinding) {
         binding.cardReaderHubRv.layoutManager = LinearLayoutManager(requireContext())
-        binding.cardReaderHubRv.addItemDecoration(
-            DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-        )
         binding.cardReaderHubRv.adapter = CardReaderHubAdapter()
     }
 
