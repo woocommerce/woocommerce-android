@@ -147,4 +147,3 @@ class JitmViewModel @Inject constructor(
         const val JITM_MESSAGE_PATH_KEY = "jitm_message_path_key"
     }
 }
-

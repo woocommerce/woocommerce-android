@@ -675,11 +675,7 @@ class JitmViewModelTest : BaseUnitTest() {
             ((sut.jitmState.value as BannerState) as BannerState.DisplayBannerState).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissFailure(
-                anyString(),
-                anyString(),
-                anyString(),
-                eq(null),
-                eq(null)
+                anyString(), anyString(), anyString(), eq(null), eq(null)
             )
         }
     }
@@ -707,11 +703,7 @@ class JitmViewModelTest : BaseUnitTest() {
             ((sut.jitmState.value as BannerState) as BannerState.DisplayBannerState).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissFailure(
-                anyString(),
-                anyString(),
-                anyString(),
-                any(),
-                eq(null)
+                anyString(), anyString(), anyString(), any(), eq(null)
             )
         }
     }
@@ -789,7 +781,6 @@ class JitmViewModelTest : BaseUnitTest() {
         )
     }
 
-
     private fun provideJitmApiResponse(
         content: JITMContent = provideJitmContent(),
         jitmCta: JITMCta = provideJitmCta(),
@@ -815,17 +806,20 @@ class JitmViewModelTest : BaseUnitTest() {
     )
 
     private fun provideJitmContent(
-        message: String = "", description: String = "", icon: String = "", title: String = ""
+        message: String = "",
+        description: String = "",
+        icon: String = "",
+        title: String = ""
     ) = JITMContent(
         message = message, description = description, icon = icon, title = title
     )
 
     private fun provideJitmCta(
-        message: String = "", link: String = ""
+        message: String = "",
+        link: String = ""
     ) = JITMCta(
         message = message, link = link
     )
-
 
     private companion object {
         val WOO_GENERIC_ERROR = WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN)
