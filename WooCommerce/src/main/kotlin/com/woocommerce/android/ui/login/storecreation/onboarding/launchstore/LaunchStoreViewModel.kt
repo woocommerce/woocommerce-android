@@ -3,6 +3,9 @@ package com.woocommerce.android.ui.login.storecreation.onboarding.launchstore
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
@@ -27,6 +30,7 @@ class LaunchStoreViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val launchStoreOnboardingRepository: StoreOnboardingRepository,
     private val selectedSite: SelectedSite,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
     val userAgent: UserAgent
 ) : ScopedViewModel(savedStateHandle) {
@@ -50,7 +54,13 @@ class LaunchStoreViewModel @Inject constructor(
         launch {
             val result = launchStoreOnboardingRepository.launchStore()
             when (result) {
-                Success -> _viewState.value = _viewState.value.copy(isStoreLaunched = true)
+                Success -> {
+                    analyticsTrackerWrapper.track(
+                        stat = AnalyticsEvent.STORE_ONBOARDING_TASK_COMPLETED,
+                        properties = mapOf(AnalyticsTracker.ONBOARDING_TASK_KEY to AnalyticsTracker.VALUE_LAUNCH_SITE)
+                    )
+                    _viewState.value = _viewState.value.copy(isStoreLaunched = true)
+                }
                 is Error -> {
                     when (result.type) {
                         ALREADY_LAUNCHED -> triggerEvent(
