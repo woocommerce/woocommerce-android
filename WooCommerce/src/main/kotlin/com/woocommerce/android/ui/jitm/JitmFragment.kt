@@ -29,15 +29,20 @@ class JitmFragment : Fragment() {
         viewModel.jitmState.observe(viewLifecycleOwner) { bannerState ->
             applyBannerComposeUI(bannerState)
         }
-        viewModel.jitmCtaClickedEvent.observe(viewLifecycleOwner) { ctaClick ->
-            startActivity(
-                Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse(ctaClick.url)
-                ).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is JitmViewModel.CtaClick -> {
+                    startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse(event.url)
+                        ).apply {
+                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        }
+                    )
                 }
-            )
+                else -> event.isHandled = false
+            }
         }
     }
 
@@ -70,4 +75,3 @@ class JitmFragment : Fragment() {
             }
     }
 }
-

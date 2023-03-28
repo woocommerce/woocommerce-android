@@ -31,8 +31,6 @@ class JitmViewModel @Inject constructor(
     private val _jitmState: MutableLiveData<BannerState> = MutableLiveData()
     val jitmState: LiveData<BannerState> = _jitmState
 
-    val jitmCtaClickedEvent: MutableLiveData<CtaClick> = MultiLiveEvent()
-
     init {
         fetchJitms()
     }
@@ -105,7 +103,7 @@ class JitmViewModel @Inject constructor(
             id,
             featureClass
         )
-        jitmCtaClickedEvent.value =
+        triggerEvent(
             CtaClick(
                 myStoreUtmProvider.getUrlWithUtmParams(
                     source = MyStoreViewModel.UTM_SOURCE,
@@ -115,6 +113,7 @@ class JitmViewModel @Inject constructor(
                     url = url
                 )
             )
+        )
     }
 
     private fun onJitmDismissClicked(jitmId: String, featureClass: String) {
@@ -148,5 +147,4 @@ class JitmViewModel @Inject constructor(
         const val JITM_MESSAGE_PATH_KEY = "jitm_message_path_key"
     }
 }
-
 
