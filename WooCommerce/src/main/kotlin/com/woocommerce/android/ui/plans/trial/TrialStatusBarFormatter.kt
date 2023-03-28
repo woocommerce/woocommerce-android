@@ -22,7 +22,7 @@ class TrialStatusBarFormatter @AssistedInject constructor(
     @Assisted private val startUpgradeFlow: StartUpgradeFlow,
 ) {
 
-    fun format(daysLeftInTrial: Int, context: Context): Spannable {
+    fun format(daysLeftInTrial: Int): Spannable {
         val statusMessage = if (daysLeftInTrial > 0) {
             StringUtils.getQuantityString(
                 context = context,

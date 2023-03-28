@@ -752,7 +752,7 @@ class MainActivity :
                     binding.trialBar.text = trialStatusBarFormatterFactory.create(
                         context = this,
                         startUpgradeFlowFactory = startUpgradeFlowFactory.create(navController)
-                    ).format(trialStatusBarState.daysLeft, this)
+                    ).format(trialStatusBarState.daysLeft)
                     binding.trialBar.movementMethod = LinkMovementMethod.getInstance()
                     binding.trialBar.visibility = View.VISIBLE
                 }
