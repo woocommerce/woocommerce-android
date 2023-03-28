@@ -103,7 +103,8 @@ class OrderDetailViewModel @Inject constructor(
     private val cardReaderTracker: CardReaderTracker,
     private val trackerWrapper: AnalyticsTrackerWrapper,
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository,
-    private val orderDetailsTransactionLauncher: OrderDetailsTransactionLauncher
+    private val orderDetailsTransactionLauncher: OrderDetailsTransactionLauncher,
+    private val getOrderSubscriptions: GetOrderSubscriptions
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
@@ -660,7 +661,7 @@ class OrderDetailViewModel @Inject constructor(
     private suspend fun fetchOrderSubscriptions() {
         val plugin = pluginsInformation[WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName]
         if (plugin == null || plugin.isOperational) {
-            orderDetailRepository.getOrderSubscriptions(navArgs.orderId).getOrNull()?.let { subscription ->
+            getOrderSubscriptions(navArgs.orderId).getOrNull()?.let { subscription ->
                 _subscriptions.value = subscription
                 if (subscription.isNotEmpty()) {
                     trackerWrapper.track(AnalyticsEvent.ORDER_DETAILS_SUBSCRIPTIONS_SHOWN)

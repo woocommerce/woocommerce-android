@@ -13,6 +13,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.transition.TransitionManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
 import com.woocommerce.android.FeedbackPrefs
@@ -285,6 +286,7 @@ class OrderDetailFragment :
                 subscriptions = subscriptions,
                 currencyFormatter = currencyFormatter
             )
+            TransitionManager.beginDelayedTransition(binding.orderDetailContainer)
             visibility = if (subscriptions.isNotEmpty()) View.VISIBLE else View.GONE
         }
     }

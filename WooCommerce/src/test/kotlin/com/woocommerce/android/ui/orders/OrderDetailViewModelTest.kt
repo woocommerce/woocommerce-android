@@ -23,6 +23,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
+import com.woocommerce.android.ui.orders.details.GetOrderSubscriptions
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
@@ -136,6 +137,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         isOrderDetailSkeletonShown = false
     )
 
+    private val getOrderSubscriptions: GetOrderSubscriptions = mock()
+
     private fun createViewModel() {
         viewModel = spy(
             OrderDetailViewModel(
@@ -152,7 +155,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 cardReaderTracker,
                 analyticsTraWrapper,
                 shippingLabelOnboardingRepository,
-                orderDetailsTransactionLauncher
+                orderDetailsTransactionLauncher,
+                getOrderSubscriptions
             )
         )
     }
@@ -1637,14 +1641,14 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             version = "1.0.0"
         )
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-        doReturn(emptyList<Subscription>()).whenever(orderDetailRepository).getOrderSubscriptions(any())
+        doReturn(emptyList<Subscription>()).whenever(getOrderSubscriptions).invoke(any())
         doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         createViewModel()
 
         viewModel.start()
 
-        verify(orderDetailRepository).getOrderSubscriptions(any())
+        verify(getOrderSubscriptions).invoke(any())
     }
 
     @Test
@@ -1660,7 +1664,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(orderDetailRepository, never()).getOrderSubscriptions(any())
+        verify(getOrderSubscriptions, never()).invoke(any())
     }
 
     @Test
@@ -1675,7 +1679,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         val result = listOf(subscription)
 
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-        doReturn(result).whenever(orderDetailRepository).getOrderSubscriptions(any())
+        doReturn(result).whenever(getOrderSubscriptions).invoke(any())
         doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         createViewModel()
@@ -1696,7 +1700,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         val result = emptyList<Subscription>()
 
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-        doReturn(result).whenever(orderDetailRepository).getOrderSubscriptions(any())
+        doReturn(result).whenever(getOrderSubscriptions).invoke(any())
         doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         createViewModel()
@@ -1717,7 +1721,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         val result = null
 
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-        doReturn(result).whenever(orderDetailRepository).getOrderSubscriptions(any())
+        doReturn(result).whenever(getOrderSubscriptions).invoke(any())
         doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         createViewModel()

@@ -16,12 +16,10 @@ import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.ShippingLabelMapper
-import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.common.subscription.SubscriptionRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.ORDERS
@@ -48,8 +46,7 @@ class OrderDetailRepository @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val dispatchers: CoroutineDispatchers,
     private val orderMapper: OrderMapper,
-    private val shippingLabelMapper: ShippingLabelMapper,
-    private val subscriptionRepository: SubscriptionRepository
+    private val shippingLabelMapper: ShippingLabelMapper
 ) {
     suspend fun fetchOrderById(orderId: Long): Order? {
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
@@ -300,18 +297,6 @@ class OrderDetailRepository @Inject constructor(
             canCreatePaymentMethod = true,
             canCreateCustomsForm = true
         )?.isEligible ?: false
-    }
-
-    suspend fun getOrderSubscriptions(orderId: Long): Result<List<Subscription>> {
-        val result = subscriptionRepository.fetchSubscriptionsByOrderId(
-            site = selectedSite.get(),
-            orderId = orderId
-        )
-        return when {
-            result.isError -> Result.failure(WooException(result.error))
-            result.model != null -> Result.success(result.model!!)
-            else -> Result.failure(Exception("Error fetching subscriptions"))
-        }
     }
 
     suspend fun orderHasMetadata(orderId: Long) = orderStore.hasOrderMetadata(orderId, selectedSite.get())
