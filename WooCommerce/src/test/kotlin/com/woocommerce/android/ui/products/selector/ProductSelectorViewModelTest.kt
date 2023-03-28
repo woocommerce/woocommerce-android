@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.products.selector
 
+import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductTestUtils
@@ -38,23 +40,19 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     }
     private val variationSelectorRepository: VariationSelectorRepository = mock()
     private val resourceProvider: ResourceProvider = mock()
+    private val tracker: AnalyticsTrackerWrapper = mock()
 
     @Test
     fun `given published products restriction, when view model created, should not show draft products`() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             restrictions = arrayOf(OnlyPublishedProducts),
+            productSelectedAnalyticsEvent = null,
+            productUnselectedAnalyticsEvent = null,
+            confirmButtonTappedAnalyticsEvent = null,
         ).initSavedStateHandle()
 
-        val sut = ProductSelectorViewModel(
-            navArgs,
-            currencyFormatter,
-            wooCommerceStore,
-            selectedSite,
-            listHandler,
-            variationSelectorRepository,
-            resourceProvider,
-        )
+        val sut = createViewModel(navArgs)
 
         sut.viewState.observeForever { state ->
             assertThat(state.products).isNotEmpty
@@ -67,17 +65,12 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             restrictions = arrayOf(NoVariableProductsWithNoVariations),
+            productSelectedAnalyticsEvent = null,
+            productUnselectedAnalyticsEvent = null,
+            confirmButtonTappedAnalyticsEvent = null,
         ).initSavedStateHandle()
 
-        val sut = ProductSelectorViewModel(
-            navArgs,
-            currencyFormatter,
-            wooCommerceStore,
-            selectedSite,
-            listHandler,
-            variationSelectorRepository,
-            resourceProvider,
-        )
+        val sut = createViewModel(navArgs)
 
         sut.viewState.observeForever { state ->
             assertThat(state.products).isNotEmpty
@@ -92,17 +85,12 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             restrictions = arrayOf(OnlyPublishedProducts, NoVariableProductsWithNoVariations),
+            productSelectedAnalyticsEvent = null,
+            productUnselectedAnalyticsEvent = null,
+            confirmButtonTappedAnalyticsEvent = null,
         ).initSavedStateHandle()
 
-        val sut = ProductSelectorViewModel(
-            navArgs,
-            currencyFormatter,
-            wooCommerceStore,
-            selectedSite,
-            listHandler,
-            variationSelectorRepository,
-            resourceProvider,
-        )
+        val sut = createViewModel(navArgs)
 
         sut.viewState.observeForever { state ->
             assertThat(state.products).isNotEmpty
@@ -118,17 +106,12 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             restrictions = emptyArray(),
+            productSelectedAnalyticsEvent = null,
+            productUnselectedAnalyticsEvent = null,
+            confirmButtonTappedAnalyticsEvent = null,
         ).initSavedStateHandle()
 
-        val sut = ProductSelectorViewModel(
-            navArgs,
-            currencyFormatter,
-            wooCommerceStore,
-            selectedSite,
-            listHandler,
-            variationSelectorRepository,
-            resourceProvider,
-        )
+        val sut = createViewModel(navArgs)
 
         sut.viewState.observeForever { state ->
             assertThat(state.products.count()).isEqualTo(3)
@@ -139,4 +122,16 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             )
         }
     }
+
+    private fun createViewModel(navArgs: SavedStateHandle) =
+        ProductSelectorViewModel(
+            navArgs,
+            currencyFormatter,
+            wooCommerceStore,
+            selectedSite,
+            listHandler,
+            variationSelectorRepository,
+            resourceProvider,
+            tracker,
+        )
 }
