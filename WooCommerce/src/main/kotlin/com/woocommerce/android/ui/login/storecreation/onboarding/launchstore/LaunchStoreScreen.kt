@@ -246,7 +246,7 @@ fun EcommerceTrialBanner(
 ) {
     Row(
         modifier = modifier
-            .background(color = colorResource(id = R.color.woo_purple_10))
+            .background(color = colorResource(id = R.color.free_trial_banner_background))
             .clickable { onBannerClicked() }
             .padding(dimensionResource(id = R.dimen.major_100)),
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
@@ -258,6 +258,7 @@ fun EcommerceTrialBanner(
         )
         Text(
             text = annotatedStringRes(R.string.store_onboarding_upgrade_plan_to_launch_store_banner_text),
+            color = colorResource(id = R.color.free_trial_banner_content),
             style = MaterialTheme.typography.body1,
         )
     }
