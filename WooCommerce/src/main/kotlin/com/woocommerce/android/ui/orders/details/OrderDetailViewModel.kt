@@ -28,6 +28,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
+import com.woocommerce.android.model.GiftCard
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
@@ -76,6 +77,7 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
@@ -85,6 +87,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
@@ -142,6 +145,9 @@ class OrderDetailViewModel @Inject constructor(
     private val _shippingLabels = MutableLiveData<List<ShippingLabel>>()
     val shippingLabels: LiveData<List<ShippingLabel>> = _shippingLabels
 
+    private val _giftCards = MutableLiveData<List<GiftCard>>()
+    val giftCards: LiveData<List<GiftCard>> = _giftCards
+
     private var isFetchingData = false
 
     override fun onCleared() {
@@ -198,7 +204,10 @@ class OrderDetailViewModel @Inject constructor(
             )
             isFetchingData = false
 
-            if (hasOrder()) displayOrderDetails()
+            if (hasOrder()){
+                displayOrderDetails()
+                fetchGiftCards()
+            }
 
             viewState = viewState.copy(
                 isOrderDetailSkeletonShown = false,
@@ -211,6 +220,22 @@ class OrderDetailViewModel @Inject constructor(
                 isRefreshing = false
             )
         }
+    }
+    @Suppress("MagicNumber")
+    private suspend fun fetchGiftCards() {
+        delay(1000)
+        _giftCards.value = listOf(
+            GiftCard(
+                id = 1L,
+                code = "ZXXC-OPI-UYT-MMNB",
+                used = BigDecimal.valueOf(10)
+            ),
+            GiftCard(
+                id = 2L,
+                code = "ZXXC-RTYU-UYT-LKIO",
+                used = BigDecimal.valueOf(50)
+            )
+        )
     }
 
     private suspend fun checkOrderMetaData() {
