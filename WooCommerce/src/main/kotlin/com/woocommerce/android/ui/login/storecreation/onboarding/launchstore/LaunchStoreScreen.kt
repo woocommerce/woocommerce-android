@@ -32,12 +32,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCWebView
+import com.woocommerce.android.ui.compose.component.WebViewProgressIndicator.Circular
 import com.woocommerce.android.ui.compose.drawShadow
 import com.woocommerce.android.ui.login.storecreation.onboarding.launchstore.LaunchStoreViewModel.LaunchStoreState
 import org.wordpress.android.fluxc.network.UserAgent
@@ -95,7 +97,9 @@ fun LaunchStoreScreen(
             if (state.isStoreLaunched) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .padding(top = dimensionResource(id = R.dimen.major_100))
                 ) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
@@ -106,7 +110,7 @@ fun LaunchStoreScreen(
                                 .size(size = dimensionResource(id = R.dimen.major_85))
                                 .clip(shape = CircleShape)
                                 .background(color = colorResource(id = R.color.color_info))
-                        ) {}
+                        )
                         Text(
                             text = stringResource(id = R.string.store_onboarding_launched_title),
                             style = MaterialTheme.typography.h5,
@@ -117,37 +121,12 @@ fun LaunchStoreScreen(
                         text = state.displayUrl,
                         style = MaterialTheme.typography.caption
                     )
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .background(color = colorResource(id = R.color.color_surface))
-                            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
-                            .padding(
-                                horizontal = dimensionResource(id = R.dimen.major_350),
-                                vertical = dimensionResource(id = R.dimen.major_200)
-                            )
-                    ) {
-                        SitePreview(
-                            url = state.siteUrl,
-                            userAgent = userAgent,
-                            authenticator = authenticator,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .align(Alignment.Center)
-                                .drawShadow(
-                                    color = colorResource(id = R.color.color_on_surface),
-                                    backgroundColor = colorResource(id = R.color.color_surface),
-                                    borderRadius = dimensionResource(id = R.dimen.major_100)
-                                )
-                                .padding(dimensionResource(id = R.dimen.minor_100))
-                                .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
-                                .border(
-                                    dimensionResource(id = R.dimen.minor_10),
-                                    colorResource(id = R.color.woo_gray_0),
-                                    shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)),
-                                )
-                        )
-                    }
+                    SitePreview(
+                        url = state.siteUrl,
+                        userAgent = userAgent,
+                        authenticator = authenticator,
+                        modifier = Modifier.fillMaxSize()
+                    )
                 }
             } else {
                 SitePreview(
@@ -226,16 +205,44 @@ fun SitePreview(
     authenticator: WPComWebViewAuthenticator,
     modifier: Modifier = Modifier
 ) {
-    Box(modifier = modifier) {
-        WCWebView(
-            url = url,
-            userAgent = userAgent,
-            wpComAuthenticator = authenticator,
-            onUrlLoaded = { },
+    Box(
+        modifier = modifier
+            .background(color = colorResource(id = R.color.color_surface))
+            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
+            .padding(
+                horizontal = dimensionResource(id = R.dimen.major_350),
+                vertical = dimensionResource(id = R.dimen.major_200)
+            )
+    ) {
+        Box(
             modifier = Modifier
+                .drawShadow(
+                    color = colorResource(id = R.color.color_on_surface),
+                    backgroundColor = colorResource(id = R.color.color_surface),
+                    borderRadius = dimensionResource(id = R.dimen.major_100)
+                )
+                .padding(dimensionResource(id = R.dimen.minor_100))
                 .fillMaxSize()
-                .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_75)))
-        )
+                .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
+                .border(
+                    dimensionResource(id = R.dimen.minor_10),
+                    colorResource(id = R.color.empty_state_bg_color),
+                    shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)),
+                )
+        ) {
+            WCWebView(
+                url = url,
+                userAgent = userAgent,
+                wpComAuthenticator = authenticator,
+                captureBackPresses = false,
+                loadWithOverviewMode = true,
+                isReadOnly = true,
+                progressIndicator = Circular(
+                    stringResource(id = string.store_creation_installation_rendering_preview_label)
+                ),
+                modifier = Modifier.background(color = colorResource(id = R.color.color_surface))
+            )
+        }
     }
 }
 
