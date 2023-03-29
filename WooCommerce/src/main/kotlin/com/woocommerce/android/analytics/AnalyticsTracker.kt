@@ -466,7 +466,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         // -- Domain change
         const val VALUE_SETTINGS = "settings"
-        const val VALUE_ONBOARDING = "onboarding"
         const val VALUE_STEP_DASHBOARD = "dashboard"
         const val VALUE_STEP_PICKER = "picker"
         const val VALUE_STEP_CONTACT_INFO = "contact_info"
