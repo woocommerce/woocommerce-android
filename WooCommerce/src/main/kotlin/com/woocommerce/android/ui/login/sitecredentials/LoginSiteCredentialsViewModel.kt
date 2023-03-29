@@ -151,6 +151,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     fun onStartWebAuthorizationClick() {
         state.value = State.WebAuthorization
+        analyticsTracker.track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_WEB_VIEW_SHOWN)
     }
 
     fun onWebAuthorizationUrlLoaded(url: String) {
