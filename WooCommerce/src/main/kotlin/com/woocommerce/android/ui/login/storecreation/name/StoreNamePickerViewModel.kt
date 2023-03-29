@@ -80,11 +80,11 @@ class StoreNamePickerViewModel @Inject constructor(
 
     fun onContinueClicked() {
         launch {
+            isCreatingStore.value = true
+            newStore.update(name = storeName.value)
             createFreeTrialSite().ifSuccessfulThen {
-                newStore.update(
-                    name = storeName.value,
-                    siteId = it
-                )
+                newStore.update(siteId = it)
+                isCreatingStore.value = false
                 triggerEvent(NavigateToNextStep(storeName.value))
             }
         }
