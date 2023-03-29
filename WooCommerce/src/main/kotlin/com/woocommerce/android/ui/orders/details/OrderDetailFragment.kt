@@ -13,6 +13,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.transition.TransitionManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
 import com.woocommerce.android.FeedbackPrefs
@@ -38,6 +39,7 @@ import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
+import com.woocommerce.android.model.GiftCard
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
@@ -254,6 +256,9 @@ class OrderDetailFragment :
         viewModel.shippingLabels.observe(viewLifecycleOwner) {
             showShippingLabels(it, viewModel.order.currency)
         }
+        viewModel.giftCards.observe(viewLifecycleOwner) {
+            showGiftCards(it, viewModel.order.currency)
+        }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
@@ -273,6 +278,18 @@ class OrderDetailFragment :
             }
         }
         viewModel.start()
+    }
+
+    private fun showGiftCards(giftCards: List<GiftCard>, currencyCode: String) {
+        binding.orderDetailGiftCardList.run {
+            updateGiftCardList(
+                giftCards = giftCards,
+                currencyFormatter = currencyFormatter,
+                currencyCode = currencyCode
+            )
+            TransitionManager.beginDelayedTransition(binding.orderDetailContainer)
+            visibility = if (giftCards.isNotEmpty()) View.VISIBLE else View.GONE
+        }
     }
 
     private fun navigateToInstallWcShippingFlow() {
