@@ -30,27 +30,43 @@ import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.StoreNamePickerState
+import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.StoreNamePickerState.*
 
 @Composable
 fun StoreNamePickerScreen(viewModel: StoreNamePickerViewModel) {
-    viewModel.storeName.observeAsState().value?.let { storeName ->
-        Scaffold(topBar = {
-            ToolbarWithHelpButton(
-                onNavigationButtonClick = viewModel::onCancelPressed,
-                onHelpButtonClick = viewModel::onHelpPressed,
-            )
-        }) { padding ->
-            NamePickerForm(
-                storeName = storeName,
-                onStoreNameChanged = viewModel::onStoreNameChanged,
-                onContinueClicked = viewModel::onContinueClicked,
-                modifier = Modifier
-                    .background(MaterialTheme.colors.surface)
-                    .fillMaxSize()
-                    .padding(padding)
-                    .padding(dimensionResource(id = R.dimen.major_125))
-            )
+    viewModel.storePickerState.observeAsState().value?.let { state ->
+        when (state) {
+            is Contentful -> ContentfulNamePickerForm(viewModel, state)
+            is Error -> {
+
+            }
         }
+
+    }
+}
+
+@Composable
+private fun ContentfulNamePickerForm(
+    viewModel: StoreNamePickerViewModel,
+    state: StoreNamePickerState.Contentful
+) {
+    Scaffold(topBar = {
+        ToolbarWithHelpButton(
+            onNavigationButtonClick = viewModel::onCancelPressed,
+            onHelpButtonClick = viewModel::onHelpPressed,
+        )
+    }) { padding ->
+        NamePickerForm(
+            storeName = state.storeName,
+            onStoreNameChanged = viewModel::onStoreNameChanged,
+            onContinueClicked = viewModel::onContinueClicked,
+            modifier = Modifier
+                .background(MaterialTheme.colors.surface)
+                .fillMaxSize()
+                .padding(padding)
+                .padding(dimensionResource(id = R.dimen.major_125))
+        )
     }
 }
 
