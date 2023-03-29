@@ -32,21 +32,26 @@ import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.StoreNamePickerState.*
+import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorScreen
+import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
+import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.StoreNamePickerState
 
 @Composable
 fun StoreNamePickerScreen(viewModel: StoreNamePickerViewModel) {
-    viewModel.storePickerState.observeAsState().value?.let { state ->
+    viewModel.storePickerState.observeAsState().value.let { state ->
         when (state) {
-            is Contentful -> StoreNamePickerScreen(
+            is StoreNamePickerState.Contentful -> StoreNamePickerScreen(
                 state = state,
                 onCancelPressed = viewModel::onCancelPressed,
                 onHelpPressed = viewModel::onHelpPressed,
                 onStoreNameChanged = viewModel::onStoreNameChanged,
                 onContinueClicked = viewModel::onContinueClicked
             )
-            is Error -> {
-
+            else -> {
+                StoreCreationErrorScreen(
+                    errorType = StoreCreationErrorType.FREE_TRIAL_ASSIGNMENT_FAILED,
+                    onArrowBackPressed = viewModel::onExitTriggered
+                )
             }
         }
 
@@ -55,7 +60,7 @@ fun StoreNamePickerScreen(viewModel: StoreNamePickerViewModel) {
 
 @Composable
 private fun StoreNamePickerScreen(
-    state: Contentful,
+    state: StoreNamePickerState.Contentful,
     onCancelPressed: () -> Unit,
     onHelpPressed: () -> Unit,
     onStoreNameChanged: (String) -> Unit,
@@ -82,7 +87,7 @@ private fun StoreNamePickerScreen(
 
 @Composable
 private fun NamePickerForm(
-    state: Contentful,
+    state: StoreNamePickerState.Contentful,
     onStoreNameChanged: (String) -> Unit,
     onContinueClicked: () -> Unit,
     modifier: Modifier = Modifier
@@ -150,7 +155,7 @@ private fun NamePickerForm(
 fun NamePickerPreview() {
     WooThemeWithBackground {
         NamePickerForm(
-            state = Contentful("White Christmas Tress", false),
+            state = StoreNamePickerState.Contentful("White Christmas Tress", false),
             onContinueClicked = {},
             onStoreNameChanged = {}
         )

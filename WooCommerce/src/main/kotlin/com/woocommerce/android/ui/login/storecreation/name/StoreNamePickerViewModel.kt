@@ -66,6 +66,10 @@ class StoreNamePickerViewModel @Inject constructor(
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
+    fun onExitTriggered() {
+        triggerEvent(MultiLiveEvent.Event.Exit)
+    }
+
     fun onHelpPressed() {
         triggerEvent(MultiLiveEvent.Event.NavigateToHelpScreen(STORE_CREATION))
     }
