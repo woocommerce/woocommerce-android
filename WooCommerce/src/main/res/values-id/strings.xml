@@ -16,7 +16,7 @@ Language: id
     <string name="upgrades_upgrade_now">Upgrade sekarang</string>
     <string name="upgrades_report_subscription_issue">Laporkan masalah langganan</string>
     <string name="free_trial_upgrade_now">Upgrade Sekarang</string>
-    <string name="free_trial_days_left">Masa percobaan Anda tersisa %1$d hari.</string>
+    <string name="free_trial_days_left">Masa percobaan Anda tersisa %1$s hari.</string>
     <string name="free_trial_trial_ended">Masa percobaan berakhir</string>
     <string name="free_trial_your_trial_ended">Masa percobaan Anda telah berakhir.</string>
     <string name="store_onboarding_launch_store_generic_error_description">Waduh, terjadi error tak terduga.</string>

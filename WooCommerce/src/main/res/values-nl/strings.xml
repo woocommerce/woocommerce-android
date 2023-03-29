@@ -16,7 +16,7 @@ Language: nl
     <string name="upgrades_upgrade_now">Upgrade nu</string>
     <string name="upgrades_report_subscription_issue">Meld probleem met abonnement</string>
     <string name="free_trial_upgrade_now">Upgrade nu</string>
-    <string name="free_trial_days_left">%1$d dagen resterend van je proefversie</string>
+    <string name="free_trial_days_left">%1$s dagen resterend van je proefversie</string>
     <string name="free_trial_trial_ended">Einde proefabonnement</string>
     <string name="free_trial_your_trial_ended">Je proefversie is beëindigd.</string>
     <string name="store_onboarding_launch_store_generic_error_description">Oeps, er zijn onverwachte fouten opgetreden.</string>

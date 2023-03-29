@@ -16,7 +16,7 @@ Language: tr
     <string name="upgrades_upgrade_now">Hemen yükseltin</string>
     <string name="upgrades_report_subscription_issue">Abonelik sorunu bildir</string>
     <string name="free_trial_upgrade_now">Hemen Yükseltin</string>
-    <string name="free_trial_days_left">Deneme sürenizin %1$d günü kaldı.</string>
+    <string name="free_trial_days_left">Deneme sürenizin %1$s günü kaldı.</string>
     <string name="free_trial_trial_ended">Deneme süresi sonu</string>
     <string name="free_trial_your_trial_ended">Deneme süreniz sona erdi.</string>
     <string name="store_onboarding_launch_store_generic_error_description">Hay aksi, beklenmeyen bazı hatalar oluştu.</string>
