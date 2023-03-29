@@ -1,11 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-09 11:54:24+0000
+Translation-Revision-Date: 2023-03-21 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="upgrades_error_fetching_data">Erreur lors de l’extraction des détails du plan</string>
+    <string name="upgrades_non_upgradeable_caption">Vous êtes abonné à %1$s ! Vous avez accès à toutes nos fonctionnalités jusqu’au %2$s. </string>
+    <string name="upgrades_trial_ended_caption">Votre période d’essai est terminée. Vous avez un accès limité à toutes les fonctionnalités. Abonnez-vous à %1$s maintenant.</string>
+    <string name="upgrades_subscription_status">État de l’abonnement</string>
+    <string name="upgrades_title">Options payantes</string>
+    <string name="upgrades_troubleshooting">Résolution des problèmes</string>
+    <string name="upgrades_current_plan">Actuellement : %s</string>
+    <string name="upgrades_upgrade_now">Choisir une option payante maintenant</string>
+    <string name="upgrades_report_subscription_issue">Signaler un problème d’abonnement</string>
+    <string name="free_trial_upgrade_now">Choisir une option payante maintenant</string>
+    <string name="free_trial_days_left">%1$d jours d’essai restants</string>
+    <string name="free_trial_trial_ended">L’essai est terminé</string>
+    <string name="free_trial_your_trial_ended">Votre essai est terminé.</string>
+    <string name="store_onboarding_launch_store_generic_error_description">Oups. des erreurs inattendues se sont produites.</string>
+    <string name="store_onboarding_launch_store_generic_error_title">Erreur inattendue</string>
+    <string name="store_onboarding_store_already_launched_error_description">Nous avons constaté que le lancement de la boutique avait déjà eu lieu.</string>
+    <string name="store_onboarding_store_already_launched_error_title">Impossible de lancer votre boutique</string>
+    <string name="store_onboarding_share_url_error">Impossible de partager l’URL de la boutique</string>
+    <string name="store_onboarding_launch_store_task_private_tag">Privé</string>
+    <string name="store_onboarding_launched_title">Votre boutique est en ligne !</string>
+    <string name="store_onboarding_launch_preview_title">Aperçu</string>
+    <string name="store_onboarding_launch_store_back_to_store_button">Retour à ma boutique</string>
+    <string name="store_onboarding_launch_store_share_url_button">URL de partage</string>
+    <string name="store_onboarding_launch_store_button">Publier ma boutique</string>
+    <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">Pour lancer votre boutique, vous devez souscrire un plan payant. &lt;u&gt;Option payante&lt;/u&gt;</string>
+    <string name="card_reader_tap_to_pay_not_available_error">La fonctionnalité Appuyer pour payer n’est pas disponible pour votre boutique ou votre appareil</string>
+    <string name="domains_search_domains">Rechercher des domaines</string>
+    <string name="login_site_credentials_http_error">La connexion a échoué avec le code d’état %1$s</string>
+    <string name="login_site_credentials_custom_admin_url">Impossible de se connecter, car nous ne pouvons pas identifier l’URL d’administration de votre boutique.</string>
+    <string name="login_site_credentials_custom_login_url">Impossible de se connecter, car nous ne pouvons pas identifier l’URL de connexion de votre boutique.</string>
+    <string name="login_site_credentials_invalid_response">Impossible de se connecter en raison d’une réponse inattendue de votre site. Nous travaillons à la résolution de ce problème.</string>
+    <string name="more_menu_button_upgrades">Options payantes</string>
+    <string name="something_went_wrong_try_again">Un problème est survenu, veuillez réessayer ultérieurement.</string>
+    <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">Votre compte comporte des prérequis en attente. Veuillez effectuer les actions demandées afin de pouvoir continuer à accepter les paiements en personne.</string>
+    <string name="analytics_banner_message">Merci d’évaluer votre expérience statistique</string>
+    <string name="analytics_banner_title">Vous aimez les statistiques ?</string>
+    <string name="analytics_wip_message">Nous avons travaillé dur pour pouvoir récupérer des informations essentielles concernant votre boutique depuis votre appareil ! Cela pourrait-il être encore mieux ? Donnez-nous votre avis afin de nous aider à améliorer cette fonctionnalité.</string>
+    <string name="analytics_wip_title">Consultez vos statistiques, vos revenus et plus encore directement depuis votre appareil !</string>
+    <string name="login_jetpack_installation_magic_link_failure">Une erreur s’est produite lors de l’extraction des données depuis votre site Web. Veuillez réessayer.</string>
     <string name="support_request_error_message">Nous ne pouvons malheureusement pas créer de demande d’assistance pour le moment. Veuillez réessayer ultérieurement.</string>
     <string name="support_request_error_title">Un problème est survenu</string>
     <string name="support_request_dialog_action">Compris !</string>
@@ -299,8 +338,6 @@ Language: fr
     <string name="card_reader_payment_collect_payment_built_in_state">Le lecteur intégré est prêt</string>
     <string name="card_reader_type_selection_bluetooth_reader">Lecteur Bluetooth</string>
     <string name="card_reader_type_selection_tap_to_pay">Appuyer pour payer</string>
-    <string name="card_reader_type_selection_description">Vous pouvez utiliser votre téléphone comme lecteur de carte ou utiliser un lecteur externe via Bluetooth</string>
-    <string name="card_reader_type_selection_title">Sélectionner le type de lecteur</string>
     <string name="analytics_conversion_subtitle">Taux de conversion</string>
     <string name="analytics_session_card_title">Sessions</string>
     <string name="analytics_session_no_data">Aucune session au cours de cette période</string>
@@ -951,7 +988,7 @@ Language: fr
     <string name="order_creation_new_customer_add_different_shipping_address">Ajouter une adresse de livraison différente</string>
     <string name="order_creation_product_instock">En stock</string>
     <string name="order_creation_product_stock_quantity">%s en stock</string>
-    <string name="order_creation_add_products">Ajouter un produit</string>
+    <string name="order_creation_add_products">Ajouter des produits</string>
     <string name="order_creation_products">Produits</string>
     <string name="order_creation_add_customer">Ajouter les détails du client</string>
     <string name="order_creation_customer">Client</string>

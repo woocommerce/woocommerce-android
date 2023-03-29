@@ -1,9 +1,11 @@
 package com.woocommerce.android.di
 
 import android.app.Application
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.iap.pub.IAPSitePurchasePlanFactory
 import com.woocommerce.android.iap.pub.PurchaseWPComPlanActions
 import com.woocommerce.android.iap.pub.PurchaseWpComPlanSupportChecker
+import com.woocommerce.android.iap.pub.network.SandboxTestingConfig
 import com.woocommerce.android.ui.login.storecreation.iap.IapMobilePayApiProvider
 import com.woocommerce.android.ui.login.storecreation.iap.WooIapLogWrapper
 import dagger.Module
@@ -19,12 +21,13 @@ class InAppPurchasesModule {
     @Provides
     fun providePurchaseWPComPlanActions(
         context: Application,
-        mobilePayAPIProvider: IapMobilePayApiProvider
+        mobilePayAPIProvider: IapMobilePayApiProvider,
     ): PurchaseWPComPlanActions =
         IAPSitePurchasePlanFactory.createIAPSitePurchasePlan(
             context,
             WooIapLogWrapper(),
-            mobilePayAPIProvider::buildMobilePayAPI
+            mobilePayAPIProvider::buildMobilePayAPI,
+            SandboxTestingConfigImpl()
         )
 
     @ViewModelScoped
@@ -34,4 +37,9 @@ class InAppPurchasesModule {
             application,
             WooIapLogWrapper(),
         )
+
+    private class SandboxTestingConfigImpl(
+        override val isDebug: Boolean = BuildConfig.DEBUG,
+        override val iapTestingSandboxUrl: String = BuildConfig.IAP_TESTING_SANDBOX_URL,
+    ) : SandboxTestingConfig
 }

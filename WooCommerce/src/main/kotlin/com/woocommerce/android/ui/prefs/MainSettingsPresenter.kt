@@ -4,6 +4,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.filter
@@ -56,7 +57,8 @@ class MainSettingsPresenter @Inject constructor(
 
     override fun setupJetpackInstallOption() {
         val supportsJetpackInstallation = selectedSite.connectionType.let {
-            it == SiteConnectionType.JetpackConnectionPackage || it == SiteConnectionType.ApplicationPasswords
+            it == SiteConnectionType.JetpackConnectionPackage ||
+                (FeatureFlag.REST_API_I2.isEnabled() && it == SiteConnectionType.ApplicationPasswords)
         }
         appSettingsFragmentView?.handleJetpackInstallOption(supportsJetpackInstallation = supportsJetpackInstallation)
         jetpackMonitoringJob?.cancel()

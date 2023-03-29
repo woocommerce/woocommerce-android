@@ -30,7 +30,7 @@ object EditCouponNavigator {
             is EditIncludedProducts -> {
                 navController.navigateSafely(
                     EditCouponFragmentDirections.actionEditCouponFragmentToProductSelectorFragment(
-                        target.selectedItems.toTypedArray()
+                        target.selectedItems.toTypedArray(), target.restrictions.toTypedArray()
                     )
                 )
             }

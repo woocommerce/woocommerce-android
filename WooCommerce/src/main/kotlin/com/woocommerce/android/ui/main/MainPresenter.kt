@@ -9,6 +9,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -50,7 +51,8 @@ class MainPresenter @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val wcOrderStore: WCOrderStore,
     private val clearCardReaderDataAction: ClearCardReaderDataAction,
-    private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
+    private val tracks: AnalyticsTrackerWrapper,
 ) : MainContract.Presenter {
     private var mainView: MainContract.View? = null
 
@@ -88,14 +90,16 @@ class MainPresenter @Inject constructor(
                 }
             }
         }
-
-        mainView?.setNotificationBarVisibility(shouldShowNotificationsPermissionBar)
     }
 
     override fun dropView() {
         mainView = null
         dispatcher.unregister(this)
         ConnectionChangeReceiver.getEventBus().unregister(this)
+    }
+
+    override fun checkForNotificationsPermission() {
+        mainView?.setNotificationBarVisibility(shouldShowNotificationsPermissionBar)
     }
 
     override fun userIsLoggedIn(): Boolean = accountRepository.isUserLoggedIn()
@@ -203,11 +207,13 @@ class MainPresenter @Inject constructor(
                     return
                 }
             }
+
             WCOrderAction.FETCH_ORDERS, WCOrderAction.UPDATE_ORDER_STATUS -> {
                 // we just fetched the order list or an order's status changed, so re-check the unfilled orders count
                 WooLog.d(WooLog.T.ORDERS, "Order status changed, re-checking unfilled orders count")
                 fetchUnfilledOrderCount()
             }
+
             else -> Unit // Do nothing
         }
     }
@@ -237,5 +243,19 @@ class MainPresenter @Inject constructor(
 
     override fun updateStatsWidgets() {
         mainView?.updateStatsWidgets()
+    }
+
+    override fun onPlanUpgraded() {
+        tracks.track(
+            AnalyticsEvent.PLAN_UPGRADE_SUCCESS,
+            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_BANNER)
+        )
+    }
+
+    override fun onPlanUpgradeDismissed() {
+        tracks.track(
+            AnalyticsEvent.PLAN_UPGRADE_ABANDONED,
+            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_BANNER)
+        )
     }
 }

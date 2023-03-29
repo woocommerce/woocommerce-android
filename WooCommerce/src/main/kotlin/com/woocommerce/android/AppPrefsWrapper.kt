@@ -315,4 +315,10 @@ class AppPrefsWrapper @Inject constructor() {
             }
         }
     }
+
+    fun markAllOnboardingTasksCompleted(siteId: Int) {
+        AppPrefs.markOnboardingTaskCompletedFor(siteId)
+    }
+
+    fun isOnboardingCompleted(siteId: Int): Boolean = AppPrefs.areOnboardingTaskCompletedFor(siteId)
 }

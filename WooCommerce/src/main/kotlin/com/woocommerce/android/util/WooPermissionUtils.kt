@@ -3,7 +3,6 @@ package com.woocommerce.android.util
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.Manifest.permission.BLUETOOTH_CONNECT
 import android.Manifest.permission.BLUETOOTH_SCAN
-import android.Manifest.permission.CAMERA
 import android.Manifest.permission.POST_NOTIFICATIONS
 import android.app.Activity
 import android.content.Context
@@ -52,12 +51,6 @@ object WooPermissionUtils {
 
     fun requestScanAndConnectBluetoothPermission(launcher: ActivityResultLauncher<Array<String>>) {
         launcher.launch(arrayOf(BLUETOOTH_SCAN, BLUETOOTH_CONNECT))
-    }
-
-    fun hasCameraPermission(context: Context) = context.checkIfPermissionGiven(CAMERA)
-
-    fun requestCameraPermission(launcher: ActivityResultLauncher<String>) {
-        launcher.launch(CAMERA)
     }
 
     @RequiresApi(VERSION_CODES.TIRAMISU)

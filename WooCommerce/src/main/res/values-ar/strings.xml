@@ -1,11 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-08 18:54:03+0000
+Translation-Revision-Date: 2023-03-22 09:54:17+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="upgrades_error_fetching_data">حدث خطأ في أثناء إحضار تفاصيل الخطة</string>
+    <string name="upgrades_non_upgradeable_caption">أنت أحد المشتركين في ⁦%1$s⁩! لقد وصلت إلى كل ميزاتنا حتى ⁦%2$s⁩. </string>
+    <string name="upgrades_trial_ended_caption">انتهى الإصدار التجريبي المجاني الخاص بك وأصبح لديك وصول محدود إلى كل الميزات. اشترك في ⁦%1$s⁩ الآن.</string>
+    <string name="upgrades_subscription_status">حالة الاشتراك</string>
+    <string name="upgrades_title">ترقيات</string>
+    <string name="upgrades_troubleshooting">حل المشكلات</string>
+    <string name="upgrades_current_plan">الحالي: %s</string>
+    <string name="upgrades_upgrade_now">قم بالترقية الآن</string>
+    <string name="upgrades_report_subscription_issue">الإبلاغ بمشكلة في الاشتراك</string>
+    <string name="free_trial_upgrade_now">قم بالترقية الآن</string>
+    <string name="free_trial_days_left">يتبقى ⁦%1$d⁩ من الأيام في الإصدار التجريبي لديك.</string>
+    <string name="free_trial_trial_ended">انتهى الإصدار التجريبي</string>
+    <string name="free_trial_your_trial_ended">انتهى الإصدار التجريبي الخاص بك.</string>
+    <string name="store_onboarding_launch_store_generic_error_description">عذرًا، حدثت بعض الأخطاء غير المتوقعة.</string>
+    <string name="store_onboarding_launch_store_generic_error_title">خطأ غير متوقع</string>
+    <string name="store_onboarding_store_already_launched_error_description">تبين لنا أن متجرك بدأ بالفعل.</string>
+    <string name="store_onboarding_store_already_launched_error_title">يتعذر بدء متجرك</string>
+    <string name="store_onboarding_share_url_error">تتعذر مشاركة عنوان url للمتجر</string>
+    <string name="store_onboarding_launch_store_task_private_tag">خاص</string>
+    <string name="store_onboarding_launched_title">أصبح متجرك نشطًا!</string>
+    <string name="store_onboarding_launch_preview_title">معاينة</string>
+    <string name="store_onboarding_launch_store_back_to_store_button">العودة إلى متجري</string>
+    <string name="store_onboarding_launch_store_share_url_button">مشاركة عنوان URL</string>
+    <string name="store_onboarding_launch_store_button">نشر متجري</string>
+    <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">لبدء متجرك، يتعين عليك الترقية إلى خطتنا. &lt;u&gt;ترقية&lt;/u&gt;</string>
+    <string name="card_reader_tap_to_pay_not_available_error">لا تتوافر ميزة \"الضغط للدفع\" في متجرك أو جهازك</string>
+    <string name="domains_search_domains">البحث في النطاقات</string>
+    <string name="login_site_credentials_http_error">فشل تسجيل الدخول باستخدام رمز الحالة ⁦%1$s⁩</string>
+    <string name="login_site_credentials_custom_admin_url">يتعذر تسجيل لدخول نظرًا إلى عدم تمكنا من التعرف على عنوان URL لمسؤول متجرك</string>
+    <string name="login_site_credentials_custom_login_url">يتعذر تسجيل لدخول نظرًا إلى عدم تمكنا من التعرف على عنوان URL لتسجيل الدخول إلى متجرك</string>
+    <string name="login_site_credentials_invalid_response">فشل تسجيل الدخول مع وجود استجابة غير متوقعة من موقعك. إننا نعمل على إصلاح هذه المشكلة.</string>
+    <string name="more_menu_button_upgrades">ترقيات</string>
+    <string name="something_went_wrong_try_again">هناك خطأ ما. ترجى المحاولة مجددًا في وقت لاحق.</string>
+    <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">توجد متطلبات معلقة في حسابك. يرجى إكمال هذه المتطلبات للاستمرار في قبول المدفوعات الشخصية.</string>
+    <string name="analytics_banner_message">يرجى تقييم خبرة التحليلات الخاصة بك</string>
+    <string name="analytics_banner_title">هل تستمتع بالتحليلات؟</string>
+    <string name="analytics_wip_message">لقد عملنا على إتاحة إمكانية عرض معلومات المتجر المهمة الواردة من جهازك! هل يمكن أن يكون أفضل؟ ترجى مساعدتنا على تحسين هذه الميزة عن طريق مشاركة ملاحظاتك معنا</string>
+    <string name="analytics_wip_title">راجع إحصاءاتك وإيراداتك والمزيد من جهازك!</string>
+    <string name="login_jetpack_installation_magic_link_failure">حدث خطأ في أثناء إحضار موقعك على الويب، ترجى إعادة المحاولة!</string>
     <string name="support_request_error_message">عذرًا، يتعذر علينا إنشاء طلبات الدعم الآن، ترجى المحاولة مجددًا في وقت لاحق.</string>
     <string name="support_request_error_title">حدث خطأ</string>
     <string name="support_request_dialog_action">فهمت!</string>
@@ -299,8 +338,6 @@ Language: ar
     <string name="card_reader_payment_collect_payment_built_in_state">القارئ المدج جاهز</string>
     <string name="card_reader_type_selection_bluetooth_reader">قارئ البلوتوث</string>
     <string name="card_reader_type_selection_tap_to_pay">الضغط للدفع</string>
-    <string name="card_reader_type_selection_description">يمكن استخدام هاتفك كقارئ بطاقات أو يمكنك الاتصال بقارئ خارجي عبر البلوتوث.</string>
-    <string name="card_reader_type_selection_title">تحديد نوع القارئ</string>
     <string name="analytics_conversion_subtitle">معدل التحويل</string>
     <string name="analytics_session_card_title">الجلسات</string>
     <string name="analytics_session_no_data">ليست هناك جلسات لهذه الفترة</string>
@@ -951,7 +988,7 @@ Language: ar
     <string name="order_creation_new_customer_add_different_shipping_address">إضافة عنوان شحن مختلف</string>
     <string name="order_creation_product_instock">متوفر في المخزون</string>
     <string name="order_creation_product_stock_quantity">%s متوفر في المخزون</string>
-    <string name="order_creation_add_products">إضافة منتج</string>
+    <string name="order_creation_add_products">إضافة منتجات</string>
     <string name="order_creation_products">المنتجات</string>
     <string name="order_creation_add_customer">إضافة تفاصيل العميل</string>
     <string name="order_creation_customer">زبون</string>

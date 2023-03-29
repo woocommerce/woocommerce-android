@@ -101,7 +101,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given payment flow, when onboarding completed, then navigates to card reader connection screen`() =
+    fun `given payment flow with external reader, when onboarding completed, then navigates to card reader connection screen with external`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
                 CardReaderOnboardingState.OnboardingCompleted(WOOCOMMERCE_PAYMENTS, pluginVersion, countryCode)
@@ -111,12 +111,37 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 CardReaderOnboardingFragmentArgs(
                     cardReaderOnboardingParam = CardReaderOnboardingParams.Check(
                         CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER)
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
             assertThat(viewModel.event.value)
                 .isInstanceOf(OnboardingEvent.ContinueToConnection::class.java)
+            assertThat((viewModel.event.value as OnboardingEvent.ContinueToConnection).cardReaderType)
+                .isEqualTo(CardReaderType.EXTERNAL)
+        }
+
+    @Test
+    fun `given payment flow with built reader, when onboarding completed, then navigates to card reader connection screen with built in`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.OnboardingCompleted(WOOCOMMERCE_PAYMENTS, pluginVersion, countryCode)
+            )
+
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    cardReaderOnboardingParam = CardReaderOnboardingParams.Check(
+                        CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER)
+                    ),
+                    cardReaderType = CardReaderType.BUILT_IN
+                ).initSavedStateHandle()
+            )
+
+            assertThat(viewModel.event.value)
+                .isInstanceOf(OnboardingEvent.ContinueToConnection::class.java)
+            assertThat((viewModel.event.value as OnboardingEvent.ContinueToConnection).cardReaderType)
+                .isEqualTo(CardReaderType.BUILT_IN)
         }
 
     @Test
@@ -138,7 +163,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
                         onboardingState = StoreCountryNotSupported(""),
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -153,7 +179,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
                         onboardingState = StoreCountryNotSupported(""),
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -171,7 +198,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                             STRIPE_EXTENSION_GATEWAY,
                             ""
                         ),
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -194,7 +222,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                             WOOCOMMERCE_PAYMENTS,
                             ""
                         ),
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -214,7 +243,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
                         onboardingState = WcpayNotInstalled,
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -231,7 +261,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
                         onboardingState = PluginUnsupportedVersion(WOOCOMMERCE_PAYMENTS),
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -248,7 +279,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
                         onboardingState = PluginUnsupportedVersion(STRIPE_EXTENSION_GATEWAY),
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -265,7 +297,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
                         onboardingState = WcpayNotActivated,
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -282,7 +315,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
                         onboardingState = SetupNotCompleted(WOOCOMMERCE_PAYMENTS),
-                    )
+                    ),
+                    CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -299,7 +333,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
                         onboardingState = SetupNotCompleted(STRIPE_EXTENSION_GATEWAY),
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -318,7 +353,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         onboardingState = PluginInTestModeWithLiveStripeAccount(
                             WOOCOMMERCE_PAYMENTS
                         ),
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -339,7 +375,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         onboardingState = PluginInTestModeWithLiveStripeAccount(
                             STRIPE_EXTENSION_GATEWAY
                         ),
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -358,7 +395,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
                         onboardingState = StripeAccountUnderReview(STRIPE_EXTENSION_GATEWAY),
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -380,7 +418,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                             null,
                             "US"
                         ),
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -404,7 +443,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         onboardingState = StripeAccountOverdueRequirement(
                             STRIPE_EXTENSION_GATEWAY
                         ),
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -425,7 +465,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                         onboardingState = StripeAccountRejected(
                             STRIPE_EXTENSION_GATEWAY
                         ),
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -444,7 +485,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
                         onboardingState = GenericError,
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -459,7 +501,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
                         onboardingState = NoConnectionError,
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -474,7 +517,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
                         onboardingState = StripeAccountCountryNotSupported(WOOCOMMERCE_PAYMENTS, "US"),
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -491,7 +535,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
                         onboardingState = StoreCountryNotSupported(""),
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -525,7 +570,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                             WOOCOMMERCE_PAYMENTS,
                             ""
                         ),
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -559,7 +605,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                             STRIPE_EXTENSION_GATEWAY,
                             ""
                         ),
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -574,7 +621,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
                         onboardingState = WcpayNotInstalled,
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -602,7 +650,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
                         onboardingState = StripeAccountCountryNotSupported(mock(), ""),
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -642,7 +691,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                             WOOCOMMERCE_PAYMENTS,
                             "US"
                         ),
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -672,7 +722,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
                         onboardingState = StoreCountryNotSupported("US"),
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -840,7 +891,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
                         onboardingState = WcpayNotActivated
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -866,7 +918,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
                         onboardingState = SetupNotCompleted(WOOCOMMERCE_PAYMENTS),
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -943,7 +996,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
                         onboardingState = PluginInTestModeWithLiveStripeAccount(mock()),
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -978,7 +1032,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                             preferredPlugin = WOOCOMMERCE_PAYMENTS,
                             version = pluginVersion
                         )
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -999,7 +1054,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                             preferredPlugin = WOOCOMMERCE_PAYMENTS,
                             version = pluginVersion
                         ),
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -1027,7 +1083,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 CardReaderOnboardingFragmentArgs(
                     cardReaderOnboardingParam = CardReaderOnboardingParams.Check(
                         CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER)
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -1094,7 +1151,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 CardReaderOnboardingFragmentArgs(
                     cardReaderOnboardingParam = CardReaderOnboardingParams.Check(
                         CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER)
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -1161,7 +1219,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 CardReaderOnboardingFragmentArgs(
                     cardReaderOnboardingParam = CardReaderOnboardingParams.Check(
                         CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER)
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -1182,7 +1241,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                             preferredPlugin = WOOCOMMERCE_PAYMENTS,
                             version = pluginVersion
                         ),
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -1808,7 +1868,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
                         onboardingState = StripeAccountRejected(mock()),
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -1873,7 +1934,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 CardReaderOnboardingFragmentArgs(
                     cardReaderOnboardingParam = CardReaderOnboardingParams.Check(
                         CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER)
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -1897,7 +1959,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                             pluginVersion,
                             countryCode
                         )
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -1997,7 +2060,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
                         onboardingState = StripeAccountOverdueRequirement(mock()),
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -2027,7 +2091,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
                         onboardingState = StripeAccountUnderReview(mock()),
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -2055,7 +2120,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
                         onboardingState = GenericError,
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -2081,7 +2147,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
                         onboardingState = NoConnectionError,
-                    )
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
                 ).initSavedStateHandle()
             )
 
@@ -2274,17 +2341,17 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     private fun createVM(
         savedState: SavedStateHandle = CardReaderOnboardingFragmentArgs(
-            cardReaderOnboardingParam = CardReaderOnboardingParams.Check(CardReaderFlowParam.CardReadersHub)
+            cardReaderOnboardingParam = CardReaderOnboardingParams.Check(CardReaderFlowParam.CardReadersHub()),
+            cardReaderType = CardReaderType.EXTERNAL
         ).initSavedStateHandle()
-    ) =
-        CardReaderOnboardingViewModel(
-            savedState,
-            onboardingChecker,
-            tracker,
-            learnMoreUrlProvider,
-            selectedSite,
-            appPrefsWrapper,
-            cardReaderManager,
-            gatewayStore
-        )
+    ) = CardReaderOnboardingViewModel(
+        savedState,
+        onboardingChecker,
+        tracker,
+        learnMoreUrlProvider,
+        selectedSite,
+        appPrefsWrapper,
+        cardReaderManager,
+        gatewayStore
+    )
 }

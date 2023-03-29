@@ -11,7 +11,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_weight="1"
-        app:layout_constraintBottom_toTopOf="@+id/offline_bar"
+        app:layout_constraintBottom_toTopOf="@+id/trial_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -74,9 +74,29 @@
         android:visibility="gone"
         android:layout_margin="@dimen/major_75"
         app:cardCornerRadius="@dimen/minor_100"
-        app:layout_constraintBottom_toTopOf="@+id/offline_bar"
+        app:layout_constraintBottom_toTopOf="@+id/trial_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/trial_bar"
+        style="@style/Woo.TextView.Subtitle1.OnPrimary.Icon"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/major_350"
+        android:layout_margin="0dp"
+        android:background="@color/woo_purple_0"
+        android:drawablePadding="@dimen/minor_100"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="@dimen/minor_100"
+        android:paddingVertical="@dimen/major_75"
+        android:textColor="@color/woo_black"
+        android:visibility="gone"
+        app:drawableStartCompat="@drawable/ic_tintable_info_outline_24dp"
+        app:drawableTint="@color/woo_black"
+        app:layout_constraintBottom_toTopOf="@+id/offline_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="7 days left in your trial. Upgrade Now" />
 
     <com.woocommerce.android.ui.network.OfflineStatusBarView
         android:id="@+id/offline_bar"

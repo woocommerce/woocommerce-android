@@ -3,15 +3,13 @@ package com.woocommerce.android.ui.orders.creation.navigation
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditFormFragmentDirections
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddProduct
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomerNote
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditFee
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditShipping
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductVariations
-import com.woocommerce.android.ui.orders.creation.products.OrderCreateEditProductSelectionFragmentDirections
 
 object OrderCreateEditNavigator {
     fun navigate(fragment: Fragment, target: OrderCreateEditNavigationTarget) {
@@ -22,9 +20,11 @@ object OrderCreateEditNavigator {
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerFragment()
             is EditCustomerNote ->
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCustomerNoteFragment()
-            is AddProduct ->
-                OrderCreateEditFormFragmentDirections
-                    .actionOrderCreationFragmentToOrderCreationProductSelectionFragment()
+            is SelectItems ->
+                OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToProductSelectorFragment(
+                    selectedItems = target.selectedItems.toTypedArray(),
+                    restrictions = target.restrictions.toTypedArray()
+                )
             is EditFee ->
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationEditFeeFragment(
                     orderSubTotal = target.orderSubTotal,
@@ -33,11 +33,6 @@ object OrderCreateEditNavigator {
             is ShowProductDetails ->
                 OrderCreateEditFormFragmentDirections
                     .actionOrderCreationFragmentToOrderCreationProductDetailsFragment(target.item)
-            is ShowProductVariations ->
-                OrderCreateEditProductSelectionFragmentDirections
-                    .actionOrderCreationProductSelectionFragmentToOrderCreationVariationSelectionFragment(
-                        target.productId
-                    )
             is ShowCreatedOrder ->
                 OrderCreateEditFormFragmentDirections
                     .actionOrderCreationFragmentToOrderDetailFragment(target.orderId)

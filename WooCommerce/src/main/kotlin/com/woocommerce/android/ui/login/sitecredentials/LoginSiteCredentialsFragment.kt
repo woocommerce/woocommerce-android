@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.login.error.ApplicationPasswordsDisabledDialog
 import com.woocommerce.android.ui.login.error.notwoo.LoginNotWooDialogFragment
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.LoggedIn
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowApplicationPasswordsUnavailableScreen
+import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowHelpScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowNonWooErrorScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowResetPasswordScreen
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -75,6 +76,7 @@ class LoginSiteCredentialsFragment : Fragment() {
                 is ShowApplicationPasswordsUnavailableScreen ->
                     ApplicationPasswordsDisabledDialogFragment.newInstance(it.siteAddress, it.isJetpackConnected)
                         .show(childFragmentManager, LoginNotWooDialogFragment.TAG)
+                is ShowHelpScreen -> loginListener.helpUsernamePassword(it.siteAddress, it.username, false)
                 is ShowSnackbar -> uiMessageResolver.showSnack(it.message)
                 is ShowUiStringSnackbar -> uiMessageResolver.showSnack(it.message)
                 is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()

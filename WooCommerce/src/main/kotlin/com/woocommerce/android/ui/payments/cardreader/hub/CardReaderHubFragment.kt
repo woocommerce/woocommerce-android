@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.core.view.isInvisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.Slide
 import androidx.transition.TransitionManager
@@ -46,12 +45,10 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
 
     private fun initViews(binding: FragmentCardReaderHubBinding) {
         binding.cardReaderHubRv.layoutManager = LinearLayoutManager(requireContext())
-        binding.cardReaderHubRv.addItemDecoration(
-            DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-        )
         binding.cardReaderHubRv.adapter = CardReaderHubAdapter()
     }
 
+    @Suppress("LongMethod")
     private fun observeEvents() {
         viewModel.event.observe(
             viewLifecycleOwner
@@ -83,9 +80,10 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                     findNavController().navigate(
                         CardReaderHubFragmentDirections.actionCardReaderHubFragmentToCardReaderOnboardingFragment(
                             CardReaderOnboardingParams.Failed(
-                                cardReaderFlowParam = CardReaderFlowParam.CardReadersHub,
+                                cardReaderFlowParam = CardReaderFlowParam.CardReadersHub(),
                                 onboardingState = event.onboardingState
-                            )
+                            ),
+                            cardReaderType = null
                         )
                     )
                 }
@@ -99,6 +97,9 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                 }
                 is CardReaderHubViewModel.CardReaderHubEvents.ShowToastString -> {
                     ToastUtils.showToast(context, event.message)
+                }
+                is CardReaderHubViewModel.CardReaderHubEvents.ShowToast -> {
+                    ToastUtils.showToast(context, getString(event.message))
                 }
                 is NavigateToTapTooPaySummaryScreen -> {
                     findNavController().navigate(

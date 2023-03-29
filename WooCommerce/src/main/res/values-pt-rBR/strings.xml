@@ -1,11 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-08 22:54:20+0000
+Translation-Revision-Date: 2023-03-21 17:54:05+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="upgrades_error_fetching_data">Erro ao buscar detalhes do plano</string>
+    <string name="upgrades_non_upgradeable_caption">Você é um assinante %1$s! Você tem acesso a todos as nossas funcionalidades até %2$s. </string>
+    <string name="upgrades_trial_ended_caption">Seu teste gratuito terminou e agora você tem acesso limitado a todas as funcionalidades. Assine o %1$s agora mesmo.</string>
+    <string name="upgrades_subscription_status">Status da assinatura</string>
+    <string name="upgrades_title">Upgrades</string>
+    <string name="upgrades_troubleshooting">Solução de problemas</string>
+    <string name="upgrades_current_plan">Atual: %s</string>
+    <string name="upgrades_upgrade_now">Faça upgrade agora mesmo</string>
+    <string name="upgrades_report_subscription_issue">Relatar problema de assinatura</string>
+    <string name="free_trial_upgrade_now">Faça upgrade agora mesmo</string>
+    <string name="free_trial_days_left">%1$d dias restantes do seu teste.</string>
+    <string name="free_trial_trial_ended">Período de teste expirado</string>
+    <string name="free_trial_your_trial_ended">Seu período de teste terminou.</string>
+    <string name="store_onboarding_launch_store_generic_error_description">Ops! Houve alguns erros inesperados.</string>
+    <string name="store_onboarding_launch_store_generic_error_title">Erro inesperado</string>
+    <string name="store_onboarding_store_already_launched_error_description">Vimos que a loja já foi lançada.</string>
+    <string name="store_onboarding_store_already_launched_error_title">Não foi possível lançar sua loja</string>
+    <string name="store_onboarding_share_url_error">Não foi possível compartilhar a URL da loja</string>
+    <string name="store_onboarding_launch_store_task_private_tag">Privado</string>
+    <string name="store_onboarding_launched_title">Sua loja está no ar!</string>
+    <string name="store_onboarding_launch_preview_title">Visualizar</string>
+    <string name="store_onboarding_launch_store_back_to_store_button">Voltar para minha loja</string>
+    <string name="store_onboarding_launch_store_share_url_button">URL de compartilhamento</string>
+    <string name="store_onboarding_launch_store_button">Publicar minha loja</string>
+    <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">Para lançar sua loja, é necessário fazer upgrade para o nosso plano. &lt;u&gt;Fazer upgrade&lt;/u&gt;</string>
+    <string name="card_reader_tap_to_pay_not_available_error">O Tap to Pay não está disponível para sua loja ou dispositivo</string>
+    <string name="domains_search_domains">Pesquisar domínios</string>
+    <string name="login_site_credentials_http_error">Falha ao fazer login com o código do status %1$s</string>
+    <string name="login_site_credentials_custom_admin_url">Não foi possível fazer login porque não conseguimos identificar a URL de administrador da sua loja</string>
+    <string name="login_site_credentials_custom_login_url">Não foi possível fazer login porque não conseguimos identificar a URL de login da sua loja</string>
+    <string name="login_site_credentials_invalid_response">Falha ao fazer login. Ocorreu uma resposta inesperada do seu site. Estamos trabalhando para corrigir esse problema.</string>
+    <string name="more_menu_button_upgrades">Upgrades</string>
+    <string name="something_went_wrong_try_again">Ocorreu um erro. Tente novamente mais tarde.</string>
+    <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">Há requisitos pendentes na sua conta. Regularize as pendências para continuar aceitando pagamentos presenciais.</string>
+    <string name="analytics_banner_message">Avalie a sua experiência com a análise</string>
+    <string name="analytics_banner_title">Está curtindo a análise?</string>
+    <string name="analytics_wip_message">Temos trabalhado para possibilitar a exibição de informações relevantes da loja no seu dispositivo. Tem como ficar melhor? Compartilhe seu feedback para nos ajudar a melhorar essa funcionalidade</string>
+    <string name="analytics_wip_title">Veja suas estatísticas, receita e muito mais no dispositivo!</string>
+    <string name="login_jetpack_installation_magic_link_failure">Ocorreu um erro ao buscar seu site. Tente novamente.</string>
     <string name="support_request_error_message">Não é possível criar solicitações de suporte agora, tente novamente mais tarde.</string>
     <string name="support_request_error_title">Ocorreu um erro</string>
     <string name="support_request_dialog_action">Entendi!</string>
@@ -299,8 +338,6 @@ Language: pt_BR
     <string name="card_reader_payment_collect_payment_built_in_state">O leitor integrado está pronto</string>
     <string name="card_reader_type_selection_bluetooth_reader">Leitor Bluetooth</string>
     <string name="card_reader_type_selection_tap_to_pay">Tap To Pay</string>
-    <string name="card_reader_type_selection_description">Você pode usar seu telefone como um leitor de cartão ou conectá-lo a um leitor externo via Bluetooth</string>
-    <string name="card_reader_type_selection_title">Selecione o tipo de leitor</string>
     <string name="analytics_conversion_subtitle">Taxa de conversão</string>
     <string name="analytics_session_card_title">Sessões</string>
     <string name="analytics_session_no_data">Sem sessões neste período</string>
@@ -951,7 +988,7 @@ Language: pt_BR
     <string name="order_creation_new_customer_add_different_shipping_address">Adicionar um endereço de entrega diferente</string>
     <string name="order_creation_product_instock">Em estoque</string>
     <string name="order_creation_product_stock_quantity">%s em estoque</string>
-    <string name="order_creation_add_products">Adicionar produto</string>
+    <string name="order_creation_add_products">Adicionar produtos</string>
     <string name="order_creation_products">Produtos</string>
     <string name="order_creation_add_customer">Adicionar dados do cliente</string>
     <string name="order_creation_customer">Cliente</string>

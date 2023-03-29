@@ -124,8 +124,8 @@ private fun CustomerListViewItem(
                     .data(customer.avatarUrl)
                     .crossfade(true)
                     .build(),
-                placeholder = painterResource(R.drawable.ic_photos_grey_c_24dp),
-                error = painterResource(R.drawable.ic_photos_grey_c_24dp),
+                placeholder = painterResource(R.drawable.img_gravatar_placeholder),
+                error = painterResource(R.drawable.img_gravatar_placeholder),
                 contentDescription = null,
                 contentScale = ContentScale.FillWidth,
                 modifier = Modifier

@@ -40,7 +40,7 @@ open class WCBottomSheetDialogFragment : BottomSheetDialogFragment {
         if (DisplayUtils.isLandscape(requireContext())) {
             dialog?.setOnShowListener {
                 val dialog = it as BottomSheetDialog
-                dialog.findViewById<View>(R.id.design_bottom_sheet)?.let { sheet ->
+                dialog.findViewById<View>(org.wordpress.aztec.R.id.design_bottom_sheet)?.let { sheet ->
                     dialog.behavior.peekHeight = if (DisplayUtils.isXLargeTablet(requireContext())) {
                         sheet.height
                     } else {
