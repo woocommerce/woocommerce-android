@@ -84,7 +84,7 @@ class StoreNamePickerViewModel @Inject constructor(
         if (FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
             launch { startFreeTrialSiteCreation() }
         } else {
-            triggerEvent(NavigateToNextStep(storeName.value))
+            triggerEvent(NavigateToDomainPicker(storeName.value))
         }
     }
 
@@ -93,7 +93,7 @@ class StoreNamePickerViewModel @Inject constructor(
         createFreeTrialSite().ifSuccessfulThen {
             newStore.update(siteId = it)
             isCreatingStore.value = false
-            triggerEvent(NavigateToNextStep(storeName.value))
+            triggerEvent(NavigateToStoreInstallation)
         }
     }
 
@@ -131,7 +131,9 @@ class StoreNamePickerViewModel @Inject constructor(
         }
     }
 
-    data class NavigateToNextStep(val domainInitialQuery: String) : MultiLiveEvent.Event()
+    data class NavigateToDomainPicker(val domainInitialQuery: String) : MultiLiveEvent.Event()
+
+    object NavigateToStoreInstallation : MultiLiveEvent.Event()
 
     sealed class StoreNamePickerState {
         data class Contentful(
