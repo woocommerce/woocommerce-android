@@ -270,14 +270,14 @@ private fun ProductList(
             item {
                 PopularProductsList(
                     state = state,
-                    heading = "Popular",
+                    heading = stringResource(id = string.product_selector_popular_products_heading),
                     onProductClick = onProductClick
                 )
             }
             item {
                 if (!state.products.isNullOrEmpty()) {
                     Text(
-                        text = "Products",
+                        text = stringResource(id = string.product_selector_products_heading),
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.h6,
                         modifier = Modifier.padding(
