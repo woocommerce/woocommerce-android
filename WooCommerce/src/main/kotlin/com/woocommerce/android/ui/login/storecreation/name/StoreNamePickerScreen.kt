@@ -54,7 +54,6 @@ fun StoreNamePickerScreen(viewModel: StoreNamePickerViewModel) {
                 )
             }
         }
-
     }
 }
 
