@@ -236,13 +236,6 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         }
     }
 
-    fun onWebViewShown(url: String) {
-        val properties = mapOf(
-            "auth_url" to url
-        )
-        analyticsTracker.track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_WEB_VIEW_SHOWN, properties)
-    }
-
     private suspend fun login() {
         val state = requireNotNull(this@LoginSiteCredentialsViewModel.viewState.value as ViewState.NativeLoginViewState)
         loadingMessage.value = R.string.logging_in

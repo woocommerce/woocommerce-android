@@ -52,8 +52,7 @@ fun LoginSiteCredentialsScreen(viewModel: LoginSiteCredentialsViewModel) {
             onHelpButtonClick = viewModel::onHelpButtonClick,
             onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
             onStartWebAuthorizationClick = viewModel::onStartWebAuthorizationClick,
-            onWebAuthorizationUrlLoaded = viewModel::onWebAuthorizationUrlLoaded,
-            onWebViewShown = viewModel::onWebViewShown
+            onWebAuthorizationUrlLoaded = viewModel::onWebAuthorizationUrlLoaded
         )
     }
 }
@@ -69,8 +68,7 @@ fun LoginSiteCredentialsScreen(
     onHelpButtonClick: () -> Unit,
     onErrorDialogDismissed: () -> Unit,
     onStartWebAuthorizationClick: () -> Unit,
-    onWebAuthorizationUrlLoaded: (String) -> Unit,
-    onWebViewShown: (String) -> Unit
+    onWebAuthorizationUrlLoaded: (String) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -106,7 +104,6 @@ fun LoginSiteCredentialsScreen(
                     onErrorDialogDismissed()
                     onBackClick()
                 },
-                onWebViewShown = onWebViewShown,
                 modifier = Modifier.padding(paddingValues)
             )
         }
@@ -226,7 +223,6 @@ private fun WebAuthorizationScreen(
     viewState: LoginSiteCredentialsViewModel.ViewState.WebAuthorizationViewState,
     onUrlLoaded: (String) -> Unit,
     onErrorDialogDismissed: () -> Unit,
-    onWebViewShown: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when {
@@ -256,7 +252,6 @@ private fun WebAuthorizationScreen(
         }
 
         viewState.authorizationUrl != null -> {
-            onWebViewShown(viewState.authorizationUrl)
             WCWebView(
                 url = viewState.authorizationUrl,
                 userAgent = viewState.userAgent,
