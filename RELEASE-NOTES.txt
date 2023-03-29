@@ -7,6 +7,7 @@
 -----
 - [*] Jetpack benefit banner and dialog are now available on the dashboard screen after logging in with site credentials. [https://github.com/woocommerce/woocommerce-android/pull/8596]
 - [*] Fixed item's stock status labels on product picker lists [https://github.com/woocommerce/woocommerce-android/pull/8627]
+- [*] Users can now log in to self-hosted sites without Jetpack by approving application password authorization to their sites. [https://github.com/woocommerce/woocommerce-android/pull/8618]
 - [***] Adds a new onboarding list on my store tab to guide the user setting up their store [https://github.com/woocommerce/woocommerce-android/pull/8645]
 
 12.8
