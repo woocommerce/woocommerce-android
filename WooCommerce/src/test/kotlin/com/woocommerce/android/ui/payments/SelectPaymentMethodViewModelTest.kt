@@ -433,7 +433,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given order payments flow, when on tap too pay clicked, then collect tracked with order flow`() =
+    fun `given order payments flow, when on tap to pay clicked, then collect tracked with order flow`() =
         testBlocking {
             // GIVEN
             val viewModel = initViewModel(Payment(1L, ORDER))
