@@ -99,7 +99,7 @@ fun LoginSiteCredentialsScreen(
 
             is LoginSiteCredentialsViewModel.ViewState.WebAuthorizationViewState -> WebAuthorizationScreen(
                 viewState = viewState,
-                onUrlLoaded = onWebAuthorizationUrlLoaded,
+                onPageFinished = onWebAuthorizationUrlLoaded,
                 onErrorDialogDismissed = {
                     onErrorDialogDismissed()
                     onBackClick()
@@ -221,9 +221,9 @@ private fun NativeLoginForm(
 @Composable
 private fun WebAuthorizationScreen(
     viewState: LoginSiteCredentialsViewModel.ViewState.WebAuthorizationViewState,
-    onUrlLoaded: (String) -> Unit,
+    onPageFinished: (String) -> Unit,
     onErrorDialogDismissed: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     when {
         viewState.loadingMessage != null -> {
@@ -255,7 +255,7 @@ private fun WebAuthorizationScreen(
             WCWebView(
                 url = viewState.authorizationUrl,
                 userAgent = viewState.userAgent,
-                onUrlLoaded = onUrlLoaded,
+                onPageFinished = onPageFinished,
                 modifier = modifier
             )
         }

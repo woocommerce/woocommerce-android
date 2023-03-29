@@ -9,6 +9,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.LOGIN_SITE_CREDENTIALS_LOGIN_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -150,6 +151,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     fun onStartWebAuthorizationClick() {
         state.value = State.WebAuthorization
+        analyticsTracker.track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_WEB_VIEW_SHOWN)
     }
 
     fun onWebAuthorizationUrlLoaded(url: String) {
@@ -164,9 +166,13 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 if (!isSuccess) {
                     fetchedSiteId.value = -1
                     state.value = State.NativeLogin
+
+                    analyticsTracker.track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_REJECTED)
                     triggerEvent(ShowSnackbar(R.string.login_site_credentials_web_authorization_connection_rejected))
                     return@launch
                 }
+
+                analyticsTracker.track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_APPROVED)
                 val username = requireNotNull(params[USERNAME_PARAMETER])
                 val password = requireNotNull(params[PASSWORD_PARAMETER])
 
@@ -220,6 +226,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             val authorizationUrl = site?.applicationPasswordsAuthorizeUrl?.let { url ->
                 "$url?app_name=$applicationPasswordsClientId&success_url=$REDIRECTION_URL"
             }
+
             ViewState.WebAuthorizationViewState(
                 authorizationUrl = authorizationUrl,
                 userAgent = userAgent,
@@ -277,6 +284,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     if (state.value == State.NativeLogin) {
                         fetchUserInfo()
                     } else if (site.applicationPasswordsAuthorizeUrl == null) {
+                        analyticsTracker.track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_URL_NOT_AVAILABLE)
                         triggerEvent(ShowApplicationPasswordsUnavailableScreen(siteAddress, site.isJetpackConnected))
                     }
                 } else {
