@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin.STORE_CREATION
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
+import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_ADDRESS_ALREADY_EXISTS
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel
@@ -17,10 +18,10 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.util.TimeZone
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.util.TimeZone
+import javax.inject.Inject
 
 @HiltViewModel
 class StoreNamePickerViewModel @Inject constructor(
@@ -77,7 +78,7 @@ class StoreNamePickerViewModel @Inject constructor(
 
     private suspend fun createFreeTrialSite(): StoreCreationResult<Long> {
         suspend fun StoreCreationResult<Long>.recoverIfSiteExists(): StoreCreationResult<Long> {
-            return if ((this as? StoreCreationResult.Failure<Long>)?.type == StoreCreationErrorType.SITE_ADDRESS_ALREADY_EXISTS) {
+            return if ((this as? StoreCreationResult.Failure<Long>)?.type == SITE_ADDRESS_ALREADY_EXISTS) {
                 repository.getSiteByUrl(newStore.data.domain)?.let { site ->
                     StoreCreationResult.Success(site.siteId)
                 } ?: this
