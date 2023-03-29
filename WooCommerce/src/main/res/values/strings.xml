@@ -3224,4 +3224,11 @@
     <string name="upgrades_current_plan_ended_caption">Your subscription has ended, and you have limited access to all the features.</string>
     <string name="upgrades_error_fetching_data">Error while fetching plan details</string>
     <string name="upgrades_plan_ended_name">%s ended</string>
+
+    <!--
+    Gift cards
+    -->
+    <string name="order_gift_card">Gift Card</string>
+    <string name="gift_card_used" translatable="false">- %1$s</string>
+
 </resources>
