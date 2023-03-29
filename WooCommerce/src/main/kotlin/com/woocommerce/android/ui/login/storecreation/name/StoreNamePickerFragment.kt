@@ -13,6 +13,7 @@ import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -44,14 +45,18 @@ class StoreNamePickerFragment : BaseFragment() {
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
-                is StoreNamePickerViewModel.NavigateToNextStep -> navigateToNextStep()
+                is StoreNamePickerViewModel.NavigateToNextStep -> navigateToNextStep(event)
             }
         }
     }
 
-    private fun navigateToNextStep() {
-        findNavController().navigateSafely(
+    private fun navigateToNextStep(event: StoreNamePickerViewModel.NavigateToNextStep) {
+        if (FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
             StoreNamePickerFragmentDirections.actionStoreNamePickerFragmentToInstallationFragment()
-        )
+        } else {
+            StoreNamePickerFragmentDirections.actionStoreNamePickerFragmentToDomainPickerFragment(
+                event.domainInitialQuery
+            )
+        }.let { findNavController().navigateSafely(it) }
     }
 }

@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SIT
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -79,14 +80,20 @@ class StoreNamePickerViewModel @Inject constructor(
     }
 
     fun onContinueClicked() {
-        launch {
-            isCreatingStore.value = true
-            newStore.update(name = storeName.value)
-            createFreeTrialSite().ifSuccessfulThen {
-                newStore.update(siteId = it)
-                isCreatingStore.value = false
-                triggerEvent(NavigateToNextStep(storeName.value))
-            }
+        newStore.update(name = storeName.value)
+        if (FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
+            launch { startFreeTrialSiteCreation() }
+        } else {
+            triggerEvent(NavigateToNextStep(storeName.value))
+        }
+    }
+
+    private suspend fun startFreeTrialSiteCreation() {
+        isCreatingStore.value = true
+        createFreeTrialSite().ifSuccessfulThen {
+            newStore.update(siteId = it)
+            isCreatingStore.value = false
+            triggerEvent(NavigateToNextStep(storeName.value))
         }
     }
 
