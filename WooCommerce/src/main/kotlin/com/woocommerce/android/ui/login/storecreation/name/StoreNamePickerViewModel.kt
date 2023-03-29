@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.util.TimeZone
 import javax.inject.Inject
+import kotlinx.coroutines.flow.combine
 
 @HiltViewModel
 class StoreNamePickerViewModel @Inject constructor(
@@ -31,9 +32,18 @@ class StoreNamePickerViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val prefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
-    private val _storeName = savedState.getStateFlow(scope = this, initialValue = "")
-    val storeName: LiveData<String> = _storeName.asLiveData()
+    private val storeName = savedState.getStateFlow(scope = this, initialValue = "")
+    private val isCreatingStore = savedState.getStateFlow(scope = this, initialValue = false)
     private val error = MutableStateFlow<StoreCreationErrorType?>(null)
+
+    val storePickerState: LiveData<StoreNamePickerState> = combine(
+        storeName,
+        isCreatingStore,
+        error
+    ) { storeName, isCreatingStore, error ->
+        error?.let { StoreNamePickerState.Error(it) }
+            ?: StoreNamePickerState.Contentful(storeName, isCreatingStore)
+    }.asLiveData()
 
     init {
         analyticsTrackerWrapper.track(
@@ -61,7 +71,7 @@ class StoreNamePickerViewModel @Inject constructor(
     }
 
     fun onStoreNameChanged(newName: String) {
-        _storeName.value = newName
+        storeName.value = newName
     }
 
     fun onContinueClicked() {
@@ -71,7 +81,7 @@ class StoreNamePickerViewModel @Inject constructor(
                     name = storeName.value,
                     siteId = it
                 )
-                triggerEvent(NavigateToNextStep(storeName.value!!))
+                triggerEvent(NavigateToNextStep(storeName.value))
             }
         }
     }
@@ -111,4 +121,12 @@ class StoreNamePickerViewModel @Inject constructor(
     }
 
     data class NavigateToNextStep(val domainInitialQuery: String) : MultiLiveEvent.Event()
+
+    sealed class StoreNamePickerState {
+        data class Contentful(
+            val storeName: String,
+            val isCreatingStore: Boolean
+        ) : StoreNamePickerState()
+        data class Error(val type: StoreCreationErrorType) : StoreNamePickerState()
+    }
 }
