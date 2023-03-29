@@ -76,6 +76,7 @@ class ProductsRealAPI : TestBase() {
             stockStatusRaw = "instock",
             variations = " • 6 variations",
             priceDiscountedRaw = "2",
+            sku = "SKU: CF-CPC"
         )
 
         val productSalad = ProductData(

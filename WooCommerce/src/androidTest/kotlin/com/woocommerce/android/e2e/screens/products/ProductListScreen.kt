@@ -2,7 +2,6 @@ package com.woocommerce.android.e2e.screens.products
 
 import android.view.View
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.util.TreeIterables
@@ -100,14 +99,12 @@ class ProductListScreen : Screen {
                 ViewMatchers.withChild(
                     Matchers.allOf(
                         ViewMatchers.withId(R.id.productSku),
-                        // Check for SKU value is disabled because of
-                        // https://github.com/woocommerce/woocommerce-android/issues/8663
-                        // ViewMatchers.withText(product.sku)
+                        ViewMatchers.withText(product.sku)
                     )
                 )
             )
         )
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+            .check(matches(ViewMatchers.isDisplayed()))
 
         return this
     }
