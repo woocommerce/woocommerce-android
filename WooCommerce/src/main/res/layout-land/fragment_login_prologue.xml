@@ -89,7 +89,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
-            android:layout_marginTop="@dimen/minor_25"
             android:layout_marginEnd="@dimen/minor_100"
             android:layout_marginBottom="@dimen/major_100"
             android:layout_weight="1"
