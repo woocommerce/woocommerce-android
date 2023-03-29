@@ -58,6 +58,9 @@ class ProductsRealAPI : TestBase() {
             .proceedWith(BuildConfig.E2E_REAL_API_URL)
             .proceedWith(BuildConfig.E2E_REAL_API_EMAIL)
             .proceedWith(BuildConfig.E2E_REAL_API_PASSWORD)
+
+        TabNavComponent()
+            .gotoProductsScreen()
     }
 
     @After
@@ -69,26 +72,28 @@ class ProductsRealAPI : TestBase() {
             .logoutIfNeeded(composeTestRule)
     }
 
+    private val productSalad = ProductData(
+        name = "Chicken Teriyaki Salad", stockStatusRaw = "instock",
+        priceDiscountedRaw = "7", sku = "SLD-CHK-TRK"
+    )
+
+    private val productCappuccino = ProductData(
+        name = "Cappuccino", stockStatusRaw = "instock", variations = " • 6 variations",
+        priceDiscountedRaw = "2", sku = "CF-CPC"
+    )
+
+    private val productCappuccinoAlmondMedium = ProductData(
+        name = "Cappuccino", stockStatusRaw = "instock", priceDiscountedRaw = "3", sku = "CF-CPC-ALM-M"
+    )
+
+    private val productCappuccinoAlmondLarge = ProductData(
+        name = "Cappuccino", stockStatusRaw = "instock", priceDiscountedRaw = "4", sku = "CF-CPC-ALM-L"
+    )
+
     @Test
     fun e2eRealApiProductsSearchUsual() {
-        val productCappuccino = ProductData(
-            name = "Cappuccino",
-            stockStatusRaw = "instock",
-            variations = " • 6 variations",
-            priceDiscountedRaw = "2",
-            sku = "SKU: CF-CPC"
-        )
-
-        val productSalad = ProductData(
-            name = "Chicken Teriyaki Salad",
-            stockStatusRaw = "instock",
-            priceDiscountedRaw = "7",
-            sku = "SKU: SLD-CHK-TRK"
-        )
-
-        TabNavComponent()
+        ProductListScreen()
             // Make sure all products are listed
-            .gotoProductsScreen()
             .assertProductCard(productCappuccino)
             .assertProductCard(productSalad)
             .assertProductsCount(2)
@@ -111,5 +116,26 @@ class ProductsRealAPI : TestBase() {
             .assertProductCard(productCappuccino)
             .assertProductCard(productSalad)
             .assertProductsCount(2)
+    }
+
+    @Test
+    fun e2eRealApiProductsSearchBySKU() {
+        ProductListScreen()
+            .openSearchPane()
+            .tapSearchSKU()
+            // Search for a simple product SKU
+            .enterSearchTerm(productSalad.sku)
+            .assertProductCard(productSalad)
+            .assertProductsCount(1)
+            // Search for variations sharing a part of SKU
+            .enterSearchTerm(productCappuccino.sku + "-ALM")
+            .assertProductCard(productCappuccinoAlmondMedium)
+            .assertProductCard(productCappuccinoAlmondLarge)
+            .assertProductsCount(2)
+            // Search for exact variation SKU
+            .enterSearchTerm(productCappuccinoAlmondLarge.sku)
+            .assertProductCard(productCappuccinoAlmondLarge)
+            .assertProductsCount(1)
+            .leaveSearchMode()
     }
 }
