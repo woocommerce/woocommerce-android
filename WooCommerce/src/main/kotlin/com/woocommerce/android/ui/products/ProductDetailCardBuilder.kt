@@ -572,9 +572,9 @@ class ProductDetailCardBuilder(
                     PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
                 )
             }
-        } else {
+        } else if (isVariableSubscription.not()) {
             emptyVariations()
-        }
+        } else null
     }
 
     private fun Product.emptyVariations() =
@@ -709,6 +709,10 @@ class ProductDetailCardBuilder(
 
     private fun Product.warning(): ProductProperty? {
         val variations = variationRepository.getProductVariationList(this.remoteId)
+
+        if (variations.isEmpty() && productType == VARIABLE_SUBSCRIPTION) {
+            return ProductProperty.Warning(resources.getString(string.no_variable_subscription_warning))
+        }
 
         val missingPriceVariation = variations
             .find { it.regularPrice == null || it.regularPrice == BigDecimal.ZERO }

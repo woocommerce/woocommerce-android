@@ -3172,6 +3172,7 @@
     <string name="subscription_no_sign_up_fee">No sign up fee</string>
     <string name="subscription_no_trial">No trial period</string>
     <string name="subscription_details_info_notice">You can edit product subscriptions in the web dashboard.</string>
+    <string name="no_variable_subscription_warning">You can only add variable subscriptions in the web dashboard.</string>
     <!--
     Subscription status
     -->
