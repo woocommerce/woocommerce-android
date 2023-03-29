@@ -19,8 +19,8 @@ import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.EditIn
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenCouponRestrictions
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
 import com.woocommerce.android.ui.products.ParameterRepository
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorRestriction
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -156,7 +156,7 @@ class EditCouponViewModel @Inject constructor(
     fun onSelectProductsButtonClick() {
         couponDraft.value?.let {
             it.productIds.map { productOrVariationId ->
-                ProductSelectorViewModel.SelectedItem.ProductOrVariation(productOrVariationId)
+                SelectedItem.ProductOrVariation(productOrVariationId)
             }.let { selectedItems ->
                 triggerEvent(
                     EditIncludedProducts(
@@ -171,7 +171,7 @@ class EditCouponViewModel @Inject constructor(
         }
     }
 
-    fun onSelectedProductsUpdated(productItems: Set<ProductSelectorViewModel.SelectedItem>) {
+    fun onSelectedProductsUpdated(productItems: Collection<SelectedItem>) {
         couponDraft.update {
             it?.copy(productIds = productItems.map { it.id })
         }

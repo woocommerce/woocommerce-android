@@ -92,7 +92,7 @@
             app:argType="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator$ValidationResult"
             app:nullable="true" />
         <argument
-            android:name="requiresPhoneNumber"
+            android:name="isCustomsFormRequired"
             app:argType="boolean" />
         <action
             android:id="@+id/action_editShippingLabelAddressFragment_to_shippingLabelAddressSuggestionFragment"

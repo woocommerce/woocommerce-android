@@ -53,7 +53,6 @@
                 tools:itemCount="10"
                 tools:listitem="@layout/card_reader_hub_list_item" />
 
-            <!-- android:textColorHighlight="#00FFFFFF": Workaround for a bug https://stackoverflow.com/a/70394538/632516 -->
             <include
                 android:id="@+id/learn_more_ipp_tv"
                 layout="@layout/card_reader_learn_more_section"

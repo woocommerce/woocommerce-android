@@ -1,6 +1,7 @@
 package com.woocommerce.android.extensions
 
 import android.text.TextUtils
+import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_PLAN_ID
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.utils.SiteUtils.getNormalizedTimezone
@@ -59,6 +60,5 @@ val SiteModel.clock: Clock
         return Clock.system(zoneId)
     }
 
-const val ECOMMERCE_TRIAL_PLAN_ID = 1052L
-val SiteModel.isCurrentPlanEcommerceTrial
-    get() = planId == ECOMMERCE_TRIAL_PLAN_ID
+val SiteModel?.isFreeTrial: Boolean
+    get() = this?.planId == FREE_TRIAL_PLAN_ID

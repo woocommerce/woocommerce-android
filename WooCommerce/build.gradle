@@ -74,9 +74,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "12.8-rc-1"
+            versionName "12.9-rc-1"
         }
-        versionCode 395
+        versionCode 397
 
         minSdkVersion gradle.ext.minSdkVersion
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -132,6 +132,8 @@ android {
             applicationId "com.woocommerce.android.dev"
             dimension "buildType"
             isDefault true
+
+            resConfigs("en", "xxhdpi")
         }
 
         // Used for CI builds on PRs (downloadable apks). Can be used locally when a developer needs
@@ -193,7 +195,6 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth:20.2.0'
 
     // Support library
-    implementation "androidx.legacy:legacy-support-v4:1.0.0"
     implementation "androidx.core:core-ktx:$coreKtxVersion"
     implementation "androidx.constraintlayout:constraintlayout:2.1.4"
     implementation "androidx.recyclerview:recyclerview:1.2.1"
@@ -275,7 +276,6 @@ dependencies {
     implementation "com.github.bumptech.glide:glide:$glideVersion"
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
     implementation "com.github.bumptech.glide:volley-integration:$glideVersion@aar"
-    implementation "org.greenrobot:eventbus:$eventBusVersion"
     implementation "com.google.android.play:core:$googlePlayCoreVersion"
 
     implementation 'com.google.android.gms:play-services-code-scanner:16.0.0-beta3'
@@ -312,7 +312,6 @@ dependencies {
     androidTestImplementation "org.assertj:assertj-core:$assertjVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
-    androidTestImplementation "androidx.test.espresso:espresso-intents:$espressoVersion"
     androidTestImplementation "com.google.dagger:hilt-android-testing:$gradle.ext.daggerVersion"
     kaptAndroidTest "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
@@ -402,6 +401,10 @@ android.buildTypes.all { buildType ->
                     "${property.value}"
         }
     }
+
+    buildConfigField "String",
+            "IAP_TESTING_SANDBOX_URL",
+            "\"${project.properties.getOrDefault('iap_testing_sandbox_url', '')}\""
 
     // If Google services file doesn't exist, copy example file.
     if (!file("google-services.json").exists()) {

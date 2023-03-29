@@ -67,6 +67,7 @@
     <string name="domain">Domain</string>
     <string name="domains">Domains</string>
     <string name="something_went_wrong_try_again">Something went wrong, Please try again later.</string>
+    <string name="loading">Loading…</string>
     <string name="shipping_labels">Shipping Labels</string>
     <string name="product_variations">Variations</string>
     <string name="product_variation_options">%1$s (%2$s options)</string>
@@ -440,6 +441,9 @@
     <string name="analytics_session_card_title">Sessions</string>
     <string name="analytics_conversion_subtitle">Conversion Rate</string>
     <string name="analytics_visitors_subtitle">Visitors</string>
+    <string name="analytics_item">item</string>
+    <string name="analytics_items">items</string>
+    <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s, %4$s sold</string>
 
     <string name="analytics_wip_title">See your stats, revenue and more from your device!</string>
     <string name="analytics_wip_message">We\'ve been working on making it possible to display significant store information from your device! Could it be better? Please help us improve this feature by sharing your feedback with us</string>
@@ -886,7 +890,7 @@
     <string name="shipping_label_address_suggestion_banner">We have slightly modified the address entered. If correct, please use the suggested address to ensure accurate delivery.</string>
     <string name="shipping_label_address_suggestion_entered_address">Entered address</string>
     <string name="shipping_label_address_suggestion_suggested_address">Suggested address</string>
-    <string name="shipping_label_address_phone_required">A phone number is required because this shipment requires a customs form</string>
+    <string name="shipping_label_address_phone_required">A phone number is required</string>
     <string name="shipping_label_origin_address_phone_invalid">Customs forms require a 10-digit phone number</string>
     <string name="shipping_label_destination_address_phone_invalid">Please enter a valid phone number</string>
     <string name="shipping_label_address_data_invalid_snackbar_message">Certain required fields are blank.</string>
@@ -2262,6 +2266,7 @@
     <string name="jetpack_benefits_modal_multiple_stores_title">Multiple stores</string>
     <string name="jetpack_benefits_modal_multiple_stores_subtitle">Get access to all of your WooCommerce stores.</string>
     <string name="jetpack_benefits_modal_login">Log In to Continue</string>
+    <string name="jetpack_benefits_open_wpadmin">Open wp-admin</string>
 
     <string name="jetpack_install_start_title">Install Jetpack</string>
     <string name="jetpack_install_start_subtitle">Install the free Jetpack plugin to &lt;strong&gt;%s&lt;/strong&gt; to experience the best mobile experience.</string>
@@ -2939,6 +2944,7 @@
     <string name="store_creation_installation_success">Your store has been created!</string>
     <string name="store_creation_installation_manage_store_button">Manage my store</string>
     <string name="store_creation_installation_show_preview_button">Store preview</string>
+    <string name="store_creation_installation_rendering_preview_label">Rendering preview…</string>
     <string name="store_creation_store_name_caption">About your store</string>
     <string name="store_creation_store_name_title">What’s your store name?</string>
     <string name="store_creation_store_name_subtitle">Don’t worry you can always change it later. </string>
@@ -3129,6 +3135,7 @@
     Store onboarding
     -->
     <string name="store_onboarding_title">Store setup</string>
+    <string name="store_onboarding_task_about_your_store_toolbar_title">About your store</string>
     <string name="store_onboarding_task_about_your_store_title">Tell us more about your store</string>
     <string name="store_onboarding_task_about_your_store_description">We’ll use the info to get a head start on your shipping, tax, and payments settings.</string>
     <string name="store_onboarding_task_add_product_title">Add your first product </string>
@@ -3157,6 +3164,9 @@
     <string name="store_onboarding_store_already_launched_error_description">We found that the store has already launched.</string>
     <string name="store_onboarding_launch_store_generic_error_title">Unexpected error</string>
     <string name="store_onboarding_launch_store_generic_error_description">Oops, some unexpected errors happened.</string>
+    <string name="store_onboarding_launch_store_ok">OK</string>
+    <string name="store_onboarding_get_paid_title">Payments Setup</string>
+    <string name="store_onboarding_get_paid_loading_label">Loading…</string>
 
     <!--
     Support Request
@@ -3187,8 +3197,10 @@
     -->
     <string name="free_trial_your_trial_ended">Your trial has ended.</string>
     <string name="free_trial_trial_ended">Trial ended</string>
-    <string name="free_trial_days_left">%1$d days left in your trial.</string>
+    <string name="free_trial_days_left">%1$s left in your trial.</string>
     <string name="free_trial_upgrade_now">Upgrade Now</string>
+    <string name="free_trial_one_day_left">1 day</string>
+    <string name="free_trial_days_left_plural">%1$d days</string>
 
     <!--
     Upgrades
@@ -3199,8 +3211,10 @@
     <string name="upgrades_troubleshooting">Troubleshooting</string>
     <string name="upgrades_title">Upgrades</string>
     <string name="upgrades_subscription_status">Subscription status</string>
-    <string name="upgrades_upgradeable_caption">You are in the %1$d-day free trial. The free trial will end in %2$d days. Upgrade to unlock new features and keep your store running..</string>
+    <string name="upgrades_upgradeable_caption">You are in the %1$d-day free trial. The free trial will end in %2$s. Upgrade to unlock new features and keep your store running.</string>
     <string name="upgrades_trial_ended_caption">Your free trial has ended and have limited access to all the features. Subscribe to %1$s now.</string>
     <string name="upgrades_non_upgradeable_caption">You are a %1$s subscriber! You have access to all our features until %2$s. </string>
+    <string name="upgrades_current_plan_ended_caption">Your subscription has ended, and you have limited access to all the features.</string>
     <string name="upgrades_error_fetching_data">Error while fetching plan details</string>
+    <string name="upgrades_plan_ended_name">%s ended</string>
 </resources>

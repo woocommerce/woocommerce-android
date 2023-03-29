@@ -59,7 +59,8 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     val editText: TextInputEditText
         get() = currencyEditText
 
-    @Inject lateinit var parameterRepository: ParameterRepository
+    @Inject
+    lateinit var parameterRepository: ParameterRepository
 
     var supportsNegativeValues: Boolean = true
         set(value) {
@@ -191,7 +192,11 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     }
 }
 
-private abstract class CurrencyEditText(context: Context) : TextInputEditText(context, null, R.attr.editTextStyle) {
+private abstract class CurrencyEditText(context: Context) : TextInputEditText(
+    context,
+    null,
+    androidx.appcompat.R.attr.editTextStyle
+) {
     open var supportsEmptyState: Boolean = true
     abstract var supportsNegativeValues: Boolean
     abstract val value: LiveData<BigDecimal?>

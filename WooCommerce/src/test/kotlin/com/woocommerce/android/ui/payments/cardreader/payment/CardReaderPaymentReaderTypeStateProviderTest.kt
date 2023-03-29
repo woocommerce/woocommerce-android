@@ -133,7 +133,7 @@ class CardReaderPaymentReaderTypeStateProviderTest {
         val result = provider.providePaymentSuccessfulReceiptSentAutomaticallyState(
             cardReaderType,
             "amountLabel",
-            UiStringRes(R.string.ok),
+            UiStringRes(R.string.all),
             {},
             {},
         )
@@ -141,7 +141,7 @@ class CardReaderPaymentReaderTypeStateProviderTest {
         // THEN
         assertThat(result).isInstanceOf(BuiltInReaderPaymentSuccessfulReceiptSentAutomaticallyState::class.java)
         assertThat(result.amountWithCurrencyLabel).isEqualTo("amountLabel")
-        assertThat(result.receiptSentAutomaticallyHint).isEqualTo(UiStringRes(R.string.ok))
+        assertThat(result.receiptSentAutomaticallyHint).isEqualTo(UiStringRes(R.string.all))
     }
 
     @Test
@@ -153,7 +153,7 @@ class CardReaderPaymentReaderTypeStateProviderTest {
         val result = provider.providePaymentSuccessfulReceiptSentAutomaticallyState(
             cardReaderType,
             "amountLabel",
-            UiStringRes(R.string.ok),
+            UiStringRes(androidx.navigation.dynamicfeatures.fragment.R.string.ok),
             {},
             {},
         )
@@ -161,7 +161,11 @@ class CardReaderPaymentReaderTypeStateProviderTest {
         // THEN
         assertThat(result).isInstanceOf(ExternalReaderPaymentSuccessfulReceiptSentAutomaticallyState::class.java)
         assertThat(result.amountWithCurrencyLabel).isEqualTo("amountLabel")
-        assertThat(result.receiptSentAutomaticallyHint).isEqualTo(UiStringRes(R.string.ok))
+        assertThat(result.receiptSentAutomaticallyHint).isEqualTo(
+            UiStringRes(
+                androidx.navigation.dynamicfeatures.fragment.R.string.ok
+            )
+        )
     }
 
     @Test
@@ -174,14 +178,14 @@ class CardReaderPaymentReaderTypeStateProviderTest {
             cardReaderType,
             errorType = PaymentFlowError.AmountTooSmall,
             amountLabel = "amountLabel",
-            primaryLabel = R.string.ok,
+            primaryLabel = androidx.navigation.dynamicfeatures.fragment.R.string.ok,
             {},
         )
 
         // THEN
         assertThat(result).isInstanceOf(BuiltInReaderFailedPaymentState::class.java)
         assertThat(result.amountWithCurrencyLabel).isEqualTo("amountLabel")
-        assertThat(result.primaryActionLabel).isEqualTo(R.string.ok)
+        assertThat(result.primaryActionLabel).isEqualTo(androidx.navigation.dynamicfeatures.fragment.R.string.ok)
         assertThat(result.paymentStateLabel).isEqualTo(PaymentFlowError.AmountTooSmall.message)
     }
 
@@ -195,14 +199,14 @@ class CardReaderPaymentReaderTypeStateProviderTest {
             cardReaderType,
             errorType = PaymentFlowError.AmountTooSmall,
             amountLabel = "amountLabel",
-            primaryLabel = R.string.ok,
+            primaryLabel = androidx.navigation.dynamicfeatures.fragment.R.string.ok,
             {},
         )
 
         // THEN
         assertThat(result).isInstanceOf(ExternalReaderFailedPaymentState::class.java)
         assertThat(result.amountWithCurrencyLabel).isEqualTo("amountLabel")
-        assertThat(result.primaryActionLabel).isEqualTo(R.string.ok)
+        assertThat(result.primaryActionLabel).isEqualTo(androidx.navigation.dynamicfeatures.fragment.R.string.ok)
         assertThat(result.paymentStateLabel).isEqualTo(PaymentFlowError.AmountTooSmall.message)
     }
 
