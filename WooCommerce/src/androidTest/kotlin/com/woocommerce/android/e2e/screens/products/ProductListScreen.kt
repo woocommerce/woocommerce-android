@@ -70,6 +70,8 @@ class ProductListScreen : Screen {
 
     fun leaveSearchMode(): ProductListScreen {
         if (Screen.isElementDisplayed(R.id.search_src_text)) {
+            // Double pressBack is needed because first one only removes the focus
+            // from search field, while the second one leaves the search mode.
             Espresso.pressBack()
             Espresso.pressBack()
         }
