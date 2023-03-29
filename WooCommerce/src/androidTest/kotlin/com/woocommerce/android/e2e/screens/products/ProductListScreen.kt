@@ -67,6 +67,11 @@ class ProductListScreen : Screen {
         return this
     }
 
+    fun tapFilters(): ProductFilterScreen {
+        clickOn(R.id.btn_product_filter)
+        return ProductFilterScreen()
+    }
+
     fun leaveSearchMode(): ProductListScreen {
         if (Screen.isElementDisplayed(R.id.search_src_text)) {
             // Double pressBack is needed because first one only removes the focus

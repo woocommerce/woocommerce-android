@@ -172,7 +172,7 @@ open class Screen {
         idleFor(1000) // allow for transitions
     }
 
-    private fun clickOn(viewInteraction: ViewInteraction) {
+    fun clickOn(viewInteraction: ViewInteraction) {
         waitForElementToBeDisplayed(viewInteraction)
         idleFor(500) // allow for transitions
         viewInteraction.perform(ViewActions.click(ViewActions.closeSoftKeyboard()))
