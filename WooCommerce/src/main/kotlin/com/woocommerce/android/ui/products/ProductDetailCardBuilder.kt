@@ -549,7 +549,8 @@ class ProductDetailCardBuilder(
     }
 
     // show product variations only if product type is variable and if there are variations for the product
-    private fun Product.variations(): ProductProperty {
+    private fun Product.variations(): ProductProperty? {
+        val isVariableSubscription = this.productType == VARIABLE_SUBSCRIPTION
         return if (this.numVariations > 0 && this.variationEnabledAttributes.isNotEmpty()) {
             val content = StringUtils.getQuantityString(
                 resourceProvider = resources,
@@ -564,7 +565,10 @@ class ProductDetailCardBuilder(
                 drawable.ic_gridicons_types
             ) {
                 viewModel.onEditProductCardClicked(
-                    ViewProductVariations(this.remoteId),
+                    ViewProductVariations(
+                        remoteId = this.remoteId,
+                        isReadOnlyMode = isVariableSubscription
+                    ),
                     PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
                 )
             }
