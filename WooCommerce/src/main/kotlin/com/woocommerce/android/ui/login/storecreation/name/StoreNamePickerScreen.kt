@@ -30,14 +30,19 @@ import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.StoreNamePickerState
 import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.StoreNamePickerState.*
 
 @Composable
 fun StoreNamePickerScreen(viewModel: StoreNamePickerViewModel) {
     viewModel.storePickerState.observeAsState().value?.let { state ->
         when (state) {
-            is Contentful -> ContentfulNamePickerForm(viewModel, state)
+            is Contentful -> ContentfulNamePickerForm(
+                state = state,
+                onCancelPressed = viewModel::onCancelPressed,
+                onHelpPressed = viewModel::onHelpPressed,
+                onStoreNameChanged = viewModel::onStoreNameChanged,
+                onContinueClicked = viewModel::onContinueClicked
+            )
             is Error -> {
 
             }
@@ -48,19 +53,22 @@ fun StoreNamePickerScreen(viewModel: StoreNamePickerViewModel) {
 
 @Composable
 private fun ContentfulNamePickerForm(
-    viewModel: StoreNamePickerViewModel,
-    state: StoreNamePickerState.Contentful
+    state: Contentful,
+    onCancelPressed: () -> Unit,
+    onHelpPressed: () -> Unit,
+    onStoreNameChanged: (String) -> Unit,
+    onContinueClicked: () -> Unit
 ) {
     Scaffold(topBar = {
         ToolbarWithHelpButton(
-            onNavigationButtonClick = viewModel::onCancelPressed,
-            onHelpButtonClick = viewModel::onHelpPressed,
+            onNavigationButtonClick = onCancelPressed,
+            onHelpButtonClick = onHelpPressed,
         )
     }) { padding ->
         NamePickerForm(
             storeName = state.storeName,
-            onStoreNameChanged = viewModel::onStoreNameChanged,
-            onContinueClicked = viewModel::onContinueClicked,
+            onStoreNameChanged = onStoreNameChanged,
+            onContinueClicked = onContinueClicked,
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
                 .fillMaxSize()
