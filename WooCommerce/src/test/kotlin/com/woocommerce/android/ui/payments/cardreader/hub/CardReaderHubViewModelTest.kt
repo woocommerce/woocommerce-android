@@ -11,14 +11,17 @@ import com.woocommerce.android.cardreader.config.CardReaderConfig
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUnsupportedCountry
 import com.woocommerce.android.initSavedStateHandle
+import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.feedback.FeedbackRepository
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.CASH_ON_DELIVERY
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.NavigateToTapTooPaySummaryScreen
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.NavigateToTapTooPaySurveyScreen
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.OpenGenericWebView
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToast
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToastString
@@ -62,6 +65,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.util.Calendar
+import java.util.concurrent.TimeUnit
 
 @ExperimentalCoroutinesApi
 class CardReaderHubViewModelTest : BaseUnitTest() {
@@ -84,6 +89,11 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     private val paymentMenuUtmProvider: UtmProvider = mock()
     private val isTapToPayAvailable: IsTapToPayAvailable = mock()
     private val appPrefs: AppPrefs = mock()
+    private val feedbackRepository: FeedbackRepository = mock {
+        on { getFeatureFeedbackSetting(any()) }.thenReturn(
+            FeatureFeedbackSettings(FeatureFeedbackSettings.Feature.TAP_TO_PAY)
+        )
+    }
 
     @Before
     fun setUp() {
@@ -1288,7 +1298,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given ttp available and used, when view model started, then show feedback row`() =
+    fun `given ttp available and used and feedback not given, when view model started, then show feedback row`() =
         testBlocking {
             // GIVEN
             whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
@@ -1297,6 +1307,69 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
                 mock<CardReaderOnboardingState.OnboardingCompleted>()
             )
             whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
+            whenever(feedbackRepository.getFeatureFeedbackSetting(FeatureFeedbackSettings.Feature.TAP_TO_PAY))
+                .thenReturn(FeatureFeedbackSettings(FeatureFeedbackSettings.Feature.TAP_TO_PAY))
+
+            // WHEN
+            initViewModel()
+
+            // THEN
+            assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).anyMatch {
+                it is NonToggleableListItem &&
+                    it.icon == R.drawable.ic_feedback_banner_logo &&
+                    it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback) &&
+                    it.description == null &&
+                    it.index == 6
+            }
+        }
+
+    @Test
+    fun `given ttp available and used and feedback given more than 30 days ago, when view model started, then dont show feedback row`() =
+        testBlocking {
+            // GIVEN
+            whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+            whenever(isTapToPayAvailable("US")).thenReturn(Available)
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+                mock<CardReaderOnboardingState.OnboardingCompleted>()
+            )
+            whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
+            whenever(feedbackRepository.getFeatureFeedbackSetting(FeatureFeedbackSettings.Feature.TAP_TO_PAY))
+                .thenReturn(
+                    FeatureFeedbackSettings(
+                        FeatureFeedbackSettings.Feature.TAP_TO_PAY,
+                        FeatureFeedbackSettings.FeedbackState.GIVEN,
+                        Calendar.getInstance().time.time - TimeUnit.DAYS.toMillis(31)
+                    )
+                )
+
+            // WHEN
+            initViewModel()
+
+            // THEN
+            assertThat((viewModel.viewStateData.getOrAwaitValue()).rows).noneMatch {
+                it is NonToggleableListItem &&
+                    it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback)
+            }
+        }
+
+    @Test
+    fun `given ttp available and used and feedback given less than 30 days ago, when view model started, then show feedback row`() =
+        testBlocking {
+            // GIVEN
+            whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+            whenever(isTapToPayAvailable("US")).thenReturn(Available)
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+                mock<CardReaderOnboardingState.OnboardingCompleted>()
+            )
+            whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
+            whenever(feedbackRepository.getFeatureFeedbackSetting(FeatureFeedbackSettings.Feature.TAP_TO_PAY))
+                .thenReturn(
+                    FeatureFeedbackSettings(
+                        FeatureFeedbackSettings.Feature.TAP_TO_PAY,
+                        FeatureFeedbackSettings.FeedbackState.GIVEN,
+                        Calendar.getInstance().time.time - TimeUnit.DAYS.toMillis(29)
+                    )
+                )
 
             // WHEN
             initViewModel()
@@ -1537,6 +1610,47 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         assertThat(viewModel.event.value).isNull()
     }
 
+    @Test
+    fun `given ttp used and feedback not given, when on survey tapped, then navigate to tap to pay feedback screen event emitted`() {
+        // GIVEN
+        whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
+        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+        whenever(isTapToPayAvailable("US")).thenReturn(Available)
+        whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US"))
+            .thenReturn(CardReaderConfigForUSA)
+
+        // WHEN
+        initViewModel()
+        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
+            it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback)
+        }!!.onClick!!.invoke()
+
+        // THEN
+        assertThat(viewModel.event.value).isInstanceOf(NavigateToTapTooPaySurveyScreen::class.java)
+    }
+
+    @Test
+    fun `given ttp used and feedback not given, when on survey tapped, then save that answer is given`() {
+        // GIVEN
+        whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
+        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+        whenever(isTapToPayAvailable("US")).thenReturn(Available)
+        whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US"))
+            .thenReturn(CardReaderConfigForUSA)
+
+        // WHEN
+        initViewModel()
+        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
+            it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback)
+        }!!.onClick!!.invoke()
+
+        // THEN
+        verify(feedbackRepository).saveFeatureFeedback(
+            FeatureFeedbackSettings.Feature.TAP_TO_PAY,
+            FeatureFeedbackSettings.FeedbackState.GIVEN
+        )
+    }
+
     private fun getSuccessWooResult() = WooResult(
         model = WCGatewayModel(
             id = "",
@@ -1577,6 +1691,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             paymentMenuUtmProvider,
             isTapToPayAvailable,
             appPrefs,
+            feedbackRepository,
         )
         viewModel.onViewVisible()
     }
