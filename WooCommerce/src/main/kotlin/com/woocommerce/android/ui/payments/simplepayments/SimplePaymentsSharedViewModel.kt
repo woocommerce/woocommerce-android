@@ -17,15 +17,8 @@ class SimplePaymentsSharedViewModel @Inject constructor(
     val currencyCode: String
         get() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
 
-    val decimals: Int
-        get() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber ?: DEFAULT_DECIMAL_PRECISION
-
     init {
         // Reset order duration recorder to ensure we don't track Simple Payments flow
         OrderDurationRecorder.reset()
-    }
-
-    companion object {
-        private const val DEFAULT_DECIMAL_PRECISION = 2
     }
 }
