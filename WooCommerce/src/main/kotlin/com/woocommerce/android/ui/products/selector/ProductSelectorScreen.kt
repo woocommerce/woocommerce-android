@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.selector
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -34,6 +35,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
@@ -170,6 +172,56 @@ private fun EmptyProductList(
 }
 
 @Composable
+private fun PopularProductsList(
+    state: ViewState,
+    heading: String,
+    onProductClick: (ProductListItem) -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
+            .padding(top = dimensionResource(id = dimen.major_150))
+            .background(color = MaterialTheme.colors.surface)
+    ) {
+        if (!state.popularProducts.isNullOrEmpty()) {
+            Text(
+                text = heading,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.h6,
+                modifier = Modifier.padding(
+                    start = dimensionResource(id = dimen.major_150),
+                    end = dimensionResource(id = dimen.major_150)
+                )
+            )
+        }
+
+        state.popularProducts.forEachIndexed { index, popularProduct ->
+            SelectorListItem(
+                title = popularProduct.title,
+                imageUrl = popularProduct.imageUrl,
+                infoLine1 = popularProduct.stockAndPrice,
+                infoLine2 = popularProduct.sku?.let {
+                    stringResource(string.product_selector_sku_value, popularProduct.sku)
+                },
+                selectionState = popularProduct.selectionState,
+                isArrowVisible = popularProduct.type == VARIABLE && popularProduct.numVariations > 0,
+                onClickLabel = stringResource(id = string.product_selector_select_product_label, popularProduct.title),
+                imageContentDescription = stringResource(string.product_image_content_description)
+            ) {
+                onProductClick(popularProduct)
+            }
+            if (index < state.popularProducts.size - 1) {
+                Divider(
+                    modifier = Modifier.padding(start = dimensionResource(id = dimen.major_100)),
+                    color = colorResource(id = R.color.divider_color),
+                    thickness = dimensionResource(id = dimen.minor_10)
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun ProductList(
     state: ViewState,
     onDoneButtonClick: () -> Unit,
@@ -215,6 +267,27 @@ private fun ProductList(
                 .weight(1f)
                 .fillMaxHeight()
         ) {
+            item {
+                PopularProductsList(
+                    state = state,
+                    heading = "Popular",
+                    onProductClick = onProductClick
+                )
+            }
+            item {
+                if (!state.products.isNullOrEmpty()) {
+                    Text(
+                        text = "Products",
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.h6,
+                        modifier = Modifier.padding(
+                            start = dimensionResource(id = dimen.major_150),
+                            end = dimensionResource(id = dimen.major_150),
+                            top = dimensionResource(id = dimen.major_150)
+                        )
+                    )
+                }
+            }
             itemsIndexed(state.products) { _, product ->
                 SelectorListItem(
                     title = product.title,
@@ -312,6 +385,140 @@ private fun ProductListSkeleton() {
     }
 }
 
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+@Suppress("MagicNumber")
+fun PopularProductsListPreview() {
+    val products = listOf(
+        ProductListItem(
+            id = 1,
+            title = "Product 1",
+            type = SIMPLE,
+            imageUrl = null,
+            numVariations = 0,
+            stockAndPrice = "Not in stock • $25.00",
+            sku = "1234",
+            selectionState = SELECTED
+        ),
+
+        ProductListItem(
+            id = 2,
+            title = "Product 2",
+            type = VARIABLE,
+            imageUrl = null,
+            numVariations = 3,
+            stockAndPrice = "In stock • $5.00 • 3 variations",
+            sku = "33333",
+            selectionState = PARTIALLY_SELECTED
+        ),
+
+        ProductListItem(
+            id = 3,
+            title = "Product 3",
+            type = GROUPED,
+            imageUrl = "",
+            numVariations = 0,
+            stockAndPrice = "Out of stock",
+            sku = null
+        ),
+
+        ProductListItem(
+            id = 4,
+            title = "Product 4",
+            type = GROUPED,
+            imageUrl = null,
+            numVariations = 0,
+            stockAndPrice = null,
+            sku = null
+        )
+    )
+
+    ProductList(
+        state = ViewState(
+            products = emptyList(),
+            selectedItemsCount = 3,
+            loadingState = IDLE,
+            filterState = FilterState(),
+            searchQuery = "",
+            popularProducts = products,
+            recentProducts = emptyList(),
+        ),
+        {},
+        {},
+        {},
+        {},
+        {}
+    )
+}
+
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+@Suppress("MagicNumber")
+fun RecentProductsListPreview() {
+    val products = listOf(
+        ProductListItem(
+            id = 1,
+            title = "Product 1",
+            type = SIMPLE,
+            imageUrl = null,
+            numVariations = 0,
+            stockAndPrice = "Not in stock • $25.00",
+            sku = "1234",
+            selectionState = SELECTED
+        ),
+
+        ProductListItem(
+            id = 2,
+            title = "Product 2",
+            type = VARIABLE,
+            imageUrl = null,
+            numVariations = 3,
+            stockAndPrice = "In stock • $5.00 • 3 variations",
+            sku = "33333",
+            selectionState = PARTIALLY_SELECTED
+        ),
+
+        ProductListItem(
+            id = 3,
+            title = "Product 3",
+            type = GROUPED,
+            imageUrl = "",
+            numVariations = 0,
+            stockAndPrice = "Out of stock",
+            sku = null
+        ),
+
+        ProductListItem(
+            id = 4,
+            title = "Product 4",
+            type = GROUPED,
+            imageUrl = null,
+            numVariations = 0,
+            stockAndPrice = null,
+            sku = null
+        )
+    )
+
+    ProductList(
+        state = ViewState(
+            products = emptyList(),
+            selectedItemsCount = 3,
+            loadingState = IDLE,
+            filterState = FilterState(),
+            searchQuery = "",
+            popularProducts = emptyList(),
+            recentProducts = products,
+        ),
+        {},
+        {},
+        {},
+        {},
+        {}
+    )
+}
+
 @Preview
 @Composable
 @Suppress("MagicNumber")
@@ -367,7 +574,7 @@ fun ProductListPreview() {
             loadingState = IDLE,
             filterState = FilterState(),
             searchQuery = "",
-            popularProducts = emptyList(),
+            popularProducts = products,
             recentProducts = emptyList(),
         ),
         {},
