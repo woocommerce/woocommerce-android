@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -36,7 +38,7 @@ import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewMo
 fun StoreNamePickerScreen(viewModel: StoreNamePickerViewModel) {
     viewModel.storePickerState.observeAsState().value?.let { state ->
         when (state) {
-            is Contentful -> ContentfulNamePickerForm(
+            is Contentful -> StoreNamePickerScreen(
                 state = state,
                 onCancelPressed = viewModel::onCancelPressed,
                 onHelpPressed = viewModel::onHelpPressed,
@@ -52,7 +54,7 @@ fun StoreNamePickerScreen(viewModel: StoreNamePickerViewModel) {
 }
 
 @Composable
-private fun ContentfulNamePickerForm(
+private fun StoreNamePickerScreen(
     state: Contentful,
     onCancelPressed: () -> Unit,
     onHelpPressed: () -> Unit,
@@ -66,7 +68,7 @@ private fun ContentfulNamePickerForm(
         )
     }) { padding ->
         NamePickerForm(
-            storeName = state.storeName,
+            state = state,
             onStoreNameChanged = onStoreNameChanged,
             onContinueClicked = onContinueClicked,
             modifier = Modifier
@@ -80,7 +82,7 @@ private fun ContentfulNamePickerForm(
 
 @Composable
 private fun NamePickerForm(
-    storeName: String,
+    state: Contentful,
     onStoreNameChanged: (String) -> Unit,
     onContinueClicked: () -> Unit,
     modifier: Modifier = Modifier
@@ -112,7 +114,7 @@ private fun NamePickerForm(
                 modifier = Modifier
                     .focusRequester(focusRequester)
                     .padding(top = dimensionResource(id = R.dimen.major_100)),
-                value = storeName,
+                value = state.storeName,
                 onValueChange = onStoreNameChanged,
                 label = stringResource(id = R.string.store_creation_store_name_hint),
                 singleLine = true,
@@ -122,9 +124,16 @@ private fun NamePickerForm(
         WCColoredButton(
             modifier = Modifier.fillMaxWidth(),
             onClick = onContinueClicked,
-            enabled = storeName.isNotBlank()
+            enabled = state.storeName.isNotBlank()
         ) {
-            Text(text = stringResource(id = R.string.continue_button))
+            if (state.isCreatingStore) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(size = dimensionResource(id = R.dimen.major_150)),
+                    color = colorResource(id = R.color.color_on_primary_surface),
+                )
+            } else {
+                Text(text = stringResource(id = R.string.continue_button))
+            }
         }
     }
     // Request focus on store name field when entering screen
@@ -141,7 +150,7 @@ private fun NamePickerForm(
 fun NamePickerPreview() {
     WooThemeWithBackground {
         NamePickerForm(
-            storeName = "White Christmas Tress",
+            state = Contentful("White Christmas Tress", false),
             onContinueClicked = {},
             onStoreNameChanged = {}
         )
