@@ -413,7 +413,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given simple payments flow, when on tap too pay clicked, then collect tracked with simple payment flow`() =
+    fun `given simple payments flow, when on tap to pay clicked, then collect tracked with simple payment flow`() =
         testBlocking {
             // GIVEN
             val viewModel = initViewModel(Payment(1L, SIMPLE))
