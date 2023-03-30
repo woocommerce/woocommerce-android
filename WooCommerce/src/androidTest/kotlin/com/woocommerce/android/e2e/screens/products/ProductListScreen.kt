@@ -6,6 +6,7 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.util.TreeIterables
 import com.woocommerce.android.R
+import com.woocommerce.android.e2e.helpers.WCMatchers.withRecyclerView
 import com.woocommerce.android.e2e.helpers.util.ProductData
 import com.woocommerce.android.e2e.helpers.util.Screen
 import com.woocommerce.android.ui.products.ProductItemView
@@ -70,6 +71,25 @@ class ProductListScreen : Screen {
     fun tapFilters(): ProductFilterScreen {
         clickOn(R.id.btn_product_filter)
         return ProductFilterScreen()
+    }
+
+    fun tapSort(): ProductListScreen {
+        clickOn(R.id.btn_product_sorting)
+        return this
+    }
+
+    fun selectSortOption(sortOption: String): ProductListScreen {
+        clickByTextAndId(sortOption, R.id.sortingItem_name)
+        return this
+    }
+
+    fun assertProductIsAtPosition(productName: String, position: Int): ProductListScreen {
+        Espresso.onView(
+            withRecyclerView(LIST_VIEW).atPositionOnView(position, R.id.productName)
+        )
+            .check(matches(ViewMatchers.withText(productName)))
+
+        return this
     }
 
     fun leaveSearchMode(): ProductListScreen {
