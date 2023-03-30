@@ -120,7 +120,7 @@ class ProductSelectorViewModel @Inject constructor(
             loadingState = loadingState,
             products = products.map { it.toUiModel(selectedIds) },
             popularProducts = getPopularProductsToDisplay(popularProducts, selectedIds),
-            recentProducts = recentProducts.map { it.toUiModel(selectedIds) },
+            recentProducts = getRecentProductsToDisplay(recentProducts, selectedIds),
             selectedItemsCount = selectedIds.size,
             filterState = filterState,
             searchQuery = searchQuery
@@ -141,10 +141,24 @@ class ProductSelectorViewModel @Inject constructor(
         popularProducts: List<Product>,
         selectedIds: List<SelectedItem>
     ): List<ProductListItem> {
+        return getProductItemsIfSearchQueryIsNotEmpty(popularProducts, selectedIds)
+    }
+
+    private fun getRecentProductsToDisplay(
+        recentProducts: List<Product>,
+        selectedIds: List<SelectedItem>
+    ): List<ProductListItem> {
+        return getProductItemsIfSearchQueryIsNotEmpty(recentProducts, selectedIds)
+    }
+
+    private fun getProductItemsIfSearchQueryIsNotEmpty(
+        productsList: List<Product>,
+        selectedIds: List<SelectedItem>
+    ): List<ProductListItem> {
         if (searchQuery.value.isNotNullOrEmpty()) {
             return emptyList()
         }
-        return popularProducts.map { it.toUiModel(selectedIds) }
+        return productsList.map { it.toUiModel(selectedIds) }
     }
 
     private suspend fun loadRecentProducts() {
