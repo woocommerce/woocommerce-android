@@ -708,11 +708,11 @@ class ProductDetailCardBuilder(
         }
 
     private fun Product.warning(): ProductProperty? {
-        val variations = variationRepository.getProductVariationList(this.remoteId)
-
-        if (variations.isEmpty() && productType == VARIABLE_SUBSCRIPTION) {
+        if (this.variationIds.isEmpty() && productType == VARIABLE_SUBSCRIPTION) {
             return ProductProperty.Warning(resources.getString(string.no_variable_subscription_warning))
         }
+
+        val variations = variationRepository.getProductVariationList(this.remoteId)
 
         val missingPriceVariation = variations
             .find { it.regularPrice == null || it.regularPrice == BigDecimal.ZERO }
