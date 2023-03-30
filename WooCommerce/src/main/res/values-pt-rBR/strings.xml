@@ -16,7 +16,7 @@ Language: pt_BR
     <string name="upgrades_upgrade_now">Faça upgrade agora mesmo</string>
     <string name="upgrades_report_subscription_issue">Relatar problema de assinatura</string>
     <string name="free_trial_upgrade_now">Faça upgrade agora mesmo</string>
-    <string name="free_trial_days_left">%1$d dias restantes do seu teste.</string>
+    <string name="free_trial_days_left">%1$s dias restantes do seu teste.</string>
     <string name="free_trial_trial_ended">Período de teste expirado</string>
     <string name="free_trial_your_trial_ended">Seu período de teste terminou.</string>
     <string name="store_onboarding_launch_store_generic_error_description">Ops! Houve alguns erros inesperados.</string>

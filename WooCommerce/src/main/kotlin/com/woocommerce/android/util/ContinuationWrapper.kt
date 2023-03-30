@@ -10,7 +10,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeout
 import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 /**
  * A wrapper class for a [CancellableContinuation], which handles some of the most common errors when a continuation
@@ -27,18 +26,11 @@ class ContinuationWrapper<T>(private val tag: WooLog.T) {
     private var continuation: CancellableContinuation<T>? = null
     private val mutex = Mutex()
 
-    val isWaiting: Boolean
-        get() = continuation?.isActive ?: false
-
     suspend fun callAndWaitUntilTimeout(
         timeout: Long = AppConstants.REQUEST_TIMEOUT,
         asyncAction: () -> Unit
     ): ContinuationResult<T> {
         return callAndWait(asyncAction, timeout)
-    }
-
-    suspend fun callAndWait(asyncAction: () -> Unit): ContinuationResult<T> {
-        return callAndWait(asyncAction, 0)
     }
 
     private suspend fun callAndWait(asyncAction: () -> Unit, timeout: Long): ContinuationResult<T> {
@@ -75,13 +67,6 @@ class ContinuationWrapper<T>(private val tag: WooLog.T) {
     }
 
     @Synchronized
-    fun continueWithException(exception: Throwable) {
-        if (continuation?.isActive == true) {
-            continuation?.resumeWithException(exception)
-        }
-    }
-
-    @Synchronized
     fun cancel() {
         continuation?.cancel()
     }
@@ -89,12 +74,5 @@ class ContinuationWrapper<T>(private val tag: WooLog.T) {
     sealed class ContinuationResult<T> {
         data class Success<T>(val value: T) : ContinuationResult<T>()
         data class Cancellation<T>(val exception: CancellationException) : ContinuationResult<T>()
-    }
-}
-
-fun ContinuationWrapper.ContinuationResult<Boolean>.isSuccessful(): Boolean {
-    return when (this) {
-        is Success -> value
-        is Cancellation -> false
     }
 }

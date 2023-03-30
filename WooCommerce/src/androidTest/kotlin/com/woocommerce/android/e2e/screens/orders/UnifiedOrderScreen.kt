@@ -29,7 +29,7 @@ class UnifiedOrderScreen : Screen(ORDER_CREATION) {
         const val PRODUCTS_SECTION = R.id.products_section
         const val SHIPPING_BUTTON = R.id.shipping_button
         const val TOOLBAR = R.id.collapsing_toolbar
-        const val UPDATE_STATUS_LIST_VIEW = R.id.select_dialog_listview
+        const val UPDATE_STATUS_LIST_VIEW = androidx.appcompat.R.id.select_dialog_listview
     }
 
     fun createOrder(): SingleOrderScreen {

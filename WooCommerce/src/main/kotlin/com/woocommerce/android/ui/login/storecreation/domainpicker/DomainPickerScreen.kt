@@ -150,7 +150,7 @@ private fun DomainSearchForm(
                 .border(
                     BorderStroke(
                         width = dimensionResource(id = R.dimen.minor_10),
-                        color = colorResource(id = R.color.gray_5)
+                        color = colorResource(id = R.color.woo_gray_5)
                     ),
                     RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
                 ),

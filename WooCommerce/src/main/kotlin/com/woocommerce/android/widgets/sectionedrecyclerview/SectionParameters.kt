@@ -42,50 +42,6 @@ class SectionParameters private constructor(builder: Builder) {
         }
 
         /**
-         * Set layout resource for Section's footer
-         * @param footerResourceId layout resource for Section's footer
-         * @return this builder
-         */
-        fun footerResourceId(@LayoutRes footerResourceId: Int): Builder {
-            this.footerResourceId = footerResourceId
-
-            return this
-        }
-
-        /**
-         * Set layout resource for Section's loading state
-         * @param loadingResourceId layout resource for Section's loading state
-         * @return this builder
-         */
-        fun loadingResourceId(@LayoutRes loadingResourceId: Int): Builder {
-            this.loadingResourceId = loadingResourceId
-
-            return this
-        }
-
-        /**
-         * Set layout resource for Section's failed state
-         * @param failedResourceId layout resource for Section's failed state
-         * @return this builder
-         */
-        fun failedResourceId(@LayoutRes failedResourceId: Int): Builder {
-            this.failedResourceId = failedResourceId
-
-            return this
-        }
-
-        /**
-         * Set layout resource for Section's empty state
-         * @param emptyResourceId layout resource for Section's empty state
-         * @return this builder
-         */
-        fun emptyResourceId(@LayoutRes emptyResourceId: Int): Builder {
-            this.emptyResourceId = emptyResourceId
-
-            return this
-        }
-
-        /**
          * Build an instance of SectionParameters
          * @return an instance of SectionParameters
          */
