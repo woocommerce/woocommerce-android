@@ -5,7 +5,7 @@ import com.woocommerce.android.e2e.helpers.util.Screen
 
 class EmailAddressScreen : Screen {
     companion object {
-        const val EMAIL_ADDRESS_FIELD = R.id.input
+        const val EMAIL_ADDRESS_FIELD = org.wordpress.android.login.R.id.input
         const val NEXT_BUTTON = R.id.login_continue_button
     }
 

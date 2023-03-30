@@ -7,7 +7,7 @@ import com.woocommerce.android.e2e.screens.TabNavComponent
 
 class WelcomeScreen : Screen {
     companion object {
-        const val LOGIN_BUTTON = R.id.button_free_trial_mode_login_store
+        const val LOGIN_BUTTON = R.id.button_login_store
         const val WPCOM_LOGIN_BUTTON = R.id.button_login_wpcom
 
         fun logoutIfNeeded(composeTestRule: ComposeContentTestRule): WelcomeScreen {

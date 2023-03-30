@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-14 15:54:04+0000
+Translation-Revision-Date: 2023-03-21 15:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="upgrades_error_fetching_data">요금제 상세 정보를 가져오는 중 오류 발생</string>
+    <string name="upgrades_non_upgradeable_caption">%1$s 구독자이십니다. %2$s까지 모든 기능에 접근하실 수 있습니다. </string>
+    <string name="upgrades_trial_ended_caption">무료 평가판이 종료되었으며 모든 기능에 대한 접근이 제한되었습니다. 지금 %1$s을(를) 구독하세요.</string>
+    <string name="upgrades_subscription_status">구독 상태</string>
+    <string name="upgrades_title">업그레이드</string>
+    <string name="upgrades_troubleshooting">문제 해결</string>
+    <string name="upgrades_current_plan">현재: %s</string>
+    <string name="upgrades_upgrade_now">지금 업그레이드</string>
+    <string name="upgrades_report_subscription_issue">구독 문제 신고</string>
+    <string name="free_trial_upgrade_now">지금 업그레이드</string>
+    <string name="free_trial_days_left">평가판이 %1$s일 남았습니다.</string>
+    <string name="free_trial_trial_ended">평가판 종료됨</string>
+    <string name="free_trial_your_trial_ended">평가판이 종료되었습니다.</string>
+    <string name="store_onboarding_launch_store_generic_error_description">죄송합니다. 예기치 않은 오류가 발생했습니다.</string>
+    <string name="store_onboarding_launch_store_generic_error_title">예기치 않은 오류</string>
+    <string name="store_onboarding_store_already_launched_error_description">스토어가 이미 시작된 것으로 확인되었습니다.</string>
+    <string name="store_onboarding_store_already_launched_error_title">스토어를 시작할 수 없음</string>
+    <string name="store_onboarding_share_url_error">스토어 URL을 공유할 수 없음</string>
+    <string name="store_onboarding_launch_store_task_private_tag">비공개</string>
+    <string name="store_onboarding_launched_title">스토어가 실행되고 있습니다.</string>
+    <string name="store_onboarding_launch_preview_title">미리보기</string>
+    <string name="store_onboarding_launch_store_back_to_store_button">내 스토어로 돌아가기</string>
+    <string name="store_onboarding_launch_store_share_url_button">공유 URL</string>
+    <string name="store_onboarding_launch_store_button">내 스토어 공개</string>
+    <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">스토어를 시작하려면 요금제로 업그레이드하셔야 합니다. &lt;u&gt;업그레이드&lt;/u&gt;</string>
+    <string name="card_reader_tap_to_pay_not_available_error">스토어 또는 기기에 Tap to Pay를 사용할 수 없습니다.</string>
+    <string name="domains_search_domains">도메인 검색</string>
+    <string name="login_site_credentials_http_error">로그인 실패(상태 코드 %1$s)</string>
+    <string name="login_site_credentials_custom_admin_url">스토어의 관리 URL이 식별되지 않아서 로그인할 수 없습니다.</string>
+    <string name="login_site_credentials_custom_login_url">스토어의 로그인 URL이 식별되지 않아서 로그인할 수 없습니다.</string>
+    <string name="login_site_credentials_invalid_response">사이트의 예기치 않은 응답으로 인해 로그인에 실패했습니다. 이 문제를 해결하는 중입니다.</string>
+    <string name="more_menu_button_upgrades">업그레이드</string>
+    <string name="something_went_wrong_try_again">문제가 발생했습니다. 나중에 다시 시도하세요.</string>
     <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">계정에 대기 중인 요구 사항이 있습니다. 직접 결제 수락을 유지하려면 해당 요구 사항을 완료하세요.</string>
     <string name="analytics_banner_message">회원님이 경험하신 분석에 대해 평가해 주세요.</string>
     <string name="analytics_banner_title">분석이 마음에 드셨나요?</string>
@@ -305,8 +338,6 @@ Language: ko_KR
     <string name="card_reader_payment_collect_payment_built_in_state">기본 제공 리더 준비됨</string>
     <string name="card_reader_type_selection_bluetooth_reader">블루투스 리더</string>
     <string name="card_reader_type_selection_tap_to_pay">눌러서 결제</string>
-    <string name="card_reader_type_selection_description">스마트폰을 카드 리더로 사용하거나, 블루투스를 통해 외부 리더에 연결할 수 있습니다.</string>
-    <string name="card_reader_type_selection_title">리더 유형 선택</string>
     <string name="analytics_conversion_subtitle">전환율</string>
     <string name="analytics_session_card_title">세션</string>
     <string name="analytics_session_no_data">이 기간 세션 없음</string>

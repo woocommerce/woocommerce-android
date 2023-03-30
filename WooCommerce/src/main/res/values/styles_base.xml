@@ -491,7 +491,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     </style>
 
     <style name="Woo.Button.Colored.Circle.White" parent="Woo.Button.Colored.Circle">
-        <item name="android:textColor">@color/color_on_secondary</item>
+        <item name="android:textColor">@color/color_on_surface</item>
         <item name="backgroundTint">@color/color_surface</item>
     </style>
 

@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-14 17:54:04+0000
+Translation-Revision-Date: 2023-03-23 23:54:39+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="upgrades_error_fetching_data">Fout bij het ophalen van de abonnementsgegevens</string>
+    <string name="upgrades_non_upgradeable_caption">Je bent een %1$s abonnee! Tot %2$s heb je toegang tot al onze functies. </string>
+    <string name="upgrades_trial_ended_caption">Je proefversie is verlopen waardoor je nu maar beperkt toegang hebt tot alle functies. Nu abonneren op %1$s.</string>
+    <string name="upgrades_subscription_status">Abonnementsstatus</string>
+    <string name="upgrades_title">Upgrades</string>
+    <string name="upgrades_troubleshooting">Probleemoplossing</string>
+    <string name="upgrades_current_plan">Huidig: %s</string>
+    <string name="upgrades_upgrade_now">Upgrade nu</string>
+    <string name="upgrades_report_subscription_issue">Meld probleem met abonnement</string>
+    <string name="free_trial_upgrade_now">Upgrade nu</string>
+    <string name="free_trial_days_left">%1$s dagen resterend van je proefversie</string>
+    <string name="free_trial_trial_ended">Einde proefabonnement</string>
+    <string name="free_trial_your_trial_ended">Je proefversie is beëindigd.</string>
+    <string name="store_onboarding_launch_store_generic_error_description">Oeps, er zijn onverwachte fouten opgetreden.</string>
+    <string name="store_onboarding_launch_store_generic_error_title">Onverwachte fout</string>
+    <string name="store_onboarding_store_already_launched_error_description">We zien dat de winkel al gelanceerd is.</string>
+    <string name="store_onboarding_store_already_launched_error_title">Je winkel kon niet gelanceerd worden</string>
+    <string name="store_onboarding_share_url_error">Winkel-URL kon niet gedeeld worden</string>
+    <string name="store_onboarding_launch_store_task_private_tag">Privé</string>
+    <string name="store_onboarding_launched_title">Je winkel is online!</string>
+    <string name="store_onboarding_launch_preview_title">Voorbeeld</string>
+    <string name="store_onboarding_launch_store_back_to_store_button">Terug naar winkel</string>
+    <string name="store_onboarding_launch_store_share_url_button">URL delen</string>
+    <string name="store_onboarding_launch_store_button">Mijn winkel publiceren</string>
+    <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">Om je winkel te lanceren, moet je je abonnement upgraden. &lt;u&gt;upgraden&lt;/u&gt;</string>
+    <string name="card_reader_tap_to_pay_not_available_error">Tap to Pay is niet beschikbaar voor je winkel of apparaat</string>
+    <string name="domains_search_domains">Domeinen zoeken</string>
+    <string name="login_site_credentials_http_error">Login mislukt met statuscode %1$s</string>
+    <string name="login_site_credentials_custom_admin_url">Het is niet gelukt om in te loggen omdat we de admin-URL van je winkel niet konden identificeren</string>
+    <string name="login_site_credentials_custom_login_url">Het is niet gelukt om in te loggen omdat we de login-URL van je winkel niet konden identificeren</string>
+    <string name="login_site_credentials_invalid_response">Vanwege een onverwachte reactie van je website is het niet gelukt om in te loggen. Wij zijn bezig dit probleem te verhelpen.</string>
+    <string name="more_menu_button_upgrades">Upgrades</string>
+    <string name="something_went_wrong_try_again">Er ging iets fout, probeer het later nog eens.</string>
     <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">Er zijn openstaande verplichtingen op je account. Voltooi deze verplichtingen om fysieke betalingen te kunnen blijven aannemen.</string>
     <string name="analytics_banner_message">Gelieve je analyse-ervaring te beoordelen</string>
     <string name="analytics_banner_title">Vind je analyses fijn?</string>
@@ -305,8 +338,6 @@ Language: nl
     <string name="card_reader_payment_collect_payment_built_in_state">Geïntegreerde lezer is klaar</string>
     <string name="card_reader_type_selection_bluetooth_reader">Lezer met bluetooth</string>
     <string name="card_reader_type_selection_tap_to_pay">Tik om te betalen</string>
-    <string name="card_reader_type_selection_description">Je telefoon kan als kaartlezer worden gebruikt. Je kan ook met een externe kaartlezer verbinden via bluetooth</string>
-    <string name="card_reader_type_selection_title">Selecteer lezertype</string>
     <string name="analytics_conversion_subtitle">Conversiescore</string>
     <string name="analytics_session_card_title">Sessies</string>
     <string name="analytics_session_no_data">Geen sessies deze periode</string>
@@ -957,7 +988,7 @@ Language: nl
     <string name="order_creation_new_customer_add_different_shipping_address">Voeg een ander verzendadres toe</string>
     <string name="order_creation_product_instock">Op voorraad</string>
     <string name="order_creation_product_stock_quantity">%s op voorraad</string>
-    <string name="order_creation_add_products">Product toevoegen</string>
+    <string name="order_creation_add_products">Producten toevoegen</string>
     <string name="order_creation_products">Producten</string>
     <string name="order_creation_add_customer">Klantgegevens toevoegen</string>
     <string name="order_creation_customer">Klant</string>

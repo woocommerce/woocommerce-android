@@ -12,7 +12,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentLoginPrologueBinding
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
-import com.woocommerce.android.util.FeatureFlag
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -38,10 +37,22 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         with(FragmentLoginPrologueBinding.bind(view)) {
-            if (FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
-                bindFreeTrialLoginButtons()
-            } else {
-                bindStandardLoginButtons()
+            buttonLoginStore.setOnClickListener {
+                // Login with site address
+                AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
+                prologueFinishedListener?.onPrimaryButtonClicked()
+            }
+
+            buttonLoginWpcom.setOnClickListener {
+                // Login with WordPress.com account
+                AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
+                prologueFinishedListener?.onSecondaryButtonClicked()
+            }
+
+            buttonGetStarted.setOnClickListener {
+                AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
+                AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED)
+                prologueFinishedListener?.onGetStartedClicked()
             }
         }
 
@@ -67,41 +78,5 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
     override fun onDetach() {
         super.onDetach()
         prologueFinishedListener = null
-    }
-
-    private fun FragmentLoginPrologueBinding.bindFreeTrialLoginButtons() {
-        standardButtons.visibility = View.GONE
-        freeTrialButtons.visibility = View.VISIBLE
-
-        buttonFreeTrialModeLoginStore.setOnClickListener {
-            AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
-            prologueFinishedListener?.onPrimaryButtonClicked()
-        }
-
-        return buttonFreeTrialModeStartYourTrial.setOnClickListener {
-            AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
-            AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED)
-            prologueFinishedListener?.onGetStartedClicked()
-        }
-    }
-
-    private fun FragmentLoginPrologueBinding.bindStandardLoginButtons() {
-        buttonLoginStore.setOnClickListener {
-            // Login with site address
-            AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
-            prologueFinishedListener?.onPrimaryButtonClicked()
-        }
-
-        buttonLoginWpcom.setOnClickListener {
-            // Login with WordPress.com account
-            AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
-            prologueFinishedListener?.onSecondaryButtonClicked()
-        }
-
-        buttonGetStarted.setOnClickListener {
-            AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
-            AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED)
-            prologueFinishedListener?.onGetStartedClicked()
-        }
     }
 }

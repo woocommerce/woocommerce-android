@@ -44,22 +44,6 @@ object OrderTestUtils {
         )
     }
 
-    fun generateOrderShipmentTrackings(totalCount: Int, lOrderId: Int): List<WCOrderShipmentTrackingModel> {
-        val result = ArrayList<WCOrderShipmentTrackingModel>()
-        for (i in totalCount downTo 1) {
-            result.add(
-                WCOrderShipmentTrackingModel(totalCount).apply {
-                    trackingProvider = "TNT Express $i"
-                    trackingNumber = "$i"
-                    dateShipped = SimpleDateFormat("yyyy-MM-dd").format(Date())
-                    trackingLink = "www.somelink$i.com"
-                    orderId = lOrderId.toLong()
-                }
-            )
-        }
-        return result
-    }
-
     fun generateOrderShipmentProviders(): List<WCOrderShipmentProviderModel> {
         val result = ArrayList<WCOrderShipmentProviderModel>()
         result.add(

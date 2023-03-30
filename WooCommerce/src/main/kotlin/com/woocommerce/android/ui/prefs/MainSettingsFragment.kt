@@ -68,6 +68,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         fun onRequestLogout()
         fun onProductAddonsOptionChanged(enabled: Boolean)
         fun onCouponsOptionChanged(enabled: Boolean)
+        fun onTapToPayOptionChanged(enabled: Boolean)
     }
 
     private lateinit var settingsListener: AppSettingsListener

@@ -29,11 +29,11 @@ class ShippingLabelAddressValidator @Inject constructor(
     suspend fun validateAddress(
         address: Address,
         type: AddressType,
-        requiresPhoneNumber: Boolean
+        isCustomsFormRequired: Boolean
     ): ValidationResult {
         return when {
             isNameMissing(address) -> ValidationResult.NameMissing
-            requiresPhoneNumber && !address.phone.isValidPhoneNumber(type) -> ValidationResult.PhoneInvalid
+            !address.phone.isValidPhoneNumber(type, isCustomsFormRequired) -> ValidationResult.PhoneInvalid
             else -> verifyAddress(address, type)
         }
     }
@@ -64,6 +64,7 @@ class ShippingLabelAddressValidator @Inject constructor(
 
                 ValidationResult.Error(GENERIC_ERROR)
             }
+
             is InvalidRequest -> {
                 AnalyticsTracker.track(
                     AnalyticsEvent.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
@@ -72,6 +73,7 @@ class ShippingLabelAddressValidator @Inject constructor(
 
                 ValidationResult.NotFound(validationResult.message)
             }
+
             is InvalidAddress -> {
                 AnalyticsTracker.track(
                     AnalyticsEvent.SHIPPING_LABEL_ADDRESS_VALIDATION_FAILED,
@@ -80,6 +82,7 @@ class ShippingLabelAddressValidator @Inject constructor(
 
                 ValidationResult.Invalid(validationResult.message)
             }
+
             is WCAddressVerificationResult.Valid -> {
                 AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_ADDRESS_VALIDATION_SUCCEEDED)
                 val suggestion =
@@ -134,19 +137,38 @@ class ShippingLabelAddressValidator @Inject constructor(
 }
 
 /**
- * Checks whether the phone number is valid or not, depending on the [addressType], the check is:
- * - [ORIGIN]: Checks whether the phone number contains 10 digits exactly after deleting an optional 1 as
- *             the area code.
- * - [DESTINATION]: Checks whether the phone has any digits.
+ * Checks whether the phone number is valid or not, depending on the [addressType] and [isCustomsFormRequired].
+ * The logic of the check is:
+ * - [ORIGIN]:
+ *    - If a customs form is required, then checks whether the phone number contains 10 digits exactly after deleting
+ *      an optional 1 as the area code.
+ *      As EasyPost is permissive for the presence of other characters, we delete all other characters before checking,
+ *      and that's similar to what the web client does.
+ *      Source: https://github.com/Automattic/woocommerce-services/issues/1351
+ *    - If no customs form is required, then checks whether the phone number is not blank.
+ *      Check ticket for discussion on why https://github.com/woocommerce/woocommerce-android/issues/8578
  *
- * As EasyPost is permissive for the presence of other characters, we delete all other characters before checking,
- * and that's similar to what the web client does.
- * Source: https://github.com/Automattic/woocommerce-services/issues/1351
+ * - [DESTINATION]:
+ *   - If a customs form is required, then checks whether the phone has any digits.
+ *   - If no customs form is required, then the phone number not required, so no validation is needed.
  */
 @Suppress("MagicNumber")
-fun String.isValidPhoneNumber(addressType: AddressType): Boolean {
+fun String.isValidPhoneNumber(addressType: AddressType, isCustomsFormRequired: Boolean): Boolean {
     return when (addressType) {
-        ORIGIN -> replace(Regex("^1|[^\\d]"), "").length == 10
-        DESTINATION -> contains(Regex("\\d"))
+        ORIGIN -> {
+            if (isCustomsFormRequired) {
+                replace(Regex("^1|[^\\d]"), "").length == 10
+            } else {
+                isNotBlank()
+            }
+        }
+
+        DESTINATION -> {
+            if (isCustomsFormRequired) {
+                contains(Regex("\\d"))
+            } else {
+                true
+            }
+        }
     }
 }

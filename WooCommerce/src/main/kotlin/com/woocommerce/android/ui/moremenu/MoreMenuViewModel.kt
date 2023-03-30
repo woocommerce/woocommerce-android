@@ -107,7 +107,7 @@ class MoreMenuViewModel @Inject constructor(
         if (unseenReviewsCount > 0) BadgeState(
             badgeSize = R.dimen.major_150,
             backgroundColor = R.color.color_primary,
-            textColor = R.color.color_on_surface_inverted,
+            textColor = R.color.color_on_primary,
             textState = TextState(unseenReviewsCount.toString(), R.dimen.text_minor_80),
         ) else null
 
