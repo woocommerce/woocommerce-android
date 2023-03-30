@@ -204,7 +204,7 @@ class OrderDetailViewModel @Inject constructor(
             )
             isFetchingData = false
 
-            if (hasOrder()){
+            if (hasOrder()) {
                 displayOrderDetails()
                 fetchGiftCards()
             }
