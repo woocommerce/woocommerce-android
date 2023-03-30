@@ -73,21 +73,32 @@ class ProductsRealAPI : TestBase() {
     }
 
     private val productSalad = ProductData(
-        name = "Chicken Teriyaki Salad", stockStatusRaw = "instock",
-        priceDiscountedRaw = "7", sku = "SLD-CHK-TRK"
+        name = "Chicken Teriyaki Salad",
+        stockStatusRaw = "instock",
+        priceDiscountedRaw = "7",
+        sku = "SLD-CHK-TRK"
     )
 
     private val productCappuccino = ProductData(
-        name = "Cappuccino", stockStatusRaw = "instock", variations = " • 6 variations",
-        priceDiscountedRaw = "2", sku = "CF-CPC"
+        name = "Cappuccino",
+        stockStatusRaw = "instock",
+        variations = " • 6 variations",
+        priceDiscountedRaw = "2",
+        sku = "CF-CPC"
     )
 
     private val productCappuccinoAlmondMedium = ProductData(
-        name = "Cappuccino", stockStatusRaw = "instock", priceDiscountedRaw = "3", sku = "CF-CPC-ALM-M"
+        name = "Cappuccino",
+        stockStatusRaw = "instock",
+        priceDiscountedRaw = "3",
+        sku = "CF-CPC-ALM-M"
     )
 
     private val productCappuccinoAlmondLarge = ProductData(
-        name = "Cappuccino", stockStatusRaw = "instock", priceDiscountedRaw = "4", sku = "CF-CPC-ALM-L"
+        name = "Cappuccino",
+        stockStatusRaw = "instock",
+        priceDiscountedRaw = "4",
+        sku = "CF-CPC-ALM-L"
     )
 
     @Test
