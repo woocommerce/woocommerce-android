@@ -124,7 +124,7 @@ open class Screen {
         idleFor(500) // allow for transitions
     }
 
-    fun clickByTextAndId(text: String, id: Int, ) {
+    fun clickByTextAndId(text: String, id: Int) {
         val element = onView(
             Matchers.allOf(
                 withText(text),
