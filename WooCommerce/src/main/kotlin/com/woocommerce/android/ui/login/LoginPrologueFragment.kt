@@ -53,11 +53,10 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
             buttonGetStarted.setOnClickListener {
                 AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
 
-                if (FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
-                    AnalyticsEvent.LOGIN_PROLOGUE_CREATE_FREE_TRIAL_SITE_TAPPED
-                } else {
-                    AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED
-                }.let { AnalyticsTracker.track(it) }
+                AnalyticsTracker.track(
+                    AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED,
+                    mapOf(AnalyticsTracker.KEY_IS_FREE_TRIAL to FeatureFlag.FREE_TRIAL_M2.isEnabled())
+                )
 
                 prologueFinishedListener?.onGetStartedClicked()
             }
