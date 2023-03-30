@@ -78,6 +78,10 @@ class ProductListScreen : Screen {
     }
 
     fun assertProductCard(product: ProductData): ProductListScreen {
+        // If a product has an SKU, value will be prefixed with "SKU :" on screen.
+        // If a product has no SKU, the field won't be shown at all.
+        val expectedSKU = if (product.sku.isEmpty()) "" else "SKU: ${product.sku}"
+
         Espresso.onView(
             Matchers.allOf(
                 ViewMatchers.withId(R.id.productInfoContainer),
@@ -99,7 +103,7 @@ class ProductListScreen : Screen {
                 ViewMatchers.withChild(
                     Matchers.allOf(
                         ViewMatchers.withId(R.id.productSku),
-                        ViewMatchers.withText(product.sku)
+                        ViewMatchers.withText(expectedSKU)
                     )
                 )
             )
