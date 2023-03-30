@@ -89,6 +89,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         when (it) {
             State.NativeLogin -> prepareNativeLoginViewState()
             State.WebAuthorization -> prepareWebAuthorizationViewState()
+            State.RetryWebAuthorization -> prepareWebAuthorizationViewState()
         }
     }.asLiveData()
 
@@ -194,6 +195,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         } else {
             // When using web authorization, retry fetching the site
             fetchSite()
+            state.value = State.RetryWebAuthorization
         }
     }
 
@@ -377,7 +379,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     private fun String.removeSchemeAndSuffix() = UrlUtils.removeScheme(UrlUtils.removeXmlrpcSuffix(this))
 
     private enum class State {
-        NativeLogin, WebAuthorization
+        NativeLogin, WebAuthorization, RetryWebAuthorization
     }
 
     sealed interface ViewState {
