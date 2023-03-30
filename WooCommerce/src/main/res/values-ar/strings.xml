@@ -16,7 +16,7 @@ Language: ar
     <string name="upgrades_upgrade_now">قم بالترقية الآن</string>
     <string name="upgrades_report_subscription_issue">الإبلاغ بمشكلة في الاشتراك</string>
     <string name="free_trial_upgrade_now">قم بالترقية الآن</string>
-    <string name="free_trial_days_left">يتبقى ⁦%1$d⁩ من الأيام في الإصدار التجريبي لديك.</string>
+    <string name="free_trial_days_left">يتبقى ⁦%1$s⁩ من الأيام في الإصدار التجريبي لديك.</string>
     <string name="free_trial_trial_ended">انتهى الإصدار التجريبي</string>
     <string name="free_trial_your_trial_ended">انتهى الإصدار التجريبي الخاص بك.</string>
     <string name="store_onboarding_launch_store_generic_error_description">عذرًا، حدثت بعض الأخطاء غير المتوقعة.</string>
