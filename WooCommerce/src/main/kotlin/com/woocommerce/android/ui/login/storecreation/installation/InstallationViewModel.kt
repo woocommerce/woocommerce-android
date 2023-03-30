@@ -60,7 +60,6 @@ class InstallationViewModel @Inject constructor(
             if (it is InitialState) {
                 loadNewStore()
             } else if (it is SuccessState && FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
-                analyticsTrackerWrapper.track(AnalyticsEvent.FREE_TRIAL_STORE_CREATED)
                 triggerEvent(NavigateToNewStore)
             }
         }.asLiveData()
