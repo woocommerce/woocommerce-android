@@ -125,11 +125,11 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(org.wordpress.android.login.R.menu.menu_login, menu)
+        menuInflater.inflate(R.menu.menu_login, menu)
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-        if (menuItem.itemId == org.wordpress.android.login.R.id.help) {
+        if (menuItem.itemId == R.id.help) {
             AnalyticsTracker.track(AnalyticsEvent.LOGIN_DISCOVERY_ERROR_MENU_HELP_TAPPED)
             loginListener?.helpSiteAddress(siteAddress)
             return true

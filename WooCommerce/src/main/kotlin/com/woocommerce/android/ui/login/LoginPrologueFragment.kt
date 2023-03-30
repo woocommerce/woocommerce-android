@@ -36,24 +36,24 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
     private var prologueFinishedListener: PrologueFinishedListener? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        with(FragmentLoginPrologueBinding.bind(view)) {
-            buttonLoginStore.setOnClickListener {
-                // Login with site address
-                AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
-                prologueFinishedListener?.onPrimaryButtonClicked()
-            }
+        val binding = FragmentLoginPrologueBinding.bind(view)
 
-            buttonLoginWpcom.setOnClickListener {
-                // Login with WordPress.com account
-                AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
-                prologueFinishedListener?.onSecondaryButtonClicked()
-            }
+        binding.buttonLoginStore.setOnClickListener {
+            // Login with site address
+            AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
+            prologueFinishedListener?.onPrimaryButtonClicked()
+        }
 
-            buttonGetStarted.setOnClickListener {
-                AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
-                AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED)
-                prologueFinishedListener?.onGetStartedClicked()
-            }
+        binding.buttonLoginWpcom.setOnClickListener {
+            // Login with WordPress.com account
+            AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
+            prologueFinishedListener?.onSecondaryButtonClicked()
+        }
+
+        binding.buttonGetStarted.setOnClickListener {
+            AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
+            AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED)
+            prologueFinishedListener?.onGetStartedClicked()
         }
 
         if (savedInstanceState == null) {

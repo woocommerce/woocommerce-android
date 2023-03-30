@@ -2,15 +2,15 @@ package com.woocommerce.android.iap.internal.network
 
 import com.woocommerce.android.iap.pub.IAPLogWrapper
 import com.woocommerce.android.iap.pub.network.IAPMobilePayAPI
-import com.woocommerce.android.iap.pub.network.SandboxTestingConfig
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class ApiImplementationProviderTest {
+
     private val logWrapperMock: IAPLogWrapper = mock()
-    private val buildConfigWrapper: SandboxTestingConfig = mock()
+    private val buildConfigWrapper: ApiImplementationProvider.BuildConfigWrapper = mock()
     private val realMobileApiProvider: (String?) -> IAPMobilePayAPI = mock()
 
     private val sut = ApiImplementationProvider(buildConfigWrapper)

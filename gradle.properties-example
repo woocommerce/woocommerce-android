@@ -55,5 +55,3 @@ kapt.incremental.apt=false
 # Measuring build times
 tracksEnabled = false
 #tracksUsername = <optional username>
-
-android.nonTransitiveRClass=true

@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.list
 
 import android.content.Context
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
@@ -87,10 +88,20 @@ class OrderListView @JvmOverloads constructor(
         binding.ordersList.smoothScrollToPosition(0)
     }
 
+    fun getCurrentPosition() =
+        (binding.ordersList.layoutManager as? LinearLayoutManager)?.findFirstVisibleItemPosition() ?: 0
+
     /**
      * save the order list on configuration change
      */
     fun onFragmentSavedInstanceState() = binding.ordersList.layoutManager?.onSaveInstanceState()
+
+    /**
+     * restore the order list on configuration change
+     */
+    fun onFragmentRestoreInstanceState(listState: Parcelable) {
+        binding.ordersList.layoutManager?.onRestoreInstanceState(listState)
+    }
 
     fun setLoadingMoreIndicator(active: Boolean) {
         binding.loadMoreProgressbar.isVisible = active

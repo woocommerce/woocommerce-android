@@ -60,11 +60,11 @@ class UserEligibilityErrorFragment : BaseFragment(layout.fragment_user_eligibili
         requireActivity().addMenuProvider(
             object : MenuProvider {
                 override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                    menuInflater.inflate(org.wordpress.android.login.R.menu.menu_login, menu)
+                    menuInflater.inflate(R.menu.menu_login, menu)
                 }
 
                 override fun onMenuItemSelected(item: MenuItem): Boolean {
-                    if (item.itemId == org.wordpress.android.login.R.id.help) {
+                    if (item.itemId == R.id.help) {
                         startActivity(
                             HelpActivity.createIntent(
                                 requireActivity(),

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.prefs
 
 import android.R.attr
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -81,6 +82,12 @@ class WCSettingsToggleOptionView @JvmOverloads constructor(
     var description: String?
         get() = binding.toggleSettingDesc.text.toString()
         set(value) { UiHelpers.setTextOrHide(binding.toggleSettingDesc, value) }
+
+    var iconImageResource: Int? = null
+        set(value) { UiHelpers.setImageOrHideInLandscape(binding.toggleSettingIcon, value) }
+
+    var iconDrawable: Drawable? = null
+        set(value) { UiHelpers.setDrawableOrHide(binding.toggleSettingIcon, value) }
 
     private val checkable: CompoundButton by lazy { binding.toggleSettingSwitch }
     var listener: OnCheckedChangeListener? = null

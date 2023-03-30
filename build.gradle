@@ -33,7 +33,7 @@ allprojects {
             jvmTarget = JavaVersion.VERSION_1_8
             allWarningsAsErrors = true
             freeCompilerArgs += [
-                    "-opt-in=kotlin.RequiresOptIn",
+                    "-Xopt-in=kotlin.RequiresOptIn",
                     "-Xjvm-default=all-compatibility",
             ]
         }

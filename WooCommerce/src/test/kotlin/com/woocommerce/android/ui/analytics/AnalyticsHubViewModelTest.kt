@@ -524,7 +524,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when the analytics feedback is on state UNANSWERED then show the feedback banner`() = testBlocking {
-        whenever(feedbackRepository.getFeatureFeedbackState(FeatureFeedbackSettings.Feature.ANALYTICS_HUB))
+        whenever(feedbackRepository.getFeatureFeedback(FeatureFeedbackSettings.Feature.ANALYTICS_HUB))
             .thenReturn(FeatureFeedbackSettings.FeedbackState.UNANSWERED)
 
         sut = givenAViewModel()
@@ -534,7 +534,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when the analytics feedback is on state GIVEN then hide the feedback banner`() = testBlocking {
-        whenever(feedbackRepository.getFeatureFeedbackState(FeatureFeedbackSettings.Feature.ANALYTICS_HUB))
+        whenever(feedbackRepository.getFeatureFeedback(FeatureFeedbackSettings.Feature.ANALYTICS_HUB))
             .thenReturn(FeatureFeedbackSettings.FeedbackState.GIVEN)
 
         sut = givenAViewModel()
@@ -544,7 +544,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when the analytics feedback is on state DISMISSED then hide the feedback banner`() = testBlocking {
-        whenever(feedbackRepository.getFeatureFeedbackState(FeatureFeedbackSettings.Feature.ANALYTICS_HUB))
+        whenever(feedbackRepository.getFeatureFeedback(FeatureFeedbackSettings.Feature.ANALYTICS_HUB))
             .thenReturn(FeatureFeedbackSettings.FeedbackState.DISMISSED)
 
         sut = givenAViewModel()

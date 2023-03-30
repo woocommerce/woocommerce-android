@@ -140,6 +140,19 @@ class CurrencyFormatter @Inject constructor(
      * level - then the same function can be used for all the various currency fields of an order.
      *
      * @param currencyCode the ISO 4217 currency code to use for formatting
+     * @return a function which, given a raw amount as a String, returns the String formatted for display as a currency
+     */
+    fun buildFormatter(currencyCode: String = defaultCurrencyCode) = { rawValue: String? ->
+        formatCurrency(rawValue ?: "0.0", currencyCode, true)
+    }
+
+    /**
+     * Utility function that returns a reduced function for formatting currencies for orders.
+     *
+     * For order objects, we generally want to show exact values, and the currency used can be set once at a global
+     * level - then the same function can be used for all the various currency fields of an order.
+     *
+     * @param currencyCode the ISO 4217 currency code to use for formatting
      * @return a function which, given an amount as a BigDecimal, returns the String formatted for display as a currency
      */
     fun buildBigDecimalFormatter(currencyCode: String = defaultCurrencyCode) = { amount: BigDecimal ->

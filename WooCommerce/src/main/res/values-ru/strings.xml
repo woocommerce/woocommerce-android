@@ -16,7 +16,7 @@ Language: ru
     <string name="upgrades_upgrade_now">Перейти на платную подписку</string>
     <string name="upgrades_report_subscription_issue">Сообщить о проблеме с подпиской</string>
     <string name="free_trial_upgrade_now">Перейти на платную подписку</string>
-    <string name="free_trial_days_left">Осталось %1$s дн. до окончания пробного периода.</string>
+    <string name="free_trial_days_left">Осталось %1$d дн. до окончания пробного периода.</string>
     <string name="free_trial_trial_ended">Конец пробного периода</string>
     <string name="free_trial_your_trial_ended">Пробный период закончился.</string>
     <string name="store_onboarding_launch_store_generic_error_description">Произошли неожиданные ошибки.</string>

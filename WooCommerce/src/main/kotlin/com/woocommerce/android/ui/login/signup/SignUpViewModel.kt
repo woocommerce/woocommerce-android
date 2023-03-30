@@ -53,7 +53,7 @@ class SignUpViewModel @Inject constructor(
         AnalyticsTracker.track(stat = AnalyticsEvent.SIGNUP_SUBMITTED)
 
         if (!networkStatus.isConnected()) {
-            triggerEvent(ShowSnackbar(org.wordpress.android.mediapicker.source.wordpress.R.string.no_network_message))
+            triggerEvent(ShowSnackbar(R.string.no_network_message))
             return
         }
 

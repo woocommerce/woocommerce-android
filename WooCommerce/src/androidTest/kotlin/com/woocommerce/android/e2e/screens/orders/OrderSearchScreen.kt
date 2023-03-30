@@ -5,7 +5,7 @@ import com.woocommerce.android.e2e.helpers.util.Screen
 
 class OrderSearchScreen : Screen {
     companion object {
-        const val SEARCH_FIELD = androidx.appcompat.R.id.search_bar
+        const val SEARCH_FIELD = R.id.search_bar
     }
 
     constructor() : super(SEARCH_FIELD)

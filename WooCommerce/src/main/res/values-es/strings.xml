@@ -16,7 +16,7 @@ Language: es
     <string name="upgrades_upgrade_now">Mejora tu plan ahora</string>
     <string name="upgrades_report_subscription_issue">Notificar un problema de suscripción</string>
     <string name="free_trial_upgrade_now">Mejora tu plan ahora</string>
-    <string name="free_trial_days_left">El período de prueba finaliza en %1$s días.</string>
+    <string name="free_trial_days_left">El período de prueba finaliza en %1$d días.</string>
     <string name="free_trial_trial_ended">Período de prueba finalizado</string>
     <string name="free_trial_your_trial_ended">Tu período de prueba ha finalizado.</string>
     <string name="store_onboarding_launch_store_generic_error_description">Ups, han ocurrido algunos errores inesperados.</string>

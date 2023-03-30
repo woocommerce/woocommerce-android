@@ -4,7 +4,7 @@ import android.net.Uri
 import android.os.Parcelable
 import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_IMAGE_TAPPED
@@ -89,7 +89,7 @@ class ProductImagesViewModel @Inject constructor(
 
     fun uploadProductImages(remoteProductId: Long, localUriList: List<Uri>) {
         if (!networkStatus.isConnected()) {
-            triggerEvent(ShowSnackbar(R.string.offline_error))
+            triggerEvent(ShowSnackbar(string.network_activity_no_connectivity))
             return
         }
 
@@ -178,9 +178,9 @@ class ProductImagesViewModel @Inject constructor(
         val numImages = (viewState.images?.size ?: 0) + (viewState.uploadingImageUris?.size ?: 0)
         viewState = viewState.copy(
             chooserButtonButtonTitleRes = when {
-                isMultiSelectionAllowed -> R.string.product_add_photos
-                numImages > 0 -> R.string.product_replace_photo
-                else -> R.string.product_add_photo
+                isMultiSelectionAllowed -> string.product_add_photos
+                numImages > 0 -> string.product_replace_photo
+                else -> string.product_add_photo
             }
         )
     }

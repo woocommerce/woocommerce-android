@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/color_surface">
+
+    <ImageView
+        android:id="@+id/about_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="fitCenter"
+        android:layout_marginTop="@dimen/major_200"
+        android:layout_marginBottom="@dimen/major_200"
+        android:contentDescription="@string/about_appname"
+        android:layout_gravity="center"
+        app:srcCompat="@drawable/img_woo_bubble_colored"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="@dimen/major_200"
+        android:background="?attr/colorSurface">
+
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/about_tos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/major_100"
+            android:paddingEnd="@dimen/minor_00"
+            app:optionTitle="@string/about_tos"/>
+
+        <View
+            style="@style/Woo.Divider"
+            android:layout_marginStart="@dimen/major_100" />
+
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/about_privacy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/major_100"
+            android:paddingEnd="@dimen/minor_00"
+            app:optionTitle="@string/settings_privacy_policy_header"/>
+
+        <View
+            style="@style/Woo.Divider"
+            android:layout_marginStart="@dimen/major_100"/>
+
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/about_privacy_ca"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/major_100"
+            android:paddingEnd="@dimen/minor_00"
+            app:optionTitle="@string/settings_privacy_policy_ca"/>
+
+        <View
+            style="@style/Woo.Divider"
+            android:layout_marginStart="@dimen/major_100"/>
+    </LinearLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/about_version"
+        style="@style/Woo.TextView.Caption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/minor_00"
+        android:gravity="center_vertical"
+        android:text="@string/about_version"
+        android:layout_gravity="center"
+        tools:text="Version 3.3-rc2" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/about_copyright"
+        style="@style/Woo.TextView.Caption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/minor_00"
+        android:gravity="center"
+        android:layout_gravity="center"
+        tools:text="\@WooCommerce, Inc and WooCommerce Ireland"/>
+</LinearLayout>

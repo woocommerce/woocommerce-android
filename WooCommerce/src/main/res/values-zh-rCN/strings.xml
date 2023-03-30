@@ -16,7 +16,7 @@ Language: zh_CN
     <string name="upgrades_upgrade_now">立即升级</string>
     <string name="upgrades_report_subscription_issue">报告订阅问题</string>
     <string name="free_trial_upgrade_now">立即升级</string>
-    <string name="free_trial_days_left">%1$s 天后免费试用结束。</string>
+    <string name="free_trial_days_left">%1$d 天后免费试用结束。</string>
     <string name="free_trial_trial_ended">试用已结束</string>
     <string name="free_trial_your_trial_ended">您的试用已结束。</string>
     <string name="store_onboarding_launch_store_generic_error_description">糟糕，发生意外错误。</string>

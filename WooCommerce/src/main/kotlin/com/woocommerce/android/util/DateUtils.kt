@@ -126,6 +126,17 @@ class DateUtils @Inject constructor(
     }
 
     /**
+     * Given a date string in localized format, returns a date object.
+     *
+     * return null from the [DateFormat] class if [dateString] cannot be
+     * properly parsed
+     */
+    fun getDateFromLocalizedLongDateString(context: Context, dateString: String): Date? {
+        val df = DateFormat.getLongDateFormat(context)
+        return df.parse(dateString)
+    }
+
+    /**
      * Given a date of format YYYY-'W'WW, returns the String in short month ("MMM d") format,
      * with the day being the first day of that week (a Monday, by ISO8601 convention).
      *
@@ -360,7 +371,12 @@ class DateUtils @Inject constructor(
         }
 
     companion object {
+        const val DAYS_IN_QUARTER = 90
+        const val DAYS_TAIL_IN_WEEK = 6
+
         const val ZERO = 0
+        const val ONE = 1
+        const val THREE = 3
 
         /**
          * Compares two dates to determine if [date2] is after [date1]. Note that
@@ -374,6 +390,11 @@ class DateUtils @Inject constructor(
             val dateOnly1 = DateUtils.round(date1, Calendar.DATE)
             val dateOnly2 = DateUtils.round(date2, Calendar.DATE)
             return dateOnly2.after(dateOnly1)
+        }
+
+        fun getDayOfWeekWithMonthAndDayFromDate(date: Date): String {
+            val dateFormat = SimpleDateFormat("EEEE, MMM dd", Locale.US)
+            return dateFormat.format(date)
         }
     }
 }

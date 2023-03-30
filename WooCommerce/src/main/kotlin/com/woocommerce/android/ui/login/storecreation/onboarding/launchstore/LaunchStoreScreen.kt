@@ -143,7 +143,7 @@ fun LaunchStoreScreen(
                                 .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
                                 .border(
                                     dimensionResource(id = R.dimen.minor_10),
-                                    colorResource(id = R.color.woo_gray_0),
+                                    colorResource(id = R.color.gray_0),
                                     shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)),
                                 )
                         )

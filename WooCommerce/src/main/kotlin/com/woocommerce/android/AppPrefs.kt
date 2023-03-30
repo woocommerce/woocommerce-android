@@ -41,6 +41,8 @@ import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.PreferenceUtils
 import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.util.ThemeOption.DEFAULT
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import java.util.Calendar
 import java.util.Date
 
@@ -134,8 +136,14 @@ object AppPrefs {
         // Play cha-ching sound on new order notifications
         NOTIFS_ORDERS_CHA_CHING_ENABLED,
 
+        // Number of times the "mark all notifications read" icon was tapped
+        NUM_TIMES_MARK_ALL_NOTIFS_READ_SNACK_SHOWN,
+
         // The app update for this version was cancelled by the user
         CANCELLED_APP_VERSION_CODE,
+
+        // Application permissions
+        ASKED_PERMISSION_CAMERA,
 
         // Date of the app installation
         APP_INSTALATION_DATE,
@@ -430,6 +438,14 @@ object AppPrefs {
     fun setCardReaderWelcomeDialogShown() =
         setBoolean(UndeletablePrefKey.CARD_READER_WELCOME_SHOWN, true)
 
+    /**
+     * Flag to check products features are enabled
+     */
+    fun isProductsFeatureEnabled() = getBoolean(DeletablePrefKey.IS_PRODUCTS_FEATURE_ENABLED, false)
+
+    fun setIsProductsFeatureEnabled(isProductsFeatureEnabled: Boolean) =
+        setBoolean(DeletablePrefKey.IS_PRODUCTS_FEATURE_ENABLED, isProductsFeatureEnabled)
+
     fun isCrashReportingEnabled(): Boolean {
         // default to False for debug builds
         val default = !BuildConfig.DEBUG
@@ -456,6 +472,14 @@ object AppPrefs {
 
     fun setOrderNotificationsChaChingEnabled(enabled: Boolean) {
         setBoolean(UndeletablePrefKey.NOTIFS_ORDERS_CHA_CHING_ENABLED, enabled)
+    }
+
+    fun getNumTimesMarkAllReadSnackShown(): Int =
+        getInt(UndeletablePrefKey.NUM_TIMES_MARK_ALL_NOTIFS_READ_SNACK_SHOWN, 0)
+
+    fun incNumTimesMarkAllReadSnackShown() {
+        val numTimesShown = getNumTimesMarkAllReadSnackShown() + 1
+        setInt(UndeletablePrefKey.NUM_TIMES_MARK_ALL_NOTIFS_READ_SNACK_SHOWN, numTimesShown)
     }
 
     fun getSelectedShipmentTrackingProviderName(): String =
@@ -486,11 +510,25 @@ object AppPrefs {
         setBoolean(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED, bypassedLogin)
     }
 
+    fun getLoginUserBypassedJetpackRequired() =
+        getBoolean(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED, false)
+
+    fun removeLoginUserBypassedJetpackRequired() {
+        remove(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED)
+    }
+
     fun getDatabaseDowngraded() = getBoolean(DATABASE_DOWNGRADED, false)
 
     fun setDatabaseDowngraded(value: Boolean) {
         setBoolean(DATABASE_DOWNGRADED, value)
     }
+
+    fun setSelectedOrderListTab(selectedOrderListTabPosition: Int) {
+        setInt(DeletablePrefKey.SELECTED_ORDER_LIST_TAB_POSITION, selectedOrderListTabPosition)
+    }
+
+    fun getSelectedOrderListTabPosition() =
+        getInt(DeletablePrefKey.SELECTED_ORDER_LIST_TAB_POSITION, -1)
 
     fun setSelectedProductType(type: ProductType) = setString(DeletablePrefKey.SELECTED_PRODUCT_TYPE, type.value)
 
@@ -500,6 +538,14 @@ object AppPrefs {
         setBoolean(DeletablePrefKey.SELECTED_PRODUCT_IS_VIRTUAL, isVirtual)
 
     fun isSelectedProductVirtual(): Boolean = getBoolean(DeletablePrefKey.SELECTED_PRODUCT_IS_VIRTUAL, false)
+
+    /**
+     * Checks if the user has a saved order list tab position yet. If no position has been saved,
+     * then the value will be the default of -1.
+     *
+     * @return True if the saved position is not the default -1, else false
+     */
+    fun hasSelectedOrderListTabPosition() = getSelectedOrderListTabPosition() > -1
 
     fun getImageOptimizationEnabled() = getBoolean(IMAGE_OPTIMIZE_ENABLED, true)
 
@@ -530,6 +576,20 @@ object AppPrefs {
 
     fun setUnifiedLoginLastSource(source: String) {
         setString(DeletablePrefKey.UNIFIED_LOGIN_LAST_ACTIVE_SOURCE, source)
+    }
+
+    /**
+     * Used during the unified login process to track the last flow the user was in before
+     * closing the app so if the user opens and finishes the flow at a later day the tracks
+     * events will be complete.
+     */
+    fun getUnifiedLoginLastFlow(): String? {
+        val result = getString(DeletablePrefKey.UNIFIED_LOGIN_LAST_ACTIVE_FLOW)
+        return if (result.isNotEmpty()) {
+            result
+        } else {
+            null
+        }
     }
 
     fun setUnifiedLoginLastFlow(flow: String) {
@@ -1005,6 +1065,21 @@ object AppPrefs {
             "${context.packageName}_deletable_preferences",
             Context.MODE_PRIVATE
         )
+    }
+
+    /*
+     * key in shared preferences which stores a boolean telling whether the app has already
+     * asked for the passed permission
+     */
+    fun getPermissionAskedKey(permission: String): PrefKey? {
+        when (permission) {
+            android.Manifest.permission.CAMERA ->
+                return UndeletablePrefKey.ASKED_PERMISSION_CAMERA
+            else -> {
+                WooLog.w(T.UTILS, "No key for requested permission: $permission")
+                return null
+            }
+        }
     }
 
     enum class CardReaderOnboardingStatus {

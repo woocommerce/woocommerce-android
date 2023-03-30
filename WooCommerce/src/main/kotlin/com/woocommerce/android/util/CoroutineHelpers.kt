@@ -1,5 +1,6 @@
 package com.woocommerce.android.util
 
+import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.coroutineScope
@@ -17,6 +18,18 @@ import kotlin.coroutines.Continuation
 suspend inline fun <T> suspendCoroutineWithTimeout(
     timeout: Long,
     crossinline block: (Continuation<T>) -> Unit
+) = coroutineScope {
+    withTimeoutOrNull(timeout) {
+        suspendCancellableCoroutine(block = block)
+    }
+}
+
+/**
+ * Similar to the above but returns a cancellable continuation
+ */
+suspend inline fun <T> suspendCancellableCoroutineWithTimeout(
+    timeout: Long,
+    crossinline block: (CancellableContinuation<T>) -> Unit
 ) = coroutineScope {
     withTimeoutOrNull(timeout) {
         suspendCancellableCoroutine(block = block)

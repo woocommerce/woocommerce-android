@@ -110,7 +110,6 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
 
             // THEN
             verify(cardReaderManager).disconnectReader()
-            verify(cardReaderTracker).trackAutomaticReadDisconnectWhenConnectedAnotherType()
             assertThat(vm.event.value)
                 .isEqualTo(
                     CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToConnection(
@@ -150,7 +149,6 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
 
             // THEN
             verify(cardReaderManager).disconnectReader()
-            verify(cardReaderTracker).trackAutomaticReadDisconnectWhenConnectedAnotherType()
             assertThat(vm.event.value)
                 .isEqualTo(
                     CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToConnection(
@@ -190,7 +188,6 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
 
             // THEN
             verify(cardReaderManager).disconnectReader()
-            verify(cardReaderTracker).trackAutomaticReadDisconnectWhenConnectedAnotherType()
             assertThat(vm.event.value)
                 .isEqualTo(
                     CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToConnection(

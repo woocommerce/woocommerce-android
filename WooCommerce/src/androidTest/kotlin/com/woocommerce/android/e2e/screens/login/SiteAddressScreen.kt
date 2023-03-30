@@ -5,7 +5,7 @@ import com.woocommerce.android.e2e.helpers.util.Screen
 
 class SiteAddressScreen : Screen {
     companion object {
-        const val SITE_ADDRESS_FIELD = org.wordpress.android.login.R.id.input
+        const val SITE_ADDRESS_FIELD = R.id.input
         const val NEXT_BUTTON = R.id.bottom_button
     }
 

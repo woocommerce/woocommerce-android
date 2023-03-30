@@ -7,17 +7,15 @@ import com.woocommerce.android.iap.internal.planpurchase.IAPPurchaseWPComPlanAct
 import com.woocommerce.android.iap.internal.planpurchase.IAPPurchaseWpComPlanHandler
 import com.woocommerce.android.iap.internal.planpurchase.IAPPurchaseWpComPlanSupportCheckerImpl
 import com.woocommerce.android.iap.pub.network.IAPMobilePayAPI
-import com.woocommerce.android.iap.pub.network.SandboxTestingConfig
 
 object IAPSitePurchasePlanFactory {
     fun createIAPSitePurchasePlan(
         context: Application,
         logWrapper: IAPLogWrapper,
         realMobilePayApiProvider: (String?) -> IAPMobilePayAPI,
-        sandboxTestingConfig: SandboxTestingConfig,
     ): PurchaseWPComPlanActions {
         val iapManager = IAPManagerFactory.createIAPManager(context, logWrapper)
-        val apiImplementationProvider = ApiImplementationProvider(sandboxTestingConfig)
+        val apiImplementationProvider = ApiImplementationProvider()
         val purchaseWpComPlanHandler = IAPPurchaseWpComPlanHandler(
             apiImplementationProvider.providerMobilePayAPI(logWrapper, realMobilePayApiProvider),
             iapManager,

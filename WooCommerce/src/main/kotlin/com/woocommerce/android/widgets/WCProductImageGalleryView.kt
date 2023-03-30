@@ -52,10 +52,10 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
     interface OnGalleryImageInteractionListener {
         fun onGalleryImageClicked(image: Product.Image)
-        fun onGalleryAddImageClicked() {}
-        fun onGalleryImageDragStarted() {}
-        fun onGalleryImageMoved(from: Int, to: Int) {}
-        fun onGalleryImageDeleteIconClicked(image: Product.Image) {}
+        fun onGalleryAddImageClicked() { }
+        fun onGalleryImageDragStarted() { }
+        fun onGalleryImageMoved(from: Int, to: Int) { }
+        fun onGalleryImageDeleteIconClicked(image: Product.Image) { }
     }
 
     private var imageSize = 0
@@ -134,8 +134,8 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
         imageSize = if (isGridView) {
             val windowWidth = DisplayUtils.getWindowPixelWidth(context)
-            val margin = context.resources.getDimensionPixelSize(R.dimen.major_100)
-            val deleteIconsSpace = context.resources.getDimensionPixelSize(R.dimen.major_100)
+            val margin = context.resources.getDimensionPixelSize(R.dimen.margin_extra_large)
+            val deleteIconsSpace = context.resources.getDimensionPixelSize(R.dimen.margin_extra_large)
             ((windowWidth - margin * NUM_GRID_MARGINS) / 2) - deleteIconsSpace
         } else {
             context.resources.getDimensionPixelSize(R.dimen.image_major_120)
@@ -145,7 +145,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
             if (isGridView) {
                 GridItemDecoration(
                     spanCount = NUM_COLUMNS,
-                    spacing = resources.getDimensionPixelSize(R.dimen.major_100)
+                    spacing = resources.getDimensionPixelSize(R.dimen.margin_extra_large)
                 )
             } else {
                 HorizontalItemDecoration(
@@ -379,7 +379,6 @@ class WCProductImageGalleryView @JvmOverloads constructor(
 
             setMargins()
         }
-
         @SuppressLint("ClickableViewAccessibility")
         private val dragOnTouchListener = OnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN && draggableItemTouchHelper.isAttached) {
@@ -444,7 +443,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
         private fun setMargins() {
             (viewBinding.productImage.layoutParams as FrameLayout.LayoutParams).apply {
                 val margin = if (isGridView) {
-                    val additionalMarginToFitDeleteIcon = context.resources.getDimensionPixelSize(R.dimen.minor_100)
+                    val additionalMarginToFitDeleteIcon = context.resources.getDimensionPixelSize(R.dimen.margin_medium)
                     additionalMarginToFitDeleteIcon
                 } else {
                     0

@@ -1,14 +1,11 @@
 package com.woocommerce.android.ui.products
 
-import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.ProductAttribute
-import com.woocommerce.android.model.ProductCategory
-import com.woocommerce.android.model.ProductTag
-import com.woocommerce.android.model.ProductVariation
-import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.*
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
+import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
+import org.wordpress.android.fluxc.store.MediaStore
 import java.sql.Date
 import java.time.Instant
 
@@ -129,7 +126,7 @@ object ProductTestUtils {
         }
     }
 
-    private fun generateTags(): List<ProductTag> {
+    fun generateTags(): List<ProductTag> {
         return listOf(ProductTag(1, "Tag", "Slug", "Desc"))
     }
 
@@ -157,10 +154,25 @@ object ProductTestUtils {
             dateCreated = Date.from(Instant.EPOCH)
         )
 
+    fun generateProductMedia(remoteProductId: Long = 1, siteId: Long = 1) =
+        MediaModel().apply {
+            id = 1
+            localPostId = remoteProductId.toInt()
+            localSiteId = siteId.toInt()
+            mediaId = 1L
+            fileName = "Image filename $remoteProductId"
+            url = "google.com"
+        }
+
+    fun generateMediaUploadErrorModel() = MediaStore.MediaError(
+        MediaStore.MediaErrorType.GENERIC_ERROR,
+        "Error uploading media"
+    )
+
     fun generateProductImagesList() =
         (1L..10L).map { id -> generateProductImage(imageId = id) }
 
-    private fun generateProductAttribute(id: Long): ProductAttribute {
+    fun generateProductAttribute(id: Long): ProductAttribute {
         return ProductAttribute(
             id = id,
             name = "attribute$id",

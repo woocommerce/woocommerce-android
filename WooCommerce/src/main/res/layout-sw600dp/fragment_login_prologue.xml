@@ -44,36 +44,25 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/image_prologue"
-        app:layout_constraintBottom_toTopOf="@id/prologueIntro"
+        app:layout_constraintBottom_toTopOf="@id/prologueTitle"
         app:layout_constraintWidth_percent="0.6"/>
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/prologueIntro"
-        style="@style/Woo.TextView.Headline6"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:text="@string/simplified_login_prologue_intro"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imageView"
-        app:layout_constraintBottom_toTopOf="@id/prologueTitle" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/prologueTitle"
         style="@style/Woo.TextView.Subtitle1"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:gravity="center_horizontal"
         android:textAlignment="gravity"
+        android:layout_marginTop="@dimen/major_100"
         android:text="@string/simplified_login_prologue_title"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/prologueIntro"
+        app:layout_constraintTop_toBottomOf="@id/imageView"
         app:layout_constraintBottom_toTopOf="@id/loginButtons"
-        app:layout_constraintWidth_percent="0.55" />
+        android:visibility="visible"
+        app:layout_constraintWidth_percent="0.5" />
 
     <LinearLayout
         android:id="@+id/loginButtons"
@@ -81,7 +70,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="@dimen/major_400"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/prologueTitle"
         app:layout_constraintBottom_toBottomOf="parent">
@@ -100,30 +88,34 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_login_store"
-            style="@style/Woo.Button.Colored.Circle"
+            style="@style/Woo.Button.Colored"
             android:layout_width="@dimen/prologue_button_wide"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginStart="@dimen/major_100"
-            android:layout_marginTop="@dimen/minor_25"
             android:layout_marginEnd="@dimen/major_100"
-            android:layout_marginBottom="@dimen/major_100"
+            android:layout_marginBottom="@dimen/minor_25"
             android:text="@string/login_store_address"
-            android:textAllCaps="false"
-            tools:visibility="visible" />
+            android:textAllCaps="false" />
+
+        <include
+            android:id="@+id/orDivider"
+            layout="@layout/woo_login_or_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_get_started"
-            style="@style/Woo.Button.Colored.Circle.White"
+            style="@style/Woo.Button.Colored.White"
             android:layout_width="@dimen/prologue_button_wide"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginEnd="@dimen/major_100"
             android:layout_marginBottom="@dimen/major_150"
             android:text="@string/signup_get_started_button"
-            android:textAllCaps="false" />
-
+            android:textAllCaps="false"
+            tools:visibility="visible"
+            android:layout_gravity="center_horizontal" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

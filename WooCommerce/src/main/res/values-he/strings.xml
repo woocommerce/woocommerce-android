@@ -16,7 +16,7 @@ Language: he_IL
     <string name="upgrades_upgrade_now">זה הזמן לשדרג</string>
     <string name="upgrades_report_subscription_issue">לדווח על בעיה במינוי</string>
     <string name="free_trial_upgrade_now">זה הזמן לשדרג</string>
-    <string name="free_trial_days_left">נותרו ⁦%1$s⁩ ימים בתקופת הניסיון שלך.</string>
+    <string name="free_trial_days_left">נותרו ⁦%1$d⁩ ימים בתקופת הניסיון שלך.</string>
     <string name="free_trial_trial_ended">תקופת הניסיון הסתיימה</string>
     <string name="free_trial_your_trial_ended">תקופת הניסיון שלך הסתיימה.</string>
     <string name="store_onboarding_launch_store_generic_error_description">אופס, אירעו כמה שגיאות לא צפויות.</string>

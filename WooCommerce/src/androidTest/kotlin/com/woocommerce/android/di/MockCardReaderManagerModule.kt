@@ -1,7 +1,6 @@
 package com.woocommerce.android.di
 
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.CardReaderManager.SimulatorUpdateFrequency
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
@@ -63,9 +62,9 @@ class MockCardReaderManagerModule {
         override val displayBluetoothCardReaderMessages: Flow<BluetoothCardReaderMessages>
             get() = emptyFlow()
 
-        override fun initialize(updateFrequency: SimulatorUpdateFrequency, useInterac: Boolean, isDebug: Boolean) {}
+        override fun initialize(updateFrequency: CardReaderManager.SimulatorUpdateFrequency, useInterac: Boolean) {}
         override fun reinitializeSimulatedTerminal(
-            updateFrequency: SimulatorUpdateFrequency,
+            updateFrequency: CardReaderManager.SimulatorUpdateFrequency,
             useInterac: Boolean
         ) {}
 

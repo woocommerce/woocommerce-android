@@ -57,7 +57,7 @@ class LaunchStoreViewModel @Inject constructor(
                             ShowDialog(
                                 titleId = R.string.store_onboarding_store_already_launched_error_title,
                                 messageId = R.string.store_onboarding_store_already_launched_error_description,
-                                positiveButtonId = R.string.store_onboarding_launch_store_ok
+                                positiveButtonId = R.string.link_dialog_button_ok
                             )
                         )
                         GENERIC_ERROR -> triggerEvent(

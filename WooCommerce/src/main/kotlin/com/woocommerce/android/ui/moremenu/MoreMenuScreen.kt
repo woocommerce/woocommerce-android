@@ -68,6 +68,9 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.woocommerce.android.R
+import com.woocommerce.android.R.color
+import com.woocommerce.android.R.drawable
+import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuViewState
 
 @ExperimentalFoundationApi
@@ -131,7 +134,7 @@ private fun MoreMenuHeader(
             .fillMaxWidth()
             .clickable(
                 enabled = state.isStoreSwitcherEnabled,
-                onClickLabel = stringResource(id = R.string.settings_switch_store),
+                onClickLabel = stringResource(id = string.settings_switch_store),
                 role = Role.Button,
                 onClick = onSwitchStore
             )
@@ -168,8 +171,8 @@ private fun SettingsButton(modifier: Modifier, onSettingsClick: () -> Unit) {
         onClick = { onSettingsClick() },
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_more_screen_settings),
-            contentDescription = stringResource(id = R.string.settings),
+            painter = painterResource(id = drawable.ic_more_screen_settings),
+            contentDescription = stringResource(id = string.settings),
             tint = Color.Unspecified
         )
     }
@@ -199,7 +202,7 @@ private fun StoreDetailsHeader(
             )
             if (isStoreSwitcherEnabled) {
                 Text(
-                    text = stringResource(R.string.settings_switch_store),
+                    text = stringResource(string.settings_switch_store),
                     color = MaterialTheme.colors.secondary,
                     style = MaterialTheme.typography.body2,
                 )
@@ -241,12 +244,12 @@ private fun MoreMenuUserAvatar(avatarUrl: String) {
         Image(
             bitmap = it.asImageBitmap(),
             contentScale = ContentScale.Crop,
-            contentDescription = stringResource(id = R.string.more_menu_avatar),
+            contentDescription = stringResource(id = string.more_menu_avatar),
             modifier = circledModifier
         )
     } ?: Image(
-        painter = painterResource(id = R.drawable.img_gravatar_placeholder),
-        contentDescription = stringResource(id = R.string.more_menu_avatar),
+        painter = painterResource(id = drawable.img_gravatar_placeholder),
+        contentDescription = stringResource(id = string.more_menu_avatar),
         modifier = circledModifier
     )
 }
@@ -262,7 +265,7 @@ private fun MoreMenuButton(
         onClick = onClick,
         contentPadding = PaddingValues(dimensionResource(id = R.dimen.major_75)),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = colorResource(id = R.color.more_menu_button_background)
+            backgroundColor = colorResource(id = color.more_menu_button_background)
         ),
         modifier = Modifier.height(dimensionResource(id = R.dimen.more_menu_button_height)),
         shape = RoundedCornerShape(dimensionResource(id = R.dimen.major_75))
@@ -279,7 +282,7 @@ private fun MoreMenuButton(
                     modifier = Modifier
                         .size(dimensionResource(id = R.dimen.major_350))
                         .clip(CircleShape)
-                        .background(colorResource(id = R.color.more_menu_button_icon_background))
+                        .background(colorResource(id = color.more_menu_button_icon_background))
                 ) {
                     Image(
                         painter = painterResource(id = iconDrawable),
@@ -349,29 +352,29 @@ private fun MoreMenuPreview() {
     val state = MoreMenuViewState(
         moreMenuItems = listOf(
             MenuUiButton(
-                R.string.more_menu_button_payments, R.drawable.ic_more_menu_payments,
+                string.more_menu_button_payments, drawable.ic_more_menu_payments,
                 BadgeState(
                     badgeSize = R.dimen.major_110,
-                    backgroundColor = R.color.color_secondary,
-                    textColor = R.color.color_on_primary,
+                    backgroundColor = color.color_secondary,
+                    textColor = color.color_on_surface_inverted,
                     textState = TextState("", R.dimen.text_minor_80),
                     animateAppearance = true
                 )
             ),
-            MenuUiButton(R.string.more_menu_button_wс_admin, R.drawable.ic_more_menu_wp_admin),
-            MenuUiButton(R.string.more_menu_button_store, R.drawable.ic_more_menu_store),
+            MenuUiButton(string.more_menu_button_wс_admin, drawable.ic_more_menu_wp_admin),
+            MenuUiButton(string.more_menu_button_store, drawable.ic_more_menu_store),
             MenuUiButton(
-                R.string.more_menu_button_reviews, R.drawable.ic_more_menu_reviews,
+                string.more_menu_button_reviews, drawable.ic_more_menu_reviews,
                 BadgeState(
                     badgeSize = R.dimen.major_150,
-                    backgroundColor = R.color.color_primary,
-                    textColor = R.color.color_on_primary,
+                    backgroundColor = color.color_primary,
+                    textColor = color.color_on_surface_inverted,
                     textState = TextState("3", R.dimen.text_minor_80),
                     animateAppearance = false
                 )
             ),
-            MenuUiButton(R.string.more_menu_button_coupons, R.drawable.ic_more_menu_coupons),
-            MenuUiButton(R.string.more_menu_button_upgrades, R.drawable.ic_more_menu_upgrades),
+            MenuUiButton(string.more_menu_button_coupons, drawable.ic_more_menu_coupons),
+            MenuUiButton(string.more_menu_button_upgrades, drawable.ic_more_menu_upgrades),
         ),
         siteName = "Example Site",
         siteUrl = "woocommerce.com",

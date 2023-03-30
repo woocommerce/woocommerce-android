@@ -111,9 +111,7 @@ class AnalyticsHubViewModel @Inject constructor(
 
     private fun shouldAskForFeedback() {
         viewModelScope.launch {
-            val feedbackStatus = feedbackRepository.getFeatureFeedbackState(
-                FeatureFeedbackSettings.Feature.ANALYTICS_HUB
-            )
+            val feedbackStatus = feedbackRepository.getFeatureFeedback(FeatureFeedbackSettings.Feature.ANALYTICS_HUB)
             mutableState.update { viewState ->
                 viewState.copy(showFeedBackBanner = feedbackStatus == FeatureFeedbackSettings.FeedbackState.UNANSWERED)
             }

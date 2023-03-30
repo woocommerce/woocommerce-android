@@ -152,12 +152,7 @@ private fun MagicLinkSentContent(
                 .fillMaxWidth()
                 .weight(1f)
         ) {
-            Image(
-                painter = painterResource(
-                    id = org.wordpress.android.login.R.drawable.img_envelope
-                ),
-                contentDescription = null
-            )
+            Image(painter = painterResource(id = R.drawable.img_envelope), contentDescription = null)
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
             Text(
                 text = stringResource(id = R.string.login_magic_links_sent_label_short),

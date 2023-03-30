@@ -54,7 +54,7 @@ class MagicLinkInterceptActivity : AppCompatActivity() {
 
         loginAnalyticsListener.trackLoginMagicLinkOpened()
 
-        setContentView(org.wordpress.android.login.R.layout.login_magic_link_sent_screen)
+        setContentView(R.layout.login_magic_link_sent_screen)
         retryButton = findViewById(R.id.login_open_email_client)
         retryContainer = findViewById(R.id.login_magic_link_container)
         retryButton?.text = getString(R.string.retry)

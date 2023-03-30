@@ -16,7 +16,7 @@ Language: ja_JP
     <string name="upgrades_upgrade_now">今すぐアップグレード</string>
     <string name="upgrades_report_subscription_issue">購読に関する問題を報告</string>
     <string name="free_trial_upgrade_now">今すぐアップグレード</string>
-    <string name="free_trial_days_left">お試し期間はあと%1$s日です。</string>
+    <string name="free_trial_days_left">お試し期間はあと%1$d日です。</string>
     <string name="free_trial_trial_ended">お試し期間終了</string>
     <string name="free_trial_your_trial_ended">お試し期間が終了しました。</string>
     <string name="store_onboarding_launch_store_generic_error_description">予期しないエラーが発生しました。</string>

@@ -16,7 +16,7 @@ Language: it
     <string name="upgrades_upgrade_now">Aggiorna ora</string>
     <string name="upgrades_report_subscription_issue">Segnala il problema con l\'abbonamento</string>
     <string name="free_trial_upgrade_now">Aggiorna ora</string>
-    <string name="free_trial_days_left">%1$s giorni di prova rimasti.</string>
+    <string name="free_trial_days_left">%1$d giorni di prova rimasti.</string>
     <string name="free_trial_trial_ended">Prova terminata</string>
     <string name="free_trial_your_trial_ended">La tua prova è terminata.</string>
     <string name="store_onboarding_launch_store_generic_error_description">Ops, si sono verificati alcuni errori imprevisti.</string>

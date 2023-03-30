@@ -23,7 +23,7 @@ class WCViewPagerIndicator @JvmOverloads constructor(
         pageCount = viewPager.adapter?.itemCount ?: 0
 
         orientation = HORIZONTAL
-        val padding = context.resources.getDimensionPixelSize(R.dimen.minor_50)
+        val padding = context.resources.getDimensionPixelSize(R.dimen.margin_small)
 
         for (page in 0 until pageCount) {
             ImageView(context).also { imageView ->

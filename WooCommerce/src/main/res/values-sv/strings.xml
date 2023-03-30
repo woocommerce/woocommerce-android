@@ -16,7 +16,7 @@ Language: sv_SE
     <string name="upgrades_upgrade_now">Uppgradera nu</string>
     <string name="upgrades_report_subscription_issue">Rapportera prenumerationsproblem</string>
     <string name="free_trial_upgrade_now">Uppgradera nu</string>
-    <string name="free_trial_days_left">%1$s dagar kvar av din provperiod.</string>
+    <string name="free_trial_days_left">%1$d dagar kvar av din provperiod.</string>
     <string name="free_trial_trial_ended">Provperioden avslutades</string>
     <string name="free_trial_your_trial_ended">Din provperiod har avslutats.</string>
     <string name="store_onboarding_launch_store_generic_error_description">Hoppsan, det uppstod några oväntade fel.</string>

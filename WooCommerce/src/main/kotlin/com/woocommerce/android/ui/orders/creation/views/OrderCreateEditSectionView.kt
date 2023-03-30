@@ -19,7 +19,7 @@ import com.woocommerce.android.databinding.OrderCreationSectionBinding
 class OrderCreateEditSectionView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = com.google.android.material.R.attr.materialCardViewStyle
+    defStyleAttr: Int = R.attr.materialCardViewStyle
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
     private val binding = OrderCreationSectionBinding.inflate(LayoutInflater.from(ctx), this, true)
 

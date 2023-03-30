@@ -1,67 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fillViewport="true">
+
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
-    <RelativeLayout
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/cardReaderHubLoading"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/cardReaderHubOnboardingFailedTv"
-            style="@style/Woo.TextView.Caption"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="@dimen/minor_100"
-            android:background="@color/color_surface"
-            android:drawableStart="@drawable/ic_info_outline_20dp"
-            android:drawablePadding="@dimen/major_100"
-            android:elevation="@dimen/minor_10"
-            android:foreground="?attr/selectableItemBackground"
-            android:outlineProvider="bounds"
-            android:padding="@dimen/major_100"
-            android:textColor="@color/color_on_surface_high"
-            android:textColorHighlight="#00FFFFFF"
-            app:drawableTint="@color/color_on_surface"
-            tools:text="@string/card_reader_onboarding_not_finished" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/cardReaderHubRv"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardReaderHubLoading"
+        app:layout_constraintVertical_chainStyle="spread_inside"
+        tools:itemCount="5"
+        tools:listitem="@layout/card_reader_hub_list_item" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+    <!-- android:textColorHighlight="#00FFFFFF": Workaround for a bug https://stackoverflow.com/a/70394538/632516 -->
+    <include
+        android:id="@+id/learn_more_ipp_tv"
+        layout="@layout/card_reader_learn_more_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardReaderHubRv" />
 
-            <com.google.android.material.progressindicator.LinearProgressIndicator
-                android:id="@+id/cardReaderHubLoading"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:indeterminate="true"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/cardReaderHubRv"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cardReaderHubLoading"
-                app:layout_constraintVertical_chainStyle="spread_inside"
-                tools:itemCount="10"
-                tools:listitem="@layout/card_reader_hub_list_item" />
-
-            <include
-                android:id="@+id/learn_more_ipp_tv"
-                layout="@layout/card_reader_learn_more_section"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardReaderHubRv" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </RelativeLayout>
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/cardReaderHubOnboardingFailedTv"
+        style="@style/Woo.TextView.Caption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/minor_100"
+        android:background="@color/color_surface"
+        android:drawableStart="@drawable/ic_info_outline_20dp"
+        android:drawablePadding="@dimen/major_100"
+        android:elevation="@dimen/minor_10"
+        android:foreground="?attr/selectableItemBackground"
+        android:outlineProvider="bounds"
+        android:padding="@dimen/major_100"
+        android:textColor="@color/color_on_surface_high"
+        android:textColorHighlight="#00FFFFFF"
+        app:drawableTint="@color/color_on_surface"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/learn_more_ipp_tv"
+        app:layout_constraintVertical_chainStyle="spread_inside"
+        app:layout_constraintVertical_bias="1"
+        tools:text="@string/card_reader_onboarding_not_finished" />
+</androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

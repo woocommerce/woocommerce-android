@@ -754,8 +754,7 @@ class MainActivity :
                     binding.trialBar.visibility = View.GONE
                 is TrialStatusBarState.Visible -> {
                     binding.trialBar.text = trialStatusBarFormatterFactory.create(
-                        context = this,
-                        startUpgradeFlowFactory = startUpgradeFlowFactory.create(navController)
+                        startUpgradeFlowFactory.create(navController)
                     ).format(trialStatusBarState.daysLeft)
                     binding.trialBar.movementMethod = LinkMovementMethod.getInstance()
                     binding.trialBar.visibility = View.VISIBLE

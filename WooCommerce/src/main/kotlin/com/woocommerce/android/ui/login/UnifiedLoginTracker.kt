@@ -104,6 +104,10 @@ class UnifiedLoginTracker
         }
     }
 
+    fun setSource(source: Source) {
+        currentSource = source
+    }
+
     fun setSource(value: String) {
         Source.values().find { it.value == value }?.let {
             currentSource = it

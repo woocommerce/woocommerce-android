@@ -16,7 +16,7 @@ Language: ko_KR
     <string name="upgrades_upgrade_now">지금 업그레이드</string>
     <string name="upgrades_report_subscription_issue">구독 문제 신고</string>
     <string name="free_trial_upgrade_now">지금 업그레이드</string>
-    <string name="free_trial_days_left">평가판이 %1$s일 남았습니다.</string>
+    <string name="free_trial_days_left">평가판이 %1$d일 남았습니다.</string>
     <string name="free_trial_trial_ended">평가판 종료됨</string>
     <string name="free_trial_your_trial_ended">평가판이 종료되었습니다.</string>
     <string name="store_onboarding_launch_store_generic_error_description">죄송합니다. 예기치 않은 오류가 발생했습니다.</string>

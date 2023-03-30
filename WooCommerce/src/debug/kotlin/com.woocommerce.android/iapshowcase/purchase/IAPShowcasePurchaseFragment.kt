@@ -16,7 +16,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.woocommerce.android.R
 import com.woocommerce.android.iap.pub.IAPActivityWrapper
 import com.woocommerce.android.iap.pub.IAPSitePurchasePlanFactory
-import com.woocommerce.android.iap.pub.network.SandboxTestingConfig
 import com.woocommerce.android.iapshowcase.IAPDebugLogWrapper
 import com.woocommerce.android.ui.login.storecreation.iap.IapMobilePayApiProvider
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,12 +38,6 @@ class IAPShowcasePurchaseFragment : Fragment(R.layout.fragment_iap_showcase_purc
                         this@IAPShowcasePurchaseFragment.requireActivity().application,
                         debugLogWrapper,
                         mobilePayAPIProvider::buildMobilePayAPI,
-                        object : SandboxTestingConfig {
-                            override val isDebug: Boolean
-                                get() = true
-                            override val iapTestingSandboxUrl: String
-                                get() = ""
-                        }
                     )
                 ) as T
             }

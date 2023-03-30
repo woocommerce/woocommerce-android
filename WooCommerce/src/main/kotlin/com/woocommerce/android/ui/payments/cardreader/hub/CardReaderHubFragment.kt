@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.core.view.isInvisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.Slide
 import androidx.transition.TransitionManager
@@ -18,9 +19,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentCardReaderHubBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.NavigateToTapTooPaySummaryScreen
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.NavigateToTapTooPaySurveyScreen
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -47,6 +46,9 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
 
     private fun initViews(binding: FragmentCardReaderHubBinding) {
         binding.cardReaderHubRv.layoutManager = LinearLayoutManager(requireContext())
+        binding.cardReaderHubRv.addItemDecoration(
+            DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+        )
         binding.cardReaderHubRv.adapter = CardReaderHubAdapter()
     }
 
@@ -107,12 +109,6 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                     findNavController().navigate(
                         CardReaderHubFragmentDirections.actionCardReaderHubFragmentToTapToPaySummaryFragment()
                     )
-                }
-                is NavigateToTapTooPaySurveyScreen -> {
-                    NavGraphMainDirections.actionGlobalFeedbackSurveyFragment(SurveyType.PAYMENTS_HUB_TAP_TO_PAY)
-                        .apply {
-                            findNavController().navigateSafely(this)
-                        }
                 }
                 else -> event.isHandled = false
             }

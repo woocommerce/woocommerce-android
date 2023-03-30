@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.payments.cardreader.hub
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.CardReaderHubHeaderBinding
@@ -34,13 +33,6 @@ abstract class CardReaderHubViewHolder(val parent: ViewGroup, @LayoutRes layout:
                 binding.cardReaderMenuIcon.alpha = DISABLED_BUTTON_ALPHA
                 binding.cardReaderHubListItemLabelTv.alpha = DISABLED_BUTTON_ALPHA
             }
-
-            (binding.cardReaderHubListItemDivider.layoutParams as ConstraintLayout.LayoutParams).startToStart =
-                if (uiState.shortDivider) {
-                    binding.cardReaderHubListItemLabelTv.id
-                } else {
-                    ConstraintLayout.LayoutParams.PARENT_ID
-                }
         }
     }
 
@@ -76,13 +68,6 @@ abstract class CardReaderHubViewHolder(val parent: ViewGroup, @LayoutRes layout:
         override fun onBind(uiState: CardReaderHubViewModel.CardReaderHubViewState.ListItem) {
             uiState as CardReaderHubViewModel.CardReaderHubViewState.ListItem.HeaderItem
             binding.cardReaderHubHeaderTv.text = UiHelpers.getTextOfUiString(itemView.context, uiState.label)
-        }
-    }
-
-    class GapBetweenSectionsViewHolder(parent: ViewGroup) :
-        CardReaderHubViewHolder(parent, R.layout.card_reader_hub_gap_between_sections) {
-        override fun onBind(uiState: CardReaderHubViewModel.CardReaderHubViewState.ListItem) {
-            // no-op
         }
     }
 }

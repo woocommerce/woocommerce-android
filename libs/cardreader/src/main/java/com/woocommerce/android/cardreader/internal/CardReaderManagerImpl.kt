@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.ComponentCallbacks2
 import android.content.res.Configuration
 import com.stripe.stripeterminal.log.LogLevel
+import com.woocommerce.android.cardreader.BuildConfig
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.connection.CardReader
@@ -56,11 +57,7 @@ internal class CardReaderManagerImpl(
 
     override val displayBluetoothCardReaderMessages = connectionManager.displayBluetoothCardReaderMessages
 
-    override fun initialize(
-        updateFrequency: CardReaderManager.SimulatorUpdateFrequency,
-        useInterac: Boolean,
-        isDebug: Boolean
-    ) {
+    override fun initialize(updateFrequency: CardReaderManager.SimulatorUpdateFrequency, useInterac: Boolean) {
         if (!terminal.isInitialized()) {
             terminal.getLifecycleObserver().onCreate(application)
 
@@ -74,7 +71,7 @@ internal class CardReaderManagerImpl(
                 }
             })
 
-            val logLevel = if (isDebug) LogLevel.VERBOSE else LogLevel.ERROR
+            val logLevel = if (BuildConfig.DEBUG) LogLevel.VERBOSE else LogLevel.ERROR
 
             initStripeTerminal(logLevel)
 

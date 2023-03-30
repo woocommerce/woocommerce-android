@@ -382,7 +382,36 @@ class ProductFilterListViewModel @Inject constructor(
         val filterItemKey: ProductFilterOption,
         val filterItemName: String,
         var filterOptionListItems: List<FilterListOptionItemUiModel>
-    ) : Parcelable
+    ) : Parcelable {
+        fun isSameFilter(updatedFilterOption: FilterListItemUiModel): Boolean {
+            if (this.filterItemName == updatedFilterOption.filterItemName &&
+                this.filterItemKey == updatedFilterOption.filterItemKey &&
+                this.filterOptionListItems.isSameFilterOptions(updatedFilterOption.filterOptionListItems)
+            ) {
+                return true
+            }
+            return false
+        }
+
+        /**
+         * Compares this filter's options with the passed list, returns true only if both lists contain
+         * the same filter options in the same order
+         */
+        private fun List<FilterListOptionItemUiModel>.isSameFilterOptions(
+            updatedFilterOptions: List<FilterListOptionItemUiModel>
+        ): Boolean {
+            if (this.size != updatedFilterOptions.size) {
+                return false
+            }
+
+            for (i in this.indices) {
+                if (!this[i].isSameFilterOption(updatedFilterOptions[i])) {
+                    return false
+                }
+            }
+            return true
+        }
+    }
 
     /**
      * [filterOptionItemName] is the display name of the filter option
@@ -405,6 +434,16 @@ class ProductFilterListViewModel @Inject constructor(
     ) : Parcelable {
         companion object {
             @DimenRes const val DEFAULT_FILTER_OPTION_MARGIN = 0
+        }
+
+        fun isSameFilterOption(updatedFilterOption: FilterListOptionItemUiModel): Boolean {
+            if (this.isSelected == updatedFilterOption.isSelected &&
+                this.filterOptionItemName == updatedFilterOption.filterOptionItemName &&
+                this.filterOptionItemValue == updatedFilterOption.filterOptionItemValue
+            ) {
+                return true
+            }
+            return false
         }
     }
 }

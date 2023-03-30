@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.payments.cardreader.hub
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.GapBetweenSections
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.HeaderItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.ToggleableListItem
@@ -22,9 +21,6 @@ class CardReaderHubAdapter :
             is HeaderItem -> {
                 VIEW_TYPE_HEADER
             }
-            is GapBetweenSections -> {
-                VIEW_TYPE_GAP_BETWEEN_SECTIONS
-            }
         }
     }
 
@@ -38,9 +34,6 @@ class CardReaderHubAdapter :
             }
             VIEW_TYPE_HEADER -> {
                 CardReaderHubViewHolder.HeaderViewHolder(parent)
-            }
-            VIEW_TYPE_GAP_BETWEEN_SECTIONS -> {
-                CardReaderHubViewHolder.GapBetweenSectionsViewHolder(parent)
             }
             else -> error("Unknown section")
         }
@@ -84,6 +77,5 @@ class CardReaderHubAdapter :
         const val VIEW_TYPE_TOGGELABLE = 1
         const val VIEW_TYPE_NON_TOGGELABLE = 2
         const val VIEW_TYPE_HEADER = 0
-        const val VIEW_TYPE_GAP_BETWEEN_SECTIONS = 3
     }
 }

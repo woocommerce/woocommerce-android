@@ -16,7 +16,7 @@ Language: de
     <string name="upgrades_upgrade_now">Jetzt Upgrade durchführen</string>
     <string name="upgrades_report_subscription_issue">Problem mit Abonnement melden</string>
     <string name="free_trial_upgrade_now">Jetzt Upgrade durchführen</string>
-    <string name="free_trial_days_left">Noch %1$s Tage bis zum Ablauf deines Gratis-Tests.</string>
+    <string name="free_trial_days_left">Noch %1$d Tage bis zum Ablauf deines Gratis-Tests.</string>
     <string name="free_trial_trial_ended">Gratis-Test abgelaufen</string>
     <string name="free_trial_your_trial_ended">Dein Gratis-Test ist abgelaufen.</string>
     <string name="store_onboarding_launch_store_generic_error_description">Ups, es sind unerwartete Fehler aufgetreten.</string>
