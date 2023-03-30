@@ -114,7 +114,7 @@ class ProductSelectorScreenTest {
                 numVariations = 0,
                 stockAndPrice = null,
                 sku = null
-            ))
-
+            )
+        )
     }
 }
