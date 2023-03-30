@@ -11,6 +11,7 @@ import com.woocommerce.android.e2e.helpers.useMockedAPI
 import com.woocommerce.android.e2e.helpers.util.ProductData
 import com.woocommerce.android.e2e.screens.TabNavComponent
 import com.woocommerce.android.e2e.screens.login.WelcomeScreen
+import com.woocommerce.android.e2e.screens.products.ProductFilterScreen
 import com.woocommerce.android.e2e.screens.products.ProductListScreen
 import com.woocommerce.android.ui.login.LoginActivity
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -67,6 +68,9 @@ class ProductsRealAPI : TestBase() {
     fun tearDown() {
         ProductListScreen()
             .leaveSearchMode()
+
+        ProductFilterScreen()
+            .leaveFilterScreen()
 
         WelcomeScreen
             .logoutIfNeeded(composeTestRule)
@@ -148,5 +152,28 @@ class ProductsRealAPI : TestBase() {
             .assertProductCard(productCappuccinoAlmondLarge)
             .assertProductsCount(1)
             .leaveSearchMode()
+    }
+
+    @Test
+    fun e2eRealApiProductsFilter() {
+        ProductListScreen()
+            // Filter by "Product type" = "Simple"
+            .tapFilters()
+            .filterByPropertyAndValue("Product type", "Simple")
+            .tapShowProducts()
+            .assertProductCard(productSalad)
+            .assertProductsCount(1)
+            // Check that "Clear" button works
+            .tapFilters()
+            .clearFilters()
+            .tapShowProducts()
+            .assertProductCard(productSalad)
+            .assertProductCard(productCappuccino)
+            .assertProductsCount(2)
+            // Filter by "Stock status" = "Out of Stock" and expect to see zero products
+            .tapFilters()
+            .filterByPropertyAndValue("Stock status", "Out of stock")
+            .tapShowProducts()
+            .assertProductsCount(0)
     }
 }
