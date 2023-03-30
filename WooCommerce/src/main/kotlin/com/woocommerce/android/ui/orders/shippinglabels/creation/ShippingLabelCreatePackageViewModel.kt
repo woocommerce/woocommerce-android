@@ -46,7 +46,6 @@ class ShippingLabelCreatePackageViewModel @Inject constructor(
     }
 
     val viewStateData = LiveDataDelegate(savedState, ShippingLabelCreatePackageViewState())
-    private var viewState by viewStateData
 
     @Parcelize
     data class ShippingLabelCreatePackageViewState(

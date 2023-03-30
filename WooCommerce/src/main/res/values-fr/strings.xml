@@ -16,7 +16,7 @@ Language: fr
     <string name="upgrades_upgrade_now">Choisir une option payante maintenant</string>
     <string name="upgrades_report_subscription_issue">Signaler un problème d’abonnement</string>
     <string name="free_trial_upgrade_now">Choisir une option payante maintenant</string>
-    <string name="free_trial_days_left">%1$d jours d’essai restants</string>
+    <string name="free_trial_days_left">%1$s jours d’essai restants</string>
     <string name="free_trial_trial_ended">L’essai est terminé</string>
     <string name="free_trial_your_trial_ended">Votre essai est terminé.</string>
     <string name="store_onboarding_launch_store_generic_error_description">Oups. des erreurs inattendues se sont produites.</string>

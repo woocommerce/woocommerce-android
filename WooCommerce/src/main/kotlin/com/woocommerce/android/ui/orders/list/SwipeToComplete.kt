@@ -34,7 +34,10 @@ class SwipeToComplete(
     private val swipeAbleColor = ContextCompat.getColor(context, R.color.color_primary)
     private val noSwipeAbleColor = ContextCompat.getColor(context, R.color.color_on_surface_disabled)
     private val width = (displayMetrics.widthPixels / displayMetrics.density).toInt().dp
-    private val completeIcon = ContextCompat.getDrawable(context, R.drawable.ic_checkmark_white_24dp)?.apply {
+    private val completeIcon = ContextCompat.getDrawable(
+        context,
+        R.drawable.ic_menu_check_white
+    )?.apply {
         setTint(Color.WHITE)
     }
     private val messageSize = context.resources.getDimension(R.dimen.text_minor_125)

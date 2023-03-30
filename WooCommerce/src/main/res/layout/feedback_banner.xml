@@ -18,7 +18,6 @@
         android:paddingLeft="@dimen/minor_00"
         android:paddingRight="@dimen/major_125"
         android:src="@drawable/ic_feedback_banner_logo"
-        app:tint="@color/color_on_surface"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="RtlHardcoded" />

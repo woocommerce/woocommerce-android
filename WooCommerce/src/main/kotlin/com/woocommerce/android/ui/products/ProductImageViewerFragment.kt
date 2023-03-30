@@ -129,7 +129,7 @@ class ProductImageViewerFragment :
         resetAdapter()
 
         binding.viewPager.setPageTransformer(
-            MarginPageTransformer(resources.getDimensionPixelSize(R.dimen.margin_large))
+            MarginPageTransformer(resources.getDimensionPixelSize(R.dimen.major_75))
         )
 
         binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {

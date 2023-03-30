@@ -279,9 +279,9 @@ fun WCPasswordField(
         keyboardActions = keyboardActions,
         trailingIcon = {
             val image = if (isPasswordVisible) {
-                painterResource(id = R.drawable.ic_password_visibility)
+                painterResource(id = org.wordpress.android.login.R.drawable.ic_password_visibility)
             } else {
-                painterResource(id = R.drawable.ic_password_visibility_off)
+                painterResource(id = org.wordpress.android.login.R.drawable.ic_password_visibility_off)
             }
 
             val description = if (isPasswordVisible) stringResource(id = R.string.hide_password_content_description)

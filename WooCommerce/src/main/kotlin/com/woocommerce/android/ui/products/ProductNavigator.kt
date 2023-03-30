@@ -83,7 +83,8 @@ class ProductNavigator @Inject constructor() {
             is ViewProductVariations -> {
                 val action = ProductDetailFragmentDirections
                     .actionProductDetailFragmentToVariationListFragment(
-                        target.remoteId
+                        target.remoteId,
+                        target.isReadOnlyMode
                     )
                 fragment.findNavController().navigateSafely(action)
             }
@@ -368,6 +369,13 @@ class ProductNavigator @Inject constructor() {
                         target.productCategoryName
                     )
                 )
+            }
+
+            is ProductNavigationTarget.ViewProductSubscription -> {
+                val action = ProductDetailFragmentDirections.actionProductDetailFragmentToProductSubscriptionFragment(
+                    target.subscription
+                )
+                fragment.findNavController().navigateSafely(action)
             }
 
             is ExitProduct -> fragment.findNavController().navigateUp()
