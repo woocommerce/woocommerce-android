@@ -44,14 +44,16 @@ data class ReviewData(
 }
 
 data class ProductData(
-    val id: Int,
+    val id: Int = -1,
     val name: String,
     val stockStatusRaw: String,
     val priceDiscountedRaw: String,
-    val priceRegularRaw: String,
-    val typeRaw: String,
-    val rating: Int,
-    val reviewsCount: Int
+    val priceRegularRaw: String = "",
+    val typeRaw: String = "",
+    val rating: Int = -1,
+    val reviewsCount: Int = -1,
+    val sku: String = "",
+    val variations: String = ""
 ) {
     val stockStatus = productStatusesMap[stockStatusRaw]
     val price = getPriceDescription()
