@@ -1182,6 +1182,8 @@
     <string name="card_reader_tap_to_pay_explanation_where_to_find"> You can find Tap to Pay on Android in\nMenu > Payments, or Collect Payment and\nchoose Tap to Pay.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Try a payment</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Something went wrong. Please try again later.</string>
+    <string name="card_reader_tap_to_pay_beta_features_heading">Tap To Pay</string>
+    <string name="card_reader_tap_to_pay_beta_features_subheading">Test out Tap To Pay in the app</string>
 
     <!--
             Card Reader Type Selection
