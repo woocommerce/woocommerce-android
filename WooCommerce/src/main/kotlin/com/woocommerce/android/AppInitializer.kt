@@ -17,7 +17,7 @@ import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.push.RegisterDevice
 import com.woocommerce.android.push.RegisterDevice.Mode.IF_NEEDED
 import com.woocommerce.android.push.WooNotificationBuilder
-import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.RateLimitedTask
 import com.woocommerce.android.tools.SelectedSite
@@ -84,7 +84,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var networkStatus: NetworkStatus
-    @Inject lateinit var zendeskHelper: ZendeskHelper
+    @Inject lateinit var zendeskSettings: ZendeskSettings
     @Inject lateinit var wooNotificationBuilder: WooNotificationBuilder
     @Inject lateinit var userEligibilityFetcher: UserEligibilityFetcher
     @Inject lateinit var uploadEncryptedLogs: UploadEncryptedLogs
@@ -158,9 +158,11 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         trackStartupAnalytics()
 
-        zendeskHelper.setupZendesk(
-            application, BuildConfig.ZENDESK_DOMAIN, BuildConfig.ZENDESK_APP_ID,
-            BuildConfig.ZENDESK_OAUTH_CLIENT_ID
+        zendeskSettings.setup(
+            context = application,
+            zendeskUrl = BuildConfig.ZENDESK_DOMAIN,
+            applicationId = BuildConfig.ZENDESK_APP_ID,
+            oauthClientId = BuildConfig.ZENDESK_OAUTH_CLIENT_ID
         )
 
         observeEncryptedLogsUploadResults()

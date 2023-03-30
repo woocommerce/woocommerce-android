@@ -2,11 +2,11 @@ package com.woocommerce.android.extensions
 
 import android.content.Context
 import android.text.format.DateFormat
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
-import org.apache.commons.lang3.time.DateUtils.isSameDay
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -61,19 +61,7 @@ fun Date.formatToEEEEMMMddhha(locale: Locale): String {
     return dateFormat.format(this)
 }
 
-fun Date.isToday() =
-    try {
-        isSameDay(Date(), this)
-    } catch (e: Exception) {
-        with("Unable to match dateString with today date. (current dateString value: $this)") {
-            WooLog.e(T.UTILS, this)
-        }
-        null
-    }
-
 fun Date.getTimeString(context: Context): String = DateFormat.getTimeFormat(context).format(this.time)
-
-fun Date.getShortDate(context: Context): String = DateFormat.getDateFormat(context).format(this)
 
 fun Date.getMediumDate(context: Context): String = DateFormat.getMediumDateFormat(context).format(this)
 
@@ -159,3 +147,5 @@ fun Date.formatAsRangeWith(other: Date, locale: Locale, calendar: Calendar): Str
 
 private const val THREE_MONTHS = 3
 private const val SEVEN_DAYS = 7
+
+fun LocalDate.formatStyleFull(): String = format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL))

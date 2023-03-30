@@ -69,9 +69,9 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                 is CardReaderOnboardingViewModel.OnboardingEvent.ContinueToConnection -> {
                     findNavController().navigate(
                         CardReaderOnboardingFragmentDirections
-                            .actionCardReaderOnboardingFragmentToCardReaderTypeSelectionDialogFragment(
+                            .actionCardReaderOnboardingFragmentToCardReaderConnectDialogFragment(
                                 event.cardReaderFlowParam,
-                                event.countryCode
+                                event.cardReaderType
                             )
                     )
                 }
@@ -347,7 +347,13 @@ sealed class CardReaderOnboardingParams : Parcelable {
 
 sealed class CardReaderFlowParam : Parcelable {
     @Parcelize
-    object CardReadersHub : CardReaderFlowParam()
+    data class CardReadersHub(
+        val openInHub: OpenInHub = OpenInHub.NONE,
+    ) : CardReaderFlowParam() {
+        enum class OpenInHub {
+            TAP_TO_PAY_SUMMARY, NONE
+        }
+    }
 
     sealed class PaymentOrRefund : CardReaderFlowParam() {
         abstract val orderId: Long

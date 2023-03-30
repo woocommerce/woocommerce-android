@@ -5,7 +5,7 @@ import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.AppCoroutineScope
-import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.util.WooLog
@@ -27,7 +27,7 @@ class AccountRepository @Inject constructor(
     private val siteStore: SiteStore,
     private val selectedSite: SelectedSite,
     private val dispatcher: Dispatcher,
-    private val zendeskHelper: ZendeskHelper,
+    private val zendeskSettings: ZendeskSettings,
     private val prefs: AppPrefs,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
@@ -91,7 +91,7 @@ class AccountRepository @Inject constructor(
         // Reset analytics
         AnalyticsTracker.flush()
         AnalyticsTracker.clearAllData()
-        zendeskHelper.reset()
+        zendeskSettings.clearIdentity()
 
         // Wipe user-specific preferences
         prefs.resetUserPreferences()

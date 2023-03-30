@@ -18,8 +18,9 @@ enum class FeatureFlag {
     IPP_TAP_TO_PAY,
     IPP_FEEDBACK_BANNER,
     STORE_CREATION_ONBOARDING,
-    FREE_TRIAL,
-    REST_API_I2;
+    FREE_TRIAL_M2,
+    REST_API_I2,
+    ANALYTICS_HUB_FEEDBACK_BANNER;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -32,15 +33,17 @@ enum class FeatureFlag {
             ORDER_CREATION_CUSTOMER_SEARCH,
             UNIFIED_ORDER_EDITING,
             NATIVE_STORE_CREATION_FLOW,
-            IPP_FEEDBACK_BANNER -> true
+            IPP_FEEDBACK_BANNER,
+            STORE_CREATION_ONBOARDING -> true
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
-            IAP_FOR_STORE_CREATION,
             IPP_TAP_TO_PAY,
-            STORE_CREATION_ONBOARDING,
-            FREE_TRIAL,
-            REST_API_I2 -> PackageUtils.isDebugBuild()
+            FREE_TRIAL_M2,
+            REST_API_I2,
+            ANALYTICS_HUB_FEEDBACK_BANNER -> PackageUtils.isDebugBuild()
+
+            IAP_FOR_STORE_CREATION -> false
         }
     }
 }

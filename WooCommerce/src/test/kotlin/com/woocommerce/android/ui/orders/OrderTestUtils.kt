@@ -23,7 +23,11 @@ object OrderTestUtils {
     const val ORDER_ID = 1L
     private const val TEST_ORDER_STATUS_COUNT = 20
 
-    fun generateOrder(): OrderEntity {
+    fun generateOrder(
+        metadata: String = "",
+        paymentMethod: String = "",
+        datePaid: String = "2018-02-02T16:11:13Z"
+    ): OrderEntity {
         return OrderEntity(
             billingFirstName = "Carissa",
             billingLastName = "King",
@@ -34,23 +38,10 @@ object OrderTestUtils {
             status = "pending, Custom 1,Custom 2,Custom 3",
             total = "106.00",
             localSiteId = LocalOrRemoteId.LocalId(1),
+            metaData = metadata,
+            paymentMethod = paymentMethod,
+            datePaid = datePaid
         )
-    }
-
-    fun generateOrderShipmentTrackings(totalCount: Int, lOrderId: Int): List<WCOrderShipmentTrackingModel> {
-        val result = ArrayList<WCOrderShipmentTrackingModel>()
-        for (i in totalCount downTo 1) {
-            result.add(
-                WCOrderShipmentTrackingModel(totalCount).apply {
-                    trackingProvider = "TNT Express $i"
-                    trackingNumber = "$i"
-                    dateShipped = SimpleDateFormat("yyyy-MM-dd").format(Date())
-                    trackingLink = "www.somelink$i.com"
-                    orderId = lOrderId.toLong()
-                }
-            )
-        }
-        return result
     }
 
     fun generateOrderShipmentProviders(): List<WCOrderShipmentProviderModel> {

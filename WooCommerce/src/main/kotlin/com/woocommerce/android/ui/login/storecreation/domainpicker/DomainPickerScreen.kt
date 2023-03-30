@@ -94,7 +94,7 @@ private fun DomainSearchForm(
     onDomainQueryChanged: (String) -> Unit,
     onDomainSuggestionSelected: (String) -> Unit,
     onContinueClicked: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val textHighlightedColor = colorResource(id = R.color.color_on_surface_high)
@@ -107,11 +107,11 @@ private fun DomainSearchForm(
             .padding(dimensionResource(id = R.dimen.major_125)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
     ) {
-        Text(
-            text = stringResource(id = string.store_creation_domain_picker_title),
-            style = MaterialTheme.typography.h5,
-        )
         if (state.freeUrl != null) {
+            Text(
+                text = stringResource(id = string.domains_search_domains),
+                style = MaterialTheme.typography.h5,
+            )
             val redirectNotice = stringResource(id = string.domains_redirect_notice)
             Text(
                 text = buildAnnotatedString {
@@ -130,6 +130,10 @@ private fun DomainSearchForm(
             )
         } else {
             Text(
+                text = stringResource(id = string.store_creation_domain_picker_title),
+                style = MaterialTheme.typography.h5,
+            )
+            Text(
                 text = stringResource(id = R.string.store_creation_domain_picker_subtitle),
                 style = MaterialTheme.typography.subtitle1,
                 color = colorResource(id = R.color.color_on_surface_medium)
@@ -146,7 +150,7 @@ private fun DomainSearchForm(
                 .border(
                     BorderStroke(
                         width = dimensionResource(id = R.dimen.minor_10),
-                        color = colorResource(id = R.color.gray_5)
+                        color = colorResource(id = R.color.woo_gray_5)
                     ),
                     RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
                 ),

@@ -10,7 +10,10 @@
         android:paddingTop="@dimen/major_100"
         android:paddingStart="@dimen/major_100"
         android:paddingEnd="@dimen/major_100"
-        android:paddingBottom="@dimen/major_100">
+        android:paddingBottom="@dimen/major_100"
+        android:screenReaderFocusable="true"
+        android:focusable="true"
+        tools:ignore="UnusedAttribute">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/cardInformationSectionTitle"
@@ -19,7 +22,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:lineHeight="@dimen/text_major_25"
-            tools:text="Total Sales" />
+            tools:text="Total Sales"
+            android:focusable="false"/>
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/cardInformationSectionValue"
@@ -32,7 +36,8 @@
             app:layout_constraintBottom_toTopOf="@+id/cardInformationSectionDeltaTag"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/cardInformationSectionTitle"
-            tools:text="$359,687.50" />
+            tools:text="$359,687.50"
+            android:focusable="false"/>
 
         <com.woocommerce.android.widgets.tags.TagView
             android:id="@+id/cardInformationSectionDeltaTag"
@@ -45,7 +50,8 @@
             app:layout_constraintTop_toBottomOf="@+id/cardInformationSectionValue"
             app:tagTextColor="@color/woo_white"
             tools:tagColor="#69B56E"
-            tools:tagText="+1000%" />
+            tools:tagText="+1000%"
+            android:focusable="false"/>
 
         <androidx.compose.ui.platform.ComposeView
             android:id="@+id/cardInformationChart"
@@ -58,7 +64,8 @@
             app:layout_constraintTop_toBottomOf="@+id/cardInformationSectionValue"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="1"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            android:focusable="false"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </merge>

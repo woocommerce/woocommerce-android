@@ -144,7 +144,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_ERROR_TYPE = "error_type"
         const val KEY_ERROR_CODE = "error_code"
         const val KEY_NETWORK_STATUS_CODE = "network_status_code"
-        const val KEY_ERROR_MESSAGE = "error_message"
         const val KEY_FROM = "from"
         const val KEY_HAS_UNFULFILLED_ORDERS = "has_unfulfilled_orders"
         const val KEY_ID = "id"
@@ -208,9 +207,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_API_FAILED = "failed"
         const val VALUE_SHIPMENT_TRACK = "track"
         const val VALUE_SHIPMENT_COPY = "copy"
-        const val VALUE_ORDER = "order"
         const val VALUE_REVIEW = "review"
-        const val VALUE_ORDER_DETAIL = "order_detail"
         const val VALUE_STARTED = "started"
         const val VALUE_PURCHASE_INITIATED = "purchase_initiated"
         const val VALUE_ORIGIN_ADDRESS_STARTED = "origin_address_started"
@@ -247,12 +244,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_HAS_MULTIPLE_SHIPPING_LINES = "has_multiple_shipping_lines"
         const val KEY_HAS_MULTIPLE_FEE_LINES = "has_multiple_fee_lines"
 
-        const val KEY_CARD = "card"
-        const val VALUE_REVENUE_CARD_SELECTED = "revenue"
-        const val VALUE_ORDERS_CARD_SELECTED = "orders"
-        const val VALUE_PRODUCTS_CARD_SELECTED = "products"
-        const val VALUE_VISITORS_CARD_SELECTED = "visitors"
-
         const val JITM_ID = "jitm_id"
         const val JITM_FEATURE_CLASS = "feature_class"
 
@@ -285,11 +276,13 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_SHIPPING_LABELS_M4_FEEDBACK = "shipping_labels_m4"
         const val VALUE_PRODUCT_ADDONS_FEEDBACK = "product_addons"
         const val VALUE_COUPONS_FEEDBACK = "coupons"
+        const val VALUE_ANALYTICS_HUB_FEEDBACK = "analytics_hub"
         const val VALUE_STATE_ON = "on"
         const val VALUE_STATE_OFF = "off"
 
         const val VALUE_SIMPLE_PAYMENTS_FLOW = "simple_payment"
         const val VALUE_SIMPLE_PAYMENTS_FEEDBACK = "simple_payments"
+        const val VALUE_TAP_TO_PAY_FEEDBACK = "tap_to_pay"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_CARD = "card"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_CASH = "cash"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_LINK = "payment_link"
@@ -372,6 +365,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_MORE_MENU_INBOX = "inbox"
         const val VALUE_MORE_MENU_COUPONS = "coupons"
         const val VALUE_MORE_MENU_PAYMENTS = "payments"
+        const val VALUE_MORE_MENU_UPGRADES = "upgrades"
 
         const val VALUE_MORE_MENU_PAYMENTS_BADGE_VISIBLE = "badge_visible"
 
@@ -421,9 +415,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Cash on Delivery
         const val KEY_IS_ENABLED = "is_enabled"
         const val KEY_CASH_ON_DELIVERY_SOURCE = "source"
-
-        // -- Experiments
-        const val KEY_EXPERIMENT_VARIANT = "experiment_variant"
 
         // -- Help Center
         const val KEY_SOURCE_FLOW = "source_flow"
@@ -482,6 +473,18 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_STEP_CONTACT_INFO = "contact_info"
         const val VALUE_STEP_PURCHASE_SUCCESS = "purchase_success"
         const val KEY_USE_DOMAIN_CREDIT = "use_domain_credit"
+
+        // -- Free Trial
+        const val VALUE_BANNER = "banner"
+        const val VALUE_UPGRADES_SCREEN = "upgrades_screen"
+
+        // -- Store Onboarding
+        const val ONBOARDING_TASK_KEY = "task"
+        const val VALUE_STORE_DETAILS = "store_details"
+        const val VALUE_PRODUCTS = "products"
+        const val VALUE_ADD_DOMAIN = "add_domain"
+        const val VALUE_LAUNCH_SITE = "launch_site"
+        const val VALUE_PAYMENTS = "payments"
 
         var sendUsageStats: Boolean = true
             set(value) {

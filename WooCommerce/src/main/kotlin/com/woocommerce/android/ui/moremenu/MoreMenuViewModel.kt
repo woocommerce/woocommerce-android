@@ -13,6 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_M
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_PAYMENTS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_PAYMENTS_BADGE_VISIBLE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_REVIEWS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_UPGRADES
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
 import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.push.UnseenReviewsCountHandler
@@ -93,6 +94,12 @@ class MoreMenuViewModel @Inject constructor(
             icon = R.drawable.ic_more_menu_inbox,
             isEnabled = moreMenuRepository.isInboxEnabled(),
             onClick = ::onInboxButtonClick
+        ),
+        MenuUiButton(
+            text = R.string.more_menu_button_upgrades,
+            icon = R.drawable.ic_more_menu_upgrades,
+            isEnabled = moreMenuRepository.isUpgradesEnabled(),
+            onClick = ::onUpgradesButtonClick
         )
     )
 
@@ -100,7 +107,7 @@ class MoreMenuViewModel @Inject constructor(
         if (unseenReviewsCount > 0) BadgeState(
             badgeSize = R.dimen.major_150,
             backgroundColor = R.color.color_primary,
-            textColor = R.color.color_on_surface_inverted,
+            textColor = R.color.color_on_primary,
             textState = TextState(unseenReviewsCount.toString(), R.dimen.text_minor_80),
         ) else null
 
@@ -161,6 +168,11 @@ class MoreMenuViewModel @Inject constructor(
         triggerEvent(MoreMenuEvent.ViewInboxEvent)
     }
 
+    private fun onUpgradesButtonClick() {
+        trackMoreMenuOptionSelected(VALUE_MORE_MENU_UPGRADES)
+        triggerEvent(MoreMenuEvent.NavigateToSubscriptionsEvent)
+    }
+
     private fun trackMoreMenuOptionSelected(
         selectedOption: String,
         extraOptions: Map<String, String> = emptyMap()
@@ -186,6 +198,7 @@ class MoreMenuViewModel @Inject constructor(
 
     sealed class MoreMenuEvent : MultiLiveEvent.Event() {
         object NavigateToSettingsEvent : MoreMenuEvent()
+        object NavigateToSubscriptionsEvent : MoreMenuEvent()
         object StartSitePickerEvent : MoreMenuEvent()
         object ViewPayments : MoreMenuEvent()
         data class ViewAdminEvent(val url: String) : MoreMenuEvent()

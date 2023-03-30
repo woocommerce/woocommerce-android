@@ -6,7 +6,6 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
-import android.widget.RelativeLayout
 import androidx.core.view.isVisible
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ActionableEmptyViewBinding
@@ -79,32 +78,6 @@ class ActionableEmptyView : LinearLayout {
 
     fun setOnClickListener(action: (View) -> Unit) {
         binding.emptyViewButton.setOnClickListener(action)
-    }
-
-    /**
-     * Update actionable empty view layout when used while searching.  The following characteristics are for each case:
-     *      Default - center in parent, use original top margin
-     *      Search  - center at top of parent, use original top margin, add 48dp top padding, hide image, hide button
-     *
-     * @param isSearching true when searching; false otherwise
-     * @param topMargin top margin in pixels to offset with other views (e.g. toolbar or tabs)
-     */
-    fun updateLayoutForSearch(isSearching: Boolean, topMargin: Int) {
-        val params: RelativeLayout.LayoutParams
-
-        if (isSearching) {
-            params = RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-            binding.root.setPadding(0, context.resources.getDimensionPixelSize(R.dimen.major_300), 0, 0)
-
-            binding.emptyViewImage.visibility = View.GONE
-            binding.emptyViewButton.visibility = View.GONE
-        } else {
-            params = RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-            binding.root.setPadding(0, 0, 0, 0)
-        }
-
-        params.topMargin = topMargin
-        binding.root.layoutParams = params
     }
 
     /**

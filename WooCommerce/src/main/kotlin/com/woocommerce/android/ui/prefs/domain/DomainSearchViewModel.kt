@@ -5,8 +5,10 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.getTitle
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository
 import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository.DomainSuggestion
 import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository.DomainSuggestion.Paid
@@ -26,6 +28,7 @@ class DomainSearchViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     domainSuggestionsRepository: DomainSuggestionsRepository,
     currencyFormatter: CurrencyFormatter,
+    selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val domainChangeRepository: DomainChangeRepository
@@ -33,10 +36,14 @@ class DomainSearchViewModel @Inject constructor(
     savedStateHandle = savedStateHandle,
     domainSuggestionsRepository = domainSuggestionsRepository,
     currencyFormatter = currencyFormatter,
-    initialQuery = "",
+    initialQuery = selectedSite.get().getTitle(""),
     searchOnlyFreeDomains = false,
-    isFreeCreditAvailable = savedStateHandle[KEY_IS_FREE_CREDIT_AVAILABLE]!!
+    isFreeCreditAvailable = savedStateHandle[KEY_IS_FREE_CREDIT_AVAILABLE]!!,
+    freeUrl = savedStateHandle[KEY_FREE_DOMAIN_URL]
 ) {
+    companion object {
+        const val KEY_FREE_DOMAIN_URL = "freeDomainUrl"
+    }
     override val helpOrigin = HelpOrigin.DOMAIN_CHANGE
 
     private val navArgs: DomainSearchFragmentArgs by savedStateHandle.navArgs()
