@@ -15,23 +15,8 @@ class ProductFilterScreen : Screen {
     constructor() : super(TOOLBAR)
 
     fun filterByPropertyAndValue(property: String, value: String): ProductFilterScreen {
-        val filterItem = Espresso.onView(
-            Matchers.allOf(
-                ViewMatchers.withId(R.id.filterItemName),
-                ViewMatchers.withText(property),
-            )
-        )
-
-        clickOn(filterItem)
-
-        val filterOption = Espresso.onView(
-            Matchers.allOf(
-                ViewMatchers.withId(R.id.filterOptionItem_name),
-                ViewMatchers.withText(value),
-            )
-        )
-
-        clickOn(filterOption)
+        clickByTextAndId(property, R.id.filterItemName)
+        clickByTextAndId(value, R.id.filterOptionItem_name)
         return this
     }
 
