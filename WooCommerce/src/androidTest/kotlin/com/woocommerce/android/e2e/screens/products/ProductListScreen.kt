@@ -62,7 +62,7 @@ class ProductListScreen : Screen {
     }
 
     fun enterSearchTerm(term: String): ProductListScreen {
-        typeTextInto(R.id.search_src_text, term)
+        typeTextInto(androidx.appcompat.R.id.search_src_text, term)
         Thread.sleep(2000)
         return this
     }
@@ -73,7 +73,7 @@ class ProductListScreen : Screen {
     }
 
     fun leaveSearchMode(): ProductListScreen {
-        if (Screen.isElementDisplayed(R.id.search_src_text)) {
+        if (Screen.isElementDisplayed(androidx.appcompat.R.id.search_src_text)) {
             // Double pressBack is needed because first one only removes the focus
             // from search field, while the second one leaves the search mode.
             Espresso.pressBack()
