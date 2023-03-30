@@ -217,12 +217,8 @@ class CardReaderHubViewModel @Inject constructor(
             add(
                 NonToggleableListItem(
                     icon = R.drawable.ic_baseline_contactless,
-                    label = UiStringRes(R.string.card_reader_tap_to_pay),
-                    description = if (appPrefs.isTTPWasUsedAtLeastOnce()) {
-                        UiStringRes(R.string.card_reader_tap_to_pay_description_used)
-                    } else {
-                        UiStringRes(R.string.card_reader_tap_to_pay_description_not_used)
-                    },
+                    label = UiStringRes(R.string.card_reader_test_tap_to_pay),
+                    description = UiStringRes(R.string.card_reader_tap_to_pay_description),
                     index = 5,
                     onClick = ::onTapTooPayClicked,
                     shortDivider = shouldShowTTPFeedbackRequest,
