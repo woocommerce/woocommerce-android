@@ -272,6 +272,45 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given popular products, when search query cleared from the search view, then show the popular products section`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+            ).initSavedStateHandle()
+            val popularOrdersList = generatePopularOrders()
+            val ordersList = generateTestOrders()
+            val totalOrders = popularOrdersList + ordersList
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+            whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(ProductTestUtils.generateProductList())
+
+            val sut = ProductSelectorViewModel(
+                navArgs,
+                currencyFormatter,
+                wooCommerceStore,
+                orderStore,
+                selectedSite,
+                listHandler,
+                variationSelectorRepository,
+                resourceProvider,
+                productsMapper,
+            )
+            sut.onSearchQueryChanged("Test query")
+
+            var viewState: ProductSelectorViewModel.ViewState? = null
+            sut.viewState.observeForever { state ->
+                viewState = state
+            }
+
+            assertThat(viewState?.popularProducts)?.isEmpty()
+
+            sut.onSearchQueryChanged("")
+
+            assertThat(viewState?.popularProducts)?.isNotEmpty
+        }
+    }
+
+    @Test
     fun `given recent products, when view model created, then verify recent products are sorted in descending order`() {
         testBlocking {
             val navArgs = ProductSelectorFragmentArgs(
