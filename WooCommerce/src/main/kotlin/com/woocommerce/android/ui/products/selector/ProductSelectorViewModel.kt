@@ -119,7 +119,7 @@ class ProductSelectorViewModel @Inject constructor(
         ViewState(
             loadingState = loadingState,
             products = products.map { it.toUiModel(selectedIds) },
-            popularProducts = popularProducts.map { it.toUiModel(selectedIds) },
+            popularProducts = getPopularProductsToDisplay(popularProducts, selectedIds),
             recentProducts = recentProducts.map { it.toUiModel(selectedIds) },
             selectedItemsCount = selectedIds.size,
             filterState = filterState,
@@ -135,6 +135,16 @@ class ProductSelectorViewModel @Inject constructor(
             loadRecentProducts()
             fetchProducts(forceRefresh = true)
         }
+    }
+
+    private fun getPopularProductsToDisplay(
+        popularProducts: List<Product>,
+        selectedIds: List<SelectedItem>
+    ): List<ProductListItem> {
+        if (searchQuery.value.isNotNullOrEmpty()) {
+            return emptyList()
+        }
+        return popularProducts.map { it.toUiModel(selectedIds) }
     }
 
     private suspend fun loadRecentProducts() {
