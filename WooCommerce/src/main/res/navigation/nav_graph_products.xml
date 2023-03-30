@@ -118,6 +118,10 @@
                 android:name="variationsToUpdate"
                 app:argType="com.woocommerce.android.model.ProductVariation[]" />
         </action>
+        <argument
+            android:name="isReadOnlyMode"
+            app:argType="boolean"
+            android:defaultValue="false" />
 
     </fragment>
     <dialog
