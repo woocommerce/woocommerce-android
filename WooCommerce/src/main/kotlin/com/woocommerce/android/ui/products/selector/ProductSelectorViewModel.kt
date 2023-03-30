@@ -6,8 +6,6 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R.string
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_COUNT
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
@@ -63,8 +61,7 @@ class ProductSelectorViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val listHandler: ProductListHandler,
     private val variationSelectorRepository: VariationSelectorRepository,
-    private val resourceProvider: ResourceProvider,
-    private val tracker: AnalyticsTrackerWrapper,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val STATE_UPDATE_DELAY = 100L
@@ -200,49 +197,24 @@ class ProductSelectorViewModel @Inject constructor(
 
     fun onProductClick(item: ProductListItem) {
         if (item.type == VARIABLE && item.numVariations > 0) {
-            triggerEvent(
-                NavigateToVariationSelector(
-                    item.id,
-                    item.selectedVariationIds,
-                    navArgs.productSelectedAnalyticsEvent,
-                    navArgs.productUnselectedAnalyticsEvent
-                )
-            )
+            triggerEvent(NavigateToVariationSelector(item.id, item.selectedVariationIds))
         } else if (item.type != VARIABLE) {
             selectedItems.update { items ->
                 val selectedProductItems = items.filter {
                     it is SelectedItem.ProductOrVariation || it is SelectedItem.Product
                 }
                 if (selectedProductItems.map { it.id }.contains(item.id)) {
-                    trackProductUnselected()
                     val productItemToUnselect = selectedProductItems.filter { it.id == item.id }.toSet()
                     selectedItems.value - productItemToUnselect
                 } else {
-                    trackProductSelected()
                     selectedItems.value + SelectedItem.Product(item.id)
                 }
             }
         }
     }
 
-    private fun trackProductSelected() {
-        navArgs.productSelectedAnalyticsEvent?.let { tracker.track(it) }
-    }
-
-    private fun trackProductUnselected() {
-        navArgs.productUnselectedAnalyticsEvent?.let { tracker.track(it) }
-    }
-
     fun onDoneButtonClick() {
-        trackDoneButtonClick()
         triggerEvent(ExitWithResult(selectedItems.value))
-    }
-
-    private fun trackDoneButtonClick() {
-        navArgs.confirmButtonTappedAnalyticsEvent?.let {
-            val selectedItemsCount = selectedItems.value.size
-            tracker.track(it, mapOf(KEY_PRODUCT_COUNT to selectedItemsCount))
-        }
     }
 
     fun onSearchQueryChanged(query: String) {

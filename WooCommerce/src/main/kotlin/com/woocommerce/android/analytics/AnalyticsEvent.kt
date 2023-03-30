@@ -1,10 +1,6 @@
 package com.woocommerce.android.analytics
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
-
-@Parcelize
-enum class AnalyticsEvent(val siteless: Boolean = false) : Parcelable {
+enum class AnalyticsEvent(val siteless: Boolean = false) {
     // -- General
     APPLICATION_OPENED(siteless = true),
     APPLICATION_CLOSED(siteless = true),
@@ -289,9 +285,6 @@ enum class AnalyticsEvent(val siteless: Boolean = false) : Parcelable {
     ORDER_PRODUCT_REMOVE,
     ORDER_FEE_REMOVE,
     ORDER_SHIPPING_METHOD_REMOVE,
-    ORDER_CREATION_PRODUCT_SELECTOR_ITEM_SELECTED,
-    ORDER_CREATION_PRODUCT_SELECTOR_ITEM_UNSELECTED,
-    ORDER_CREATION_PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED,
 
     // -- Refunds
     CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,

@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
@@ -112,9 +111,7 @@ sealed class ProductNavigationTarget : Event() {
 
     data class NavigateToVariationSelector(
         val productId: Long,
-        val selectedVariationIds: Set<Long>,
-        val variationSelectedAnalyticsEvent: AnalyticsEvent? = null,
-        val variationUnselectedAnalyticsEvent: AnalyticsEvent? = null
+        val selectedVariationIds: Set<Long>
     ) : ProductNavigationTarget()
 
     data class NavigateToProductFilter(

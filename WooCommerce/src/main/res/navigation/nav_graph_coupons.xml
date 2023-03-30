@@ -38,18 +38,6 @@
             <argument
                 android:name="restrictions"
                 app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorRestriction[]" />
-            <argument
-                android:name="product_selected_analytics_event"
-                app:argType="com.woocommerce.android.analytics.AnalyticsEvent"
-                app:nullable="true" />
-            <argument
-                android:name="product_unselected_analytics_event"
-                app:argType="com.woocommerce.android.analytics.AnalyticsEvent"
-                app:nullable="true" />
-            <argument
-                android:name="confirm_button_tapped_analytics_event"
-                app:argType="com.woocommerce.android.analytics.AnalyticsEvent"
-                app:nullable="true" />
         </action>
         <action
             android:id="@+id/action_editCouponFragment_to_couponRestrictionsFragment"
