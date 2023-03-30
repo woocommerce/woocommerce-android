@@ -173,16 +173,48 @@ private fun EmptyProductList(
 @Composable
 private fun PopularProductsList(
     state: ViewState,
-    heading: String,
     onProductClick: (ProductListItem) -> Unit,
 ) {
+    displayProductsSection(
+        type = ProductType.POPULAR,
+        state = state,
+        onProductClick = onProductClick
+    )
+}
+
+@Composable
+private fun RecentlySoldProductsList(
+    state: ViewState,
+    onProductClick: (ProductListItem) -> Unit,
+) {
+    displayProductsSection(
+        type = ProductType.RECENT,
+        state = state,
+        onProductClick = onProductClick
+    )
+}
+
+@Composable
+private fun displayProductsSection(
+    type: ProductType,
+    state: ViewState,
+    onProductClick: (ProductListItem) -> Unit,
+) {
+    val (productsList, heading) = when (type) {
+        ProductType.POPULAR -> Pair(
+            state.popularProducts, stringResource(id = string.product_selector_popular_products_heading)
+        )
+        ProductType.RECENT -> Pair(
+            state.recentProducts, stringResource(id = string.product_selector_recent_products_heading)
+        )
+    }
     Column(
         modifier = Modifier
             .fillMaxHeight()
             .padding(top = dimensionResource(id = dimen.major_150))
             .background(color = MaterialTheme.colors.surface)
     ) {
-        if (!state.popularProducts.isNullOrEmpty()) {
+        if (!productsList.isNullOrEmpty()) {
             Text(
                 text = heading,
                 textAlign = TextAlign.Center,
@@ -194,7 +226,7 @@ private fun PopularProductsList(
             )
         }
 
-        state.popularProducts.forEachIndexed { index, popularProduct ->
+        productsList.forEachIndexed { index, popularProduct ->
             SelectorListItem(
                 title = popularProduct.title,
                 imageUrl = popularProduct.imageUrl,
@@ -209,7 +241,7 @@ private fun PopularProductsList(
             ) {
                 onProductClick(popularProduct)
             }
-            if (index < state.popularProducts.size - 1) {
+            if (index < state.recentProducts.size - 1) {
                 Divider(
                     modifier = Modifier.padding(start = dimensionResource(id = dimen.major_100)),
                     color = colorResource(id = R.color.divider_color),
@@ -218,6 +250,11 @@ private fun PopularProductsList(
             }
         }
     }
+}
+
+enum class ProductType {
+    POPULAR,
+    RECENT
 }
 
 @Composable
@@ -269,7 +306,12 @@ private fun ProductList(
             item {
                 PopularProductsList(
                     state = state,
-                    heading = stringResource(id = string.product_selector_popular_products_heading),
+                    onProductClick = onProductClick
+                )
+            }
+            item {
+                RecentlySoldProductsList(
+                    state = state,
                     onProductClick = onProductClick
                 )
             }
@@ -574,7 +616,7 @@ fun ProductListPreview() {
             filterState = FilterState(),
             searchQuery = "",
             popularProducts = products,
-            recentProducts = emptyList(),
+            recentProducts = products,
         ),
         {},
         {},
