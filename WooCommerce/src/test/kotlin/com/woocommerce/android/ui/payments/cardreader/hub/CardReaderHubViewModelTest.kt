@@ -1648,9 +1648,8 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     @Test
     fun `given ttp used and feedback not given, when on survey tapped, then navigate tap is tracked`() {
         // GIVEN
-        whenever(feedbackRepository.getFeatureFeedback(FeatureFeedbackSettings.Feature.TAP_TO_PAY)).thenReturn(
-            FeatureFeedbackSettings.FeedbackState.UNANSWERED
-        )
+        whenever(feedbackRepository.getFeatureFeedbackSetting(FeatureFeedbackSettings.Feature.TAP_TO_PAY))
+            .thenReturn(FeatureFeedbackSettings(FeatureFeedbackSettings.Feature.TAP_TO_PAY))
         whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
         whenever(isTapToPayAvailable("US")).thenReturn(Available)
