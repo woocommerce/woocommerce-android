@@ -129,16 +129,33 @@ fun LaunchStoreScreen(
                     )
                 }
             } else {
-                SitePreview(
-                    url = state.siteUrl,
-                    userAgent = userAgent,
-                    authenticator = authenticator,
-                    modifier = Modifier.fillMaxSize()
-                )
+                WebView(state.siteUrl, userAgent, authenticator)
             }
         }
         ActionsFooter(state, onLaunchStoreClicked, onShareStoreUrl, onBackToStoreClicked)
     }
+}
+
+@Composable
+private fun WebView(
+    url: String,
+    userAgent: UserAgent,
+    authenticator: WPComWebViewAuthenticator
+) {
+    WCWebView(
+        url = url,
+        userAgent = userAgent,
+        wpComAuthenticator = authenticator,
+        captureBackPresses = false,
+        loadWithOverviewMode = true,
+        isReadOnly = true,
+        progressIndicator = Circular(
+            stringResource(id = string.store_creation_installation_rendering_preview_label)
+        ),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = colorResource(id = R.color.color_surface))
+    )
 }
 
 @Composable
@@ -230,18 +247,7 @@ fun SitePreview(
                     shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)),
                 )
         ) {
-            WCWebView(
-                url = url,
-                userAgent = userAgent,
-                wpComAuthenticator = authenticator,
-                captureBackPresses = false,
-                loadWithOverviewMode = true,
-                isReadOnly = true,
-                progressIndicator = Circular(
-                    stringResource(id = string.store_creation_installation_rendering_preview_label)
-                ),
-                modifier = Modifier.background(color = colorResource(id = R.color.color_surface))
-            )
+            WebView(url, userAgent, authenticator)
         }
     }
 }
