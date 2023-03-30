@@ -352,7 +352,8 @@ class ProductNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(
                     ProductSelectorFragmentDirections.actionProductSelectorFragmentToVariationSelectorFragment(
                         target.productId,
-                        target.selectedVariationIds.toLongArray()
+                        target.selectedVariationIds.toLongArray(),
+                        target.productSelectorFlow,
                     )
                 )
             }

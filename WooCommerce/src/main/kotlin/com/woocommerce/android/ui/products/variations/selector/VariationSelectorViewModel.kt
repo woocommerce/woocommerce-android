@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
@@ -49,7 +50,8 @@ class VariationSelectorViewModel @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
     private val variationListHandler: VariationListHandler,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val tracker: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val STATE_UPDATE_DELAY = 100L
@@ -132,9 +134,23 @@ class VariationSelectorViewModel @Inject constructor(
 
     fun onVariationClick(item: VariationListItem) {
         if (selectedVariationIds.value.contains(item.id)) {
+            trackVariationUnselected()
             selectedVariationIds.value = selectedVariationIds.value - item.id
         } else {
+            trackVariationSelected()
             selectedVariationIds.value = selectedVariationIds.value + item.id
+        }
+    }
+
+    private fun trackVariationSelected() {
+        navArgs.productSelectorFlow.itemSelectedAnalyticsEvent?.let {
+            tracker.track(it)
+        }
+    }
+
+    private fun trackVariationUnselected() {
+        navArgs.productSelectorFlow.itemUnselectedAnalyticsEvent?.let {
+            tracker.track(it)
         }
     }
 

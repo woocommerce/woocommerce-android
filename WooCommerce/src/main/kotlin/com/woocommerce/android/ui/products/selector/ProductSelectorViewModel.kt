@@ -6,6 +6,12 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_ITEM_SELECTED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_ITEM_UNSELECTED
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_COUNT
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
@@ -61,7 +67,8 @@ class ProductSelectorViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val listHandler: ProductListHandler,
     private val variationSelectorRepository: VariationSelectorRepository,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val tracker: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val STATE_UPDATE_DELAY = 100L
@@ -197,24 +204,51 @@ class ProductSelectorViewModel @Inject constructor(
 
     fun onProductClick(item: ProductListItem) {
         if (item.type == VARIABLE && item.numVariations > 0) {
-            triggerEvent(NavigateToVariationSelector(item.id, item.selectedVariationIds))
+            triggerEvent(
+                NavigateToVariationSelector(
+                    item.id,
+                    item.selectedVariationIds,
+                    navArgs.productSelectorFlow
+                )
+            )
         } else if (item.type != VARIABLE) {
             selectedItems.update { items ->
                 val selectedProductItems = items.filter {
                     it is SelectedItem.ProductOrVariation || it is SelectedItem.Product
                 }
                 if (selectedProductItems.map { it.id }.contains(item.id)) {
+                    trackItemUnselected()
                     val productItemToUnselect = selectedProductItems.filter { it.id == item.id }.toSet()
                     selectedItems.value - productItemToUnselect
                 } else {
+                    trackProductSelected()
                     selectedItems.value + SelectedItem.Product(item.id)
                 }
             }
         }
     }
 
+    private fun trackProductSelected() {
+        navArgs.productSelectorFlow.itemSelectedAnalyticsEvent?.let {
+            tracker.track(it)
+        }
+    }
+
+    private fun trackItemUnselected() {
+        navArgs.productSelectorFlow.itemUnselectedAnalyticsEvent?.let {
+            tracker.track(it)
+        }
+    }
+
     fun onDoneButtonClick() {
+        trackDoneButtonClicked()
         triggerEvent(ExitWithResult(selectedItems.value))
+    }
+
+    private fun trackDoneButtonClicked() {
+        navArgs.productSelectorFlow.confirmButtonTappedAnalyticsEvent?.let {
+            tracker.track(it, mapOf(KEY_PRODUCT_COUNT to selectedItems.value.size))
+        }
     }
 
     fun onSearchQueryChanged(query: String) {
@@ -384,6 +418,26 @@ class ProductSelectorViewModel @Inject constructor(
                 return !(product.productType == VARIABLE && product.numVariations == 0)
             }
         }
+    }
+
+    @Parcelize
+    sealed class ProductSelectorFlow(
+        val itemSelectedAnalyticsEvent: AnalyticsEvent? = null,
+        val itemUnselectedAnalyticsEvent: AnalyticsEvent? = null,
+        val confirmButtonTappedAnalyticsEvent: AnalyticsEvent? = null,
+    ) : Parcelable {
+        @Parcelize
+        object OrderCreation : ProductSelectorFlow(
+            itemSelectedAnalyticsEvent = ORDER_CREATION_PRODUCT_SELECTOR_ITEM_SELECTED,
+            itemUnselectedAnalyticsEvent = ORDER_CREATION_PRODUCT_SELECTOR_ITEM_UNSELECTED,
+            confirmButtonTappedAnalyticsEvent = ORDER_CREATION_PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED
+        )
+
+        @Parcelize
+        object CouponEdition : ProductSelectorFlow()
+
+        @Parcelize
+        object Undefined : ProductSelectorFlow()
     }
 }
 

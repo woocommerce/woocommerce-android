@@ -47,9 +47,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             restrictions = arrayOf(OnlyPublishedProducts),
-            productSelectedAnalyticsEvent = null,
-            productUnselectedAnalyticsEvent = null,
-            confirmButtonTappedAnalyticsEvent = null,
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined,
         ).initSavedStateHandle()
 
         val sut = createViewModel(navArgs)
@@ -65,9 +63,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             restrictions = arrayOf(NoVariableProductsWithNoVariations),
-            productSelectedAnalyticsEvent = null,
-            productUnselectedAnalyticsEvent = null,
-            confirmButtonTappedAnalyticsEvent = null,
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined,
         ).initSavedStateHandle()
 
         val sut = createViewModel(navArgs)
@@ -85,9 +81,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             restrictions = arrayOf(OnlyPublishedProducts, NoVariableProductsWithNoVariations),
-            productSelectedAnalyticsEvent = null,
-            productUnselectedAnalyticsEvent = null,
-            confirmButtonTappedAnalyticsEvent = null,
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined,
         ).initSavedStateHandle()
 
         val sut = createViewModel(navArgs)
@@ -106,9 +100,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             restrictions = emptyArray(),
-            productSelectedAnalyticsEvent = null,
-            productUnselectedAnalyticsEvent = null,
-            confirmButtonTappedAnalyticsEvent = null,
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined,
         ).initSavedStateHandle()
 
         val sut = createViewModel(navArgs)
