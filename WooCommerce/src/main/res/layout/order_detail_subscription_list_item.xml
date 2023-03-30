@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/major_100">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/subscription_start_date"
+        style="@style/Woo.TextView.Caption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        tools:text="Feb 28, 2023" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/subscription_end_date"
+        style="@style/Woo.TextView.Caption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/subscription_start_date"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        tools:text=" - Dec 28, 2023" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/subscription_id"
+        style="@style/Woo.ListItem.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Subscription #345"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="@dimen/minor_100"
+        app:layout_constraintTop_toBottomOf="@id/subscription_start_date"/>
+
+    <com.woocommerce.android.widgets.tags.TagView
+        android:id="@+id/subscription_status_tag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/minor_100"
+        tools:tagText="Active"
+        app:tagTextColor="@color/tagView_text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/subscription_id" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/subscription_total"
+        style="@style/Woo.ListItem.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginEnd="0dp"
+        app:layout_constraintBaseline_toBaselineOf="@id/subscription_id"
+        tools:text="$60.00 /" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/subscription_period"
+        style="@style/Woo.ListItem.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@+id/subscription_total"
+        app:layout_constraintTop_toBottomOf="@+id/subscription_total"
+        android:layout_marginEnd="0dp"
+        android:layout_marginTop="0dp"
+        tools:text="Every 4 months" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

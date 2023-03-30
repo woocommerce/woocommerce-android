@@ -290,7 +290,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_SIMPLE_PAYMENTS_SOURCE_SUMMARY = "summary"
         const val VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD = "payment_method"
 
+        const val VALUE_TAP_TO_PAY_SOURCE_TRY_PAYMENT_PROMPT = "tap_to_pay_try_a_payment_prompt"
+        const val VALUE_CARD_READER_TYPE_EXTERNAL = "external"
+        const val VALUE_CARD_READER_TYPE_BUILT_IN = "built_in"
+
         const val VALUE_ORDER_PAYMENTS_FLOW = "order_payment"
+        const val VALUE_TTP_TRY_PAYMENT_FLOW = "tap_to_pay_try_a_payment"
 
         const val KEY_JITM = "jitm"
         const val KEY_JITM_COUNT = "count"
@@ -340,6 +345,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         const val KEY_PAYMENT_METHOD = "payment_method"
         const val KEY_PAYMENT_GATEWAY = "payment_gateway"
+        const val KEY_PAYMENT_CARD_READER_TYPE = "card_reader_type"
 
         const val KEY_IS_JETPACK_CP_CONNECTED = "is_jetpack_cp_conntected"
         const val KEY_ACTIVE_JETPACK_CONNECTION_PLUGINS = "active_jetpack_connection_plugins"

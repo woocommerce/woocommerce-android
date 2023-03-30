@@ -36,6 +36,7 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.model.loadProducts
@@ -105,7 +106,8 @@ class OrderDetailViewModel @Inject constructor(
     private val cardReaderTracker: CardReaderTracker,
     private val trackerWrapper: AnalyticsTrackerWrapper,
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository,
-    private val orderDetailsTransactionLauncher: OrderDetailsTransactionLauncher
+    private val orderDetailsTransactionLauncher: OrderDetailsTransactionLauncher,
+    private val getOrderSubscriptions: GetOrderSubscriptions
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
@@ -147,6 +149,9 @@ class OrderDetailViewModel @Inject constructor(
 
     private val _giftCards = MutableLiveData<List<GiftCard>>()
     val giftCards: LiveData<List<GiftCard>> = _giftCards
+
+    private val _subscriptions = MutableLiveData<List<Subscription>>()
+    val subscriptions: LiveData<List<Subscription>> = _subscriptions
 
     private var isFetchingData = false
 
@@ -206,6 +211,7 @@ class OrderDetailViewModel @Inject constructor(
 
             if (hasOrder()) {
                 displayOrderDetails()
+                fetchOrderSubscriptions()
                 fetchGiftCards()
             }
 
@@ -673,6 +679,18 @@ class OrderDetailViewModel @Inject constructor(
             orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId)
         }
         orderDetailsTransactionLauncher.onShippingLabelFetchingCompleted()
+    }
+
+    private suspend fun fetchOrderSubscriptions() {
+        val plugin = pluginsInformation[WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName]
+        if (plugin == null || plugin.isOperational) {
+            getOrderSubscriptions(navArgs.orderId).getOrNull()?.let { subscription ->
+                _subscriptions.value = subscription
+                if (subscription.isNotEmpty()) {
+                    trackerWrapper.track(AnalyticsEvent.ORDER_DETAILS_SUBSCRIPTIONS_SHOWN)
+                }
+            }
+        }
     }
 
     private fun loadOrderShippingLabels(): ListInfo<ShippingLabel> {
