@@ -19,9 +19,11 @@ import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.model.WooPlugin
+import com.woocommerce.android.network.giftcard.GiftCardRestClient
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.common.giftcard.GiftCardRepository
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
 import com.woocommerce.android.ui.orders.details.GetOrderSubscriptions
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
@@ -46,6 +48,7 @@ import kotlinx.coroutines.test.advanceTimeBy
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.UseConstructor
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
@@ -138,6 +141,14 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     )
 
     private val getOrderSubscriptions: GetOrderSubscriptions = mock()
+    private val giftCardRestClient: GiftCardRestClient = mock()
+    private val giftCardRepository: GiftCardRepository = mock(
+        useConstructor = UseConstructor.withArguments(
+            selectedSite,
+            giftCardRestClient,
+            coroutinesTestRule.testDispatchers
+        )
+    )
 
     private fun createViewModel() {
         viewModel = spy(
@@ -156,7 +167,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 analyticsTraWrapper,
                 shippingLabelOnboardingRepository,
                 orderDetailsTransactionLauncher,
-                getOrderSubscriptions
+                getOrderSubscriptions,
+                giftCardRepository
             )
         )
     }
