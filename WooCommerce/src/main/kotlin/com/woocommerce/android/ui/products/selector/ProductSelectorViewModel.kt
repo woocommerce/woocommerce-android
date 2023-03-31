@@ -6,12 +6,6 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R.string
-import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_CLEAR_SELECTION_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_ITEM_SELECTED
-import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_ITEM_UNSELECTED
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_COUNT
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
@@ -68,7 +62,7 @@ class ProductSelectorViewModel @Inject constructor(
     private val listHandler: ProductListHandler,
     private val variationSelectorRepository: VariationSelectorRepository,
     private val resourceProvider: ResourceProvider,
-    private val tracker: AnalyticsTrackerWrapper,
+    private val tracker: ProductSelectorTracker,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val STATE_UPDATE_DELAY = 100L
@@ -79,6 +73,7 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     private val navArgs: ProductSelectorFragmentArgs by savedState.navArgs()
+    private val productSelectorFlow = navArgs.productSelectorFlow
 
     private val searchQuery = savedState.getStateFlow(this, "")
     private val loadingState = MutableStateFlow(IDLE)
@@ -187,20 +182,10 @@ class ProductSelectorViewModel @Inject constructor(
         launch {
             delay(STATE_UPDATE_DELAY) // let the animation play out before hiding the button
             selectedItems.value = emptyList()
-            trackClearSelectionButtonClicked()
-        }
-    }
-
-    private fun trackClearSelectionButtonClicked() {
-        when (navArgs.productSelectorFlow) {
-            ProductSelectorFlow.OrderCreation -> {
-                tracker.track(
-                    ORDER_CREATION_PRODUCT_SELECTOR_CLEAR_SELECTION_BUTTON_TAPPED,
-                )
-            }
-            else -> {
-                // no-op
-            }
+            tracker.trackClearSelectionButtonClicked(
+                productSelectorFlow,
+                ProductSelectorTracker.ProductSelectorSource.ProductSelector
+            )
         }
     }
 
@@ -222,7 +207,7 @@ class ProductSelectorViewModel @Inject constructor(
                 NavigateToVariationSelector(
                     item.id,
                     item.selectedVariationIds,
-                    navArgs.productSelectorFlow
+                    productSelectorFlow
                 )
             )
         } else if (item.type != VARIABLE) {
@@ -231,60 +216,20 @@ class ProductSelectorViewModel @Inject constructor(
                     it is SelectedItem.ProductOrVariation || it is SelectedItem.Product
                 }
                 if (selectedProductItems.map { it.id }.contains(item.id)) {
-                    trackItemUnselected()
+                    tracker.trackItemUnselected(productSelectorFlow)
                     val productItemToUnselect = selectedProductItems.filter { it.id == item.id }.toSet()
                     selectedItems.value - productItemToUnselect
                 } else {
-                    trackProductSelected()
+                    tracker.trackItemSelected(productSelectorFlow)
                     selectedItems.value + SelectedItem.Product(item.id)
                 }
             }
         }
     }
 
-    private fun trackProductSelected() {
-        when (navArgs.productSelectorFlow) {
-            ProductSelectorFlow.OrderCreation -> {
-                tracker.track(
-                    ORDER_CREATION_PRODUCT_SELECTOR_ITEM_SELECTED,
-                )
-            }
-            else -> {
-                // no-op
-            }
-        }
-    }
-
-    private fun trackItemUnselected() {
-        when (navArgs.productSelectorFlow) {
-            ProductSelectorFlow.OrderCreation -> {
-                tracker.track(
-                    ORDER_CREATION_PRODUCT_SELECTOR_ITEM_UNSELECTED,
-                )
-            }
-            else -> {
-                // no-op
-            }
-        }
-    }
-
     fun onDoneButtonClick() {
-        trackDoneButtonClicked()
+        tracker.trackDoneButtonClicked(productSelectorFlow, selectedItems.value.size)
         triggerEvent(ExitWithResult(selectedItems.value))
-    }
-
-    private fun trackDoneButtonClicked() {
-        when (navArgs.productSelectorFlow) {
-            ProductSelectorFlow.OrderCreation -> {
-                tracker.track(
-                    ORDER_CREATION_PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED,
-                    mapOf(KEY_PRODUCT_COUNT to selectedItems.value.size)
-                )
-            }
-            else -> {
-                // no-op
-            }
-        }
     }
 
     fun onSearchQueryChanged(query: String) {

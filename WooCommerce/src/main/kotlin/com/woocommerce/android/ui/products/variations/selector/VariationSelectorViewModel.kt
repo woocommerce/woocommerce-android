@@ -5,10 +5,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R.string
-import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_CLEAR_SELECTION_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_ITEM_SELECTED
-import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_ITEM_UNSELECTED
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
@@ -16,6 +12,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductStockStatus.Custom
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.NotAvailable
+import com.woocommerce.android.ui.products.selector.ProductSelectorTracker
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.ui.products.selector.SelectionState
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
@@ -55,7 +52,7 @@ class VariationSelectorViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val variationListHandler: VariationListHandler,
     private val resourceProvider: ResourceProvider,
-    private val tracker: AnalyticsTrackerWrapper,
+    private val tracker: ProductSelectorTracker,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val STATE_UPDATE_DELAY = 100L
@@ -66,6 +63,7 @@ class VariationSelectorViewModel @Inject constructor(
     }
 
     private val navArgs: VariationSelectorFragmentArgs by savedState.navArgs()
+    private val productSelectorFlow = navArgs.productSelectorFlow
 
     private val loadingState = MutableStateFlow(IDLE)
     private val selectedVariationIds = savedState.getStateFlow(viewModelScope, navArgs.variationIds.toSet())
@@ -140,13 +138,13 @@ class VariationSelectorViewModel @Inject constructor(
     private fun trackClearSelectionButtonClicked() {
         when (navArgs.productSelectorFlow) {
             ProductSelectorViewModel.ProductSelectorFlow.OrderCreation -> {
-                tracker.track(
-                    ORDER_CREATION_PRODUCT_SELECTOR_CLEAR_SELECTION_BUTTON_TAPPED,
+                tracker.trackClearSelectionButtonClicked(
+                    productSelectorFlow,
+                    ProductSelectorTracker.ProductSelectorSource.VariationSelector
                 )
             }
-            else -> {
-                // no-op
-            }
+            ProductSelectorViewModel.ProductSelectorFlow.CouponEdition -> {}
+            ProductSelectorViewModel.ProductSelectorFlow.Undefined -> {}
         }
     }
 
@@ -163,26 +161,20 @@ class VariationSelectorViewModel @Inject constructor(
     private fun trackVariationSelected() {
         when (navArgs.productSelectorFlow) {
             ProductSelectorViewModel.ProductSelectorFlow.OrderCreation -> {
-                tracker.track(
-                    ORDER_CREATION_PRODUCT_SELECTOR_ITEM_SELECTED,
-                )
+                tracker.trackItemSelected(productSelectorFlow)
             }
-            else -> {
-                // no-op
-            }
+            ProductSelectorViewModel.ProductSelectorFlow.CouponEdition -> {}
+            ProductSelectorViewModel.ProductSelectorFlow.Undefined -> {}
         }
     }
 
     private fun trackVariationUnselected() {
         when (navArgs.productSelectorFlow) {
             ProductSelectorViewModel.ProductSelectorFlow.OrderCreation -> {
-                tracker.track(
-                    ORDER_CREATION_PRODUCT_SELECTOR_ITEM_UNSELECTED,
-                )
+                tracker.trackItemUnselected(productSelectorFlow)
             }
-            else -> {
-                // no-op
-            }
+            ProductSelectorViewModel.ProductSelectorFlow.CouponEdition -> {}
+            ProductSelectorViewModel.ProductSelectorFlow.Undefined -> {}
         }
     }
 

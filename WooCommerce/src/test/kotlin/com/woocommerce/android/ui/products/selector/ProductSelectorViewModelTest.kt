@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.selector
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.SelectedSite
@@ -18,6 +19,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
@@ -41,6 +43,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     private val variationSelectorRepository: VariationSelectorRepository = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val tracker: AnalyticsTrackerWrapper = mock()
+    private val productSelectorTracker: ProductSelectorTracker = ProductSelectorTracker(tracker)
 
     @Test
     fun `given published products restriction, when view model created, should not show draft products`() {
@@ -115,6 +118,76 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `given order creation flow, when item is selected, should track analytic event`() {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            restrictions = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        ).initSavedStateHandle()
+
+        val sut = createViewModel(navArgs)
+
+        sut.onProductClick(ProductSelectorViewModel.ProductListItem(1, "", ProductType.SIMPLE, numVariations = 0))
+        verify(tracker).track(AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_ITEM_SELECTED)
+    }
+
+    @Test
+    fun `given order creation flow, when item is unselected, should track analytic event`() {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            restrictions = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        ).initSavedStateHandle()
+
+        val sut = createViewModel(navArgs)
+        val listItem = ProductSelectorViewModel.ProductListItem(1, "", ProductType.SIMPLE, numVariations = 0)
+        sut.onProductClick(listItem) // select
+        sut.onProductClick(listItem) // unselect
+
+        verify(tracker).track(AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_ITEM_UNSELECTED)
+    }
+
+    @Test
+    fun `given order creation flow and no items selected, when done button is tapped, should track analytics event`() = testBlocking {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            restrictions = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        ).initSavedStateHandle()
+
+        val sut = createViewModel(navArgs)
+        sut.onDoneButtonClick()
+
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED,
+            mapOf(
+                "product_count" to 0,
+            )
+        )
+    }
+
+    @Test
+    fun `given order creation flow and multiple items selected, when done button is tapped, should track analytics event`() = testBlocking {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            restrictions = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        ).initSavedStateHandle()
+
+        val sut = createViewModel(navArgs)
+        sut.onProductClick(ProductSelectorViewModel.ProductListItem(1, "", ProductType.SIMPLE, numVariations = 0))
+        sut.onProductClick(ProductSelectorViewModel.ProductListItem(2, "", ProductType.SIMPLE, numVariations = 0))
+        sut.onDoneButtonClick()
+
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED,
+            mapOf(
+                "product_count" to 2,
+            )
+        )
+    }
+
     private fun createViewModel(navArgs: SavedStateHandle) =
         ProductSelectorViewModel(
             navArgs,
@@ -124,6 +197,6 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             listHandler,
             variationSelectorRepository,
             resourceProvider,
-            tracker,
+            productSelectorTracker,
         )
 }
