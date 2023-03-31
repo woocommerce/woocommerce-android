@@ -292,7 +292,7 @@ fun CategoriesContentPreview() {
                     StoreProfilerOptionUi(
                         name = "Electronics and Software",
                         key = "",
-                        isSelected = false
+                        isSelected = true
                     ),
                     StoreProfilerOptionUi(
                         name = "Construction & Industrial",

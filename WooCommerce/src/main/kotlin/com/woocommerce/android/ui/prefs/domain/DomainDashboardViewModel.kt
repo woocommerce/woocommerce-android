@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ViewStat
 import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ViewState.LoadingState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +29,7 @@ import javax.inject.Inject
 class DomainDashboardViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     appPrefsWrapper: AppPrefsWrapper,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val repository: DomainChangeRepository,
     private val userEligibilityFetcher: UserEligibilityFetcher
 ) : ScopedViewModel(savedStateHandle) {
@@ -37,6 +38,8 @@ class DomainDashboardViewModel @Inject constructor(
         private const val NO_DOMAIN = "<NO DOMAIN>"
     }
 
+    private val navArgs: DomainDashboardFragmentArgs by savedState.navArgs()
+
     private var hasFreeCredits = false
     private lateinit var freeDomain: Domain
 
@@ -44,10 +47,11 @@ class DomainDashboardViewModel @Inject constructor(
     val viewState = _viewState.asLiveData()
 
     init {
+        appPrefsWrapper.setCustomDomainsSource(navArgs.source)
         analyticsTrackerWrapper.track(
             AnalyticsEvent.CUSTOM_DOMAINS_STEP,
             mapOf(
-                AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSource(),
+                AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSourceAsString(),
                 AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_DASHBOARD
             )
         )

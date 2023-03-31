@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-20 16:54:23+0000
+Translation-Revision-Date: 2023-03-28 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="upgrades_plan_ended_name">%s wurde beendet</string>
+    <string name="upgrades_current_plan_ended_caption">Dein Abonnement wurde beendet. Du hast jetzt nur noch eingeschränkten Zugriff auf alle Funktionen.</string>
+    <string name="free_trial_days_left_plural">%1$d Tage</string>
+    <string name="free_trial_one_day_left">1 Tag</string>
+    <string name="store_onboarding_get_paid_loading_label">Wird geladen …</string>
+    <string name="store_onboarding_get_paid_title">Zahlungseinrichtung</string>
+    <string name="store_onboarding_task_about_your_store_toolbar_title">Infos zu deinem Shop</string>
+    <string name="store_creation_installation_rendering_preview_label">Vorschau wird angezeigt …</string>
+    <string name="jetpack_benefits_open_wpadmin">WP Admin öffnen</string>
+    <string name="shipping_label_address_phone_required">Telefonnummer erforderlich</string>
+    <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s und %4$s verkauft</string>
+    <string name="analytics_items">Artikel</string>
+    <string name="analytics_item">Artikel</string>
     <string name="upgrades_error_fetching_data">Fehler beim Abrufen der Tarifdetails</string>
     <string name="upgrades_non_upgradeable_caption">Du hast %1$s abonniert! Bis zum %2$s kannst du auf alle Funktionen zugreifen. </string>
     <string name="upgrades_trial_ended_caption">Dein Gratis-Test ist abgelaufen und du hast nun eingeschränkten Zugriff auf alle Funktionen. Abonniere jetzt %1$s.</string>
+    <string name="upgrades_upgradeable_caption">Du nutzt gerade den %1$d-tägigen Gratis-Test. Der Gratis-Test endet in %2$s. Führe ein Upgrade durch, um von neuen Funktionen zu profitieren und deinen Shop weiterhin zu betreiben.</string>
     <string name="upgrades_subscription_status">Abonnement-Status</string>
     <string name="upgrades_title">Upgrades</string>
     <string name="upgrades_troubleshooting">Problembehandlung</string>
@@ -1335,7 +1349,6 @@ Language: de
     <string name="card_reader_payment_fetch_order_loading_header">App-Status aktualisieren</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Dein Kunde hat %1$s ausgewählt</string>
     <string name="shipping_label_origin_address_phone_invalid">In Zollformularen muss eine zehnstellige Telefonnummer angegeben werden.</string>
-    <string name="shipping_label_address_phone_required">Die Telefonnummer ist erforderlich, weil für diese Lieferung ein Zollformular benötigt wird.</string>
     <string name="shipping_label_create_customs_done">Zollformular ausgefüllt</string>
     <string name="print_receipt_label_info_step_7">Wenn du Probleme beim Drucken von deinem Gerät aus hast, wende dich an den Kundensupport für deinen Drucker.</string>
     <string name="print_receipt_label_info_step_6">Wenn die Option „Drucken“ nicht verfügbar ist, kannst du deinen Beleg stattdessen als PDF speichern und ihn per E-Mail an ein anderes Gerät senden, um ihn von dort aus zu drucken.</string>

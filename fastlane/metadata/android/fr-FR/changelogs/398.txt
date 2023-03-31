@@ -1,0 +1,2 @@
+12.9:
+Pour cette version, nous avons principalement voulu faciliter votre expérience lors de la création d’une commande et de la mise à jour de produits. En outre, il est désormais possible d’installer Jetpack à partir de l’application si vous souhaitez profiter de fonctionnalités supplémentaires, telles que les notifications push et les statistiques de trafic. Continuez de nous faire part de vos commentaires !
