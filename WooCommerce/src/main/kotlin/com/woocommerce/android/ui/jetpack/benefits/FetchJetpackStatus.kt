@@ -7,7 +7,20 @@ import com.woocommerce.android.tools.SelectedSite
 import org.wordpress.android.fluxc.store.JetpackStore
 import javax.inject.Inject
 
+/**
+ * Meaning for Jetpack's `/connection/data` endpoint responses, as outlined from the Jetpack codebase:
+ * `projects/packages/connection/tests/php/test-rest-endpoints.php`
+ *
+ * - 404: Jetpack is not installed.
+ * - 403: Jetpack is activated but current user has no permission to get connection data.
+ * - 200: Jetpack is activated, connection data is given.
+ *
+ *  See also https://github.com/Automattic/jetpack/blob/trunk/docs/rest-api.md#get-wp-jsonjetpackv4connectiondata
+ *  for full response.
+ *
+ */
 private const val NOT_FOUND_STATUS_CODE = 404
+private const val FORBIDDEN_CODE = 403
 
 class FetchJetpackStatus @Inject constructor(
     private val jetpackStore: JetpackStore,
