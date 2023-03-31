@@ -24,6 +24,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.wordpress.android.fluxc.model.SiteModel
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class StoreNamePickerViewModelTest: BaseUnitTest() {
@@ -100,6 +101,34 @@ internal class StoreNamePickerViewModelTest: BaseUnitTest() {
     }
 
     @Test
+    fun `when onContinueClicked happens and site address already exists, then store creation is recovered`() = testBlocking {
+        // Given
+        val storeCreationErrorType = StoreCreationErrorType.SITE_ADDRESS_ALREADY_EXISTS
+        createSutWith(
+            expectedSiteCreationData,
+            StoreCreationResult.Failure(storeCreationErrorType, "error message")
+        )
+
+        var latestEvent: MultiLiveEvent.Event? = null
+        sut.event.observeForever { latestEvent = it }
+
+        // When
+        sut.onStoreNameChanged("Store name")
+        sut.onContinueClicked()
+
+        // Then
+        verify(newStore).update(name = "Store name")
+        verify(newStore).update(siteId = 123)
+        verify(storeCreationRepository).createNewFreeTrialSite(
+            eq(expectedSiteCreationData),
+            eq(PlansViewModel.NEW_SITE_LANGUAGE_ID),
+            any()
+        )
+        verify(storeCreationRepository).getSiteByUrl(expectedSiteCreationData.domain)
+        assertThat(latestEvent).isEqualTo(NavigateToStoreInstallation)
+    }
+
+    @Test
     fun `when onStoreNameChanges happens, then viewState is updated as expected`() = testBlocking {
         // Given
         val viewStateChanges = mutableListOf<StoreNamePickerState>()
@@ -158,6 +187,7 @@ internal class StoreNamePickerViewModelTest: BaseUnitTest() {
         expectedSiteCreationData: SiteCreationData,
         expectedCreationResult: StoreCreationResult<Long> = StoreCreationResult.Success(123)
     ) {
+        val siteModel = SiteModel().apply { siteId = 123 }
         newStore = mock {
             on { data } doReturn NewStore.NewStoreData(
                 domain = expectedSiteCreationData.domain,
@@ -173,6 +203,8 @@ internal class StoreNamePickerViewModelTest: BaseUnitTest() {
                     any()
                 )
             } doReturn expectedCreationResult
+
+            onBlocking { getSiteByUrl(expectedSiteCreationData.domain) } doReturn siteModel
         }
 
         analyticsTracker = mock()
