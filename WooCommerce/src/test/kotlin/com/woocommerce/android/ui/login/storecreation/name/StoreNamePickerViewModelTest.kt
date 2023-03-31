@@ -5,6 +5,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository
@@ -181,7 +182,31 @@ internal class StoreNamePickerViewModelTest: BaseUnitTest() {
         assertThat(latestEvent).isEqualTo(MultiLiveEvent.Event.Exit)
     }
 
+    @Test
+    fun `when onExitTriggered happens, then trigger Exit event`() {
+        // Given
+        var latestEvent: MultiLiveEvent.Event? = null
+        sut.event.observeForever { latestEvent = it }
 
+        // When
+        sut.onExitTriggered()
+
+        // Then
+        assertThat(latestEvent).isEqualTo(MultiLiveEvent.Event.Exit)
+    }
+
+    @Test
+    fun `when onHelpPressed happens, then trigger NavigateToHelpScreen event`() {
+        // Given
+        var latestEvent: MultiLiveEvent.Event? = null
+        sut.event.observeForever { latestEvent = it }
+
+        // When
+        sut.onHelpPressed()
+
+        // Then
+        assertThat(latestEvent).isEqualTo(MultiLiveEvent.Event.NavigateToHelpScreen(HelpOrigin.STORE_CREATION))
+    }
 
     private fun createSutWith(
         expectedSiteCreationData: SiteCreationData,
