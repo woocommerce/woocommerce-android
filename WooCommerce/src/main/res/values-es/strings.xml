@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-21 09:54:04+0000
+Translation-Revision-Date: 2023-03-28 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="upgrades_plan_ended_name">Finalizó el %s</string>
+    <string name="upgrades_current_plan_ended_caption">Tu suscripción ha finalizado y tienes acceso restringido a todas las funciones.</string>
+    <string name="free_trial_days_left_plural">%1$d días</string>
+    <string name="free_trial_one_day_left">1 día</string>
+    <string name="store_onboarding_get_paid_loading_label">Cargando…</string>
+    <string name="store_onboarding_get_paid_title">Configuración de pago</string>
+    <string name="store_onboarding_task_about_your_store_toolbar_title">Acerca de tu tienda</string>
+    <string name="store_creation_installation_rendering_preview_label">Renderizando vista previa…</string>
+    <string name="jetpack_benefits_open_wpadmin">Abrir WP-Admin</string>
+    <string name="shipping_label_address_phone_required">Se debe introducir un número de teléfono</string>
+    <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s, %4$s vendidos</string>
+    <string name="analytics_items">elementos</string>
+    <string name="analytics_item">elemento</string>
     <string name="upgrades_error_fetching_data">Error al obtener los detalles de tu plan</string>
     <string name="upgrades_non_upgradeable_caption">¡Ya te has suscrito a %1$s! Tienes acceso a todas las funciones hasta el %2$s. </string>
     <string name="upgrades_trial_ended_caption">Tu prueba gratuita ha finalizado, por lo que solo tienes acceso limitado a las funciones. Suscríbete a %1$s ahora.</string>
+    <string name="upgrades_upgradeable_caption">Estás en el período de prueba de %1$d días. El período de prueba finaliza en %2$s. Mejora el plan para descubrir nuevas funciones y que tu tienda siga funcionando.</string>
     <string name="upgrades_subscription_status">Estado de la suscripción</string>
     <string name="upgrades_title">Mejoras</string>
     <string name="upgrades_troubleshooting">Solución de problemas</string>
@@ -1335,7 +1349,6 @@ Language: es
     <string name="card_reader_payment_fetch_order_loading_header">Actualizando estado en la aplicación</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Tu cliente ha seleccionado %1$s</string>
     <string name="shipping_label_origin_address_phone_invalid">Los formularios de aduanas requieren un número de teléfono de 10 dígitos.</string>
-    <string name="shipping_label_address_phone_required">Es necesario un número de teléfono porque este envío necesita un formulario de aduanas.</string>
     <string name="shipping_label_create_customs_done">Formulario de aduanas rellenado</string>
     <string name="print_receipt_label_info_step_7">Si tienes problemas al imprimir desde tu dispositivo, ponte en contacto con el servicio de atención al cliente de tu impresora.</string>
     <string name="print_receipt_label_info_step_6">Si la impresión no está disponible, puedes guardar el recibo en formato PDF y enviarlo por correo electrónico para imprimirlo con otro dispositivo.</string>

@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-21 11:54:04+0000
+Translation-Revision-Date: 2023-03-27 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="upgrades_plan_ended_name">%s berakhir</string>
+    <string name="upgrades_current_plan_ended_caption">Langganan Anda berakhir dan Anda dapat mengakses semua fitur secara terbatas.</string>
+    <string name="free_trial_days_left_plural">%1$d hari</string>
+    <string name="free_trial_one_day_left">1 hari</string>
+    <string name="store_onboarding_get_paid_loading_label">Memuat…</string>
+    <string name="store_onboarding_get_paid_title">Pengaturan Pembayaran</string>
+    <string name="store_onboarding_task_about_your_store_toolbar_title">Tentang toko Anda</string>
+    <string name="store_creation_installation_rendering_preview_label">Merender pratinjau…</string>
+    <string name="jetpack_benefits_open_wpadmin">Buka wp-admin</string>
+    <string name="shipping_label_address_phone_required">Nomor telepon diperlukan</string>
+    <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s, %4$s terjual</string>
+    <string name="analytics_items">objek</string>
+    <string name="analytics_item">barang</string>
     <string name="upgrades_error_fetching_data">Error saat mengambil detail paket</string>
     <string name="upgrades_non_upgradeable_caption">Sekarang Anda menjadi pelanggan %1$s! Anda memiliki akses ke semua fitur kami hingga %2$s. </string>
     <string name="upgrades_trial_ended_caption">Masa percobaan gratis Anda telah berakhir, menyisakan akses fitur secara terbatas. Berlangganan %1$s sekarang.</string>
+    <string name="upgrades_upgradeable_caption">Masa percobaan gratis Anda adalah %1$d hari. Percobaan gratis Anda akan berakhir dalam %2$s. Upgrade untuk membuka fitur-fitur baru dan membuat toko Anda tetap berjalan.</string>
     <string name="upgrades_subscription_status">Status langganan</string>
     <string name="upgrades_title">Upgrade</string>
     <string name="upgrades_troubleshooting">Pemecahan Masalah</string>
@@ -1335,7 +1349,6 @@ Language: id
     <string name="card_reader_payment_fetch_order_loading_header">Memperbarui status aplikasi</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Pelanggan Anda memilih %1$s</string>
     <string name="shipping_label_origin_address_phone_invalid">Formulir bea cukai wajib menyertakan nomor telepon 10 digit</string>
-    <string name="shipping_label_address_phone_required">Nomor telepon diwajibkan karena pengiriman ini memerlukan formulir bea-cukai</string>
     <string name="shipping_label_create_customs_done">Formulir bea-cukai diisi</string>
     <string name="print_receipt_label_info_step_7">Jika mengalami masalah pencetakan dari perangkat Anda, hubungi dukungan pelanggan untuk mesin cetak Anda.</string>
     <string name="print_receipt_label_info_step_6">Jika pencetakan tidak tersedia, Anda bisa selalu menyimpan tanda terima ke dalam format PDF dan mengirimkannya melalui email untuk mencetaknya dari perangkat lain.</string>

@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-22 19:54:04+0000
+Translation-Revision-Date: 2023-03-29 09:54:21+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="upgrades_plan_ended_name">%s sona erdi</string>
+    <string name="upgrades_current_plan_ended_caption">Aboneliğiniz sona erdi ve tüm özelliklere erişiminiz sınırlandırıldı.</string>
+    <string name="free_trial_days_left_plural">%1$d gün</string>
+    <string name="free_trial_one_day_left">1 gün</string>
+    <string name="store_onboarding_get_paid_loading_label">Yükleniyor…</string>
+    <string name="store_onboarding_get_paid_title">Ödeme Ayarları</string>
+    <string name="store_onboarding_task_about_your_store_toolbar_title">Mağazanız hakkında</string>
+    <string name="store_creation_installation_rendering_preview_label">Önizleme oluşturuluyor…</string>
+    <string name="jetpack_benefits_open_wpadmin">Panoyu aç</string>
+    <string name="shipping_label_address_phone_required">Telefon numarası gerekli</string>
+    <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s, %4$s satıldı</string>
+    <string name="analytics_items">öğe</string>
+    <string name="analytics_item">öğe</string>
     <string name="upgrades_error_fetching_data">Paket ayrıntıları getirilirken hata oluştu</string>
     <string name="upgrades_non_upgradeable_caption">%1$s abonesisiniz! %2$s tarihine kadar tüm özelliklerimize erişebilirsiniz. </string>
     <string name="upgrades_trial_ended_caption">Ücretsiz deneme süreniz sona erdi ve tüm özelliklere erişiminiz sınırlandırıldı. Şimdi %1$s abonesi olun.</string>
+    <string name="upgrades_upgradeable_caption">%1$d günlük ücretsiz deneme süresindesiniz. Ücretsiz deneme süresi %2$s tarihinde sona erecek. Yeni özelliklerin kilidini açmak ve mağazanızın çalışmaya devam etmesini sağlamak için yükseltin.</string>
     <string name="upgrades_subscription_status">Abonelik durumu</string>
     <string name="upgrades_title">Yükseltmeler</string>
     <string name="upgrades_troubleshooting">Sorun giderme</string>
@@ -1335,7 +1349,6 @@ Language: tr
     <string name="card_reader_payment_fetch_order_loading_header">Uygulama durumu güncelleniyor</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Müşteriniz seçildi %1$s</string>
     <string name="shipping_label_origin_address_phone_invalid">Gümrük formları 10 haneli bir telefon numarası gerektirir</string>
-    <string name="shipping_label_address_phone_required">Bu gönderi bir gümrük formu gerektirdiğinden telefon numarası gerekir</string>
     <string name="shipping_label_create_customs_done">Gümrük formu tamamlandı</string>
     <string name="print_receipt_label_info_step_7">Cihazınızdan yazdırma ile ilgili sorun yaşıyorsanız, yazıcınızın müşteri desteği ile iletişime geçin.</string>
     <string name="print_receipt_label_info_step_6">Yazdırmak mümkün olmuyorsa, makbuzunuzu her zaman PDF olarak kaydedebilir ve başka bir cihazdan yazdırmak üzere e-posta ile gönderebilirsiniz.</string>
