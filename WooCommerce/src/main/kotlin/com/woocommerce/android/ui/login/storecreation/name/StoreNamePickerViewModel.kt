@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.login.storecreation.name
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
@@ -37,10 +36,8 @@ class StoreNamePickerViewModel @Inject constructor(
     private val isCreatingStore = savedState.getStateFlow(scope = this, initialValue = false)
     private val error = MutableStateFlow<StoreCreationErrorType?>(null)
 
-    val storePickerState: LiveData<StoreNamePickerState> = combine(
-        storeName,
-        isCreatingStore,
-        error
+    val storePickerState = combine(
+        storeName, isCreatingStore, error
     ) { storeName, isCreatingStore, error ->
         error?.let { StoreNamePickerState.Error(it) }
             ?: StoreNamePickerState.Contentful(storeName, isCreatingStore)
