@@ -57,8 +57,7 @@ class CardReaderStatusCheckerViewModel
                 val cardReaderStatus = cardReaderManager.readerStatus.value
                 if (cardReaderStatus is Connected) {
                     if (cardReaderStatus.cardReader.toCardReaderType() != arguments.cardReaderType) {
-                        cardReaderManager.disconnectReader()
-                        handleOnboardingStatus(param)
+                        handleNotSelectedReaderTypeConnected(param)
                     } else {
                         triggerEvent(
                             StatusCheckerEvent.NavigateToPayment(
@@ -72,6 +71,12 @@ class CardReaderStatusCheckerViewModel
                 }
             }
         }.exhaustive
+    }
+
+    private suspend fun handleNotSelectedReaderTypeConnected(param: CardReaderFlowParam) {
+        cardReaderTracker.trackAutomaticReadDisconnectWhenConnectedAnotherType()
+        cardReaderManager.disconnectReader()
+        handleOnboardingStatus(param)
     }
 
     private suspend fun handleOnboardingStatus(param: CardReaderFlowParam) {
