@@ -9,8 +9,19 @@ sealed class BannerState {
         val title: UiString,
         val description: UiString,
         val primaryActionLabel: UiString,
-        val chipLabel: UiString
+        val primaryIcon: LocalOrRemoteIcon,
+        val secondaryIcon: LabelOrRemoteIcon,
     ) : BannerState()
 
     object HideBannerState : BannerState()
+
+    sealed class LocalOrRemoteIcon {
+        data class Local(val drawableId: Int) : LocalOrRemoteIcon()
+        data class RemoteIcon(val url: String) : LocalOrRemoteIcon()
+    }
+
+    sealed class LabelOrRemoteIcon {
+        data class Label(val label: UiString) : LabelOrRemoteIcon()
+        data class RemoteIcon(val url: String) : LabelOrRemoteIcon()
+    }
 }

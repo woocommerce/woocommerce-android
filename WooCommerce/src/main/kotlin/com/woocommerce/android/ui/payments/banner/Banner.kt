@@ -31,6 +31,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -90,12 +92,24 @@ fun Banner(bannerState: BannerState) {
                             .background(colorResource(id = R.color.woo_purple_10)),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = UiHelpers.getTextOfUiString(LocalContext.current, bannerState.chipLabel),
-                            color = colorResource(id = R.color.woo_purple_60),
-                            style = MaterialTheme.typography.caption,
-                            fontWeight = FontWeight.Bold,
-                        )
+                        when (val icon = bannerState.secondaryIcon) {
+                            is BannerState.LabelOrRemoteIcon.Label -> {
+                                Text(
+                                    text = UiHelpers.getTextOfUiString(LocalContext.current, icon.label),
+                                    color = colorResource(id = R.color.woo_purple_60),
+                                    style = MaterialTheme.typography.caption,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                            }
+                            is BannerState.LabelOrRemoteIcon.RemoteIcon -> {
+                                AsyncImage(
+                                    model = ImageRequest.Builder(LocalContext.current)
+                                        .data(icon.url)
+                                        .build(),
+                                    contentDescription = null
+                                )
+                            }
+                        }
                     }
                     Text(
                         text = UiHelpers.getTextOfUiString(LocalContext.current, bannerState.title),
@@ -153,7 +167,14 @@ fun PaymentScreenBannerPreview() {
                 title = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_title),
                 description = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_description),
                 primaryActionLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_cta),
-                chipLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
+                primaryIcon = BannerState.LocalOrRemoteIcon.Local(
+                    R.drawable.ic_banner_upsell_card_reader_illustration
+                ),
+                secondaryIcon = BannerState.LabelOrRemoteIcon.Label(
+                    UiString.UiStringRes(
+                        R.string.card_reader_upsell_card_reader_banner_new
+                    )
+                ),
             )
         )
     }
