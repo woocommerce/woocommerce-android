@@ -1,6 +1,10 @@
 package com.woocommerce.android.ui.login.storecreation.name
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository.SiteCreationData
@@ -25,31 +29,26 @@ internal class StoreNamePickerViewModelTest: BaseUnitTest() {
     private lateinit var sut: StoreNamePickerViewModel
     private lateinit var storeCreationRepository: StoreCreationRepository
     private lateinit var newStore: NewStore
+    private lateinit var analyticsTracker: AnalyticsTrackerWrapper
+    private lateinit var prefsWrapper: AppPrefsWrapper
     private val savedState = SavedStateHandle()
+
+    private val expectedSiteCreationData = SiteCreationData(
+        siteDesign = PlansViewModel.NEW_SITE_THEME,
+        domain = "test domain",
+        title = "test title",
+        segmentId = null
+    )
 
     @Before
     fun setUp() {
-        val expectedSiteCreationData = SiteCreationData(
-            siteDesign = PlansViewModel.NEW_SITE_THEME,
-            domain = "test domain",
-            title = "test title",
-            segmentId = null
-        )
-
-        createSut(expectedSiteCreationData)
+        prefsWrapper = mock()
+        createSutWith(expectedSiteCreationData)
     }
 
     @Test
     fun `when onContinueClicked happens, then free trial store creation starts`() = testBlocking {
         // Given
-        val expectedSiteCreationData = SiteCreationData(
-            siteDesign = PlansViewModel.NEW_SITE_THEME,
-            domain = "test domain",
-            title = "test title",
-            segmentId = null
-        )
-
-        createSut(expectedSiteCreationData)
         var latestEvent: MultiLiveEvent.Event? = null
         sut.event.observeForever { latestEvent = it }
 
@@ -95,7 +94,33 @@ internal class StoreNamePickerViewModelTest: BaseUnitTest() {
         )
     }
 
-    private fun createSut(expectedSiteCreationData: SiteCreationData) {
+    @Test
+    fun `when onCancelPressed happens, then the tracks and events are triggered as expected`() {
+        // Given
+        val storeCreationSource = "test source"
+        prefsWrapper = mock {
+            on { getStoreCreationSource() } doReturn storeCreationSource
+        }
+        createSutWith(expectedSiteCreationData)
+        var latestEvent: MultiLiveEvent.Event? = null
+        sut.event.observeForever { latestEvent = it }
+
+        // When
+        sut.onCancelPressed()
+
+        // Then
+        verify(analyticsTracker).track(
+            AnalyticsEvent.SITE_CREATION_DISMISSED,
+            mapOf(
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_NAME,
+                AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE,
+                AnalyticsTracker.KEY_SOURCE to storeCreationSource
+            )
+        )
+        assertThat(latestEvent).isEqualTo(MultiLiveEvent.Event.Exit)
+    }
+
+    private fun createSutWith(expectedSiteCreationData: SiteCreationData) {
         newStore = mock {
             on { data } doReturn NewStore.NewStoreData(
                 domain = expectedSiteCreationData.domain,
@@ -113,12 +138,14 @@ internal class StoreNamePickerViewModelTest: BaseUnitTest() {
             } doReturn StoreCreationResult.Success(123)
         }
 
+        analyticsTracker = mock()
+
         sut = StoreNamePickerViewModel(
             savedStateHandle = savedState,
             newStore = newStore,
             repository = storeCreationRepository,
-            analyticsTrackerWrapper = mock(),
-            prefsWrapper = mock()
+            analyticsTrackerWrapper = analyticsTracker,
+            prefsWrapper = prefsWrapper
         )
     }
 }
