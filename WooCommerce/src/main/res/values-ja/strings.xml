@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-23 09:54:05+0000
+Translation-Revision-Date: 2023-03-29 09:54:25+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="upgrades_plan_ended_name">%sが終了しました</string>
+    <string name="upgrades_current_plan_ended_caption">サブスクリプションが終了したため、ご利用いただける機能に制限がかかります。</string>
+    <string name="free_trial_days_left_plural">%1$d日</string>
+    <string name="free_trial_one_day_left">1日</string>
+    <string name="store_onboarding_get_paid_loading_label">読み込み中…</string>
+    <string name="store_onboarding_get_paid_title">決済設定</string>
+    <string name="store_onboarding_task_about_your_store_toolbar_title">ストアについて</string>
+    <string name="store_creation_installation_rendering_preview_label">プレビューをレンダリング中…</string>
+    <string name="jetpack_benefits_open_wpadmin">WP 管理画面を開く</string>
+    <string name="shipping_label_address_phone_required">電話番号は必須項目です</string>
+    <string name="analytics_list_item_products_sold">%1$s、%2$s、%3$s、%4$sが販売済み</string>
+    <string name="analytics_items">項目</string>
+    <string name="analytics_item">アイテム</string>
     <string name="upgrades_error_fetching_data">プラン詳細を取得中にエラーが発生しました</string>
     <string name="upgrades_non_upgradeable_caption">%1$s を購読しています。 %2$s まですべての機能をご利用いただけます。 </string>
     <string name="upgrades_trial_ended_caption">お試し期間が終了したため、ご利用いただける機能に制限がかかります。 今すぐ %1$s を購読しましょう。</string>
+    <string name="upgrades_upgradeable_caption">%1$d日間の無料お試しが開始しました。 お試し期間は%2$s日後に終了します。 アップグレードして新しい機能を利用し、ストアの運営を継続しましょう。</string>
     <string name="upgrades_subscription_status">定期購入ステータス</string>
     <string name="upgrades_title">アップグレード</string>
     <string name="upgrades_troubleshooting">トラブルシューティング</string>
@@ -1335,7 +1349,6 @@ Language: ja_JP
     <string name="card_reader_payment_fetch_order_loading_header">アプリの状態を更新する</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">お客様が %1$s を選択しました</string>
     <string name="shipping_label_origin_address_phone_invalid">カスタムフォームには、10桁の電話番号を入力してください</string>
-    <string name="shipping_label_address_phone_required">この配送にはカスタムフォームが必要なため、電話番号が必須です</string>
     <string name="shipping_label_create_customs_done">カスタムフォームの入力が完了しました</string>
     <string name="print_receipt_label_info_step_7">デバイスからの印刷で問題が生じている場合は、プリンターのカスタマーサポートにお問い合わせください。</string>
     <string name="print_receipt_label_info_step_6">印刷できない場合はレシートを PDF として保存し、メールで送信して別のデバイスから印刷できます。</string>

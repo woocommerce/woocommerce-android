@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-21 13:54:03+0000
+Translation-Revision-Date: 2023-03-28 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="upgrades_plan_ended_name">%s har avslutats</string>
+    <string name="upgrades_current_plan_ended_caption">Din prenumeration har avslutats och du har begränsad åtkomst till alla funktionerna.</string>
+    <string name="free_trial_days_left_plural">%1$d dagar</string>
+    <string name="free_trial_one_day_left">1 dag</string>
+    <string name="store_onboarding_get_paid_loading_label">Laddar in …</string>
+    <string name="store_onboarding_get_paid_title">Konfiguration av Payments</string>
+    <string name="store_onboarding_task_about_your_store_toolbar_title">Om din butik</string>
+    <string name="store_creation_installation_rendering_preview_label">Renderar förhandsgranskning…</string>
+    <string name="jetpack_benefits_open_wpadmin">Öppna wp-admin</string>
+    <string name="shipping_label_address_phone_required">Ett telefonnummer är obligatoriskt</string>
+    <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s, %4$s har sålts</string>
+    <string name="analytics_items">poster</string>
+    <string name="analytics_item">artikel</string>
     <string name="upgrades_error_fetching_data">Det gick inte att hämta paketinformationen</string>
     <string name="upgrades_non_upgradeable_caption">Du är %1$s-prenumerant. Du har tillgång till alla våra funktioner fram till %2$s. </string>
     <string name="upgrades_trial_ended_caption">Din kostnadsfria provperiod har avslutats och du har begränsad åtkomst till alla funktionerna. Prenumerera på %1$s nu.</string>
+    <string name="upgrades_upgradeable_caption">Du har en kostnadsfri provperiod på %1$d dagar. Din kostnadsfria provperiod löper ut om %2$s. Uppgradera för att låsa upp nya funktioner och hålla igång din butik.</string>
     <string name="upgrades_subscription_status">Prenumerationsstatus</string>
     <string name="upgrades_title">Uppgraderingar</string>
     <string name="upgrades_troubleshooting">Felsökning</string>
@@ -1335,7 +1349,6 @@ Language: sv_SE
     <string name="card_reader_payment_fetch_order_loading_header">Uppdaterar appstatusen</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Din kund valde %1$s</string>
     <string name="shipping_label_origin_address_phone_invalid">Tullformulär kräver ett tiosiffrigt telefonnummer</string>
-    <string name="shipping_label_address_phone_required">Ett telefonnummer krävs eftersom denna försändelse kräver ett tullformulär</string>
     <string name="shipping_label_create_customs_done">Tullformulär ifyllt</string>
     <string name="print_receipt_label_info_step_7">Om du har problem med att skriva ut från din enhet kontaktar du kundsupporten för din skrivare.</string>
     <string name="print_receipt_label_info_step_6">Om utskrift inte är tillgänglig kan du alltid spara ditt kvitto som PDF och skicka det via e-post för att skriva ut det från en annan enhet.</string>
