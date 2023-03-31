@@ -1668,10 +1668,12 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         val subscriptions = WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName
         pluginsInfo[subscriptions] = WooPlugin(
             isInstalled = true,
-            isActive = true,
+            isActive = false,
             version = "1.0.0"
         )
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         createViewModel()
 
         viewModel.start()
