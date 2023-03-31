@@ -176,4 +176,17 @@ class ProductsRealAPI : TestBase() {
             .tapShowProducts()
             .assertProductsCount(0)
     }
+
+    @Test
+    fun e2eRealApiProductsSort() {
+        ProductListScreen()
+            // Check the default sort (A-Z)
+            .assertProductIsAtPosition(productCappuccino.name, 0)
+            .assertProductIsAtPosition(productSalad.name, 1)
+            // Sort Z to A
+            .tapSort()
+            .selectSortOption("Title: Z to A")
+            .assertProductIsAtPosition(productCappuccino.name, 1)
+            .assertProductIsAtPosition(productSalad.name, 0)
+    }
 }
