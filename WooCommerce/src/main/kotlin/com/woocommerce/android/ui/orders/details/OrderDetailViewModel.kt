@@ -667,7 +667,7 @@ class OrderDetailViewModel @Inject constructor(
 
     private suspend fun fetchOrderSubscriptions() {
         val plugin = pluginsInformation[WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName]
-        if (plugin == null || plugin.isOperational) {
+        if (plugin != null && plugin.isOperational) {
             getOrderSubscriptions(navArgs.orderId).getOrNull()?.let { subscription ->
                 _subscriptions.value = subscription
                 if (subscription.isNotEmpty()) {
