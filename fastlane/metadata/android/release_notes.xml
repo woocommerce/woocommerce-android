@@ -1,68 +1,68 @@
 <ar>
-12.8:
-يتضمن هذا الإصدار الكثير من التحسينات على وظيفة إنشاء الطلب. أصبح من الممكن تحديد منتجات متعددة دفعة واحدة وخيار بحث وتصفية محسّن بشكل أسرع. أصلحنا أيضًا بعض الأخطاء وأجرينا العديد من التحسينات للحصول على إمكانية الوصول إلى قسم "التحليلات". أضفنا قسم "الترقيات" الجديد إلى مستخدمي ووردبريس.كوم.
+12.9:
+في هذا الإصدار، ركّزنا على جعل تجربتك أكثر سلاسة عند إدارة المنتجات. بالإضافة إلى ذلك، أصبح من الممكن الآن تثبيت Jetpack من التطبيق في حال رغبت في وظائف إضافية، مثل: تنبيهات الدفع وإحصاءات الزائرين. واصل إرسال ملاحظاتك!
 </ar>
 <de-DE>
-12.8:
-Diese Version enthält viele Verbesserung hinsichtlich der Funktion zur Erstellung von Bestellungen. Es ist nun möglich, mehrere Produkte gleichzeitig auszuwählen. Außerdem wurde die Such- und Filteroption optimiert und beschleunigt. Des Weiteren haben wir einige Fehler behoben und diverse Verbesserungen an der Zugänglichkeit des Analyse-Abschnitts vorgenommen. Für unsere WordPress.com-Benutzer haben wir einen neuen Upgrades-Abschnitt hinzugefügt.
+12.9:
+In dieser Version haben wir dein Erlebnis, wenn du Produkte verwaltest, noch reibungsloser gestaltet. Zudem ist es jetzt möglich, Jetpack in der App zu installieren, wenn du von zusätzlichen Funktionen wie Push-Benachrichtigungen und Besucherstatistiken profitieren möchtest. Wir freuen uns auf weiteres Feedback!
 </de-DE>
 <es-ES>
-12.8:
-Esta versión cuenta con numerosas mejoras en la función Creación de pedidos. Ahora es posible elegir varios productos de una vez y aplicar la opción de búsqueda y filtro mejorada y más rápida. También hemos corregido algunos errores e introducido varias mejoras de accesibilidad en la sección Análisis. Hemos añadido una nueva sección Mejoras al perfil de usuario de WordPress.com.
+12.9:
+En esta versión, nuestro objetivo ha sido facilitar la gestión de los productos. Además, ahora puedes instalar Jetpack desde la aplicación para utilizar funciones adicionales, como notificaciones push y estadísticas de visitas. ¡Sigue mandándonos tus comentarios!
 </es-ES>
 <fr-FR>
-12.8:
-Cette version comprend de nombreuses améliorations de la fonctionnalité de création de commande. Il est possible de sélectionner plusieurs produits simultanément, et l’option de recherche et de filtrage a été améliorée et est à présent plus rapide. Nous avons également corrigé quelques bogues et apporté plusieurs améliorations pour accéder à la section Statistiques. Nous avons ajouté une nouvelle section Options payantes pour les utilisateurs de WordPress.com.
+12.9:
+Pour cette version, nous avons principalement voulu faciliter votre expérience lors de la création d’une commande et de la mise à jour de produits. En outre, il est désormais possible d’installer Jetpack à partir de l’application si vous souhaitez profiter de fonctionnalités supplémentaires, telles que les notifications push et les statistiques de trafic. Continuez de nous faire part de vos commentaires !
 </fr-FR>
 <iw-IL>
-12.8:
-בגרסה הזאת הוספנו המון שיפורים לפונקציונליות של יצירת הזמנות. ניתן לבחור מספר מוצרים בפעולה אחת, ואפשרויות החיפוש והסינון מהירות וטובות יותר. בנוסף, תיקנו גם כמה באגים והוספנו שיפורים לנגישות במקטע 'נתונים אנליטיים'. הוספנו מקטע 'שדרוגים' חדש למשתמשי WordPress.com.
+12.9:
+בגרסה הזאת התמקדנו בביצוע שיפורים בחוויית השימוש כאשר מנהלים מוצרים. בנוסף, כעת אפשר להתקין את Jetpack מהאפליקציה אם ברצונך להוסיף עוד פונקציונליות, כגון הודעות בדחיפה ונתונים סטטיסטיים של מבקרים. נשמח להמשיך לקבל משוב!
 </iw-IL>
 <id>
-12.8:
-Rilis ini menyertakan berbagai peningkatan dalam fungsi pembuatan pesanan. Anda kini dapat memilih beberapa produk sekaligus. Fitur pencarian & penyaringan juga lebih baik dan lebih cepat. Selain itu, kami memperbaiki sejumlah bug dan menyempurnakan  beberapa aspek aksesibilitas pada bagian Analytics. Kami juga menambahkan bagian Upgrade baru untuk pengguna WordPress.com.
+12.9:
+Dalam rilis ini, kami berfokus pada upaya untuk mempermudah pengalaman Anda ketika mengelola produk. Selain itu, kini Anda dapat menginstal Jetpack dari aplikasi jika Anda menginginkan fungsionalitas tambahan, seperti pemberitahuan push dan statistik pengunjung. Terus kirimkan feedback Anda!
 </id>
 <it-IT>
-12.8:
-Questo rilascio include molti miglioramenti alla funzionalità di creazione degli ordini. È possibile selezionare più prodotti in una volta e un'opzione migliorata di ricerca più veloce e filtro. Abbiamo anche corretto alcuni bug e apportato vari miglioramenti all'accessibilità della sezione Analisi. Abbiamo aggiunto una nuova sezione Miglioramenti al profilo degli utenti WordPress.com.
+12.9:
+Per questa versione, ci siamo concentrati sul rendere la tua esperienza più fluida durante la gestione dei prodotti. Inoltre, ora è possibile installare Jetpack dall'app se desideri funzionalità aggiuntive come notifiche push e statistiche dei visitatori. Mantieni il tuo feedback pronto.
 </it-IT>
 <ja-JP>
-12.8:
-今回のリリースでは、注文作成機能に数多くの改善が加えられています。 一度に複数の商品を選択できるようになり、検索の速度が上がり、フィルターのオプションも増えました。 また、いくつかのバグが修正され、アナリティクスセクションのアクセシビリティも向上しています。 WordPress.com ユーザー向けに新しいアップグレードセクションが追加されました。
+12.9:
+今回のリリースでは、商品管理をよりスムーズに行えるようにすることに重点を置きました。 さらに、プッシュ通知や訪問者の統計などの追加機能をご希望の場合は、アプリから Jetpack をインストールできるようになりました。 今後もフィードバックをお聞かせください。
 </ja-JP>
 <ko-KR>
-12.8:
-이 릴리스에는 주문 생성 기능에 대한 많은 개선 사항이 포함되어 있습니다. 개선된 더 빠른 검색 및 필터 옵션으로 한 번에 여러 상품을 선택할 수 있습니다. 몇 가지 버그도 수정하고 분석 섹션의 접근성도 많이 개선했습니다. 워드프레스닷컴 사용자에 대한 새로운 업그레이드 섹션을 추가했습니다.
+12.9:
+이 릴리스에서는 상품을 관리하는 환경을 더 원활하게 만드는 데 중점을 두었습니다. 아울러 이제는 추가 기능(예: 푸시 알림, 방문자 통계)이 필요하면 앱에서 젯팩을 설치할 수도 있습니다. 피드백을 계속 보내주세요!
 </ko-KR>
 <nl-NL>
-12.8:
-This release includes a lot of improvements to the order creation functionality. It's possible to select multiple products at one go & an improved faster search & filter option. We also fixed a few bugs and made several enhancements for accessibility of the Analytics section. We’ve added a new Upgrades section to WordPress.com users.
+12.9:
+For this release, we focused on making your experience smoother when managing products. Additionally, it's now possible to install Jetpack from the app if you would like additional functionality such as push notifications and visitor stats. Blijf ons je feedback sturen!
 </nl-NL>
 <pt-BR>
-12.8:
-Esta versão inclui muitos aprimoramentos na funcionalidade de criação de pedidos. Agora é possível selecionar vários produtos de uma vez só, além de uma opção de pesquisa e filtro mais rápida e aprimorada. Também corrigimos alguns bugs e fizemos várias melhorias para acessibilidade da seção de análise. Adicionamos uma nova seção de Upgrades para usuários do WordPress.com.
+12.9:
+Para este lançamento, nós nos concentramos em tornar sua experiência melhor ao gerenciar produtos. Além disso, agora é possível instalar o Jetpack do aplicativo se você quiser mais funcionalidades, como notificações em push e estatísticas de visitantes. Continue enviando seu feedback!
 </pt-BR>
 <ru-RU>
-12.8:
-В этом выпуске улучшена процедура создания заказов. Теперь можно выбрать несколько товаров сразу, а поиск и фильтры стали работать быстрее. Также исправлено несколько ошибок и повышена доступность раздела аналитики. Для пользователей WordPress.com добавлен новый раздел «Покупки».
+12.9:
+В этом выпуске мы постарались сделать так, чтобы вам было удобнее управлять товарами. Кроме того, теперь возможно установить Jetpack из приложения, если вам нужна дополнительная функциональность, например push-уведомления и статистика посещений. Продолжайте делиться обратной связью!
 </ru-RU>
 <sv-SE>
-12.8:
-Den här versionen inkluderar en rad olika förbättringar av funktionen för beställningsskapande. Det är möjligt att välja flera produkter på en gång och söknings- och filtreringsalternativet har blivit snabbare. Vi har även korrigerat ett antal buggar och gjort flertalet förbättringar rörande tillgänglighet i sektionen Analys. Vi har lagt till den nya sektionen Uppgraderingar för WordPress.com-användare.
+12.9:
+För den här versionen har vi fokuserat på att göra din upplevelse smidigare när du hanterar produkter. Dessutom är det nu möjligt att installera Jetpack från appen om du vill ha ytterligare funktioner såsom push-notiser och besöksstatistik. Fortsätt att lämna feedback.
 </sv-SE>
 <tr-TR>
-12.8:
-Bu sürüm, sipariş oluşturma işlevinde birçok iyileştirme içerir. Tek seferde birden fazla ürün seçmek mümkün ve daha hızlı arama ve filtreleme seçeneği iyileştirildi. Ayrıca birkaç hatayı düzelttik ve Analiz bölümünün erişilebilirliği için çeşitli geliştirmeler yaptık. WordPress.com kullanıcılarına yeni bir Yükseltmeler bölümü ekledik.
+12.9:
+Bu sürümde, ürünleri yönetme deneyiminizi daha sorunsuz hale getirmeye odaklandık. Ek olarak, anlık bildirimler ve ziyaretçi istatistikleri gibi ek işlevler istiyorsanız Jetpack'i uygulamadan yüklemek artık mümkün. Görüşlerinizi bildirmeye devam edin!
 </tr-TR>
 <zh-CN>
-12.8：
-此版本包含一些订单创建功能的改进。 现在可以一次选择多个产品，并改进了快速搜索和过滤器选项。 我们还修复了一些错误，并对分析部分的可访问性进行了一些改进。 我们为 WordPress.com 用户添加了新的“升级”部分。
+12.9：
+在这个版本中，我们专注于使您在管理产品时的体验更加顺畅。 此外，如果您想要其他功能（例如推送通知和访客统计信息），现在可以通过应用安装 Jetpack。 请尽情提供反馈！
 </zh-CN>
 <zh-TW>
-12.8：
-此版本包含對於訂單建立功能的許多改善。 現在能夠一次選取多個產品，並提供更完善且快速的搜尋和篩選選項。 我們也修正了幾個錯誤並針對「分析」區段的存取能力進行了一些強化。 我們已為 WordPress.com 使用者增加全新的「升級」區段。
+12.9：
+此版本著重於提升使用體驗，讓你在管理產品時的體驗更順暢。 另外，如果你想使用推播通知和訪客統計資料等其他功能，現在可以從應用程式安裝 Jetpack。 歡迎繼續給予我們指教！
 </zh-TW>
 <en-US>
-12.8:
-This release includes a lot of improvements to the order creation functionality. It's possible to select multiple products at one go & an improved faster search & filter option. We also fixed a few bugs and made several enhancements for accessibility of the Analytics section. Furthermore, WordPress.com users can now easily view the details of their plans by accessing the new 'Upgrades' screen in the Menu.
+12.9:
+For this release, we focused on making your experience smoother when managing products. Additionally, it's now possible to install Jetpack from the app if you would like additional functionality such as push notifications and visitor stats. Keep your feedback coming!
 </en-US>

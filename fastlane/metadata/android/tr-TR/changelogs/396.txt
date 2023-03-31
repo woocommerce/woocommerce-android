@@ -1,2 +1,0 @@
-12.8:
-Bu sürüm, sipariş oluşturma işlevinde birçok iyileştirme içerir. Tek seferde birden fazla ürün seçmek mümkün ve daha hızlı arama ve filtreleme seçeneği iyileştirildi. Ayrıca birkaç hatayı düzelttik ve Analiz bölümünün erişilebilirliği için çeşitli geliştirmeler yaptık. WordPress.com kullanıcılarına yeni bir Yükseltmeler bölümü ekledik.

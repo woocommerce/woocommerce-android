@@ -1,2 +1,0 @@
-12.8:
-Esta versão inclui muitos aprimoramentos na funcionalidade de criação de pedidos. Agora é possível selecionar vários produtos de uma vez só, além de uma opção de pesquisa e filtro mais rápida e aprimorada. Também corrigimos alguns bugs e fizemos várias melhorias para acessibilidade da seção de análise. Adicionamos uma nova seção de Upgrades para usuários do WordPress.com.
