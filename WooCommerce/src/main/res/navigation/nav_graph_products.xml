@@ -89,6 +89,10 @@
         <action
             android:id="@+id/action_productDetailFragment_to_productAddonsFragment"
             app:destination="@id/productAddonsFragment" />
+        <action
+            android:id="@+id/action_productDetailFragment_to_productSubscriptionFragment"
+            app:destination="@id/productSubscriptionFragment">
+        </action>
     </fragment>
     <fragment
         android:id="@+id/variationListFragment"
@@ -118,6 +122,10 @@
                 android:name="variationsToUpdate"
                 app:argType="com.woocommerce.android.model.ProductVariation[]" />
         </action>
+        <argument
+            android:name="isReadOnlyMode"
+            app:argType="boolean"
+            android:defaultValue="false" />
 
     </fragment>
     <dialog
@@ -564,6 +572,9 @@
                 app:argType="integer" />
         </action>
         <deepLink app:uri="wcandroid://variationDetail?remoteProductId={remoteProductId}&amp;remoteVariationId={remoteVariationId}" />
+        <action
+            android:id="@+id/action_variationDetailFragment_to_productSubscriptionFragment"
+            app:destination="@id/productSubscriptionFragment" />
     </fragment>
     <fragment
         android:id="@+id/productAddonsFragment"
@@ -613,4 +624,12 @@
         android:id="@+id/action_global_addVariationAttributeTermsFragment"
         app:destination="@id/addAttributeTermsFragment" />
     <include app:graph="@navigation/nav_graph_image_gallery" />
+    <fragment
+        android:id="@+id/productSubscriptionFragment"
+        android:name="com.woocommerce.android.ui.products.ProductSubscriptionFragment"
+        android:label="ProductSubscriptionFragment" >
+        <argument
+            android:name="subscription"
+            app:argType="com.woocommerce.android.model.SubscriptionDetails" />
+    </fragment>
 </navigation>

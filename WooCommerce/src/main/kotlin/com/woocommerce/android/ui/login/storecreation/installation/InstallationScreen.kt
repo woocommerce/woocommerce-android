@@ -170,7 +170,7 @@ private fun PreviewWebView(
             .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
             .border(
                 dimensionResource(id = R.dimen.minor_10),
-                colorResource(id = R.color.woo_gray_0),
+                colorResource(id = R.color.empty_state_bg_color),
                 shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)),
             )
     ) {
