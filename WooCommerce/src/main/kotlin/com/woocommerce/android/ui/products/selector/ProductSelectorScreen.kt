@@ -303,17 +303,21 @@ private fun ProductList(
                 .weight(1f)
                 .fillMaxHeight()
         ) {
-            item {
-                PopularProductsList(
-                    state = state,
-                    onProductClick = onProductClick
-                )
+            if (!state.popularProducts.isNullOrEmpty()) {
+                item {
+                    PopularProductsList(
+                        state = state,
+                        onProductClick = onProductClick
+                    )
+                }
             }
-            item {
-                RecentlySoldProductsList(
-                    state = state,
-                    onProductClick = onProductClick
-                )
+            if (!state.recentProducts.isNullOrEmpty()) {
+                item {
+                    RecentlySoldProductsList(
+                        state = state,
+                        onProductClick = onProductClick
+                    )
+                }
             }
             item {
                 if (!state.products.isNullOrEmpty()) {
