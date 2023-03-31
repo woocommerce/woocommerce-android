@@ -1744,4 +1744,40 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         verify(analyticsTraWrapper, never()).track(AnalyticsEvent.ORDER_DETAILS_SUBSCRIPTIONS_SHOWN)
     }
+
+    @Test
+    fun `when gift cards plugin is installed and active, then fetch plugin data`() = testBlocking {
+        val giftCards = WooCommerceStore.WooPlugin.WOO_GIFT_CARDS.pluginName
+        pluginsInfo[giftCards] = WooPlugin(
+            isInstalled = true,
+            isActive = true,
+            version = "1.0.0"
+        )
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(giftCardRepository).fetchGiftCardSummaryByOrderId(any(), anyOrNull())
+    }
+
+    @Test
+    fun `when gift cards plugin is NOT active, then DON'T fetch plugin data`() = testBlocking {
+        val giftCards = WooCommerceStore.WooPlugin.WOO_GIFT_CARDS.pluginName
+        pluginsInfo[giftCards] = WooPlugin(
+            isInstalled = true,
+            isActive = false,
+            version = "1.0.0"
+        )
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(giftCardRepository, never()).fetchGiftCardSummaryByOrderId(any(), anyOrNull())
+    }
 }
