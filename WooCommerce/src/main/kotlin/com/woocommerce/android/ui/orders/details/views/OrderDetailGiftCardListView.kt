@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailGiftCardListBinding
-import com.woocommerce.android.model.GiftCard
+import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailGiftCardListAdapter
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.widgets.AlignedDividerDecoration
@@ -21,7 +21,7 @@ class OrderDetailGiftCardListView @JvmOverloads constructor(
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
     private val binding = OrderDetailGiftCardListBinding.inflate(LayoutInflater.from(ctx), this)
     fun updateGiftCardList(
-        giftCards: List<GiftCard>,
+        giftCards: List<GiftCardSummary>,
         currencyFormatter: CurrencyFormatter,
         currencyCode: String
     ) {

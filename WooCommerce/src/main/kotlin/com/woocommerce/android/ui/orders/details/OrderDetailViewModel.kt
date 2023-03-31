@@ -28,7 +28,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
-import com.woocommerce.android.model.GiftCard
+import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
@@ -147,8 +147,8 @@ class OrderDetailViewModel @Inject constructor(
     private val _shippingLabels = MutableLiveData<List<ShippingLabel>>()
     val shippingLabels: LiveData<List<ShippingLabel>> = _shippingLabels
 
-    private val _giftCards = MutableLiveData<List<GiftCard>>()
-    val giftCards: LiveData<List<GiftCard>> = _giftCards
+    private val _giftCards = MutableLiveData<List<GiftCardSummary>>()
+    val giftCards: LiveData<List<GiftCardSummary>> = _giftCards
 
     private val _subscriptions = MutableLiveData<List<Subscription>>()
     val subscriptions: LiveData<List<Subscription>> = _subscriptions
@@ -231,12 +231,12 @@ class OrderDetailViewModel @Inject constructor(
     private suspend fun fetchGiftCards() {
         delay(1000)
         _giftCards.value = listOf(
-            GiftCard(
+            GiftCardSummary(
                 id = 1L,
                 code = "ZXXC-OPI-UYT-MMNB",
                 used = BigDecimal.valueOf(10)
             ),
-            GiftCard(
+            GiftCardSummary(
                 id = 2L,
                 code = "ZXXC-RTYU-UYT-LKIO",
                 used = BigDecimal.valueOf(50)

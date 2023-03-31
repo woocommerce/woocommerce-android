@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailGiftCardListItemBinding
-import com.woocommerce.android.model.GiftCard
+import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.util.CurrencyFormatter
 
 class OrderDetailGiftCardListAdapter(
@@ -14,7 +14,7 @@ class OrderDetailGiftCardListAdapter(
     private val currencyCode: String
 ) :
     RecyclerView.Adapter<OrderDetailGiftCardListAdapter.OrderDetailGiftCardViewHolder>() {
-    var giftCardList: List<GiftCard> = ArrayList()
+    var giftCardList: List<GiftCardSummary> = ArrayList()
         set(value) {
             val diffResult = DiffUtil.calculateDiff(
                 GiftCardDiffCallback(
@@ -48,7 +48,7 @@ class OrderDetailGiftCardListAdapter(
         private val currencyCode: String
     ) :
         RecyclerView.ViewHolder(viewBinding.root) {
-        fun bind(giftCard: GiftCard) {
+        fun bind(giftCard: GiftCardSummary) {
             viewBinding.giftCardCode.text = giftCard.code
             with(viewBinding.giftCardUsed) {
                 text = context.getString(
@@ -64,8 +64,8 @@ class OrderDetailGiftCardListAdapter(
     }
 
     class GiftCardDiffCallback(
-        private val oldList: List<GiftCard>,
-        private val newList: List<GiftCard>
+        private val oldList: List<GiftCardSummary>,
+        private val newList: List<GiftCardSummary>
     ) : DiffUtil.Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             return oldList[oldItemPosition].id == newList[newItemPosition].id

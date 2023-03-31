@@ -39,7 +39,7 @@ import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.DISMISSED
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.GIVEN
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.UNANSWERED
-import com.woocommerce.android.model.GiftCard
+import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
@@ -295,15 +295,15 @@ class OrderDetailFragment :
         }
     }
 
-    private fun showGiftCards(giftCards: List<GiftCard>, currencyCode: String) {
+    private fun showGiftCards(giftCardSummaries: List<GiftCardSummary>, currencyCode: String) {
+        TransitionManager.beginDelayedTransition(binding.orderDetailContainer)
         binding.orderDetailGiftCardList.run {
             updateGiftCardList(
-                giftCards = giftCards,
+                giftCards = giftCardSummaries,
                 currencyFormatter = currencyFormatter,
                 currencyCode = currencyCode
             )
-            TransitionManager.beginDelayedTransition(binding.orderDetailContainer)
-            visibility = if (giftCards.isNotEmpty()) View.VISIBLE else View.GONE
+            visibility = if (giftCardSummaries.isNotEmpty()) View.VISIBLE else View.GONE
         }
     }
 
