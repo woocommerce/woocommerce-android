@@ -2,17 +2,15 @@ package com.woocommerce.android.ui.payments.banner
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -22,7 +20,8 @@ import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -31,6 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
@@ -78,39 +78,9 @@ fun Banner(bannerState: BannerState) {
                 Column(
                     modifier = Modifier.weight(1f)
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .padding(
-                                top = dimensionResource(id = R.dimen.major_100),
-                                bottom = dimensionResource(id = R.dimen.minor_100)
-                            )
-                            .width(dimensionResource(id = R.dimen.major_275))
-                            .height(dimensionResource(id = R.dimen.major_150))
-                            .clip(
-                                RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
-                            )
-                            .background(colorResource(id = R.color.woo_purple_10)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        when (val icon = bannerState.secondaryIcon) {
-                            is BannerState.LabelOrRemoteIcon.Label -> {
-                                Text(
-                                    text = UiHelpers.getTextOfUiString(LocalContext.current, icon.label),
-                                    color = colorResource(id = R.color.woo_purple_60),
-                                    style = MaterialTheme.typography.caption,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                            }
-                            is BannerState.LabelOrRemoteIcon.Remote -> {
-                                AsyncImage(
-                                    model = ImageRequest.Builder(LocalContext.current)
-                                        .data(icon.url)
-                                        .build(),
-                                    contentDescription = null
-                                )
-                            }
-                        }
-                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    SecondaryIcon(bannerState)
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = UiHelpers.getTextOfUiString(LocalContext.current, bannerState.title),
                         style = MaterialTheme.typography.subtitle1,
@@ -144,25 +114,64 @@ fun Banner(bannerState: BannerState) {
                     }
                 }
                 Column {
-                    when (val icon = bannerState.primaryIcon) {
-                        is BannerState.LocalOrRemoteIcon.Local -> {
-                            Image(
-                                painter = painterResource(id = icon.drawableId),
-                                contentDescription = null,
-                                contentScale = ContentScale.Inside
-                            )
-                        }
-                        is BannerState.LocalOrRemoteIcon.Remote -> {
-                            AsyncImage(
-                                model = ImageRequest.Builder(LocalContext.current)
-                                    .data(icon.url)
-                                    .build(),
-                                contentDescription = null
-                            )
-                        }
-                    }
+                    PrimaryIcon(bannerState)
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun PrimaryIcon(bannerState: BannerState.DisplayBannerState) {
+    when (val icon = bannerState.primaryIcon) {
+        is BannerState.LocalOrRemoteIcon.Local -> {
+            Image(
+                painter = painterResource(id = icon.drawableId),
+                contentDescription = null,
+                contentScale = ContentScale.Inside,
+                modifier = Modifier.width(154.dp)
+            )
+        }
+        is BannerState.LocalOrRemoteIcon.Remote -> {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(icon.url)
+                    .build(),
+                contentDescription = null,
+                modifier = Modifier.width(154.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun SecondaryIcon(bannerState: BannerState.DisplayBannerState) {
+    when (val icon = bannerState.secondaryIcon) {
+        is BannerState.LabelOrRemoteIcon.Label -> {
+            val bcgColor = colorResource(id = R.color.woo_purple_10)
+            Text(
+                text = UiHelpers.getTextOfUiString(LocalContext.current, icon.label),
+                color = colorResource(id = R.color.woo_purple_60),
+                style = MaterialTheme.typography.caption,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .drawBehind {
+                        drawRoundRect(
+                            color = bcgColor,
+                            cornerRadius = CornerRadius(x = 8.dp.toPx(), y = 8.dp.toPx()),
+                        )
+                    }
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+            )
+        }
+        is BannerState.LabelOrRemoteIcon.Remote -> {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(icon.url)
+                    .build(),
+                contentDescription = null,
+                modifier = Modifier.height(26.dp)
+            )
         }
     }
 }
@@ -187,27 +196,6 @@ fun PaymentScreenBannerPreview() {
                         R.string.card_reader_upsell_card_reader_banner_new
                     )
                 ),
-            )
-        )
-    }
-}
-
-@Preview(name = "Light mode")
-@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun PaymentScreenBannerPreviewRemoteIcons() {
-    WooThemeWithBackground {
-        Banner(
-            BannerState.DisplayBannerState(
-                onPrimaryActionClicked = {},
-                onDismissClicked = {},
-                title = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_title),
-                description = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_description),
-                primaryActionLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_cta),
-                primaryIcon = BannerState.LocalOrRemoteIcon.Remote(
-                    "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg"
-                ),
-                secondaryIcon = BannerState.LabelOrRemoteIcon.Remote("https://static.thenounproject.com/png/802590-200.png"),
             )
         )
     }
