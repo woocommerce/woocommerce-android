@@ -1,2 +1,1 @@
-- [***] Add read-only support for the WooCommerce Subscription extension on order details and product details. [https://github.com/woocommerce/woocommerce-android/pull/8440]
-
+Great news for folks that are using WooCommerce Subscriptions extension. We have added read only support for the WooCommerce Subsciptions extension in the order detail and product detail screens. More features coming soon!
