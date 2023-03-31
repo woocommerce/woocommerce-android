@@ -6,6 +6,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.storecreation.NewStore
+import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository.SiteCreationData
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult
@@ -47,7 +48,7 @@ internal class StoreNamePickerViewModelTest: BaseUnitTest() {
     }
 
     @Test
-    fun `when onContinueClicked happens, then free trial store creation starts`() = testBlocking {
+    fun `when onContinueClicked happens and store creation succeed, then free trial store creation starts`() = testBlocking {
         // Given
         var latestEvent: MultiLiveEvent.Event? = null
         sut.event.observeForever { latestEvent = it }
@@ -65,6 +66,37 @@ internal class StoreNamePickerViewModelTest: BaseUnitTest() {
             any()
         )
         assertThat(latestEvent).isEqualTo(NavigateToStoreInstallation)
+    }
+
+    @Test
+    fun `when onContinueClicked happens and store creation fails, then error state is triggered`() = testBlocking {
+        // Given
+        val storeCreationErrorType = StoreCreationErrorType.FREE_TRIAL_ASSIGNMENT_FAILED
+        createSutWith(
+            expectedSiteCreationData,
+            StoreCreationResult.Failure(storeCreationErrorType, "error message")
+        )
+
+        var latestEvent: MultiLiveEvent.Event? = null
+        var latestState: StoreNamePickerState? = null
+
+        sut.event.observeForever { latestEvent = it }
+        sut.storePickerState.observeForever { latestState = it }
+
+        // When
+        sut.onStoreNameChanged("Store name")
+        sut.onContinueClicked()
+
+        // Then
+        verify(newStore).update(name = "Store name")
+        verify(storeCreationRepository).createNewFreeTrialSite(
+            eq(expectedSiteCreationData),
+            eq(PlansViewModel.NEW_SITE_LANGUAGE_ID),
+            any()
+        )
+
+        assertThat(latestEvent).isNull()
+        assertThat(latestState).isEqualTo(StoreNamePickerState.Error(storeCreationErrorType))
     }
 
     @Test
@@ -120,7 +152,12 @@ internal class StoreNamePickerViewModelTest: BaseUnitTest() {
         assertThat(latestEvent).isEqualTo(MultiLiveEvent.Event.Exit)
     }
 
-    private fun createSutWith(expectedSiteCreationData: SiteCreationData) {
+
+
+    private fun createSutWith(
+        expectedSiteCreationData: SiteCreationData,
+        expectedCreationResult: StoreCreationResult<Long> = StoreCreationResult.Success(123)
+    ) {
         newStore = mock {
             on { data } doReturn NewStore.NewStoreData(
                 domain = expectedSiteCreationData.domain,
@@ -135,7 +172,7 @@ internal class StoreNamePickerViewModelTest: BaseUnitTest() {
                     eq(PlansViewModel.NEW_SITE_LANGUAGE_ID),
                     any()
                 )
-            } doReturn StoreCreationResult.Success(123)
+            } doReturn expectedCreationResult
         }
 
         analyticsTracker = mock()
