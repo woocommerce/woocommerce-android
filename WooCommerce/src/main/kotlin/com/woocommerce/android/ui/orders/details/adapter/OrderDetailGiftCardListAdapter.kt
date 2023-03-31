@@ -52,7 +52,7 @@ class OrderDetailGiftCardListAdapter(
             viewBinding.giftCardCode.text = giftCard.code
             with(viewBinding.giftCardUsed) {
                 text = context.getString(
-                    R.string.gift_card_used,
+                    R.string.negative_currency,
                     currencyFormatter.formatCurrency(
                         amount = giftCard.used,
                         currencyCode = currencyCode,

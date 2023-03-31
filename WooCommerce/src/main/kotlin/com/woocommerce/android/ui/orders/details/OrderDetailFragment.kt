@@ -305,6 +305,10 @@ class OrderDetailFragment :
             )
             visibility = if (giftCardSummaries.isNotEmpty()) View.VISIBLE else View.GONE
         }
+        binding.orderDetailPaymentInfo.updateGiftCardSection(
+            giftCardSummaries = giftCardSummaries,
+            formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(currencyCode)
+        )
     }
 
     private fun navigateToInstallWcShippingFlow() {

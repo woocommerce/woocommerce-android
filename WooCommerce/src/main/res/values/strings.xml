@@ -3278,6 +3278,7 @@
     Gift cards
     -->
     <string name="order_gift_card">Gift Card</string>
-    <string name="gift_card_used" translatable="false">- %1$s</string>
+    <string name="gift_cards">Gift Cards</string>
+    <string name="negative_currency" translatable="false">- %1$s</string>
 
 </resources>
