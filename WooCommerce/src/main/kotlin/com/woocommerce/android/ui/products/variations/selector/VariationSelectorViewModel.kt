@@ -129,9 +129,9 @@ class VariationSelectorViewModel @Inject constructor(
 
     fun onClearButtonClick() {
         launch {
+            trackClearSelectionButtonClicked()
             delay(STATE_UPDATE_DELAY) // let the animation play out before hiding the button
             selectedVariationIds.value = emptySet()
-            trackClearSelectionButtonClicked()
         }
     }
 
