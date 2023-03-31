@@ -22,7 +22,10 @@ fun PromoBanner(
             title = UiString.UiStringRes(bannerType.titleRes),
             description = UiString.UiStringRes(bannerType.messageRes),
             primaryActionLabel = UiString.UiStringRes(R.string.set_up_now),
-            chipLabel = UiString.UiStringRes(R.string.tip)
+            primaryIcon = BannerState.LocalOrRemoteIcon.Local(R.drawable.ic_banner_upsell_card_reader_illustration),
+            secondaryIcon = BannerState.LabelOrRemoteIcon.Label(
+                UiString.UiStringRes(R.string.tip)
+            ),
         )
     )
 }

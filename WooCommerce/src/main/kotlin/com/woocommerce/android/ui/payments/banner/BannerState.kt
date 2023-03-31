@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.payments.banner
 
+import androidx.annotation.DrawableRes
 import com.woocommerce.android.model.UiString
 
 sealed class BannerState {
@@ -16,12 +17,12 @@ sealed class BannerState {
     object HideBannerState : BannerState()
 
     sealed class LocalOrRemoteIcon {
-        data class Local(val drawableId: Int) : LocalOrRemoteIcon()
-        data class RemoteIcon(val url: String) : LocalOrRemoteIcon()
+        data class Local(@DrawableRes val drawableId: Int) : LocalOrRemoteIcon()
+        data class Remote(val url: String) : LocalOrRemoteIcon()
     }
 
     sealed class LabelOrRemoteIcon {
         data class Label(val label: UiString) : LabelOrRemoteIcon()
-        data class RemoteIcon(val url: String) : LabelOrRemoteIcon()
+        data class Remote(val url: String) : LabelOrRemoteIcon()
     }
 }

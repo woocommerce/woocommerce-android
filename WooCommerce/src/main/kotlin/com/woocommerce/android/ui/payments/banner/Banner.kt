@@ -101,7 +101,7 @@ fun Banner(bannerState: BannerState) {
                                     fontWeight = FontWeight.Bold,
                                 )
                             }
-                            is BannerState.LabelOrRemoteIcon.RemoteIcon -> {
+                            is BannerState.LabelOrRemoteIcon.Remote -> {
                                 AsyncImage(
                                     model = ImageRequest.Builder(LocalContext.current)
                                         .data(icon.url)
@@ -144,11 +144,23 @@ fun Banner(bannerState: BannerState) {
                     }
                 }
                 Column {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_banner_upsell_card_reader_illustration),
-                        contentDescription = null,
-                        contentScale = ContentScale.Inside
-                    )
+                    when (val icon = bannerState.primaryIcon) {
+                        is BannerState.LocalOrRemoteIcon.Local -> {
+                            Image(
+                                painter = painterResource(id = icon.drawableId),
+                                contentDescription = null,
+                                contentScale = ContentScale.Inside
+                            )
+                        }
+                        is BannerState.LocalOrRemoteIcon.Remote -> {
+                            AsyncImage(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(icon.url)
+                                    .build(),
+                                contentDescription = null
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -175,6 +187,27 @@ fun PaymentScreenBannerPreview() {
                         R.string.card_reader_upsell_card_reader_banner_new
                     )
                 ),
+            )
+        )
+    }
+}
+
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun PaymentScreenBannerPreviewRemoteIcons() {
+    WooThemeWithBackground {
+        Banner(
+            BannerState.DisplayBannerState(
+                onPrimaryActionClicked = {},
+                onDismissClicked = {},
+                title = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_title),
+                description = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_description),
+                primaryActionLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_cta),
+                primaryIcon = BannerState.LocalOrRemoteIcon.Remote(
+                    "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg"
+                ),
+                secondaryIcon = BannerState.LabelOrRemoteIcon.Remote("https://static.thenounproject.com/png/802590-200.png"),
             )
         )
     }

@@ -85,7 +85,10 @@ class JitmViewModel @Inject constructor(
                 title = UiString.UiStringText(model.content.message),
                 description = UiString.UiStringText(model.content.description),
                 primaryActionLabel = UiString.UiStringText(model.cta.message),
-                chipLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
+                primaryIcon = BannerState.LocalOrRemoteIcon.Local(R.drawable.ic_banner_upsell_card_reader_illustration),
+                secondaryIcon = BannerState.LabelOrRemoteIcon.Label(
+                    UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
+                ),
             )
         } ?: run {
             _jitmState.value = BannerState.HideBannerState
