@@ -180,12 +180,12 @@ class ProductSelectorViewModel @Inject constructor(
 
     fun onClearButtonClick() {
         launch {
-            delay(STATE_UPDATE_DELAY) // let the animation play out before hiding the button
-            selectedItems.value = emptyList()
             tracker.trackClearSelectionButtonClicked(
                 productSelectorFlow,
                 ProductSelectorTracker.ProductSelectorSource.ProductSelector
             )
+            delay(STATE_UPDATE_DELAY) // let the animation play out before hiding the button
+            selectedItems.value = emptyList()
         }
     }
 

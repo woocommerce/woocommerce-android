@@ -188,6 +188,23 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `given order creation flow, when clear button is tapped, should track analytics event`() = testBlocking {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            restrictions = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        ).initSavedStateHandle()
+
+        val sut = createViewModel(navArgs)
+        sut.onClearButtonClick()
+
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_CLEAR_SELECTION_BUTTON_TAPPED,
+            mapOf("source" to "product_selector")
+        )
+    }
+
     private fun createViewModel(navArgs: SavedStateHandle) =
         ProductSelectorViewModel(
             navArgs,
