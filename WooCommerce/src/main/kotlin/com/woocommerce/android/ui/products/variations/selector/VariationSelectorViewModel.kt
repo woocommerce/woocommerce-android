@@ -5,6 +5,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_CLEAR_SELECTION_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_ITEM_SELECTED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_ITEM_UNSELECTED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.model.Product
@@ -13,6 +16,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductStockStatus.Custom
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.NotAvailable
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.ui.products.selector.SelectionState
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.UNSELECTED
@@ -129,6 +133,20 @@ class VariationSelectorViewModel @Inject constructor(
         launch {
             delay(STATE_UPDATE_DELAY) // let the animation play out before hiding the button
             selectedVariationIds.value = emptySet()
+            trackClearSelectionButtonClicked()
+        }
+    }
+
+    private fun trackClearSelectionButtonClicked() {
+        when (navArgs.productSelectorFlow) {
+            ProductSelectorViewModel.ProductSelectorFlow.OrderCreation -> {
+                tracker.track(
+                    ORDER_CREATION_PRODUCT_SELECTOR_CLEAR_SELECTION_BUTTON_TAPPED,
+                )
+            }
+            else -> {
+                // no-op
+            }
         }
     }
 
@@ -143,14 +161,28 @@ class VariationSelectorViewModel @Inject constructor(
     }
 
     private fun trackVariationSelected() {
-        navArgs.productSelectorFlow.itemSelectedAnalyticsEvent?.let {
-            tracker.track(it)
+        when (navArgs.productSelectorFlow) {
+            ProductSelectorViewModel.ProductSelectorFlow.OrderCreation -> {
+                tracker.track(
+                    ORDER_CREATION_PRODUCT_SELECTOR_ITEM_SELECTED,
+                )
+            }
+            else -> {
+                // no-op
+            }
         }
     }
 
     private fun trackVariationUnselected() {
-        navArgs.productSelectorFlow.itemUnselectedAnalyticsEvent?.let {
-            tracker.track(it)
+        when (navArgs.productSelectorFlow) {
+            ProductSelectorViewModel.ProductSelectorFlow.OrderCreation -> {
+                tracker.track(
+                    ORDER_CREATION_PRODUCT_SELECTOR_ITEM_UNSELECTED,
+                )
+            }
+            else -> {
+                // no-op
+            }
         }
     }
 

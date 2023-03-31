@@ -6,7 +6,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R.string
-import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_CLEAR_SELECTION_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_ITEM_SELECTED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_ITEM_UNSELECTED
@@ -187,6 +187,20 @@ class ProductSelectorViewModel @Inject constructor(
         launch {
             delay(STATE_UPDATE_DELAY) // let the animation play out before hiding the button
             selectedItems.value = emptyList()
+            trackClearSelectionButtonClicked()
+        }
+    }
+
+    private fun trackClearSelectionButtonClicked() {
+        when (navArgs.productSelectorFlow) {
+            ProductSelectorFlow.OrderCreation -> {
+                tracker.track(
+                    ORDER_CREATION_PRODUCT_SELECTOR_CLEAR_SELECTION_BUTTON_TAPPED,
+                )
+            }
+            else -> {
+                // no-op
+            }
         }
     }
 
@@ -229,14 +243,28 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     private fun trackProductSelected() {
-        navArgs.productSelectorFlow.itemSelectedAnalyticsEvent?.let {
-            tracker.track(it)
+        when (navArgs.productSelectorFlow) {
+            ProductSelectorFlow.OrderCreation -> {
+                tracker.track(
+                    ORDER_CREATION_PRODUCT_SELECTOR_ITEM_SELECTED,
+                )
+            }
+            else -> {
+                // no-op
+            }
         }
     }
 
     private fun trackItemUnselected() {
-        navArgs.productSelectorFlow.itemUnselectedAnalyticsEvent?.let {
-            tracker.track(it)
+        when (navArgs.productSelectorFlow) {
+            ProductSelectorFlow.OrderCreation -> {
+                tracker.track(
+                    ORDER_CREATION_PRODUCT_SELECTOR_ITEM_UNSELECTED,
+                )
+            }
+            else -> {
+                // no-op
+            }
         }
     }
 
@@ -246,8 +274,16 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     private fun trackDoneButtonClicked() {
-        navArgs.productSelectorFlow.confirmButtonTappedAnalyticsEvent?.let {
-            tracker.track(it, mapOf(KEY_PRODUCT_COUNT to selectedItems.value.size))
+        when (navArgs.productSelectorFlow) {
+            ProductSelectorFlow.OrderCreation -> {
+                tracker.track(
+                    ORDER_CREATION_PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED,
+                    mapOf(KEY_PRODUCT_COUNT to selectedItems.value.size)
+                )
+            }
+            else -> {
+                // no-op
+            }
         }
     }
 
@@ -420,24 +456,8 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
 
-    @Parcelize
-    sealed class ProductSelectorFlow(
-        val itemSelectedAnalyticsEvent: AnalyticsEvent? = null,
-        val itemUnselectedAnalyticsEvent: AnalyticsEvent? = null,
-        val confirmButtonTappedAnalyticsEvent: AnalyticsEvent? = null,
-    ) : Parcelable {
-        @Parcelize
-        object OrderCreation : ProductSelectorFlow(
-            itemSelectedAnalyticsEvent = ORDER_CREATION_PRODUCT_SELECTOR_ITEM_SELECTED,
-            itemUnselectedAnalyticsEvent = ORDER_CREATION_PRODUCT_SELECTOR_ITEM_UNSELECTED,
-            confirmButtonTappedAnalyticsEvent = ORDER_CREATION_PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED
-        )
-
-        @Parcelize
-        object CouponEdition : ProductSelectorFlow()
-
-        @Parcelize
-        object Undefined : ProductSelectorFlow()
+    enum class ProductSelectorFlow {
+        OrderCreation, CouponEdition, Undefined
     }
 }
 
