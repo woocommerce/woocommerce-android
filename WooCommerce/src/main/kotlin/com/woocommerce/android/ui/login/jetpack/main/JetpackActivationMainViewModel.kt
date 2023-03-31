@@ -11,7 +11,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.support.help.HelpOrigin.JETPACK_INSTALLATION
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.PluginRepository
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivated
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivationFailed
@@ -55,7 +54,6 @@ class JetpackActivationMainViewModel @Inject constructor(
     private val jetpackActivationRepository: JetpackActivationRepository,
     private val pluginRepository: PluginRepository,
     private val accountRepository: AccountRepository,
-    private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
@@ -147,7 +145,7 @@ class JetpackActivationMainViewModel @Inject constructor(
             val site = jetpackActivationRepository.getSiteByUrl(navArgs.siteUrl)
             requireNotNull(site) { "Illegal state, the button shouldn't be visible before fetching the site" }
             if (site.hasWooCommerce) {
-                selectedSite.set(site)
+                jetpackActivationRepository.setSelectedSiteAndCleanOldSites(site)
                 triggerEvent(GoToStore)
             } else {
                 triggerEvent(ShowWooNotInstalledScreen(navArgs.siteUrl))
