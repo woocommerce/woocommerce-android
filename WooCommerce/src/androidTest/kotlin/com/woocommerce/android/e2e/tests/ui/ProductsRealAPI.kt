@@ -180,15 +180,15 @@ class ProductsRealAPI : TestBase() {
     @Test
     fun e2eRealApiProductsSort() {
         ProductListScreen()
-            // Sort A to Z
-            .tapSort()
-            .selectSortOption("Title: A to Z")
-            .assertProductIsAtPosition(productCappuccino.name, 0)
-            .assertProductIsAtPosition(productSalad.name, 1)
             // Sort Z to A
             .tapSort()
             .selectSortOption("Title: Z to A")
             .assertProductIsAtPosition(productCappuccino.name, 1)
             .assertProductIsAtPosition(productSalad.name, 0)
+            // Sort A to Z
+            .tapSort()
+            .selectSortOption("Title: A to Z")
+            .assertProductIsAtPosition(productCappuccino.name, 0)
+            .assertProductIsAtPosition(productSalad.name, 1)
     }
 }
