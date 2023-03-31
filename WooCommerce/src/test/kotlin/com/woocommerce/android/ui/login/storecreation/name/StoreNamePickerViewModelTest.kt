@@ -28,7 +28,7 @@ import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.model.SiteModel
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class StoreNamePickerViewModelTest: BaseUnitTest() {
+internal class StoreNamePickerViewModelTest : BaseUnitTest() {
     private lateinit var sut: StoreNamePickerViewModel
     private lateinit var storeCreationRepository: StoreCreationRepository
     private lateinit var newStore: NewStore
@@ -180,6 +180,16 @@ internal class StoreNamePickerViewModelTest: BaseUnitTest() {
             )
         )
         assertThat(latestEvent).isEqualTo(MultiLiveEvent.Event.Exit)
+    }
+
+    @Test
+    fun `when viewModel is created, then the site creation step track is triggered`() {
+        verify(analyticsTracker).track(
+            AnalyticsEvent.SITE_CREATION_STEP,
+            mapOf(
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_NAME
+            )
+        )
     }
 
     @Test
