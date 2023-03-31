@@ -42,7 +42,12 @@
             app:destination="@id/launchStoreFragment" />
         <action
             android:id="@+id/action_myStore_to_nav_graph_domain_change"
-            app:destination="@id/nav_graph_domain_change" />
+            app:destination="@id/nav_graph_domain_change">
+            <argument
+                android:name="source"
+                android:defaultValue="STORE_ONBOARDING"
+                app:argType="com.woocommerce.android.ui.prefs.domain.DomainFlowSource" />
+        </action>
         <action
             android:id="@+id/action_myStore_to_productTypesBottomSheet"
             app:destination="@id/productTypesBottomSheetFragment"
@@ -52,8 +57,12 @@
             app:popExitAnim="@anim/activity_fade_out">
             <argument
                 android:name="isAddProduct"
-                android:defaultValue="false"
+                android:defaultValue="true"
                 app:argType="boolean" />
+            <argument
+                android:name="source"
+                android:defaultValue="STORE_ONBOARDING"
+                app:argType="com.woocommerce.android.ui.products.AddProductSource" />
         </action>
         <action
             android:id="@+id/action_myStore_to_getPaidFragment"
@@ -269,6 +278,10 @@
             android:name="isTrashEnabled"
             android:defaultValue="false"
             app:argType="boolean" />
+        <argument
+            android:name="source"
+            android:defaultValue="PRODUCT_TAB"
+            app:argType="com.woocommerce.android.ui.products.AddProductSource" />
     </action>
     <action
         android:id="@+id/action_global_reviewDetailFragment"
@@ -404,6 +417,10 @@
             android:name="isCurrentProductVirtual"
             android:defaultValue="false"
             app:argType="boolean" />
+        <argument
+            android:name="source"
+            android:defaultValue="PRODUCT_TAB"
+            app:argType="com.woocommerce.android.ui.products.AddProductSource" />
     </dialog>
     <dialog
         android:id="@+id/featureAnnouncementDialogFragmentOnMain"
@@ -464,7 +481,12 @@
             app:destination="@id/launchStoreFragment" />
         <action
             android:id="@+id/action_storeOnboardingFragment_to_nav_graph_domain_change"
-            app:destination="@id/nav_graph_domain_change" />
+            app:destination="@id/nav_graph_domain_change">
+            <argument
+                android:name="source"
+                android:defaultValue="STORE_ONBOARDING"
+                app:argType="com.woocommerce.android.ui.prefs.domain.DomainFlowSource" />
+        </action>
         <action
             android:id="@+id/action_storeOnboardingFragment_to_aboutYourStoreFragment"
             app:destination="@id/aboutYourStoreFragment" />
@@ -477,8 +499,12 @@
             app:popExitAnim="@anim/activity_fade_out">
             <argument
                 android:name="isAddProduct"
-                android:defaultValue="false"
+                android:defaultValue="true"
                 app:argType="boolean" />
+            <argument
+                android:name="source"
+                android:defaultValue="STORE_ONBOARDING"
+                app:argType="com.woocommerce.android.ui.products.AddProductSource" />
         </action>
         <action
             android:id="@+id/action_storeOnboardingFragment_to_getPaidFragment"

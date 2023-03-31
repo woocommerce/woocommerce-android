@@ -280,7 +280,10 @@ class ProductNavigator @Inject constructor() {
             }
 
             is ViewProductAdd -> {
-                val action = NavGraphMainDirections.actionGlobalProductDetailFragment(isAddProduct = true)
+                val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
+                    isAddProduct = true,
+                    source = target.source
+                )
                 fragment.findNavController().navigateSafely(action)
             }
 
