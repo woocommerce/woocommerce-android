@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository.SiteCreationData
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult
 import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.NavigateToStoreInstallation
+import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.StoreNamePickerState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -28,13 +29,6 @@ internal class StoreNamePickerViewModelTest: BaseUnitTest() {
 
     @Before
     fun setUp() {
-        newStore = mock {
-            on { data } doReturn NewStore.NewStoreData(
-                domain = "test domain",
-                name = "test title"
-            )
-        }
-
         val expectedSiteCreationData = SiteCreationData(
             siteDesign = PlansViewModel.NEW_SITE_THEME,
             domain = "test domain",
@@ -42,12 +36,81 @@ internal class StoreNamePickerViewModelTest: BaseUnitTest() {
             segmentId = null
         )
 
+        createSut(expectedSiteCreationData)
+    }
+
+    @Test
+    fun `when onContinueClicked happens, then free trial store creation starts`() = testBlocking {
+        // Given
+        val expectedSiteCreationData = SiteCreationData(
+            siteDesign = PlansViewModel.NEW_SITE_THEME,
+            domain = "test domain",
+            title = "test title",
+            segmentId = null
+        )
+
+        createSut(expectedSiteCreationData)
+        var latestEvent: MultiLiveEvent.Event? = null
+        sut.event.observeForever { latestEvent = it }
+
+        // When
+        sut.onStoreNameChanged("Store name")
+        sut.onContinueClicked()
+
+        // Then
+        verify(newStore).update(name = "Store name")
+        verify(newStore).update(siteId = 123)
+        verify(storeCreationRepository).createNewFreeTrialSite(
+            eq(expectedSiteCreationData),
+            eq(PlansViewModel.NEW_SITE_LANGUAGE_ID),
+            any()
+        )
+        assertThat(latestEvent).isEqualTo(NavigateToStoreInstallation)
+    }
+
+    @Test
+    fun `when onStoreNameChanges happens, then viewState is updated as expected`() = testBlocking {
+        // Given
+        val viewStateChanges = mutableListOf<StoreNamePickerState>()
+        sut.storePickerState.observeForever {
+            viewStateChanges.add(it)
+        }
+
+        // When
+        sut.onStoreNameChanged("Store name")
+
+        // Then
+        assertThat(viewStateChanges).hasSize(2)
+        assertThat(viewStateChanges[0]).isEqualTo(
+            StoreNamePickerState.Contentful(
+                storeName = "",
+                isCreatingStore = false
+            )
+        )
+        assertThat(viewStateChanges[1]).isEqualTo(
+            StoreNamePickerState.Contentful(
+                storeName = "Store name",
+                isCreatingStore = false
+            )
+        )
+    }
+
+    private fun createSut(expectedSiteCreationData: SiteCreationData) {
+        newStore = mock {
+            on { data } doReturn NewStore.NewStoreData(
+                domain = expectedSiteCreationData.domain,
+                name = expectedSiteCreationData.title
+            )
+        }
+
         storeCreationRepository = mock {
-            onBlocking { createNewFreeTrialSite(
-                eq(expectedSiteCreationData),
-                eq(PlansViewModel.NEW_SITE_LANGUAGE_ID),
-                any()
-            ) } doReturn StoreCreationResult.Success(123)
+            onBlocking {
+                createNewFreeTrialSite(
+                    eq(expectedSiteCreationData),
+                    eq(PlansViewModel.NEW_SITE_LANGUAGE_ID),
+                    any()
+                )
+            } doReturn StoreCreationResult.Success(123)
         }
 
         sut = StoreNamePickerViewModel(
@@ -57,20 +120,5 @@ internal class StoreNamePickerViewModelTest: BaseUnitTest() {
             analyticsTrackerWrapper = mock(),
             prefsWrapper = mock()
         )
-    }
-
-    @Test
-    fun `when onContinueClicked happens, then free trial store creation starts`() = testBlocking {
-        // Given
-        var latestEvent: MultiLiveEvent.Event? = null
-        sut.event.observeForever { latestEvent = it }
-
-        // When
-        sut.onStoreNameChanged("Store name")
-        sut.onContinueClicked()
-
-        // Then
-        verify(newStore).update(siteId = 123)
-        assertThat(latestEvent).isEqualTo(NavigateToStoreInstallation)
     }
 }
