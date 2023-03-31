@@ -527,5 +527,16 @@
         android:name="com.woocommerce.android.ui.login.storecreation.onboarding.aboutyourstore.AboutYourStoreFragment"
         android:label="AboutYourStoreFragment" />
     <include app:graph="@navigation/nav_graph_domain_change" />
-
+    <fragment
+        android:id="@+id/planUpgradeStartFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment"
+        android:label="PlanUpgradeStartFragment">
+        <argument
+            android:name="source"
+            app:argType="com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment$PlanUpgradeStartSource"
+            app:nullable="false" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_planUpgradeStartFragment"
+        app:destination="@id/planUpgradeStartFragment" />
 </navigation>
