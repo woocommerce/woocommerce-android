@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.FREE_TRIAL_UPGRADE_NOW_T
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_BANNER
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment
 import com.woocommerce.android.ui.plans.domain.StartUpgradeFlow
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.WooClickableSpan
@@ -40,7 +41,7 @@ class TrialStatusBarFormatter @AssistedInject constructor(
             .inSpans(
                 WooClickableSpan(customLinkColor = context.getColor(R.color.free_trial_banner_link_text)) {
                     analyticsTrackerWrapper.track(FREE_TRIAL_UPGRADE_NOW_TAPPED, mapOf(KEY_SOURCE to VALUE_BANNER))
-                    startUpgradeFlow.invoke()
+                    startUpgradeFlow.invoke(PlanUpgradeStartFragment.PlanUpgradeStartSource.BANNER)
                 },
                 UnderlineSpan(),
             ) {

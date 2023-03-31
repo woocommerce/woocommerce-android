@@ -12,9 +12,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment.Companion.WEBVIEW_DISMISSED
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment.Companion.WEBVIEW_RESULT
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment
+import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.Companion.PLAN_UPGRADE_SUCCEED
 import com.woocommerce.android.ui.plans.di.StartUpgradeFlowFactory
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesEvent.OpenSubscribeNow
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesEvent.OpenSupportRequestForm
@@ -51,16 +51,15 @@ class UpgradesFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is OpenSubscribeNow -> {
-                    startUpgradeFlowFactory.create(navController = findNavController()).invoke()
+                    startUpgradeFlowFactory.create(navController = findNavController()).invoke(
+                        PlanUpgradeStartFragment.PlanUpgradeStartSource.UPGRADES_SCREEN
+                    )
                 }
                 is OpenSupportRequestForm -> startSupportRequestFormActivity(event)
             }
         }
-        handleNotice(WEBVIEW_RESULT) {
+        handleNotice(PLAN_UPGRADE_SUCCEED) {
             viewModel.onPlanUpgraded()
-        }
-        handleNotice(WEBVIEW_DISMISSED) {
-            viewModel.onPlanUpgradeDismissed()
         }
     }
 

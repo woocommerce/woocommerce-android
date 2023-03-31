@@ -52,7 +52,7 @@ class DomainSearchViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             AnalyticsEvent.CUSTOM_DOMAINS_STEP,
             mapOf(
-                AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSource(),
+                AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSourceAsString(),
                 AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_PICKER
             )
         )
@@ -89,7 +89,7 @@ class DomainSearchViewModel @Inject constructor(
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.CUSTOM_DOMAIN_PURCHASE_FAILED,
                     mapOf(
-                        AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSource(),
+                        AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSourceAsString(),
                         AnalyticsTracker.KEY_USE_DOMAIN_CREDIT to false,
                         AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                         AnalyticsTracker.KEY_ERROR_TYPE to result.error.type.name,
