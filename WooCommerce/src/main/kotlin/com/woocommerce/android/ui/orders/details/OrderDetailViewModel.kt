@@ -688,6 +688,9 @@ class OrderDetailViewModel @Inject constructor(
                 ?.let { result ->
                     val giftCardSummaries = result.model ?: return@let
                     _giftCards.value = giftCardSummaries
+                    if (giftCardSummaries.isNotEmpty()) {
+                        trackerWrapper.track(AnalyticsEvent.ORDER_DETAILS_GIFT_CARD_SHOWN)
+                    }
                 }
         }
     }
