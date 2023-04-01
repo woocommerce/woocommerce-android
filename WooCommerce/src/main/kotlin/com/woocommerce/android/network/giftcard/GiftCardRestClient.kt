@@ -34,5 +34,3 @@ class GiftCardRestClient @Inject constructor(private val wooNetwork: WooNetwork)
         val amount: String? = null,
     )
 }
-
-
