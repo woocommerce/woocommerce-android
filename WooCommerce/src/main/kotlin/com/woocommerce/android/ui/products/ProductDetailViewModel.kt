@@ -684,6 +684,7 @@ class ProductDetailViewModel @Inject constructor(
             is ProductExitEvent.ExitProductDownloadsSettings -> Unit // Do nothing
             is ProductExitEvent.ExitProductRenameAttribute -> Unit // Do nothing
             is ProductExitEvent.ExitProductSubscriptions -> Unit // Do nothing
+            is ProductExitEvent.ExitProductQuantityRules -> Unit // Do nothing
         }
         eventName?.let { tracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
         triggerEvent(event)
@@ -2219,6 +2220,8 @@ class ProductDetailViewModel @Inject constructor(
         object ExitProductAddons : ProductExitEvent()
 
         object ExitProductSubscriptions : ProductExitEvent()
+
+        object ExitProductQuantityRules : ProductExitEvent()
     }
 
     object RefreshMenu : Event()
