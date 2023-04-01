@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.initSavedStateHandle
+import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
@@ -65,6 +66,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
@@ -1779,5 +1781,69 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         verify(giftCardRepository, never()).fetchGiftCardSummaryByOrderId(any(), anyOrNull())
+    }
+
+    @Test
+    fun `when gift cards fetched is NOT empty, then track gift cards shown event`() = testBlocking {
+        val giftCards = WooCommerceStore.WooPlugin.WOO_GIFT_CARDS.pluginName
+        pluginsInfo[giftCards] = WooPlugin(
+            isInstalled = true,
+            isActive = true,
+            version = "1.0.0"
+        )
+        val giftCard: GiftCardSummary = mock()
+        val result = WooResult(listOf(giftCard))
+
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(result).whenever(giftCardRepository).fetchGiftCardSummaryByOrderId(any(), anyOrNull())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAILS_GIFT_CARD_SHOWN)
+    }
+
+    @Test
+    fun `when gift cards fetched is empty, then DON'T track gift cards shown event`() = testBlocking {
+        val giftCards = WooCommerceStore.WooPlugin.WOO_GIFT_CARDS.pluginName
+        pluginsInfo[giftCards] = WooPlugin(
+            isInstalled = true,
+            isActive = true,
+            version = "1.0.0"
+        )
+        val result = WooResult(emptyList<Subscription>())
+
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(result).whenever(giftCardRepository).fetchGiftCardSummaryByOrderId(any(), anyOrNull())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(analyticsTraWrapper, never()).track(AnalyticsEvent.ORDER_DETAILS_GIFT_CARD_SHOWN)
+    }
+
+    @Test
+    fun `when gift cards fetched is null, then DON'T track gift cards shown event`() = testBlocking {
+        val giftCards = WooCommerceStore.WooPlugin.WOO_GIFT_CARDS.pluginName
+        pluginsInfo[giftCards] = WooPlugin(
+            isInstalled = true,
+            isActive = true,
+            version = "1.0.0"
+        )
+        val result = WooResult(null)
+
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(result).whenever(giftCardRepository).fetchGiftCardSummaryByOrderId(any(), anyOrNull())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(analyticsTraWrapper, never()).track(AnalyticsEvent.ORDER_DETAILS_GIFT_CARD_SHOWN)
     }
 }
