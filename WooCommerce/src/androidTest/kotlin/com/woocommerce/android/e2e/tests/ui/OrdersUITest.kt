@@ -77,7 +77,7 @@ class OrdersUITest : TestBase() {
 
     private fun mapJSONToOrder(orderJSON: JSONObject): OrderData {
         return OrderData(
-            customer = orderJSON.getJSONObject("billing").getString("first_name"),
+            customerName = orderJSON.getJSONObject("billing").getString("first_name"),
             customerNoteRaw = orderJSON.getString("customer_note"),
             feeRaw = orderJSON.getJSONArray("fee_lines").getJSONObject(0).getString("total"),
             id = orderJSON.getInt("id"),

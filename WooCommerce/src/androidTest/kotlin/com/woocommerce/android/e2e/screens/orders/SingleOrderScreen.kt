@@ -50,7 +50,9 @@ class SingleOrderScreen : Screen {
             .check(ViewAssertions.matches(isDisplayed()))
 
         assertIdAndTextDisplayed(ORDER_STATUS_TAG, order.status)
-        assertIdAndTextDisplayed(ORDER_STATUS_CUSTOMER, order.customerName)
+        // The element for customer name has a trailing space in the text value,
+        // adjusting here to match that
+        assertIdAndTextDisplayed(ORDER_STATUS_CUSTOMER, "${order.customerName} ")
 
         Espresso.onView(withId(AMOUNT_TOTAL))
             .perform(NestedScrollViewExtension())
