@@ -211,8 +211,11 @@ class OrderDetailViewModel @Inject constructor(
 
             if (hasOrder()) {
                 displayOrderDetails()
-                fetchOrderSubscriptions()
-                fetchGiftCards()
+                // Fetch Hosted Woo Extensions info async
+                awaitAll(
+                    fetchOrderSubscriptionsAsync(),
+                    fetchGiftCardsAsync()
+                )
             }
 
             viewState = viewState.copy(
@@ -665,7 +668,7 @@ class OrderDetailViewModel @Inject constructor(
         orderDetailsTransactionLauncher.onShippingLabelFetchingCompleted()
     }
 
-    private suspend fun fetchOrderSubscriptions() {
+    private fun fetchOrderSubscriptionsAsync() = async {
         val plugin = pluginsInformation[WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName]
         if (plugin != null && plugin.isOperational) {
             getOrderSubscriptions(navArgs.orderId).getOrNull()?.let { subscription ->
@@ -677,7 +680,7 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
-    private suspend fun fetchGiftCards() {
+    private suspend fun fetchGiftCardsAsync() = async {
         val plugin = pluginsInformation[WooCommerceStore.WooPlugin.WOO_GIFT_CARDS.pluginName]
         if (plugin != null && plugin.isOperational) {
             giftCardRepository.fetchGiftCardSummaryByOrderId(navArgs.orderId)
