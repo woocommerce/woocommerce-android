@@ -123,7 +123,8 @@ class ProductDetailViewModel @Inject constructor(
     private val generateVariationCandidates: GenerateVariationCandidates,
     private val duplicateProduct: DuplicateProduct,
     private val tracker: AnalyticsTrackerWrapper,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val getProductQuantityRules: GetProductQuantityRules
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -2189,6 +2190,8 @@ class ProductDetailViewModel @Inject constructor(
             isRefreshing = false
         )
     }
+
+    suspend fun getQuantityRules(productRemoteID: Long) = getProductQuantityRules(productRemoteID)
 
     /**
      * Sealed class that handles the back navigation for the product detail screens while providing a common
