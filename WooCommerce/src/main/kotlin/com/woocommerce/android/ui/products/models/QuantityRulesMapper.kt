@@ -1,9 +1,8 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.models
 
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import com.woocommerce.android.ui.products.models.QuantityRules
 import org.wordpress.android.fluxc.model.WCMetaData
 import org.wordpress.android.fluxc.model.WCProductModel.QuantityRulesMetadataKeys
 import javax.inject.Inject
