@@ -52,14 +52,13 @@ import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
-import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
-import kotlinx.coroutines.delay
+import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 
 @SuppressWarnings("LargeClass")
@@ -731,20 +730,15 @@ class ProductDetailCardBuilder(
             ProductProperty.Warning(resources.getString(string.variation_detail_price_warning))
         }
     }
-    @Suppress("MagicNumber")
-    private suspend fun Product.quantityRules(): ProductProperty {
-        delay(500)
-        val rules = QuantityRules(
-            min = 4,
-            max = 20,
-            groupOf = 2
-        )
 
-        val properties = mapOf(
-            resources.getString(string.min_quantity) to rules.min.toString(),
-            resources.getString(string.max_quantity) to rules.max.toString(),
-            resources.getString(string.group_of) to rules.groupOf.toString(),
-        )
+    private suspend fun Product.quantityRules(): ProductProperty? {
+        val rules = viewModel.getQuantityRules(this.remoteId) ?: return null
+
+        val properties = buildMap {
+            putIfNotNull(resources.getString(string.min_quantity) to rules.min?.toString())
+            putIfNotNull(resources.getString(string.max_quantity) to rules.max?.toString())
+            putIfNotNull(resources.getString(string.group_of) to rules.groupOf?.toString())
+        }
 
         return PropertyGroup(
             title = string.product_quantity_rules_title,
