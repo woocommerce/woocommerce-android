@@ -8,7 +8,6 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -43,7 +42,6 @@ internal class CreateFreeTrialStoreTest: BaseUnitTest() {
 
         // When
         sut.createFreeTrialSite(siteDomain, siteTitle)
-        advanceUntilIdle()
 
         // Then
         verify(storeCreationRepository).createNewFreeTrialSite(
