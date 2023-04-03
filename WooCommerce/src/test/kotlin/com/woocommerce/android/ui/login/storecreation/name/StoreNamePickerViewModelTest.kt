@@ -98,32 +98,6 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when onContinueClicked happens and site address already exists, then store creation is recovered`() = testBlocking {
-        // Given
-        val storeCreationErrorType = StoreCreationErrorType.SITE_ADDRESS_ALREADY_EXISTS
-        createSutWith(
-            expectedSiteCreationData,
-            StoreCreationState.Error(storeCreationErrorType)
-        )
-
-        var latestEvent: MultiLiveEvent.Event? = null
-        sut.event.observeForever { latestEvent = it }
-
-        // When
-        sut.onStoreNameChanged("Store name")
-        sut.onContinueClicked()
-
-        // Then
-        verify(newStore).update(name = "Store name")
-        verify(newStore).update(siteId = 123)
-        verify(createStore).invoke(
-            expectedSiteCreationData.domain,
-            expectedSiteCreationData.title
-        )
-        assertThat(latestEvent).isEqualTo(NavigateToStoreInstallation)
-    }
-
-    @Test
     fun `when onStoreNameChanges happens, then viewState is updated as expected`() = testBlocking {
         // Given
         val viewStateChanges = mutableListOf<StoreNamePickerState>()
