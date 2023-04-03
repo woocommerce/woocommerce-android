@@ -27,9 +27,25 @@ class OrderListScreen : Screen {
         return SingleOrderScreen()
     }
 
-    fun openSearchPane(): OrderSearchScreen {
+    fun openSearchPane(): OrderListScreen {
         clickOn(SEARCH_BUTTON)
-        return OrderSearchScreen()
+        return this
+    }
+
+    fun enterSearchTerm(term: String): OrderListScreen {
+        typeTextInto(androidx.appcompat.R.id.search_src_text, term)
+        Thread.sleep(2000)
+        return this
+    }
+
+    fun leaveSearchMode(): OrderListScreen {
+        if (Screen.isElementDisplayed(androidx.appcompat.R.id.search_src_text)) {
+            // Double pressBack is needed because first one only removes the focus
+            // from search field, while the second one leaves the search mode.
+            Espresso.pressBack()
+            Espresso.pressBack()
+        }
+        return this
     }
 
     fun tapFilters(): FilterScreen {
