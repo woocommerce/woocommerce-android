@@ -78,6 +78,36 @@ internal class CreateFreeTrialStoreTest: BaseUnitTest() {
         assertThat(result).isEqualTo(expectedCreationResult)
     }
 
+    @Test
+    fun `when createFreeTrialSite fails with SITE_ADDRESS_ALREADY_EXISTS, then the site is retrieved`() = testBlocking {
+        // Given
+        val siteDomain = "test domain"
+        val siteTitle = "test title"
+        val expectedSiteCreationData = SiteCreationData(
+            siteDesign = PlansViewModel.NEW_SITE_THEME,
+            domain = siteDomain,
+            title = siteTitle,
+            segmentId = null
+        )
+        createSut(
+            siteDomain,
+            siteTitle,
+            StoreCreationResult.Failure(StoreCreationErrorType.SITE_ADDRESS_ALREADY_EXISTS)
+        )
+
+        // When
+        val result = sut.createFreeTrialSite(siteDomain, siteTitle)
+
+        // Then
+        verify(storeCreationRepository).createNewFreeTrialSite(
+            eq(expectedSiteCreationData),
+            eq(PlansViewModel.NEW_SITE_LANGUAGE_ID),
+            any()
+        )
+        verify(storeCreationRepository).getSiteByUrl(siteDomain)
+        assertThat(result).isEqualTo(StoreCreationResult.Success(123L))
+    }
+
     private fun createSut(
         siteDomain: String = "test domain",
         siteTitle: String = "test title",
