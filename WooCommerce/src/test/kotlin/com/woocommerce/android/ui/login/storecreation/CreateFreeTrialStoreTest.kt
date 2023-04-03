@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.storecreation
 
+import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository.SiteCreationData
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -10,6 +11,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.model.SiteModel
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -28,12 +30,23 @@ internal class CreateFreeTrialStoreTest: BaseUnitTest() {
         val siteDomain = "test domain"
         val siteTitle = "test title"
         val expectedCreationResult = StoreCreationResult.Success(123L)
+        val expectedSiteCreationData = SiteCreationData(
+            siteDesign = PlansViewModel.NEW_SITE_THEME,
+            domain = siteDomain,
+            title = siteTitle,
+            segmentId = null
+        )
         createSut(siteDomain, siteTitle, expectedCreationResult)
 
         // When
         val result = sut.createFreeTrialSite(siteDomain, siteTitle)
 
         // Then
+        verify(storeCreationRepository).createNewFreeTrialSite(
+            eq(expectedSiteCreationData),
+            eq(PlansViewModel.NEW_SITE_LANGUAGE_ID),
+            any()
+        )
         assertThat(result).isEqualTo(expectedCreationResult)
     }
 
@@ -45,12 +58,23 @@ internal class CreateFreeTrialStoreTest: BaseUnitTest() {
         val expectedCreationResult = StoreCreationResult.Failure<Long>(
             StoreCreationErrorType.FREE_TRIAL_ASSIGNMENT_FAILED
         )
+        val expectedSiteCreationData = SiteCreationData(
+            siteDesign = PlansViewModel.NEW_SITE_THEME,
+            domain = siteDomain,
+            title = siteTitle,
+            segmentId = null
+        )
         createSut(siteDomain, siteTitle, expectedCreationResult)
 
         // When
         val result = sut.createFreeTrialSite(siteDomain, siteTitle)
 
         // Then
+        verify(storeCreationRepository).createNewFreeTrialSite(
+            eq(expectedSiteCreationData),
+            eq(PlansViewModel.NEW_SITE_LANGUAGE_ID),
+            any()
+        )
         assertThat(result).isEqualTo(expectedCreationResult)
     }
 
@@ -59,7 +83,7 @@ internal class CreateFreeTrialStoreTest: BaseUnitTest() {
         siteTitle: String = "test title",
         expectedCreationResult: StoreCreationResult<Long> = StoreCreationResult.Success(123)
     ) {
-        val expectedSiteCreationData = StoreCreationRepository.SiteCreationData(
+        val expectedSiteCreationData = SiteCreationData(
             siteDesign = PlansViewModel.NEW_SITE_THEME,
             domain = siteDomain,
             title = siteTitle,
