@@ -49,10 +49,42 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when onContinueClicked starts loading, then the state is updated to reflect it`() = testBlocking {
+        // Given
+        createSutWith(
+            expectedSiteCreationData,
+            StoreCreationState.Loading
+        )
+
+        var latestState: StoreNamePickerState? = null
+        sut.storePickerState.observeForever { latestState = it }
+
+        // When
+        sut.onStoreNameChanged("Store name")
+        sut.onContinueClicked()
+
+        // Then
+        verify(newStore).update(name = "Store name")
+        verify(createStore).invoke(
+            expectedSiteCreationData.domain,
+            expectedSiteCreationData.title
+        )
+        assertThat(latestState).isEqualTo(
+            StoreNamePickerState.Contentful(
+                storeName = "Store name",
+                isCreatingStore = true
+            )
+        )
+    }
+
+    @Test
     fun `when onContinueClicked happens and store creation succeed, then free trial store creation starts`() = testBlocking {
         // Given
         var latestEvent: MultiLiveEvent.Event? = null
         sut.event.observeForever { latestEvent = it }
+
+        var latestState: StoreNamePickerState? = null
+        sut.storePickerState.observeForever { latestState = it }
 
         // When
         sut.onStoreNameChanged("Store name")
@@ -66,6 +98,12 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
             expectedSiteCreationData.title
         )
         assertThat(latestEvent).isEqualTo(NavigateToStoreInstallation)
+        assertThat(latestState).isEqualTo(
+            StoreNamePickerState.Contentful(
+                storeName = "Store name",
+                isCreatingStore = false
+            )
+        )
     }
 
     @Test
