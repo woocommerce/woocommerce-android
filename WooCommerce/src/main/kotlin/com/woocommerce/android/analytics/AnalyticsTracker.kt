@@ -492,6 +492,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_LAUNCH_SITE = "launch_site"
         const val VALUE_PAYMENTS = "payments"
 
+        // -- Product Selector
+        const val VALUE_PRODUCT_SELECTOR = "product_selector"
+        const val VALUE_VARIATION_SELECTOR = "variation_selector"
+
         var sendUsageStats: Boolean = true
             set(value) {
                 if (value != field) {

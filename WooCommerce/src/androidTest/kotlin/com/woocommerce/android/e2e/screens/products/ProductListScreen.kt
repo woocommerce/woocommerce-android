@@ -1,20 +1,17 @@
 package com.woocommerce.android.e2e.screens.products
 
-import android.view.View
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.util.TreeIterables
 import com.woocommerce.android.R
 import com.woocommerce.android.e2e.helpers.WCMatchers.withRecyclerView
+import com.woocommerce.android.e2e.helpers.util.CustomMatchers
 import com.woocommerce.android.e2e.helpers.util.ProductData
 import com.woocommerce.android.e2e.helpers.util.Screen
+import com.woocommerce.android.e2e.screens.shared.FilterScreen
 import com.woocommerce.android.ui.products.ProductItemView
-import org.hamcrest.Description
-import org.hamcrest.Matcher
 import org.hamcrest.Matchers
 import org.hamcrest.Matchers.instanceOf
-import org.hamcrest.TypeSafeMatcher
 
 class ProductListScreen : Screen {
     companion object {
@@ -68,9 +65,9 @@ class ProductListScreen : Screen {
         return this
     }
 
-    fun tapFilters(): ProductFilterScreen {
+    fun tapFilters(): FilterScreen {
         clickOn(R.id.btn_product_filter)
-        return ProductFilterScreen()
+        return FilterScreen()
     }
 
     fun tapSort(): ProductListScreen {
@@ -142,29 +139,8 @@ class ProductListScreen : Screen {
         Espresso.onView(
             ViewMatchers.withId(R.id.productsRecycler)
         )
-            .check(matches(withViewCount(instanceOf(ProductItemView::class.java), count)))
+            .check(matches(CustomMatchers().withViewCount(instanceOf(ProductItemView::class.java), count)))
 
         return this
-    }
-
-    // Hat tip https://stackoverflow.com/a/69943394
-    private fun withViewCount(viewMatcher: Matcher<View>, expectedCount: Int): Matcher<View?> {
-        return object : TypeSafeMatcher<View?>() {
-            private var actualCount = -1
-            override fun describeTo(description: Description) {
-                when {
-                    actualCount >= 0 -> description.also {
-                        it.appendText("Expected items count: $expectedCount, but got: $actualCount")
-                    }
-                }
-            }
-
-            override fun matchesSafely(root: View?): Boolean {
-                actualCount = TreeIterables.breadthFirstViewTraversal(root).count {
-                    viewMatcher.matches(it)
-                }
-                return expectedCount == actualCount
-            }
-        }
     }
 }
