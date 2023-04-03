@@ -26,25 +26,34 @@ class FetchJetpackStatus @Inject constructor(
     private val jetpackStore: JetpackStore,
     private val selectedSite: SelectedSite
 ) {
-    suspend operator fun invoke(): Result<JetpackStatus> {
+    enum class JetpackStatusFetchResponse {
+        SUCCESS, NOT_FOUND, FORBIDDEN
+    }
+    suspend operator fun invoke(): Result<Pair<JetpackStatus, JetpackStatusFetchResponse>> {
         return jetpackStore.fetchJetpackUser(selectedSite.get()).let { result ->
             when {
                 result.error?.errorCode == NOT_FOUND_STATUS_CODE -> {
                     Result.success(
-                        JetpackStatus(
-                            isJetpackInstalled = false,
-                            isJetpackConnected = false,
-                            wpComEmail = null
+                        Pair(
+                            JetpackStatus(
+                                isJetpackInstalled = false,
+                                isJetpackConnected = false,
+                                wpComEmail = null
+                            ),
+                            JetpackStatusFetchResponse.NOT_FOUND
                         )
                     )
                 }
 
                 result.error?.errorCode == FORBIDDEN_CODE -> {
                     Result.success(
-                        JetpackStatus(
-                            isJetpackInstalled = true,
-                            isJetpackConnected = false,
-                            wpComEmail = null
+                        Pair(
+                            JetpackStatus(
+                                isJetpackInstalled = true,
+                                isJetpackConnected = false,
+                                wpComEmail = null
+                            ),
+                            JetpackStatusFetchResponse.FORBIDDEN
                         )
                     )
                 }
@@ -55,10 +64,13 @@ class FetchJetpackStatus @Inject constructor(
 
                 else -> {
                     Result.success(
-                        JetpackStatus(
-                            isJetpackInstalled = true,
-                            isJetpackConnected = result.user!!.isConnected,
-                            wpComEmail = result.user!!.wpcomEmail.orNullIfEmpty()
+                        Pair(
+                            JetpackStatus(
+                                isJetpackInstalled = true,
+                                isJetpackConnected = result.user!!.isConnected,
+                                wpComEmail = result.user!!.wpcomEmail.orNullIfEmpty()
+                            ),
+                            JetpackStatusFetchResponse.SUCCESS
                         )
                     )
                 }
