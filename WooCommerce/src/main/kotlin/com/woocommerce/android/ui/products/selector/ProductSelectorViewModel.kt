@@ -287,9 +287,9 @@ class ProductSelectorViewModel @Inject constructor(
         )
     }
 
-    fun onProductClick(item: ProductListItem) {
+    fun onProductClick(item: ProductListItem, productSourceForTracking: ProductSourceForTracking) {
         if (item.type == VARIABLE && item.numVariations > 0) {
-            triggerEvent(NavigateToVariationSelector(item.id, item.selectedVariationIds))
+            triggerEvent(NavigateToVariationSelector(item.id, item.selectedVariationIds, productSourceForTracking))
         } else if (item.type != VARIABLE) {
             selectedItems.update { items ->
                 val selectedProductItems = items.filter {
@@ -299,7 +299,7 @@ class ProductSelectorViewModel @Inject constructor(
                     val productItemToUnselect = selectedProductItems.filter { it.id == item.id }.toSet()
                     selectedItems.value - productItemToUnselect
                 } else {
-                    selectedItems.value + SelectedItem.Product(item.id)
+                    selectedItems.value + SelectedItem.Product(item.id, productSourceForTracking)
                 }
             }
         }
@@ -354,7 +354,11 @@ class ProductSelectorViewModel @Inject constructor(
                 }
 
                 val newItems = result.selectedVariationIds.map { variationId ->
-                    SelectedItem.ProductVariation(productId = result.productId, variationId = variationId)
+                    SelectedItem.ProductVariation(
+                        productId = result.productId,
+                        variationId = variationId,
+                        productSourceForTracking = result.productSourceForTracking
+                    )
                 }
 
                 selectedItems.value - oldItems.toSet() + newItems
@@ -453,15 +457,28 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     @Parcelize
-    sealed class SelectedItem(val id: Long) : Parcelable {
+    sealed class SelectedItem(
+        val id: Long,
+        val source: ProductSourceForTracking
+    ) : Parcelable {
         @Parcelize
-        data class ProductOrVariation(val productOrVariationId: Long) : SelectedItem(productOrVariationId)
+        data class ProductOrVariation(
+            val productOrVariationId: Long,
+            val productSourceForTracking: ProductSourceForTracking,
+        ) : SelectedItem(productOrVariationId, productSourceForTracking)
 
         @Parcelize
-        data class Product(val productId: Long) : SelectedItem(productId)
+        data class Product(
+            val productId: Long,
+            val productSourceForTracking: ProductSourceForTracking,
+        ) : SelectedItem(productId, productSourceForTracking)
 
         @Parcelize
-        data class ProductVariation(val productId: Long, val variationId: Long) : SelectedItem(variationId)
+        data class ProductVariation(
+            val productId: Long,
+            val variationId: Long,
+            val productSourceForTracking: ProductSourceForTracking,
+        ) : SelectedItem(variationId, productSourceForTracking)
     }
 
     @Parcelize
@@ -486,6 +503,15 @@ val Collection<ProductSelectorViewModel.SelectedItem>.variationIds: List<Long>
         return filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductOrVariation>().map { it.id } +
             filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductVariation>().map { it.variationId }
     }
+
+
+enum class ProductSourceForTracking {
+    POPULAR,
+    RECENT,
+    ALPHABETICAL,
+    SEARCH,
+    FILTER,
+}
 
 @Suppress("LongParameterList")
 inline fun <T1, T2, T3, T4, T5, T6, T7, R> combine(
