@@ -13,6 +13,9 @@
         <argument
             android:name="variationIds"
             app:argType="long[]" />
+        <argument
+            android:name="productSource"
+            app:argType="com.woocommerce.android.ui.products.selector.ProductSourceForTracking" />
     </fragment>
 
     <fragment
