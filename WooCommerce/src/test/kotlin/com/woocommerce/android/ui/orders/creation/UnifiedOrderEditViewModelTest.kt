@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -118,7 +119,30 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_PRODUCT_ADD,
-            mapOf(AnalyticsTracker.KEY_FLOW to tracksFlow),
+            mapOf(
+                AnalyticsTracker.KEY_FLOW to tracksFlow,
+                AnalyticsTracker.KEY_PRODUCT_COUNT to 1
+            ),
+        )
+    }
+
+    @Test
+    fun `when multiple products selected, send tracks event with correct property`() {
+        val selectedItems = setOf(
+            ProductSelectorViewModel.SelectedItem.Product(1),
+            ProductSelectorViewModel.SelectedItem.Product(2),
+            ProductSelectorViewModel.SelectedItem.Product(3),
+            ProductSelectorViewModel.SelectedItem.Product(4),
+        )
+        sut.onProductsSelected(selectedItems)
+        assertThat(selectedItems).hasSize(4)
+
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_PRODUCT_ADD,
+            mapOf(
+                AnalyticsTracker.KEY_FLOW to tracksFlow,
+                AnalyticsTracker.KEY_PRODUCT_COUNT to 4
+            ),
         )
     }
 
