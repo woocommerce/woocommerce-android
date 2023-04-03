@@ -68,6 +68,11 @@ class JitmViewModel @Inject constructor(
                 model.id,
                 model.featureClass
             )
+
+            val primaryIcon = model.content.iconPath?.let { BannerState.LocalOrRemoteIcon.Remote(it) }
+                ?: BannerState.LocalOrRemoteIcon.Local(R.drawable.ic_banner_upsell_card_reader_illustration)
+            val secondaryIcon = model.content.secondaryIconPath?.let { BannerState.LabelOrRemoteIcon.Remote(it) }
+                ?: BannerState.LabelOrRemoteIcon.Label(UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new))
             _jitmState.value = BannerState.DisplayBannerState(
                 onPrimaryActionClicked = {
                     onJitmCtaClicked(
@@ -85,10 +90,8 @@ class JitmViewModel @Inject constructor(
                 title = UiString.UiStringText(model.content.message),
                 description = UiString.UiStringText(model.content.description),
                 primaryActionLabel = UiString.UiStringText(model.cta.message),
-                primaryIcon = BannerState.LocalOrRemoteIcon.Local(R.drawable.ic_banner_upsell_card_reader_illustration),
-                secondaryIcon = BannerState.LabelOrRemoteIcon.Label(
-                    UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
-                ),
+                primaryIcon = primaryIcon,
+                secondaryIcon = secondaryIcon,
             )
         } ?: run {
             _jitmState.value = BannerState.HideBannerState
