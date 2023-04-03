@@ -1170,10 +1170,9 @@
     <string name="card_reader_icon_content_description">Card Reader Image</string>
     <string name="card_reader_onboarding_not_finished">We’ve noticed that you have not yet finished In-Person Payments setup. &lt;a href=\'\'&gt;Continue setup&lt;/a&gt;</string>
     <string name="card_reader_onboarding_with_pending_requirements">There is an issue that requires your attention. Please &lt;a href=\'\'&gt;take a look&lt;/a&gt;</string>
-    <string name="card_reader_tap_to_pay">Tap To Pay</string>
+    <string name="card_reader_test_tap_to_pay">Test Your Tap To Pay</string>
+    <string name="card_reader_tap_to_pay_description">You can test Tap To Pay with a small\namount here.</string>
     <string name="card_reader_tap_to_pay_share_feedback">Share Tap to Pay feedback</string>
-    <string name="card_reader_tap_to_pay_description_not_used">Use your phone to accept card\npayments. Try it now.</string>
-    <string name="card_reader_tap_to_pay_description_used">Use your phone to accept card payments.</string>
     <string name="card_reader_tap_to_pay_not_available_error">Tap to Pay is not available for your store or device</string>
 
     <!--

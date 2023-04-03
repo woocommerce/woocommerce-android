@@ -5,6 +5,7 @@
 
 13.0
 -----
+- [*][Internal] Added analytics events for Product Selector interactions [https://github.com/woocommerce/woocommerce-android/pull/8665]
 - [***] Add read-only support for the WooCommerce Subscription extension on order details and product details. [https://github.com/woocommerce/woocommerce-android/pull/8440]
 
 12.9

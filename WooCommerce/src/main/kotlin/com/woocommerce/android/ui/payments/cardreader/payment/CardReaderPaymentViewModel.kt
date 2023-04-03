@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
@@ -52,6 +52,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderCollectPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderFailedPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.CollectRefundState
@@ -95,7 +96,7 @@ class CardReaderPaymentViewModel
     private val cardReaderManager: CardReaderManager,
     private val orderRepository: OrderDetailRepository,
     private val selectedSite: SelectedSite,
-    private val appPrefsWrapper: AppPrefsWrapper,
+    private val appPrefs: AppPrefs = AppPrefs,
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
     private val interacRefundableChecker: CardReaderInteracRefundableChecker,
     private val tracker: CardReaderTracker,
@@ -108,6 +109,7 @@ class CardReaderPaymentViewModel
     private val cardReaderPaymentReaderTypeStateProvider: CardReaderPaymentReaderTypeStateProvider,
     private val cardReaderPaymentOrderHelper: CardReaderPaymentOrderHelper,
     private val cardReaderPaymentReceiptHelper: CardReaderPaymentReceiptHelper,
+    private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogFragmentArgs by savedState.navArgs()
 
@@ -254,7 +256,7 @@ class CardReaderPaymentViewModel
         val customerEmail = order.billingAddress.email
         val site = selectedSite.get()
         val countryCode = getStoreCountryCode()
-        val rawStatementDescriptor = appPrefsWrapper.getCardReaderStatementDescriptor(
+        val rawStatementDescriptor = appPrefs.getCardReaderStatementDescriptor(
             localSiteId = site.id,
             remoteSiteId = site.siteId,
             selfHostedSiteId = site.selfHostedSiteId
@@ -413,6 +415,7 @@ class CardReaderPaymentViewModel
         orderId: Long,
     ) {
         cardReaderPaymentReceiptHelper.storeReceiptUrl(orderId, paymentStatus.receiptUrl)
+        appPrefs.setCardReaderSuccessfulPaymentTime()
         triggerEvent(PlayChaChing)
         showPaymentSuccessfulState()
         reFetchOrder()
@@ -437,6 +440,7 @@ class CardReaderPaymentViewModel
         error: InteracRefundFailure
     ) {
         WooLog.e(WooLog.T.CARD_READER, "Refund failed: ${error.errorMessage}")
+        cardReaderOnboardingChecker.invalidateCache()
         val onRetryClicked = { retryInteracRefund() }
         val errorType = interacRefundErrorMapper.mapRefundErrorToUiError(error.type)
         if (errorType is InteracRefundFlowError.NonRetryableError) {
@@ -463,6 +467,7 @@ class CardReaderPaymentViewModel
 
     private fun emitFailedPaymentState(orderId: Long, billingEmail: String, error: PaymentFailed, amountLabel: String) {
         WooLog.e(WooLog.T.CARD_READER, error.errorMessage)
+        cardReaderOnboardingChecker.invalidateCache()
         val onRetryClicked = error.paymentDataForRetry?.let {
             { retry(orderId, billingEmail, it, amountLabel) }
         } ?: { initPaymentFlow(isRetry = true) }
