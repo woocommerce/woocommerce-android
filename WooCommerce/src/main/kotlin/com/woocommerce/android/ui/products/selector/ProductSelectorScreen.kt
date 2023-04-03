@@ -241,7 +241,7 @@ private fun displayProductsSection(
             ) {
                 onProductClick(popularProduct)
             }
-            if (index < state.recentProducts.size - 1) {
+            if (index < productsList.size - 1) {
                 Divider(
                     modifier = Modifier.padding(start = dimensionResource(id = dimen.major_100)),
                     color = colorResource(id = R.color.divider_color),
