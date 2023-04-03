@@ -15,8 +15,8 @@ class CreateFreeTrialStore @Inject constructor(
     val state: StateFlow<StoreCreationState> = _state
 
     suspend operator fun invoke(
-        storeDomain: String,
-        storeName: String
+        storeDomain: String?,
+        storeName: String?
     ) {
         _state.value = Loading
 
@@ -37,7 +37,7 @@ class CreateFreeTrialStore @Inject constructor(
     }
 
     private suspend fun StoreCreationResult<Long>.recoverIfSiteExists(
-        storeDomain: String
+        storeDomain: String?
     ) = run { this as? StoreCreationResult.Failure<Long> }
         ?.takeIf { it.type == SITE_ADDRESS_ALREADY_EXISTS }
         ?.let { repository.getSiteByUrl(storeDomain) }
