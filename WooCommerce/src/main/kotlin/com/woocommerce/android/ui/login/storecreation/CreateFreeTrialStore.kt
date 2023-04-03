@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.storecreation
 
+import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_ADDRESS_ALREADY_EXISTS
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel
 import java.util.TimeZone
 import javax.inject.Inject
@@ -13,28 +14,24 @@ class CreateFreeTrialStore @Inject constructor(
     suspend fun createFreeTrialSite(
         storeDomain: String,
         storeName: String
-    ): StoreCreationResult<Long> {
-        suspend fun StoreCreationResult<Long>.recoverIfSiteExists(): StoreCreationResult<Long> {
-            return if ((this as? StoreCreationResult.Failure<Long>)?.type == StoreCreationErrorType.SITE_ADDRESS_ALREADY_EXISTS) {
-                repository.getSiteByUrl(storeDomain)?.let { site ->
-                    StoreCreationResult.Success(site.siteId)
-                } ?: this
-            } else {
-                this
-            }
-        }
+    ) = repository.createNewFreeTrialSite(
+        StoreCreationRepository.SiteCreationData(
+            siteDesign = PlansViewModel.NEW_SITE_THEME,
+            domain = storeDomain,
+            title = storeName,
+            segmentId = null
+        ),
+        PlansViewModel.NEW_SITE_LANGUAGE_ID,
+        TimeZone.getDefault().id
+    ).recoverIfSiteExists(storeDomain)
 
-        return repository.createNewFreeTrialSite(
-            StoreCreationRepository.SiteCreationData(
-                siteDesign = PlansViewModel.NEW_SITE_THEME,
-                domain = storeDomain,
-                title = storeName,
-                segmentId = null
-            ),
-            PlansViewModel.NEW_SITE_LANGUAGE_ID,
-            TimeZone.getDefault().id
-        ).recoverIfSiteExists()
-    }
+    private suspend fun StoreCreationResult<Long>.recoverIfSiteExists(
+        storeDomain: String
+    ) = run { this as? StoreCreationResult.Failure<Long> }
+        ?.takeIf { it.type == SITE_ADDRESS_ALREADY_EXISTS }
+        ?.let { repository.getSiteByUrl(storeDomain) }
+        ?.let { StoreCreationResult.Success(it.siteId) }
+        ?: this
 
     private suspend fun <T : Any?> StoreCreationResult<T>.ifSuccessfulThen(
         successAction: suspend (T) -> Unit
