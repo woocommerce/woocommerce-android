@@ -7,40 +7,40 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin.STORE_CREATION
+import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore
+import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Error
+import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Loading
+import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Success
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
-import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_ADDRESS_ALREADY_EXISTS
-import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository
-import com.woocommerce.android.ui.login.storecreation.StoreCreationResult
-import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import java.util.TimeZone
 import javax.inject.Inject
+import kotlinx.coroutines.flow.mapNotNull
 
 @HiltViewModel
 class StoreNamePickerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val newStore: NewStore,
-    private val repository: StoreCreationRepository,
+    private val createStore: CreateFreeTrialStore,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val prefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val storeName = savedState.getStateFlow(scope = this, initialValue = "")
-    private val isCreatingStore = savedState.getStateFlow(scope = this, initialValue = false)
-    private val error = MutableStateFlow<StoreCreationErrorType?>(null)
 
     val storePickerState = combine(
-        storeName, isCreatingStore, error
-    ) { storeName, isCreatingStore, error ->
-        error?.let { StoreNamePickerState.Error(it) }
-            ?: StoreNamePickerState.Contentful(storeName, isCreatingStore)
+        storeName, createStore.state
+    ) { storeName, createStoreState ->
+        when (createStoreState) {
+            is Error -> StoreNamePickerState.Error(createStoreState.type)
+            is Loading -> StoreNamePickerState.Contentful(storeName, true)
+            else -> StoreNamePickerState.Contentful(storeName, false)
+        }
     }.asLiveData()
 
     init {
@@ -50,6 +50,15 @@ class StoreNamePickerViewModel @Inject constructor(
                 AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_NAME
             )
         )
+
+        launch {
+            createStore.state
+                .mapNotNull { it as? Success }
+                .collect {
+                    newStore.update(siteId = it.siteId)
+                    triggerEvent(NavigateToStoreInstallation)
+                }
+        }
     }
 
     fun onCancelPressed() {
@@ -86,46 +95,10 @@ class StoreNamePickerViewModel @Inject constructor(
     }
 
     private suspend fun startFreeTrialSiteCreation() {
-        isCreatingStore.value = true
-        createFreeTrialSite().ifSuccessfulThen {
-            newStore.update(siteId = it)
-            isCreatingStore.value = false
-            triggerEvent(NavigateToStoreInstallation)
-        }
-    }
-
-    private suspend fun createFreeTrialSite(): StoreCreationResult<Long> {
-        suspend fun StoreCreationResult<Long>.recoverIfSiteExists(): StoreCreationResult<Long> {
-            return if ((this as? StoreCreationResult.Failure<Long>)?.type == SITE_ADDRESS_ALREADY_EXISTS) {
-                repository.getSiteByUrl(newStore.data.domain)?.let { site ->
-                    StoreCreationResult.Success(site.siteId)
-                } ?: this
-            } else {
-                this
-            }
-        }
-
-        return repository.createNewFreeTrialSite(
-            StoreCreationRepository.SiteCreationData(
-                siteDesign = PlansViewModel.NEW_SITE_THEME,
-                domain = newStore.data.domain,
-                title = newStore.data.name,
-                segmentId = null
-            ),
-            PlansViewModel.NEW_SITE_LANGUAGE_ID,
-            TimeZone.getDefault().id
-        ).recoverIfSiteExists()
-    }
-
-    private suspend fun <T : Any?> StoreCreationResult<T>.ifSuccessfulThen(
-        successAction: suspend (T) -> Unit
-    ) {
-        when (this) {
-            is StoreCreationResult.Success -> successAction(this.data)
-            is StoreCreationResult.Failure -> {
-                error.emit(this.type)
-            }
-        }
+        createStore(
+            storeDomain = newStore.data.domain,
+            storeName = newStore.data.name
+        )
     }
 
     data class NavigateToDomainPicker(val domainInitialQuery: String) : MultiLiveEvent.Event()
