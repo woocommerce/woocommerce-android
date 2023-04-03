@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
@@ -239,7 +240,8 @@ class CardReaderConnectViewModel @Inject constructor(
         if (!cardReaderManager.initialized) {
             cardReaderManager.initialize(
                 updateFrequency = mapUpdateOptions(appPrefs.selectedUpdateReaderOption()),
-                useInterac = developerOptionsRepository.isInteracPaymentEnabled()
+                useInterac = developerOptionsRepository.isInteracPaymentEnabled(),
+                BuildConfig.DEBUG,
             )
         }
         launch {

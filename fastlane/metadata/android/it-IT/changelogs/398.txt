@@ -1,0 +1,2 @@
+12.9:
+Per questa versione, ci siamo concentrati sul rendere la tua esperienza più fluida durante la gestione dei prodotti. Inoltre, ora è possibile installare Jetpack dall'app se desideri funzionalità aggiuntive come notifiche push e statistiche dei visitatori. Mantieni il tuo feedback pronto.

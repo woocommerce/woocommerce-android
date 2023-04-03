@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.payments.cardreader.connect
 
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
@@ -332,7 +333,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(false)
             (viewModel.event.value as RequestEnableBluetooth).onEnableBluetoothRequestResult(true)
 
-            verify(cardReaderManager).initialize(updateFrequency, useInterac)
+            verify(cardReaderManager).initialize(updateFrequency, useInterac, BuildConfig.DEBUG)
         }
 
     @Test
@@ -346,7 +347,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .onBluetoothRuntimePermissionsRequestResult(true)
             (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(true)
 
-            verify(cardReaderManager).initialize(updateFrequency, useInterac)
+            verify(cardReaderManager).initialize(updateFrequency, useInterac, BuildConfig.DEBUG)
         }
 
     @Test
@@ -359,7 +360,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.event.value as RequestBluetoothRuntimePermissions)
                 .onBluetoothRuntimePermissionsRequestResult(false)
 
-            verify(cardReaderManager, never()).initialize(updateFrequency, useInterac)
+            verify(cardReaderManager, never()).initialize(updateFrequency, useInterac, BuildConfig.DEBUG)
         }
 
     @Test
@@ -374,7 +375,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.event.value as RequestEnableBluetooth).onEnableBluetoothRequestResult(true)
 
-            verify(cardReaderManager, never()).initialize(updateFrequency, useInterac)
+            verify(cardReaderManager, never()).initialize(updateFrequency, useInterac, BuildConfig.DEBUG)
         }
 
     @Test

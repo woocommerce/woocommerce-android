@@ -161,4 +161,12 @@
     <color name="or_divider_line">#5A5F66</color>
     <color name="or_divider_text">#999BA4</color>
 
+
+    <!--
+    Free Trial
+    -->
+    <color name="free_trial_banner_background">@color/woo_purple_90</color>
+    <color name="free_trial_banner_link_text">@color/woo_purple_40</color>
+    <color name="free_trial_banner_content">@color/color_on_surface</color>
+
 </resources>

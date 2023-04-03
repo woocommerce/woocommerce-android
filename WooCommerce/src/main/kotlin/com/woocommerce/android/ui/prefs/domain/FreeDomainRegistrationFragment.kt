@@ -139,8 +139,8 @@ class FreeDomainRegistrationFragment : BaseFragment() {
                 is ShowCountryPickerDialog -> showCountryPicker(event.countries)
                 is ShowStatePickerDialog -> showStatePicker(event.states)
                 is NavigateToPurchaseSuccessScreen -> navigateToPurchaseSuccessScreen(event.domain)
+                is NavigateToDomainDashboard -> navigateToDomainDashboard(event.source)
                 ShowTermsOfService -> showTermsOfService()
-                NavigateToDomainDashboard -> navigateToDomainDashboard()
             }
         }
     }
@@ -152,10 +152,10 @@ class FreeDomainRegistrationFragment : BaseFragment() {
         )
     }
 
-    private fun navigateToDomainDashboard() {
+    private fun navigateToDomainDashboard(source: DomainFlowSource) {
         findNavController().navigateSafely(
             FreeDomainRegistrationFragmentDirections
-                .actionDomainRegistrationDetailsFragmentToDomainDashboardFragment()
+                .actionDomainRegistrationDetailsFragmentToDomainDashboardFragment(source = source)
         )
     }
 

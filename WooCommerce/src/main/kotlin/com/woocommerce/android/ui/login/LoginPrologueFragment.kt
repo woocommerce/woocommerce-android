@@ -12,6 +12,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentLoginPrologueBinding
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
+import com.woocommerce.android.util.FeatureFlag
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -36,24 +37,29 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
     private var prologueFinishedListener: PrologueFinishedListener? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val binding = FragmentLoginPrologueBinding.bind(view)
+        with(FragmentLoginPrologueBinding.bind(view)) {
+            buttonLoginStore.setOnClickListener {
+                // Login with site address
+                AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
+                prologueFinishedListener?.onPrimaryButtonClicked()
+            }
 
-        binding.buttonLoginStore.setOnClickListener {
-            // Login with site address
-            AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
-            prologueFinishedListener?.onPrimaryButtonClicked()
-        }
+            buttonLoginWpcom.setOnClickListener {
+                // Login with WordPress.com account
+                AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
+                prologueFinishedListener?.onSecondaryButtonClicked()
+            }
 
-        binding.buttonLoginWpcom.setOnClickListener {
-            // Login with WordPress.com account
-            AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
-            prologueFinishedListener?.onSecondaryButtonClicked()
-        }
+            buttonGetStarted.setOnClickListener {
+                AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
 
-        binding.buttonGetStarted.setOnClickListener {
-            AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
-            AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED)
-            prologueFinishedListener?.onGetStartedClicked()
+                AnalyticsTracker.track(
+                    AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED,
+                    mapOf(AnalyticsTracker.KEY_IS_FREE_TRIAL to FeatureFlag.FREE_TRIAL_M2.isEnabled())
+                )
+
+                prologueFinishedListener?.onGetStartedClicked()
+            }
         }
 
         if (savedInstanceState == null) {
