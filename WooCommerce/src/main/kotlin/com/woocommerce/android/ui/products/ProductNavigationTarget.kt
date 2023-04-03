@@ -5,6 +5,7 @@ import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
+import com.woocommerce.android.ui.products.selector.ProductSourceForTracking
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -111,7 +112,8 @@ sealed class ProductNavigationTarget : Event() {
 
     data class NavigateToVariationSelector(
         val productId: Long,
-        val selectedVariationIds: Set<Long>
+        val selectedVariationIds: Set<Long>,
+        val productSourceForTracking: ProductSourceForTracking,
     ) : ProductNavigationTarget()
 
     data class NavigateToProductFilter(

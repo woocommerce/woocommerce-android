@@ -12,6 +12,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductStockStatus.Custom
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.NotAvailable
+import com.woocommerce.android.ui.products.selector.ProductSourceForTracking
 import com.woocommerce.android.ui.products.selector.SelectionState
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.UNSELECTED
@@ -147,7 +148,11 @@ class VariationSelectorViewModel @Inject constructor(
     }
 
     fun onBackPress() {
-        triggerEvent(ExitWithResult(VariationSelectionResult(navArgs.productId, selectedVariationIds.value)))
+        triggerEvent(
+            ExitWithResult(
+                VariationSelectionResult(navArgs.productId, selectedVariationIds.value, navArgs.productSource)
+            )
+        )
     }
 
     data class ViewState(
@@ -167,7 +172,11 @@ class VariationSelectorViewModel @Inject constructor(
     )
 
     @Parcelize
-    data class VariationSelectionResult(val productId: Long, val selectedVariationIds: Set<Long>) : Parcelable
+    data class VariationSelectionResult(
+        val productId: Long,
+        val selectedVariationIds: Set<Long>,
+        val productSourceForTracking: ProductSourceForTracking,
+    ) : Parcelable
 
     enum class LoadingState {
         IDLE, LOADING, APPENDING
