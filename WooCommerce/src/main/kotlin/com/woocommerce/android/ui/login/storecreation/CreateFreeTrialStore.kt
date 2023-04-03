@@ -6,17 +6,19 @@ import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel
 import java.util.TimeZone
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 class CreateFreeTrialStore @Inject constructor(
     private val repository: StoreCreationRepository
 ) {
-    val state = MutableStateFlow<StoreCreationState>(StoreCreationState.Idle)
+    private val _state = MutableStateFlow<StoreCreationState>(StoreCreationState.Idle)
+    val state: StateFlow<StoreCreationState> = _state
 
     suspend fun createFreeTrialSite(
         storeDomain: String,
         storeName: String
     ) {
-        state.value = Loading
+        _state.value = Loading
 
         val result = repository.createNewFreeTrialSite(
             StoreCreationRepository.SiteCreationData(
@@ -29,7 +31,7 @@ class CreateFreeTrialStore @Inject constructor(
             TimeZone.getDefault().id
         )
 
-        state.value = result
+        _state.value = result
             .recoverIfSiteExists(storeDomain)
             .asCreationState()
     }

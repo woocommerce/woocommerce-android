@@ -101,8 +101,8 @@ internal class CreateFreeTrialStoreTest: BaseUnitTest() {
     @Test
     fun `when createFreeTrialSite fails with SITE_ADDRESS_ALREADY_EXISTS, then the site is retrieved`() = testBlocking {
         // Given
-        val siteDomain = "test domain"
-        val siteTitle = "test title"
+        val siteDomain = "test existent domain"
+        val siteTitle = "test existent title"
         val expectedSiteCreationData = SiteCreationData(
             siteDesign = PlansViewModel.NEW_SITE_THEME,
             domain = siteDomain,
