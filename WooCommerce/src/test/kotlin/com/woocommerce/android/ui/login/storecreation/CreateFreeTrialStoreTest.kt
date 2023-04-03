@@ -41,7 +41,7 @@ internal class CreateFreeTrialStoreTest: BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut.createFreeTrialSite(siteDomain, siteTitle)
+        sut(siteDomain, siteTitle)
 
         // Then
         verify(storeCreationRepository).createNewFreeTrialSite(
@@ -78,7 +78,7 @@ internal class CreateFreeTrialStoreTest: BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut.createFreeTrialSite(siteDomain, siteTitle)
+        sut(siteDomain, siteTitle)
 
         // Then
         verify(storeCreationRepository).createNewFreeTrialSite(
@@ -120,7 +120,7 @@ internal class CreateFreeTrialStoreTest: BaseUnitTest() {
             .launchIn(this)
 
         // When
-        sut.createFreeTrialSite(siteDomain, siteTitle)
+        sut(siteDomain, siteTitle)
 
         // Then
         verify(storeCreationRepository).createNewFreeTrialSite(

@@ -14,7 +14,7 @@ class CreateFreeTrialStore @Inject constructor(
     private val _state = MutableStateFlow<StoreCreationState>(StoreCreationState.Idle)
     val state: StateFlow<StoreCreationState> = _state
 
-    suspend fun createFreeTrialSite(
+    suspend operator fun invoke(
         storeDomain: String,
         storeName: String
     ) {
