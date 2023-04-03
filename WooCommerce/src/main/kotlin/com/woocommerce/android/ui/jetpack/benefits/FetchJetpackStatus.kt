@@ -11,7 +11,7 @@ import javax.inject.Inject
  * Meaning for Jetpack's `/connection/data` endpoint responses, as outlined from the Jetpack codebase:
  * `projects/packages/connection/tests/php/test-rest-endpoints.php`
  *
- * - 404: Jetpack is not installed.
+ * - 404: Jetpack is not activated.
  * - 403: Jetpack is activated but current user has no permission to get connection data.
  * - 200: Jetpack is activated, connection data is given.
  *
@@ -33,6 +33,16 @@ class FetchJetpackStatus @Inject constructor(
                     Result.success(
                         JetpackStatus(
                             isJetpackInstalled = false,
+                            isJetpackConnected = false,
+                            wpComEmail = null
+                        )
+                    )
+                }
+
+                result.error?.errorCode == FORBIDDEN_CODE -> {
+                    Result.success(
+                        JetpackStatus(
+                            isJetpackInstalled = true,
                             isJetpackConnected = false,
                             wpComEmail = null
                         )
