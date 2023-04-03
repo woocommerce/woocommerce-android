@@ -25,8 +25,7 @@ import javax.inject.Singleton
 @Singleton
 class VariationNavigator @Inject constructor() {
     @Suppress("LongMethod")
-    fun navigate(fragment: Fragment, target: VariationNavigationTarget) {
-        when (target) {
+    fun navigate(fragment: Fragment, target: VariationNavigationTarget) { when (target) {
             is ViewImageGallery -> {
                 val action = VariationDetailFragmentDirections.actionVariationDetailFragmentToNavGraphImageGallery(
                     remoteId = target.remoteId,
@@ -82,6 +81,11 @@ class VariationNavigator @Inject constructor() {
             is VariationNavigationTarget.ViewSubscription -> {
                 val action = VariationDetailFragmentDirections
                     .actionVariationDetailFragmentToProductSubscriptionFragment(target.subscription)
+                fragment.findNavController().navigateSafely(action)
+            }
+            is VariationNavigationTarget.ViewProductQuantityRules -> {
+                val action = VariationDetailFragmentDirections
+                    .actionVariationDetailFragmentToProductQuantityRulesFragment(target.quantityRules)
                 fragment.findNavController().navigateSafely(action)
             }
         }
