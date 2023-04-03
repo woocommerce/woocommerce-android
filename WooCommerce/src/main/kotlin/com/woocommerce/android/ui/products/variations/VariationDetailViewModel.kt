@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewImageGallery
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewMediaUploadErrors
@@ -55,7 +56,8 @@ class VariationDetailViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val parameterRepository: ParameterRepository,
     private val mediaFileUploadHandler: MediaFileUploadHandler,
-    private val resources: ResourceProvider
+    private val resources: ResourceProvider,
+    private val getProductVariationQuantityRules: GetProductVariationQuantityRules
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_VARIATION_PARAMETERS = "key_variation_parameters"
@@ -403,6 +405,10 @@ class VariationDetailViewModel @Inject constructor(
                 }
             }
             .launchIn(this)
+    }
+
+    suspend fun getQuantityRules(remoteProductId: Long, remoteVariationId: Long): QuantityRules? {
+        return getProductVariationQuantityRules(remoteProductId, remoteVariationId)
     }
 
     object HideImageUploadErrorSnackbar : Event()

@@ -327,7 +327,7 @@ class VariationDetailCardBuilder(
     }
 
     private suspend fun ProductVariation.quantityRules(): ProductProperty? {
-        val rules = viewModel.getQuantityRules(this.remoteVariationId) ?: return null
+        val rules = viewModel.getQuantityRules(this.remoteProductId, this.remoteVariationId) ?: return null
 
         val properties = buildMap {
             putIfNotNull(resources.getString(string.min_quantity) to rules.min?.toString())
