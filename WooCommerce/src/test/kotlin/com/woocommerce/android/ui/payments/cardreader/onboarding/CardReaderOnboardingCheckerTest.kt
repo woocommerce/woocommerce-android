@@ -57,6 +57,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider = mock()
     private val cashOnDeliverySettingsRepository: CashOnDeliverySettingsRepository = mock()
+    private val cardReaderOnboardingCheckResultCache: CardReaderOnboardingCheckResultCache = mock()
 
     private val site = SiteModel()
 
@@ -76,7 +77,8 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             networkStatus,
             cardReaderTrackingInfoKeeper,
             cardReaderCountryConfigProvider,
-            cashOnDeliverySettingsRepository
+            cashOnDeliverySettingsRepository,
+            cardReaderOnboardingCheckResultCache,
         )
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(selectedSite.get()).thenReturn(site)
@@ -684,76 +686,89 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given wcpay installed, when onboarding completed, then onboarding completed status saved`() = testBlocking {
-        whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
-        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-            .thenReturn(buildWCPayPluginInfo(isActive = true))
-        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-            .thenReturn(null)
+    fun `given wcpay installed, when onboarding check completed, then onboarding completed status saved and cached`() =
+        testBlocking {
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(isActive = true))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(null)
 
-        checker.getOnboardingState()
+            checker.getOnboardingState()
 
-        val captor = argumentCaptor<PersistentOnboardingData>()
-        verify(appPrefsWrapper).setCardReaderOnboardingData(
-            anyInt(),
-            anyLong(),
-            anyLong(),
-            captor.capture(),
-        )
-        assertThat(captor.firstValue.status).isEqualTo(CARD_READER_ONBOARDING_COMPLETED)
-    }
+            val captor = argumentCaptor<PersistentOnboardingData>()
+            verify(appPrefsWrapper).setCardReaderOnboardingData(
+                anyInt(),
+                anyLong(),
+                anyLong(),
+                captor.capture(),
+            )
+            assertThat(captor.firstValue.status).isEqualTo(CARD_READER_ONBOARDING_COMPLETED)
+            verify(cardReaderOnboardingCheckResultCache).value =
+                CardReaderOnboardingCheckResultCache.Result.Cached(
+                    CardReaderOnboardingState.OnboardingCompleted(
+                        PluginType.WOOCOMMERCE_PAYMENTS,
+                        wcPayPluginVersion,
+                        countryCode,
+                    )
+                )
+        }
 
     @Test
-    fun `given wcpay installed, when onboarding pending, then onboarding pending status saved`() = testBlocking {
-        whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
-        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-            .thenReturn(buildWCPayPluginInfo(isActive = true))
-        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-            .thenReturn(null)
-        whenever(wcInPersonPaymentsStore.loadAccount(any(), any())).thenReturn(
-            buildPaymentAccountResult(
-                hasPendingRequirements = true,
-                status = WCPaymentAccountResult.WCPaymentAccountStatus.RESTRICTED
+    fun `given wcpay installed, when onboarding pending, then onboarding pending status saved but status not cached`() =
+        testBlocking {
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(isActive = true))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(null)
+            whenever(wcInPersonPaymentsStore.loadAccount(any(), any())).thenReturn(
+                buildPaymentAccountResult(
+                    hasPendingRequirements = true,
+                    status = WCPaymentAccountResult.WCPaymentAccountStatus.RESTRICTED
+                )
             )
-        )
 
-        checker.getOnboardingState()
+            checker.getOnboardingState()
 
-        val captor = argumentCaptor<PersistentOnboardingData>()
-        verify(appPrefsWrapper).setCardReaderOnboardingData(
-            anyInt(),
-            anyLong(),
-            anyLong(),
-            captor.capture(),
-        )
-        assertThat(captor.firstValue.status).isEqualTo(CARD_READER_ONBOARDING_PENDING)
-    }
+            val captor = argumentCaptor<PersistentOnboardingData>()
+            verify(appPrefsWrapper).setCardReaderOnboardingData(
+                anyInt(),
+                anyLong(),
+                anyLong(),
+                captor.capture(),
+            )
+            assertThat(captor.firstValue.status).isEqualTo(CARD_READER_ONBOARDING_PENDING)
+            verify(cardReaderOnboardingCheckResultCache, never()).value = any()
+        }
 
     @Test
-    fun `given wcpay installed, when onboarding pending, then wcpay version saved`() = testBlocking {
-        whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
-        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-            .thenReturn(buildWCPayPluginInfo(isActive = true))
-        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-            .thenReturn(null)
-        whenever(wcInPersonPaymentsStore.loadAccount(any(), any())).thenReturn(
-            buildPaymentAccountResult(
-                hasPendingRequirements = true,
-                status = WCPaymentAccountResult.WCPaymentAccountStatus.RESTRICTED
+    fun `given wcpay installed, when onboarding pending, then wcpay version saved but status not cached`() =
+        testBlocking {
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(isActive = true))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(null)
+            whenever(wcInPersonPaymentsStore.loadAccount(any(), any())).thenReturn(
+                buildPaymentAccountResult(
+                    hasPendingRequirements = true,
+                    status = WCPaymentAccountResult.WCPaymentAccountStatus.RESTRICTED
+                )
             )
-        )
 
-        checker.getOnboardingState()
+            checker.getOnboardingState()
 
-        val captor = argumentCaptor<PersistentOnboardingData>()
-        verify(appPrefsWrapper).setCardReaderOnboardingData(
-            anyInt(),
-            anyLong(),
-            anyLong(),
-            captor.capture(),
-        )
-        assertThat(captor.firstValue.version).isEqualTo(wcPayPluginVersion)
-    }
+            val captor = argumentCaptor<PersistentOnboardingData>()
+            verify(appPrefsWrapper).setCardReaderOnboardingData(
+                anyInt(),
+                anyLong(),
+                anyLong(),
+                captor.capture(),
+            )
+            assertThat(captor.firstValue.version).isEqualTo(wcPayPluginVersion)
+            verify(cardReaderOnboardingCheckResultCache, never()).value = any()
+        }
 
     @Test
     fun `given stripe ext installed, when onboarding completed, then stripe version saved`() = testBlocking {
@@ -776,50 +791,61 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given stripe ext installed, when onboarding completed, then onboarding status saved`() = testBlocking {
-        whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
-        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-            .thenReturn(null)
-        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-            .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
+    fun `given stripe ext installed, when onboarding completed, then onboarding status saved and status is cached`() =
+        testBlocking {
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(null)
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
 
-        checker.getOnboardingState()
+            checker.getOnboardingState()
 
-        val captor = argumentCaptor<PersistentOnboardingData>()
-        verify(appPrefsWrapper).setCardReaderOnboardingData(
-            anyInt(),
-            anyLong(),
-            anyLong(),
-            captor.capture(),
-        )
-        assertThat(captor.firstValue.version).isEqualTo(stripePluginVersion)
-    }
+            val captor = argumentCaptor<PersistentOnboardingData>()
+            verify(appPrefsWrapper).setCardReaderOnboardingData(
+                anyInt(),
+                anyLong(),
+                anyLong(),
+                captor.capture(),
+            )
+            assertThat(captor.firstValue.version).isEqualTo(stripePluginVersion)
+            verify(cardReaderOnboardingCheckResultCache).value =
+                CardReaderOnboardingCheckResultCache.Result.Cached(
+                    CardReaderOnboardingState.OnboardingCompleted(
+                        STRIPE_EXTENSION_GATEWAY,
+                        stripePluginVersion,
+                        countryCode,
+                    )
+                )
+        }
 
     @Test
-    fun `given stripe ext installed, when onboarding pending, then pending status saved`() = testBlocking {
-        whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
-        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-            .thenReturn(null)
-        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-            .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
-        whenever(wcInPersonPaymentsStore.loadAccount(any(), any())).thenReturn(
-            buildPaymentAccountResult(
-                hasPendingRequirements = true,
-                status = WCPaymentAccountResult.WCPaymentAccountStatus.RESTRICTED
+    fun `given stripe ext installed, when onboarding pending, then pending status saved but not cached`() =
+        testBlocking {
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(null)
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(buildStripeExtensionPluginInfo(isActive = true))
+            whenever(wcInPersonPaymentsStore.loadAccount(any(), any())).thenReturn(
+                buildPaymentAccountResult(
+                    hasPendingRequirements = true,
+                    status = WCPaymentAccountResult.WCPaymentAccountStatus.RESTRICTED
+                )
             )
-        )
 
-        checker.getOnboardingState()
+            checker.getOnboardingState()
 
-        val captor = argumentCaptor<PersistentOnboardingData>()
-        verify(appPrefsWrapper).setCardReaderOnboardingData(
-            anyInt(),
-            anyLong(),
-            anyLong(),
-            captor.capture(),
-        )
-        assertThat(captor.firstValue.status).isEqualTo(CARD_READER_ONBOARDING_PENDING)
-    }
+            val captor = argumentCaptor<PersistentOnboardingData>()
+            verify(appPrefsWrapper).setCardReaderOnboardingData(
+                anyInt(),
+                anyLong(),
+                anyLong(),
+                captor.capture(),
+            )
+            assertThat(captor.firstValue.status).isEqualTo(CARD_READER_ONBOARDING_PENDING)
+            verify(cardReaderOnboardingCheckResultCache, never()).value = any()
+        }
 
     @Test
     fun `when payment account loads, then statement descriptor saved`() = testBlocking {
@@ -1401,24 +1427,38 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given cod disabled state, when cod disabled not skipped, then show CashOnDeliveryDisabled`() = testBlocking {
-        whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
-        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-            .thenReturn(null)
-        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-            .thenReturn(buildWCPayPluginInfo(isActive = true))
-        whenever(
-            appPrefsWrapper.isCashOnDeliveryDisabledStateSkipped(
-                anyInt(),
-                anyLong(),
-                anyLong(),
-            )
-        ).thenReturn(false)
-        whenever(cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()).thenReturn(false)
+    fun `given cod disabled state, when cod disabled not skipped, then show CashOnDeliveryDisabled but do not cache result`() =
+        testBlocking {
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+                .thenReturn(null)
+            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+                .thenReturn(buildWCPayPluginInfo(isActive = true))
+            whenever(
+                appPrefsWrapper.isCashOnDeliveryDisabledStateSkipped(
+                    anyInt(),
+                    anyLong(),
+                    anyLong(),
+                )
+            ).thenReturn(false)
+            whenever(cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()).thenReturn(false)
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isInstanceOf(CardReaderOnboardingState.CashOnDeliveryDisabled::class.java)
+            verify(cardReaderOnboardingCheckResultCache, never()).value = any()
+        }
+
+    @Test
+    fun `given value in cache, when get onboarding state, then return cached value`() = testBlocking {
+        val state = mock<CardReaderOnboardingState.OnboardingCompleted>()
+        whenever(cardReaderOnboardingCheckResultCache.value).thenReturn(
+            CardReaderOnboardingCheckResultCache.Result.Cached(state)
+        )
 
         val result = checker.getOnboardingState()
 
-        assertThat(result).isInstanceOf(CardReaderOnboardingState.CashOnDeliveryDisabled::class.java)
+        assertThat(result).isEqualTo(state)
     }
 
     private fun buildPaymentAccountResult(
