@@ -41,11 +41,12 @@ class GetProductQuantityRulesTest : BaseUnitTest() {
     fun `when min max extension is not installed then return null quantity rules`() = testBlocking {
         val productId = 1L
         val plugin = null
-        whenever(wooCommerceStore.getSitePlugin(
-            any(),
-            eq(WooCommerceStore.WooPlugin.WOO_MIN_MAX_QUANTITIES)
-        ))
-            .doReturn(plugin)
+        whenever(
+            wooCommerceStore.getSitePlugin(
+                any(),
+                eq(WooCommerceStore.WooPlugin.WOO_MIN_MAX_QUANTITIES)
+            )
+        ).doReturn(plugin)
 
         val result = sut.invoke(productId)
 
@@ -56,12 +57,13 @@ class GetProductQuantityRulesTest : BaseUnitTest() {
     fun `when min max extension is installed and active then get quantity rules`() = testBlocking {
         val productId = 1L
         val plugin = SitePluginModel().apply { setIsActive(true) }
-        val quantityRules = QuantityRules(2,20,2)
-        whenever(wooCommerceStore.getSitePlugin(
-            any(),
-            eq(WooCommerceStore.WooPlugin.WOO_MIN_MAX_QUANTITIES)
-        ))
-            .doReturn(plugin)
+        val quantityRules = QuantityRules(2, 20, 2)
+        whenever(
+            wooCommerceStore.getSitePlugin(
+                any(),
+                eq(WooCommerceStore.WooPlugin.WOO_MIN_MAX_QUANTITIES)
+            )
+        ).doReturn(plugin)
         whenever(productDetailRepository.getQuantityRules(productId)).doReturn(quantityRules)
 
         val result = sut.invoke(productId)
@@ -73,10 +75,12 @@ class GetProductQuantityRulesTest : BaseUnitTest() {
     fun `when min max extension is installed and NOT active then return null quantity rules`() = testBlocking {
         val productId = 1L
         val plugin = SitePluginModel().apply { setIsActive(false) }
-        whenever(wooCommerceStore.getSitePlugin(
-            any(),
-            eq(WooCommerceStore.WooPlugin.WOO_MIN_MAX_QUANTITIES)
-        ))
+        whenever(
+            wooCommerceStore.getSitePlugin(
+                any(),
+                eq(WooCommerceStore.WooPlugin.WOO_MIN_MAX_QUANTITIES)
+            )
+        )
             .doReturn(plugin)
 
         val result = sut.invoke(productId)
