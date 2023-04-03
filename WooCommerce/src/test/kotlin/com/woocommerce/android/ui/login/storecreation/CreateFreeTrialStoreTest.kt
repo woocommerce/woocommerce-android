@@ -1,20 +1,57 @@
 package com.woocommerce.android.ui.login.storecreation
 
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.wordpress.android.fluxc.model.SiteModel
 
-internal class CreateFreeTrialStoreTest {
+@OptIn(ExperimentalCoroutinesApi::class)
+internal class CreateFreeTrialStoreTest: BaseUnitTest() {
     private lateinit var sut: CreateFreeTrialStore
     private lateinit var storeCreationRepository: StoreCreationRepository
 
     @Before
     fun setUp() {
         createSut()
+    }
+
+    @Test
+    fun `when createFreeTrialSite is called correctly, then free trial store creation starts`() = testBlocking {
+        // Given
+        val siteDomain = "test domain"
+        val siteTitle = "test title"
+        val expectedCreationResult = StoreCreationResult.Success(123L)
+        createSut(siteDomain, siteTitle, expectedCreationResult)
+
+        // When
+        val result = sut.createFreeTrialSite(siteDomain, siteTitle)
+
+        // Then
+        assertThat(result).isEqualTo(expectedCreationResult)
+    }
+
+    @Test
+    fun `when createFreeTrialSite fails, then the error is returned`() = testBlocking {
+        // Given
+        val siteDomain = "test domain"
+        val siteTitle = "test title"
+        val expectedCreationResult = StoreCreationResult.Failure<Long>(
+            StoreCreationErrorType.FREE_TRIAL_ASSIGNMENT_FAILED
+        )
+        createSut(siteDomain, siteTitle, expectedCreationResult)
+
+        // When
+        val result = sut.createFreeTrialSite(siteDomain, siteTitle)
+
+        // Then
+        assertThat(result).isEqualTo(expectedCreationResult)
     }
 
     private fun createSut(
