@@ -6,6 +6,7 @@ import com.woocommerce.android.util.dispatchAndAwait
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.AuthenticationActionBuilder
+import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayload
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticatePayload
@@ -19,7 +20,8 @@ import org.wordpress.android.login.AuthOptions
 import javax.inject.Inject
 
 class WPComLoginRepository @Inject constructor(
-    private val dispatcher: Dispatcher
+    private val dispatcher: Dispatcher,
+    private val wpComAccessToken: AccessToken
 ) {
     suspend fun fetchAuthOptions(emailOrUsername: String): Result<AuthOptions> {
         val action = AccountActionBuilder.newFetchAuthOptionsAction(
@@ -36,6 +38,10 @@ class WPComLoginRepository @Inject constructor(
                 )
             )
         }
+    }
+
+    fun clearAccessToken() {
+        wpComAccessToken.set(null)
     }
 
     suspend fun login(emailOrUsername: String, password: String): Result<Unit> {
