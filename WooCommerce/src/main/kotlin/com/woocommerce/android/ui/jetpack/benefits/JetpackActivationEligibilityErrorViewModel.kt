@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.jetpack.JetpackActivationEligibilityErrorFragmentArgs
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
@@ -30,6 +31,10 @@ class JetpackActivationEligibilityErrorViewModel @Inject constructor(
             isRetrying = isRetrying
         )
     }.asLiveData()
+
+    fun onBackButtonClick() {
+        triggerEvent(Exit)
+    }
 
     data class ViewState(
         val username: String,

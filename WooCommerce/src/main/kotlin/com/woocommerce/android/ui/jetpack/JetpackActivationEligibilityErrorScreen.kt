@@ -36,20 +36,22 @@ import com.woocommerce.android.ui.jetpack.benefits.JetpackActivationEligibilityE
 fun JetpackActivationEligibilityErrorScreen(viewModel: JetpackActivationEligibilityErrorViewModel) {
     viewModel.viewState.observeAsState().value?.let {
         JetpackActivationEligibilityErrorScreen(
-            viewState = it
+            viewState = it,
+            onBackButtonClick = viewModel::onBackButtonClick
         )
     }
 }
 @Composable
 fun JetpackActivationEligibilityErrorScreen(
-    viewState: JetpackActivationEligibilityErrorViewModel.ViewState
+    viewState: JetpackActivationEligibilityErrorViewModel.ViewState,
+    onBackButtonClick: () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
             ToolbarWithHelpButton(
                 navigationIcon = Icons.Filled.ArrowBack,
                 onHelpButtonClick = { },
-                onNavigationButtonClick = { }
+                onNavigationButtonClick = onBackButtonClick
             )
         }
     ) { paddingValues ->
