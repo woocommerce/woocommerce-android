@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-21 11:54:04+0000
+Translation-Revision-Date: 2023-03-28 18:54:09+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="upgrades_plan_ended_name">Terminato il %s</string>
+    <string name="upgrades_current_plan_ended_caption">Il tuo abbonamento è scaduto e hai un accesso limitato a tutte le funzionalità.</string>
+    <string name="free_trial_days_left_plural">%1$d giorni</string>
+    <string name="free_trial_one_day_left">1 giorno</string>
+    <string name="store_onboarding_get_paid_loading_label">Caricamento…</string>
+    <string name="store_onboarding_get_paid_title">impostazioni di pagamento</string>
+    <string name="store_onboarding_task_about_your_store_toolbar_title">Informazioni sul tuo negozio</string>
+    <string name="store_creation_installation_rendering_preview_label">Anteprima di rendering…</string>
+    <string name="jetpack_benefits_open_wpadmin">Apri wp-admin</string>
+    <string name="shipping_label_address_phone_required">È richiesto un numero di telefono</string>
+    <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s, %4$s venduti</string>
+    <string name="analytics_items">elementi</string>
+    <string name="analytics_item">articolo</string>
     <string name="upgrades_error_fetching_data">Errore durante il recupero dei dettagli del piano.</string>
     <string name="upgrades_non_upgradeable_caption">Ora sei un abbonato %1$s. Hai accesso a tutte le nostre funzionalità fino al giorno %2$s. </string>
     <string name="upgrades_trial_ended_caption">La tua prova gratuita è terminata e hai accesso limitato a tutte le funzionalità. Abbonati a %1$s ora.</string>
+    <string name="upgrades_upgradeable_caption">Stai utilizzando il periodo di prova di %1$d giorni. La prova gratuita terminerà il %2$s. Esegui l\'upgrade per sbloccare nuove funzionalità e mantenere attivo il tuo negozio.</string>
     <string name="upgrades_subscription_status">Stato dell\'abbonamento</string>
     <string name="upgrades_title">Miglioramenti</string>
     <string name="upgrades_troubleshooting">Risoluzione dei problemi</string>
@@ -16,7 +30,7 @@ Language: it
     <string name="upgrades_upgrade_now">Aggiorna ora</string>
     <string name="upgrades_report_subscription_issue">Segnala il problema con l\'abbonamento</string>
     <string name="free_trial_upgrade_now">Aggiorna ora</string>
-    <string name="free_trial_days_left">%1$d giorni di prova rimasti.</string>
+    <string name="free_trial_days_left">%1$s giorni di prova rimasti.</string>
     <string name="free_trial_trial_ended">Prova terminata</string>
     <string name="free_trial_your_trial_ended">La tua prova è terminata.</string>
     <string name="store_onboarding_launch_store_generic_error_description">Ops, si sono verificati alcuni errori imprevisti.</string>
@@ -359,7 +373,7 @@ Language: it
     <string name="not_a_valid_qr_code">Il codice QR che hai scansionato non è un codice WooCommerce</string>
     <string name="store_creation_iap_eligibility_check_error_not_available_for_country">La creazione del negozio dall\'app per dispositivi mobili non è attualmente disponibile per il tuo Paese.</string>
     <string name="store_creation_iap_eligibility_check_error_title">Impossibile creare un negozio</string>
-    <string name="store_creation_iap_eligibility_loading_subtitle">Resta connesso.</string>
+    <string name="store_creation_iap_eligibility_loading_subtitle">Non disconnetterti.</string>
     <string name="store_creation_iap_eligibility_loading_title">Stiamo preparando la creazione del tuo negozio</string>
     <string name="review_reply_failure">Si è verificato un errore durante l\'invio della risposta</string>
     <string name="review_reply_success">Risposta inviata!</string>
@@ -1335,7 +1349,6 @@ Language: it
     <string name="card_reader_payment_fetch_order_loading_header">Aggiornamento dello stato dell\'app</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Il cliente ha scelto %1$s</string>
     <string name="shipping_label_origin_address_phone_invalid">I moduli dei clienti richiedono un numero di telefono a 10 cifre</string>
-    <string name="shipping_label_address_phone_required">È obbligatorio un numero di telefono perché questa spedizione richiede un modulo personalizzato</string>
     <string name="shipping_label_create_customs_done">Modulo dei clienti completato</string>
     <string name="print_receipt_label_info_step_7">Se riscontri problemi con la stampa dal tuo dispositivo, contatta l\'assistenza clienti per la tua stampante.</string>
     <string name="print_receipt_label_info_step_6">Se la stampa non è disponibile, puoi sempre salvare la ricevuta come PDF e inviarla via e-mail per stamparla da un altro dispositivo.</string>

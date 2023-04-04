@@ -106,7 +106,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         val reviewsButton = states.last().moreMenuItems.first { it.text == R.string.more_menu_button_reviews }
         assertThat(reviewsButton.icon).isEqualTo(R.drawable.ic_more_menu_reviews)
         assertThat(reviewsButton.badgeState?.textColor).isEqualTo(
-            R.color.color_on_surface_inverted
+            R.color.color_on_primary
         )
         assertThat(reviewsButton.badgeState?.badgeSize).isEqualTo(
             R.dimen.major_150

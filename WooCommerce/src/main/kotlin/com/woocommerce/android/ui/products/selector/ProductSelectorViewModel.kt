@@ -67,6 +67,7 @@ class ProductSelectorViewModel @Inject constructor(
     private val listHandler: ProductListHandler,
     private val variationSelectorRepository: VariationSelectorRepository,
     private val resourceProvider: ResourceProvider,
+    private val tracker: ProductSelectorTracker,
     private val productsMapper: ProductsMapper
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -79,6 +80,7 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     private val navArgs: ProductSelectorFragmentArgs by savedState.navArgs()
+    private val productSelectorFlow = navArgs.productSelectorFlow
 
     private val searchQuery = savedState.getStateFlow(this, "")
     private val loadingState = MutableStateFlow(IDLE)
@@ -211,6 +213,10 @@ class ProductSelectorViewModel @Inject constructor(
 
     fun onClearButtonClick() {
         launch {
+            tracker.trackClearSelectionButtonClicked(
+                productSelectorFlow,
+                ProductSelectorTracker.ProductSelectorSource.ProductSelector
+            )
             delay(STATE_UPDATE_DELAY) // let the animation play out before hiding the button
             selectedItems.value = emptyList()
         }
@@ -230,16 +236,24 @@ class ProductSelectorViewModel @Inject constructor(
 
     fun onProductClick(item: ProductListItem) {
         if (item.type == VARIABLE && item.numVariations > 0) {
-            triggerEvent(NavigateToVariationSelector(item.id, item.selectedVariationIds))
+            triggerEvent(
+                NavigateToVariationSelector(
+                    item.id,
+                    item.selectedVariationIds,
+                    productSelectorFlow
+                )
+            )
         } else if (item.type != VARIABLE) {
             selectedItems.update { items ->
                 val selectedProductItems = items.filter {
                     it is SelectedItem.ProductOrVariation || it is SelectedItem.Product
                 }
                 if (selectedProductItems.map { it.id }.contains(item.id)) {
+                    tracker.trackItemUnselected(productSelectorFlow)
                     val productItemToUnselect = selectedProductItems.filter { it.id == item.id }.toSet()
                     selectedItems.value - productItemToUnselect
                 } else {
+                    tracker.trackItemSelected(productSelectorFlow)
                     selectedItems.value + SelectedItem.Product(item.id)
                 }
             }
@@ -247,6 +261,7 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     fun onDoneButtonClick() {
+        tracker.trackDoneButtonClicked(productSelectorFlow, selectedItems.value.size)
         triggerEvent(ExitWithResult(selectedItems.value))
     }
 
@@ -418,6 +433,10 @@ class ProductSelectorViewModel @Inject constructor(
                 return !(product.productType == VARIABLE && product.numVariations == 0)
             }
         }
+    }
+
+    enum class ProductSelectorFlow {
+        OrderCreation, CouponEdition, Undefined
     }
 }
 

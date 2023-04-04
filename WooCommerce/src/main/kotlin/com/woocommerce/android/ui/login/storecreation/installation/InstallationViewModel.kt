@@ -81,7 +81,8 @@ class InstallationViewModel @Inject constructor(
                 val properties = mapOf(
                     AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getStoreCreationSource(),
                     AnalyticsTracker.KEY_URL to newStore.data.domain!!,
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE
+                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE,
+                    AnalyticsTracker.KEY_IS_FREE_TRIAL to FeatureFlag.FREE_TRIAL_M2.isEnabled()
                 )
                 analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SITE_CREATED, properties)
 
@@ -91,7 +92,8 @@ class InstallationViewModel @Inject constructor(
                     AnalyticsEvent.SITE_CREATION_FAILED,
                     mapOf(
                         AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getStoreCreationSource(),
-                        AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE
+                        AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE,
+                        AnalyticsTracker.KEY_IS_FREE_TRIAL to FeatureFlag.FREE_TRIAL_M2.isEnabled()
                     )
                 )
 

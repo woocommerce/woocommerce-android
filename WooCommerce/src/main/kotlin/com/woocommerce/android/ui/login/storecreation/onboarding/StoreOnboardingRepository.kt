@@ -40,23 +40,25 @@ class StoreOnboardingRepository @Inject constructor(
                 WooLog.d(WooLog.T.ONBOARDING, "Success fetching onboarding tasks")
                 val mobileSupportedTasks = result.model?.map { it.toOnboardingTask() }
                     ?.filter { it.type != MOBILE_UNSUPPORTED }
-                    ?.sortedBy { it.type.order }
                     ?.toMutableList()
-                    ?: emptyList<OnboardingTask>().toMutableList()
+                    ?.apply {
+                        if (
+                            selectedSite.get().isFreeTrial &&
+                            !this.any { it.type == LAUNCH_YOUR_STORE }
+                        ) {
+                            add(
+                                OnboardingTask(
+                                    type = LAUNCH_YOUR_STORE,
+                                    isComplete = false,
+                                    isVisible = true,
+                                    isVisited = false
+                                )
+                            )
+                        }
+                    }
+                    ?.sortedBy { it.type.order }
+                    ?: emptyList()
 
-                if (
-                    selectedSite.get().isFreeTrial &&
-                    !mobileSupportedTasks.any { it.type == LAUNCH_YOUR_STORE }
-                ) {
-                    mobileSupportedTasks.add(
-                        OnboardingTask(
-                            type = LAUNCH_YOUR_STORE,
-                            isComplete = false,
-                            isVisible = true,
-                            isVisited = false
-                        )
-                    )
-                }
                 if (mobileSupportedTasks.all { it.isComplete }) {
                     WooLog.d(
                         WooLog.T.ONBOARDING,

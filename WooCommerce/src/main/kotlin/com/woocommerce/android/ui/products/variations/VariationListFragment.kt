@@ -188,6 +188,9 @@ class VariationListFragment :
                     hideProgressDialog()
                 }
             }
+            new.isAddVariationButtonVisible.takeIfNotEqualTo(old?.isAddVariationButtonVisible) { isVisible ->
+                binding.addVariationButton.isVisible = isVisible
+            }
         }
 
         viewModel.variationList.observe(viewLifecycleOwner) {

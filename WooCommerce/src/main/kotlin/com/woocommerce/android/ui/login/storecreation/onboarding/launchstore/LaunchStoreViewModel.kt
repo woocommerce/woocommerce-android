@@ -3,6 +3,10 @@ package com.woocommerce.android.ui.login.storecreation.onboarding.launchstore
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.FREE_TRIAL_UPGRADE_NOW_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
@@ -27,6 +31,7 @@ class LaunchStoreViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val launchStoreOnboardingRepository: StoreOnboardingRepository,
     private val selectedSite: SelectedSite,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
     val userAgent: UserAgent
 ) : ScopedViewModel(savedStateHandle) {
@@ -50,14 +55,20 @@ class LaunchStoreViewModel @Inject constructor(
         launch {
             val result = launchStoreOnboardingRepository.launchStore()
             when (result) {
-                Success -> _viewState.value = _viewState.value.copy(isStoreLaunched = true)
+                Success -> {
+                    analyticsTrackerWrapper.track(
+                        stat = AnalyticsEvent.STORE_ONBOARDING_TASK_COMPLETED,
+                        properties = mapOf(AnalyticsTracker.ONBOARDING_TASK_KEY to AnalyticsTracker.VALUE_LAUNCH_SITE)
+                    )
+                    _viewState.value = _viewState.value.copy(isStoreLaunched = true)
+                }
                 is Error -> {
                     when (result.type) {
                         ALREADY_LAUNCHED -> triggerEvent(
                             ShowDialog(
                                 titleId = R.string.store_onboarding_store_already_launched_error_title,
                                 messageId = R.string.store_onboarding_store_already_launched_error_description,
-                                positiveButtonId = R.string.link_dialog_button_ok
+                                positiveButtonId = R.string.store_onboarding_launch_store_ok
                             )
                         )
                         GENERIC_ERROR -> triggerEvent(
@@ -77,6 +88,10 @@ class LaunchStoreViewModel @Inject constructor(
     }
 
     fun onUpgradePlanBannerClicked() {
+        analyticsTrackerWrapper.track(
+            FREE_TRIAL_UPGRADE_NOW_TAPPED,
+            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_BANNER)
+        )
         triggerEvent(
             UpgradeToEcommercePlan(
                 url = PLANS_URL + selectedSite.get().siteId

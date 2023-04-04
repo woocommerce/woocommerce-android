@@ -9,15 +9,12 @@ import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.view.animation.RotateAnimation
 import android.view.animation.TranslateAnimation
 import androidx.core.view.isVisible
-import com.woocommerce.android.R
 import com.woocommerce.android.util.WooAnimUtils.Duration.EXTRA_LONG
-import com.woocommerce.android.util.WooAnimUtils.Duration.LONG
 
 private const val REPEAT_COUNT_LOOP = -1
 private const val DEGREES_0 = 0f
@@ -125,32 +122,6 @@ object WooAnimUtils {
         }
     }
 
-    fun scale(
-        target: View,
-        scaleStart: Float,
-        scaleEnd: Float,
-        duration: Duration
-    ) {
-        val scaleX = PropertyValuesHolder.ofFloat(
-            View.SCALE_X,
-            scaleStart,
-            scaleEnd
-        )
-        val scaleY = PropertyValuesHolder.ofFloat(
-            View.SCALE_Y,
-            scaleStart,
-            scaleEnd
-        )
-        val animator = ObjectAnimator.ofPropertyValuesHolder(
-            target,
-            scaleX,
-            scaleY
-        )
-        animator.duration = duration.toMillis(target.context)
-        animator.interpolator = AccelerateDecelerateInterpolator()
-        animator.start()
-    }
-
     fun animateBottomBar(view: View, show: Boolean, duration: Duration = DEFAULT_DURATION) {
         animateBar(view, show, false, duration)
     }
@@ -188,13 +159,6 @@ object WooAnimUtils {
         view.clearAnimation()
         view.startAnimation(animation)
         view.isVisible = isVisible
-    }
-
-    fun pop(view: View, duration: Duration = LONG) {
-        AnimationUtils.loadAnimation(view.context, R.anim.pop)?.let { animation ->
-            animation.duration = duration.toMillis(view.context)
-            view.startAnimation(animation)
-        }
     }
 
     fun rotate(view: View, duration: Duration = EXTRA_LONG) {

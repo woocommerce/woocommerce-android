@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.payments.cardreader
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
@@ -43,6 +43,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
@@ -137,7 +138,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
     private val tracker: CardReaderTracker = mock()
-    private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val appPrefs: AppPrefs = mock()
     private val currencyFormatter: CurrencyFormatter = mock()
     private val wooStore: WooCommerceStore = mock()
 
@@ -168,6 +169,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val cardReaderPaymentReaderTypeStateProvider = CardReaderPaymentReaderTypeStateProvider()
     private val cardReaderPaymentOrderHelper: CardReaderPaymentOrderHelper = mock()
     private val cardReaderPaymentReceiptHelper: CardReaderPaymentReceiptHelper = mock()
+    private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
 
     @Before
     fun setUp() = testBlocking {
@@ -179,7 +181,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             paymentCollectibilityChecker = paymentCollectibilityChecker,
             interacRefundableChecker = interacRefundableChecker,
             tracker = tracker,
-            appPrefsWrapper = appPrefsWrapper,
+            appPrefs = appPrefs,
             currencyFormatter = currencyFormatter,
             errorMapper = errorMapper,
             interacRefundErrorMapper = interacRefundErrorMapper,
@@ -189,6 +191,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             cardReaderPaymentReaderTypeStateProvider = cardReaderPaymentReaderTypeStateProvider,
             cardReaderPaymentOrderHelper = cardReaderPaymentOrderHelper,
             cardReaderPaymentReceiptHelper = cardReaderPaymentReceiptHelper,
+            cardReaderOnboardingChecker = cardReaderOnboardingChecker,
         )
 
         whenever(orderRepository.getOrderById(any())).thenReturn(mockedOrder)
@@ -214,7 +217,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(selectedSite.get()).thenReturn(siteModel)
         whenever(paymentCollectibilityChecker.isCollectable(any())).thenReturn(true)
         whenever(interacRefundableChecker.isRefundable(any())).thenReturn(true)
-        whenever(appPrefsWrapper.getCardReaderStatementDescriptor(anyOrNull(), anyOrNull(), anyOrNull()))
+        whenever(appPrefs.getCardReaderStatementDescriptor(anyOrNull(), anyOrNull(), anyOrNull()))
             .thenReturn("test statement descriptor")
         whenever(wooStore.getStoreCountryCode(any())).thenReturn("US")
         whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
@@ -509,7 +512,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when flow started, then correct statement descriptor is propagated to CardReaderManager`() =
         testBlocking {
             val expectedResult = "hooray"
-            whenever(appPrefsWrapper.getCardReaderStatementDescriptor(anyOrNull(), anyOrNull(), anyOrNull()))
+            whenever(appPrefs.getCardReaderStatementDescriptor(anyOrNull(), anyOrNull(), anyOrNull()))
                 .thenReturn(expectedResult)
             val captor = argumentCaptor<PaymentInfo>()
 
@@ -789,6 +792,20 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(BuiltInReaderFailedPaymentState::class.java)
+        }
+
+    @Test
+    fun `when payment fails, then invalidate onboarding cache`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(Generic))
+                .thenReturn(PaymentFlowError.Generic)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithEmptyDataForRetry) }
+            }
+
+            viewModel.start()
+
+            verify(cardReaderOnboardingChecker).invalidateCache()
         }
 
     @Test
@@ -3117,6 +3134,36 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when interac refund fails, then invalidate onboarding cache`() =
+        testBlocking {
+            setupViewModelForInteracRefund()
+            whenever(
+                interacRefundErrorMapper.mapRefundErrorToUiError(
+                    CardInteracRefundStatus.RefundStatusErrorType.Generic
+                )
+            ).thenReturn(InteracRefundFlowError.Generic)
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow {
+                    emit(
+                        CardInteracRefundStatus.InteracRefundFailure(
+                            CardInteracRefundStatus.RefundStatusErrorType.Generic,
+                            "",
+                            RefundParams(
+                                amount = BigDecimal.TEN,
+                                chargeId = "",
+                                currency = "USD"
+                            )
+                        )
+                    )
+                }
+            }
+
+            viewModel.start()
+
+            verify(cardReaderOnboardingChecker).invalidateCache()
+        }
+
+    @Test
     fun `given chargeId is null, when interac refund initiated, then proper state is shown`() =
         testBlocking {
             setupViewModelForInteracRefund()
@@ -3874,7 +3921,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             paymentCollectibilityChecker = paymentCollectibilityChecker,
             interacRefundableChecker = interacRefundableChecker,
             tracker = tracker,
-            appPrefsWrapper = appPrefsWrapper,
+            appPrefs = appPrefs,
             currencyFormatter = currencyFormatter,
             errorMapper = errorMapper,
             interacRefundErrorMapper = interacRefundErrorMapper,
@@ -3884,6 +3931,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             cardReaderPaymentReaderTypeStateProvider = cardReaderPaymentReaderTypeStateProvider,
             cardReaderPaymentOrderHelper = cardReaderPaymentOrderHelper,
             cardReaderPaymentReceiptHelper = cardReaderPaymentReceiptHelper,
+            cardReaderOnboardingChecker = cardReaderOnboardingChecker,
         )
     }
 
@@ -3899,7 +3947,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             paymentCollectibilityChecker = paymentCollectibilityChecker,
             interacRefundableChecker = interacRefundableChecker,
             tracker = tracker,
-            appPrefsWrapper = appPrefsWrapper,
+            appPrefs = appPrefs,
             currencyFormatter = currencyFormatter,
             errorMapper = errorMapper,
             interacRefundErrorMapper = interacRefundErrorMapper,
@@ -3909,6 +3957,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             cardReaderPaymentReaderTypeStateProvider = cardReaderPaymentReaderTypeStateProvider,
             cardReaderPaymentOrderHelper = cardReaderPaymentOrderHelper,
             cardReaderPaymentReceiptHelper = cardReaderPaymentReceiptHelper,
+            cardReaderOnboardingChecker = cardReaderOnboardingChecker,
         )
     }
 }

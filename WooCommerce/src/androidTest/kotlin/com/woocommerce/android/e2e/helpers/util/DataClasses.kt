@@ -26,6 +26,7 @@ val productTypesMap = mapOf(
 )
 
 val orderStatusMap = mapOf(
+    "completed" to "Completed",
     "pending" to "Pending payment",
     "processing" to "Processing"
 )
@@ -44,14 +45,16 @@ data class ReviewData(
 }
 
 data class ProductData(
-    val id: Int,
+    val id: Int = -1,
     val name: String,
     val stockStatusRaw: String,
     val priceDiscountedRaw: String,
-    val priceRegularRaw: String,
-    val typeRaw: String,
-    val rating: Int,
-    val reviewsCount: Int
+    val priceRegularRaw: String = "",
+    val typeRaw: String = "",
+    val rating: Int = -1,
+    val reviewsCount: Int = -1,
+    val sku: String = "",
+    val variations: String = ""
 ) {
     val stockStatus = productStatusesMap[stockStatusRaw]
     val price = getPriceDescription()
@@ -74,17 +77,15 @@ data class ProductData(
 }
 
 data class OrderData(
-    val customer: String,
-    val customerNoteRaw: String,
-    val feeRaw: String,
-    val id: Int,
-    val productName: String,
-    val shippingRaw: String,
-    val statusRaw: String,
-    val totalRaw: String
+    val customerName: String = "",
+    val customerNoteRaw: String = "",
+    val feeRaw: String = "",
+    val id: Int = -1,
+    val productName: String = "",
+    val shippingRaw: String = "",
+    val statusRaw: String = "",
+    val totalRaw: String = "",
 ) {
-    // there is a white space in the text value returned by the element, adjusting here to match that
-    val customerName = "$customer "
     val customerNote = "\"$customerNoteRaw\""
     val feeAmount = "\$$feeRaw"
     val shippingAmount = "\$$shippingRaw"

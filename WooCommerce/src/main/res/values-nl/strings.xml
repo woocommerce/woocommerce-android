@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-23 23:54:39+0000
+Translation-Revision-Date: 2023-03-30 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="upgrades_plan_ended_name">%s beëindigd</string>
+    <string name="upgrades_current_plan_ended_caption">Je abonnement is verlopen en je hebt beperkte toegang tot alle functies.</string>
+    <string name="free_trial_days_left_plural">%1$d dagen</string>
+    <string name="free_trial_one_day_left">1 dag</string>
+    <string name="store_onboarding_get_paid_loading_label">Laden…</string>
+    <string name="store_onboarding_get_paid_title">Betalingsconfiguratie</string>
+    <string name="store_onboarding_task_about_your_store_toolbar_title">Over je winkel</string>
+    <string name="store_creation_installation_rendering_preview_label">Voorbeeldweergave renderen…</string>
+    <string name="jetpack_benefits_open_wpadmin">Wp-admin openen</string>
+    <string name="shipping_label_address_phone_required">Een telefoonnummer is vereist</string>
+    <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s, %4$s verkocht</string>
+    <string name="analytics_items">artikelen</string>
+    <string name="analytics_item">artikel</string>
     <string name="upgrades_error_fetching_data">Fout bij het ophalen van de abonnementsgegevens</string>
     <string name="upgrades_non_upgradeable_caption">Je bent een %1$s abonnee! Tot %2$s heb je toegang tot al onze functies. </string>
     <string name="upgrades_trial_ended_caption">Je proefversie is verlopen waardoor je nu maar beperkt toegang hebt tot alle functies. Nu abonneren op %1$s.</string>
+    <string name="upgrades_upgradeable_caption">Je gebruikt het gratis proefabonnement van %1$d dagen. Je gratis proefabonnement loopt af over %2$s. Upgrade om nieuwe functies te ontgrendelen en je winkel draaiende te houden.</string>
     <string name="upgrades_subscription_status">Abonnementsstatus</string>
     <string name="upgrades_title">Upgrades</string>
     <string name="upgrades_troubleshooting">Probleemoplossing</string>
@@ -16,7 +30,7 @@ Language: nl
     <string name="upgrades_upgrade_now">Upgrade nu</string>
     <string name="upgrades_report_subscription_issue">Meld probleem met abonnement</string>
     <string name="free_trial_upgrade_now">Upgrade nu</string>
-    <string name="free_trial_days_left">%1$d dagen resterend van je proefversie</string>
+    <string name="free_trial_days_left">%1$s dagen resterend van je proefversie</string>
     <string name="free_trial_trial_ended">Einde proefabonnement</string>
     <string name="free_trial_your_trial_ended">Je proefversie is beëindigd.</string>
     <string name="store_onboarding_launch_store_generic_error_description">Oeps, er zijn onverwachte fouten opgetreden.</string>
@@ -1335,7 +1349,6 @@ Language: nl
     <string name="card_reader_payment_fetch_order_loading_header">Status in de app aan het bijwerken…</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Je klant heeft het volgende geselecteerd %1$s</string>
     <string name="shipping_label_origin_address_phone_invalid">Voor douaneformulieren is een tiencijferig telefoonnummer verplicht</string>
-    <string name="shipping_label_address_phone_required">Een telefoonnummer is verplicht omdat deze verzending een douaneformulier vereist</string>
     <string name="shipping_label_create_customs_done">Douaneformulier ingevuld</string>
     <string name="print_receipt_label_info_step_7">Als je problemen ervaart met afdrukken vanaf je apparaat, neem dan contact op met de klantenservice van uw printer.</string>
     <string name="print_receipt_label_info_step_6">Als afdrukken niet beschikbaar is, kan je je kwitantie altijd opslaan als pdf en hem per e-mail versturen om hem op een ander apparaat af te drukken.</string>

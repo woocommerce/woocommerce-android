@@ -68,6 +68,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         fun onRequestLogout()
         fun onProductAddonsOptionChanged(enabled: Boolean)
         fun onCouponsOptionChanged(enabled: Boolean)
+        fun onTapToPayOptionChanged(enabled: Boolean)
     }
 
     private lateinit var settingsListener: AppSettingsListener
@@ -212,8 +213,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             binding.domainGroup.isVisible = presenter.isDomainOptionVisible
             binding.optionDomain.setOnClickListener {
                 AnalyticsTracker.track(SETTINGS_DOMAINS_TAPPED)
-                AppPrefs.setCustomDomainsSource(AnalyticsTracker.VALUE_SETTINGS)
-                showDomainChooser()
+                showDomainDashboard()
             }
         }
 
@@ -222,7 +222,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         presenter.setupApplicationPasswordsSettings()
     }
 
-    private fun showDomainChooser() {
+    private fun showDomainDashboard() {
         findNavController()
             .navigateSafely(MainSettingsFragmentDirections.actionMainSettingsFragmentToNavGraphDomainChange())
     }
