@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.login.storecreation.StoreCreationResult
 import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.NavigateToStoreInstallation
 import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.StoreNamePickerState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -176,7 +177,8 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
             mapOf(
                 AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_NAME,
                 AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE,
-                AnalyticsTracker.KEY_SOURCE to storeCreationSource
+                AnalyticsTracker.KEY_SOURCE to storeCreationSource,
+                AnalyticsTracker.KEY_IS_FREE_TRIAL to FeatureFlag.FREE_TRIAL_M2.isEnabled()
             )
         )
         assertThat(latestEvent).isEqualTo(MultiLiveEvent.Event.Exit)
