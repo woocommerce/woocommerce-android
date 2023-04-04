@@ -1,17 +1,17 @@
 package com.woocommerce.android.ui.login.storecreation
 
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Failed
-import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Loading
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Finished
+import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Loading
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_ADDRESS_ALREADY_EXISTS
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository.SiteCreationData
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.Companion.NEW_SITE_LANGUAGE_ID
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.Companion.NEW_SITE_THEME
-import java.util.TimeZone
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
+import java.util.TimeZone
+import javax.inject.Inject
 
 class CreateFreeTrialStore @Inject constructor(
     private val repository: StoreCreationRepository
@@ -31,7 +31,7 @@ class CreateFreeTrialStore @Inject constructor(
             TimeZone.getDefault().id
         ).recoverIfSiteExists(storeDomain)
 
-        when(result) {
+        when (result) {
             is StoreCreationResult.Success -> {
                 _state.value = Finished
                 emit(result.data)

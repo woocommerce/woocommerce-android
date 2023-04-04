@@ -20,7 +20,7 @@ import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.model.SiteModel
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class CreateFreeTrialStoreTest: BaseUnitTest() {
+internal class CreateFreeTrialStoreTest : BaseUnitTest() {
     private lateinit var sut: CreateFreeTrialStore
     private lateinit var storeCreationRepository: StoreCreationRepository
 
