@@ -48,12 +48,15 @@ class ProductSelectorTracker @Inject constructor(private val tracker: AnalyticsT
         }
     }
 
-    fun trackDoneButtonClicked(flow: ProductSelectorFlow, selectedItemsCount: Int) {
+    fun trackDoneButtonClicked(flow: ProductSelectorFlow, selectedItems: List<ProductSelectorViewModel.SelectedItem>) {
         when (flow) {
             ProductSelectorFlow.OrderCreation -> {
                 tracker.track(
                     AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED,
-                    mapOf(AnalyticsTracker.KEY_PRODUCT_COUNT to selectedItemsCount)
+                    mapOf(
+                        AnalyticsTracker.KEY_PRODUCT_COUNT to selectedItems.size,
+                        AnalyticsTracker.KEY_PRODUCT_SELECTOR_SOURCE to selectedItems.map { it.source }
+                    )
                 )
             }
             ProductSelectorFlow.CouponEdition -> {}

@@ -7,9 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.combine
-import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_SELECTOR_SOURCE
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Product
@@ -323,14 +320,8 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     fun onDoneButtonClick() {
-        tracker.trackDoneButtonClicked(productSelectorFlow, selectedItems.value.size)
+        tracker.trackDoneButtonClicked(productSelectorFlow, selectedItems.value)
         triggerEvent(ExitWithResult(selectedItems.value))
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED,
-            mapOf(
-                KEY_PRODUCT_SELECTOR_SOURCE to selectedItems.value.map { it.source }
-            )
-        )
     }
 
     fun onSearchQueryChanged(query: String) {
