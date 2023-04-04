@@ -341,7 +341,10 @@ class VariationDetailCardBuilder(
             properties = properties,
             showTitle = true,
             onClick = {
-                viewModel.onEditVariationCardClicked(ViewProductQuantityRules(rules))
+                viewModel.onEditVariationCardClicked(
+                    ViewProductQuantityRules(rules),
+                    AnalyticsEvent.PRODUCT_DETAILS_VIEW_QUANTITY_RULES_TAPPED
+                )
             }
         )
     }
