@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
@@ -70,15 +71,27 @@ private fun SummaryBody(modifier: Modifier) {
     Column(modifier = modifier) {
         Text(
             text = stringResource(id = R.string.free_trial_summary_title),
-            style = MaterialTheme.typography.h4
+            style = MaterialTheme.typography.h4,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(
+                end = dimensionResource(id = R.dimen.major_400),
+                bottom = dimensionResource(id = R.dimen.major_100)
+            )
         )
         Text(
             text = stringResource(id = R.string.free_trial_summary_advertise),
-            style = MaterialTheme.typography.body1
+            style = MaterialTheme.typography.body1,
+            modifier = Modifier.padding(
+                bottom = dimensionResource(id = R.dimen.major_200)
+            )
         )
         Text(
             text = stringResource(id = R.string.free_trial_summary_try_it),
-            style = MaterialTheme.typography.h5
+            style = MaterialTheme.typography.h5,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(
+                bottom = dimensionResource(id = R.dimen.major_100)
+            )
         )
     }
 }
