@@ -69,6 +69,11 @@ class JitmViewModel @Inject constructor(
                 model.featureClass
             )
 
+            val assets = mapOf(
+                "background_image_url" to "https://w7.pngwing.com/pngs/308/74/png-transparent-computer-icons-setting-icon-cdr-svg-setting-icon.png",
+                "badge_image_url" to "https://img.freepik.com/free-icon/internet_318-922355.jpg"
+            )
+
             _jitmState.value = BannerState.DisplayBannerState(
                 onPrimaryActionClicked = {
                     onJitmCtaClicked(
@@ -86,8 +91,10 @@ class JitmViewModel @Inject constructor(
                 title = UiString.UiStringText(model.content.message),
                 description = UiString.UiStringText(model.content.description),
                 primaryActionLabel = UiString.UiStringText(model.cta.message),
-                backgroundImage = model.assets.getBackgroundImage(),
-                badgeIcon = model.assets.getBadgeIcon(),
+//                backgroundImage = model.assets.getBackgroundImage(),
+//                badgeIcon = model.assets.getBadgeIcon(),
+                backgroundImage = assets.getBackgroundImage(),
+                badgeIcon = assets.getBadgeIcon(),
             )
         } ?: run {
             _jitmState.value = BannerState.HideBannerState
