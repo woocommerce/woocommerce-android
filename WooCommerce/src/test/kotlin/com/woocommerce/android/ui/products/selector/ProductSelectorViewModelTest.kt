@@ -281,22 +281,13 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
             ).initSavedStateHandle()
             val recentOrdersList = generateTestOrders()
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(recentOrdersList)
             val argumentCaptor = argumentCaptor<List<Long>>()
 
-            ProductSelectorViewModel(
-                navArgs,
-                currencyFormatter,
-                wooCommerceStore,
-                orderStore,
-                selectedSite,
-                listHandler,
-                variationSelectorRepository,
-                resourceProvider,
-                productsMapper,
-            )
+            createViewModel(navArgs)
 
             verify(productsMapper, times(2)).mapProductIdsToProduct(argumentCaptor.capture())
             assertThat(argumentCaptor.firstValue).isEqualTo(
@@ -311,6 +302,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
             ).initSavedStateHandle()
             val ordersThatAreNotPaidYet = mutableListOf<OrderEntity>()
             repeat(10) {
@@ -329,17 +321,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
             val argumentCaptor = argumentCaptor<List<Long>>()
 
-            ProductSelectorViewModel(
-                navArgs,
-                currencyFormatter,
-                wooCommerceStore,
-                orderStore,
-                selectedSite,
-                listHandler,
-                variationSelectorRepository,
-                resourceProvider,
-                productsMapper,
-            )
+            createViewModel(navArgs)
 
             verify(productsMapper, times(2)).mapProductIdsToProduct(argumentCaptor.capture())
             assertThat(argumentCaptor.firstValue).isEqualTo(
