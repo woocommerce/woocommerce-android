@@ -349,22 +349,13 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation
             ).initSavedStateHandle()
             val ordersList = generateTestOrders()
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(ordersList)
             whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(ProductTestUtils.generateProductList())
 
-            val sut = ProductSelectorViewModel(
-                navArgs,
-                currencyFormatter,
-                wooCommerceStore,
-                orderStore,
-                selectedSite,
-                listHandler,
-                variationSelectorRepository,
-                resourceProvider,
-                productsMapper,
-            )
+            val sut = createViewModel(navArgs)
             sut.onSearchQueryChanged("Test query")
 
             var viewState: ProductSelectorViewModel.ViewState? = null
@@ -382,22 +373,13 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation
             ).initSavedStateHandle()
             val ordersList = generateTestOrders()
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(ordersList)
             whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(ProductTestUtils.generateProductList())
 
-            val sut = ProductSelectorViewModel(
-                navArgs,
-                currencyFormatter,
-                wooCommerceStore,
-                orderStore,
-                selectedSite,
-                listHandler,
-                variationSelectorRepository,
-                resourceProvider,
-                productsMapper,
-            )
+            val sut = createViewModel(navArgs)
             sut.onSearchQueryChanged("Test query")
 
             var viewState: ProductSelectorViewModel.ViewState? = null
