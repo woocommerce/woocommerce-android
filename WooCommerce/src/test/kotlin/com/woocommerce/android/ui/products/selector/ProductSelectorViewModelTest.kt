@@ -511,6 +511,52 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `given product selected from recent section, then track correct source`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+            ).initSavedStateHandle()
+            val ordersThatAreNotPaidYet = mutableListOf<OrderEntity>()
+            val recentOrdersList = generateTestOrders()
+            val totalOrders = ordersThatAreNotPaidYet + recentOrdersList
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+
+            val sut = ProductSelectorViewModel(
+                navArgs,
+                currencyFormatter,
+                wooCommerceStore,
+                orderStore,
+                selectedSite,
+                listHandler,
+                variationSelectorRepository,
+                resourceProvider,
+                productsMapper,
+                analyticsTracksWrapper,
+            )
+            sut.onProductClick(
+                item = generateProductListItem(id = 0L),
+                productSourceForTracking = ProductSourceForTracking.RECENT
+            )
+            sut.onProductClick(
+                item = generateProductListItem(id = 1L),
+                productSourceForTracking = ProductSourceForTracking.POPULAR
+            )
+            sut.onDoneButtonClick()
+
+            verify(analyticsTracksWrapper).track(
+                PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED,
+                mapOf(
+                    KEY_PRODUCT_SELECTOR_SOURCE to listOf(
+                        ProductSourceForTracking.RECENT,
+                        ProductSourceForTracking.POPULAR
+                    )
+                )
+            )
+        }
+    }
+
     //endregion
 
     private fun generateProductListItem(
