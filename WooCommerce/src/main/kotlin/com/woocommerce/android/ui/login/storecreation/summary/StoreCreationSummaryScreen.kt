@@ -47,12 +47,12 @@ private fun StoreCreationSummaryScreen(
     }) {
         Column(
             modifier = Modifier
+                .background(MaterialTheme.colors.surface)
                 .padding(it)
                 .fillMaxSize()
         ) {
             SummaryBody(
                 modifier = Modifier
-                    .background(MaterialTheme.colors.surface)
                     .fillMaxWidth()
                     .padding(dimensionResource(id = R.dimen.major_125))
                     .weight(4f)
