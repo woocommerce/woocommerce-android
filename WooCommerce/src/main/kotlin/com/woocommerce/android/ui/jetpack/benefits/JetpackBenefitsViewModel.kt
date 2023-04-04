@@ -80,7 +80,19 @@ class JetpackBenefitsViewModel @Inject constructor(
                         )
                     }
                     JetpackStatusFetchResponse.FORBIDDEN -> {
-                        triggerEvent(OpenJetpackEligibilityError)
+                        launch {
+                            userEligibilityFetcher.fetchUserInfo().fold(
+                                onSuccess = { user ->
+                                    triggerEvent(OpenJetpackEligibilityError(
+                                        user.username,
+                                        user.roles.first().value
+                                    ))
+                                },
+                                onFailure = {
+                                    triggerEvent(ShowSnackbar(string.error_generic))
+                                }
+                            )
+                        }
                     }
                     JetpackStatusFetchResponse.NOT_FOUND -> {
                         launch {
@@ -95,7 +107,10 @@ class JetpackBenefitsViewModel @Inject constructor(
                                             )
                                         )
                                     } else {
-                                        triggerEvent(OpenJetpackEligibilityError)
+                                        triggerEvent(OpenJetpackEligibilityError(
+                                            user.username,
+                                            user.roles.first().value
+                                        ))
                                     }
                                 },
                                 onFailure = {
@@ -137,5 +152,5 @@ class JetpackBenefitsViewModel @Inject constructor(
         val jetpackStatus: JetpackStatus
     ) : Event()
     data class OpenWpAdminJetpackActivation(val activationUrl: String) : Event()
-    object OpenJetpackEligibilityError : Event()
+    data class OpenJetpackEligibilityError(val username: String, val role: String) : Event()
 }

@@ -82,7 +82,10 @@ class JetpackBenefitsDialog : DialogFragment() {
                 is JetpackBenefitsViewModel.OpenJetpackEligibilityError -> {
                     findNavController().navigateSafely(
                         JetpackBenefitsDialogDirections
-                            .actionJetpackBenefitsDialogToJetpackActivationEligibilityErrorFragment()
+                            .actionJetpackBenefitsDialogToJetpackActivationEligibilityErrorFragment(
+                                username = event.username,
+                                role = event.role
+                            )
                     )
                 }
 
