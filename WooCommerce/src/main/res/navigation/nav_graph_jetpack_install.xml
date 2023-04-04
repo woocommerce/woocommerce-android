@@ -38,18 +38,18 @@
         </action>
         <action
             android:id="@+id/action_jetpackBenefitsDialog_to_jetpackActivationEligibilityErrorFragment"
-            app:destination="@id/jetpackActivationEligibilityErrorFragment">
-            <argument
-                android:name="username"
-                app:argType="string" />
-            <argument
-                android:name="role"
-                app:argType="string" />
-        </action>
+            app:destination="@id/jetpackActivationEligibilityErrorFragment" />
     </dialog>
     <include app:graph="@navigation/nav_graph_jetpack_activation" />
     <fragment
         android:id="@+id/jetpackActivationEligibilityErrorFragment"
         android:name="com.woocommerce.android.ui.jetpack.JetpackActivationEligibilityErrorFragment"
-        android:label="JetpackActivationEligibilityErrorFragment" />
+        android:label="JetpackActivationEligibilityErrorFragment">
+        <argument
+            android:name="username"
+            app:argType="string" />
+        <argument
+            android:name="role"
+            app:argType="string" />
+    </fragment>
 </navigation>
