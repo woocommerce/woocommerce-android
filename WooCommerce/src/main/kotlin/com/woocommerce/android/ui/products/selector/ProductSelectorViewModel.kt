@@ -136,14 +136,14 @@ class ProductSelectorViewModel @Inject constructor(
     private suspend fun loadPopularProducts() {
         val recentlySoldOrders = getRecentlySoldOrders()
         val productIdsWithPurchaseCount = getProductIdsWithNumberOfPurchases(recentlySoldOrders)
-        val top5PopularProducts = productIdsWithPurchaseCount
+        val topPopularProductsSorted = productIdsWithPurchaseCount
             .asSequence()
             .take(NUMBER_OF_SUGGESTED_ITEMS)
             .map { it.toPair() }
             .toList()
             .sortedByDescending { it.second }
             .toMap()
-        popularProducts.value = productsMapper.mapProductIdsToProduct(top5PopularProducts.keys.toList())
+        popularProducts.value = productsMapper.mapProductIdsToProduct(topPopularProductsSorted.keys.toList())
     }
 
     private suspend fun getRecentlySoldOrders() =
