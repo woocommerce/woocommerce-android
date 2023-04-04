@@ -42,24 +42,27 @@ private fun StoreCreationSummaryScreen(
         )
     }) {
         Column(
-            Modifier
+            modifier = Modifier
                 .padding(it)
                 .fillMaxSize()
         ) {
-            SummaryBody()
-            SummaryBottom(onTryForFreeButtonPressed)
+            SummaryBody(modifier = Modifier
+                .background(MaterialTheme.colors.surface)
+                .fillMaxWidth()
+                .padding(dimensionResource(id = R.dimen.major_125))
+                .weight(4f)
+            )
+            SummaryBottom(
+                modifier = Modifier.weight(1f),
+                onTryForFreeButtonPressed = onTryForFreeButtonPressed
+            )
         }
     }
 }
 
 @Composable
-private fun SummaryBody() {
-    Column(
-        modifier = Modifier
-            .background(MaterialTheme.colors.surface)
-            .fillMaxWidth()
-            .padding(dimensionResource(id = R.dimen.major_125))
-    ) {
+private fun SummaryBody(modifier: Modifier) {
+    Column(modifier = modifier) {
         Text(
             text = stringResource(id = R.string.free_trial_summary_title),
             style = MaterialTheme.typography.h4
@@ -77,9 +80,10 @@ private fun SummaryBody() {
 
 @Composable
 private fun SummaryBottom(
+    modifier: Modifier,
     onTryForFreeButtonPressed: () -> Unit
 ) {
-    Column {
+    Column(modifier = modifier) {
         Divider()
         WCColoredButton(
             modifier = Modifier
