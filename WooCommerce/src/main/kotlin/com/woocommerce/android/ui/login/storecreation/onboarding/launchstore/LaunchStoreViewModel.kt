@@ -35,9 +35,6 @@ class LaunchStoreViewModel @Inject constructor(
     val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
     val userAgent: UserAgent
 ) : ScopedViewModel(savedStateHandle) {
-    private companion object {
-        const val PLANS_URL = "https://wordpress.com/plans/"
-    }
 
     private val _viewState = MutableStateFlow(
         LaunchStoreState(
@@ -92,11 +89,7 @@ class LaunchStoreViewModel @Inject constructor(
             FREE_TRIAL_UPGRADE_NOW_TAPPED,
             mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_BANNER)
         )
-        triggerEvent(
-            UpgradeToEcommercePlan(
-                url = PLANS_URL + selectedSite.get().siteId
-            )
-        )
+        triggerEvent(UpgradeToEcommercePlan)
     }
 
     fun onBackPressed() {
@@ -117,6 +110,6 @@ class LaunchStoreViewModel @Inject constructor(
         val displayUrl: String
     )
 
-    data class UpgradeToEcommercePlan(val url: String) : MultiLiveEvent.Event()
+    object UpgradeToEcommercePlan : MultiLiveEvent.Event()
     data class ShareStoreUrl(val url: String) : MultiLiveEvent.Event()
 }
