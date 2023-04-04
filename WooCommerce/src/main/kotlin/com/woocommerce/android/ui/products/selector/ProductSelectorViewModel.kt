@@ -6,6 +6,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R.string
+import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Product
@@ -38,7 +39,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -71,7 +71,7 @@ class ProductSelectorViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val STATE_UPDATE_DELAY = 100L
-        private const val NO_OF_PRODUCTS = 5
+        private const val NUMBER_OF_SUGGESTED_ITEMS = 5
     }
 
     private val currencyCode by lazy {
@@ -148,33 +148,25 @@ class ProductSelectorViewModel @Inject constructor(
 
     private suspend fun loadPopularProducts() {
         val recentlySoldOrders = getRecentlySoldOrders()
-        val popularProductsMap = filterPopularProductsFrom(recentlySoldOrders)
-        val top5PopularProducts = popularProductsMap
+        val productIdsWithPurchaseCount = getProductIdsWithNumberOfPurchases(recentlySoldOrders)
+        val topPopularProductsSorted = productIdsWithPurchaseCount
             .asSequence()
-            .take(NO_OF_PRODUCTS)
+            .take(NUMBER_OF_SUGGESTED_ITEMS)
             .map { it.toPair() }
             .toList()
             .sortedByDescending { it.second }
             .toMap()
-        popularProducts.value = productsMapper.mapProductIdsToProduct(top5PopularProducts.keys.toList())
+        popularProducts.value = productsMapper.mapProductIdsToProduct(topPopularProductsSorted.keys.toList())
     }
 
     private suspend fun getRecentlySoldOrders() =
         orderStore.getPaidOrdersForSiteDesc(selectedSite.get()).filter { it.datePaid.isNotNullOrEmpty() }
 
-    private fun filterPopularProductsFrom(
-        recentlySoldOrdersList: List<OrderEntity>
-    ): MutableMap<Long, Int> {
-        val popularProductsMap: MutableMap<Long, Int> = mutableMapOf()
-        recentlySoldOrdersList.forEach { orderEntity ->
-            orderEntity.getLineItemList().forEach { lineItem ->
-                lineItem.productId?.let { productId ->
-                    popularProductsMap[productId] = popularProductsMap[productId]?.plus(1) ?: 1
-                }
-            }
-        }
-        return popularProductsMap
-    }
+    private fun getProductIdsWithNumberOfPurchases(recentlySoldOrdersList: List<OrderEntity>): Map<Long, Int> =
+        recentlySoldOrdersList.asSequence()
+            .flatMap { it.getLineItemList().mapNotNull { it.productId } }
+            .groupingBy { it }
+            .eachCount()
 
     private fun getProductIdsFromRecentlySoldOrders(
         recentlySoldOrdersList: List<OrderEntity>
@@ -454,28 +446,3 @@ val Collection<ProductSelectorViewModel.SelectedItem>.variationIds: List<Long>
         return filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductOrVariation>().map { it.id } +
             filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductVariation>().map { it.variationId }
     }
-
-@Suppress("LongParameterList")
-inline fun <T1, T2, T3, T4, T5, T6, T7, R> combine(
-    flow: Flow<T1>,
-    flow2: Flow<T2>,
-    flow3: Flow<T3>,
-    flow4: Flow<T4>,
-    flow5: Flow<T5>,
-    flow6: Flow<T6>,
-    flow7: Flow<T7>,
-    crossinline transform: suspend (T1, T2, T3, T4, T5, T6, T7) -> R
-): Flow<R> {
-    return combine(flow, flow2, flow3, flow4, flow5, flow6, flow7) { args: Array<*> ->
-        @Suppress("UNCHECKED_CAST", "MagicNumber")
-        transform(
-            args[0] as T1,
-            args[1] as T2,
-            args[2] as T3,
-            args[3] as T4,
-            args[4] as T5,
-            args[5] as T6,
-            args[6] as T7,
-        )
-    }
-}
