@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.login.storecreation.onboarding.launchstore
 
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
@@ -34,10 +36,7 @@ class LaunchStoreViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
     val userAgent: UserAgent
-) : ScopedViewModel(savedStateHandle) {
-    private companion object {
-        const val PLANS_URL = "https://wordpress.com/plans/"
-    }
+) : ScopedViewModel(savedStateHandle), DefaultLifecycleObserver {
 
     private val _viewState = MutableStateFlow(
         LaunchStoreState(
@@ -49,6 +48,12 @@ class LaunchStoreViewModel @Inject constructor(
         )
     )
     val viewState = _viewState.asLiveData()
+
+    override fun onResume(owner: LifecycleOwner) {
+        _viewState.value = _viewState.value.copy(
+            isTrialPlan = selectedSite.get().isFreeTrial
+        )
+    }
 
     fun launchStore() {
         _viewState.value = _viewState.value.copy(isLoading = true)
@@ -92,11 +97,7 @@ class LaunchStoreViewModel @Inject constructor(
             FREE_TRIAL_UPGRADE_NOW_TAPPED,
             mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_BANNER)
         )
-        triggerEvent(
-            UpgradeToEcommercePlan(
-                url = PLANS_URL + selectedSite.get().siteId
-            )
-        )
+        triggerEvent(UpgradeToEcommercePlan)
     }
 
     fun onBackPressed() {
@@ -117,6 +118,6 @@ class LaunchStoreViewModel @Inject constructor(
         val displayUrl: String
     )
 
-    data class UpgradeToEcommercePlan(val url: String) : MultiLiveEvent.Event()
+    object UpgradeToEcommercePlan : MultiLiveEvent.Event()
     data class ShareStoreUrl(val url: String) : MultiLiveEvent.Event()
 }
