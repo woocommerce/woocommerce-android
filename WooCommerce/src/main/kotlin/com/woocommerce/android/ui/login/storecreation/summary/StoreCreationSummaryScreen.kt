@@ -50,11 +50,12 @@ private fun StoreCreationSummaryScreen(
                 .padding(it)
                 .fillMaxSize()
         ) {
-            SummaryBody(modifier = Modifier
-                .background(MaterialTheme.colors.surface)
-                .fillMaxWidth()
-                .padding(dimensionResource(id = R.dimen.major_125))
-                .weight(4f)
+            SummaryBody(
+                modifier = Modifier
+                    .background(MaterialTheme.colors.surface)
+                    .fillMaxWidth()
+                    .padding(dimensionResource(id = R.dimen.major_125))
+                    .weight(4f)
             )
             SummaryBottom(
                 modifier = Modifier
