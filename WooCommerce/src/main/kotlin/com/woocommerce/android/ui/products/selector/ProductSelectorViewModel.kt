@@ -41,7 +41,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.map
@@ -138,7 +137,7 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     private suspend fun loadRecentProducts() {
-        val recentlySoldOrders = getRecentlySoldOrders().take(NO_OF_PRODUCTS)
+        val recentlySoldOrders = getRecentlySoldOrders().take(NUMBER_OF_SUGGESTED_ITEMS)
         recentProducts.value = productsMapper.mapProductIdsToProduct(
             getProductIdsFromRecentlySoldOrders(
                 recentlySoldOrders
