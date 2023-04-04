@@ -28,7 +28,6 @@ fun StoreCreationSummaryScreen(viewModel: StoreCreationSummaryViewModel) {
     )
 }
 
-
 @Composable
 private fun StoreCreationSummaryScreen(
     onCancelPressed: () -> Unit,
@@ -41,11 +40,12 @@ private fun StoreCreationSummaryScreen(
             onHelpButtonClick = onHelpPressed,
         )
     }) {
-        Column(modifier = Modifier
-            .background(MaterialTheme.colors.surface)
-            .fillMaxSize()
-            .padding(it)
-            .padding(dimensionResource(id = R.dimen.major_125))
+        Column(
+            modifier = Modifier
+                .background(MaterialTheme.colors.surface)
+                .fillMaxSize()
+                .padding(it)
+                .padding(dimensionResource(id = R.dimen.major_125))
         ) {
             Text(
                 text = "Launch in days, grow for years",
