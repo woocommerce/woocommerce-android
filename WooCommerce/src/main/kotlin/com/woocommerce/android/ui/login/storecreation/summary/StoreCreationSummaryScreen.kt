@@ -40,38 +40,58 @@ private fun StoreCreationSummaryScreen(
             onHelpButtonClick = onHelpPressed,
         )
     }) {
-        Column(
-            modifier = Modifier
-                .background(MaterialTheme.colors.surface)
-                .fillMaxSize()
-                .padding(it)
-                .padding(dimensionResource(id = R.dimen.major_125))
+        Column(Modifier
+            .padding(it)
+            .fillMaxSize()
         ) {
-            Text(
-                text = "Launch in days, grow for years",
-                style = MaterialTheme.typography.h4
-            )
-            Text(
-                "We offer everything you need to build and grow an online store, " +
-                    "powered by WooCommerce and hosted on WordPress.com.",
-                style = MaterialTheme.typography.body1
-            )
-            Text(
-                "Try it for 14 days.",
-                style = MaterialTheme.typography.h5
-            )
-            Divider()
-            WCColoredButton(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = onTryForFreeButtonPressed
-            ) {
-                Text("Try for free")
-            }
-            Text(
-                "No credit card required.",
-                style = MaterialTheme.typography.caption
-            )
+            SummaryBody()
+            SummaryBottom(onTryForFreeButtonPressed)
         }
+    }
+}
+
+@Composable
+private fun SummaryBody() {
+    Column(
+        modifier = Modifier
+            .background(MaterialTheme.colors.surface)
+            .fillMaxWidth()
+            .padding(dimensionResource(id = R.dimen.major_125))
+    ) {
+        Text(
+            text = "Launch in days, grow for years",
+            style = MaterialTheme.typography.h4
+        )
+        Text(
+            "We offer everything you need to build and grow an online store, " +
+                "powered by WooCommerce and hosted on WordPress.com.",
+            style = MaterialTheme.typography.body1
+        )
+        Text(
+            "Try it for 14 days.",
+            style = MaterialTheme.typography.h5
+        )
+    }
+}
+
+@Composable
+private fun SummaryBottom(
+    onTryForFreeButtonPressed: () -> Unit
+) {
+    Column {
+        Divider()
+        WCColoredButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(id = R.dimen.major_125)),
+            onClick = onTryForFreeButtonPressed
+        ) {
+            Text("Try for free")
+        }
+        Text(
+            "No credit card required.",
+            style = MaterialTheme.typography.caption
+        )
     }
 }
 
