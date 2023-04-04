@@ -6,11 +6,11 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore
+import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
-import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository.SiteCreationData
-import com.woocommerce.android.ui.login.storecreation.StoreCreationResult
 import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.NavigateToStoreInstallation
 import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.StoreNamePickerState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel
@@ -18,20 +18,20 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
-import org.wordpress.android.fluxc.model.SiteModel
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class StoreNamePickerViewModelTest : BaseUnitTest() {
     private lateinit var sut: StoreNamePickerViewModel
-    private lateinit var storeCreationRepository: StoreCreationRepository
+    private lateinit var createStore: CreateFreeTrialStore
     private lateinit var newStore: NewStore
     private lateinit var analyticsTracker: AnalyticsTrackerWrapper
     private lateinit var prefsWrapper: AppPrefsWrapper
@@ -51,10 +51,42 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when onContinueClicked starts loading, then the state is updated to reflect it`() = testBlocking {
+        // Given
+        createSutWith(
+            expectedSiteCreationData,
+            StoreCreationState.Loading
+        )
+
+        var latestState: StoreNamePickerState? = null
+        sut.storePickerState.observeForever { latestState = it }
+
+        // When
+        sut.onStoreNameChanged("Store name")
+        sut.onContinueClicked()
+
+        // Then
+        verify(newStore).update(name = "Store name")
+        verify(createStore).invoke(
+            expectedSiteCreationData.domain,
+            expectedSiteCreationData.title
+        )
+        assertThat(latestState).isEqualTo(
+            StoreNamePickerState.Contentful(
+                storeName = "Store name",
+                isCreatingStore = true
+            )
+        )
+    }
+
+    @Test
     fun `when onContinueClicked happens and store creation succeed, then free trial store creation starts`() = testBlocking {
         // Given
         var latestEvent: MultiLiveEvent.Event? = null
         sut.event.observeForever { latestEvent = it }
+
+        var latestState: StoreNamePickerState? = null
+        sut.storePickerState.observeForever { latestState = it }
 
         // When
         sut.onStoreNameChanged("Store name")
@@ -63,12 +95,17 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
         // Then
         verify(newStore).update(name = "Store name")
         verify(newStore).update(siteId = 123)
-        verify(storeCreationRepository).createNewFreeTrialSite(
-            eq(expectedSiteCreationData),
-            eq(PlansViewModel.NEW_SITE_LANGUAGE_ID),
-            any()
+        verify(createStore).invoke(
+            expectedSiteCreationData.domain,
+            expectedSiteCreationData.title
         )
         assertThat(latestEvent).isEqualTo(NavigateToStoreInstallation)
+        assertThat(latestState).isEqualTo(
+            StoreNamePickerState.Contentful(
+                storeName = "Store name",
+                isCreatingStore = false
+            )
+        )
     }
 
     @Test
@@ -77,7 +114,7 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
         val storeCreationErrorType = StoreCreationErrorType.FREE_TRIAL_ASSIGNMENT_FAILED
         createSutWith(
             expectedSiteCreationData,
-            StoreCreationResult.Failure(storeCreationErrorType, "error message")
+            StoreCreationState.Failed(storeCreationErrorType)
         )
 
         var latestEvent: MultiLiveEvent.Event? = null
@@ -92,42 +129,12 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
 
         // Then
         verify(newStore).update(name = "Store name")
-        verify(storeCreationRepository).createNewFreeTrialSite(
-            eq(expectedSiteCreationData),
-            eq(PlansViewModel.NEW_SITE_LANGUAGE_ID),
-            any()
+        verify(createStore).invoke(
+            expectedSiteCreationData.domain,
+            expectedSiteCreationData.title
         )
-
         assertThat(latestEvent).isNull()
         assertThat(latestState).isEqualTo(StoreNamePickerState.Error(storeCreationErrorType))
-    }
-
-    @Test
-    fun `when onContinueClicked happens and site address already exists, then store creation is recovered`() = testBlocking {
-        // Given
-        val storeCreationErrorType = StoreCreationErrorType.SITE_ADDRESS_ALREADY_EXISTS
-        createSutWith(
-            expectedSiteCreationData,
-            StoreCreationResult.Failure(storeCreationErrorType, "error message")
-        )
-
-        var latestEvent: MultiLiveEvent.Event? = null
-        sut.event.observeForever { latestEvent = it }
-
-        // When
-        sut.onStoreNameChanged("Store name")
-        sut.onContinueClicked()
-
-        // Then
-        verify(newStore).update(name = "Store name")
-        verify(newStore).update(siteId = 123)
-        verify(storeCreationRepository).createNewFreeTrialSite(
-            eq(expectedSiteCreationData),
-            eq(PlansViewModel.NEW_SITE_LANGUAGE_ID),
-            any()
-        )
-        verify(storeCreationRepository).getSiteByUrl(expectedSiteCreationData.domain)
-        assertThat(latestEvent).isEqualTo(NavigateToStoreInstallation)
     }
 
     @Test
@@ -222,9 +229,8 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
 
     private fun createSutWith(
         expectedSiteCreationData: SiteCreationData,
-        expectedCreationResult: StoreCreationResult<Long> = StoreCreationResult.Success(123)
+        expectedCreationState: StoreCreationState = StoreCreationState.Finished
     ) {
-        val siteModel = SiteModel().apply { siteId = 123 }
         newStore = mock {
             on { data } doReturn NewStore.NewStoreData(
                 domain = expectedSiteCreationData.domain,
@@ -232,16 +238,24 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
             )
         }
 
-        storeCreationRepository = mock {
-            onBlocking {
-                createNewFreeTrialSite(
-                    eq(expectedSiteCreationData),
-                    eq(PlansViewModel.NEW_SITE_LANGUAGE_ID),
-                    any()
-                )
-            } doReturn expectedCreationResult
+        val creationStateFlow = MutableStateFlow<StoreCreationState>(StoreCreationState.Idle)
 
-            onBlocking { getSiteByUrl(expectedSiteCreationData.domain) } doReturn siteModel
+        createStore = mock {
+            on { state } doReturn creationStateFlow
+
+            onBlocking {
+                invoke(
+                    expectedSiteCreationData.domain,
+                    expectedSiteCreationData.title
+                )
+            } doAnswer {
+                creationStateFlow.value = expectedCreationState
+                if (expectedCreationState is StoreCreationState.Finished) {
+                    flowOf(123)
+                } else {
+                    flowOf(null)
+                }
+            }
         }
 
         analyticsTracker = mock()
@@ -249,7 +263,7 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
         sut = StoreNamePickerViewModel(
             savedStateHandle = savedState,
             newStore = newStore,
-            repository = storeCreationRepository,
+            createStore = createStore,
             analyticsTrackerWrapper = analyticsTracker,
             prefsWrapper = prefsWrapper
         )
