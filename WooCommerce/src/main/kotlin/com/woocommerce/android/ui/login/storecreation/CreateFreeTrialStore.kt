@@ -19,6 +19,14 @@ class CreateFreeTrialStore @Inject constructor(
     private val _state = MutableStateFlow<StoreCreationState>(StoreCreationState.Idle)
     val state: StateFlow<StoreCreationState> = _state
 
+    /**
+     * Triggers the creation of a new free trial site given a domain and a name.
+     * If the site already exists, it will try to retrieve the site ID from the API.
+     *
+     *  @return a [flow] that will emit the Store ID if the creation is successful, null otherwise
+     *
+     *  To observe the creation progress, use [state]
+     */
     suspend operator fun invoke(
         storeDomain: String?,
         storeName: String?
