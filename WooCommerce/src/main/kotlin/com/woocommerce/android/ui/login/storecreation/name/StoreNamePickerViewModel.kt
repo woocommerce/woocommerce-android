@@ -10,7 +10,6 @@ import com.woocommerce.android.support.help.HelpOrigin.STORE_CREATION
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Error
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Loading
-import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Success
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
 import com.woocommerce.android.util.FeatureFlag
@@ -21,7 +20,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.filterNotNull
 
 @HiltViewModel
 class StoreNamePickerViewModel @Inject constructor(
@@ -38,8 +37,10 @@ class StoreNamePickerViewModel @Inject constructor(
     ) { storeName, createStoreState ->
         when (createStoreState) {
             is Error -> StoreNamePickerState.Error(createStoreState.type)
-            is Loading -> StoreNamePickerState.Contentful(storeName, true)
-            else -> StoreNamePickerState.Contentful(storeName, false)
+            else -> StoreNamePickerState.Contentful(
+                storeName = storeName,
+                isCreatingStore = createStoreState is Loading
+            )
         }
     }.asLiveData()
 
@@ -50,15 +51,6 @@ class StoreNamePickerViewModel @Inject constructor(
                 AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_NAME
             )
         )
-
-        launch {
-            createStore.state
-                .mapNotNull { it as? Success }
-                .collect {
-                    newStore.update(siteId = it.siteId)
-                    triggerEvent(NavigateToStoreInstallation)
-                }
-        }
     }
 
     fun onCancelPressed() {
@@ -98,7 +90,10 @@ class StoreNamePickerViewModel @Inject constructor(
         createStore(
             storeDomain = newStore.data.domain,
             storeName = newStore.data.name
-        )
+        ).filterNotNull().collect {
+            newStore.update(siteId = it)
+            triggerEvent(NavigateToStoreInstallation)
+        }
     }
 
     data class NavigateToDomainPicker(val domainInitialQuery: String) : MultiLiveEvent.Event()
