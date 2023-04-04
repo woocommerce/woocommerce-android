@@ -315,6 +315,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Linked Products
         const val KEY_LINKED_PRODUCTS_ACTION = "action"
 
+        // -- Product Selector
+        const val KEY_PRODUCT_SELECTOR_SOURCE = "source"
+
         enum class LinkedProductsAction(val value: String) {
             SHOWN("shown"),
             DONE("done")
