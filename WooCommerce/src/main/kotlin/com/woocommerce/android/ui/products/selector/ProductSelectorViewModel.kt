@@ -179,8 +179,8 @@ class ProductSelectorViewModel @Inject constructor(
     private fun getProductIdsFromRecentlySoldOrders(
         recentlySoldOrdersList: List<OrderEntity>
     ) = recentlySoldOrdersList.flatMap { orderEntity ->
-            orderEntity.getLineItemList().mapNotNull { it.productId }
-        }
+        orderEntity.getLineItemList().mapNotNull { it.productId }
+    }
 
     private fun Product.toUiModel(selectedItems: Collection<SelectedItem>): ProductListItem {
         fun getProductSelection(): SelectionState {
