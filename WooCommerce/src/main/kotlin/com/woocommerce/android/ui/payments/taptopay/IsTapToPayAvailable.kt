@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.payments.taptopay
 
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUnsupportedCountry
 import com.woocommerce.android.cardreader.connection.ReaderType
@@ -9,14 +10,14 @@ import com.woocommerce.android.util.SystemVersionUtilsWrapper
 import javax.inject.Inject
 
 class IsTapToPayAvailable @Inject constructor(
-    private val isTapToPayEnabled: IsTapToPayEnabled,
+    private val appPrefs: AppPrefs = AppPrefs,
     private val deviceFeatures: DeviceFeatures,
     private val systemVersionUtilsWrapper: SystemVersionUtilsWrapper,
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
 ) {
     operator fun invoke(countryCode: String) =
         when {
-            !isTapToPayEnabled() -> Result.NotAvailable.TapToPayDisabled
+            !appPrefs.isTapToPayEnabled -> Result.NotAvailable.TapToPayDisabled
             !systemVersionUtilsWrapper.isAtLeastP() -> Result.NotAvailable.SystemVersionNotSupported
             !deviceFeatures.isGooglePlayServicesAvailable() -> Result.NotAvailable.GooglePlayServicesNotAvailable
             !deviceFeatures.isNFCAvailable() -> Result.NotAvailable.NfcNotAvailable

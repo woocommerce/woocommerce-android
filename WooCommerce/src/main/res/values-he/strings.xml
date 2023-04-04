@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-21 15:54:04+0000
+Translation-Revision-Date: 2023-03-28 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="upgrades_plan_ended_name">התוקף של %s הסתיים</string>
+    <string name="upgrades_current_plan_ended_caption">המינוי שלך הסתיים ולכן הגישה שלך לכל האפשרויות הוגבלה.</string>
+    <string name="free_trial_days_left_plural">⁦%1$d⁩ ימים</string>
+    <string name="free_trial_one_day_left">יום אחד</string>
+    <string name="store_onboarding_get_paid_loading_label">טוען…</string>
+    <string name="store_onboarding_get_paid_title">הגדרת תשלומים</string>
+    <string name="store_onboarding_task_about_your_store_toolbar_title">מידע לגבי החנות שלך</string>
+    <string name="store_creation_installation_rendering_preview_label">מעבד תצוגה מקדימה…</string>
+    <string name="jetpack_benefits_open_wpadmin">לפתוח את wp-admin</string>
+    <string name="shipping_label_address_phone_required">יש להזין מספר טלפון</string>
+    <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s, ⁦%4$s⁩ נמכרו</string>
+    <string name="analytics_items">פריטים</string>
+    <string name="analytics_item">פריט</string>
     <string name="upgrades_error_fetching_data">שגיאה בהבאת הפרטים של התוכנית.</string>
     <string name="upgrades_non_upgradeable_caption">נרשמת למינוי על ⁦%1$s⁩ בהצלחה! יש לך גישה לכל האפשרויות עד ⁦%2$s⁩. </string>
     <string name="upgrades_trial_ended_caption">תקופת ההתנסות שלך הסתיימה ולכן הגישה שלך לכל האפשרויות הוגבלה. כדאי להירשם למינוי על ⁦%1$s⁩ עכשיו.</string>
+    <string name="upgrades_upgradeable_caption">התחלת תקופת ניסיון בחינם של ⁦%1$d⁩ ימים. תקופת הניסיון תסתיים בעוד ⁦%2$s⁩. כדאי לשדרג כדי להשתמש באפשרויות חדשות ולהמשיך להפעיל את החנות שלך.</string>
     <string name="upgrades_subscription_status">סטטוס מינוי</string>
     <string name="upgrades_title">שדרוגים</string>
     <string name="upgrades_troubleshooting">פתרון בעיות</string>
@@ -16,7 +30,7 @@ Language: he_IL
     <string name="upgrades_upgrade_now">זה הזמן לשדרג</string>
     <string name="upgrades_report_subscription_issue">לדווח על בעיה במינוי</string>
     <string name="free_trial_upgrade_now">זה הזמן לשדרג</string>
-    <string name="free_trial_days_left">נותרו ⁦%1$d⁩ ימים בתקופת הניסיון שלך.</string>
+    <string name="free_trial_days_left">נותרו ⁦%1$s⁩ ימים בתקופת הניסיון שלך.</string>
     <string name="free_trial_trial_ended">תקופת הניסיון הסתיימה</string>
     <string name="free_trial_your_trial_ended">תקופת הניסיון שלך הסתיימה.</string>
     <string name="store_onboarding_launch_store_generic_error_description">אופס, אירעו כמה שגיאות לא צפויות.</string>
@@ -1335,7 +1349,6 @@ Language: he_IL
     <string name="card_reader_payment_fetch_order_loading_header">מעדכן את מצב האפליקציה</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">הלקוח בחר את ⁦%1$s⁩</string>
     <string name="shipping_label_origin_address_phone_invalid">לטופסי מכס נדרש מספר טלפון בן 10 ספרות</string>
-    <string name="shipping_label_address_phone_required">מספר טלפון נדרש מאחר שלמשלוח נדרש טופס מכס</string>
     <string name="shipping_label_create_customs_done">טופס המכס הושלם</string>
     <string name="print_receipt_label_info_step_7">אם יש לך בעיה בהדפסה מהמכשיר, יש ליצור קשר עם שירות התמיכה של המדפסת.</string>
     <string name="print_receipt_label_info_step_6">אם אפשרות ההדפסה לא זמינה, אפשר תמיד לשמור את הקבלה כקובץ PDF ולשלוח אותה באימייל כדי להדפיס אותה ממכשיר אחר.</string>

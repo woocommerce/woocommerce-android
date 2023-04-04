@@ -80,7 +80,8 @@ data class Product(
     override val length: Float,
     override val width: Float,
     override val height: Float,
-    override val weight: Float
+    override val weight: Float,
+    val subscription: SubscriptionDetails?
 ) : Parcelable, IProduct {
     companion object {
         const val TAX_CLASS_DEFAULT = "standard"
@@ -466,6 +467,12 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
 }
 
 fun WCProductModel.toAppModel(): Product {
+    val productType = ProductType.fromString(type)
+    val subscription = if (productType == ProductType.SUBSCRIPTION) {
+        SubscriptionDetailsMapper.toAppModel(this.metadata)
+    } else {
+        null
+    }
     return Product(
         remoteId = this.remoteProductId,
         name = this.name,
@@ -548,7 +555,8 @@ fun WCProductModel.toAppModel(): Product {
         crossSellProductIds = this.getCrossSellProductIdList(),
         upsellProductIds = this.getUpsellProductIdList(),
         variationIds = this.getVariationIdList(),
-        isPurchasable = this.purchasable
+        isPurchasable = this.purchasable,
+        subscription = subscription
     )
 }
 

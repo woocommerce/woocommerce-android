@@ -1,2 +1,0 @@
-12.8:
-Diese Version enthält viele Verbesserung hinsichtlich der Funktion zur Erstellung von Bestellungen. Es ist nun möglich, mehrere Produkte gleichzeitig auszuwählen. Außerdem wurde die Such- und Filteroption optimiert und beschleunigt. Des Weiteren haben wir einige Fehler behoben und diverse Verbesserungen an der Zugänglichkeit des Analyse-Abschnitts vorgenommen. Für unsere WordPress.com-Benutzer haben wir einen neuen Upgrades-Abschnitt hinzugefügt.

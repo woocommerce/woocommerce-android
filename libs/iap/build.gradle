@@ -13,6 +13,10 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    buildFeatures {
+        buildConfig = false
+    }
+
     buildTypes {
         release {
             minifyEnabled true
@@ -23,12 +27,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-}
-
-android.buildTypes.all { buildType ->
-    buildConfigField "String",
-            "IAP_TESTING_SANDBOX_URL",
-            "\"${project.properties.getOrDefault('iap_testing_sandbox_url', '')}\""
 }
 
 dependencies {

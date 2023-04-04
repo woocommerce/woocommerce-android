@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-21 09:54:04+0000
+Translation-Revision-Date: 2023-03-28 09:54:10+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="upgrades_plan_ended_name">%s 已结束</string>
+    <string name="upgrades_current_plan_ended_caption">您的订阅已结束，并且您对所有功能的访问将受到限制。</string>
+    <string name="free_trial_days_left_plural">%1$d 天</string>
+    <string name="free_trial_one_day_left">1 天</string>
+    <string name="store_onboarding_get_paid_loading_label">正在加载…</string>
+    <string name="store_onboarding_get_paid_title">付款设置</string>
+    <string name="store_onboarding_task_about_your_store_toolbar_title">关于您的商店</string>
+    <string name="store_creation_installation_rendering_preview_label">正在渲染预览…</string>
+    <string name="jetpack_benefits_open_wpadmin">打开 wp-admin</string>
+    <string name="shipping_label_address_phone_required">必须提供电话号码</string>
+    <string name="analytics_list_item_products_sold">%1$s、%2$s、%3$s、%4$s 已售</string>
+    <string name="analytics_items">个项目</string>
+    <string name="analytics_item">个项目</string>
     <string name="upgrades_error_fetching_data">获取套餐详细信息时出现错误</string>
     <string name="upgrades_non_upgradeable_caption">您已订阅 %1$s！ %2$s前，您可以访问我们的所有功能。 </string>
     <string name="upgrades_trial_ended_caption">您的免费试用已结束，已被限制访问所有功能。 立即订阅 %1$s。</string>
+    <string name="upgrades_upgradeable_caption">您正处于 %1$d 天免费试用期间。 免费试用版将于 %2$s后到期。 升级以解锁新功能并持续运营商店。</string>
     <string name="upgrades_subscription_status">订阅状态</string>
     <string name="upgrades_title">升级</string>
     <string name="upgrades_troubleshooting">故障排除</string>
@@ -16,7 +30,7 @@ Language: zh_CN
     <string name="upgrades_upgrade_now">立即升级</string>
     <string name="upgrades_report_subscription_issue">报告订阅问题</string>
     <string name="free_trial_upgrade_now">立即升级</string>
-    <string name="free_trial_days_left">%1$d 天后免费试用结束。</string>
+    <string name="free_trial_days_left">%1$s 天后免费试用结束。</string>
     <string name="free_trial_trial_ended">试用已结束</string>
     <string name="free_trial_your_trial_ended">您的试用已结束。</string>
     <string name="store_onboarding_launch_store_generic_error_description">糟糕，发生意外错误。</string>
@@ -1335,7 +1349,6 @@ Language: zh_CN
     <string name="card_reader_payment_fetch_order_loading_header">更新应用程序状态</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">您选定的客户 %1$s</string>
     <string name="shipping_label_origin_address_phone_invalid">报关单需要 10 位的电话号码</string>
-    <string name="shipping_label_address_phone_required">之所以需要电话号码，是因为此配送需要报关单</string>
     <string name="shipping_label_create_customs_done">报关单填写完毕</string>
     <string name="print_receipt_label_info_step_7">如果从设备打印时遇到问题，请联系打印机的客户支持。</string>
     <string name="print_receipt_label_info_step_6">如果无法打印，您可以随时将收据保存为 PDF，并通过电子邮件发送到其他设备进行打印。</string>

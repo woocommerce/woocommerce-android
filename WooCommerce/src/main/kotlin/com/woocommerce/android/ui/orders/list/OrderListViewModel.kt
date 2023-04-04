@@ -706,10 +706,4 @@ class OrderListViewModel @Inject constructor(
             val bannerData: GetIPPFeedbackBannerData.IPPFeedbackBanner,
         ) : IPPSurveyFeedbackBannerState()
     }
-
-    companion object {
-        const val UTM_CAMPAIGN = "feature_announcement_card"
-        const val UTM_SOURCE = "orders_list"
-        const val UTM_CONTENT = "upsell_card_readers"
-    }
 }

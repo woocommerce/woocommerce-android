@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.content.Intent
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.NavGraphProductsDirections
@@ -9,6 +10,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Product.Image
+import com.woocommerce.android.ui.products.AddProductSource.STORE_ONBOARDING
 import com.woocommerce.android.ui.products.GroupedProductListType.GROUPED
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttribute
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductAttributeTerms
@@ -83,7 +85,8 @@ class ProductNavigator @Inject constructor() {
             is ViewProductVariations -> {
                 val action = ProductDetailFragmentDirections
                     .actionProductDetailFragmentToVariationListFragment(
-                        target.remoteId
+                        target.remoteId,
+                        target.isReadOnlyMode
                     )
                 fragment.findNavController().navigateSafely(action)
             }
@@ -279,8 +282,20 @@ class ProductNavigator @Inject constructor() {
             }
 
             is ViewProductAdd -> {
-                val action = NavGraphMainDirections.actionGlobalProductDetailFragment(isAddProduct = true)
-                fragment.findNavController().navigateSafely(action)
+                val directions = NavGraphMainDirections.actionGlobalProductDetailFragment(
+                    isAddProduct = true,
+                    source = target.source
+                )
+
+                fragment.findNavController().navigateSafely(
+                    directions = directions,
+                    navOptions =
+                    if (target.source == STORE_ONBOARDING)
+                        NavOptions.Builder()
+                            .setPopUpTo(R.id.dashboard, false)
+                            .build()
+                    else null
+                )
             }
 
             is ViewProductDownloads -> {
@@ -352,7 +367,8 @@ class ProductNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(
                     ProductSelectorFragmentDirections.actionProductSelectorFragmentToVariationSelectorFragment(
                         target.productId,
-                        target.selectedVariationIds.toLongArray()
+                        target.selectedVariationIds.toLongArray(),
+                        target.productSelectorFlow,
                     )
                 )
             }
@@ -367,6 +383,13 @@ class ProductNavigator @Inject constructor() {
                         target.productCategoryName
                     )
                 )
+            }
+
+            is ProductNavigationTarget.ViewProductSubscription -> {
+                val action = ProductDetailFragmentDirections.actionProductDetailFragmentToProductSubscriptionFragment(
+                    target.subscription
+                )
+                fragment.findNavController().navigateSafely(action)
             }
 
             is ExitProduct -> fragment.findNavController().navigateUp()

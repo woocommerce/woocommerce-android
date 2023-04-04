@@ -12,6 +12,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductStockStatus.Custom
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.NotAvailable
+import com.woocommerce.android.ui.products.selector.ProductSelectorTracker
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.ui.products.selector.SelectionState
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.UNSELECTED
@@ -49,7 +51,8 @@ class VariationSelectorViewModel @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
     private val variationListHandler: VariationListHandler,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val tracker: ProductSelectorTracker,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val STATE_UPDATE_DELAY = 100L
@@ -60,6 +63,7 @@ class VariationSelectorViewModel @Inject constructor(
     }
 
     private val navArgs: VariationSelectorFragmentArgs by savedState.navArgs()
+    private val productSelectorFlow = navArgs.productSelectorFlow
 
     private val loadingState = MutableStateFlow(IDLE)
     private val selectedVariationIds = savedState.getStateFlow(viewModelScope, navArgs.variationIds.toSet())
@@ -125,16 +129,52 @@ class VariationSelectorViewModel @Inject constructor(
 
     fun onClearButtonClick() {
         launch {
+            trackClearSelectionButtonClicked()
             delay(STATE_UPDATE_DELAY) // let the animation play out before hiding the button
             selectedVariationIds.value = emptySet()
         }
     }
 
+    private fun trackClearSelectionButtonClicked() {
+        when (navArgs.productSelectorFlow) {
+            ProductSelectorViewModel.ProductSelectorFlow.OrderCreation -> {
+                tracker.trackClearSelectionButtonClicked(
+                    productSelectorFlow,
+                    ProductSelectorTracker.ProductSelectorSource.VariationSelector
+                )
+            }
+            ProductSelectorViewModel.ProductSelectorFlow.CouponEdition -> {}
+            ProductSelectorViewModel.ProductSelectorFlow.Undefined -> {}
+        }
+    }
+
     fun onVariationClick(item: VariationListItem) {
         if (selectedVariationIds.value.contains(item.id)) {
+            trackVariationUnselected()
             selectedVariationIds.value = selectedVariationIds.value - item.id
         } else {
+            trackVariationSelected()
             selectedVariationIds.value = selectedVariationIds.value + item.id
+        }
+    }
+
+    private fun trackVariationSelected() {
+        when (navArgs.productSelectorFlow) {
+            ProductSelectorViewModel.ProductSelectorFlow.OrderCreation -> {
+                tracker.trackItemSelected(productSelectorFlow)
+            }
+            ProductSelectorViewModel.ProductSelectorFlow.CouponEdition -> {}
+            ProductSelectorViewModel.ProductSelectorFlow.Undefined -> {}
+        }
+    }
+
+    private fun trackVariationUnselected() {
+        when (navArgs.productSelectorFlow) {
+            ProductSelectorViewModel.ProductSelectorFlow.OrderCreation -> {
+                tracker.trackItemUnselected(productSelectorFlow)
+            }
+            ProductSelectorViewModel.ProductSelectorFlow.CouponEdition -> {}
+            ProductSelectorViewModel.ProductSelectorFlow.Undefined -> {}
         }
     }
 

@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-21 15:54:04+0000
+Translation-Revision-Date: 2023-03-28 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="upgrades_plan_ended_name">%s 종료됨</string>
+    <string name="upgrades_current_plan_ended_caption">구독이 종료되었으며, 모든 기능에 대한 접근 권한이 제한되었습니다.</string>
+    <string name="free_trial_days_left_plural">%1$d일</string>
+    <string name="free_trial_one_day_left">1일</string>
+    <string name="store_onboarding_get_paid_loading_label">로드 중…</string>
+    <string name="store_onboarding_get_paid_title">결제 설정</string>
+    <string name="store_onboarding_task_about_your_store_toolbar_title">스토어 소개</string>
+    <string name="store_creation_installation_rendering_preview_label">미리보기 렌더링 중…</string>
+    <string name="jetpack_benefits_open_wpadmin">WP 관리자 열기</string>
+    <string name="shipping_label_address_phone_required">전화번호는 필수 사항입니다.</string>
+    <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s, %4$s 판매됨</string>
+    <string name="analytics_items">아이템</string>
+    <string name="analytics_item">아이템</string>
     <string name="upgrades_error_fetching_data">요금제 상세 정보를 가져오는 중 오류 발생</string>
     <string name="upgrades_non_upgradeable_caption">%1$s 구독자이십니다. %2$s까지 모든 기능에 접근하실 수 있습니다. </string>
     <string name="upgrades_trial_ended_caption">무료 평가판이 종료되었으며 모든 기능에 대한 접근이 제한되었습니다. 지금 %1$s을(를) 구독하세요.</string>
+    <string name="upgrades_upgradeable_caption">무료 평가판을 %1$d일째 사용 중입니다. %2$s에 무료 평가판이 종료됩니다. 업그레이드하여 새로운 기능을 잠금 해제하고 스토어를 계속 실행하세요.</string>
     <string name="upgrades_subscription_status">구독 상태</string>
     <string name="upgrades_title">업그레이드</string>
     <string name="upgrades_troubleshooting">문제 해결</string>
@@ -16,7 +30,7 @@ Language: ko_KR
     <string name="upgrades_upgrade_now">지금 업그레이드</string>
     <string name="upgrades_report_subscription_issue">구독 문제 신고</string>
     <string name="free_trial_upgrade_now">지금 업그레이드</string>
-    <string name="free_trial_days_left">평가판이 %1$d일 남았습니다.</string>
+    <string name="free_trial_days_left">평가판이 %1$s일 남았습니다.</string>
     <string name="free_trial_trial_ended">평가판 종료됨</string>
     <string name="free_trial_your_trial_ended">평가판이 종료되었습니다.</string>
     <string name="store_onboarding_launch_store_generic_error_description">죄송합니다. 예기치 않은 오류가 발생했습니다.</string>
@@ -1335,7 +1349,6 @@ Language: ko_KR
     <string name="card_reader_payment_fetch_order_loading_header">앱 상태 업데이트하기</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">고객이 %1$s을(를) 선택함</string>
     <string name="shipping_label_origin_address_phone_invalid">세관 양식에 10자리 전화번호 필요</string>
-    <string name="shipping_label_address_phone_required">이 배송에는 세관 양식이 필요하므로 전화번호가 필요합니다.</string>
     <string name="shipping_label_create_customs_done">세관 양식 완료됨</string>
     <string name="print_receipt_label_info_step_7">기기에서 인쇄하는 중 문제가 발생하면 프린터에 대한 고객 지원을 문의하세요.</string>
     <string name="print_receipt_label_info_step_6">인쇄를 이용할 수 없는 경우에는 언제든지 영수증을 PDF로 저장하고 이메일로 보내 다른 기기에서 인쇄할 수 있습니다.</string>

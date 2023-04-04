@@ -17,11 +17,13 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
+import com.woocommerce.android.ui.orders.details.GetOrderSubscriptions
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
@@ -135,6 +137,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         isOrderDetailSkeletonShown = false
     )
 
+    private val getOrderSubscriptions: GetOrderSubscriptions = mock()
+
     private fun createViewModel() {
         viewModel = spy(
             OrderDetailViewModel(
@@ -151,7 +155,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 cardReaderTracker,
                 analyticsTraWrapper,
                 shippingLabelOnboardingRepository,
-                orderDetailsTransactionLauncher
+                orderDetailsTransactionLauncher,
+                getOrderSubscriptions
             )
         )
     }
@@ -1625,5 +1630,104 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         verify(orderDetailRepository, times(1)).fetchOrderShippingLabels(any())
         verify(orderDetailRepository, times(1)).fetchOrderShipmentTrackingList(any())
+    }
+
+    @Test
+    fun `when subscriptions plugin is installed and active, then fetch plugin data`() = testBlocking {
+        val subscriptions = WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName
+        pluginsInfo[subscriptions] = WooPlugin(
+            isInstalled = true,
+            isActive = true,
+            version = "1.0.0"
+        )
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(emptyList<Subscription>()).whenever(getOrderSubscriptions).invoke(any())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(getOrderSubscriptions).invoke(any())
+    }
+
+    @Test
+    fun `when subscriptions plugin is NOT active, then DON'T fetch plugin data`() = testBlocking {
+        val subscriptions = WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName
+        pluginsInfo[subscriptions] = WooPlugin(
+            isInstalled = true,
+            isActive = true,
+            version = "1.0.0"
+        )
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(getOrderSubscriptions, never()).invoke(any())
+    }
+
+    @Test
+    fun `when subscriptions fetched is NOT empty, then track subscription shown event`() = testBlocking {
+        val subscriptions = WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName
+        pluginsInfo[subscriptions] = WooPlugin(
+            isInstalled = true,
+            isActive = true,
+            version = "1.0.0"
+        )
+        val subscription: Subscription = mock()
+        val result = listOf(subscription)
+
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(result).whenever(getOrderSubscriptions).invoke(any())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAILS_SUBSCRIPTIONS_SHOWN)
+    }
+
+    @Test
+    fun `when subscriptions fetched is empty, then DON'T track subscription shown event`() = testBlocking {
+        val subscriptions = WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName
+        pluginsInfo[subscriptions] = WooPlugin(
+            isInstalled = true,
+            isActive = true,
+            version = "1.0.0"
+        )
+        val result = emptyList<Subscription>()
+
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(result).whenever(getOrderSubscriptions).invoke(any())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(analyticsTraWrapper, never()).track(AnalyticsEvent.ORDER_DETAILS_SUBSCRIPTIONS_SHOWN)
+    }
+
+    @Test
+    fun `when subscriptions fetched is null, then DON'T track subscription shown event`() = testBlocking {
+        val subscriptions = WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName
+        pluginsInfo[subscriptions] = WooPlugin(
+            isInstalled = true,
+            isActive = true,
+            version = "1.0.0"
+        )
+        val result = null
+
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(result).whenever(getOrderSubscriptions).invoke(any())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(analyticsTraWrapper, never()).track(AnalyticsEvent.ORDER_DETAILS_SUBSCRIPTIONS_SHOWN)
     }
 }
