@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.login.storecreation.onboarding.launchstore
 
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
@@ -34,7 +36,7 @@ class LaunchStoreViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
     val userAgent: UserAgent
-) : ScopedViewModel(savedStateHandle) {
+) : ScopedViewModel(savedStateHandle), DefaultLifecycleObserver {
 
     private val _viewState = MutableStateFlow(
         LaunchStoreState(
@@ -46,6 +48,12 @@ class LaunchStoreViewModel @Inject constructor(
         )
     )
     val viewState = _viewState.asLiveData()
+
+    override fun onResume(owner: LifecycleOwner) {
+        _viewState.value = _viewState.value.copy(
+            isTrialPlan = selectedSite.get().isFreeTrial
+        )
+    }
 
     fun launchStore() {
         _viewState.value = _viewState.value.copy(isLoading = true)
