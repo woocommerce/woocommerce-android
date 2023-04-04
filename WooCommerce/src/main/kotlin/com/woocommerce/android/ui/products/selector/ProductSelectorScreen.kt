@@ -202,10 +202,14 @@ private fun displayProductsSection(
 ) {
     val (productsList, heading, productSectionForTracking) = when (type) {
         ProductType.POPULAR -> Triple(
-            state.popularProducts, stringResource(id = string.product_selector_popular_products_heading), ProductSourceForTracking.POPULAR
+            state.popularProducts,
+            stringResource(id = string.product_selector_popular_products_heading),
+            ProductSourceForTracking.POPULAR
         )
         ProductType.RECENT -> Triple(
-            state.recentProducts, stringResource(id = string.product_selector_recent_products_heading), ProductSourceForTracking.RECENT
+            state.recentProducts,
+            stringResource(id = string.product_selector_recent_products_heading),
+            ProductSourceForTracking.RECENT
         )
     }
     Column(
@@ -492,7 +496,7 @@ fun PopularProductsListPreview() {
         {},
         {},
         {},
-        {_, _ ->},
+        { _, _ -> },
         {}
     )
 }
@@ -559,7 +563,7 @@ fun RecentProductsListPreview() {
         {},
         {},
         {},
-        {_, _ ->},
+        { _, _ -> },
         {}
     )
 }
@@ -625,7 +629,7 @@ fun ProductListPreview() {
         {},
         {},
         {},
-        {_, _ ->},
+        { _, _ -> },
         {}
     )
 }
