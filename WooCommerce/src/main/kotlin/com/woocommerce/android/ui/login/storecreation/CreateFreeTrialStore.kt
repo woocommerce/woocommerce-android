@@ -1,7 +1,8 @@
 package com.woocommerce.android.ui.login.storecreation
 
+import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Failed
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Loading
-import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Success
+import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Finished
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_ADDRESS_ALREADY_EXISTS
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.Companion.NEW_SITE_LANGUAGE_ID
@@ -51,14 +52,14 @@ class CreateFreeTrialStore @Inject constructor(
         ?: this
 
     private fun StoreCreationResult<Long>.asCreationState() = when (this) {
-        is StoreCreationResult.Success -> Success
-        is StoreCreationResult.Failure -> StoreCreationState.Error(this.type)
+        is StoreCreationResult.Success -> Finished
+        is StoreCreationResult.Failure -> Failed(this.type)
     }
 
     sealed class StoreCreationState {
         object Idle : StoreCreationState()
         object Loading : StoreCreationState()
-        object Success : StoreCreationState()
-        data class Error(val type: StoreCreationErrorType) : StoreCreationState()
+        object Finished : StoreCreationState()
+        data class Failed(val type: StoreCreationErrorType) : StoreCreationState()
     }
 }

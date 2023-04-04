@@ -113,7 +113,7 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
         val storeCreationErrorType = StoreCreationErrorType.FREE_TRIAL_ASSIGNMENT_FAILED
         createSutWith(
             expectedSiteCreationData,
-            StoreCreationState.Error(storeCreationErrorType)
+            StoreCreationState.Failed(storeCreationErrorType)
         )
 
         var latestEvent: MultiLiveEvent.Event? = null
@@ -227,7 +227,7 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
 
     private fun createSutWith(
         expectedSiteCreationData: SiteCreationData,
-        expectedCreationState: StoreCreationState = StoreCreationState.Success
+        expectedCreationState: StoreCreationState = StoreCreationState.Finished
     ) {
         newStore = mock {
             on { data } doReturn NewStore.NewStoreData(
@@ -248,7 +248,7 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
                 )
             } doAnswer {
                 creationStateFlow.value = expectedCreationState
-                if (expectedCreationState is StoreCreationState.Success) {
+                if (expectedCreationState is StoreCreationState.Finished) {
                     flowOf(123)
                 } else {
                     flowOf(null)

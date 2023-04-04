@@ -9,7 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin.STORE_CREATION
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState
-import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Error
+import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Failed
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Loading
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
@@ -95,7 +95,7 @@ class StoreNamePickerViewModel @Inject constructor(
         storeName: String,
         createStoreState: StoreCreationState
     ) = when (createStoreState) {
-        is Error -> StoreNamePickerState.Error(createStoreState.type)
+        is Failed -> StoreNamePickerState.Error(createStoreState.type)
         else -> StoreNamePickerState.Contentful(
             storeName = storeName,
             isCreatingStore = createStoreState is Loading
