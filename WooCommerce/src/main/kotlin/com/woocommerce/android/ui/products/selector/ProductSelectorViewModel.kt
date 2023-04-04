@@ -292,14 +292,9 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     fun onProductClick(item: ProductListItem, productSourceForTracking: ProductSourceForTracking) {
-        var productSource = productSourceForTracking
-        if (searchQuery.value.isNotNullOrEmpty()) {
-            productSource = ProductSourceForTracking.SEARCH
-        } else if (!filterState.value.filterOptions.isNullOrEmpty()) {
-            productSource = ProductSourceForTracking.FILTER
-        }
+        val productSource = updateProductSourceIfSearchOrFilterIsEnabled(productSourceForTracking)
         if (item.type == VARIABLE && item.numVariations > 0) {
-            triggerEvent(NavigateToVariationSelector(item.id, item.selectedVariationIds, productSourceForTracking))
+            triggerEvent(NavigateToVariationSelector(item.id, item.selectedVariationIds, productSource))
         } else if (item.type != VARIABLE) {
             selectedItems.update { items ->
                 val selectedProductItems = items.filter {
@@ -312,6 +307,16 @@ class ProductSelectorViewModel @Inject constructor(
                     selectedItems.value + SelectedItem.Product(item.id, productSource)
                 }
             }
+        }
+    }
+
+    private fun updateProductSourceIfSearchOrFilterIsEnabled(productSource: ProductSourceForTracking): ProductSourceForTracking {
+        return if (searchQuery.value.isNotNullOrEmpty()) {
+            ProductSourceForTracking.SEARCH
+        } else if (!filterState.value.filterOptions.isNullOrEmpty()) {
+            ProductSourceForTracking.FILTER
+        } else {
+            productSource
         }
     }
 
