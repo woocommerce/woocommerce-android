@@ -65,6 +65,7 @@ class JetpackBenefitsViewModel @Inject constructor(
         }
     }
 
+    @Suppress("LongMethod")
     private fun handleJetpackStatusResult(
         result: Result<Pair<JetpackStatus, JetpackStatusFetchResponse>>
     ) {
@@ -83,10 +84,12 @@ class JetpackBenefitsViewModel @Inject constructor(
                         launch {
                             userEligibilityFetcher.fetchUserInfo().fold(
                                 onSuccess = { user ->
-                                    triggerEvent(OpenJetpackEligibilityError(
-                                        user.username,
-                                        user.roles.first().value
-                                    ))
+                                    triggerEvent(
+                                        OpenJetpackEligibilityError(
+                                            user.username,
+                                            user.roles.first().value
+                                        )
+                                    )
                                 },
                                 onFailure = {
                                     triggerEvent(ShowSnackbar(string.error_generic))
@@ -107,10 +110,12 @@ class JetpackBenefitsViewModel @Inject constructor(
                                             )
                                         )
                                     } else {
-                                        triggerEvent(OpenJetpackEligibilityError(
-                                            user.username,
-                                            user.roles.first().value
-                                        ))
+                                        triggerEvent(
+                                            OpenJetpackEligibilityError(
+                                                user.username,
+                                                user.roles.first().value
+                                            )
+                                        )
                                     }
                                 },
                                 onFailure = {

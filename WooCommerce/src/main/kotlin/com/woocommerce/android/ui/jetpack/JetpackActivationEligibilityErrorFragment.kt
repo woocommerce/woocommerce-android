@@ -21,7 +21,6 @@ class JetpackActivationEligibilityErrorFragment : BaseFragment(), Listener {
 
     private val viewModel: JetpackActivationEligibilityErrorViewModel by viewModels()
 
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
