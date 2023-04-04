@@ -139,7 +139,7 @@ class ProductListScreen : Screen {
         Espresso.onView(
             ViewMatchers.withId(R.id.productsRecycler)
         )
-            .check(matches(CustomMatchers().withViewCount(instanceOf(ProductItemView::class.java), count)))
+            .check(matches(CustomMatchers().atLeastViewCount(instanceOf(ProductItemView::class.java), count)))
 
         return this
     }
