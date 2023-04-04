@@ -8,4 +8,7 @@ import javax.inject.Inject
 @HiltViewModel
 class StoreCreationSummaryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
-) : ScopedViewModel(savedStateHandle)
+) : ScopedViewModel(savedStateHandle) {
+    fun onCancelPressed() {}
+    fun onHelpPressed() {}
+}

@@ -12,8 +12,8 @@ import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 fun StoreCreationSummaryScreen(viewModel: StoreCreationSummaryViewModel) {
     Scaffold(topBar = {
         ToolbarWithHelpButton(
-            onNavigationButtonClick = {},
-            onHelpButtonClick = { },
+            onNavigationButtonClick = viewModel::onCancelPressed,
+            onHelpButtonClick = viewModel::onHelpPressed,
         )
     }) {
         Column(modifier = Modifier.padding(it)) {
