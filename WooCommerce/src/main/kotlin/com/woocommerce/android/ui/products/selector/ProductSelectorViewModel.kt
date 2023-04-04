@@ -135,7 +135,7 @@ class ProductSelectorViewModel @Inject constructor(
 
     private suspend fun loadPopularProducts() {
         val recentlySoldOrders = getRecentlySoldOrders()
-        val popularProductsMap = filterPopularProductsFrom(recentlySoldOrders)
+        val popularProductsMap = getProductIdsWithNumberOfPurchases(recentlySoldOrders)
         val top5PopularProducts = popularProductsMap
             .asSequence()
             .take(NO_OF_PRODUCTS)
@@ -149,7 +149,7 @@ class ProductSelectorViewModel @Inject constructor(
     private suspend fun getRecentlySoldOrders() =
         orderStore.getPaidOrdersForSiteDesc(selectedSite.get()).filter { it.datePaid.isNotNullOrEmpty() }
 
-    private fun filterPopularProductsFrom(recentlySoldOrdersList: List<OrderEntity>): Map<Long, Int> =
+    private fun getProductIdsWithNumberOfPurchases(recentlySoldOrdersList: List<OrderEntity>): Map<Long, Int> =
         recentlySoldOrdersList.asSequence()
             .flatMap { it.getLineItemList().mapNotNull { it.productId } }
             .groupingBy { it }
