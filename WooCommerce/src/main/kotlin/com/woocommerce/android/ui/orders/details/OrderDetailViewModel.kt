@@ -678,6 +678,7 @@ class OrderDetailViewModel @Inject constructor(
                 }
             }
         }
+        orderDetailsTransactionLauncher.onSubscriptionsFetched()
     }
 
     private suspend fun fetchGiftCardsAsync() = async {
@@ -690,6 +691,7 @@ class OrderDetailViewModel @Inject constructor(
                     _giftCards.value = giftCardSummaries
                 }
         }
+        orderDetailsTransactionLauncher.onGiftCardsFetched()
     }
 
     private fun loadOrderShippingLabels(): ListInfo<ShippingLabel> {
