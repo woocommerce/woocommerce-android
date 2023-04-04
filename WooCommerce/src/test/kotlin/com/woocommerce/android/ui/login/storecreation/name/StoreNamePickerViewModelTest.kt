@@ -18,6 +18,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -226,7 +227,7 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
 
     private fun createSutWith(
         expectedSiteCreationData: SiteCreationData,
-        expectedCreationState: StoreCreationState = StoreCreationState.Success(123)
+        expectedCreationState: StoreCreationState = StoreCreationState.Success
     ) {
         newStore = mock {
             on { data } doReturn NewStore.NewStoreData(
@@ -247,6 +248,11 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
                 )
             } doAnswer {
                 creationStateFlow.value = expectedCreationState
+                if (expectedCreationState is StoreCreationState.Success) {
+                    flowOf(123)
+                } else {
+                    flowOf(null)
+                }
             }
         }
 
