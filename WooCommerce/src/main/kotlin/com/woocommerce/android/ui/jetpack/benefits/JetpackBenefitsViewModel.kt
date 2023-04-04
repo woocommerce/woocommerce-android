@@ -80,7 +80,7 @@ class JetpackBenefitsViewModel @Inject constructor(
                         )
                     }
                     JetpackStatusFetchResponse.FORBIDDEN -> {
-                        // TODO open "Admin role required" screen
+                        triggerEvent(OpenJetpackEligibilityError)
                     }
                     JetpackStatusFetchResponse.NOT_FOUND -> {
                         launch {
@@ -95,7 +95,7 @@ class JetpackBenefitsViewModel @Inject constructor(
                                             )
                                         )
                                     } else {
-                                        // TODO open "Admin role required" screen
+                                        triggerEvent(OpenJetpackEligibilityError)
                                     }
                                 },
                                 onFailure = {
@@ -137,4 +137,5 @@ class JetpackBenefitsViewModel @Inject constructor(
         val jetpackStatus: JetpackStatus
     ) : Event()
     data class OpenWpAdminJetpackActivation(val activationUrl: String) : Event()
+    object OpenJetpackEligibilityError : Event()
 }

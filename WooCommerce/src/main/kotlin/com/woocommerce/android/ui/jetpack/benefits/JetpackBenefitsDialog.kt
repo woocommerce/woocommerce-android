@@ -38,7 +38,7 @@ class JetpackBenefitsDialog : DialogFragment() {
         setStyle(STYLE_NO_TITLE, if (isTabletLandscape()) style.Theme_Woo_Dialog else style.Theme_Woo)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         // Specify transition animations
         dialog?.window?.attributes?.windowAnimations = style.Woo_Animations_Dialog
 
@@ -77,6 +77,13 @@ class JetpackBenefitsDialog : DialogFragment() {
 
                 is JetpackBenefitsViewModel.OpenWpAdminJetpackActivation -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.activationUrl)
+                }
+
+                is JetpackBenefitsViewModel.OpenJetpackEligibilityError -> {
+                    findNavController().navigateSafely(
+                        JetpackBenefitsDialogDirections
+                            .actionJetpackBenefitsDialogToJetpackActivationEligibilityErrorFragment()
+                    )
                 }
 
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
