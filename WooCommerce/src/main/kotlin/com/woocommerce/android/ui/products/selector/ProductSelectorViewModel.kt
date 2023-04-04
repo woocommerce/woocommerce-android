@@ -178,17 +178,9 @@ class ProductSelectorViewModel @Inject constructor(
 
     private fun getProductIdsFromRecentlySoldOrders(
         recentlySoldOrdersList: List<OrderEntity>
-    ): List<Long> {
-        val productIds = mutableListOf<Long>()
-        recentlySoldOrdersList.forEach { orderEntity ->
-            orderEntity.getLineItemList().forEach { lineItem ->
-                lineItem.productId?.let { productId ->
-                    productIds.add(productId)
-                }
-            }
+    ) = recentlySoldOrdersList.flatMap { orderEntity ->
+            orderEntity.getLineItemList().mapNotNull { it.productId }
         }
-        return productIds
-    }
 
     private fun Product.toUiModel(selectedItems: Collection<SelectedItem>): ProductListItem {
         fun getProductSelection(): SelectionState {
