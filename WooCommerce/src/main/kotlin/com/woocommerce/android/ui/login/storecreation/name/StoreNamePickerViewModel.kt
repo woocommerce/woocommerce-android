@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin.STORE_CREATION
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore
+import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Error
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Loading
 import com.woocommerce.android.ui.login.storecreation.NewStore
@@ -33,16 +34,10 @@ class StoreNamePickerViewModel @Inject constructor(
     private val storeName = savedState.getStateFlow(scope = this, initialValue = "")
 
     val storePickerState = combine(
-        storeName, createStore.state
-    ) { storeName, createStoreState ->
-        when (createStoreState) {
-            is Error -> StoreNamePickerState.Error(createStoreState.type)
-            else -> StoreNamePickerState.Contentful(
-                storeName = storeName,
-                isCreatingStore = createStoreState is Loading
-            )
-        }
-    }.asLiveData()
+        storeName,
+        createStore.state,
+        ::mapStoreNamePickerState
+    ).asLiveData()
 
     init {
         analyticsTrackerWrapper.track(
@@ -94,6 +89,17 @@ class StoreNamePickerViewModel @Inject constructor(
             newStore.update(siteId = it)
             triggerEvent(NavigateToStoreInstallation)
         }
+    }
+
+    private fun mapStoreNamePickerState(
+        storeName: String,
+        createStoreState: StoreCreationState
+    ) = when (createStoreState) {
+        is Error -> StoreNamePickerState.Error(createStoreState.type)
+        else -> StoreNamePickerState.Contentful(
+            storeName = storeName,
+            isCreatingStore = createStoreState is Loading
+        )
     }
 
     data class NavigateToDomainPicker(val domainInitialQuery: String) : MultiLiveEvent.Event()
