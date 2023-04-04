@@ -13,6 +13,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
@@ -40,9 +41,10 @@ private fun StoreCreationSummaryScreen(
             onHelpButtonClick = onHelpPressed,
         )
     }) {
-        Column(Modifier
-            .padding(it)
-            .fillMaxSize()
+        Column(
+            Modifier
+                .padding(it)
+                .fillMaxSize()
         ) {
             SummaryBody()
             SummaryBottom(onTryForFreeButtonPressed)
@@ -59,16 +61,15 @@ private fun SummaryBody() {
             .padding(dimensionResource(id = R.dimen.major_125))
     ) {
         Text(
-            text = "Launch in days, grow for years",
+            text = stringResource(id = R.string.free_trial_summary_title),
             style = MaterialTheme.typography.h4
         )
         Text(
-            "We offer everything you need to build and grow an online store, " +
-                "powered by WooCommerce and hosted on WordPress.com.",
+            text = stringResource(id = R.string.free_trial_summary_advertise),
             style = MaterialTheme.typography.body1
         )
         Text(
-            "Try it for 14 days.",
+            text = stringResource(id = R.string.free_trial_summary_try_it),
             style = MaterialTheme.typography.h5
         )
     }
@@ -86,10 +87,10 @@ private fun SummaryBottom(
                 .padding(dimensionResource(id = R.dimen.major_125)),
             onClick = onTryForFreeButtonPressed
         ) {
-            Text("Try for free")
+            Text(stringResource(id = R.string.free_trial_summary_try_button))
         }
         Text(
-            "No credit card required.",
+            text = stringResource(id = R.string.free_trial_summary_credit_card_message),
             style = MaterialTheme.typography.caption
         )
     }
