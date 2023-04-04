@@ -2301,6 +2301,9 @@
     <string name="jetpack_install_progress_option_wp_admin_activate">Activate</string>
     <string name="jetpack_install_progress_failed_option_contact_support">Contact Support</string>
 
+    <string name="jetpack_install_role_eligibility_error_message">It looks like your role doesn\'t allow you to install Jetpack. \nPlease contact your administrator for help.</string>
+    <string name="jetpack_install_role_eligibility_learn_more">Learn more about roles and permission</string>
+
     <!-- Inbox -->
     <string name="inbox_screen_title">Inbox</string>
     <string name="dismiss_inbox_note">Dismiss</string>
