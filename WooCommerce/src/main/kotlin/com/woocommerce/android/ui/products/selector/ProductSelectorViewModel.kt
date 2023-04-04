@@ -6,7 +6,9 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R.string
+import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.extensions.isInteger
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToProductFilter
@@ -48,6 +50,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.OrderEntity
+import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
@@ -58,13 +62,16 @@ class ProductSelectorViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val currencyFormatter: CurrencyFormatter,
     private val wooCommerceStore: WooCommerceStore,
+    private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite,
     private val listHandler: ProductListHandler,
     private val variationSelectorRepository: VariationSelectorRepository,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val productsMapper: ProductsMapper
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val STATE_UPDATE_DELAY = 100L
+        private const val NUMBER_OF_SUGGESTED_ITEMS = 5
     }
 
     private val currencyCode by lazy {
@@ -87,13 +94,15 @@ class ProductSelectorViewModel @Inject constructor(
             productsRestrictions.map { restriction -> restriction(product) }.fold(true) { acc, result -> acc && result }
         }
     }
+    private val popularProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
 
     private var fetchProductsJob: Job? = null
     private var loadMoreJob: Job? = null
 
     val viewState = combine(
         flow = products,
-        flow2 = loadingState.withIndex()
+        flow2 = popularProducts,
+        flow3 = loadingState.withIndex()
             .debounce {
                 if (it.index != 0 && it.value == IDLE) {
                     // When resetting to IDLE, wait a bit to make sure the list has been fetched from DB
@@ -101,13 +110,14 @@ class ProductSelectorViewModel @Inject constructor(
                 } else 0L
             }
             .map { it.value },
-        flow3 = selectedItems,
-        flow4 = filterState,
-        flow5 = searchQuery
-    ) { products, loadingState, selectedIds, filterState, searchQuery ->
+        flow4 = selectedItems,
+        flow5 = filterState,
+        flow6 = searchQuery
+    ) { products, popularProducts, loadingState, selectedIds, filterState, searchQuery ->
         ViewState(
             loadingState = loadingState,
             products = products.map { it.toUiModel(selectedIds) },
+            popularProducts = popularProducts.map { it.toUiModel(selectedIds) },
             selectedItemsCount = selectedIds.size,
             filterState = filterState,
             searchQuery = searchQuery
@@ -118,9 +128,32 @@ class ProductSelectorViewModel @Inject constructor(
         monitorSearchQuery()
         monitorProductFilters()
         viewModelScope.launch {
+            loadPopularProducts()
             fetchProducts(forceRefresh = true)
         }
     }
+
+    private suspend fun loadPopularProducts() {
+        val recentlySoldOrders = getRecentlySoldOrders()
+        val productIdsWithPurchaseCount = getProductIdsWithNumberOfPurchases(recentlySoldOrders)
+        val topPopularProductsSorted = productIdsWithPurchaseCount
+            .asSequence()
+            .take(NUMBER_OF_SUGGESTED_ITEMS)
+            .map { it.toPair() }
+            .toList()
+            .sortedByDescending { it.second }
+            .toMap()
+        popularProducts.value = productsMapper.mapProductIdsToProduct(topPopularProductsSorted.keys.toList())
+    }
+
+    private suspend fun getRecentlySoldOrders() =
+        orderStore.getPaidOrdersForSiteDesc(selectedSite.get()).filter { it.datePaid.isNotNullOrEmpty() }
+
+    private fun getProductIdsWithNumberOfPurchases(recentlySoldOrdersList: List<OrderEntity>): Map<Long, Int> =
+        recentlySoldOrdersList.asSequence()
+            .flatMap { it.getLineItemList().mapNotNull { it.productId } }
+            .groupingBy { it }
+            .eachCount()
 
     private fun Product.toUiModel(selectedItems: Collection<SelectedItem>): ProductListItem {
         fun getProductSelection(): SelectionState {
@@ -331,6 +364,7 @@ class ProductSelectorViewModel @Inject constructor(
     data class ViewState(
         val loadingState: LoadingState,
         val products: List<ProductListItem>,
+        val popularProducts: List<ProductListItem>,
         val selectedItemsCount: Int,
         val filterState: FilterState,
         val searchQuery: String
