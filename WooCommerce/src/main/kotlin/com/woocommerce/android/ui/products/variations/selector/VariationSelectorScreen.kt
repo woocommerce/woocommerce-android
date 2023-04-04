@@ -120,14 +120,13 @@ private fun VariationList(
                 .padding(horizontal = dimensionResource(dimen.minor_100))
                 .fillMaxWidth()
         ) {
-            if (state.selectedItemsCount > 0) {
-                WCTextButton(
-                    onClick = onClearButtonClick,
-                    text = stringResource(id = R.string.product_selector_clear_button_title),
-                    allCaps = false,
-                    modifier = Modifier.align(Alignment.CenterStart)
-                )
-            }
+            WCTextButton(
+                onClick = onClearButtonClick,
+                text = stringResource(id = R.string.product_selector_clear_button_title),
+                allCaps = false,
+                enabled = state.selectedItemsCount > 0,
+                modifier = Modifier.align(Alignment.CenterStart)
+            )
         }
         LazyColumn(
             state = listState,
