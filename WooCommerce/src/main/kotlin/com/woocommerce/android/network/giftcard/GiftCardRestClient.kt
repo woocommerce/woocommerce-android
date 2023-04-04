@@ -23,10 +23,9 @@ class GiftCardRestClient @Inject constructor(private val wooNetwork: WooNetwork)
         }
     }
 
-    @Suppress("PropertyName", "VariableNaming")
-    class GiftCardSummaryResponse : Response {
-        val gift_cards: List<GiftCardSummaryDto>? = null
-    }
+    data class GiftCardSummaryResponse (
+        @SerializedName("gift_cards") val giftCards: List<GiftCardSummaryDto>? = null
+    )
 
     data class GiftCardSummaryDto(
         val id: Long? = null,
