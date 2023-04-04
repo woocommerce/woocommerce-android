@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.products.selector
 
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_SELECTOR_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.SelectedSite
@@ -468,6 +470,62 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     }
 
     //endregion
+
+    // region sort by popularity and recently sold, analytics
+    @Test
+    fun `given product selected from popular section, then track correct source`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+            ).initSavedStateHandle()
+            val ordersThatAreNotPaidYet = mutableListOf<OrderEntity>()
+            val recentOrdersList = generateTestOrders()
+            val totalOrders = ordersThatAreNotPaidYet + recentOrdersList
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+
+            val sut = ProductSelectorViewModel(
+                navArgs,
+                currencyFormatter,
+                wooCommerceStore,
+                orderStore,
+                selectedSite,
+                listHandler,
+                variationSelectorRepository,
+                resourceProvider,
+                productsMapper,
+                analyticsTracksWrapper,
+            )
+            sut.onProductClick(
+                item = generateProductListItem(0L),
+                productSourceForTracking = ProductSourceForTracking.POPULAR
+            )
+            sut.onDoneButtonClick()
+
+            verify(analyticsTracksWrapper).track(
+                PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED,
+                mapOf(
+                    KEY_PRODUCT_SELECTOR_SOURCE to listOf(ProductSourceForTracking.POPULAR)
+                )
+            )
+        }
+    }
+
+    //endregion
+
+    private fun generateProductListItem(
+        id: Long,
+    ) = ProductSelectorViewModel.ProductListItem(
+        id = id,
+        title = "",
+        type = ProductType.SIMPLE,
+        imageUrl = null,
+        numVariations = 0,
+        stockAndPrice = null,
+        sku = null,
+        selectedVariationIds = emptySet(),
+        selectionState = SelectionState.SELECTED
+    )
 
     private fun generateLineItems(
         name: String,
