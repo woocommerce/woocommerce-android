@@ -37,6 +37,8 @@ class CreateFreeTrialStore @Inject constructor(
 
         if (result is StoreCreationResult.Success<Long>) {
             emit(result.data)
+        } else {
+            emit(null)
         }
     }
 
