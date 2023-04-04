@@ -79,7 +79,7 @@ fun Banner(bannerState: BannerState) {
                     modifier = Modifier.weight(1f)
                 ) {
                     Spacer(modifier = Modifier.height(16.dp))
-                    SecondaryIcon(bannerState)
+                    BadgeIcon(bannerState)
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = UiHelpers.getTextOfUiString(LocalContext.current, bannerState.title),
@@ -114,7 +114,7 @@ fun Banner(bannerState: BannerState) {
                     }
                 }
                 Column {
-                    PrimaryIcon(bannerState)
+                    BackgroundImage(bannerState)
                 }
             }
         }
@@ -122,7 +122,7 @@ fun Banner(bannerState: BannerState) {
 }
 
 @Composable
-private fun PrimaryIcon(bannerState: BannerState.DisplayBannerState) {
+private fun BackgroundImage(bannerState: BannerState.DisplayBannerState) {
     when (val icon = bannerState.backgroundImage) {
         is BannerState.LocalOrRemoteImage.Local -> {
             Image(
@@ -145,7 +145,7 @@ private fun PrimaryIcon(bannerState: BannerState.DisplayBannerState) {
 }
 
 @Composable
-private fun SecondaryIcon(bannerState: BannerState.DisplayBannerState) {
+private fun BadgeIcon(bannerState: BannerState.DisplayBannerState) {
     when (val icon = bannerState.badgeIcon) {
         is BannerState.LabelOrRemoteIcon.Label -> {
             val bcgColor = colorResource(id = R.color.woo_purple_10)
