@@ -23,7 +23,8 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 fun StoreCreationSummaryScreen(viewModel: StoreCreationSummaryViewModel) {
     StoreCreationSummaryScreen(
         onCancelPressed = viewModel::onCancelPressed,
-        onHelpPressed = viewModel::onHelpPressed
+        onHelpPressed = viewModel::onHelpPressed,
+        onTryForFreeButtonPressed = viewModel::onTryForFreeButtonPressed
     )
 }
 
@@ -31,7 +32,8 @@ fun StoreCreationSummaryScreen(viewModel: StoreCreationSummaryViewModel) {
 @Composable
 private fun StoreCreationSummaryScreen(
     onCancelPressed: () -> Unit,
-    onHelpPressed: () -> Unit
+    onHelpPressed: () -> Unit,
+    onTryForFreeButtonPressed: () -> Unit
 ) {
     Scaffold(topBar = {
         ToolbarWithHelpButton(
@@ -60,7 +62,7 @@ private fun StoreCreationSummaryScreen(
             Divider()
             WCColoredButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { /*TODO*/ }
+                onClick = onTryForFreeButtonPressed
             ) {
                 Text("Try for free")
             }
@@ -79,7 +81,8 @@ fun StoreCreationSummary() {
     WooThemeWithBackground {
         StoreCreationSummaryScreen(
             onCancelPressed = {},
-            onHelpPressed = {}
+            onHelpPressed = {},
+            onTryForFreeButtonPressed = {}
         )
     }
 }

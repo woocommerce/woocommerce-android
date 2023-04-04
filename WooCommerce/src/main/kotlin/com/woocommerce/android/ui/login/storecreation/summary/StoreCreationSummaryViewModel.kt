@@ -11,4 +11,5 @@ class StoreCreationSummaryViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     fun onCancelPressed() {}
     fun onHelpPressed() {}
+    fun onTryForFreeButtonPressed() {}
 }
