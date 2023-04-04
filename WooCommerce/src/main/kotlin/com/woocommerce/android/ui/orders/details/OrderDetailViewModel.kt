@@ -205,17 +205,14 @@ class OrderDetailViewModel @Inject constructor(
                 fetchOrderShippingLabelsAsync(),
                 fetchShipmentTrackingAsync(),
                 fetchOrderRefundsAsync(),
-                fetchSLCreationEligibilityAsync()
+                fetchSLCreationEligibilityAsync(),
+                fetchGiftCardsAsync()
             )
             isFetchingData = false
 
             if (hasOrder()) {
                 displayOrderDetails()
-                // Fetch Hosted Woo Extensions info async
-                awaitAll(
-                    fetchOrderSubscriptionsAsync(),
-                    fetchGiftCardsAsync()
-                )
+                fetchOrderSubscriptionsAsync().await()
             }
 
             viewState = viewState.copy(
