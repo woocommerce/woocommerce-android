@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-22 09:54:17+0000
+Translation-Revision-Date: 2023-03-28 11:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="upgrades_plan_ended_name">تم انتهاء %s</string>
+    <string name="upgrades_current_plan_ended_caption">انتهى اشتراكك، وأصبح لديك وصول محدود إلى كل الميزات.</string>
+    <string name="free_trial_days_left_plural">⁦%1$d⁩ من الأيام</string>
+    <string name="free_trial_one_day_left">يوم واحد</string>
+    <string name="store_onboarding_get_paid_loading_label">جارٍ التحميل…</string>
+    <string name="store_onboarding_get_paid_title">إعداد المدفوعات</string>
+    <string name="store_onboarding_task_about_your_store_toolbar_title">نبذة عن متجرك</string>
+    <string name="store_creation_installation_rendering_preview_label">جارٍ استدعاء المعاينة…</string>
+    <string name="jetpack_benefits_open_wpadmin">فتح مسؤول ووردبريس</string>
+    <string name="shipping_label_address_phone_required">رقم الهاتف مطلوب</string>
+    <string name="analytics_list_item_products_sold">تم بيع ⁦%1$s⁩ و⁦%2$s⁩ و⁦%3$s⁩ و⁦%4$s⁩</string>
+    <string name="analytics_items">عناصر</string>
+    <string name="analytics_item">العنصر</string>
     <string name="upgrades_error_fetching_data">حدث خطأ في أثناء إحضار تفاصيل الخطة</string>
     <string name="upgrades_non_upgradeable_caption">أنت أحد المشتركين في ⁦%1$s⁩! لقد وصلت إلى كل ميزاتنا حتى ⁦%2$s⁩. </string>
     <string name="upgrades_trial_ended_caption">انتهى الإصدار التجريبي المجاني الخاص بك وأصبح لديك وصول محدود إلى كل الميزات. اشترك في ⁦%1$s⁩ الآن.</string>
+    <string name="upgrades_upgradeable_caption">أنت في الإصدار التجريبي المجاني الذي تبلغ مدته ⁦%1$d⁩. سينتهي الإصدار التجريبي المجاني في ⁦%2$s⁩. يمكنك الترقية لفتح ميزات جديدة والاستمرار في تشغيل متجرك.</string>
     <string name="upgrades_subscription_status">حالة الاشتراك</string>
     <string name="upgrades_title">ترقيات</string>
     <string name="upgrades_troubleshooting">حل المشكلات</string>
@@ -1335,7 +1349,6 @@ Language: ar
     <string name="card_reader_payment_fetch_order_loading_header">تحديث حالة التطبيق</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">قام عميلك بتحديد ⁦%1$s⁩</string>
     <string name="shipping_label_origin_address_phone_invalid">تتطلب النماذج الجمركية رقم هاتف مكوَّنًا من 10 أرقام</string>
-    <string name="shipping_label_address_phone_required">يلزم رقم هاتف، نظرًا إلى أن هذه الشحنة تتطلب نموذجًا جمركيًا</string>
     <string name="shipping_label_create_customs_done">تم الانتهاء من النموذج الجمركي</string>
     <string name="print_receipt_label_info_step_7">إذا كنت تواجه مشكلات في الطباعة من جهازك، فاتصل بدعم العملاء بشأن طابعتك.</string>
     <string name="print_receipt_label_info_step_6">إذا كانت الطباعة غير متاحة، فيمكنك دائمًا حفظ إيصالك كملف PDF وإرساله عبر البريد الإلكتروني لطباعته من جهاز آخر.</string>

@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
 import androidx.preference.PreferenceManager
-import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.valueOf
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE
@@ -36,6 +35,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
+import com.woocommerce.android.ui.prefs.domain.DomainFlowSource
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.PreferenceUtils
@@ -174,6 +174,9 @@ object AppPrefs {
 
         // Whether onboarding tasks have been completed or not for a given site
         STORE_ONBOARDING_TASKS_COMPLETED,
+
+        // Time when the last successful payment was made with a card reader
+        CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME,
     }
 
     fun init(context: Context) {
@@ -581,15 +584,6 @@ object AppPrefs {
         )
     }
 
-    fun isCardReaderOnboardingCompleted(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long): Boolean {
-        val completedStatus = getCardReaderOnboardingStatus(
-            localSiteId,
-            remoteSiteId,
-            selfHostedSiteId
-        )
-        return completedStatus == CARD_READER_ONBOARDING_COMPLETED
-    }
-
     fun isCardReaderWelcomeDialogShown() = getBoolean(UndeletablePrefKey.CARD_READER_WELCOME_SHOWN, false)
 
     fun isCardReaderPluginExplicitlySelected(
@@ -857,7 +851,7 @@ object AppPrefs {
         setString(DeletablePrefKey.CUSTOM_DOMAINS_SOURCE, source)
     }
 
-    fun getCustomDomainsSource() = getString(DeletablePrefKey.CUSTOM_DOMAINS_SOURCE, AnalyticsTracker.VALUE_SETTINGS)
+    fun getCustomDomainsSource() = getString(DeletablePrefKey.CUSTOM_DOMAINS_SOURCE, DomainFlowSource.SETTINGS.name)
 
     private fun getActiveStatsGranularityFilterKey(currentSiteId: Int) =
         PrefKeyString("${DeletablePrefKey.ACTIVE_STATS_GRANULARITY}:$currentSiteId")
@@ -902,6 +896,13 @@ object AppPrefs {
         key = getStoreOnboardingKeyFor(siteId),
         default = false
     )
+
+    fun getCardReaderLastSuccessfulPaymentTime() =
+        getLong(UndeletablePrefKey.CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME, 0L)
+
+    fun setCardReaderSuccessfulPaymentTime() {
+        setLong(UndeletablePrefKey.CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME, System.currentTimeMillis())
+    }
 
     private fun getStoreOnboardingKeyFor(siteId: Int) =
         PrefKeyString("$STORE_ONBOARDING_TASKS_COMPLETED:$siteId")

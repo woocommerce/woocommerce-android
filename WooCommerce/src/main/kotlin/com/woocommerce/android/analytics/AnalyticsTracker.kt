@@ -196,6 +196,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_CAUSE = "cause"
         const val KEY_SCENARIO = "scenario"
         const val KEY_REASON = "reason"
+        const val KEY_IS_FREE_TRIAL = "is_free_trial"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_SORT_NAME_ASC = "name,ascending"
@@ -473,7 +474,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         // -- Domain change
         const val VALUE_SETTINGS = "settings"
-        const val VALUE_ONBOARDING = "onboarding"
         const val VALUE_STEP_DASHBOARD = "dashboard"
         const val VALUE_STEP_PICKER = "picker"
         const val VALUE_STEP_CONTACT_INFO = "contact_info"
@@ -491,6 +491,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_ADD_DOMAIN = "add_domain"
         const val VALUE_LAUNCH_SITE = "launch_site"
         const val VALUE_PAYMENTS = "payments"
+
+        // -- Product Selector
+        const val VALUE_PRODUCT_SELECTOR = "product_selector"
+        const val VALUE_VARIATION_SELECTOR = "variation_selector"
 
         var sendUsageStats: Boolean = true
             set(value) {
