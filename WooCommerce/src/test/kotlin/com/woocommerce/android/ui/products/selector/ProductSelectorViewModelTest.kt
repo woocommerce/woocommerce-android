@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.selector
 
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
@@ -48,6 +49,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock()
     private val orderStore: WCOrderStore = mock()
     private val productsMapper: ProductsMapper = mock()
+    private val analyticsTracksWrapper: AnalyticsTrackerWrapper = mock()
 
     @Test
     fun `given published products restriction, when view model created, should not show draft products`() {
@@ -66,6 +68,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             variationSelectorRepository,
             resourceProvider,
             productsMapper,
+            analyticsTracksWrapper,
         )
 
         sut.viewState.observeForever { state ->
@@ -91,6 +94,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             variationSelectorRepository,
             resourceProvider,
             productsMapper,
+            analyticsTracksWrapper,
         )
 
         sut.viewState.observeForever { state ->
@@ -118,6 +122,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             variationSelectorRepository,
             resourceProvider,
             productsMapper,
+            analyticsTracksWrapper,
         )
 
         sut.viewState.observeForever { state ->
@@ -146,6 +151,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             variationSelectorRepository,
             resourceProvider,
             productsMapper,
+            analyticsTracksWrapper,
         )
 
         sut.viewState.observeForever { state ->
@@ -183,6 +189,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 variationSelectorRepository,
                 resourceProvider,
                 productsMapper,
+                analyticsTracksWrapper,
             )
 
             verify(productsMapper, times(2)).mapProductIdsToProduct(argumentCaptor.capture())
@@ -227,6 +234,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 variationSelectorRepository,
                 resourceProvider,
                 productsMapper,
+                analyticsTracksWrapper,
             )
 
             verify(productsMapper, times(2)).mapProductIdsToProduct(argumentCaptor.capture())
@@ -259,6 +267,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 variationSelectorRepository,
                 resourceProvider,
                 productsMapper,
+                analyticsTracksWrapper,
             )
             sut.onSearchQueryChanged("Test query")
 
@@ -294,6 +303,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 variationSelectorRepository,
                 resourceProvider,
                 productsMapper,
+                analyticsTracksWrapper,
             )
             sut.onSearchQueryChanged("Test query")
 
@@ -331,6 +341,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 variationSelectorRepository,
                 resourceProvider,
                 productsMapper,
+                analyticsTracksWrapper,
             )
             sut.onSearchQueryChanged("Test query")
 
@@ -364,6 +375,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 variationSelectorRepository,
                 resourceProvider,
                 productsMapper,
+                analyticsTracksWrapper,
             )
             sut.onSearchQueryChanged("Test query")
 
@@ -401,6 +413,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 variationSelectorRepository,
                 resourceProvider,
                 productsMapper,
+                analyticsTracksWrapper,
             )
 
             verify(productsMapper, times(2)).mapProductIdsToProduct(argumentCaptor.capture())
@@ -444,6 +457,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 variationSelectorRepository,
                 resourceProvider,
                 productsMapper,
+                analyticsTracksWrapper,
             )
 
             verify(productsMapper, times(2)).mapProductIdsToProduct(argumentCaptor.capture())
