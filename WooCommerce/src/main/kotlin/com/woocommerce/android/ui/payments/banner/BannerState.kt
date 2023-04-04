@@ -10,15 +10,15 @@ sealed class BannerState {
         val title: UiString,
         val description: UiString,
         val primaryActionLabel: UiString,
-        val primaryIcon: LocalOrRemoteIcon,
-        val secondaryIcon: LabelOrRemoteIcon,
+        val backgroundImage: LocalOrRemoteImage,
+        val badgeIcon: LabelOrRemoteIcon,
     ) : BannerState()
 
     object HideBannerState : BannerState()
 
-    sealed class LocalOrRemoteIcon {
-        data class Local(@DrawableRes val drawableId: Int) : LocalOrRemoteIcon()
-        data class Remote(val url: String) : LocalOrRemoteIcon()
+    sealed class LocalOrRemoteImage {
+        data class Local(@DrawableRes val drawableId: Int) : LocalOrRemoteImage()
+        data class Remote(val url: String) : LocalOrRemoteImage()
     }
 
     sealed class LabelOrRemoteIcon {

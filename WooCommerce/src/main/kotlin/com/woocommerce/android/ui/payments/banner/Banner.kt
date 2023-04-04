@@ -123,8 +123,8 @@ fun Banner(bannerState: BannerState) {
 
 @Composable
 private fun PrimaryIcon(bannerState: BannerState.DisplayBannerState) {
-    when (val icon = bannerState.primaryIcon) {
-        is BannerState.LocalOrRemoteIcon.Local -> {
+    when (val icon = bannerState.backgroundImage) {
+        is BannerState.LocalOrRemoteImage.Local -> {
             Image(
                 painter = painterResource(id = icon.drawableId),
                 contentDescription = null,
@@ -132,7 +132,7 @@ private fun PrimaryIcon(bannerState: BannerState.DisplayBannerState) {
                 modifier = Modifier.width(154.dp)
             )
         }
-        is BannerState.LocalOrRemoteIcon.Remote -> {
+        is BannerState.LocalOrRemoteImage.Remote -> {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(icon.url)
@@ -146,7 +146,7 @@ private fun PrimaryIcon(bannerState: BannerState.DisplayBannerState) {
 
 @Composable
 private fun SecondaryIcon(bannerState: BannerState.DisplayBannerState) {
-    when (val icon = bannerState.secondaryIcon) {
+    when (val icon = bannerState.badgeIcon) {
         is BannerState.LabelOrRemoteIcon.Label -> {
             val bcgColor = colorResource(id = R.color.woo_purple_10)
             Text(
@@ -188,10 +188,10 @@ fun PaymentScreenBannerPreview() {
                 title = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_title),
                 description = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_description),
                 primaryActionLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_cta),
-                primaryIcon = BannerState.LocalOrRemoteIcon.Local(
+                backgroundImage = BannerState.LocalOrRemoteImage.Local(
                     R.drawable.ic_banner_upsell_card_reader_illustration
                 ),
-                secondaryIcon = BannerState.LabelOrRemoteIcon.Label(
+                badgeIcon = BannerState.LabelOrRemoteIcon.Label(
                     UiString.UiStringRes(
                         R.string.card_reader_upsell_card_reader_banner_new
                     )

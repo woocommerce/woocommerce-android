@@ -69,12 +69,6 @@ class JitmViewModel @Inject constructor(
                 model.featureClass
             )
 
-            val primaryIcon = model.content.iconPath?.let { BannerState.LocalOrRemoteIcon.Remote(it) }
-                ?: BannerState.LocalOrRemoteIcon.Local(R.drawable.ic_banner_upsell_card_reader_illustration)
-            val secondaryIcon = model.content.secondaryIconPath?.let { BannerState.LabelOrRemoteIcon.Remote(it) }
-                ?: BannerState.LabelOrRemoteIcon.Label(
-                    UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
-                )
             _jitmState.value = BannerState.DisplayBannerState(
                 onPrimaryActionClicked = {
                     onJitmCtaClicked(
@@ -92,8 +86,8 @@ class JitmViewModel @Inject constructor(
                 title = UiString.UiStringText(model.content.message),
                 description = UiString.UiStringText(model.content.description),
                 primaryActionLabel = UiString.UiStringText(model.cta.message),
-                primaryIcon = primaryIcon,
-                secondaryIcon = secondaryIcon,
+                backgroundImage = model.assets.getBackgroundImage(),
+                badgeIcon = model.assets.getBadgeIcon(),
             )
         } ?: run {
             _jitmState.value = BannerState.HideBannerState
@@ -148,6 +142,16 @@ class JitmViewModel @Inject constructor(
             }
         }
     }
+
+    private fun Map<String, String>?.getBackgroundImage() =
+        this?.get("background_image_url")?.let { BannerState.LocalOrRemoteImage.Remote(it) }
+            ?: BannerState.LocalOrRemoteImage.Local(R.drawable.ic_banner_upsell_card_reader_illustration)
+
+    private fun Map<String, String>?.getBadgeIcon() =
+        this?.get("badge_image_url")?.let { BannerState.LabelOrRemoteIcon.Remote(it) }
+            ?: BannerState.LabelOrRemoteIcon.Label(
+                UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
+            )
 
     data class CtaClick(val url: String) : MultiLiveEvent.Event()
 
