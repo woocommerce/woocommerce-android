@@ -44,6 +44,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.ProductImageMap.OnProductFetchedListener
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.common.giftcard.GiftCardRepository
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
@@ -78,7 +79,6 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
@@ -88,7 +88,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
@@ -107,7 +106,8 @@ class OrderDetailViewModel @Inject constructor(
     private val trackerWrapper: AnalyticsTrackerWrapper,
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository,
     private val orderDetailsTransactionLauncher: OrderDetailsTransactionLauncher,
-    private val getOrderSubscriptions: GetOrderSubscriptions
+    private val getOrderSubscriptions: GetOrderSubscriptions,
+    private val giftCardRepository: GiftCardRepository
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
@@ -205,14 +205,14 @@ class OrderDetailViewModel @Inject constructor(
                 fetchOrderShippingLabelsAsync(),
                 fetchShipmentTrackingAsync(),
                 fetchOrderRefundsAsync(),
-                fetchSLCreationEligibilityAsync()
+                fetchSLCreationEligibilityAsync(),
+                fetchGiftCardsAsync()
             )
             isFetchingData = false
 
             if (hasOrder()) {
                 displayOrderDetails()
-                fetchOrderSubscriptions()
-                fetchGiftCards()
+                fetchOrderSubscriptionsAsync().await()
             }
 
             viewState = viewState.copy(
@@ -226,22 +226,6 @@ class OrderDetailViewModel @Inject constructor(
                 isRefreshing = false
             )
         }
-    }
-    @Suppress("MagicNumber")
-    private suspend fun fetchGiftCards() {
-        delay(1000)
-        _giftCards.value = listOf(
-            GiftCardSummary(
-                id = 1L,
-                code = "ZXXC-OPI-UYT-MMNB",
-                used = BigDecimal.valueOf(10)
-            ),
-            GiftCardSummary(
-                id = 2L,
-                code = "ZXXC-RTYU-UYT-LKIO",
-                used = BigDecimal.valueOf(50)
-            )
-        )
     }
 
     private suspend fun checkOrderMetaData() {
@@ -681,9 +665,9 @@ class OrderDetailViewModel @Inject constructor(
         orderDetailsTransactionLauncher.onShippingLabelFetchingCompleted()
     }
 
-    private suspend fun fetchOrderSubscriptions() {
+    private fun fetchOrderSubscriptionsAsync() = async {
         val plugin = pluginsInformation[WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName]
-        if (plugin == null || plugin.isOperational) {
+        if (plugin != null && plugin.isOperational) {
             getOrderSubscriptions(navArgs.orderId).getOrNull()?.let { subscription ->
                 _subscriptions.value = subscription
                 if (subscription.isNotEmpty()) {
@@ -691,6 +675,23 @@ class OrderDetailViewModel @Inject constructor(
                 }
             }
         }
+        orderDetailsTransactionLauncher.onSubscriptionsFetched()
+    }
+
+    private suspend fun fetchGiftCardsAsync() = async {
+        val plugin = pluginsInformation[WooCommerceStore.WooPlugin.WOO_GIFT_CARDS.pluginName]
+        if (plugin != null && plugin.isOperational) {
+            giftCardRepository.fetchGiftCardSummaryByOrderId(navArgs.orderId)
+                .takeIf { result -> result.isError.not() }
+                ?.let { result ->
+                    val giftCardSummaries = result.model ?: return@let
+                    _giftCards.value = giftCardSummaries
+                    if (giftCardSummaries.isNotEmpty()) {
+                        trackerWrapper.track(AnalyticsEvent.ORDER_DETAILS_GIFT_CARD_SHOWN)
+                    }
+                }
+        }
+        orderDetailsTransactionLauncher.onGiftCardsFetched()
     }
 
     private fun loadOrderShippingLabels(): ListInfo<ShippingLabel> {

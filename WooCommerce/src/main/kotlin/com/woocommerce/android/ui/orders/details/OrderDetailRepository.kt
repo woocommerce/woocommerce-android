@@ -239,7 +239,8 @@ class OrderDetailRepository @Inject constructor(
             WooCommerceStore.WooPlugin.WOO_CORE,
             WooCommerceStore.WooPlugin.WOO_SERVICES,
             WooCommerceStore.WooPlugin.WOO_SHIPMENT_TRACKING,
-            WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS
+            WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS,
+            WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
         )
 
         val result = HashMap<String, WooPlugin>()

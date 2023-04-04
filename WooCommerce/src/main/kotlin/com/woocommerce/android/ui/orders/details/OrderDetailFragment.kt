@@ -88,12 +88,18 @@ class OrderDetailFragment :
     private val viewModel: OrderDetailViewModel by viewModels()
     private val orderEditingViewModel by hiltNavGraphViewModels<OrderEditingViewModel>(R.id.nav_graph_orders)
 
-    @Inject lateinit var navigator: OrderNavigator
-    @Inject lateinit var currencyFormatter: CurrencyFormatter
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var productImageMap: ProductImageMap
-    @Inject lateinit var dateUtils: DateUtils
-    @Inject lateinit var cardReaderManager: CardReaderManager
+    @Inject
+    lateinit var navigator: OrderNavigator
+    @Inject
+    lateinit var currencyFormatter: CurrencyFormatter
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var productImageMap: ProductImageMap
+    @Inject
+    lateinit var dateUtils: DateUtils
+    @Inject
+    lateinit var cardReaderManager: CardReaderManager
 
     private var _binding: FragmentOrderDetailBinding? = null
     private val binding get() = _binding!!
@@ -290,19 +296,30 @@ class OrderDetailFragment :
                 subscriptions = subscriptions,
                 currencyFormatter = currencyFormatter
             )
+
+            // Animate visibility only when necessary
+            if (subscriptions.isEmpty() && visibility == View.GONE) return
+
+            TransitionManager.endTransitions(binding.orderDetailContainer)
             TransitionManager.beginDelayedTransition(binding.orderDetailContainer)
             visibility = if (subscriptions.isNotEmpty()) View.VISIBLE else View.GONE
         }
     }
 
     private fun showGiftCards(giftCardSummaries: List<GiftCardSummary>, currencyCode: String) {
-        TransitionManager.beginDelayedTransition(binding.orderDetailContainer)
         binding.orderDetailGiftCardList.run {
             updateGiftCardList(
                 giftCards = giftCardSummaries,
                 currencyFormatter = currencyFormatter,
                 currencyCode = currencyCode
             )
+
+            // Animate visibility only when necessary
+            if (giftCardSummaries.isEmpty() && visibility == View.GONE) return@run
+
+            TransitionManager.endTransitions(binding.orderDetailContainer)
+            TransitionManager.beginDelayedTransition(binding.orderDetailContainer)
+
             visibility = if (giftCardSummaries.isNotEmpty()) View.VISIBLE else View.GONE
         }
         binding.orderDetailPaymentInfo.updateGiftCardSection(
