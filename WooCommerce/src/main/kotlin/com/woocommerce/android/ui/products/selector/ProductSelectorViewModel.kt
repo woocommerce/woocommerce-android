@@ -6,6 +6,8 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_SELECTOR_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.extensions.isNotNullOrEmpty
@@ -290,6 +292,12 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     fun onProductClick(item: ProductListItem, productSourceForTracking: ProductSourceForTracking) {
+        var productSource = productSourceForTracking
+        if (searchQuery.value.isNotNullOrEmpty()) {
+            productSource = ProductSourceForTracking.SEARCH
+        } else if (!filterState.value.filterOptions.isNullOrEmpty()) {
+            productSource = ProductSourceForTracking.FILTER
+        }
         if (item.type == VARIABLE && item.numVariations > 0) {
             triggerEvent(NavigateToVariationSelector(item.id, item.selectedVariationIds, productSourceForTracking))
         } else if (item.type != VARIABLE) {
@@ -301,7 +309,7 @@ class ProductSelectorViewModel @Inject constructor(
                     val productItemToUnselect = selectedProductItems.filter { it.id == item.id }.toSet()
                     selectedItems.value - productItemToUnselect
                 } else {
-                    selectedItems.value + SelectedItem.Product(item.id, productSourceForTracking)
+                    selectedItems.value + SelectedItem.Product(item.id, productSource)
                 }
             }
         }
@@ -309,6 +317,12 @@ class ProductSelectorViewModel @Inject constructor(
 
     fun onDoneButtonClick() {
         triggerEvent(ExitWithResult(selectedItems.value))
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED,
+            mapOf(
+                KEY_PRODUCT_SELECTOR_SOURCE to selectedItems.value.map { it.source }
+            )
+        )
     }
 
     fun onSearchQueryChanged(query: String) {
@@ -461,25 +475,25 @@ class ProductSelectorViewModel @Inject constructor(
     @Parcelize
     sealed class SelectedItem(
         val id: Long,
-        val source: ProductSourceForTracking
+        val source: ProductSourceForTracking?
     ) : Parcelable {
         @Parcelize
         data class ProductOrVariation(
             val productOrVariationId: Long,
-            val productSourceForTracking: ProductSourceForTracking,
+            val productSourceForTracking: ProductSourceForTracking? = null,
         ) : SelectedItem(productOrVariationId, productSourceForTracking)
 
         @Parcelize
         data class Product(
             val productId: Long,
-            val productSourceForTracking: ProductSourceForTracking,
+            val productSourceForTracking: ProductSourceForTracking? = null,
         ) : SelectedItem(productId, productSourceForTracking)
 
         @Parcelize
         data class ProductVariation(
             val productId: Long,
             val variationId: Long,
-            val productSourceForTracking: ProductSourceForTracking,
+            val productSourceForTracking: ProductSourceForTracking? = null,
         ) : SelectedItem(variationId, productSourceForTracking)
     }
 
