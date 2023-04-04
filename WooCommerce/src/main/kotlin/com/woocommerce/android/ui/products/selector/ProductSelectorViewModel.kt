@@ -71,7 +71,7 @@ class ProductSelectorViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val STATE_UPDATE_DELAY = 100L
-        private const val NO_OF_PRODUCTS = 5
+        private const val NUMBER_OF_SUGGESTED_ITEMS = 5
     }
 
     private val currencyCode by lazy {
@@ -138,7 +138,7 @@ class ProductSelectorViewModel @Inject constructor(
         val productIdsWithPurchaseCount = getProductIdsWithNumberOfPurchases(recentlySoldOrders)
         val top5PopularProducts = productIdsWithPurchaseCount
             .asSequence()
-            .take(NO_OF_PRODUCTS)
+            .take(NUMBER_OF_SUGGESTED_ITEMS)
             .map { it.toPair() }
             .toList()
             .sortedByDescending { it.second }
