@@ -33,6 +33,10 @@ class StoreNamePickerViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val storeName = savedState.getStateFlow(scope = this, initialValue = "")
 
+    private val canCreateFreeTrialStore
+        get() = FeatureFlag.FREE_TRIAL_M2.isEnabled() &&
+            FeatureFlag.STORE_CREATION_PROFILER.isEnabled().not()
+
     val storePickerState = combine(
         storeName,
         createStore.state,
@@ -74,8 +78,10 @@ class StoreNamePickerViewModel @Inject constructor(
 
     fun onContinueClicked() {
         newStore.update(name = storeName.value)
-        if (FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
+        if (canCreateFreeTrialStore) {
             launch { startFreeTrialSiteCreation() }
+        } else if (FeatureFlag.STORE_CREATION_PROFILER.isEnabled()) {
+            triggerEvent(NavigateToDomainPicker(storeName.value))
         } else {
             triggerEvent(NavigateToDomainPicker(storeName.value))
         }
