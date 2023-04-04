@@ -52,7 +52,8 @@ private fun StoreCreationSummaryScreen(
                 style = MaterialTheme.typography.h4
             )
             Text(
-                "We offer everything you need to build and grow an online store, powered by WooCommerce and hosted on WordPress.com.",
+                "We offer everything you need to build and grow an online store, " +
+                    "powered by WooCommerce and hosted on WordPress.com.",
                 style = MaterialTheme.typography.body1
             )
             Text(
