@@ -18,6 +18,7 @@ import org.junit.Test
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.OrderEntity
@@ -183,7 +184,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 productsMapper,
             )
 
-            verify(productsMapper).mapProductIdsToProduct(argumentCaptor.capture())
+            verify(productsMapper, times(2)).mapProductIdsToProduct(argumentCaptor.capture())
             assertThat(argumentCaptor.firstValue).isEqualTo(
                 listOf(2445L, 2448L, 2447L, 2444L, 2446L)
             )
@@ -227,9 +228,82 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 productsMapper,
             )
 
-            verify(productsMapper).mapProductIdsToProduct(argumentCaptor.capture())
+            verify(productsMapper, times(2)).mapProductIdsToProduct(argumentCaptor.capture())
             assertThat(argumentCaptor.firstValue).isEqualTo(
                 listOf(2445L, 2448L, 2447L, 2444L, 2446L)
+            )
+        }
+    }
+
+    @Test
+    fun `given recent products, when view model created, then verify recent products are sorted in descending order`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+            ).initSavedStateHandle()
+            val recentOrdersList = generateTestOrders()
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(recentOrdersList)
+            val argumentCaptor = argumentCaptor<List<Long>>()
+
+            ProductSelectorViewModel(
+                navArgs,
+                currencyFormatter,
+                wooCommerceStore,
+                orderStore,
+                selectedSite,
+                listHandler,
+                variationSelectorRepository,
+                resourceProvider,
+                productsMapper,
+            )
+
+            verify(productsMapper, times(2)).mapProductIdsToProduct(argumentCaptor.capture())
+            assertThat(argumentCaptor.firstValue).isEqualTo(
+                listOf(2444L, 2446L, 2449L, 2450L, 2451L)
+            )
+        }
+    }
+
+    @Test
+    fun `given recent products, when view model created, then only filter recent products from the orders that are already paid`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+            ).initSavedStateHandle()
+            val ordersThatAreNotPaidYet = mutableListOf<OrderEntity>()
+            repeat(10) {
+                ordersThatAreNotPaidYet.add(
+                    OrderTestUtils.generateOrder(
+                        lineItems = generateLineItems(
+                            name = "ACME Bike",
+                            productId = "1111"
+                        ),
+                        datePaid = ""
+                    ),
+                )
+            }
+            val recentOrdersList = generateTestOrders()
+            val totalOrders = ordersThatAreNotPaidYet + recentOrdersList
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+            val argumentCaptor = argumentCaptor<List<Long>>()
+
+            ProductSelectorViewModel(
+                navArgs,
+                currencyFormatter,
+                wooCommerceStore,
+                orderStore,
+                selectedSite,
+                listHandler,
+                variationSelectorRepository,
+                resourceProvider,
+                productsMapper,
+            )
+
+            verify(productsMapper, times(2)).mapProductIdsToProduct(argumentCaptor.capture())
+            assertThat(argumentCaptor.firstValue).isEqualTo(
+                listOf(2444L, 2446L, 2449L, 2450L, 2451L)
             )
         }
     }

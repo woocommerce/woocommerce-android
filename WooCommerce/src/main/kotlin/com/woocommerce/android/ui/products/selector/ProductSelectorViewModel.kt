@@ -41,7 +41,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.map
@@ -95,6 +94,7 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
     private val popularProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
+    private val recentProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
 
     private var fetchProductsJob: Job? = null
     private var loadMoreJob: Job? = null
@@ -102,7 +102,8 @@ class ProductSelectorViewModel @Inject constructor(
     val viewState = combine(
         flow = products,
         flow2 = popularProducts,
-        flow3 = loadingState.withIndex()
+        flow3 = recentProducts,
+        flow4 = loadingState.withIndex()
             .debounce {
                 if (it.index != 0 && it.value == IDLE) {
                     // When resetting to IDLE, wait a bit to make sure the list has been fetched from DB
@@ -110,14 +111,15 @@ class ProductSelectorViewModel @Inject constructor(
                 } else 0L
             }
             .map { it.value },
-        flow4 = selectedItems,
-        flow5 = filterState,
-        flow6 = searchQuery
-    ) { products, popularProducts, loadingState, selectedIds, filterState, searchQuery ->
+        flow5 = selectedItems,
+        flow6 = filterState,
+        flow7 = searchQuery
+    ) { products, popularProducts, recentProducts, loadingState, selectedIds, filterState, searchQuery ->
         ViewState(
             loadingState = loadingState,
             products = products.map { it.toUiModel(selectedIds) },
             popularProducts = popularProducts.map { it.toUiModel(selectedIds) },
+            recentProducts = recentProducts.map { it.toUiModel(selectedIds) },
             selectedItemsCount = selectedIds.size,
             filterState = filterState,
             searchQuery = searchQuery
@@ -129,8 +131,18 @@ class ProductSelectorViewModel @Inject constructor(
         monitorProductFilters()
         viewModelScope.launch {
             loadPopularProducts()
+            loadRecentProducts()
             fetchProducts(forceRefresh = true)
         }
+    }
+
+    private suspend fun loadRecentProducts() {
+        val recentlySoldOrders = getRecentlySoldOrders().take(NUMBER_OF_SUGGESTED_ITEMS)
+        recentProducts.value = productsMapper.mapProductIdsToProduct(
+            getProductIdsFromRecentlySoldOrders(
+                recentlySoldOrders
+            )
+        )
     }
 
     private suspend fun loadPopularProducts() {
@@ -154,6 +166,12 @@ class ProductSelectorViewModel @Inject constructor(
             .flatMap { it.getLineItemList().mapNotNull { it.productId } }
             .groupingBy { it }
             .eachCount()
+
+    private fun getProductIdsFromRecentlySoldOrders(
+        recentlySoldOrdersList: List<OrderEntity>
+    ) = recentlySoldOrdersList.flatMap { orderEntity ->
+        orderEntity.getLineItemList().mapNotNull { it.productId }
+    }
 
     private fun Product.toUiModel(selectedItems: Collection<SelectedItem>): ProductListItem {
         fun getProductSelection(): SelectionState {
@@ -365,6 +383,7 @@ class ProductSelectorViewModel @Inject constructor(
         val loadingState: LoadingState,
         val products: List<ProductListItem>,
         val popularProducts: List<ProductListItem>,
+        val recentProducts: List<ProductListItem>,
         val selectedItemsCount: Int,
         val filterState: FilterState,
         val searchQuery: String
