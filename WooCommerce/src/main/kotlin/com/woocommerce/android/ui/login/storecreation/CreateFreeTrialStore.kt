@@ -4,8 +4,9 @@ import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.Store
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Loading
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Finished
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_ADDRESS_ALREADY_EXISTS
-import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel
+import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository.SiteCreationData
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.Companion.NEW_SITE_LANGUAGE_ID
+import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.Companion.NEW_SITE_THEME
 import java.util.TimeZone
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,22 +25,21 @@ class CreateFreeTrialStore @Inject constructor(
     ) = flow {
         _state.value = Loading
 
-        val creationData = StoreCreationRepository.SiteCreationData(
-            siteDesign = PlansViewModel.NEW_SITE_THEME,
-            domain = storeDomain,
-            title = storeName,
-            segmentId = null
-        )
+        val result = repository.createNewFreeTrialSite(
+            SiteCreationData(null, NEW_SITE_THEME, storeDomain, storeName),
+            NEW_SITE_LANGUAGE_ID,
+            TimeZone.getDefault().id
+        ).recoverIfSiteExists(storeDomain)
 
-        val result = repository.createNewFreeTrialSite(creationData, NEW_SITE_LANGUAGE_ID, TimeZone.getDefault().id)
-            .recoverIfSiteExists(storeDomain)
-            .also { _state.value = it.asCreationState() }
-
-
-        if (result is StoreCreationResult.Success<Long>) {
-            emit(result.data)
-        } else {
-            emit(null)
+        when(result) {
+            is StoreCreationResult.Success -> {
+                _state.value = Finished
+                emit(result.data)
+            }
+            is StoreCreationResult.Failure -> {
+                _state.value = Failed(result.type)
+                emit(null)
+            }
         }
     }
 
@@ -50,11 +50,6 @@ class CreateFreeTrialStore @Inject constructor(
         ?.let { repository.getSiteByUrl(storeDomain) }
         ?.let { StoreCreationResult.Success(it.siteId) }
         ?: this
-
-    private fun StoreCreationResult<Long>.asCreationState() = when (this) {
-        is StoreCreationResult.Success -> Finished
-        is StoreCreationResult.Failure -> Failed(this.type)
-    }
 
     sealed class StoreCreationState {
         object Idle : StoreCreationState()
