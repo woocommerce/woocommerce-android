@@ -795,4 +795,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     STORE_ONBOARDING_TASK_TAPPED,
     STORE_ONBOARDING_TASK_COMPLETED,
     STORE_ONBOARDING_COMPLETED,
+
+    // Quantity rules (Min/Max extension)
+    PRODUCT_DETAILS_VIEW_QUANTITY_RULES_TAPPED
 }
