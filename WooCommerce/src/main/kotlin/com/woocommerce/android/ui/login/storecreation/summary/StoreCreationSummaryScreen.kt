@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -13,6 +14,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -86,13 +88,22 @@ private fun SummaryBottom(
     modifier: Modifier,
     onTryForFreeButtonPressed: () -> Unit
 ) {
+    val primaryPurple = colorResource(id = R.color.color_primary)
+    val buttonColors = ButtonDefaults.buttonColors(
+        backgroundColor = primaryPurple,
+        contentColor = MaterialTheme.colors.onPrimary,
+        disabledBackgroundColor = primaryPurple.copy(alpha = 0.38f),
+        disabledContentColor = MaterialTheme.colors.onPrimary
+    )
+
     Column(modifier = modifier) {
         Divider()
         WCColoredButton(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(dimensionResource(id = R.dimen.major_125)),
-            onClick = onTryForFreeButtonPressed
+            onClick = onTryForFreeButtonPressed,
+            colors = buttonColors
         ) {
             Text(stringResource(id = R.string.free_trial_summary_try_button))
         }
