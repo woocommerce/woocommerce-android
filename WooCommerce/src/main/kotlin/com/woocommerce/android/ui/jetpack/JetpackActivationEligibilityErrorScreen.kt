@@ -17,6 +17,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -29,9 +30,20 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.jetpack.benefits.JetpackActivationEligibilityErrorViewModel
 
 @Composable
-fun JetpackActivationEligibilityErrorScreen() {
+fun JetpackActivationEligibilityErrorScreen(viewModel: JetpackActivationEligibilityErrorViewModel) {
+    viewModel.viewState.observeAsState().value?.let {
+        JetpackActivationEligibilityErrorScreen(
+            viewState = it
+        )
+    }
+}
+@Composable
+fun JetpackActivationEligibilityErrorScreen(
+    viewState: JetpackActivationEligibilityErrorViewModel.ViewState
+) {
     Scaffold(
         topBar = {
             ToolbarWithHelpButton(
@@ -57,6 +69,8 @@ fun JetpackActivationEligibilityErrorScreen() {
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100))
             ) {
                 MainContent(
+                    username = viewState.username,
+                    role = viewState.role,
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
@@ -78,19 +92,23 @@ fun JetpackActivationEligibilityErrorScreen() {
 }
 
 @Composable
-private fun MainContent(modifier: Modifier) {
+private fun MainContent(
+    username: String,
+    role: String,
+    modifier: Modifier
+) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Display name",
+            text = username,
             style = MaterialTheme.typography.h5,
             color = colorResource(id = R.color.color_on_surface_high)
         )
         Text(
-            text = "Shop Manager",
-            style = MaterialTheme.typography.body1
+            text = role,
+            style = MaterialTheme.typography.caption
         )
 
         Image(
@@ -117,5 +135,11 @@ private fun MainContent(modifier: Modifier) {
 @Preview
 @Composable
 private fun JetpackActivationEligibilityErrorScreenPreview() {
-    JetpackActivationEligibilityErrorScreen()
+    JetpackActivationEligibilityErrorScreen(
+        JetpackActivationEligibilityErrorViewModel.ViewState(
+            username = "username",
+            role = "Shop Manager",
+            isRetrying = false
+        )
+    )
 }
