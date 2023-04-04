@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorRestriction.NoVariableProductsWithNoVariations
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorRestriction.OnlyPublishedProducts
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorRepository
+import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -692,6 +693,48 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 mapOf(
                     KEY_PRODUCT_SELECTOR_SOURCE to listOf(
                         ProductSourceForTracking.FILTER
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given product variation selected from popular section, then track correct source`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+            ).initSavedStateHandle()
+            val recentOrdersList = generateTestOrders()
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(recentOrdersList)
+
+            val sut = ProductSelectorViewModel(
+                navArgs,
+                currencyFormatter,
+                wooCommerceStore,
+                orderStore,
+                selectedSite,
+                listHandler,
+                variationSelectorRepository,
+                resourceProvider,
+                productsMapper,
+                analyticsTracksWrapper,
+            )
+            sut.onSelectedVariationsUpdated(
+                VariationSelectorViewModel.VariationSelectionResult(
+                    productId = 0L,
+                    selectedVariationIds = setOf(1L),
+                    productSourceForTracking = ProductSourceForTracking.POPULAR
+                )
+            )
+            sut.onDoneButtonClick()
+
+            verify(analyticsTracksWrapper).track(
+                PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED,
+                mapOf(
+                    KEY_PRODUCT_SELECTOR_SOURCE to listOf(
+                        ProductSourceForTracking.POPULAR
                     )
                 )
             )
