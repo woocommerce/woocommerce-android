@@ -11,6 +11,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -53,7 +54,9 @@ private fun StoreCreationSummaryScreen(
                 .weight(4f)
             )
             SummaryBottom(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
                 onTryForFreeButtonPressed = onTryForFreeButtonPressed
             )
         }
@@ -95,7 +98,8 @@ private fun SummaryBottom(
         }
         Text(
             text = stringResource(id = R.string.free_trial_summary_credit_card_message),
-            style = MaterialTheme.typography.caption
+            style = MaterialTheme.typography.caption,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         )
     }
 }
