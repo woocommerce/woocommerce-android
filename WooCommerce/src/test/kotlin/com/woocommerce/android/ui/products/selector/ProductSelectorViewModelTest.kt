@@ -782,6 +782,48 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             )
         }
     }
+
+    @Test
+    fun `given product variation selected from alphabetical section, then track correct source`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+            ).initSavedStateHandle()
+            val recentOrdersList = generateTestOrders()
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(recentOrdersList)
+
+            val sut = ProductSelectorViewModel(
+                navArgs,
+                currencyFormatter,
+                wooCommerceStore,
+                orderStore,
+                selectedSite,
+                listHandler,
+                variationSelectorRepository,
+                resourceProvider,
+                productsMapper,
+                analyticsTracksWrapper,
+            )
+            sut.onSelectedVariationsUpdated(
+                VariationSelectorViewModel.VariationSelectionResult(
+                    productId = 0L,
+                    selectedVariationIds = setOf(1L),
+                    productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
+                )
+            )
+            sut.onDoneButtonClick()
+
+            verify(analyticsTracksWrapper).track(
+                PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED,
+                mapOf(
+                    KEY_PRODUCT_SELECTOR_SOURCE to listOf(
+                        ProductSourceForTracking.ALPHABETICAL
+                    )
+                )
+            )
+        }
+    }
     //endregion
 
     private fun generateProductListItem(
