@@ -1,13 +1,15 @@
 package com.woocommerce.android.ui.login.storecreation
 
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState
-import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Error
+import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Failed
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository.SiteCreationData
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -25,6 +27,10 @@ internal class CreateFreeTrialStoreTest: BaseUnitTest() {
     @Test
     fun `when createFreeTrialSite is called correctly, then free trial store creation starts`() = testBlocking {
         // Given
+        val jobs = mutableListOf<Job>()
+        var lastCreationState: StoreCreationState? = null
+        var receivedSiteID: Long? = null
+
         val siteDomain = "test domain"
         val siteTitle = "test title"
         val expectedCreationResult = StoreCreationResult.Success(123L)
@@ -35,13 +41,18 @@ internal class CreateFreeTrialStoreTest: BaseUnitTest() {
             segmentId = null
         )
         createSut(siteDomain, siteTitle, expectedCreationResult)
-        val storeCreationUpdates = mutableListOf<StoreCreationState>()
-        val job = sut.state
-            .onEach { storeCreationUpdates.add(it) }
+        sut.state
+            .onEach { lastCreationState = it }
             .launchIn(this)
+            .also { jobs.add(it) }
 
         // When
         sut(siteDomain, siteTitle)
+            .onEach { receivedSiteID = it }
+            .launchIn(this)
+            .also { jobs.add(it) }
+
+        advanceUntilIdle()
 
         // Then
         verify(storeCreationRepository).createNewFreeTrialSite(
@@ -49,17 +60,19 @@ internal class CreateFreeTrialStoreTest: BaseUnitTest() {
             eq(PlansViewModel.NEW_SITE_LANGUAGE_ID),
             any()
         )
-        assertThat(storeCreationUpdates).hasSize(3)
-        assertThat(storeCreationUpdates[0]).isEqualTo(StoreCreationState.Idle)
-        assertThat(storeCreationUpdates[1]).isEqualTo(StoreCreationState.Loading)
-        assertThat(storeCreationUpdates[2]).isEqualTo(StoreCreationState.Success(123L))
+        assertThat(lastCreationState).isEqualTo(StoreCreationState.Finished)
+        assertThat(receivedSiteID).isEqualTo(123L)
 
-        job.cancel()
+        jobs.forEach { it.cancel() }
     }
 
     @Test
     fun `when createFreeTrialSite fails, then the error is returned`() = testBlocking {
         // Given
+        val jobs = mutableListOf<Job>()
+        var lastCreationState: StoreCreationState? = null
+        var receivedSiteID: Long? = null
+
         val siteDomain = "test domain"
         val siteTitle = "test title"
         val expectedCreationResult = StoreCreationResult.Failure<Long>(
@@ -71,14 +84,20 @@ internal class CreateFreeTrialStoreTest: BaseUnitTest() {
             title = siteTitle,
             segmentId = null
         )
+
         createSut(siteDomain, siteTitle, expectedCreationResult)
-        val storeCreationUpdates = mutableListOf<StoreCreationState>()
-        val job = sut.state
-            .onEach { storeCreationUpdates.add(it) }
+        sut.state
+            .onEach { lastCreationState = it }
             .launchIn(this)
+            .also { jobs.add(it) }
 
         // When
         sut(siteDomain, siteTitle)
+            .onEach { receivedSiteID = it }
+            .launchIn(this)
+            .also { jobs.add(it) }
+
+        advanceUntilIdle()
 
         // Then
         verify(storeCreationRepository).createNewFreeTrialSite(
@@ -86,19 +105,21 @@ internal class CreateFreeTrialStoreTest: BaseUnitTest() {
             eq(PlansViewModel.NEW_SITE_LANGUAGE_ID),
             any()
         )
-        assertThat(storeCreationUpdates).hasSize(3)
-        assertThat(storeCreationUpdates[0]).isEqualTo(StoreCreationState.Idle)
-        assertThat(storeCreationUpdates[1]).isEqualTo(StoreCreationState.Loading)
-        assertThat(storeCreationUpdates[2]).isEqualTo(
-            Error(StoreCreationErrorType.FREE_TRIAL_ASSIGNMENT_FAILED)
+        assertThat(lastCreationState).isEqualTo(
+            Failed(StoreCreationErrorType.FREE_TRIAL_ASSIGNMENT_FAILED)
         )
+        assertThat(receivedSiteID).isNull()
 
-        job.cancel()
+        jobs.forEach { it.cancel() }
     }
 
     @Test
     fun `when createFreeTrialSite fails with SITE_ADDRESS_ALREADY_EXISTS, then the site is retrieved`() = testBlocking {
         // Given
+        val jobs = mutableListOf<Job>()
+        var lastCreationState: StoreCreationState? = null
+        var receivedSiteID: Long? = null
+
         val siteDomain = "test existent domain"
         val siteTitle = "test existent title"
         val expectedSiteCreationData = SiteCreationData(
@@ -113,14 +134,18 @@ internal class CreateFreeTrialStoreTest: BaseUnitTest() {
             siteTitle,
             StoreCreationResult.Failure(StoreCreationErrorType.SITE_ADDRESS_ALREADY_EXISTS)
         )
-
-        val storeCreationUpdates = mutableListOf<StoreCreationState>()
-        val job = sut.state
-            .onEach { storeCreationUpdates.add(it) }
+        sut.state
+            .onEach { lastCreationState = it }
             .launchIn(this)
+            .also { jobs.add(it) }
 
         // When
         sut(siteDomain, siteTitle)
+            .onEach { receivedSiteID = it }
+            .launchIn(this)
+            .also { jobs.add(it) }
+
+        advanceUntilIdle()
 
         // Then
         verify(storeCreationRepository).createNewFreeTrialSite(
@@ -129,12 +154,10 @@ internal class CreateFreeTrialStoreTest: BaseUnitTest() {
             any()
         )
         verify(storeCreationRepository).getSiteByUrl(siteDomain)
-        assertThat(storeCreationUpdates).hasSize(3)
-        assertThat(storeCreationUpdates[0]).isEqualTo(StoreCreationState.Idle)
-        assertThat(storeCreationUpdates[1]).isEqualTo(StoreCreationState.Loading)
-        assertThat(storeCreationUpdates[2]).isEqualTo(StoreCreationState.Success(123L))
+        assertThat(lastCreationState).isEqualTo(StoreCreationState.Finished)
+        assertThat(receivedSiteID).isEqualTo(123L)
 
-        job.cancel()
+        jobs.forEach { it.cancel() }
     }
 
     private fun createSut(
