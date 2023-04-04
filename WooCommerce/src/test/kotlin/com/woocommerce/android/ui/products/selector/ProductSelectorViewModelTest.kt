@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.selector
 
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_SELECTOR_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -50,29 +51,20 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     }
     private val variationSelectorRepository: VariationSelectorRepository = mock()
     private val resourceProvider: ResourceProvider = mock()
+    private val tracker: AnalyticsTrackerWrapper = mock()
+    private val productSelectorTracker: ProductSelectorTracker = ProductSelectorTracker(tracker)
     private val orderStore: WCOrderStore = mock()
     private val productsMapper: ProductsMapper = mock()
-    private val analyticsTracksWrapper: AnalyticsTrackerWrapper = mock()
 
     @Test
     fun `given published products restriction, when view model created, should not show draft products`() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             restrictions = arrayOf(OnlyPublishedProducts),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined,
         ).initSavedStateHandle()
 
-        val sut = ProductSelectorViewModel(
-            navArgs,
-            currencyFormatter,
-            wooCommerceStore,
-            orderStore,
-            selectedSite,
-            listHandler,
-            variationSelectorRepository,
-            resourceProvider,
-            productsMapper,
-            analyticsTracksWrapper,
-        )
+        val sut = createViewModel(navArgs)
 
         sut.viewState.observeForever { state ->
             assertThat(state.products).isNotEmpty
@@ -85,20 +77,10 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             restrictions = arrayOf(NoVariableProductsWithNoVariations),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined,
         ).initSavedStateHandle()
 
-        val sut = ProductSelectorViewModel(
-            navArgs,
-            currencyFormatter,
-            wooCommerceStore,
-            orderStore,
-            selectedSite,
-            listHandler,
-            variationSelectorRepository,
-            resourceProvider,
-            productsMapper,
-            analyticsTracksWrapper,
-        )
+        val sut = createViewModel(navArgs)
 
         sut.viewState.observeForever { state ->
             assertThat(state.products).isNotEmpty
@@ -113,20 +95,10 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             restrictions = arrayOf(OnlyPublishedProducts, NoVariableProductsWithNoVariations),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined,
         ).initSavedStateHandle()
 
-        val sut = ProductSelectorViewModel(
-            navArgs,
-            currencyFormatter,
-            wooCommerceStore,
-            orderStore,
-            selectedSite,
-            listHandler,
-            variationSelectorRepository,
-            resourceProvider,
-            productsMapper,
-            analyticsTracksWrapper,
-        )
+        val sut = createViewModel(navArgs)
 
         sut.viewState.observeForever { state ->
             assertThat(state.products).isNotEmpty
@@ -142,20 +114,10 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
             restrictions = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined,
         ).initSavedStateHandle()
 
-        val sut = ProductSelectorViewModel(
-            navArgs,
-            currencyFormatter,
-            wooCommerceStore,
-            orderStore,
-            selectedSite,
-            listHandler,
-            variationSelectorRepository,
-            resourceProvider,
-            productsMapper,
-            analyticsTracksWrapper,
-        )
+        val sut = createViewModel(navArgs)
 
         sut.viewState.observeForever { state ->
             assertThat(state.products.count()).isEqualTo(3)
@@ -167,6 +129,95 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `given order creation flow, when item is selected, should track analytic event`() {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            restrictions = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        ).initSavedStateHandle()
+
+        val sut = createViewModel(navArgs)
+
+        sut.onProductClick(ProductSelectorViewModel.ProductListItem(1, "", ProductType.SIMPLE, numVariations = 0))
+        verify(tracker).track(AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_ITEM_SELECTED)
+    }
+
+    @Test
+    fun `given order creation flow, when item is unselected, should track analytic event`() {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            restrictions = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        ).initSavedStateHandle()
+
+        val sut = createViewModel(navArgs)
+        val listItem = ProductSelectorViewModel.ProductListItem(1, "", ProductType.SIMPLE, numVariations = 0)
+        sut.onProductClick(listItem) // select
+        sut.onProductClick(listItem) // unselect
+
+        verify(tracker).track(AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_ITEM_UNSELECTED)
+    }
+
+    @Test
+    fun `given order creation flow and no items selected, when done button is tapped, should track analytics event`() =
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = emptyArray(),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+            ).initSavedStateHandle()
+
+            val sut = createViewModel(navArgs)
+            sut.onDoneButtonClick()
+
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED,
+                mapOf(
+                    "product_count" to 0,
+                )
+            )
+        }
+
+    @Test
+    fun `given order creation flow and multiple items selected, when done button is tapped, should track analytics event`() =
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = emptyArray(),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+            ).initSavedStateHandle()
+
+            val sut = createViewModel(navArgs)
+            sut.onProductClick(ProductSelectorViewModel.ProductListItem(1, "", ProductType.SIMPLE, numVariations = 0))
+            sut.onProductClick(ProductSelectorViewModel.ProductListItem(2, "", ProductType.SIMPLE, numVariations = 0))
+            sut.onDoneButtonClick()
+
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED,
+                mapOf(
+                    "product_count" to 2,
+                )
+            )
+        }
+
+    @Test
+    fun `given order creation flow, when clear button is tapped, should track analytics event`() = testBlocking {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            restrictions = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        ).initSavedStateHandle()
+
+        val sut = createViewModel(navArgs)
+        sut.onClearButtonClick()
+
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_CLEAR_SELECTION_BUTTON_TAPPED,
+            mapOf("source" to "product_selector")
+        )
+    }
+
     // region Sort by popularity and recently sold products
 
     @Test
@@ -175,6 +226,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
             ).initSavedStateHandle()
             val popularOrdersList = generatePopularOrders()
             val ordersList = generateTestOrders()
@@ -182,18 +234,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
             val argumentCaptor = argumentCaptor<List<Long>>()
 
-            ProductSelectorViewModel(
-                navArgs,
-                currencyFormatter,
-                wooCommerceStore,
-                orderStore,
-                selectedSite,
-                listHandler,
-                variationSelectorRepository,
-                resourceProvider,
-                productsMapper,
-                analyticsTracksWrapper,
-            )
+            createViewModel(navArgs)
 
             verify(productsMapper, times(2)).mapProductIdsToProduct(argumentCaptor.capture())
             assertThat(argumentCaptor.firstValue).isEqualTo(
@@ -208,6 +249,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
             ).initSavedStateHandle()
             val popularOrdersList = generatePopularOrders()
             val popularOrdersThatAreNotPaidYet = mutableListOf<OrderEntity>()
@@ -227,18 +269,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
             val argumentCaptor = argumentCaptor<List<Long>>()
 
-            ProductSelectorViewModel(
-                navArgs,
-                currencyFormatter,
-                wooCommerceStore,
-                orderStore,
-                selectedSite,
-                listHandler,
-                variationSelectorRepository,
-                resourceProvider,
-                productsMapper,
-                analyticsTracksWrapper,
-            )
+            createViewModel(navArgs)
 
             verify(productsMapper, times(2)).mapProductIdsToProduct(argumentCaptor.capture())
             assertThat(argumentCaptor.firstValue).isEqualTo(
@@ -270,7 +301,6 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 variationSelectorRepository,
                 resourceProvider,
                 productsMapper,
-                analyticsTracksWrapper,
             )
             sut.onSearchQueryChanged("Test query")
 
@@ -306,7 +336,6 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 variationSelectorRepository,
                 resourceProvider,
                 productsMapper,
-                analyticsTracksWrapper,
             )
             sut.onSearchQueryChanged("Test query")
 
@@ -344,7 +373,6 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 variationSelectorRepository,
                 resourceProvider,
                 productsMapper,
-                analyticsTracksWrapper,
             )
             sut.onSearchQueryChanged("Test query")
 
@@ -378,7 +406,6 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 variationSelectorRepository,
                 resourceProvider,
                 productsMapper,
-                analyticsTracksWrapper,
             )
             sut.onSearchQueryChanged("Test query")
 
@@ -401,23 +428,13 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
             ).initSavedStateHandle()
             val recentOrdersList = generateTestOrders()
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(recentOrdersList)
             val argumentCaptor = argumentCaptor<List<Long>>()
 
-            ProductSelectorViewModel(
-                navArgs,
-                currencyFormatter,
-                wooCommerceStore,
-                orderStore,
-                selectedSite,
-                listHandler,
-                variationSelectorRepository,
-                resourceProvider,
-                productsMapper,
-                analyticsTracksWrapper,
-            )
+            createViewModel(navArgs)
 
             verify(productsMapper, times(2)).mapProductIdsToProduct(argumentCaptor.capture())
             assertThat(argumentCaptor.firstValue).isEqualTo(
@@ -432,6 +449,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
             ).initSavedStateHandle()
             val ordersThatAreNotPaidYet = mutableListOf<OrderEntity>()
             repeat(10) {
@@ -450,18 +468,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
             val argumentCaptor = argumentCaptor<List<Long>>()
 
-            ProductSelectorViewModel(
-                navArgs,
-                currencyFormatter,
-                wooCommerceStore,
-                orderStore,
-                selectedSite,
-                listHandler,
-                variationSelectorRepository,
-                resourceProvider,
-                productsMapper,
-                analyticsTracksWrapper,
-            )
+            createViewModel(navArgs)
 
             verify(productsMapper, times(2)).mapProductIdsToProduct(argumentCaptor.capture())
             assertThat(argumentCaptor.firstValue).isEqualTo(
@@ -923,6 +930,20 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         selectedVariationIds = emptySet(),
         selectionState = SelectionState.SELECTED
     )
+
+    private fun createViewModel(navArgs: SavedStateHandle) =
+        ProductSelectorViewModel(
+            navArgs,
+            currencyFormatter,
+            wooCommerceStore,
+            orderStore,
+            selectedSite,
+            listHandler,
+            variationSelectorRepository,
+            resourceProvider,
+            productSelectorTracker,
+            productsMapper,
+        )
 
     private fun generateLineItems(
         name: String,

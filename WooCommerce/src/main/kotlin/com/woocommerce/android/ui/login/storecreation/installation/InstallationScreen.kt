@@ -22,9 +22,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import com.woocommerce.android.R.color
-import com.woocommerce.android.R.dimen
-import com.woocommerce.android.R.string
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -63,7 +61,7 @@ fun InstallationScreen(
                     viewModel::onRetryButtonClicked
                 )
                 is InitialState, LoadingState -> {
-                    ProgressIndicator(stringResource(id = string.store_creation_in_progress))
+                    ProgressIndicator(stringResource(id = R.string.store_creation_in_progress))
                 }
             }
         }
@@ -86,24 +84,24 @@ private fun InstallationSummary(
             .fillMaxSize()
     ) {
         Text(
-            text = stringResource(id = string.store_creation_installation_success),
-            color = colorResource(id = color.color_on_surface),
+            text = stringResource(id = R.string.store_creation_installation_success),
+            color = colorResource(id = R.color.color_on_surface),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.h5,
             modifier = Modifier
                 .padding(
-                    top = dimensionResource(id = dimen.major_350)
+                    top = dimensionResource(id = R.dimen.major_350)
                 )
         )
 
         Box(
             modifier = Modifier
                 .weight(1f)
-                .background(color = colorResource(id = color.color_surface))
-                .clip(RoundedCornerShape(dimensionResource(id = dimen.minor_100)))
+                .background(color = colorResource(id = R.color.color_surface))
+                .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
                 .padding(
-                    horizontal = dimensionResource(id = dimen.major_350),
-                    vertical = dimensionResource(id = dimen.major_200)
+                    horizontal = dimensionResource(id = R.dimen.major_350),
+                    vertical = dimensionResource(id = R.dimen.major_200)
                 )
         ) {
             PreviewWebView(
@@ -112,9 +110,9 @@ private fun InstallationSummary(
                     .fillMaxSize()
                     .align(Alignment.Center)
                     .drawShadow(
-                        color = colorResource(id = color.color_on_surface),
-                        backgroundColor = colorResource(id = color.color_surface),
-                        borderRadius = dimensionResource(id = dimen.major_100)
+                        color = colorResource(id = R.color.color_on_surface),
+                        backgroundColor = colorResource(id = R.color.color_surface),
+                        borderRadius = dimensionResource(id = R.dimen.major_100)
                     ),
                 userAgent = userAgent,
                 authenticator = authenticator,
@@ -123,34 +121,34 @@ private fun InstallationSummary(
         }
 
         Divider(
-            color = colorResource(id = color.divider_color),
-            thickness = dimensionResource(id = dimen.minor_10),
-            modifier = Modifier.padding(bottom = dimensionResource(id = dimen.major_100))
+            color = colorResource(id = R.color.divider_color),
+            thickness = dimensionResource(id = R.dimen.minor_10),
+            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100))
         )
 
         WCColoredButton(
             modifier = Modifier
-                .padding(horizontal = dimensionResource(id = dimen.major_100))
+                .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                 .fillMaxWidth(),
             onClick = onManageStoreButtonClicked
         ) {
             Text(
-                text = stringResource(id = string.store_creation_installation_manage_store_button)
+                text = stringResource(id = R.string.store_creation_installation_manage_store_button)
             )
         }
 
         WCOutlinedButton(
             modifier = Modifier
                 .padding(
-                    start = dimensionResource(id = dimen.major_100),
-                    end = dimensionResource(id = dimen.major_100),
-                    bottom = dimensionResource(id = dimen.major_100)
+                    start = dimensionResource(id = R.dimen.major_100),
+                    end = dimensionResource(id = R.dimen.major_100),
+                    bottom = dimensionResource(id = R.dimen.major_100)
                 )
                 .fillMaxWidth(),
             onClick = onShowPreviewButtonClicked
         ) {
             Text(
-                text = stringResource(id = string.store_creation_installation_show_preview_button)
+                text = stringResource(id = R.string.store_creation_installation_show_preview_button)
             )
         }
     }
@@ -167,13 +165,13 @@ private fun PreviewWebView(
 ) {
     Box(
         modifier = modifier
-            .padding(dimensionResource(id = dimen.minor_100))
+            .padding(dimensionResource(id = R.dimen.minor_100))
             .fillMaxSize()
-            .clip(RoundedCornerShape(dimensionResource(id = dimen.minor_100)))
+            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
             .border(
-                dimensionResource(id = dimen.minor_10),
-                colorResource(id = color.gray_0),
-                shape = RoundedCornerShape(dimensionResource(id = dimen.minor_100)),
+                dimensionResource(id = R.dimen.minor_10),
+                colorResource(id = R.color.empty_state_bg_color),
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)),
             )
     ) {
         WCWebView(
@@ -185,10 +183,10 @@ private fun PreviewWebView(
             isReadOnly = true,
             initialScale = 140,
             progressIndicator = Circular(
-                stringResource(id = string.store_creation_installation_rendering_preview_label)
+                stringResource(id = R.string.store_creation_installation_rendering_preview_label)
             ),
             onUrlLoaded = onUrlLoaded,
-            modifier = modifier.background(color = colorResource(id = color.color_surface))
+            modifier = modifier.background(color = colorResource(id = R.color.color_surface))
         )
     }
 }

@@ -77,6 +77,8 @@ class VariationListViewModel @Inject constructor(
     private val navArgs: VariationListFragmentArgs by savedState.navArgs()
     private val remoteProductId = navArgs.remoteProductId
 
+    private val isReadOnlyMode = navArgs.isReadOnlyMode
+
     private val _variationList = MutableLiveData<List<ProductVariation>>()
     val variationList: LiveData<List<ProductVariation>> = Transformations.map(_variationList) { variations ->
         val isEmpty = viewState.parentProduct?.variationEnabledAttributes?.isEmpty() == true
@@ -92,7 +94,7 @@ class VariationListViewModel @Inject constructor(
         }
     }
 
-    val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
+    val viewStateLiveData = LiveDataDelegate(savedState, ViewState(isAddVariationButtonVisible = isReadOnlyMode.not()))
     private var viewState by viewStateLiveData
 
     private var loadingJob: Job? = null
@@ -247,11 +249,14 @@ class VariationListViewModel @Inject constructor(
             if (fetchedVariations.isEmpty()) {
                 if (!loadMore) {
                     _variationList.value = emptyList()
-                    viewState = viewState.copy(isEmptyViewVisible = true, isVariationsOptionsMenuEnabled = false)
+                    viewState = viewState.copy(
+                        isEmptyViewVisible = true,
+                        isVariationsOptionsMenuEnabled = false
+                    )
                 }
             } else {
                 _variationList.value = combineData(fetchedVariations)
-                viewState = viewState.copy(isVariationsOptionsMenuEnabled = true)
+                viewState = viewState.copy(isVariationsOptionsMenuEnabled = isReadOnlyMode.not())
             }
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
@@ -262,6 +267,7 @@ class VariationListViewModel @Inject constructor(
             isLoadingMore = false
         )
     }
+
     private fun combineData(variations: List<ProductVariation>): List<ProductVariation> {
         val currencyCode = variationRepository.getCurrencyCode()
         variations.map { variation ->
@@ -351,6 +357,7 @@ class VariationListViewModel @Inject constructor(
         val parentProduct: Product? = null,
         val isVariationsOptionsMenuEnabled: Boolean = false,
         val isBulkUpdateProgressDialogShown: Boolean = false,
+        val isAddVariationButtonVisible: Boolean = true
     ) : Parcelable
 
     @Parcelize

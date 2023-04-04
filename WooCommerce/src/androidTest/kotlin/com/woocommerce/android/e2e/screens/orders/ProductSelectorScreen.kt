@@ -2,6 +2,8 @@ package com.woocommerce.android.e2e.screens.orders
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso
@@ -27,7 +29,7 @@ class ProductSelectorScreen : Screen(R.id.product_selector_compose_view) {
         composeTestRule: ComposeContentTestRule,
         productName: String
     ): UnifiedOrderScreen {
-        composeTestRule.onNodeWithText(productName).performClick()
+        composeTestRule.onAllNodesWithText(productName).onFirst().performClick()
         val selectButtonText = String.format(getTranslatedString(R.string.product_selector_select_button_title_one), 1)
         composeTestRule.onNodeWithText(selectButtonText).performClick()
 

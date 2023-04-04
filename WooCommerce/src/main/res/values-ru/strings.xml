@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-21 15:54:04+0000
+Translation-Revision-Date: 2023-03-28 13:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="upgrades_plan_ended_name">%s завершён</string>
+    <string name="upgrades_current_plan_ended_caption">Действие вашей подписки завершено, и теперь вам доступны не все функции.</string>
+    <string name="free_trial_days_left_plural">%1$d дн.</string>
+    <string name="free_trial_one_day_left">1 день</string>
+    <string name="store_onboarding_get_paid_loading_label">Загрузка…</string>
+    <string name="store_onboarding_get_paid_title">Настройка платежей</string>
+    <string name="store_onboarding_task_about_your_store_toolbar_title">О магазине</string>
+    <string name="store_creation_installation_rendering_preview_label">Подготовка к просмотру…</string>
+    <string name="jetpack_benefits_open_wpadmin">Открыть консоль</string>
+    <string name="shipping_label_address_phone_required">Укажите номер телефона</string>
+    <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s, %4$s проданы</string>
+    <string name="analytics_items">элементов</string>
+    <string name="analytics_item">товар</string>
     <string name="upgrades_error_fetching_data">Ошибка при получении сведений о плане</string>
     <string name="upgrades_non_upgradeable_caption">Вы оформили подписку на %1$s! У вас есть доступ ко всем функциям до %2$s. </string>
     <string name="upgrades_trial_ended_caption">У вас закончился пробный период, доступ к функциям ограничен. Подпишитесь на %1$s прямо сейчас.</string>
+    <string name="upgrades_upgradeable_caption">У вас идёт %1$d-дневный бесплатный пробный период. Бесплатный пробный период закончится через %2$s. Перейдите на платную подписку для доступа к новым функциям магазина.</string>
     <string name="upgrades_subscription_status">Статус подписки</string>
     <string name="upgrades_title">Платные услуги</string>
     <string name="upgrades_troubleshooting">Устранение неполадок</string>
@@ -16,7 +30,7 @@ Language: ru
     <string name="upgrades_upgrade_now">Перейти на платную подписку</string>
     <string name="upgrades_report_subscription_issue">Сообщить о проблеме с подпиской</string>
     <string name="free_trial_upgrade_now">Перейти на платную подписку</string>
-    <string name="free_trial_days_left">Осталось %1$d дн. до окончания пробного периода.</string>
+    <string name="free_trial_days_left">Осталось %1$s дн. до окончания пробного периода.</string>
     <string name="free_trial_trial_ended">Конец пробного периода</string>
     <string name="free_trial_your_trial_ended">Пробный период закончился.</string>
     <string name="store_onboarding_launch_store_generic_error_description">Произошли неожиданные ошибки.</string>
@@ -1335,7 +1349,6 @@ Language: ru
     <string name="card_reader_payment_fetch_order_loading_header">Обновление состояния приложения</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Ваш клиент выбрал %1$s</string>
     <string name="shipping_label_origin_address_phone_invalid">Для таможенных форм требуется 10-значный телефонный номер</string>
-    <string name="shipping_label_address_phone_required">Телефонный номер необходимо указать, так как для этой доставки требуется таможенная форма</string>
     <string name="shipping_label_create_customs_done">Таможенная форма заполнена</string>
     <string name="print_receipt_label_info_step_7">При наличии проблем с печатью с устройства обратитесь в службу поддержки вашего принтера.</string>
     <string name="print_receipt_label_info_step_6">Если печать недоступна, можно всегда сохранить квитанцию в формате PDF и отправить её по электронной почте, чтобы распечатать с другого устройства.</string>

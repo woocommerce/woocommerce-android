@@ -1,0 +1,1 @@
+For this release, we focused on making your experience smoother when managing products. Additionally, it's now possible to install Jetpack from the app if you would like additional functionality such as push notifications and visitor stats. Keep your feedback coming!

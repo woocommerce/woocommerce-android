@@ -246,9 +246,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                     )
                 is StoreOnboardingViewModel.NavigateToAddProduct ->
                     findNavController().navigateSafely(
-                        directions = MyStoreFragmentDirections.actionMyStoreToProductTypesBottomSheet(
-                            isAddProduct = true
-                        )
+                        directions = MyStoreFragmentDirections.actionMyStoreToProductTypesBottomSheet()
                     )
                 is StoreOnboardingViewModel.NavigateToSetupPayments ->
                     findNavController().navigateSafely(

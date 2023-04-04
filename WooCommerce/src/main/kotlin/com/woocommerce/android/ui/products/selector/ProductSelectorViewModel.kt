@@ -6,6 +6,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R.string
+import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_SELECTOR_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -41,10 +42,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.map
@@ -70,12 +69,12 @@ class ProductSelectorViewModel @Inject constructor(
     private val listHandler: ProductListHandler,
     private val variationSelectorRepository: VariationSelectorRepository,
     private val resourceProvider: ResourceProvider,
-    private val productsMapper: ProductsMapper,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val tracker: ProductSelectorTracker,
+    private val productsMapper: ProductsMapper
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val STATE_UPDATE_DELAY = 100L
-        private const val NO_OF_PRODUCTS = 5
+        private const val NUMBER_OF_SUGGESTED_ITEMS = 5
     }
 
     private val currencyCode by lazy {
@@ -83,6 +82,7 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     private val navArgs: ProductSelectorFragmentArgs by savedState.navArgs()
+    private val productSelectorFlow = navArgs.productSelectorFlow
 
     private val searchQuery = savedState.getStateFlow(this, "")
     private val loadingState = MutableStateFlow(IDLE)
@@ -166,7 +166,7 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     private suspend fun loadRecentProducts() {
-        val recentlySoldOrders = getRecentlySoldOrders().take(NO_OF_PRODUCTS)
+        val recentlySoldOrders = getRecentlySoldOrders().take(NUMBER_OF_SUGGESTED_ITEMS)
         recentProducts.value = productsMapper.mapProductIdsToProduct(
             getProductIdsFromRecentlySoldOrders(
                 recentlySoldOrders
@@ -176,46 +176,30 @@ class ProductSelectorViewModel @Inject constructor(
 
     private suspend fun loadPopularProducts() {
         val recentlySoldOrders = getRecentlySoldOrders()
-        val popularProductsMap = filterPopularProductsFrom(recentlySoldOrders)
-        val top5PopularProducts = popularProductsMap
+        val productIdsWithPurchaseCount = getProductIdsWithNumberOfPurchases(recentlySoldOrders)
+        val topPopularProductsSorted = productIdsWithPurchaseCount
             .asSequence()
-            .take(NO_OF_PRODUCTS)
+            .take(NUMBER_OF_SUGGESTED_ITEMS)
             .map { it.toPair() }
             .toList()
             .sortedByDescending { it.second }
             .toMap()
-        popularProducts.value = productsMapper.mapProductIdsToProduct(top5PopularProducts.keys.toList())
+        popularProducts.value = productsMapper.mapProductIdsToProduct(topPopularProductsSorted.keys.toList())
     }
 
     private suspend fun getRecentlySoldOrders() =
         orderStore.getPaidOrdersForSiteDesc(selectedSite.get()).filter { it.datePaid.isNotNullOrEmpty() }
 
-    private fun filterPopularProductsFrom(
-        recentlySoldOrdersList: List<OrderEntity>
-    ): MutableMap<Long, Int> {
-        val popularProductsMap: MutableMap<Long, Int> = mutableMapOf()
-        recentlySoldOrdersList.forEach { orderEntity ->
-            orderEntity.getLineItemList().forEach { lineItem ->
-                lineItem.productId?.let { productId ->
-                    popularProductsMap[productId] = popularProductsMap[productId]?.plus(1) ?: 1
-                }
-            }
-        }
-        return popularProductsMap
-    }
+    private fun getProductIdsWithNumberOfPurchases(recentlySoldOrdersList: List<OrderEntity>): Map<Long, Int> =
+        recentlySoldOrdersList.asSequence()
+            .flatMap { it.getLineItemList().mapNotNull { it.productId } }
+            .groupingBy { it }
+            .eachCount()
 
     private fun getProductIdsFromRecentlySoldOrders(
         recentlySoldOrdersList: List<OrderEntity>
-    ): List<Long> {
-        val productIds = mutableListOf<Long>()
-        recentlySoldOrdersList.forEach { orderEntity ->
-            orderEntity.getLineItemList().forEach { lineItem ->
-                lineItem.productId?.let { productId ->
-                    productIds.add(productId)
-                }
-            }
-        }
-        return productIds
+    ) = recentlySoldOrdersList.flatMap { orderEntity ->
+        orderEntity.getLineItemList().mapNotNull { it.productId }
     }
 
     private fun Product.toUiModel(selectedItems: Collection<SelectedItem>): ProductListItem {
@@ -274,6 +258,10 @@ class ProductSelectorViewModel @Inject constructor(
 
     fun onClearButtonClick() {
         launch {
+            tracker.trackClearSelectionButtonClicked(
+                productSelectorFlow,
+                ProductSelectorTracker.ProductSelectorSource.ProductSelector
+            )
             delay(STATE_UPDATE_DELAY) // let the animation play out before hiding the button
             selectedItems.value = emptyList()
         }
@@ -294,16 +282,25 @@ class ProductSelectorViewModel @Inject constructor(
     fun onProductClick(item: ProductListItem, productSourceForTracking: ProductSourceForTracking) {
         val productSource = updateProductSourceIfSearchOrFilterIsEnabled(productSourceForTracking)
         if (item.type == VARIABLE && item.numVariations > 0) {
-            triggerEvent(NavigateToVariationSelector(item.id, item.selectedVariationIds, productSource))
+            triggerEvent(
+                NavigateToVariationSelector(
+                    item.id,
+                    item.selectedVariationIds,
+                    productSelectorFlow,
+                    productSource
+                )
+            )
         } else if (item.type != VARIABLE) {
             selectedItems.update { items ->
                 val selectedProductItems = items.filter {
                     it is SelectedItem.ProductOrVariation || it is SelectedItem.Product
                 }
                 if (selectedProductItems.map { it.id }.contains(item.id)) {
+                    tracker.trackItemUnselected(productSelectorFlow)
                     val productItemToUnselect = selectedProductItems.filter { it.id == item.id }.toSet()
                     selectedItems.value - productItemToUnselect
                 } else {
+                    tracker.trackItemSelected(productSelectorFlow)
                     selectedItems.value + SelectedItem.Product(item.id, productSource)
                 }
             }
@@ -326,6 +323,7 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     fun onDoneButtonClick() {
+        tracker.trackDoneButtonClicked(productSelectorFlow, selectedItems.value.size)
         triggerEvent(ExitWithResult(selectedItems.value))
         analyticsTrackerWrapper.track(
             AnalyticsEvent.PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED,
@@ -522,6 +520,10 @@ class ProductSelectorViewModel @Inject constructor(
             }
         }
     }
+
+    enum class ProductSelectorFlow {
+        OrderCreation, CouponEdition, Undefined
+    }
 }
 
 val Collection<ProductSelectorViewModel.SelectedItem>.variationIds: List<Long>
@@ -535,29 +537,4 @@ enum class ProductSourceForTracking {
     ALPHABETICAL,
     SEARCH,
     FILTER,
-}
-
-@Suppress("LongParameterList")
-inline fun <T1, T2, T3, T4, T5, T6, T7, R> combine(
-    flow: Flow<T1>,
-    flow2: Flow<T2>,
-    flow3: Flow<T3>,
-    flow4: Flow<T4>,
-    flow5: Flow<T5>,
-    flow6: Flow<T6>,
-    flow7: Flow<T7>,
-    crossinline transform: suspend (T1, T2, T3, T4, T5, T6, T7) -> R
-): Flow<R> {
-    return combine(flow, flow2, flow3, flow4, flow5, flow6, flow7) { args: Array<*> ->
-        @Suppress("UNCHECKED_CAST", "MagicNumber")
-        transform(
-            args[0] as T1,
-            args[1] as T2,
-            args[2] as T3,
-            args[3] as T4,
-            args[4] as T5,
-            args[5] as T6,
-            args[6] as T7,
-        )
-    }
 }

@@ -1,5 +1,6 @@
 package com.woocommerce.android.e2e.screens.moremenu
 
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -26,5 +27,11 @@ class MoreMenuScreen : Screen(MORE_MENU_VIEW) {
             getTranslatedString(R.string.settings)
         ).performClick()
         return SettingsScreen()
+    }
+
+    fun assertStoreTitle(composeTestRule: ComposeTestRule, storeTitle: String): MoreMenuScreen {
+        composeTestRule.onNodeWithText(storeTitle)
+            .assertIsDisplayed()
+        return MoreMenuScreen()
     }
 }
