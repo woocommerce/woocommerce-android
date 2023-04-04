@@ -69,14 +69,9 @@ class UpgradesViewModel @Inject constructor(
     }
 
     fun onPlanUpgraded() {
-        tracks.track(AnalyticsEvent.PLAN_UPGRADE_SUCCESS, tracksProperties)
         launch {
             loadSubscriptionState()
         }
-    }
-
-    fun onPlanUpgradeDismissed() {
-        tracks.track(AnalyticsEvent.PLAN_UPGRADE_ABANDONED, tracksProperties)
     }
 
     private fun loadSubscriptionState() {

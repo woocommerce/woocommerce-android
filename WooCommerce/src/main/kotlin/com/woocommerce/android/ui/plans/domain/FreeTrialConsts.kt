@@ -7,4 +7,4 @@ const val FREE_TRIAL_PLAN_ID = 1052L
 @Suppress("MagicNumber")
 val FREE_TRIAL_PERIOD: Period = Period.ofDays(14)
 
-const val FREE_TRIAL_UPGRADE_PLAN = "eCommerce"
+const val FREE_TRIAL_UPGRADE_PLAN = "Woo Express Performance Plan"

@@ -17,6 +17,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.DUPLICATE_PRODUCT_SUCCES
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_LINKED_PRODUCTS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCTS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.addNewItem
 import com.woocommerce.android.extensions.clearList
@@ -45,6 +46,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
+import com.woocommerce.android.ui.products.AddProductSource.STORE_ONBOARDING
 import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
@@ -569,7 +571,7 @@ class ProductDetailViewModel @Inject constructor(
             updateProductDraft(downloads = updatedDownloads)
             // If the downloads list is empty now, go directly to the product details screen
             if (updatedDownloads.isEmpty()) triggerEvent(
-                ProductExitEvent.ExitProductDownloads(shouldShowDiscardDialog = false)
+                ProductExitEvent.ExitProductDownloads()
             )
         }
     }
@@ -640,20 +642,6 @@ class ProductDetailViewModel @Inject constructor(
 
     fun hasExternalLinkChanges() = storedProduct.value?.hasExternalLinkChanges(viewState.productDraft) ?: false
 
-    fun hasLinkedProductChanges() = storedProduct.value?.hasLinkedProductChanges(viewState.productDraft) ?: false
-
-    fun hasDownloadsChanges(): Boolean {
-        return storedProduct.value?.hasDownloadChanges(viewState.productDraft) ?: false
-    }
-
-    fun hasDownloadsSettingsChanges(): Boolean {
-        return storedProduct.value?.let {
-            it.downloadLimit != viewState.productDraft?.downloadLimit ||
-                it.downloadExpiry != viewState.productDraft?.downloadExpiry ||
-                it.isDownloadable != viewState.productDraft?.isDownloadable
-        } ?: false
-    }
-
     /**
      * Called when the back= button is clicked in a product sub detail screen
      */
@@ -695,6 +683,7 @@ class ProductDetailViewModel @Inject constructor(
             is ProductExitEvent.ExitProductDownloads -> Unit // Do nothing
             is ProductExitEvent.ExitProductDownloadsSettings -> Unit // Do nothing
             is ProductExitEvent.ExitProductRenameAttribute -> Unit // Do nothing
+            is ProductExitEvent.ExitProductSubscriptions -> Unit // Do nothing
         }
         eventName?.let { tracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
         triggerEvent(event)
@@ -832,6 +821,12 @@ class ProductDetailViewModel @Inject constructor(
                 val snackbarMessage = pickAddProductRequestSnackbarText(isSuccess, productStatus)
                 triggerEvent(ShowSnackbar(snackbarMessage))
                 if (isSuccess) {
+                    if (navArgs.source == STORE_ONBOARDING) {
+                        tracker.track(
+                            stat = AnalyticsEvent.STORE_ONBOARDING_TASK_COMPLETED,
+                            properties = mapOf(AnalyticsTracker.ONBOARDING_TASK_KEY to VALUE_PRODUCTS)
+                        )
+                    }
                     tracker.track(AnalyticsEvent.ADD_PRODUCT_SUCCESS)
                     if (product.remoteId != newProductId) {
                         // Assign the current uploads to the new product id
@@ -1343,23 +1338,6 @@ class ProductDetailViewModel @Inject constructor(
 
             updateProductDraft(attributes = updatedAttributes)
             trackWithProductId(AnalyticsEvent.PRODUCT_ATTRIBUTE_REMOVE_BUTTON_TAPPED)
-        }
-    }
-
-    /**
-     * Updates (replaces) a single attribute in the product draft
-     */
-    fun updateAttributeInDraft(attributeToUpdate: ProductAttribute) {
-        productDraftAttributes.map { attribute ->
-            if (attributeToUpdate.id == attribute.id && attributeToUpdate.name == attribute.name) {
-                attributeToUpdate
-            } else {
-                attribute
-            }
-        }.also { attributeList ->
-            if (productDraftAttributes != attributeList) {
-                updateProductDraft(attributes = attributeList)
-            }
         }
     }
 
@@ -2005,11 +1983,11 @@ class ProductDetailViewModel @Inject constructor(
 
                 // redirect to the product detail screen
                 productTagsViewState = productTagsViewState.copy(isProgressDialogShown = false)
-                onBackButtonClicked(ProductExitEvent.ExitProductTags(shouldShowDiscardDialog = false))
+                onBackButtonClicked(ProductExitEvent.ExitProductTags())
             }
         } else {
             // There are no newly added tags so redirect to the product detail screen
-            onBackButtonClicked(ProductExitEvent.ExitProductTags(shouldShowDiscardDialog = false))
+            onBackButtonClicked(ProductExitEvent.ExitProductTags())
         }
     }
 
@@ -2218,37 +2196,29 @@ class ProductDetailViewModel @Inject constructor(
      *
      * Add a new class here for each new product sub detail screen to handle back navigation.
      */
-    sealed class ProductExitEvent(val shouldShowDiscardDialog: Boolean = true) : Event() {
-        class ExitExternalLink(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
-        class ExitSettings(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
-        class ExitProductCategories(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
-        class ExitProductTags(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
-        class ExitLinkedProducts(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
-        class ExitProductDownloads(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(shouldShowDiscardDialog)
-        class ExitProductDownloadsSettings(shouldShowDiscardDialog: Boolean = true) :
-            ProductExitEvent(shouldShowDiscardDialog)
+    sealed class ProductExitEvent : Event() {
+        class ExitExternalLink : ProductExitEvent()
+        class ExitSettings : ProductExitEvent()
+        class ExitProductCategories : ProductExitEvent()
+        class ExitProductTags : ProductExitEvent()
+        class ExitLinkedProducts : ProductExitEvent()
+        class ExitProductDownloads : ProductExitEvent()
+        class ExitProductDownloadsSettings :
+            ProductExitEvent()
 
-        class ExitProductAttributeList(
-            shouldShowDiscardDialog: Boolean = true
-        ) : ProductExitEvent(
-            shouldShowDiscardDialog
-        )
+        class ExitProductAttributeList : ProductExitEvent()
 
-        class ExitProductAddAttribute(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
-            shouldShowDiscardDialog
-        )
+        class ExitProductAddAttribute : ProductExitEvent()
 
-        class ExitProductAddAttributeTerms(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
-            shouldShowDiscardDialog
-        )
+        class ExitProductAddAttributeTerms : ProductExitEvent()
 
-        class ExitProductRenameAttribute(shouldShowDiscardDialog: Boolean = true) : ProductExitEvent(
-            shouldShowDiscardDialog
-        )
+        class ExitProductRenameAttribute : ProductExitEvent()
 
-        object ExitAttributesAdded : ProductExitEvent(shouldShowDiscardDialog = false)
+        object ExitAttributesAdded : ProductExitEvent()
 
-        object ExitProductAddons : ProductExitEvent(shouldShowDiscardDialog = false)
+        object ExitProductAddons : ProductExitEvent()
+
+        object ExitProductSubscriptions : ProductExitEvent()
     }
 
     object RefreshMenu : Event()

@@ -67,6 +67,7 @@
     <string name="domain">Domain</string>
     <string name="domains">Domains</string>
     <string name="something_went_wrong_try_again">Something went wrong, Please try again later.</string>
+    <string name="loading">Loading…</string>
     <string name="shipping_labels">Shipping Labels</string>
     <string name="product_variations">Variations</string>
     <string name="product_variation_options">%1$s (%2$s options)</string>
@@ -209,7 +210,7 @@
     <string name="login_no_jetpack_username">Signed in as \@%1$s\nWrong account? %2$s</string>
     <string name="login_jetpack_required">This app requires Jetpack to connect to your store.</string>
     <string name="login_wpcom">Continue with WordPress.com</string>
-    <string name="login_store_address">Enter your store address</string>
+    <string name="login_store_address">Log In</string>
     <string name="login_with_store_address">Log in with your store address</string>
     <string name="login_configure_link">Read the %1$sconfiguration instructions%2$s.</string>
     <string name="login_with_qr_code">Scan QR code to login</string>
@@ -351,6 +352,10 @@
     <string name="login_site_credentials_custom_login_url">Unable to login because we cannot identify your store\'s login URL</string>
     <string name="login_site_credentials_custom_admin_url">Unable to login because we cannot identify your store\'s admin URL</string>
     <string name="login_site_credentials_http_error">Login failed with status code %1$s</string>
+    <string name="login_site_credentials_use_web_authorization">Try again with WP Admin page</string>
+    <string name="login_site_credentials_fetching_site_failed">An error occurred while fetching your website</string>
+    <string name="login_site_credentials_fetching_site">Fetching site…</string>
+    <string name="login_site_credentials_web_authorization_connection_rejected">Unable to login because application password creation is not approved.</string>
 
     <!--
         My Store View
@@ -387,7 +392,7 @@
     <!--
         Sign Up Flow
     -->
-    <string name="signup_get_started_button">Get started</string>
+    <string name="signup_get_started_button">Get Started</string>
     <string name="signup_get_started_label">Get started in minutes</string>
     <string name="signup_already_registered">First, let’s create your account. Already registered? &lt;a href=\'login\'&gt;&lt;u&gt;Log in&lt;/u&gt;&lt;/a&gt;</string>
     <string name="signup_email_address_hint">Your email address</string>
@@ -1165,8 +1170,9 @@
     <string name="card_reader_icon_content_description">Card Reader Image</string>
     <string name="card_reader_onboarding_not_finished">We’ve noticed that you have not yet finished In-Person Payments setup. &lt;a href=\'\'&gt;Continue setup&lt;/a&gt;</string>
     <string name="card_reader_onboarding_with_pending_requirements">There is an issue that requires your attention. Please &lt;a href=\'\'&gt;take a look&lt;/a&gt;</string>
-    <string name="card_reader_tap_to_pay">Tap To Pay</string>
-    <string name="card_reader_tap_to_pay_description">Use your phone to accept card payments</string>
+    <string name="card_reader_test_tap_to_pay">Test Your Tap To Pay</string>
+    <string name="card_reader_tap_to_pay_description">You can test Tap To Pay with a small\namount here.</string>
+    <string name="card_reader_tap_to_pay_share_feedback">Share Tap to Pay feedback</string>
     <string name="card_reader_tap_to_pay_not_available_error">Tap to Pay is not available for your store or device</string>
 
     <!--
@@ -1179,12 +1185,16 @@
     <string name="card_reader_tap_to_pay_explanation_where_to_find"> You can find Tap to Pay on Android in\nMenu > Payments, or Collect Payment and\nchoose Tap to Pay.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Try a payment</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Something went wrong. Please try again later.</string>
+    <string name="card_reader_tap_to_pay_beta_features_heading">Tap To Pay</string>
+    <string name="card_reader_tap_to_pay_beta_features_subheading">Test out Tap To Pay in the app</string>
 
     <!--
             Card Reader Type Selection
         -->
     <string name="card_reader_type_selection_tap_to_pay">Tap To Pay</string>
-    <string name="card_reader_type_selection_bluetooth_reader">Bluetooth Reader</string>
+    <string name="card_reader_type_selection_tap_to_pay_description">Securely accept contactless payments directly from your phone.</string>
+    <string name="card_reader_type_selection_bluetooth_reader">Card Reader</string>
+    <string name="card_reader_type_selection_bluetooth_reader_description">Card reader accepts tap, chip, and swipe payments with debit and credit cards.</string>
 
     <!--
             Card Reader Interac refund
@@ -1729,6 +1739,7 @@
     <string name="edit_products_button">Edit products</string>
     <string name="empty_product_add_product_button">Add product</string>
     <string name="empty_product_message">Start selling today by adding your first product to the store.</string>
+    <string name="product_subscription_title">Subscription</string>
     <string name="product_add_ons_title">Product Add-ons</string>
     <string name="product_add_ons_details_info_notice">You can edit product add-ons in the web dashboard.</string>
     <string name="product_count_one">%d product</string>
@@ -2028,8 +2039,12 @@
 
 
     <string name="requesting_otp">Requesting a verification code via SMS.</string>
+    <string name="requesting_sms_otp_success">SMS requested, please check your messages for the code.</string>
+    <string name="requesting_sms_otp_failure">SMS request failed. Please try again.</string>
+
 
     <string name="password_incorrect">It looks like this password is incorrect. Please double check your information and try again.</string>
+    <string name="otp_incorrect">The OTP code is incorrect. Please double check your information and try again.</string>
 
 
     <string name="login_magic_link_email_requesting">Requesting log-in email</string>
@@ -2184,6 +2199,7 @@
     <string name="product_type_physical">Physical</string>
     <string name="product_type_virtual">Virtual</string>
     <string name="product_type_downloadable">Downloadable</string>
+    <string name="product_type_subscription">Subscription</string>
 
     <!-- Product type bottom sheets -->
     <string name="product_type_list_header">Select a product type</string>
@@ -2763,7 +2779,8 @@
     <string name="enter_account_info_for_site">Enter your account information for %1$s.</string>
     <string name="get_started">Get Started</string>
     <string name="lets_get_started">Let\'s get started!</string>
-    <string name="simplified_login_prologue_title">WooCommerce is a customizable, open-source eCommerce platform built on WordPress.</string>
+    <string name="simplified_login_prologue_intro">Sell anything, anywhere.</string>
+    <string name="simplified_login_prologue_title">From your first sale to millions in revenue, Woo is with you. See why merchants trust us to power 3.4 million online stores.</string>
     <string name="check_email">Check email</string>
     <string name="login_text_otp">Text me a code instead</string>
     <string name="login_text_otp_another">Text me another code instead</string>
@@ -3164,6 +3181,7 @@
     <string name="store_onboarding_store_already_launched_error_description">We found that the store has already launched.</string>
     <string name="store_onboarding_launch_store_generic_error_title">Unexpected error</string>
     <string name="store_onboarding_launch_store_generic_error_description">Oops, some unexpected errors happened.</string>
+    <string name="store_onboarding_launch_store_ok">OK</string>
     <string name="store_onboarding_get_paid_title">Payments Setup</string>
     <string name="store_onboarding_get_paid_loading_label">Loading…</string>
 
@@ -3196,7 +3214,7 @@
     -->
     <string name="free_trial_your_trial_ended">Your trial has ended.</string>
     <string name="free_trial_trial_ended">Trial ended</string>
-    <string name="free_trial_days_left">%1$d days left in your trial.</string>
+    <string name="free_trial_days_left">%1$s left in your trial.</string>
     <string name="free_trial_upgrade_now">Upgrade Now</string>
     <string name="free_trial_one_day_left">1 day</string>
     <string name="free_trial_days_left_plural">%1$d days</string>
@@ -3216,4 +3234,49 @@
     <string name="upgrades_current_plan_ended_caption">Your subscription has ended, and you have limited access to all the features.</string>
     <string name="upgrades_error_fetching_data">Error while fetching plan details</string>
     <string name="upgrades_plan_ended_name">%s ended</string>
+    <!--
+    Subscription
+    -->
+    <string name="order_subscription">Subscription</string>
+    <string name="subscription_id">Subscription #%1$d</string>
+    <string name="subscription_total" translatable="false">%1$s /</string>
+    <string name="subscription_period_interval_single">Every %1$s</string>
+    <string name="subscription_period_interval_multiple">Every %1$d %2$s</string>
+    <string name="subscription_end_date" translatable="false">&#160;- %1$s</string>
+    <string name="product_subscription_description">%1$s every %2$s %3$s</string>
+    <string name="subscription_period" translatable="false">%1$s %2$s</string>
+    <string name="subscription_never_expire">Never expire</string>
+    <string name="subscription_no_sign_up_fee">No sign up fee</string>
+    <string name="subscription_no_trial">No trial period</string>
+    <string name="subscription_details_info_notice">You can edit product subscriptions in the web dashboard.</string>
+    <string name="no_variable_subscription_warning">You can only add variable subscriptions in the web dashboard.</string>
+    <!--
+    Subscription status
+    -->
+    <string name="subscription_status_active">Active</string>
+    <string name="subscription_status_on_hold">On Hold</string>
+    <string name="subscription_status_cancelled">Cancelled</string>
+    <string name="subscription_status_expired">Expired</string>
+    <string name="subscription_status_pending_cancellation">Pending Cancellation</string>
+    <string name="subscription_status_custom">Custom</string>
+    <!--
+    Subscription period
+    -->
+    <string name="subscription_period_day">day</string>
+    <string name="subscription_period_week">week</string>
+    <string name="subscription_period_month">month</string>
+    <string name="subscription_period_year">year</string>
+
+    <string name="subscription_period_multiple_days">days</string>
+    <string name="subscription_period_multiple_weeks">weeks</string>
+    <string name="subscription_period_multiple_months">months</string>
+    <string name="subscription_period_multiple_years">years</string>
+    <!--
+    Subscription details
+    -->
+    <string name="subscription_price">Subscription price</string>
+    <string name="subscription_expire">Expire after</string>
+    <string name="subscription_sign_up_fee">Sign up fee</string>
+    <string name="subscription_free_trial">Free trial</string>
+
 </resources>
