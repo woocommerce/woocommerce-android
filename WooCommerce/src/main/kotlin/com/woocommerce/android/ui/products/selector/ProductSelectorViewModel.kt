@@ -149,19 +149,11 @@ class ProductSelectorViewModel @Inject constructor(
     private suspend fun getRecentlySoldOrders() =
         orderStore.getPaidOrdersForSiteDesc(selectedSite.get()).filter { it.datePaid.isNotNullOrEmpty() }
 
-    private fun filterPopularProductsFrom(
-        recentlySoldOrdersList: List<OrderEntity>
-    ): MutableMap<Long, Int> {
-        val popularProductsMap: MutableMap<Long, Int> = mutableMapOf()
-        recentlySoldOrdersList.forEach { orderEntity ->
-            orderEntity.getLineItemList().forEach { lineItem ->
-                lineItem.productId?.let { productId ->
-                    popularProductsMap[productId] = popularProductsMap[productId]?.plus(1) ?: 1
-                }
-            }
-        }
-        return popularProductsMap
-    }
+    private fun filterPopularProductsFrom(recentlySoldOrdersList: List<OrderEntity>): Map<Long, Int> =
+        recentlySoldOrdersList.asSequence()
+            .flatMap { it.getLineItemList().mapNotNull { it.productId } }
+            .groupingBy { it }
+            .eachCount()
 
     private fun Product.toUiModel(selectedItems: Collection<SelectedItem>): ProductListItem {
         fun getProductSelection(): SelectionState {
