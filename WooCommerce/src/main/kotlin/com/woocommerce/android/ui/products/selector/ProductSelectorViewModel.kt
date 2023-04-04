@@ -310,13 +310,18 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
 
-    private fun updateProductSourceIfSearchOrFilterIsEnabled(productSource: ProductSourceForTracking): ProductSourceForTracking {
-        return if (searchQuery.value.isNotNullOrEmpty()) {
-            ProductSourceForTracking.SEARCH
-        } else if (!filterState.value.filterOptions.isNullOrEmpty()) {
-            ProductSourceForTracking.FILTER
-        } else {
-            productSource
+    private fun updateProductSourceIfSearchOrFilterIsEnabled(productSource: ProductSourceForTracking):
+        ProductSourceForTracking {
+        return when {
+            searchQuery.value.isNotNullOrEmpty() -> {
+                ProductSourceForTracking.SEARCH
+            }
+            !filterState.value.filterOptions.isNullOrEmpty() -> {
+                ProductSourceForTracking.FILTER
+            }
+            else -> {
+                productSource
+            }
         }
     }
 
@@ -524,8 +529,6 @@ val Collection<ProductSelectorViewModel.SelectedItem>.variationIds: List<Long>
         return filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductOrVariation>().map { it.id } +
             filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductVariation>().map { it.variationId }
     }
-
-
 enum class ProductSourceForTracking {
     POPULAR,
     RECENT,
