@@ -18,6 +18,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -272,6 +273,73 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             assertThat(argumentCaptor.firstValue).isEqualTo(
                 listOf(2445L, 2448L, 2447L, 2444L, 2446L)
             )
+        }
+    }
+
+    @Test
+    fun `given popular products, when searched for products, then hide the popular products section`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation
+            ).initSavedStateHandle()
+            val popularOrdersList = generatePopularOrders()
+            val ordersList = generateTestOrders()
+            val totalOrders = popularOrdersList + ordersList
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+            whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(ProductTestUtils.generateProductList())
+
+            val sut = createViewModel(navArgs)
+            sut.onSearchQueryChanged("Test query")
+
+            var viewState: ProductSelectorViewModel.ViewState? = null
+            sut.viewState.observeForever { state ->
+                viewState = state
+            }
+
+            assertThat(viewState?.popularProducts)?.isEmpty()
+        }
+    }
+
+    @Test
+    fun `given popular products, when search query cleared from the search view, then show the popular products section`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation
+            ).initSavedStateHandle()
+            val popularOrdersList = generatePopularOrders()
+            val ordersList = generateTestOrders()
+            val totalOrders = popularOrdersList + ordersList
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+            whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(ProductTestUtils.generateProductList())
+
+            val sut = ProductSelectorViewModel(
+                navArgs,
+                currencyFormatter,
+                wooCommerceStore,
+                orderStore,
+                selectedSite,
+                listHandler,
+                variationSelectorRepository,
+                resourceProvider,
+                productSelectorTracker,
+                productsMapper,
+            )
+            sut.onSearchQueryChanged("Test query")
+
+            var viewState: ProductSelectorViewModel.ViewState? = null
+            sut.viewState.observeForever { state ->
+                viewState = state
+            }
+
+            assertThat(viewState?.popularProducts)?.isEmpty()
+
+            sut.onSearchQueryChanged("")
+
+            assertThat(viewState?.popularProducts)?.isNotEmpty
         }
     }
 
