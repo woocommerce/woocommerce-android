@@ -21,6 +21,7 @@ enum class FeatureFlag {
     FREE_TRIAL_M2,
     REST_API_I2,
     ANALYTICS_HUB_FEEDBACK_BANNER,
+    GIFT_CARD_READ_ONLY_SUPPORT,
     STORE_CREATION_PROFILER;
 
     fun isEnabled(context: Context? = null): Boolean {
@@ -42,7 +43,8 @@ enum class FeatureFlag {
             IPP_TAP_TO_PAY,
             FREE_TRIAL_M2,
             REST_API_I2,
-            ANALYTICS_HUB_FEEDBACK_BANNER -> PackageUtils.isDebugBuild()
+            ANALYTICS_HUB_FEEDBACK_BANNER,
+            GIFT_CARD_READ_ONLY_SUPPORT -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION,
             STORE_CREATION_PROFILER -> false
