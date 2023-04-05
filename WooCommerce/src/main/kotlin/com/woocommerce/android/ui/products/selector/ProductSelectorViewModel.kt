@@ -163,11 +163,11 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     private suspend fun loadRecentProducts() {
-        val recentlySoldOrders = getRecentlySoldOrders().take(NUMBER_OF_SUGGESTED_ITEMS).toSet()
+        val recentlySoldOrders = getRecentlySoldOrders().take(NUMBER_OF_SUGGESTED_ITEMS)
         recentProducts.value = productsMapper.mapProductIdsToProduct(
             getProductIdsFromRecentlySoldOrders(
                 recentlySoldOrders
-            )
+            ).distinctBy { it }
         )
     }
 
@@ -194,7 +194,7 @@ class ProductSelectorViewModel @Inject constructor(
             .eachCount()
 
     private fun getProductIdsFromRecentlySoldOrders(
-        recentlySoldOrdersList: Set<OrderEntity>
+        recentlySoldOrdersList: List<OrderEntity>
     ) = recentlySoldOrdersList.flatMap { orderEntity ->
         orderEntity.getLineItemList().mapNotNull { it.productId }
     }
