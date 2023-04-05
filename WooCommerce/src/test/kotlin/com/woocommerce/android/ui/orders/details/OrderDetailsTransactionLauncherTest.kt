@@ -60,6 +60,8 @@ class OrderDetailsTransactionLauncherTest : BaseUnitTest() {
         sut.onRefundsFetched()
         sut.onShipmentTrackingFetchingCompleted()
         sut.onPackageCreationEligibleFetched()
+        sut.onSubscriptionsFetched()
+        sut.onGiftCardsFetched()
 
         verify(performanceTransactionRepository).finishTransaction(transactionId, TransactionStatus.SUCCESSFUL)
     }
