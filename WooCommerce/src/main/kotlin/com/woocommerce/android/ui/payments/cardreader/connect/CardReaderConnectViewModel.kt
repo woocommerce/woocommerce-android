@@ -60,6 +60,7 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectV
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.MissingMerchantAddressError
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.MultipleExternalReadersFoundState
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ScanningFailedState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
@@ -89,6 +90,7 @@ class CardReaderConnectViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val cardReaderManager: CardReaderManager,
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
+    private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
     private val learnMoreUrlProvider: LearnMoreUrlProvider,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderConnectDialogFragmentArgs by savedState.navArgs()
@@ -465,6 +467,7 @@ class CardReaderConnectViewModel @Inject constructor(
         tracker.trackConnectionFailed()
         WooLog.e(WooLog.T.CARD_READER, "Connecting to reader failed.")
         viewState.value = ConnectingFailedState(::restartFlow, ::onCancelClicked)
+        cardReaderOnboardingChecker.invalidateCache()
     }
 
     private fun triggerOpenUrlEventAndExitIfNeeded(

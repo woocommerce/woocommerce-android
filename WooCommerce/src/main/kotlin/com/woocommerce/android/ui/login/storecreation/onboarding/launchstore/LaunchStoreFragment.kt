@@ -9,14 +9,14 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource.BANNER
 import com.woocommerce.android.ui.login.storecreation.onboarding.launchstore.LaunchStoreViewModel.ShareStoreUrl
 import com.woocommerce.android.ui.login.storecreation.onboarding.launchstore.LaunchStoreViewModel.UpgradeToEcommercePlan
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.plans.di.StartUpgradeFlowFactory
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.LogLevel.e
 import com.woocommerce.android.util.WooLog.T
@@ -24,14 +24,23 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ToastUtils
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class LaunchStoreFragment : BaseFragment() {
     private val viewModel: LaunchStoreViewModel by viewModels()
     private lateinit var rootView: ComposeView
 
+    @Inject
+    lateinit var startUpgradeFlowFactory: StartUpgradeFlowFactory
+
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        lifecycle.addObserver(viewModel)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         rootView = ComposeView(requireContext()).apply {
@@ -50,23 +59,24 @@ class LaunchStoreFragment : BaseFragment() {
         setupObservers()
     }
 
+    override fun onDestroyView() {
+        lifecycle.removeObserver(viewModel)
+        super.onDestroyView()
+    }
+
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                is UpgradeToEcommercePlan -> openInWebView(event.url)
+                is UpgradeToEcommercePlan -> startUpgradeFlow()
                 is ShareStoreUrl -> shareStoreUrl(event.url)
                 is ShowDialog -> event.showDialog()
             }
         }
     }
 
-    private fun openInWebView(url: String) {
-        findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                urlToLoad = url
-            )
-        )
+    private fun startUpgradeFlow() {
+        startUpgradeFlowFactory.create(findNavController()).invoke(BANNER)
     }
 
     private fun shareStoreUrl(storeUrl: String) {
