@@ -50,6 +50,11 @@ class ProductSubscriptionFragment : BaseProductFragment(R.layout.fragment_produc
 
     private fun initializeViews(subscription: SubscriptionDetails, sale: SaleDetails?) {
         val period = subscription.period.getPeriodString(requireContext(), subscription.periodInterval)
+        initializeSubscriptionDetails(subscription, period)
+        initializeSaleDetails(sale, period, subscription.periodInterval.toString())
+    }
+
+    private fun initializeSubscriptionDetails(subscription: SubscriptionDetails, period: String) {
         with(binding.priceValue) {
             text = getString(
                 R.string.product_subscription_description,
@@ -78,17 +83,20 @@ class ProductSubscriptionFragment : BaseProductFragment(R.layout.fragment_produc
             } else {
                 getString(R.string.subscription_no_trial)
             }
+    }
 
+    private fun initializeSaleDetails(sale: SaleDetails?, period: String, periodInterval: String) {
         sale?.let {
             binding.saleTitle.isVisible = true
             binding.saleDivider.isVisible = true
+            binding.saleSpace.isVisible = sale.salePrice != null && sale.isSaleScheduled
             if (sale.salePrice != null) {
                 with(binding.saleValue) {
                     isVisible = true
                     text = getString(
                         R.string.product_subscription_description,
                         currencyFormatter.formatCurrency(sale.salePrice, viewModel.currencyCode, true),
-                        subscription.periodInterval.toString(),
+                        periodInterval,
                         period
                     )
                 }

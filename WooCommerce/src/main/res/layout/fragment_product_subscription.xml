@@ -59,13 +59,18 @@
                     tools:text="Apr 6,2023 - Apr 7, 2023"
                     android:visibility="gone"/>
 
+                <Space
+                    android:id="@+id/sale_space"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/minor_100"
+                    android:visibility="gone"/>
+
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/sale_value"
                     style="@style/Woo.Card.Body"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:text="$50.00 every 3 months"
-                    android:layout_marginTop="@dimen/minor_100"
                     android:visibility="gone" />
 
                 <com.google.android.material.divider.MaterialDivider
