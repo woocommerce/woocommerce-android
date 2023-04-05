@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -109,19 +111,29 @@ private fun SummaryBody(modifier: Modifier) {
 @Composable
 private fun SummaryFreeTrialFeatureList() {
     Column() {
-        FreeTrialFeature(imageVector = Icons.Default.Edit, text = "Premium Themes")
-        FreeTrialFeature(imageVector = Icons.Default.Edit, text = "Premium Themes")
-        FreeTrialFeature(imageVector = Icons.Default.Edit, text = "Premium Themes")
-        FreeTrialFeature(imageVector = Icons.Default.Edit, text = "Premium Themes")
+        FeatureRow(imageVector = Icons.Default.Edit, text = "Premium themes")
+        FeatureRow(imageVector = Icons.Default.Edit, text = "Unlimited products")
+        FeatureRow(imageVector = Icons.Default.Edit, text = "Shipping labels")
+        FeatureRow(imageVector = Icons.Default.Edit, text = "Ecommerce reports")
+        FeatureRow(imageVector = Icons.Default.Edit, text = "Multiple payment options")
+        FeatureRow(imageVector = Icons.Default.Edit, text = "Subscription & product kits")
+        FeatureRow(imageVector = Icons.Default.Edit, text = "Social advertising")
+        FeatureRow(imageVector = Icons.Default.Edit, text = "Email marketing")
+        FeatureRow(imageVector = Icons.Default.Edit, text = "24/7 support")
+        FeatureRow(imageVector = Icons.Default.Edit, text = "Auto updates & backups")
+        FeatureRow(imageVector = Icons.Default.Edit, text = "Site security")
+        FeatureRow(imageVector = Icons.Default.Edit, text = "Fast to launch")
     }
 }
 
 @Composable
-private fun FreeTrialFeature(
+private fun FeatureRow(
     imageVector: ImageVector,
     text: String
 ) {
-    Row() {
+    Row(modifier = Modifier
+        .padding(bottom = dimensionResource(id = R.dimen.major_75))
+    ) {
         Icon(
             imageVector = imageVector,
             contentDescription = null,
