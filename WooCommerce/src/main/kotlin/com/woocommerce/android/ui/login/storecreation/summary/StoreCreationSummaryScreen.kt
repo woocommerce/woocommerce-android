@@ -63,6 +63,7 @@ private fun StoreCreationSummaryScreen(
         ) {
             SummaryBody(
                 modifier = Modifier
+                    .verticalScroll(rememberScrollState())
                     .fillMaxWidth()
                     .padding(dimensionResource(id = R.dimen.major_125))
                     .weight(4f)
