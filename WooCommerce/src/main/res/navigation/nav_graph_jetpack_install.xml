@@ -51,5 +51,15 @@
         <argument
             android:name="role"
             app:argType="string" />
+        <action
+            android:id="@+id/action_jetpackActivationEligibilityErrorFragment_to_jetpack_activation"
+            app:destination="@id/nav_graph_jetpack_activation">
+            <argument
+                android:name="siteUrl"
+                app:argType="string" />
+            <argument
+                android:name="jetpackStatus"
+                app:argType="com.woocommerce.android.model.JetpackStatus" />
+        </action>
     </fragment>
 </navigation>

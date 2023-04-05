@@ -27,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
@@ -38,7 +39,8 @@ fun JetpackActivationEligibilityErrorScreen(viewModel: JetpackActivationEligibil
         JetpackActivationEligibilityErrorScreen(
             viewState = it,
             onBackButtonClick = viewModel::onBackButtonClick,
-            onLearnMoreClick = viewModel::onLearnMoreButtonClicked
+            onLearnMoreClick = viewModel::onLearnMoreButtonClicked,
+            onRetryClick = viewModel::onRetryButtonClicked
         )
     }
 }
@@ -46,7 +48,8 @@ fun JetpackActivationEligibilityErrorScreen(viewModel: JetpackActivationEligibil
 fun JetpackActivationEligibilityErrorScreen(
     viewState: JetpackActivationEligibilityErrorViewModel.ViewState,
     onBackButtonClick: () -> Unit = {},
-    onLearnMoreClick: () -> Unit = {}
+    onLearnMoreClick: () -> Unit = {},
+    onRetryClick: () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -84,12 +87,19 @@ fun JetpackActivationEligibilityErrorScreen(
 
                 Spacer(Modifier.height(dimensionResource(id = R.dimen.major_100)))
                 WCColoredButton(
-                    onClick = { },
+                    onClick = onRetryClick,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                 ) {
                     Text(text = stringResource(id = R.string.retry))
+                }
+
+                if (viewState.isRetrying) {
+                    ProgressDialog(
+                        title = stringResource(id = R.string.jetpack_benefits_fetching_status),
+                        subtitle = stringResource(id = R.string.please_wait)
+                    )
                 }
             }
         }

@@ -8,10 +8,12 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.jetpack.benefits.JetpackActivationEligibilityErrorViewModel
 import com.woocommerce.android.ui.jetpack.benefits.JetpackActivationEligibilityErrorViewModel.OpenUrlEvent
+import com.woocommerce.android.ui.jetpack.benefits.JetpackActivationEligibilityErrorViewModel.StartJetpackActivationForApplicationPasswords
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment.Listener
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -42,8 +44,17 @@ class JetpackActivationEligibilityErrorFragment : BaseFragment(), Listener {
 
         viewModel.event.observe(this) { event ->
             when (event) {
+                is StartJetpackActivationForApplicationPasswords -> {
+                    findNavController().navigateSafely(
+                        JetpackActivationEligibilityErrorFragmentDirections
+                            .actionJetpackActivationEligibilityErrorFragmentToJetpackActivation(
+                                siteUrl = event.siteUrl,
+                                jetpackStatus = event.jetpackStatus,
+                            )
+                    )
+                }
                 is OpenUrlEvent -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
-                is Exit -> findNavController().navigateUp()
+                is Exit -> findNavController().popBackStack()
             }
         }
     }
