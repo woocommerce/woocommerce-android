@@ -122,7 +122,19 @@ private fun FreeTrialFeature(
     text: String
 ) {
     Row() {
-
+        Icon(
+            imageVector = imageVector,
+            contentDescription = null,
+            tint = colorResource(id = R.color.color_primary),
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .padding(end = dimensionResource(id = R.dimen.minor_100))
+                .size(16.dp)
+        )
+        Text(
+            text = text,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
