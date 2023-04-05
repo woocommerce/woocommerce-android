@@ -35,9 +35,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
-import com.woocommerce.android.R.color
-import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCWebView
@@ -201,7 +200,7 @@ fun CreateStoreState(
                 backgroundColor = colorResource(id = R.color.divider_color),
             )
             Text(
-                text = stringResource(id = viewState.description),
+                text = annotatedStringRes(stringResId = viewState.description),
                 style = MaterialTheme.typography.subtitle1,
                 color = colorResource(id = R.color.color_on_surface_medium)
             )
@@ -255,12 +254,12 @@ private fun CreateStoreStatePreview() {
         CreateStoreState(
             viewState = CreatingStoreState(
                 progress = 0,
-                title = string.store_creation_in_progress_title_1,
-                description = string.store_creation_in_progress_description_1
+                title = R.string.store_creation_in_progress_title_1,
+                description = R.string.store_creation_in_progress_description_1
             ),
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = colorResource(id = color.color_surface))
+                .background(color = colorResource(id = R.color.color_surface))
         )
     }
 }

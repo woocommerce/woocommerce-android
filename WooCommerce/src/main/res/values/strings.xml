@@ -2926,9 +2926,9 @@
     <string name="store_creation_in_progress_title_1">Woo! We are creating your store</string>
     <string name="store_creation_in_progress_title_2">Applying the finishing touches</string>
     <string name="store_creation_in_progress_title_3">Turning on the lights</string>
-    <string name="store_creation_in_progress_description_1"><b>#FunWooFact:</b> There are more than 150 WooCommerce meetups held all over the world! A great way to meet fellow store owners.</string>
-    <string name="store_creation_in_progress_description_2"><b>#FunWooFact:</b> There are more than 150 WooCommerce meetups held all over the world! A great way to meet fellow store owners.</string>
-    <string name="store_creation_in_progress_description_3"><b>#FunWooFact:</b> Our favorite color is purple 💜</string>
+    <string name="store_creation_in_progress_description_1">&lt;b&gt;#FunWooFact:&lt;/b&gt; There are more than 150 WooCommerce meetups held all over the world! A great way to meet fellow store owners.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#FunWooFact:&lt;/b&gt; There are more than 150 WooCommerce meetups held all over the world! A great way to meet fellow store owners.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#FunWooFact:&lt;/b&gt; Our favorite color is purple 💜</string>
 
     <string name="store_creation_domain_picker_title">Choose a domain</string>
     <string name="store_creation_domain_picker_subtitle">This is where people will find you on the Internet. Don\'t worry, you can change it later.</string>
