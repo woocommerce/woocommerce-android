@@ -59,7 +59,7 @@ import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
-
+@SuppressWarnings("LargeClass")
 class ProductDetailCardBuilder(
     private val viewModel: ProductDetailViewModel,
     private val resources: ResourceProvider,

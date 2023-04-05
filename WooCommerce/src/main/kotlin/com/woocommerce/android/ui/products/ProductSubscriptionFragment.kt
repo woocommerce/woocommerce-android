@@ -94,7 +94,7 @@ class ProductSubscriptionFragment : BaseProductFragment(R.layout.fragment_produc
                 }
             }
             if (sale.isSaleScheduled) {
-                with(binding.saleDates){
+                with(binding.saleDates) {
                     isVisible = true
                     text = getSalesDates(sale)
                 }
