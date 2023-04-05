@@ -124,5 +124,8 @@ sealed class ProductNavigationTarget : Event() {
         val productCategoryName: String?
     ) : ProductNavigationTarget()
 
-    data class ViewProductSubscription(val subscription: SubscriptionDetails) : ProductNavigationTarget()
+    data class ViewProductSubscription(
+        val subscription: SubscriptionDetails,
+        val sale: SaleDetails? = null
+    ) : ProductNavigationTarget()
 }

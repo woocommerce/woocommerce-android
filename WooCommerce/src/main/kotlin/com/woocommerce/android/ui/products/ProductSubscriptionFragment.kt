@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -12,6 +13,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -87,3 +89,11 @@ class ProductSubscriptionFragment : BaseProductFragment(R.layout.fragment_produc
         _binding = null
     }
 }
+
+@Parcelize
+data class SaleDetails(
+    val salePrice: BigDecimal?,
+    val isSaleScheduled: Boolean,
+    val saleStartDateGmt: Date?,
+    val saleEndDateGmt: Date?
+) : Parcelable
