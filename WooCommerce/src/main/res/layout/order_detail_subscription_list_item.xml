@@ -37,15 +37,10 @@
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginStart="0dp"
         android:layout_marginTop="@dimen/minor_100"
-        app:layout_constraintTop_toBottomOf="@id/subscription_start_date"/>
-
-    <com.woocommerce.android.widgets.tags.TagView
-        android:id="@+id/subscription_status_tag"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/minor_100"
-        tools:tagText="Active"
-        app:tagTextColor="@color/tagView_text"
+        android:ellipsize="end"
+        android:focusable="false"
+        android:lines="1"
+        app:layout_constraintEnd_toStartOf="@+id/subscription_total"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/subscription_id" />
 
