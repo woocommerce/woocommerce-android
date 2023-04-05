@@ -18,13 +18,15 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
 import javax.inject.Inject
 
 @HiltViewModel
 class JetpackBenefitsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val selectedSite: SelectedSite,
-    private val fetchJetpackStatus: FetchJetpackStatus
+    private val fetchJetpackStatus: FetchJetpackStatus,
+    private val wpComAccessToken: AccessToken
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val JETPACK_CONNECT_URL = "https://wordpress.com/jetpack/connect"
@@ -69,7 +71,10 @@ class JetpackBenefitsViewModel @Inject constructor(
         }
     }
 
-    fun onDismiss() = triggerEvent(Exit)
+    fun onDismiss() {
+        wpComAccessToken.set(null)
+        triggerEvent(Exit)
+    }
 
     fun onOpenWpAdminJetpackActivationClicked() {
         AnalyticsTracker.track(

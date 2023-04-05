@@ -31,6 +31,7 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewImageGallery
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewMediaUploadErrors
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.Optional
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -408,6 +409,7 @@ class VariationDetailViewModel @Inject constructor(
     }
 
     suspend fun getQuantityRules(remoteProductId: Long, remoteVariationId: Long): QuantityRules? {
+        if (FeatureFlag.QUANTITY_RULES_READ_ONLY_SUPPORT.isEnabled().not()) return null
         return getProductVariationQuantityRules(remoteProductId, remoteVariationId)
     }
 

@@ -52,6 +52,7 @@ import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
@@ -65,6 +66,7 @@ import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -2191,7 +2193,10 @@ class ProductDetailViewModel @Inject constructor(
         )
     }
 
-    suspend fun getQuantityRules(productRemoteID: Long) = getProductQuantityRules(productRemoteID)
+    suspend fun getQuantityRules(productRemoteID: Long): QuantityRules? {
+        if (FeatureFlag.QUANTITY_RULES_READ_ONLY_SUPPORT.isEnabled().not()) return null
+        return getProductQuantityRules(productRemoteID)
+    }
 
     /**
      * Sealed class that handles the back navigation for the product detail screens while providing a common
