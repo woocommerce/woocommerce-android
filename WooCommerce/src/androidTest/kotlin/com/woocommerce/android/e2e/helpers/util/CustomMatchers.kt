@@ -41,24 +41,4 @@ class CustomMatchers {
             }
         }
     }
-
-    fun atLeastViewCount(viewMatcher: Matcher<View>, atleastCount: Int): Matcher<View?> {
-        return object : TypeSafeMatcher<View?>() {
-            private var actualCount = -1
-            override fun describeTo(description: Description) {
-                when {
-                    actualCount <= atleastCount -> description.also {
-                        it.appendText("Expected at least count: $atleastCount, but got: $actualCount")
-                    }
-                }
-            }
-
-            override fun matchesSafely(root: View?): Boolean {
-                actualCount = TreeIterables.breadthFirstViewTraversal(root).count {
-                    viewMatcher.matches(it)
-                }
-                return atleastCount <= actualCount
-            }
-        }
-    }
 }
