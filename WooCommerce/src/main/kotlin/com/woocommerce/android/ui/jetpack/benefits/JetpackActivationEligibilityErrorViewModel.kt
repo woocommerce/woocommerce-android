@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.jetpack.benefits
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.extensions.toCamelCase
 import com.woocommerce.android.ui.jetpack.JetpackActivationEligibilityErrorFragmentArgs
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -27,7 +28,7 @@ class JetpackActivationEligibilityErrorViewModel @Inject constructor(
     ) { (username, role), isRetrying ->
         ViewState(
             username = username,
-            role = role,
+            role = role.replace("_", " ").toCamelCase(),
             isRetrying = isRetrying
         )
     }.asLiveData()
