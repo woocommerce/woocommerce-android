@@ -113,6 +113,8 @@ class StoreNamePickerViewModel @Inject constructor(
 
     object NavigateToStoreInstallation : MultiLiveEvent.Event()
 
+    object NavigateToSummary : MultiLiveEvent.Event()
+
     sealed class StoreNamePickerState {
         data class Contentful(
             val storeName: String,

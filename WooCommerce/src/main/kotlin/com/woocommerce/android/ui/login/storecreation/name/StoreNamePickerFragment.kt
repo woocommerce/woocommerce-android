@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.NavigateToDomainPicker
 import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.NavigateToStoreInstallation
+import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.NavigateToSummary
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -48,6 +49,7 @@ class StoreNamePickerFragment : BaseFragment() {
                 is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
                 is NavigateToDomainPicker -> navigateToDomainPicker(event.domainInitialQuery)
                 is NavigateToStoreInstallation -> navigateToInstallation()
+                is NavigateToSummary -> navigateToSummary()
             }
         }
     }
