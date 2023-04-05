@@ -3224,6 +3224,7 @@
     <string name="free_trial_summary_try_it">Try it for 14 days.</string>
     <string name="free_trial_summary_try_button">Try For Free</string>
     <string name="free_trial_summary_credit_card_message">No credit card required.</string>
+    <string name="free_trial_feature_premium_themes">Premium themes</string>
     <string name="free_trial_feature_unlimited_products">Unlimited products</string>
     <string name="free_trial_feature_shipping_labels">Shipping labels</string>
     <string name="free_trial_feature_ecommerce_reports">Ecommerce reports</string>
