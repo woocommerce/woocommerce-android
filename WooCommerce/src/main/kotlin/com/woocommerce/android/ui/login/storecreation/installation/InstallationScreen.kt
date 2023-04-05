@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -178,6 +180,16 @@ fun CreateStoreState(
         animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
     ).value
     Box(modifier = modifier) {
+        Image(
+            modifier = Modifier.align(Alignment.TopEnd),
+            painter = painterResource(id = R.drawable.store_creation_loading_image_top_end),
+            contentDescription = null,
+        )
+        Image(
+            modifier = Modifier.align(Alignment.BottomStart),
+            painter = painterResource(id = R.drawable.store_creation_loading_image_bottom_start),
+            contentDescription = null,
+        )
         Column(
             modifier = Modifier
                 .padding(dimensionResource(id = R.dimen.major_250))
