@@ -108,26 +108,26 @@ private fun SummaryBody(modifier: Modifier) {
 
 @Composable
 private fun SummaryFreeTrialFeatureList() {
-    Column() {
-        FeatureRow(iconResourceId = R.drawable.ic_star, text = "Premium themes")
-        FeatureRow(iconResourceId = R.drawable.ic_box, text = "Unlimited products")
-        FeatureRow(iconResourceId = R.drawable.ic_truck, text = "Shipping labels")
-        FeatureRow(iconResourceId = R.drawable.ic_chart, text = "Ecommerce reports")
-        FeatureRow(iconResourceId = R.drawable.ic_dollar, text = "Multiple payment options")
-        FeatureRow(iconResourceId = R.drawable.ic_gift, text = "Subscription & product kits")
-        FeatureRow(iconResourceId = R.drawable.ic_megaphone, text = "Social advertising")
-        FeatureRow(iconResourceId = R.drawable.ic_letter, text = "Email marketing")
-        FeatureRow(iconResourceId = R.drawable.ic_two_persons, text = "24/7 support")
-        FeatureRow(iconResourceId = R.drawable.ic_update_clock, text = "Auto updates & backups")
-        FeatureRow(iconResourceId = R.drawable.ic_cloud, text = "Site security")
-        FeatureRow(iconResourceId = R.drawable.ic_globe_2, text = "Fast to launch")
+    Column {
+        FeatureRow(iconResourceId = R.drawable.ic_star, stringResourceId = R.string.free_trial_feature_premium_themes)
+        FeatureRow(iconResourceId = R.drawable.ic_box, stringResourceId = R.string.free_trial_feature_unlimited_products)
+        FeatureRow(iconResourceId = R.drawable.ic_truck, stringResourceId = R.string.free_trial_feature_shipping_labels)
+        FeatureRow(iconResourceId = R.drawable.ic_chart, stringResourceId = R.string.free_trial_feature_ecommerce_reports)
+        FeatureRow(iconResourceId = R.drawable.ic_dollar, stringResourceId = R.string.free_trial_feature_multiple_payment_options)
+        FeatureRow(iconResourceId = R.drawable.ic_gift, stringResourceId = R.string.free_trial_feature_subscription_product_kits)
+        FeatureRow(iconResourceId = R.drawable.ic_megaphone, stringResourceId = R.string.free_trial_feature_social_advertising)
+        FeatureRow(iconResourceId = R.drawable.ic_letter, stringResourceId = R.string.free_trial_feature_email_marketing)
+        FeatureRow(iconResourceId = R.drawable.ic_two_persons, stringResourceId = R.string.free_trial_feature_247_support)
+        FeatureRow(iconResourceId = R.drawable.ic_update_clock, stringResourceId = R.string.free_trial_feature_auto_updates_backups)
+        FeatureRow(iconResourceId = R.drawable.ic_cloud, stringResourceId = R.string.free_trial_feature_site_security)
+        FeatureRow(iconResourceId = R.drawable.ic_globe_2, stringResourceId = R.string.free_trial_feature_fast_to_launch)
     }
 }
 
 @Composable
 private fun FeatureRow(
     iconResourceId: Int,
-    text: String
+    stringResourceId: Int
 ) {
     Row(modifier = Modifier
         .padding(bottom = dimensionResource(id = R.dimen.major_75))
@@ -142,7 +142,7 @@ private fun FeatureRow(
                 .size(dimensionResource(id = R.dimen.major_150))
         )
         Text(
-            text = text,
+            text = stringResource(id =stringResourceId),
             textAlign = TextAlign.Start,
             modifier = Modifier.align(Alignment.CenterVertically)
         )
