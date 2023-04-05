@@ -11,8 +11,10 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.jetpack.benefits.JetpackActivationEligibilityErrorViewModel
+import com.woocommerce.android.ui.jetpack.benefits.JetpackActivationEligibilityErrorViewModel.OpenUrlEvent
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment.Listener
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -40,6 +42,7 @@ class JetpackActivationEligibilityErrorFragment : BaseFragment(), Listener {
 
         viewModel.event.observe(this) { event ->
             when (event) {
+                is OpenUrlEvent -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 is Exit -> findNavController().navigateUp()
             }
         }

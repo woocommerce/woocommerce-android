@@ -37,14 +37,16 @@ fun JetpackActivationEligibilityErrorScreen(viewModel: JetpackActivationEligibil
     viewModel.viewState.observeAsState().value?.let {
         JetpackActivationEligibilityErrorScreen(
             viewState = it,
-            onBackButtonClick = viewModel::onBackButtonClick
+            onBackButtonClick = viewModel::onBackButtonClick,
+            onLearnMoreClick = viewModel::onLearnMoreButtonClicked
         )
     }
 }
 @Composable
 fun JetpackActivationEligibilityErrorScreen(
     viewState: JetpackActivationEligibilityErrorViewModel.ViewState,
-    onBackButtonClick: () -> Unit = {}
+    onBackButtonClick: () -> Unit = {},
+    onLearnMoreClick: () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -73,6 +75,7 @@ fun JetpackActivationEligibilityErrorScreen(
                 MainContent(
                     username = viewState.username,
                     role = viewState.role,
+                    onLearnMoreClick = onLearnMoreClick,
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
@@ -97,7 +100,8 @@ fun JetpackActivationEligibilityErrorScreen(
 private fun MainContent(
     username: String,
     role: String,
-    modifier: Modifier
+    onLearnMoreClick: () -> Unit = {},
+    modifier: Modifier,
 ) {
     Column(
         modifier = modifier,
@@ -127,7 +131,7 @@ private fun MainContent(
 
         WCTextButton(
             modifier = Modifier.fillMaxWidth(),
-            onClick = {}
+            onClick = onLearnMoreClick
         ) {
             Text(text = stringResource(id = R.string.jetpack_install_role_eligibility_learn_more))
         }

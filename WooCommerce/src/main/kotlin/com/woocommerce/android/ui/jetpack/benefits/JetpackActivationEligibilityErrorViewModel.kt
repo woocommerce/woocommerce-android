@@ -3,8 +3,10 @@ package com.woocommerce.android.ui.jetpack.benefits
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppUrls.WOOCOMMERCE_USER_ROLES
 import com.woocommerce.android.extensions.toCamelCase
 import com.woocommerce.android.ui.jetpack.JetpackActivationEligibilityErrorFragmentArgs
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -37,9 +39,15 @@ class JetpackActivationEligibilityErrorViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
+    fun onLearnMoreButtonClicked() {
+        triggerEvent(OpenUrlEvent(WOOCOMMERCE_USER_ROLES))
+    }
+
     data class ViewState(
         val username: String,
         val role: String,
         val isRetrying: Boolean
     )
+
+    data class OpenUrlEvent(val url: String) : Event()
 }
