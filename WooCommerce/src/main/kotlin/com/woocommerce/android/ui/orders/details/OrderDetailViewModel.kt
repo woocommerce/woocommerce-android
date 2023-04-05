@@ -68,6 +68,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentC
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -679,6 +680,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private suspend fun fetchGiftCardsAsync() = async {
+        if (FeatureFlag.GIFT_CARD_READ_ONLY_SUPPORT.isEnabled().not()) return@async
         val plugin = pluginsInformation[WooCommerceStore.WooPlugin.WOO_GIFT_CARDS.pluginName]
         if (plugin != null && plugin.isOperational) {
             giftCardRepository.fetchGiftCardSummaryByOrderId(navArgs.orderId)
