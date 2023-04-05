@@ -3276,4 +3276,12 @@
     <string name="subscription_sign_up_fee">Sign up fee</string>
     <string name="subscription_free_trial">Free trial</string>
 
+
+    <!--
+    Gift cards
+    -->
+    <string name="order_gift_card">Gift Card</string>
+    <string name="gift_cards">Gift Cards</string>
+    <string name="negative_currency" translatable="false">- %1$s</string>
+
 </resources>

@@ -230,6 +230,8 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED,
     ORDER_DETAIL_WAITING_TIME_LOADED,
     ORDER_VIEW_CUSTOM_FIELDS_TAPPED,
+    ORDER_DETAILS_SUBSCRIPTIONS_SHOWN,
+    ORDER_DETAILS_GIFT_CARD_SHOWN,
 
     // - Order detail editing
     ORDER_DETAIL_EDIT_FLOW_STARTED,
@@ -520,7 +522,6 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     EXTERNAL_PRODUCT_LINK_SETTINGS_DONE_BUTTON_TAPPED,
 
     // -- Product subscriptions
-    ORDER_DETAILS_SUBSCRIPTIONS_SHOWN,
     PRODUCT_DETAILS_VIEW_SUBSCRIPTIONS_TAPPED,
 
     // -- Product attributes
