@@ -109,6 +109,20 @@ private fun SummaryBody(modifier: Modifier) {
 @Composable
 private fun SummaryFreeTrialFeatureList() {
     Column() {
+        FreeTrialFeature(imageVector = Icons.Default.Edit, text = "Premium Themes")
+        FreeTrialFeature(imageVector = Icons.Default.Edit, text = "Premium Themes")
+        FreeTrialFeature(imageVector = Icons.Default.Edit, text = "Premium Themes")
+        FreeTrialFeature(imageVector = Icons.Default.Edit, text = "Premium Themes")
+    }
+}
+
+@Composable
+private fun FreeTrialFeature(
+    imageVector: ImageVector,
+    text: String
+) {
+    Row() {
+
     }
 }
 
