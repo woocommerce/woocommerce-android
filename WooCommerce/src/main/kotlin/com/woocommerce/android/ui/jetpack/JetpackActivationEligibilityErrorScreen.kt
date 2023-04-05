@@ -40,7 +40,8 @@ fun JetpackActivationEligibilityErrorScreen(viewModel: JetpackActivationEligibil
             viewState = it,
             onBackButtonClick = viewModel::onBackButtonClick,
             onLearnMoreClick = viewModel::onLearnMoreButtonClicked,
-            onRetryClick = viewModel::onRetryButtonClicked
+            onRetryClick = viewModel::onRetryButtonClicked,
+            onHelpButtonClick = viewModel::onHelpButtonClicked
         )
     }
 }
@@ -49,13 +50,14 @@ fun JetpackActivationEligibilityErrorScreen(
     viewState: JetpackActivationEligibilityErrorViewModel.ViewState,
     onBackButtonClick: () -> Unit = {},
     onLearnMoreClick: () -> Unit = {},
-    onRetryClick: () -> Unit = {}
+    onRetryClick: () -> Unit = {},
+    onHelpButtonClick: () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
             ToolbarWithHelpButton(
                 navigationIcon = Icons.Filled.ArrowBack,
-                onHelpButtonClick = { },
+                onHelpButtonClick = onHelpButtonClick,
                 onNavigationButtonClick = onBackButtonClick
             )
         }
