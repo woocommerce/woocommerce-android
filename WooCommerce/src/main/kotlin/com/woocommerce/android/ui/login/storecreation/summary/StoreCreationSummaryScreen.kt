@@ -26,7 +26,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -140,11 +139,12 @@ private fun FeatureRow(
             modifier = Modifier
                 .align(Alignment.CenterVertically)
                 .padding(end = dimensionResource(id = R.dimen.minor_100))
-                .size(16.dp)
+                .size(dimensionResource(id = R.dimen.major_150))
         )
         Text(
             text = text,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Start,
+            modifier = Modifier.align(Alignment.CenterVertically)
         )
     }
 }
