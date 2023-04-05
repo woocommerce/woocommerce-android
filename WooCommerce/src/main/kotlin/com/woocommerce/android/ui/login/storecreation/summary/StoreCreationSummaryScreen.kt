@@ -16,14 +16,12 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -112,31 +110,31 @@ private fun SummaryBody(modifier: Modifier) {
 @Composable
 private fun SummaryFreeTrialFeatureList() {
     Column() {
-        FeatureRow(imageVector = Icons.Default.Edit, text = "Premium themes")
-        FeatureRow(imageVector = Icons.Default.Edit, text = "Unlimited products")
-        FeatureRow(imageVector = Icons.Default.Edit, text = "Shipping labels")
-        FeatureRow(imageVector = Icons.Default.Edit, text = "Ecommerce reports")
-        FeatureRow(imageVector = Icons.Default.Edit, text = "Multiple payment options")
-        FeatureRow(imageVector = Icons.Default.Edit, text = "Subscription & product kits")
-        FeatureRow(imageVector = Icons.Default.Edit, text = "Social advertising")
-        FeatureRow(imageVector = Icons.Default.Edit, text = "Email marketing")
-        FeatureRow(imageVector = Icons.Default.Edit, text = "24/7 support")
-        FeatureRow(imageVector = Icons.Default.Edit, text = "Auto updates & backups")
-        FeatureRow(imageVector = Icons.Default.Edit, text = "Site security")
-        FeatureRow(imageVector = Icons.Default.Edit, text = "Fast to launch")
+        FeatureRow(iconResourceId = R.drawable.ic_star, text = "Premium themes")
+        FeatureRow(iconResourceId = R.drawable.ic_box, text = "Unlimited products")
+        FeatureRow(iconResourceId = R.drawable.ic_truck, text = "Shipping labels")
+        FeatureRow(iconResourceId = R.drawable.ic_chart, text = "Ecommerce reports")
+        FeatureRow(iconResourceId = R.drawable.ic_dollar, text = "Multiple payment options")
+        FeatureRow(iconResourceId = R.drawable.ic_gift, text = "Subscription & product kits")
+        FeatureRow(iconResourceId = R.drawable.ic_megaphone, text = "Social advertising")
+        FeatureRow(iconResourceId = R.drawable.ic_letter, text = "Email marketing")
+        FeatureRow(iconResourceId = R.drawable.ic_two_persons, text = "24/7 support")
+        FeatureRow(iconResourceId = R.drawable.ic_update_clock, text = "Auto updates & backups")
+        FeatureRow(iconResourceId = R.drawable.ic_cloud, text = "Site security")
+        FeatureRow(iconResourceId = R.drawable.ic_globe_2, text = "Fast to launch")
     }
 }
 
 @Composable
 private fun FeatureRow(
-    imageVector: ImageVector,
+    iconResourceId: Int,
     text: String
 ) {
     Row(modifier = Modifier
         .padding(bottom = dimensionResource(id = R.dimen.major_75))
     ) {
         Icon(
-            imageVector = imageVector,
+            painter = painterResource(id = iconResourceId),
             contentDescription = null,
             tint = colorResource(id = R.color.color_primary),
             modifier = Modifier
