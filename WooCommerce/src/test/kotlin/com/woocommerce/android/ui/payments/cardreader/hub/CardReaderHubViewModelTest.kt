@@ -1563,7 +1563,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         // WHEN
         initViewModel()
         (viewModel.viewStateData.getOrAwaitValue()).rows.find {
-            it.label == UiStringRes(R.string.card_reader_tap_to_pay)
+            it.label == UiStringRes(R.string.card_reader_test_tap_to_pay)
         }!!.onClick!!.invoke()
 
         // THEN
