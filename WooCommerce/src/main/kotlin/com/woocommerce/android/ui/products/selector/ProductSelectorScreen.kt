@@ -226,20 +226,20 @@ private fun displayProductsSection(
             )
         }
 
-        productsList.forEachIndexed { index, popularProduct ->
+        productsList.forEachIndexed { index, product ->
             SelectorListItem(
-                title = popularProduct.title,
-                imageUrl = popularProduct.imageUrl,
-                infoLine1 = popularProduct.stockAndPrice,
-                infoLine2 = popularProduct.sku?.let {
-                    stringResource(string.product_selector_sku_value, popularProduct.sku)
+                title = product.title,
+                imageUrl = product.imageUrl,
+                infoLine1 = product.stockAndPrice,
+                infoLine2 = product.sku?.let {
+                    stringResource(string.product_selector_sku_value, product.sku)
                 },
-                selectionState = popularProduct.selectionState,
-                isArrowVisible = popularProduct.type == VARIABLE && popularProduct.numVariations > 0,
-                onClickLabel = stringResource(id = string.product_selector_select_product_label, popularProduct.title),
+                selectionState = product.selectionState,
+                isArrowVisible = product.type == VARIABLE && product.numVariations > 0,
+                onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
                 imageContentDescription = stringResource(string.product_image_content_description)
             ) {
-                onProductClick(popularProduct)
+                onProductClick(product)
             }
             if (index < productsList.size - 1) {
                 Divider(
