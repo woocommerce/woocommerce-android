@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.jetpack
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,6 +44,7 @@ fun JetpackActivationEligibilityErrorScreen(viewModel: JetpackActivationEligibil
         )
     }
 }
+
 @Composable
 fun JetpackActivationEligibilityErrorScreen(
     viewState: JetpackActivationEligibilityErrorViewModel.ViewState,
@@ -68,41 +68,37 @@ fun JetpackActivationEligibilityErrorScreen(
                 .fillMaxSize()
                 .background(color = MaterialTheme.colors.surface)
                 .padding(paddingValues)
-                .padding(vertical = dimensionResource(id = R.dimen.major_100))
+                .padding(
+                    vertical = dimensionResource(id = R.dimen.major_100),
+                    horizontal = dimensionResource(id = R.dimen.major_100)
+                )
         ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
+
+            MainContent(
+                username = viewState.username,
+                role = viewState.role,
+                onLearnMoreClick = onLearnMoreClick,
                 modifier = Modifier
                     .weight(1f)
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+            )
+
+            Spacer(Modifier.height(dimensionResource(id = R.dimen.major_100)))
+            WCColoredButton(
+                onClick = onRetryClick,
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100))
             ) {
-                MainContent(
-                    username = viewState.username,
-                    role = viewState.role,
-                    onLearnMoreClick = onLearnMoreClick,
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .verticalScroll(rememberScrollState())
+                Text(text = stringResource(id = R.string.retry))
+            }
+
+            if (viewState.isRetrying) {
+                ProgressDialog(
+                    title = stringResource(id = R.string.jetpack_benefits_fetching_status),
+                    subtitle = stringResource(id = R.string.please_wait)
                 )
-
-                Spacer(Modifier.height(dimensionResource(id = R.dimen.major_100)))
-                WCColoredButton(
-                    onClick = onRetryClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-                ) {
-                    Text(text = stringResource(id = R.string.retry))
-                }
-
-                if (viewState.isRetrying) {
-                    ProgressDialog(
-                        title = stringResource(id = R.string.jetpack_benefits_fetching_status),
-                        subtitle = stringResource(id = R.string.please_wait)
-                    )
-                }
             }
         }
     }
