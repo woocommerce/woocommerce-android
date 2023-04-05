@@ -28,7 +28,9 @@ class StoreOnboardingRepository @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) {
 
-    var onboardingTasksCacheFlow: MutableStateFlow<List<OnboardingTask>> = MutableStateFlow(emptyList())
+    private val onboardingTasksCacheFlow: MutableStateFlow<List<OnboardingTask>> = MutableStateFlow(emptyList())
+
+    fun observeOnboardingTasks() = onboardingTasksCacheFlow
 
     suspend fun fetchOnboardingTasks() {
         WooLog.d(WooLog.T.ONBOARDING, "Fetching onboarding tasks")

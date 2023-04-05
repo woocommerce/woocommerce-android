@@ -46,7 +46,7 @@ class StoreOnboardingViewModel @Inject constructor(
 
     init {
         launch {
-            onboardingRepository.onboardingTasksCacheFlow
+            onboardingRepository.observeOnboardingTasks()
                 .collectLatest { tasks ->
                     _viewState.value = OnboardingState(
                         show = tasks.any { !it.isComplete } && FeatureFlag.STORE_CREATION_ONBOARDING.isEnabled(),
