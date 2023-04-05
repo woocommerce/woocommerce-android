@@ -450,6 +450,37 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `given order creation, when multiple same products purchased, then only display 1 of them in the recent products section `() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+            ).initSavedStateHandle()
+            val recentOrdersList = mutableListOf<OrderEntity>()
+            repeat(10) {
+                recentOrdersList.add(
+                    OrderTestUtils.generateOrder(
+                        lineItems = generateLineItems(
+                            name = "ACME Bike",
+                            productId = "1111"
+                        ),
+                    ),
+                )
+            }
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(recentOrdersList)
+            val argumentCaptor = argumentCaptor<List<Long>>()
+
+            createViewModel(navArgs)
+
+            verify(productsMapper, times(2)).mapProductIdsToProduct(argumentCaptor.capture())
+            assertThat(argumentCaptor.secondValue).isEqualTo(
+                listOf(1111L)
+            )
+        }
+    }
+
     //endregion
 
     private fun createViewModel(navArgs: SavedStateHandle) =
