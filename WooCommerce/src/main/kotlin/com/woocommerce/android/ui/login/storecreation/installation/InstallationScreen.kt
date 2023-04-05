@@ -1,39 +1,52 @@
 package com.woocommerce.android.ui.login.storecreation.installation
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.R.color
+import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
-import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCWebView
 import com.woocommerce.android.ui.compose.component.WebViewProgressIndicator.Circular
 import com.woocommerce.android.ui.compose.drawShadow
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorScreen
+import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.CreatingStoreState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.InitialState
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.LoadingState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.SuccessState
 import org.wordpress.android.fluxc.network.UserAgent
 
@@ -43,7 +56,7 @@ fun InstallationScreen(
     userAgent: UserAgent,
     authenticator: WPComWebViewAuthenticator
 ) {
-    viewModel.viewState.observeAsState(InitialState).value.let { state ->
+    viewModel.viewState.observeAsState().value?.let { state ->
         Crossfade(targetState = state) { viewState ->
             when (viewState) {
                 is SuccessState -> InstallationSummary(
@@ -60,9 +73,10 @@ fun InstallationScreen(
                     viewState.message,
                     viewModel::onRetryButtonClicked
                 )
-                is InitialState, LoadingState -> {
-                    ProgressIndicator(stringResource(id = R.string.store_creation_in_progress))
-                }
+                is CreatingStoreState -> CreateStoreState(
+                    viewState = viewState,
+                    modifier = Modifier.fillMaxSize()
+                )
             }
         }
     }
@@ -155,6 +169,47 @@ private fun InstallationSummary(
 }
 
 @Composable
+fun CreateStoreState(
+    viewState: CreatingStoreState,
+    modifier: Modifier = Modifier
+) {
+    val progress by remember { mutableStateOf(viewState.progress / viewState.maxProgress) }
+    val animatedProgress = animateFloatAsState(
+        targetValue = progress,
+        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
+    ).value
+    Box(modifier = modifier) {
+        Column(
+            modifier = Modifier
+                .padding(dimensionResource(id = R.dimen.major_250))
+                .align(Alignment.Center),
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_150)),
+        ) {
+            Text(
+                text = stringResource(id = viewState.title),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.h5,
+                fontWeight = FontWeight.Bold,
+            )
+            LinearProgressIndicator(
+                progress = animatedProgress,
+                modifier = Modifier
+                    .height(dimensionResource(id = R.dimen.minor_100))
+                    .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
+                    .fillMaxWidth(),
+                color = MaterialTheme.colors.primary,
+                backgroundColor = colorResource(id = R.color.divider_color),
+            )
+            Text(
+                text = stringResource(id = viewState.description),
+                style = MaterialTheme.typography.subtitle1,
+                color = colorResource(id = R.color.color_on_surface_medium)
+            )
+        }
+    }
+}
+
+@Composable
 @SuppressLint("SetJavaScriptEnabled", "ClickableViewAccessibility")
 private fun PreviewWebView(
     url: String,
@@ -187,6 +242,25 @@ private fun PreviewWebView(
             ),
             onUrlLoaded = onUrlLoaded,
             modifier = modifier.background(color = colorResource(id = R.color.color_surface))
+        )
+    }
+}
+
+@ExperimentalFoundationApi
+@Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Composable
+private fun CreateStoreStatePreview() {
+    WooThemeWithBackground {
+        CreateStoreState(
+            viewState = CreatingStoreState(
+                progress = 0,
+                title = string.store_creation_in_progress_title_1,
+                description = string.store_creation_in_progress_description_1
+            ),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = colorResource(id = color.color_surface))
         )
     }
 }
