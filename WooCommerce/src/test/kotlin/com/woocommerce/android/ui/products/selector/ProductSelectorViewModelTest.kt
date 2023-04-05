@@ -410,7 +410,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             createViewModel(navArgs)
 
             verify(productsMapper, times(2)).mapProductIdsToProduct(argumentCaptor.capture())
-            assertThat(argumentCaptor.firstValue).isEqualTo(
+            assertThat(argumentCaptor.secondValue).isEqualTo(
                 listOf(2444L, 2446L, 2449L, 2450L, 2451L)
             )
         }
@@ -444,7 +444,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             createViewModel(navArgs)
 
             verify(productsMapper, times(2)).mapProductIdsToProduct(argumentCaptor.capture())
-            assertThat(argumentCaptor.firstValue).isEqualTo(
+            assertThat(argumentCaptor.secondValue).isEqualTo(
                 listOf(2444L, 2446L, 2449L, 2450L, 2451L)
             )
         }
