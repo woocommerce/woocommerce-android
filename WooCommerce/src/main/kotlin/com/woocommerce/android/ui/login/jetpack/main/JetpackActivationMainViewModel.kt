@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_SETUP_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isNotNullOrEmpty
@@ -123,23 +124,50 @@ class JetpackActivationMainViewModel @Inject constructor(
         }
     }.asLiveData()
 
+    private val isFromBanner = appPrefsWrapper.getJetpackInstallationIsFromBanner()
+
     init {
-        analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_SETUP_SCREEN_VIEWED)
+        if (!isFromBanner) {
+            analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_SETUP_SCREEN_VIEWED)
+        }
+
         monitorCurrentStep()
         handleErrorStates()
         startNextStep()
     }
 
     fun onCloseClick() {
-        analyticsTrackerWrapper.track(
-            stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_SCREEN_DISMISSED,
-            properties = mapOf(AnalyticsTracker.KEY_JETPACK_INSTALLATION_STEP to currentStep.value.type.analyticsName),
-        )
+        if (isFromBanner) {
+            analyticsTrackerWrapper.track(
+                stat = JETPACK_SETUP_FLOW,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_STEP to currentStep.value.type.analyticsName,
+                    AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_DISMISS
+                )
+            )
+        } else {
+            analyticsTrackerWrapper.track(
+                stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_SCREEN_DISMISSED,
+                properties = mapOf(AnalyticsTracker.KEY_JETPACK_INSTALLATION_STEP to currentStep.value.type.analyticsName),
+            )
+        }
         triggerEvent(Exit)
     }
 
     fun onContinueClick() = launch {
-        analyticsTrackerWrapper.track(stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_GO_TO_STORE_BUTTON_TAPPED)
+        if (isFromBanner) {
+            analyticsTrackerWrapper.track(
+                stat = JETPACK_SETUP_FLOW,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_STEP to currentStep.value.type.analyticsName,
+                    AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_JETPACK_SETUP_TAP_GO_TO_STORE
+                )
+            )
+            appPrefsWrapper.setJetpackInstallationIsFromBanner(false)
+        } else {
+            analyticsTrackerWrapper.track(stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_GO_TO_STORE_BUTTON_TAPPED)
+        }
+
         val loggedInEmail = accountRepository.getUserAccount()?.email
         if (jetpackConnectedEmail == loggedInEmail) {
             val site = jetpackActivationRepository.getSiteByUrl(navArgs.siteUrl)
@@ -147,6 +175,10 @@ class JetpackActivationMainViewModel @Inject constructor(
             if (site.hasWooCommerce) {
                 jetpackActivationRepository.setSelectedSiteAndCleanOldSites(site)
                 triggerEvent(GoToStore)
+
+                if (isFromBanner) {
+                    analyticsTrackerWrapper.track(stat = AnalyticsEvent.JETPACK_SETUP_SYNCHRONIZATION_COMPLETED)
+                }
             } else {
                 triggerEvent(ShowWooNotInstalledScreen(navArgs.siteUrl))
             }
@@ -162,18 +194,38 @@ class JetpackActivationMainViewModel @Inject constructor(
     }
 
     fun onRetryClick() {
-        analyticsTrackerWrapper.track(
-            stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_TRY_AGAIN_BUTTON_TAPPED,
-            properties = mapOf(AnalyticsTracker.KEY_JETPACK_INSTALLATION_STEP to currentStep.value.type.analyticsName)
-        )
+        if (isFromBanner) {
+            analyticsTrackerWrapper.track(
+                stat = JETPACK_SETUP_FLOW,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_STEP to currentStep.value.type.analyticsName,
+                    AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_JETPACK_SETUP_TAP_TRY_AGAIN
+                )
+            )
+        } else {
+            analyticsTrackerWrapper.track(
+                stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_TRY_AGAIN_BUTTON_TAPPED,
+                properties = mapOf(AnalyticsTracker.KEY_JETPACK_INSTALLATION_STEP to currentStep.value.type.analyticsName)
+            )
+        }
         startNextStep()
     }
 
     fun onGetHelpClick() {
-        analyticsTrackerWrapper.track(
-            stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_GET_SUPPORT_BUTTON_TAPPED,
-            properties = mapOf(AnalyticsTracker.KEY_JETPACK_INSTALLATION_STEP to currentStep.value.type.analyticsName),
-        )
+        if (isFromBanner) {
+            analyticsTrackerWrapper.track(
+                stat = JETPACK_SETUP_FLOW,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_STEP to currentStep.value.type.analyticsName,
+                    AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_JETPACK_SETUP_TAP_SUPPORT
+                )
+            )
+        } else {
+            analyticsTrackerWrapper.track(
+                stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_GET_SUPPORT_BUTTON_TAPPED,
+                properties = mapOf(AnalyticsTracker.KEY_JETPACK_INSTALLATION_STEP to currentStep.value.type.analyticsName),
+            )
+        }
         triggerEvent(NavigateToHelpScreen(JETPACK_INSTALLATION))
     }
 
@@ -197,8 +249,11 @@ class JetpackActivationMainViewModel @Inject constructor(
             .map { it.type }
             .onEach { stepType ->
                 WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: handle step: $stepType")
+
                 when (stepType) {
-                    StepType.Installation -> startJetpackInstallation()
+                    StepType.Installation -> {
+                        startJetpackInstallation()
+                    }
                     StepType.Connection -> {
                         var connectionStepJob: Job? = null
                         connectionStepJob = connectionStep.onEach { connectionStep ->
@@ -210,6 +265,7 @@ class JetpackActivationMainViewModel @Inject constructor(
                                         type = StepType.Connection,
                                         state = StepState.Success
                                     )
+
                                     delay(DELAY_AFTER_CONNECTION_MS)
                                     currentStep.value = Step(
                                         type = StepType.Done,
@@ -223,7 +279,14 @@ class JetpackActivationMainViewModel @Inject constructor(
                     }
 
                     StepType.Done -> {
-                        analyticsTrackerWrapper.track(stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_ALL_STEPS_MARKED_DONE)
+                        if (isFromBanner) {
+                            analyticsTrackerWrapper.track(stat = AnalyticsEvent.JETPACK_SETUP_COMPLETED)
+                        } else {
+                            analyticsTrackerWrapper.track(
+                                stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_ALL_STEPS_MARKED_DONE
+                            )
+                        }
+
                         currentStep.value = Step(
                             type = StepType.Done,
                             state = StepState.Success
@@ -257,34 +320,58 @@ class JetpackActivationMainViewModel @Inject constructor(
         ).collect { status ->
             when (status) {
                 is PluginInstalled -> {
-                    analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_SETUP_INSTALL_SUCCESSFUL)
+                    if (!isFromBanner) {
+                        analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_SETUP_INSTALL_SUCCESSFUL)
+                    }
                     currentStep.value = Step(type = StepType.Activation, state = StepState.Ongoing)
                 }
 
                 is PluginInstallFailed -> {
-                    analyticsTrackerWrapper.track(
-                        stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_INSTALL_FAILED,
-                        properties = mapOf(AnalyticsTracker.KEY_ERROR_CODE to status.errorCode.toString()),
-                        errorContext = this@JetpackActivationMainViewModel::class.simpleName,
-                        errorType = status.errorType,
-                        errorDescription = status.errorDescription
-                    )
+                    if (isFromBanner) {
+                        analyticsTrackerWrapper.track(
+                            stat = JETPACK_SETUP_FLOW,
+                            properties = mapOf(
+                                AnalyticsTracker.KEY_STEP to currentStep.value.type.analyticsName,
+                                AnalyticsTracker.KEY_FAILURE to "Jetpack installation failed: $status",
+                            )
+                        )
+                    } else {
+                        analyticsTrackerWrapper.track(
+                            stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_INSTALL_FAILED,
+                            properties = mapOf(AnalyticsTracker.KEY_ERROR_CODE to status.errorCode.toString()),
+                            errorContext = this@JetpackActivationMainViewModel::class.simpleName,
+                            errorType = status.errorType,
+                            errorDescription = status.errorDescription
+                        )
+                    }
                     currentStep.update { state -> state.copy(state = StepState.Error(status.errorCode)) }
                 }
 
                 is PluginActivated -> {
-                    analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_SETUP_ACTIVATION_SUCCESSFUL)
+                    if (!isFromBanner) {
+                        analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_SETUP_ACTIVATION_SUCCESSFUL)
+                    }
                     currentStep.value = Step(type = StepType.Connection, state = StepState.Ongoing)
                 }
 
                 is PluginActivationFailed -> {
-                    analyticsTrackerWrapper.track(
-                        stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_ACTIVATION_FAILED,
-                        properties = mapOf(AnalyticsTracker.KEY_ERROR_CODE to status.errorCode.toString()),
-                        errorContext = this@JetpackActivationMainViewModel::class.simpleName,
-                        errorType = status.errorType,
-                        errorDescription = status.errorDescription
-                    )
+                    if (isFromBanner) {
+                        analyticsTrackerWrapper.track(
+                            stat = JETPACK_SETUP_FLOW,
+                            properties = mapOf(
+                                AnalyticsTracker.KEY_STEP to currentStep.value.type.analyticsName,
+                                AnalyticsTracker.KEY_FAILURE to "Jetpack activation failed: $status",
+                            )
+                        )
+                    } else {
+                        analyticsTrackerWrapper.track(
+                            stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_ACTIVATION_FAILED,
+                            properties = mapOf(AnalyticsTracker.KEY_ERROR_CODE to status.errorCode.toString()),
+                            errorContext = this@JetpackActivationMainViewModel::class.simpleName,
+                            errorType = status.errorType,
+                            errorDescription = status.errorDescription
+                        )
+                    }
                     currentStep.update { state -> state.copy(state = StepState.Error(status.errorCode)) }
                 }
             }
@@ -295,9 +382,12 @@ class JetpackActivationMainViewModel @Inject constructor(
         WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: start Jetpack Connection")
         jetpackActivationRepository.fetchJetpackConnectionUrl(site.await()).fold(
             onSuccess = { connectionUrl ->
-                analyticsTrackerWrapper.track(
-                    stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_FETCH_JETPACK_CONNECTION_URL_SUCCESSFUL
-                )
+                if (!isFromBanner) {
+                    analyticsTrackerWrapper.track(
+                        stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_FETCH_JETPACK_CONNECTION_URL_SUCCESSFUL
+                    )
+                }
+
                 triggerEvent(
                     ShowJetpackConnectionWebView(
                         url = connectionUrl,
@@ -307,13 +397,24 @@ class JetpackActivationMainViewModel @Inject constructor(
             },
             onFailure = {
                 val error = (it as? OnChangedException)?.error as? JetpackConnectionUrlError
-                analyticsTrackerWrapper.track(
-                    stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_FETCH_JETPACK_CONNECTION_URL_FAILED,
-                    properties = mapOf(AnalyticsTracker.KEY_ERROR_CODE to error?.errorCode.toString()),
-                    errorContext = this@JetpackActivationMainViewModel::class.simpleName,
-                    errorType = it::class.simpleName,
-                    errorDescription = it.message.orEmpty()
-                )
+
+                if (isFromBanner) {
+                    analyticsTrackerWrapper.track(
+                        stat = JETPACK_SETUP_FLOW,
+                        properties = mapOf(
+                            AnalyticsTracker.KEY_STEP to currentStep.value.type.analyticsName,
+                            AnalyticsTracker.KEY_FAILURE to "Jetpack installation failed: ${it.message}",
+                        )
+                    )
+                } else {
+                    analyticsTrackerWrapper.track(
+                        stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_FETCH_JETPACK_CONNECTION_URL_FAILED,
+                        properties = mapOf(AnalyticsTracker.KEY_ERROR_CODE to error?.errorCode.toString()),
+                        errorContext = this@JetpackActivationMainViewModel::class.simpleName,
+                        errorType = it::class.simpleName,
+                        errorDescription = it.message.orEmpty()
+                    )
+                }
                 currentStep.update { state -> state.copy(state = StepState.Error(error?.errorCode)) }
             }
         )
@@ -325,9 +426,11 @@ class JetpackActivationMainViewModel @Inject constructor(
             onSuccess = { email ->
                 jetpackConnectedEmail = email
                 if (accountRepository.getUserAccount()?.email != email) {
-                    analyticsTrackerWrapper.track(
-                        stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_AUTHORIZED_USING_DIFFERENT_WPCOM_ACCOUNT
-                    )
+                    if (!isFromBanner) {
+                        analyticsTrackerWrapper.track(
+                            stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_AUTHORIZED_USING_DIFFERENT_WPCOM_ACCOUNT
+                        )
+                    }
                     WooLog.d(
                         WooLog.T.LOGIN,
                         "Jetpack Activation: connection made using a different email than the logged in one"
@@ -339,13 +442,24 @@ class JetpackActivationMainViewModel @Inject constructor(
             },
             onFailure = {
                 val error = (it as? OnChangedException)?.error as? JetpackUserError
-                analyticsTrackerWrapper.track(
-                    stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_ERROR_CHECKING_JETPACK_CONNECTION,
-                    properties = mapOf(AnalyticsTracker.KEY_ERROR_CODE to error?.errorCode.toString()),
-                    errorContext = this@JetpackActivationMainViewModel::class.simpleName,
-                    errorType = it::class.simpleName,
-                    errorDescription = it.message.orEmpty()
-                )
+
+                if (isFromBanner) {
+                    analyticsTrackerWrapper.track(
+                        stat = JETPACK_SETUP_FLOW,
+                        properties = mapOf(
+                            AnalyticsTracker.KEY_STEP to currentStep.value.type.analyticsName,
+                            AnalyticsTracker.KEY_FAILURE to "Jetpack connection validation failed: ${it.message}",
+                        )
+                    )
+                } else {
+                    analyticsTrackerWrapper.track(
+                        stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_ERROR_CHECKING_JETPACK_CONNECTION,
+                        properties = mapOf(AnalyticsTracker.KEY_ERROR_CODE to error?.errorCode.toString()),
+                        errorContext = this@JetpackActivationMainViewModel::class.simpleName,
+                        errorType = it::class.simpleName,
+                        errorDescription = it.message.orEmpty()
+                    )
+                }
                 currentStep.update { state -> state.copy(state = StepState.Error(error?.errorCode)) }
             }
         )
@@ -358,12 +472,22 @@ class JetpackActivationMainViewModel @Inject constructor(
                 connectionStep.value = ConnectionStep.Approved
             },
             onFailure = {
-                analyticsTrackerWrapper.track(
-                    stat = AnalyticsEvent.LOGIN_JETPACK_FETCHING_WPCOM_SITES_FAILED,
-                    errorContext = this@JetpackActivationMainViewModel::class.simpleName,
-                    errorType = it::class.simpleName,
-                    errorDescription = it.message.orEmpty()
-                )
+                if (isFromBanner) {
+                    analyticsTrackerWrapper.track(
+                        stat = JETPACK_SETUP_FLOW,
+                        properties = mapOf(
+                            AnalyticsTracker.KEY_STEP to currentStep.value.type.analyticsName,
+                            AnalyticsTracker.KEY_FAILURE to "Site connection confirmation failed: ${it.message}",
+                        )
+                    )
+                } else {
+                    analyticsTrackerWrapper.track(
+                        stat = AnalyticsEvent.LOGIN_JETPACK_FETCHING_WPCOM_SITES_FAILED,
+                        errorContext = this@JetpackActivationMainViewModel::class.simpleName,
+                        errorType = it::class.simpleName,
+                        errorDescription = it.message.orEmpty()
+                    )
+                }
                 currentStep.update { state -> state.copy(state = StepState.Error(null)) }
             }
         )
