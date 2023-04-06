@@ -56,38 +56,35 @@ private fun StoreCreationSummaryScreen(
             onHelpButtonClick = onHelpPressed,
         )
     }) {
-        Box(
+        Column(
             modifier = Modifier
                 .padding(it)
                 .background(MaterialTheme.colors.surface)
                 .fillMaxSize()
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(top = dimensionResource(id = R.dimen.free_trial_summary_title_top_padding))
-                    .fillMaxSize()
+            Box(modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .weight(4f)
             ) {
                 SummaryBody(
                     modifier = Modifier
-                        .verticalScroll(rememberScrollState())
                         .fillMaxWidth()
-                        .padding(dimensionResource(id = R.dimen.major_125))
-                        .weight(4f)
+                        .padding(horizontal = dimensionResource(id = R.dimen.major_125))
+                        .padding(top = dimensionResource(id = R.dimen.free_trial_summary_title_top_padding))
                 )
-                SummaryBottom(
+                Image(
+                    painter = painterResource(id = R.drawable.free_trial_summary_illustration),
+                    contentDescription = null,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    onTryForFreeButtonPressed = onTryForFreeButtonPressed
+                        .align(Alignment.TopEnd)
+                        .offset(x = dimensionResource(id = R.dimen.major_150))
                 )
             }
-
-            Image(
-                painter = painterResource(id = R.drawable.free_trial_summary_illustration),
-                contentDescription = null,
+            SummaryBottom(
                 modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .offset(x = dimensionResource(id = R.dimen.major_150))
+                    .fillMaxWidth()
+                    .weight(1f),
+                onTryForFreeButtonPressed = onTryForFreeButtonPressed
             )
         }
     }
