@@ -245,3 +245,15 @@ fun StoreCreationSummary() {
         )
     }
 }
+
+@Preview(name = "Loading mode")
+@Composable
+fun StoreCreationSummaryLoading() {
+    WooThemeWithBackground {
+        StoreCreationSummaryScreen(
+            onCancelPressed = {},
+            onTryForFreeButtonPressed = {},
+            isLoading = true
+        )
+    }
+}
