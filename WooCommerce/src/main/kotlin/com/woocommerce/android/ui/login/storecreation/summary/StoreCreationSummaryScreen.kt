@@ -55,13 +55,15 @@ private fun StoreCreationSummaryScreen(
             onHelpButtonClick = onHelpPressed,
         )
     }) {
-        Box(modifier = Modifier
-            .background(MaterialTheme.colors.surface)
-            .fillMaxSize()
+        Box(
+            modifier = Modifier
+                .padding(it)
+                .background(MaterialTheme.colors.surface)
+                .fillMaxSize()
         ) {
             Column(
                 modifier = Modifier
-                    .padding(it)
+                    .padding(top = dimensionResource(id = R.dimen.major_400))
                     .fillMaxSize()
             ) {
                 SummaryBody(
@@ -151,8 +153,9 @@ private fun FeatureRow(
     iconId: Int,
     stringId: Int
 ) {
-    Row(modifier = Modifier
-        .padding(bottom = dimensionResource(id = R.dimen.major_75))
+    Row(
+        modifier = Modifier
+            .padding(bottom = dimensionResource(id = R.dimen.major_75))
     ) {
         Icon(
             painter = painterResource(id = iconId),
@@ -164,7 +167,7 @@ private fun FeatureRow(
                 .size(dimensionResource(id = R.dimen.major_150))
         )
         Text(
-            text = stringResource(id =stringId),
+            text = stringResource(id = stringId),
             textAlign = TextAlign.Start,
             modifier = Modifier.align(Alignment.CenterVertically)
         )
