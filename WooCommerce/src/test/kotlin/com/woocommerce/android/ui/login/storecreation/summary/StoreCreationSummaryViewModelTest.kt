@@ -50,8 +50,10 @@ internal class StoreCreationSummaryViewModelTest: BaseUnitTest() {
         var lastReceivedEvent: MultiLiveEvent.Event? = null
         sut.event.observeForever { lastReceivedEvent = it }
 
+        // When
         sut.onTryForFreeButtonPressed()
 
+        // Then
         assertThat(lastReceivedEvent).isEqualTo(OnStoreCreationSuccess)
     }
 
@@ -65,15 +67,34 @@ internal class StoreCreationSummaryViewModelTest: BaseUnitTest() {
         var lastReceivedEvent: MultiLiveEvent.Event? = null
         sut.event.observeForever { lastReceivedEvent = it }
 
+        // When
         sut.onTryForFreeButtonPressed()
 
+
+        // Then
         assertThat(lastReceivedEvent).isEqualTo(OnStoreCreationFailure)
+    }
+
+    @Test
+    fun `when store creation succeeds, then set site id`() = testBlocking {
+        // Given
+        val expectedDomain = "test domain"
+        val expectedTitle = "test title"
+        val expectedSiteId = 321321321L
+        createSut(expectedDomain, expectedTitle, StoreCreationState.Finished, expectedSiteId)
+
+        // When
+        sut.onTryForFreeButtonPressed()
+
+        // Then
+        verify(newStore).update(siteId = expectedSiteId)
     }
 
     private fun createSut(
         expectedDomain: String,
         expectedTitle: String,
-        expectedCreationState: StoreCreationState
+        expectedCreationState: StoreCreationState,
+        createdSiteId: Long = 123
     ) {
         val creationStateFlow = MutableStateFlow<StoreCreationState>(StoreCreationState.Idle)
 
@@ -92,7 +113,7 @@ internal class StoreCreationSummaryViewModelTest: BaseUnitTest() {
             } doAnswer {
                 creationStateFlow.value = expectedCreationState
                 if (expectedCreationState is StoreCreationState.Finished) {
-                    flowOf(123)
+                    flowOf(createdSiteId)
                 } else {
                     flowOf(null)
                 }
