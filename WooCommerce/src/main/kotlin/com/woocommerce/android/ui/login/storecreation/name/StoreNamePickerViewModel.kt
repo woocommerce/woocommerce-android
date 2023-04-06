@@ -20,7 +20,6 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -80,9 +79,9 @@ class StoreNamePickerViewModel @Inject constructor(
     fun onContinueClicked() {
         newStore.update(name = storeName.value)
         if (canCreateFreeTrialStore) {
-            launch { startFreeTrialSiteCreation() }
+            triggerEvent(NavigateToSummary)
         } else if (FeatureFlag.STORE_CREATION_PROFILER.isEnabled()) {
-            triggerEvent(NavigateToDomainPicker(storeName.value))
+            triggerEvent(NavigateToStoreProfiler)
         } else {
             triggerEvent(NavigateToDomainPicker(storeName.value))
         }
@@ -112,6 +111,8 @@ class StoreNamePickerViewModel @Inject constructor(
     data class NavigateToDomainPicker(val domainInitialQuery: String) : MultiLiveEvent.Event()
 
     object NavigateToStoreInstallation : MultiLiveEvent.Event()
+
+    object NavigateToStoreProfiler : MultiLiveEvent.Event()
 
     object NavigateToSummary : MultiLiveEvent.Event()
 
