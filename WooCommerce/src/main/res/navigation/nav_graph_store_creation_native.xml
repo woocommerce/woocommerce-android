@@ -83,6 +83,10 @@
             android:id="@+id/action_countryPickerFragment_to_installationFragment"
             app:destination="@id/installationFragment"
             app:popUpTo="@id/nav_graph_store_creation" />
+        <action
+            android:id="@+id/action_countryPickerFragment_to_summaryFragment"
+            app:destination="@id/summaryFragment"
+            app:popUpTo="@id/nav_graph_store_creation" />
     </fragment>
 
     <fragment
@@ -124,5 +128,10 @@
     <fragment
         android:id="@+id/summaryFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryFragment"
-        android:label="SummaryFragment" />
+        android:label="SummaryFragment" >
+        <action
+            android:id="@+id/action_summaryFragment_to_installationFragment"
+            app:destination="@id/installationFragment"
+            app:popUpTo="@id/nav_graph_store_creation" />
+    </fragment>
 </navigation>

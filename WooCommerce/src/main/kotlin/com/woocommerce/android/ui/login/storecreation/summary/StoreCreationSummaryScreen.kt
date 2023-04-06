@@ -14,12 +14,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -40,18 +42,22 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun StoreCreationSummaryScreen(viewModel: StoreCreationSummaryViewModel) {
-    StoreCreationSummaryScreen(
-        modifier = Modifier,
-        onCancelPressed = viewModel::onCancelPressed,
-        onTryForFreeButtonPressed = viewModel::onTryForFreeButtonPressed
-    )
+    viewModel.isLoading.observeAsState().value?.let { isLoading ->
+        StoreCreationSummaryScreen(
+            modifier = Modifier,
+            onCancelPressed = viewModel::onCancelPressed,
+            onTryForFreeButtonPressed = viewModel::onTryForFreeButtonPressed,
+            isLoading = isLoading
+        )
+    }
 }
 
 @Composable
 private fun StoreCreationSummaryScreen(
     modifier: Modifier,
     onCancelPressed: () -> Unit,
-    onTryForFreeButtonPressed: () -> Unit
+    onTryForFreeButtonPressed: () -> Unit,
+    isLoading: Boolean
 ) {
     Scaffold(topBar = {
         Toolbar(onNavigationButtonClick = onCancelPressed)
@@ -90,7 +96,8 @@ private fun StoreCreationSummaryScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                onTryForFreeButtonPressed = onTryForFreeButtonPressed
+                onTryForFreeButtonPressed = onTryForFreeButtonPressed,
+                isLoading = isLoading
             )
         }
     }
@@ -181,7 +188,8 @@ private fun FeatureRow(
 @Composable
 private fun SummaryBottom(
     modifier: Modifier,
-    onTryForFreeButtonPressed: () -> Unit
+    onTryForFreeButtonPressed: () -> Unit,
+    isLoading: Boolean
 ) {
     val primaryPurple = colorResource(id = R.color.color_primary)
     val buttonColors = ButtonDefaults.buttonColors(
@@ -203,7 +211,14 @@ private fun SummaryBottom(
             onClick = onTryForFreeButtonPressed,
             colors = buttonColors
         ) {
-            Text(stringResource(id = R.string.free_trial_summary_try_button))
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(size = dimensionResource(id = R.dimen.major_150)),
+                    color = colorResource(id = R.color.color_on_primary_surface),
+                )
+            } else {
+                Text(stringResource(id = R.string.free_trial_summary_try_button))
+            }
         }
         Text(
             text = stringResource(id = R.string.free_trial_summary_credit_card_message),
@@ -228,7 +243,21 @@ fun StoreCreationSummary() {
         StoreCreationSummaryScreen(
             modifier = Modifier,
             onCancelPressed = {},
-            onTryForFreeButtonPressed = {}
+            onTryForFreeButtonPressed = {},
+            isLoading = false
+        )
+    }
+}
+
+@Preview(name = "Loading mode")
+@Composable
+fun StoreCreationSummaryLoading() {
+    WooThemeWithBackground {
+        StoreCreationSummaryScreen(
+            modifier = Modifier,
+            onCancelPressed = {},
+            onTryForFreeButtonPressed = {},
+            isLoading = true
         )
     }
 }

@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.NavigateToDomainPicker
 import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.NavigateToStoreInstallation
+import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.NavigateToStoreProfiler
 import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.NavigateToSummary
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -48,6 +49,7 @@ class StoreNamePickerFragment : BaseFragment() {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
                 is NavigateToDomainPicker -> navigateToDomainPicker(event.domainInitialQuery)
+                is NavigateToStoreProfiler -> navigateToStoreProfiler()
                 is NavigateToStoreInstallation -> navigateToInstallation()
                 is NavigateToSummary -> navigateToSummary()
             }
@@ -61,6 +63,11 @@ class StoreNamePickerFragment : BaseFragment() {
 
     private fun navigateToInstallation() {
         StoreNamePickerFragmentDirections.actionStoreNamePickerFragmentToInstallationFragment()
+            .let { findNavController().navigateSafely(it) }
+    }
+
+    private fun navigateToStoreProfiler() {
+        StoreNamePickerFragmentDirections.actionStoreNamePickerFragmentToStoreProfilerCategoryFragment()
             .let { findNavController().navigateSafely(it) }
     }
 
