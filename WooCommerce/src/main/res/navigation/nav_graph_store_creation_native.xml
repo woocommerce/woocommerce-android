@@ -124,5 +124,10 @@
     <fragment
         android:id="@+id/summaryFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryFragment"
-        android:label="SummaryFragment" />
+        android:label="SummaryFragment" >
+        <action
+            android:id="@+id/action_summaryFragment_to_installationFragment"
+            app:destination="@id/installationFragment"
+            app:popUpTo="@id/nav_graph_store_creation" />
+    </fragment>
 </navigation>
