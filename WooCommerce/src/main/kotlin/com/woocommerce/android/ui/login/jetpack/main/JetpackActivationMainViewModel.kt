@@ -8,6 +8,8 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_SETUP_FLOW
+import com.woocommerce.android.analytics.AnalyticsEvent.LOGIN_JETPACK_SETUP_ACTIVATION_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.LOGIN_JETPACK_SETUP_INSTALL_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isNotNullOrEmpty
@@ -148,7 +150,10 @@ class JetpackActivationMainViewModel @Inject constructor(
         } else {
             analyticsTrackerWrapper.track(
                 stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_SCREEN_DISMISSED,
-                properties = mapOf(AnalyticsTracker.KEY_JETPACK_INSTALLATION_STEP to currentStep.value.type.analyticsName),
+                properties = mapOf(
+                    AnalyticsTracker.KEY_JETPACK_INSTALLATION_STEP to
+                        currentStep.value.type.analyticsName
+                )
             )
         }
         triggerEvent(Exit)
@@ -204,7 +209,10 @@ class JetpackActivationMainViewModel @Inject constructor(
         } else {
             analyticsTrackerWrapper.track(
                 stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_TRY_AGAIN_BUTTON_TAPPED,
-                properties = mapOf(AnalyticsTracker.KEY_JETPACK_INSTALLATION_STEP to currentStep.value.type.analyticsName)
+                properties = mapOf(
+                    AnalyticsTracker.KEY_JETPACK_INSTALLATION_STEP to
+                        currentStep.value.type.analyticsName
+                )
             )
         }
         startNextStep()
@@ -222,7 +230,10 @@ class JetpackActivationMainViewModel @Inject constructor(
         } else {
             analyticsTrackerWrapper.track(
                 stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_GET_SUPPORT_BUTTON_TAPPED,
-                properties = mapOf(AnalyticsTracker.KEY_JETPACK_INSTALLATION_STEP to currentStep.value.type.analyticsName),
+                properties = mapOf(
+                    AnalyticsTracker.KEY_JETPACK_INSTALLATION_STEP to
+                        currentStep.value.type.analyticsName
+                ),
             )
         }
         triggerEvent(NavigateToHelpScreen(JETPACK_INSTALLATION))
@@ -326,23 +337,7 @@ class JetpackActivationMainViewModel @Inject constructor(
                 }
 
                 is PluginInstallFailed -> {
-                    if (isFromBanner) {
-                        analyticsTrackerWrapper.track(
-                            stat = JETPACK_SETUP_FLOW,
-                            properties = mapOf(
-                                AnalyticsTracker.KEY_STEP to currentStep.value.type.analyticsName,
-                                AnalyticsTracker.KEY_FAILURE to "Jetpack installation failed: $status",
-                            )
-                        )
-                    } else {
-                        analyticsTrackerWrapper.track(
-                            stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_INSTALL_FAILED,
-                            properties = mapOf(AnalyticsTracker.KEY_ERROR_CODE to status.errorCode.toString()),
-                            errorContext = this@JetpackActivationMainViewModel::class.simpleName,
-                            errorType = status.errorType,
-                            errorDescription = status.errorDescription
-                        )
-                    }
+                    trackPluginInstallationError(status)
                     currentStep.update { state -> state.copy(state = StepState.Error(status.errorCode)) }
                 }
 
@@ -354,26 +349,50 @@ class JetpackActivationMainViewModel @Inject constructor(
                 }
 
                 is PluginActivationFailed -> {
-                    if (isFromBanner) {
-                        analyticsTrackerWrapper.track(
-                            stat = JETPACK_SETUP_FLOW,
-                            properties = mapOf(
-                                AnalyticsTracker.KEY_STEP to currentStep.value.type.analyticsName,
-                                AnalyticsTracker.KEY_FAILURE to "Jetpack activation failed: $status",
-                            )
-                        )
-                    } else {
-                        analyticsTrackerWrapper.track(
-                            stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_ACTIVATION_FAILED,
-                            properties = mapOf(AnalyticsTracker.KEY_ERROR_CODE to status.errorCode.toString()),
-                            errorContext = this@JetpackActivationMainViewModel::class.simpleName,
-                            errorType = status.errorType,
-                            errorDescription = status.errorDescription
-                        )
-                    }
+                    trackPluginActivationError(status)
                     currentStep.update { state -> state.copy(state = StepState.Error(status.errorCode)) }
                 }
             }
+        }
+    }
+
+    private fun trackPluginActivationError(status: PluginActivationFailed) {
+        if (isFromBanner) {
+            analyticsTrackerWrapper.track(
+                stat = JETPACK_SETUP_FLOW,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_STEP to currentStep.value.type.analyticsName,
+                    AnalyticsTracker.KEY_FAILURE to "Jetpack activation failed: $status",
+                )
+            )
+        } else {
+            analyticsTrackerWrapper.track(
+                stat = LOGIN_JETPACK_SETUP_ACTIVATION_FAILED,
+                properties = mapOf(AnalyticsTracker.KEY_ERROR_CODE to status.errorCode.toString()),
+                errorContext = this@JetpackActivationMainViewModel::class.simpleName,
+                errorType = status.errorType,
+                errorDescription = status.errorDescription
+            )
+        }
+    }
+
+    private fun trackPluginInstallationError(status: PluginInstallFailed) {
+        if (isFromBanner) {
+            analyticsTrackerWrapper.track(
+                stat = JETPACK_SETUP_FLOW,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_STEP to currentStep.value.type.analyticsName,
+                    AnalyticsTracker.KEY_FAILURE to "Jetpack installation failed: $status",
+                )
+            )
+        } else {
+            analyticsTrackerWrapper.track(
+                stat = LOGIN_JETPACK_SETUP_INSTALL_FAILED,
+                properties = mapOf(AnalyticsTracker.KEY_ERROR_CODE to status.errorCode.toString()),
+                errorContext = this@JetpackActivationMainViewModel::class.simpleName,
+                errorType = status.errorType,
+                errorDescription = status.errorDescription
+            )
         }
     }
 
