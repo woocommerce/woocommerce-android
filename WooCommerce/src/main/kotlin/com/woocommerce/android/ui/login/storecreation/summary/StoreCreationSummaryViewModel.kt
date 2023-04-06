@@ -13,8 +13,10 @@ class StoreCreationSummaryViewModel @Inject constructor(
     private val createStore: CreateFreeTrialStore
 ) : ScopedViewModel(savedStateHandle) {
     fun onCancelPressed() { triggerEvent(OnCancelPressed) }
-    fun onTryForFreeButtonPressed() { triggerEvent(OnTryForFreeButtonPressed) }
+    fun onTryForFreeButtonPressed() { triggerEvent(OnStoreCreationSuccess) }
 
     object OnCancelPressed : MultiLiveEvent.Event()
-    object OnTryForFreeButtonPressed : MultiLiveEvent.Event()
+    object OnStoreCreationSuccess : MultiLiveEvent.Event()
+
+    object OnStoreCreationFailure: MultiLiveEvent.Event()
 }
