@@ -64,13 +64,16 @@ private fun StoreCreationSummaryScreen(
         ) {
             Box(modifier = Modifier
                 .verticalScroll(rememberScrollState())
-                .weight(4f)
+                .weight(5f)
             ) {
                 SummaryBody(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = dimensionResource(id = R.dimen.major_125))
-                        .padding(top = dimensionResource(id = R.dimen.free_trial_summary_title_top_padding))
+                        .padding(
+                            top = dimensionResource(id = R.dimen.free_trial_summary_title_top_padding),
+                            bottom = dimensionResource(id = R.dimen.major_75)
+                        )
                 )
                 Image(
                     painter = painterResource(id = R.drawable.free_trial_summary_illustration),
