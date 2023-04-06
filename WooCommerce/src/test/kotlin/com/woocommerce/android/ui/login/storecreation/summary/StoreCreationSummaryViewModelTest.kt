@@ -92,11 +92,30 @@ internal class StoreCreationSummaryViewModelTest: BaseUnitTest() {
     }
 
     @Test
-    fun `when store creation starts, then viewState is updated as expected`() = testBlocking {
+    fun `when store creation is Idle, then viewState is updated as expected`() = testBlocking {
         // Given
         val expectedDomain = "test domain"
         val expectedTitle = "test title"
-        createSutWithFullCreationStateBehavior(expectedDomain, expectedTitle)
+        createSut(expectedDomain, expectedTitle, StoreCreationState.Idle)
+
+        val viewStateUpdates = mutableListOf<ViewState>()
+        sut.viewState.observeForever { viewStateUpdates.add(it) }
+
+        // When
+        sut.onTryForFreeButtonPressed()
+
+        // Then
+        assertThat(viewStateUpdates).containsExactly(
+            ViewState(isLoading = false)
+        )
+    }
+
+    @Test
+    fun `when store creation is Loading, then viewState is updated as expected`() = testBlocking {
+        // Given
+        val expectedDomain = "test domain"
+        val expectedTitle = "test title"
+        createSut(expectedDomain, expectedTitle, StoreCreationState.Loading)
 
         val viewStateUpdates = mutableListOf<ViewState>()
         sut.viewState.observeForever { viewStateUpdates.add(it) }
@@ -107,7 +126,44 @@ internal class StoreCreationSummaryViewModelTest: BaseUnitTest() {
         // Then
         assertThat(viewStateUpdates).containsExactly(
             ViewState(isLoading = false),
-            ViewState(isLoading = true),
+            ViewState(isLoading = true)
+        )
+    }
+
+    @Test
+    fun `when store creation is Failed, then viewState is updated as expected`() = testBlocking {
+        // Given
+        val expectedDomain = "test domain"
+        val expectedTitle = "test title"
+        createSut(expectedDomain, expectedTitle, StoreCreationState.Failed(SITE_CREATION_FAILED))
+
+        val viewStateUpdates = mutableListOf<ViewState>()
+        sut.viewState.observeForever { viewStateUpdates.add(it) }
+
+        // When
+        sut.onTryForFreeButtonPressed()
+
+        // Then
+        assertThat(viewStateUpdates).containsExactly(
+            ViewState(isLoading = false)
+        )
+    }
+
+    @Test
+    fun `when store creation is Finished, then viewState is updated as expected`() = testBlocking {
+        // Given
+        val expectedDomain = "test domain"
+        val expectedTitle = "test title"
+        createSut(expectedDomain, expectedTitle, StoreCreationState.Finished)
+
+        val viewStateUpdates = mutableListOf<ViewState>()
+        sut.viewState.observeForever { viewStateUpdates.add(it) }
+
+        // When
+        sut.onTryForFreeButtonPressed()
+
+        // Then
+        assertThat(viewStateUpdates).containsExactly(
             ViewState(isLoading = false)
         )
     }
@@ -139,39 +195,6 @@ internal class StoreCreationSummaryViewModelTest: BaseUnitTest() {
                 } else {
                     flowOf(null)
                 }
-            }
-        }
-
-        sut = StoreCreationSummaryViewModel(
-            savedStateHandle = savedState,
-            createStore = createStore,
-            newStore = newStore
-        )
-    }
-
-    private fun createSutWithFullCreationStateBehavior(
-        expectedDomain: String,
-        expectedTitle: String
-    ) {
-        val creationStateFlow = MutableStateFlow<StoreCreationState>(StoreCreationState.Idle)
-
-        newStore = mock {
-            on { data } doReturn NewStore.NewStoreData(
-                domain = expectedDomain,
-                name = expectedTitle
-            )
-        }
-
-        createStore = mock {
-            on { state } doReturn creationStateFlow
-
-            onBlocking {
-                invoke(newStore.data.domain, newStore.data.name)
-            } doAnswer {
-                creationStateFlow.value = StoreCreationState.Idle
-                creationStateFlow.value = StoreCreationState.Loading
-                creationStateFlow.value = StoreCreationState.Finished
-                flowOf(123)
             }
         }
 
