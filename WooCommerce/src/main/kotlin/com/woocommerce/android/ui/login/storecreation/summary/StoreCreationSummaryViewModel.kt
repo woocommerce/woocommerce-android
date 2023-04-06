@@ -28,7 +28,7 @@ class StoreCreationSummaryViewModel @Inject constructor(
             createStore(
                 storeDomain = newStore.data.domain,
                 storeName = newStore.data.name,
-            ).collect {siteId ->
+            ).collect { siteId ->
                 siteId?.let {
                     newStore.update(siteId = it)
                     triggerEvent(OnStoreCreationSuccess)

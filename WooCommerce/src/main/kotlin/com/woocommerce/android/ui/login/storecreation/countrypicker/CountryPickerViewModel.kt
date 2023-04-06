@@ -103,7 +103,6 @@ class CountryPickerViewModel @Inject constructor(
         }
     }
 
-
     /**
      * We're currently not using this method anymore,
      * but we need to keep it until we have a final decision on
