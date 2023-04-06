@@ -369,6 +369,7 @@ class ProductNavigator @Inject constructor() {
                         target.productId,
                         target.selectedVariationIds.toLongArray(),
                         target.productSelectorFlow,
+                        target.productSourceForTracking,
                     )
                 )
             }
@@ -388,6 +389,13 @@ class ProductNavigator @Inject constructor() {
             is ProductNavigationTarget.ViewProductSubscription -> {
                 val action = ProductDetailFragmentDirections.actionProductDetailFragmentToProductSubscriptionFragment(
                     target.subscription
+                )
+                fragment.findNavController().navigateSafely(action)
+            }
+
+            is ProductNavigationTarget.ViewProductQuantityRules -> {
+                val action = ProductDetailFragmentDirections.actionProductDetailFragmentToProductQuantityRulesFragment(
+                    target.quantityRules
                 )
                 fragment.findNavController().navigateSafely(action)
             }

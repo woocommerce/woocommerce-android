@@ -2,6 +2,7 @@
 13.1
 -----
 - [internal] Users can now create a Free Trial store from the app from the Get Started section of the app prologue. [https://github.com/woocommerce/woocommerce-android/pull/8759]
+- [**] Add Popular and Last sold sections to product selector screen [https://github.com/woocommerce/woocommerce-android/pull/8756]
 
 13.0
 -----

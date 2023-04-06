@@ -200,7 +200,7 @@ private fun StoreDetailsHeader(
             if (isStoreSwitcherEnabled) {
                 Text(
                     text = stringResource(R.string.settings_switch_store),
-                    color = MaterialTheme.colors.secondary,
+                    color = MaterialTheme.colors.primary,
                     style = MaterialTheme.typography.body2,
                 )
             }

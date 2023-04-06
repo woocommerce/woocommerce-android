@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/major_100">
+
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/gift_card_code"
+        style="@style/Woo.ListItem.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="E7MR-FSHR-X26J-JRGN"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="@dimen/minor_100"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/gift_card_used"
+        style="@style/Woo.ListItem.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginEnd="0dp"
+        android:textStyle="bold"
+        app:layout_constraintBaseline_toBaselineOf="@id/gift_card_code"
+        tools:text="- $60.00" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
