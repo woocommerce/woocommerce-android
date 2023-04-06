@@ -98,6 +98,8 @@ class ProductSelectorViewModel @Inject constructor(
     private val popularProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
     private val recentProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
 
+    private val selectedItemsSource: MutableMap<Long, ProductSourceForTracking> = mutableMapOf()
+
     private var fetchProductsJob: Job? = null
     private var loadMoreJob: Job? = null
 
@@ -120,8 +122,8 @@ class ProductSelectorViewModel @Inject constructor(
         ViewState(
             loadingState = loadingState,
             products = products.map { it.toUiModel(selectedIds) },
-            popularProducts = popularProducts.map { it.toUiModel(selectedIds) },
-            recentProducts = recentProducts.map { it.toUiModel(selectedIds) },
+            popularProducts = getPopularProductsToDisplay(popularProducts, selectedIds),
+            recentProducts = getRecentProductsToDisplay(recentProducts, selectedIds),
             selectedItemsCount = selectedIds.size,
             filterState = filterState,
             searchQuery = searchQuery
@@ -138,12 +140,36 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
 
+    private fun getPopularProductsToDisplay(
+        popularProducts: List<Product>,
+        selectedIds: List<SelectedItem>
+    ): List<ProductListItem> {
+        return getProductItemsIfSearchQueryIsNotEmpty(popularProducts, selectedIds)
+    }
+
+    private fun getRecentProductsToDisplay(
+        recentProducts: List<Product>,
+        selectedIds: List<SelectedItem>
+    ): List<ProductListItem> {
+        return getProductItemsIfSearchQueryIsNotEmpty(recentProducts, selectedIds)
+    }
+
+    private fun getProductItemsIfSearchQueryIsNotEmpty(
+        productsList: List<Product>,
+        selectedIds: List<SelectedItem>
+    ): List<ProductListItem> {
+        if (searchQuery.value.isNotNullOrEmpty()) {
+            return emptyList()
+        }
+        return productsList.map { it.toUiModel(selectedIds) }
+    }
+
     private suspend fun loadRecentProducts() {
         val recentlySoldOrders = getRecentlySoldOrders().take(NUMBER_OF_SUGGESTED_ITEMS)
         recentProducts.value = productsMapper.mapProductIdsToProduct(
             getProductIdsFromRecentlySoldOrders(
                 recentlySoldOrders
-            )
+            ).distinctBy { it }
         )
     }
 
@@ -152,10 +178,10 @@ class ProductSelectorViewModel @Inject constructor(
         val productIdsWithPurchaseCount = getProductIdsWithNumberOfPurchases(recentlySoldOrders)
         val topPopularProductsSorted = productIdsWithPurchaseCount
             .asSequence()
-            .take(NUMBER_OF_SUGGESTED_ITEMS)
             .map { it.toPair() }
             .toList()
             .sortedByDescending { it.second }
+            .take(NUMBER_OF_SUGGESTED_ITEMS)
             .toMap()
         popularProducts.value = productsMapper.mapProductIdsToProduct(topPopularProductsSorted.keys.toList())
     }
@@ -252,13 +278,15 @@ class ProductSelectorViewModel @Inject constructor(
         )
     }
 
-    fun onProductClick(item: ProductListItem) {
+    fun onProductClick(item: ProductListItem, productSourceForTracking: ProductSourceForTracking) {
+        val productSource = updateProductSourceIfSearchIsEnabled(productSourceForTracking)
         if (item.type == VARIABLE && item.numVariations > 0) {
             triggerEvent(
                 NavigateToVariationSelector(
                     item.id,
                     item.selectedVariationIds,
-                    productSelectorFlow
+                    productSelectorFlow,
+                    productSource
                 )
             )
         } else if (item.type != VARIABLE) {
@@ -268,9 +296,11 @@ class ProductSelectorViewModel @Inject constructor(
                 }
                 if (selectedProductItems.map { it.id }.contains(item.id)) {
                     tracker.trackItemUnselected(productSelectorFlow)
+                    selectedItemsSource.remove(item.id)
                     val productItemToUnselect = selectedProductItems.filter { it.id == item.id }.toSet()
                     selectedItems.value - productItemToUnselect
                 } else {
+                    selectedItemsSource[item.id] = productSource
                     tracker.trackItemSelected(productSelectorFlow)
                     selectedItems.value + SelectedItem.Product(item.id)
                 }
@@ -278,10 +308,29 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
 
+    private fun updateProductSourceIfSearchIsEnabled(productSource: ProductSourceForTracking):
+        ProductSourceForTracking {
+        return when {
+            searchQuery.value.isNotNullOrEmpty() -> {
+                ProductSourceForTracking.SEARCH
+            }
+            else -> {
+                productSource
+            }
+        }
+    }
+
     fun onDoneButtonClick() {
-        tracker.trackDoneButtonClicked(productSelectorFlow, selectedItems.value.size)
+        tracker.trackDoneButtonClicked(
+            productSelectorFlow,
+            selectedItems.value,
+            selectedItemsSource.values.toList(),
+            isFilterActive()
+        )
         triggerEvent(ExitWithResult(selectedItems.value))
     }
+
+    private fun isFilterActive() = !filterState.value.filterOptions.isNullOrEmpty()
 
     fun onSearchQueryChanged(query: String) {
         searchQuery.value = query
@@ -327,8 +376,16 @@ class ProductSelectorViewModel @Inject constructor(
                     it is SelectedItem.ProductVariation && it.productId == result.productId
                 }
 
+                oldItems.forEach {
+                    selectedItemsSource.remove(it.id)
+                }
+
                 val newItems = result.selectedVariationIds.map { variationId ->
-                    SelectedItem.ProductVariation(productId = result.productId, variationId = variationId)
+                    selectedItemsSource[variationId] = result.productSourceForTracking
+                    SelectedItem.ProductVariation(
+                        productId = result.productId,
+                        variationId = variationId,
+                    )
                 }
 
                 selectedItems.value - oldItems.toSet() + newItems
@@ -429,13 +486,20 @@ class ProductSelectorViewModel @Inject constructor(
     @Parcelize
     sealed class SelectedItem(val id: Long) : Parcelable {
         @Parcelize
-        data class ProductOrVariation(val productOrVariationId: Long) : SelectedItem(productOrVariationId)
+        data class ProductOrVariation(
+            val productOrVariationId: Long,
+        ) : SelectedItem(productOrVariationId)
 
         @Parcelize
-        data class Product(val productId: Long) : SelectedItem(productId)
+        data class Product(
+            val productId: Long,
+        ) : SelectedItem(productId)
 
         @Parcelize
-        data class ProductVariation(val productId: Long, val variationId: Long) : SelectedItem(variationId)
+        data class ProductVariation(
+            val productId: Long,
+            val variationId: Long,
+        ) : SelectedItem(variationId)
     }
 
     @Parcelize
@@ -464,3 +528,10 @@ val Collection<ProductSelectorViewModel.SelectedItem>.variationIds: List<Long>
         return filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductOrVariation>().map { it.id } +
             filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductVariation>().map { it.variationId }
     }
+enum class ProductSourceForTracking {
+    POPULAR,
+    RECENT,
+    ALPHABETICAL,
+    SEARCH,
+    FILTER,
+}

@@ -2439,6 +2439,9 @@
     <string name="product_selector_search_failed">Searching products failed</string>
     <string name="product_selector_empty_state">No products found</string>
     <string name="product_selector_clear_filters_button_title">Clear Filters</string>
+    <string name="product_selector_popular_products_heading">Popular</string>
+    <string name="product_selector_recent_products_heading">Recent</string>
+    <string name="product_selector_products_heading">Products</string>
 
     <!-- WC Shipping installation flow -->
     <string name="install_wc_shipping_flow_onboarding_screen_title">Fulfill your orders with WooCommerce Shipping</string>
