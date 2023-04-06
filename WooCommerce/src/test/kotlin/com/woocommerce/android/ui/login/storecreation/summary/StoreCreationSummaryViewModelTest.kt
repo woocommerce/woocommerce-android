@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.login.storecreation.summary
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState
-import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
+import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_CREATION_FAILED
 import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryViewModel.OnStoreCreationFailure
 import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryViewModel.OnStoreCreationSuccess
@@ -21,8 +21,9 @@ import org.mockito.kotlin.verify
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class StoreCreationSummaryViewModelTest: BaseUnitTest() {
-    lateinit var sut: StoreCreationSummaryViewModel
-    lateinit var createStore: CreateFreeTrialStore
+    private lateinit var sut: StoreCreationSummaryViewModel
+    private lateinit var createStore: CreateFreeTrialStore
+    private lateinit var newStore: NewStore
     private val savedState = SavedStateHandle()
 
     @Test
@@ -76,11 +77,18 @@ internal class StoreCreationSummaryViewModelTest: BaseUnitTest() {
     ) {
         val creationStateFlow = MutableStateFlow<StoreCreationState>(StoreCreationState.Idle)
 
+        newStore = mock {
+            on { data } doReturn NewStore.NewStoreData(
+                domain = expectedDomain,
+                name = expectedTitle
+            )
+        }
+
         createStore = mock {
             on { state } doReturn creationStateFlow
 
             onBlocking {
-                invoke(expectedDomain, expectedTitle)
+                invoke(newStore.data.domain, newStore.data.name)
             } doAnswer {
                 creationStateFlow.value = expectedCreationState
                 if (expectedCreationState is StoreCreationState.Finished) {
@@ -93,7 +101,8 @@ internal class StoreCreationSummaryViewModelTest: BaseUnitTest() {
 
         sut = StoreCreationSummaryViewModel(
             savedStateHandle = savedState,
-            createStore = createStore
+            createStore = createStore,
+            newStore = newStore
         )
     }
 }
