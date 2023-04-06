@@ -321,7 +321,7 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     fun onDoneButtonClick() {
-        tracker.trackDoneButtonClicked(productSelectorFlow, selectedItems.value)
+        tracker.trackDoneButtonClicked(productSelectorFlow, selectedItems.value, selectedItemsSource.toSet())
         triggerEvent(ExitWithResult(selectedItems.value))
     }
 
