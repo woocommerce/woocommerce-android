@@ -189,15 +189,13 @@ private fun ProductList(
                 .padding(horizontal = dimensionResource(dimen.minor_100))
                 .fillMaxWidth()
         ) {
-            if (state.selectedItemsCount > 0) {
-                WCTextButton(
-                    onClick = onClearButtonClick,
-                    text = stringResource(id = string.product_selector_clear_button_title),
-                    allCaps = false,
-                    modifier = Modifier.align(Alignment.CenterStart)
-                )
-            }
-
+            WCTextButton(
+                onClick = onClearButtonClick,
+                text = stringResource(id = string.product_selector_clear_button_title),
+                allCaps = false,
+                enabled = state.selectedItemsCount > 0,
+                modifier = Modifier.align(Alignment.CenterStart)
+            )
             WCTextButton(
                 onClick = onFilterButtonClick,
                 text = StringUtils.getQuantityString(

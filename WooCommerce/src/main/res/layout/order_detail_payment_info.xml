@@ -90,6 +90,44 @@
                     tools:text="-$4.00"/>
             </LinearLayout>
 
+            <!-- Gift Cards -->
+            <LinearLayout
+                android:id="@+id/paymentInfo_giftCardSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/minor_50"
+                android:focusable="true"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/paymentInfo_lblGiftCards"
+                    style="@style/Woo.Card.Body.High"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/minor_100"
+                    android:text="@string/gift_cards" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/paymentInfo_giftCardItems"
+                    style="@style/Woo.Card.Body.High"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/minor_00"
+                    android:layout_marginEnd="@dimen/minor_00"
+                    android:layout_weight="1"
+                    tools:text="(NZR8-67YT-XZGF-FFG9,\nFGRT-6789-KJUY-OILK9\nERT5-UIY7-IOU8-MNB0)"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/paymentInfo_giftCardTotal"
+                    style="@style/Woo.Card.Body.High"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/minor_100"
+                    tools:text="-$4.00"/>
+            </LinearLayout>
+
             <!-- Fees -->
             <LinearLayout
                 android:id="@+id/paymentInfo_feesSection"

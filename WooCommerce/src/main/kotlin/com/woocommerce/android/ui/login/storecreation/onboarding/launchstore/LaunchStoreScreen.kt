@@ -129,7 +129,12 @@ fun LaunchStoreScreen(
                     )
                 }
             } else {
-                WebView(state.siteUrl, userAgent, authenticator)
+                WebView(
+                    state.siteUrl,
+                    userAgent,
+                    authenticator,
+                    isReadOnly = false
+                )
             }
         }
         ActionsFooter(state, onLaunchStoreClicked, onShareStoreUrl, onBackToStoreClicked)
@@ -140,7 +145,8 @@ fun LaunchStoreScreen(
 private fun WebView(
     url: String,
     userAgent: UserAgent,
-    authenticator: WPComWebViewAuthenticator
+    authenticator: WPComWebViewAuthenticator,
+    isReadOnly: Boolean
 ) {
     WCWebView(
         url = url,
@@ -148,7 +154,7 @@ private fun WebView(
         wpComAuthenticator = authenticator,
         captureBackPresses = false,
         loadWithOverviewMode = true,
-        isReadOnly = true,
+        isReadOnly = isReadOnly,
         progressIndicator = Circular(
             stringResource(id = string.store_creation_installation_rendering_preview_label)
         ),
@@ -247,7 +253,12 @@ fun SitePreview(
                     shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)),
                 )
         ) {
-            WebView(url, userAgent, authenticator)
+            WebView(
+                url,
+                userAgent,
+                authenticator,
+                isReadOnly = true
+            )
         }
     }
 }

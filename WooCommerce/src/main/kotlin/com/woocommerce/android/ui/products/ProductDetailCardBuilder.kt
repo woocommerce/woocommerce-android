@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDo
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductQuantityRules
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductReviews
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
@@ -57,8 +58,10 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
+import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 
+@SuppressWarnings("LargeClass")
 class ProductDetailCardBuilder(
     private val viewModel: ProductDetailViewModel,
     private val resources: ResourceProvider,
@@ -106,6 +109,7 @@ class ProductDetailCardBuilder(
                 if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.inventory(SIMPLE),
                 product.addons(),
+                product.quantityRules(),
                 product.shipping(),
                 product.categories(),
                 product.tags(),
@@ -125,6 +129,7 @@ class ProductDetailCardBuilder(
                 if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.inventory(GROUPED),
                 product.addons(),
+                product.quantityRules(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
@@ -143,6 +148,7 @@ class ProductDetailCardBuilder(
                 product.externalLink(),
                 product.inventory(EXTERNAL),
                 product.addons(),
+                product.quantityRules(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
@@ -162,6 +168,7 @@ class ProductDetailCardBuilder(
                 if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.inventory(VARIABLE),
                 product.addons(),
+                product.quantityRules(),
                 product.shipping(),
                 product.categories(),
                 product.tags(),
@@ -180,6 +187,7 @@ class ProductDetailCardBuilder(
                 product.subscription(),
                 product.inventory(SIMPLE),
                 product.addons(),
+                product.quantityRules(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
@@ -199,6 +207,7 @@ class ProductDetailCardBuilder(
             properties = listOf(
                 if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.addons(),
+                product.quantityRules(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
@@ -720,6 +729,25 @@ class ProductDetailCardBuilder(
         return missingPriceVariation?.let {
             ProductProperty.Warning(resources.getString(string.variation_detail_price_warning))
         }
+    }
+
+    private suspend fun Product.quantityRules(): ProductProperty? {
+        val rules = viewModel.getQuantityRules(this.remoteId) ?: return null
+
+        val properties = buildMap {
+            putIfNotNull(resources.getString(string.min_quantity) to rules.min?.toString())
+            putIfNotNull(resources.getString(string.max_quantity) to rules.max?.toString())
+        }
+
+        return PropertyGroup(
+            title = string.product_quantity_rules_title,
+            icon = drawable.ic_gridicons_product,
+            properties = properties,
+            showTitle = true,
+            onClick = {
+                viewModel.onEditProductCardClicked(ViewProductQuantityRules(rules))
+            }
+        )
     }
 }
 

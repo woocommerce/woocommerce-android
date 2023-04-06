@@ -3276,4 +3276,21 @@
     <string name="subscription_sign_up_fee">Sign up fee</string>
     <string name="subscription_free_trial">Free trial</string>
 
+
+    <!--
+    Gift cards
+    -->
+    <string name="order_gift_card">Gift Card</string>
+    <string name="gift_cards">Gift Cards</string>
+    <string name="negative_currency" translatable="false">- %1$s</string>
+
+    <!--
+    Quantity Rules
+    -->
+    <string name="product_quantity_rules_title">Quantity Rules</string>
+    <string name="min_quantity">Minimum quantity</string>
+    <string name="max_quantity">Maximum quantity</string>
+    <string name="group_of">Group of</string>
+    <string name="quantity_rules_info_notice">You can edit product\'s quantity rules in the web dashboard.</string>
+
 </resources>

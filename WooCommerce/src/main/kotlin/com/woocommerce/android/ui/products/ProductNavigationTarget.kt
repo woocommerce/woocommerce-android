@@ -6,6 +6,7 @@ import com.woocommerce.android.model.SubscriptionDetails
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
+import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
@@ -128,4 +129,6 @@ sealed class ProductNavigationTarget : Event() {
     ) : ProductNavigationTarget()
 
     data class ViewProductSubscription(val subscription: SubscriptionDetails) : ProductNavigationTarget()
+
+    data class ViewProductQuantityRules(val quantityRules: QuantityRules) : ProductNavigationTarget()
 }

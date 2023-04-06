@@ -5,7 +5,7 @@
         android:alpha="@dimen/alpha_emphasis_disabled"
         android:color="@color/color_on_surface"/>
     <item
-        android:color="@color/color_secondary"/>
+        android:color="@color/color_primary"/>
 </selector>
 
 
