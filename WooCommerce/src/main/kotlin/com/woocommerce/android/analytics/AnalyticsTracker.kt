@@ -196,6 +196,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_CAUSE = "cause"
         const val KEY_SCENARIO = "scenario"
         const val KEY_REASON = "reason"
+        const val KEY_TAP = "tap"
+        const val KEY_FAILURE = "failure"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_SORT_NAME_ASC = "name,ascending"
@@ -227,6 +229,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_PURCHASE_READY = "purchase_ready"
         const val VALUE_SEARCH_ALL = "all"
         const val VALUE_SEARCH_SKU = "sku"
+        const val VALUE_SUBMIT = "submit"
+        const val VALUE_DISMISS = "dismiss"
+        const val VALUE_SUPPORT = "support"
 
         const val KEY_FLOW = "flow"
         const val KEY_HAS_DIFFERENT_SHIPPING_DETAILS = "has_different_shipping_details"
@@ -402,6 +407,18 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Jetpack Installation
         const val VALUE_JETPACK_INSTALLATION_SOURCE_WEB = "web"
         const val VALUE_JETPACK_INSTALLATION_SOURCE_NATIVE = "native"
+
+        // -- Jetpack Setup
+        const val KEY_JETPACK_SETUP_IS_ALREADY_CONNECTED = "is_already_connected"
+        const val KEY_JETPACK_SETUP_REQUIRES_CONNECTION_ONLY = "requires_connection_only"
+        const val VALUE_JETPACK_SETUP_STEP_EMAIL_ADDRESS = "email_address"
+        const val VALUE_JETPACK_SETUP_STEP_PASSWORD = "password"
+        const val VALUE_JETPACK_SETUP_STEP_MAGIC_LINK = "magic_link"
+        const val VALUE_JETPACK_INSTALLATION_STEP_BENEFITS = "benefits"
+        const val VALUE_JETPACK_SETUP_STEP_VERIFICATION_CODE = "verification_code"
+        const val VALUE_JETPACK_SETUP_TAP_GO_TO_STORE = "go_to_store"
+        const val VALUE_JETPACK_SETUP_TAP_SUPPORT = "support"
+        const val VALUE_JETPACK_SETUP_TAP_TRY_AGAIN = "try_again"
 
         // -- Login with WordPress.com account flow
         const val VALUE_LOGIN_WITH_WORDPRESS_COM = "wordpress_com"
