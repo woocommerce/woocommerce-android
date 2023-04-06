@@ -37,12 +37,12 @@ enum class FeatureFlag {
             UNIFIED_ORDER_EDITING,
             NATIVE_STORE_CREATION_FLOW,
             IPP_FEEDBACK_BANNER,
+            FREE_TRIAL_M2,
             STORE_CREATION_ONBOARDING -> true
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             IPP_TAP_TO_PAY,
-            FREE_TRIAL_M2,
             REST_API_I2,
             ANALYTICS_HUB_FEEDBACK_BANNER,
             GIFT_CARD_READ_ONLY_SUPPORT,
