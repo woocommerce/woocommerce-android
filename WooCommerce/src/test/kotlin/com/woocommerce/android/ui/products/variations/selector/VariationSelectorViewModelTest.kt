@@ -7,6 +7,7 @@ import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.selector.ProductSelectorTracker
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
+import com.woocommerce.android.ui.products.selector.ProductSourceForTracking
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -38,7 +39,8 @@ class VariationSelectorViewModelTest : BaseUnitTest() {
         val navArgs = VariationSelectorFragmentArgs(
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
             productId = 1L,
-            variationIds = longArrayOf(2L, 3L)
+            variationIds = longArrayOf(2L, 3L),
+            productSource = ProductSourceForTracking.ALPHABETICAL
         ).initSavedStateHandle()
 
         val sut = createViewModel(navArgs)
@@ -54,7 +56,8 @@ class VariationSelectorViewModelTest : BaseUnitTest() {
         val navArgs = VariationSelectorFragmentArgs(
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
             productId = 1L,
-            variationIds = longArrayOf(2L, 3L)
+            variationIds = longArrayOf(2L, 3L),
+            productSource = ProductSourceForTracking.ALPHABETICAL
         ).initSavedStateHandle()
 
         val sut = createViewModel(navArgs)
@@ -69,7 +72,8 @@ class VariationSelectorViewModelTest : BaseUnitTest() {
         val navArgs = VariationSelectorFragmentArgs(
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
             productId = 1L,
-            variationIds = longArrayOf(2L, 3L)
+            variationIds = longArrayOf(2L, 3L),
+            productSource = ProductSourceForTracking.ALPHABETICAL
         ).initSavedStateHandle()
 
         val sut = createViewModel(navArgs)

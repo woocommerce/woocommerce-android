@@ -80,7 +80,7 @@ fun ProductSelectorScreen(
     onDoneButtonClick: () -> Unit,
     onClearButtonClick: () -> Unit,
     onFilterButtonClick: () -> Unit,
-    onProductClick: (ProductListItem) -> Unit,
+    onProductClick: (ProductListItem, ProductSourceForTracking) -> Unit,
     onLoadMore: () -> Unit,
     onSearchQueryChanged: (String) -> Unit,
     onClearFiltersButtonClick: () -> Unit
@@ -173,7 +173,7 @@ private fun EmptyProductList(
 @Composable
 private fun PopularProductsList(
     state: ViewState,
-    onProductClick: (ProductListItem) -> Unit,
+    onProductClick: (ProductListItem, ProductSourceForTracking) -> Unit,
 ) {
     displayProductsSection(
         type = ProductType.POPULAR,
@@ -185,7 +185,7 @@ private fun PopularProductsList(
 @Composable
 private fun RecentlySoldProductsList(
     state: ViewState,
-    onProductClick: (ProductListItem) -> Unit,
+    onProductClick: (ProductListItem, ProductSourceForTracking) -> Unit,
 ) {
     displayProductsSection(
         type = ProductType.RECENT,
@@ -198,14 +198,18 @@ private fun RecentlySoldProductsList(
 private fun displayProductsSection(
     type: ProductType,
     state: ViewState,
-    onProductClick: (ProductListItem) -> Unit,
+    onProductClick: (ProductListItem, ProductSourceForTracking) -> Unit,
 ) {
-    val (productsList, heading) = when (type) {
-        ProductType.POPULAR -> Pair(
-            state.popularProducts, stringResource(id = string.product_selector_popular_products_heading)
+    val (productsList, heading, productSectionForTracking) = when (type) {
+        ProductType.POPULAR -> Triple(
+            state.popularProducts,
+            stringResource(id = string.product_selector_popular_products_heading),
+            ProductSourceForTracking.POPULAR
         )
-        ProductType.RECENT -> Pair(
-            state.recentProducts, stringResource(id = string.product_selector_recent_products_heading)
+        ProductType.RECENT -> Triple(
+            state.recentProducts,
+            stringResource(id = string.product_selector_recent_products_heading),
+            ProductSourceForTracking.RECENT
         )
     }
     Column(
@@ -239,7 +243,7 @@ private fun displayProductsSection(
                 onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
                 imageContentDescription = stringResource(string.product_image_content_description)
             ) {
-                onProductClick(product)
+                onProductClick(product, productSectionForTracking)
             }
             if (index < productsList.size - 1) {
                 Divider(
@@ -263,7 +267,7 @@ private fun ProductList(
     onDoneButtonClick: () -> Unit,
     onClearButtonClick: () -> Unit,
     onFilterButtonClick: () -> Unit,
-    onProductClick: (ProductListItem) -> Unit,
+    onProductClick: (ProductListItem, ProductSourceForTracking) -> Unit,
     onLoadMore: () -> Unit,
 ) {
     val listState = rememberLazyListState()
@@ -346,7 +350,7 @@ private fun ProductList(
                     onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
                     imageContentDescription = stringResource(string.product_image_content_description)
                 ) {
-                    onProductClick(product)
+                    onProductClick(product, ProductSourceForTracking.ALPHABETICAL)
                 }
                 Divider(
                     modifier = Modifier.padding(start = dimensionResource(id = dimen.major_100)),
@@ -492,7 +496,7 @@ fun PopularProductsListPreview() {
         {},
         {},
         {},
-        {},
+        { _, _ -> },
         {}
     )
 }
@@ -559,7 +563,7 @@ fun RecentProductsListPreview() {
         {},
         {},
         {},
-        {},
+        { _, _ -> },
         {}
     )
 }
@@ -625,7 +629,7 @@ fun ProductListPreview() {
         {},
         {},
         {},
-        {},
+        { _, _ -> },
         {}
     )
 }

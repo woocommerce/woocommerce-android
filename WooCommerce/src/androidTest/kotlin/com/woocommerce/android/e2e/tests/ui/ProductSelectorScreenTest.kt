@@ -34,7 +34,7 @@ class ProductSelectorScreenTest {
                 onDoneButtonClick = {},
                 onClearButtonClick = {},
                 onFilterButtonClick = {},
-                onProductClick = {},
+                onProductClick = { _, _ -> },
                 onLoadMore = {},
                 onSearchQueryChanged = {},
                 onClearFiltersButtonClick = {}
@@ -60,7 +60,7 @@ class ProductSelectorScreenTest {
                 onDoneButtonClick = {},
                 onClearButtonClick = {},
                 onFilterButtonClick = {},
-                onProductClick = {},
+                onProductClick = { _, _ -> },
                 onLoadMore = {},
                 onSearchQueryChanged = {},
                 onClearFiltersButtonClick = {}
