@@ -9,6 +9,7 @@ import com.woocommerce.android.e2e.helpers.util.CustomMatchers
 import com.woocommerce.android.e2e.helpers.util.OrderData
 import com.woocommerce.android.e2e.helpers.util.Screen
 import com.woocommerce.android.e2e.screens.shared.FilterScreen
+import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.Matchers
 
 class OrderListScreen : Screen {
@@ -34,7 +35,15 @@ class OrderListScreen : Screen {
 
     fun enterSearchTerm(term: String): OrderListScreen {
         typeTextInto(androidx.appcompat.R.id.search_src_text, term)
-        Thread.sleep(2000)
+        // If we expect for results, we wait for the list header
+        waitForElementToBeDisplayed(R.id.orderListHeader)
+        return this
+    }
+
+    fun enterAbsentSearchTerm(term: String): OrderListScreen {
+        typeTextInto(androidx.appcompat.R.id.search_src_text, term)
+        // If we don't expect for results, we wait for "no results" situation
+        waitForElementToBeDisplayed(R.id.empty_view_title)
         return this
     }
 
@@ -107,6 +116,18 @@ class OrderListScreen : Screen {
                 )
             )
 
+        return this
+    }
+
+    fun assertSearchResultsAbsent(term: String): OrderListScreen {
+        val expectedString = "We're sorry, we couldn't find results for \"${term}\""
+        Espresso.onView(
+            Matchers.allOf(
+                ViewMatchers.withId(R.id.empty_view_title),
+                ViewMatchers.withText(containsString(expectedString))
+            )
+        )
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         return this
     }
 }
