@@ -7,7 +7,6 @@ import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_CREATION_FAILED
 import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryViewModel.OnStoreCreationFailure
 import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryViewModel.OnStoreCreationSuccess
-import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryViewModel.ViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -98,16 +97,14 @@ internal class StoreCreationSummaryViewModelTest: BaseUnitTest() {
         val expectedTitle = "test title"
         createSut(expectedDomain, expectedTitle, StoreCreationState.Idle)
 
-        val viewStateUpdates = mutableListOf<ViewState>()
-        sut.viewState.observeForever { viewStateUpdates.add(it) }
+        var isLoading: Boolean? = null
+        sut.isLoading.observeForever { isLoading = it }
 
         // When
         sut.onTryForFreeButtonPressed()
 
         // Then
-        assertThat(viewStateUpdates).containsExactly(
-            ViewState(isLoading = false)
-        )
+       assertThat(isLoading).isFalse
     }
 
     @Test
@@ -117,17 +114,14 @@ internal class StoreCreationSummaryViewModelTest: BaseUnitTest() {
         val expectedTitle = "test title"
         createSut(expectedDomain, expectedTitle, StoreCreationState.Loading)
 
-        val viewStateUpdates = mutableListOf<ViewState>()
-        sut.viewState.observeForever { viewStateUpdates.add(it) }
+        var isLoading: Boolean? = null
+        sut.isLoading.observeForever { isLoading = it }
 
         // When
         sut.onTryForFreeButtonPressed()
 
         // Then
-        assertThat(viewStateUpdates).containsExactly(
-            ViewState(isLoading = false),
-            ViewState(isLoading = true)
-        )
+        assertThat(isLoading).isTrue
     }
 
     @Test
@@ -137,16 +131,14 @@ internal class StoreCreationSummaryViewModelTest: BaseUnitTest() {
         val expectedTitle = "test title"
         createSut(expectedDomain, expectedTitle, StoreCreationState.Failed(SITE_CREATION_FAILED))
 
-        val viewStateUpdates = mutableListOf<ViewState>()
-        sut.viewState.observeForever { viewStateUpdates.add(it) }
+        var isLoading: Boolean? = null
+        sut.isLoading.observeForever { isLoading = it }
 
         // When
         sut.onTryForFreeButtonPressed()
 
         // Then
-        assertThat(viewStateUpdates).containsExactly(
-            ViewState(isLoading = false)
-        )
+        assertThat(isLoading).isFalse
     }
 
     @Test
@@ -156,16 +148,14 @@ internal class StoreCreationSummaryViewModelTest: BaseUnitTest() {
         val expectedTitle = "test title"
         createSut(expectedDomain, expectedTitle, StoreCreationState.Finished)
 
-        val viewStateUpdates = mutableListOf<ViewState>()
-        sut.viewState.observeForever { viewStateUpdates.add(it) }
+        var isLoading: Boolean? = null
+        sut.isLoading.observeForever { isLoading = it }
 
         // When
         sut.onTryForFreeButtonPressed()
 
         // Then
-        assertThat(viewStateUpdates).containsExactly(
-            ViewState(isLoading = false)
-        )
+        assertThat(isLoading).isFalse
     }
 
     private fun createSut(
