@@ -63,7 +63,7 @@ private fun StoreCreationSummaryScreen(
         ) {
             Column(
                 modifier = Modifier
-                    .padding(top = dimensionResource(id = R.dimen.major_400))
+                    .padding(top = dimensionResource(id = R.dimen.free_trial_summary_title_top_padding))
                     .fillMaxSize()
             ) {
                 SummaryBody(
