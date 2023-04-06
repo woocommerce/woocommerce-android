@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.selector
 
 import android.os.Parcelable
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -97,6 +98,8 @@ class ProductSelectorViewModel @Inject constructor(
     }
     private val popularProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
     private val recentProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
+
+    private val selectedItemsSource: MutableSet<ProductSourceForTracking> = mutableSetOf()
 
     private var fetchProductsJob: Job? = null
     private var loadMoreJob: Job? = null
@@ -302,6 +305,7 @@ class ProductSelectorViewModel @Inject constructor(
                 }
             }
         }
+        selectedItemsSource.add(productSourceForTracking)
     }
 
     private fun updateProductSourceIfSearchOrFilterIsEnabled(productSource: ProductSourceForTracking):
