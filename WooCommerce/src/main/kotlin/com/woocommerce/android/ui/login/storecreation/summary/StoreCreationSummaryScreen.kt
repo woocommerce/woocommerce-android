@@ -193,7 +193,10 @@ private fun SummaryBottom(
         WCColoredButton(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(dimensionResource(id = R.dimen.major_125)),
+                .padding(
+                    horizontal = dimensionResource(id = R.dimen.major_125),
+                    vertical = dimensionResource(id = R.dimen.minor_100)
+                ),
             onClick = onTryForFreeButtonPressed,
             colors = buttonColors
         ) {
