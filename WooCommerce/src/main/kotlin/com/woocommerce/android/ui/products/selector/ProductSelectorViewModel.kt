@@ -321,9 +321,16 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     fun onDoneButtonClick() {
-        tracker.trackDoneButtonClicked(productSelectorFlow, selectedItems.value, selectedItemsSource.toSet())
+        tracker.trackDoneButtonClicked(
+            productSelectorFlow,
+            selectedItems.value,
+            selectedItemsSource.toSet(),
+            isFilterActive()
+        )
         triggerEvent(ExitWithResult(selectedItems.value))
     }
+
+    private fun isFilterActive() = !filterState.value.filterOptions.isNullOrEmpty()
 
     fun onSearchQueryChanged(query: String) {
         searchQuery.value = query
