@@ -41,6 +41,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 @Composable
 fun StoreCreationSummaryScreen(viewModel: StoreCreationSummaryViewModel) {
     StoreCreationSummaryScreen(
+        modifier = Modifier,
         onCancelPressed = viewModel::onCancelPressed,
         onTryForFreeButtonPressed = viewModel::onTryForFreeButtonPressed
     )
@@ -48,6 +49,7 @@ fun StoreCreationSummaryScreen(viewModel: StoreCreationSummaryViewModel) {
 
 @Composable
 private fun StoreCreationSummaryScreen(
+    modifier: Modifier,
     onCancelPressed: () -> Unit,
     onTryForFreeButtonPressed: () -> Unit
 ) {
@@ -55,7 +57,7 @@ private fun StoreCreationSummaryScreen(
         Toolbar(onNavigationButtonClick = onCancelPressed)
     }) {
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .padding(it)
                 .background(MaterialTheme.colors.surface)
                 .fillMaxSize()
@@ -224,6 +226,7 @@ fun isSystemInRTL(): Boolean {
 fun StoreCreationSummary() {
     WooThemeWithBackground {
         StoreCreationSummaryScreen(
+            modifier = Modifier,
             onCancelPressed = {},
             onTryForFreeButtonPressed = {}
         )
