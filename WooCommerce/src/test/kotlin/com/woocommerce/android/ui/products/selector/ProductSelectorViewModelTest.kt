@@ -496,17 +496,15 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given product selected from recent section, then track correct source`() {
+    fun `given product selected from recent and popular section, when done button clicked, then track correct source`() {
         testBlocking {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 restrictions = arrayOf(OnlyPublishedProducts),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
             ).initSavedStateHandle()
-            val ordersThatAreNotPaidYet = mutableListOf<OrderEntity>()
             val recentOrdersList = generateTestOrders()
-            val totalOrders = ordersThatAreNotPaidYet + recentOrdersList
-            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(recentOrdersList)
 
             val sut = createViewModel(navArgs)
             sut.onProductClick(
@@ -534,17 +532,15 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given product selected from alphabetical section, then track correct source`() {
+    fun `given products selected from recent, alphabetical and popular, when done button clicked, then track correct source`() {
         testBlocking {
             val navArgs = ProductSelectorFragmentArgs(
                 selectedItems = emptyArray(),
                 restrictions = arrayOf(OnlyPublishedProducts),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
             ).initSavedStateHandle()
-            val ordersThatAreNotPaidYet = mutableListOf<OrderEntity>()
             val recentOrdersList = generateTestOrders()
-            val totalOrders = ordersThatAreNotPaidYet + recentOrdersList
-            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(recentOrdersList)
 
             val sut = createViewModel(navArgs)
             sut.onProductClick(
@@ -584,10 +580,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 restrictions = arrayOf(OnlyPublishedProducts),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
             ).initSavedStateHandle()
-            val ordersThatAreNotPaidYet = mutableListOf<OrderEntity>()
             val recentOrdersList = generateTestOrders()
-            val totalOrders = ordersThatAreNotPaidYet + recentOrdersList
-            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(recentOrdersList)
 
             val sut = createViewModel(navArgs)
             sut.onSearchQueryChanged("Test")
@@ -618,10 +612,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 restrictions = arrayOf(OnlyPublishedProducts),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
             ).initSavedStateHandle()
-            val ordersThatAreNotPaidYet = mutableListOf<OrderEntity>()
             val recentOrdersList = generateTestOrders()
-            val totalOrders = ordersThatAreNotPaidYet + recentOrdersList
-            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(recentOrdersList)
 
             val sut = createViewModel(navArgs)
             sut.onFiltersChanged(
