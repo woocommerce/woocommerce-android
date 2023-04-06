@@ -51,7 +51,7 @@ class ProductSelectorTracker @Inject constructor(private val tracker: AnalyticsT
     fun trackDoneButtonClicked(
         flow: ProductSelectorFlow,
         selectedItems: List<ProductSelectorViewModel.SelectedItem>,
-        selectedItemsSource: Set<ProductSourceForTracking>,
+        selectedItemsSource: List<ProductSourceForTracking>,
         isFilterActive: Boolean,
     ) {
         when (flow) {

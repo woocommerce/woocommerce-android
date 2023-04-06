@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products.selector
 
 import android.os.Parcelable
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -99,7 +98,7 @@ class ProductSelectorViewModel @Inject constructor(
     private val popularProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
     private val recentProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
 
-    private val selectedItemsSource: MutableSet<ProductSourceForTracking> = mutableSetOf()
+    private val selectedItemsSource: MutableList<ProductSourceForTracking> = mutableListOf()
 
     private var fetchProductsJob: Job? = null
     private var loadMoreJob: Job? = null
@@ -302,7 +301,7 @@ class ProductSelectorViewModel @Inject constructor(
                 } else {
                     selectedItemsSource.add(productSource)
                     tracker.trackItemSelected(productSelectorFlow)
-                    selectedItems.value + SelectedItem.Product(item.id, productSource)
+                    selectedItems.value + SelectedItem.Product(item.id)
                 }
             }
         }
@@ -324,7 +323,7 @@ class ProductSelectorViewModel @Inject constructor(
         tracker.trackDoneButtonClicked(
             productSelectorFlow,
             selectedItems.value,
-            selectedItemsSource.toSet(),
+            selectedItemsSource,
             isFilterActive()
         )
         triggerEvent(ExitWithResult(selectedItems.value))
@@ -380,11 +379,12 @@ class ProductSelectorViewModel @Inject constructor(
                     SelectedItem.ProductVariation(
                         productId = result.productId,
                         variationId = variationId,
-                        productSourceForTracking = result.productSourceForTracking
                     )
                 }
 
-                selectedItemsSource.add(result.productSourceForTracking)
+                if (!newItems.isNullOrEmpty()) {
+                    selectedItemsSource.add(result.productSourceForTracking)
+                }
                 selectedItems.value - oldItems.toSet() + newItems
             }
         }
@@ -481,28 +481,22 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     @Parcelize
-    sealed class SelectedItem(
-        val id: Long,
-        val source: ProductSourceForTracking?
-    ) : Parcelable {
+    sealed class SelectedItem(val id: Long) : Parcelable {
         @Parcelize
         data class ProductOrVariation(
             val productOrVariationId: Long,
-            val productSourceForTracking: ProductSourceForTracking? = null,
-        ) : SelectedItem(productOrVariationId, productSourceForTracking)
+        ) : SelectedItem(productOrVariationId)
 
         @Parcelize
         data class Product(
             val productId: Long,
-            val productSourceForTracking: ProductSourceForTracking? = null,
-        ) : SelectedItem(productId, productSourceForTracking)
+        ) : SelectedItem(productId)
 
         @Parcelize
         data class ProductVariation(
             val productId: Long,
             val variationId: Long,
-            val productSourceForTracking: ProductSourceForTracking? = null,
-        ) : SelectedItem(variationId, productSourceForTracking)
+        ) : SelectedItem(variationId)
     }
 
     @Parcelize
