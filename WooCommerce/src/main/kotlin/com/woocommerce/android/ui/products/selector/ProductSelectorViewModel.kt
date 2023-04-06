@@ -169,7 +169,7 @@ class ProductSelectorViewModel @Inject constructor(
         recentProducts.value = productsMapper.mapProductIdsToProduct(
             getProductIdsFromRecentlySoldOrders(
                 recentlySoldOrders
-            )
+            ).distinctBy { it }
         )
     }
 
@@ -178,10 +178,10 @@ class ProductSelectorViewModel @Inject constructor(
         val productIdsWithPurchaseCount = getProductIdsWithNumberOfPurchases(recentlySoldOrders)
         val topPopularProductsSorted = productIdsWithPurchaseCount
             .asSequence()
-            .take(NUMBER_OF_SUGGESTED_ITEMS)
             .map { it.toPair() }
             .toList()
             .sortedByDescending { it.second }
+            .take(NUMBER_OF_SUGGESTED_ITEMS)
             .toMap()
         popularProducts.value = productsMapper.mapProductIdsToProduct(topPopularProductsSorted.keys.toList())
     }
