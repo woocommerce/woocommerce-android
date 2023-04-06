@@ -163,7 +163,6 @@ class JetpackActivationMainViewModel @Inject constructor(
                     AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_JETPACK_SETUP_TAP_GO_TO_STORE
                 )
             )
-            appPrefsWrapper.setJetpackInstallationIsFromBanner(false)
         } else {
             analyticsTrackerWrapper.track(stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_GO_TO_STORE_BUTTON_TAPPED)
         }

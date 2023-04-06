@@ -368,6 +368,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
     @Suppress("ForbiddenComment")
     private fun prepareJetpackBenefitsBanner() {
+        appPrefsWrapper.setJetpackInstallationIsFromBanner(false)
         binding.jetpackBenefitsBanner.root.isVisible = false
         binding.jetpackBenefitsBanner.root.setOnClickListener {
             AnalyticsTracker.track(
