@@ -16,6 +16,9 @@
         <argument
             android:name="productSelectorFlow"
             app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorFlow" />
+        <argument
+            android:name="productSource"
+            app:argType="com.woocommerce.android.ui.products.selector.ProductSourceForTracking" />
     </fragment>
 
     <fragment
