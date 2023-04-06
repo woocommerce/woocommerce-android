@@ -55,24 +55,36 @@ private fun StoreCreationSummaryScreen(
             onHelpButtonClick = onHelpPressed,
         )
     }) {
-        Column(
-            modifier = Modifier
-                .background(MaterialTheme.colors.surface)
-                .padding(it)
-                .fillMaxSize()
+        Box(modifier = Modifier
+            .background(MaterialTheme.colors.surface)
+            .fillMaxSize()
         ) {
-            SummaryBody(
+            Column(
                 modifier = Modifier
-                    .verticalScroll(rememberScrollState())
-                    .fillMaxWidth()
-                    .padding(dimensionResource(id = R.dimen.major_125))
-                    .weight(4f)
-            )
-            SummaryBottom(
+                    .padding(it)
+                    .fillMaxSize()
+            ) {
+                SummaryBody(
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
+                        .fillMaxWidth()
+                        .padding(dimensionResource(id = R.dimen.major_125))
+                        .weight(4f)
+                )
+                SummaryBottom(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    onTryForFreeButtonPressed = onTryForFreeButtonPressed
+                )
+            }
+
+            Image(
+                painter = painterResource(id = R.drawable.free_trial_summary_illustration),
+                contentDescription = null,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                onTryForFreeButtonPressed = onTryForFreeButtonPressed
+                    .align(Alignment.TopEnd)
+                    .offset(x = dimensionResource(id = R.dimen.major_150))
             )
         }
     }
