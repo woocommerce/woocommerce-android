@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login.storecreation.summary
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -8,7 +9,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StoreCreationSummaryViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val createStore: CreateFreeTrialStore
 ) : ScopedViewModel(savedStateHandle) {
     fun onCancelPressed() { triggerEvent(OnCancelPressed) }
     fun onTryForFreeButtonPressed() { triggerEvent(OnTryForFreeButtonPressed) }
