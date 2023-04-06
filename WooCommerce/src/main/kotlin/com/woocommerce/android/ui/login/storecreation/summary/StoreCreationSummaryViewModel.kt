@@ -9,10 +9,10 @@ import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class StoreCreationSummaryViewModel @Inject constructor(
@@ -47,5 +47,5 @@ class StoreCreationSummaryViewModel @Inject constructor(
 
     object OnCancelPressed : MultiLiveEvent.Event()
     object OnStoreCreationSuccess : MultiLiveEvent.Event()
-    object OnStoreCreationFailure: MultiLiveEvent.Event()
+    object OnStoreCreationFailure : MultiLiveEvent.Event()
 }

@@ -87,6 +87,12 @@ class StoreNamePickerViewModel @Inject constructor(
         }
     }
 
+    /**
+     * We're currently not using this method anymore,
+     * but we need to keep it until we have a final decision on
+     * the store free trial creation flow steps.
+     */
+    @Suppress("UnusedPrivateMember")
     private suspend fun startFreeTrialSiteCreation() {
         createStore(
             storeDomain = newStore.data.domain,

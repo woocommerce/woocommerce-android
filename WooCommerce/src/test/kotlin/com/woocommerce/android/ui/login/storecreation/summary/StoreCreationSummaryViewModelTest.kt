@@ -20,7 +20,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class StoreCreationSummaryViewModelTest: BaseUnitTest() {
+internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
     private lateinit var sut: StoreCreationSummaryViewModel
     private lateinit var createStore: CreateFreeTrialStore
     private lateinit var newStore: NewStore
@@ -70,7 +70,6 @@ internal class StoreCreationSummaryViewModelTest: BaseUnitTest() {
         // When
         sut.onTryForFreeButtonPressed()
 
-
         // Then
         assertThat(lastReceivedEvent).isEqualTo(OnStoreCreationFailure)
     }
@@ -104,7 +103,7 @@ internal class StoreCreationSummaryViewModelTest: BaseUnitTest() {
         sut.onTryForFreeButtonPressed()
 
         // Then
-       assertThat(isLoading).isFalse
+        assertThat(isLoading).isFalse
     }
 
     @Test
