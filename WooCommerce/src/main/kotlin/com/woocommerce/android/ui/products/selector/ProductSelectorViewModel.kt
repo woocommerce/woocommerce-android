@@ -300,12 +300,12 @@ class ProductSelectorViewModel @Inject constructor(
                     val productItemToUnselect = selectedProductItems.filter { it.id == item.id }.toSet()
                     selectedItems.value - productItemToUnselect
                 } else {
+                    selectedItemsSource.add(productSource)
                     tracker.trackItemSelected(productSelectorFlow)
                     selectedItems.value + SelectedItem.Product(item.id, productSource)
                 }
             }
         }
-        selectedItemsSource.add(productSource)
     }
 
     private fun updateProductSourceIfSearchIsEnabled(productSource: ProductSourceForTracking):
@@ -377,6 +377,7 @@ class ProductSelectorViewModel @Inject constructor(
                     )
                 }
 
+                selectedItemsSource.add(result.productSourceForTracking)
                 selectedItems.value - oldItems.toSet() + newItems
             }
         }
