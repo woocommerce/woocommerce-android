@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_COUNT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_SELECTOR_FILTER_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_SELECTOR_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
@@ -181,7 +182,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 ORDER_CREATION_PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED,
                 mapOf(
                     "product_count" to 0,
-                    KEY_PRODUCT_SELECTOR_SOURCE to emptyList<ProductSourceForTracking>()
+                    KEY_PRODUCT_SELECTOR_SOURCE to emptyList<ProductSourceForTracking>(),
+                    KEY_PRODUCT_SELECTOR_FILTER_STATUS to false,
                 )
             )
         }
@@ -211,9 +213,10 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 mapOf(
                     "product_count" to 2,
                     KEY_PRODUCT_SELECTOR_SOURCE to listOf(
-                        ProductSourceForTracking.ALPHABETICAL,
-                        ProductSourceForTracking.ALPHABETICAL
-                    )
+                        ProductSourceForTracking.ALPHABETICAL.name,
+                        ProductSourceForTracking.ALPHABETICAL.name
+                    ),
+                    KEY_PRODUCT_SELECTOR_FILTER_STATUS to false,
                 )
             )
         }
@@ -485,7 +488,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 ORDER_CREATION_PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED,
                 mapOf(
                     KEY_PRODUCT_COUNT to 1,
-                    KEY_PRODUCT_SELECTOR_SOURCE to listOf(ProductSourceForTracking.POPULAR)
+                    KEY_PRODUCT_SELECTOR_SOURCE to listOf(ProductSourceForTracking.POPULAR.name),
+                    KEY_PRODUCT_SELECTOR_FILTER_STATUS to false,
                 )
             )
         }
@@ -520,9 +524,10 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 mapOf(
                     KEY_PRODUCT_COUNT to 2,
                     KEY_PRODUCT_SELECTOR_SOURCE to listOf(
-                        ProductSourceForTracking.RECENT,
-                        ProductSourceForTracking.POPULAR
-                    )
+                        ProductSourceForTracking.RECENT.name,
+                        ProductSourceForTracking.POPULAR.name
+                    ),
+                    KEY_PRODUCT_SELECTOR_FILTER_STATUS to false,
                 )
             )
         }
@@ -561,10 +566,11 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 mapOf(
                     KEY_PRODUCT_COUNT to 3,
                     KEY_PRODUCT_SELECTOR_SOURCE to listOf(
-                        ProductSourceForTracking.RECENT,
-                        ProductSourceForTracking.ALPHABETICAL,
-                        ProductSourceForTracking.POPULAR
-                    )
+                        ProductSourceForTracking.RECENT.name,
+                        ProductSourceForTracking.ALPHABETICAL.name,
+                        ProductSourceForTracking.POPULAR.name
+                    ),
+                    KEY_PRODUCT_SELECTOR_FILTER_STATUS to false,
                 )
             )
         }
@@ -596,8 +602,9 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 mapOf(
                     KEY_PRODUCT_COUNT to 1,
                     KEY_PRODUCT_SELECTOR_SOURCE to listOf(
-                        ProductSourceForTracking.SEARCH
-                    )
+                        ProductSourceForTracking.SEARCH.name
+                    ),
+                    KEY_PRODUCT_SELECTOR_FILTER_STATUS to false,
                 )
             )
         }
@@ -635,13 +642,45 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 mapOf(
                     KEY_PRODUCT_COUNT to 1,
                     KEY_PRODUCT_SELECTOR_SOURCE to listOf(
-                        ProductSourceForTracking.FILTER
-                    )
+                        ProductSourceForTracking.ALPHABETICAL.name
+                    ),
+                    KEY_PRODUCT_SELECTOR_FILTER_STATUS to true,
                 )
             )
         }
     }
 
+    @Test
+    fun `given product variation detail screen entered but not selected, then do not track source`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+            ).initSavedStateHandle()
+            val recentOrdersList = generateTestOrders()
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(recentOrdersList)
+
+            val sut = createViewModel(navArgs)
+            sut.onSelectedVariationsUpdated(
+                VariationSelectorViewModel.VariationSelectionResult(
+                    productId = 0L,
+                    selectedVariationIds = emptySet(),
+                    productSourceForTracking = ProductSourceForTracking.POPULAR
+                )
+            )
+            sut.onDoneButtonClick()
+
+            verify(tracker).track(
+                ORDER_CREATION_PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED,
+                mapOf(
+                    KEY_PRODUCT_COUNT to 0,
+                    KEY_PRODUCT_SELECTOR_SOURCE to emptyList<String>(),
+                    KEY_PRODUCT_SELECTOR_FILTER_STATUS to false,
+                )
+            )
+        }
+    }
     @Test
     fun `given product variation selected from popular section, then track correct source`() {
         testBlocking {
@@ -668,8 +707,9 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 mapOf(
                     KEY_PRODUCT_COUNT to 1,
                     KEY_PRODUCT_SELECTOR_SOURCE to listOf(
-                        ProductSourceForTracking.POPULAR
-                    )
+                        ProductSourceForTracking.POPULAR.name
+                    ),
+                    KEY_PRODUCT_SELECTOR_FILTER_STATUS to false,
                 )
             )
         }
@@ -701,8 +741,9 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 mapOf(
                     KEY_PRODUCT_COUNT to 1,
                     KEY_PRODUCT_SELECTOR_SOURCE to listOf(
-                        ProductSourceForTracking.RECENT
-                    )
+                        ProductSourceForTracking.RECENT.name
+                    ),
+                    KEY_PRODUCT_SELECTOR_FILTER_STATUS to false,
                 )
             )
         }
@@ -734,8 +775,9 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 mapOf(
                     KEY_PRODUCT_COUNT to 1,
                     KEY_PRODUCT_SELECTOR_SOURCE to listOf(
-                        ProductSourceForTracking.ALPHABETICAL
-                    )
+                        ProductSourceForTracking.ALPHABETICAL.name
+                    ),
+                    KEY_PRODUCT_SELECTOR_FILTER_STATUS to false,
                 )
             )
         }
@@ -767,8 +809,9 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 mapOf(
                     KEY_PRODUCT_COUNT to 1,
                     KEY_PRODUCT_SELECTOR_SOURCE to listOf(
-                        ProductSourceForTracking.SEARCH
-                    )
+                        ProductSourceForTracking.SEARCH.name
+                    ),
+                    KEY_PRODUCT_SELECTOR_FILTER_STATUS to false,
                 )
             )
         }
@@ -786,6 +829,13 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(recentOrdersList)
 
             val sut = createViewModel(navArgs)
+            sut.onFiltersChanged(
+                stockStatus = "In stock",
+                productStatus = null,
+                productType = null,
+                productCategory = null,
+                productCategoryName = null
+            )
             sut.onSelectedVariationsUpdated(
                 VariationSelectorViewModel.VariationSelectionResult(
                     productId = 0L,
@@ -800,8 +850,9 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 mapOf(
                     KEY_PRODUCT_COUNT to 1,
                     KEY_PRODUCT_SELECTOR_SOURCE to listOf(
-                        ProductSourceForTracking.FILTER
-                    )
+                        ProductSourceForTracking.FILTER.name
+                    ),
+                    KEY_PRODUCT_SELECTOR_FILTER_STATUS to true,
                 )
             )
         }

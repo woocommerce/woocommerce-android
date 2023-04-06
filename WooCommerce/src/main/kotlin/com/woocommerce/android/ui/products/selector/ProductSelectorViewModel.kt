@@ -98,7 +98,7 @@ class ProductSelectorViewModel @Inject constructor(
     private val popularProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
     private val recentProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
 
-    private val selectedItemsSource: MutableList<ProductSourceForTracking> = mutableListOf()
+    private val selectedItemsSource: MutableMap<Long, ProductSourceForTracking> = mutableMapOf()
 
     private var fetchProductsJob: Job? = null
     private var loadMoreJob: Job? = null
@@ -296,10 +296,11 @@ class ProductSelectorViewModel @Inject constructor(
                 }
                 if (selectedProductItems.map { it.id }.contains(item.id)) {
                     tracker.trackItemUnselected(productSelectorFlow)
+                    selectedItemsSource.remove(item.id)
                     val productItemToUnselect = selectedProductItems.filter { it.id == item.id }.toSet()
                     selectedItems.value - productItemToUnselect
                 } else {
-                    selectedItemsSource.add(productSource)
+                    selectedItemsSource[item.id] = productSource
                     tracker.trackItemSelected(productSelectorFlow)
                     selectedItems.value + SelectedItem.Product(item.id)
                 }
@@ -323,7 +324,7 @@ class ProductSelectorViewModel @Inject constructor(
         tracker.trackDoneButtonClicked(
             productSelectorFlow,
             selectedItems.value,
-            selectedItemsSource,
+            selectedItemsSource.values.toList(),
             isFilterActive()
         )
         triggerEvent(ExitWithResult(selectedItems.value))
@@ -375,16 +376,18 @@ class ProductSelectorViewModel @Inject constructor(
                     it is SelectedItem.ProductVariation && it.productId == result.productId
                 }
 
+                oldItems.forEach {
+                    selectedItemsSource.remove(it.id)
+                }
+
                 val newItems = result.selectedVariationIds.map { variationId ->
+                    selectedItemsSource[variationId] = result.productSourceForTracking
                     SelectedItem.ProductVariation(
                         productId = result.productId,
                         variationId = variationId,
                     )
                 }
 
-                if (!newItems.isNullOrEmpty()) {
-                    selectedItemsSource.add(result.productSourceForTracking)
-                }
                 selectedItems.value - oldItems.toSet() + newItems
             }
         }
