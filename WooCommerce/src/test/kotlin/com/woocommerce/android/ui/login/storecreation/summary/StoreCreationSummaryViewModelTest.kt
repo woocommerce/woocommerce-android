@@ -5,6 +5,7 @@ import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_CREATION_FAILED
+import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryViewModel.OnCancelPressed
 import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryViewModel.OnStoreCreationFailure
 import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryViewModel.OnStoreCreationSuccess
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -155,6 +156,23 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
 
         // Then
         assertThat(isLoading).isFalse
+    }
+
+    @Test
+    fun `when onCancelPressed happens, then trigger expected event`() = testBlocking {
+        // Given
+        val expectedDomain = "test domain"
+        val expectedTitle = "test title"
+        createSut(expectedDomain, expectedTitle, StoreCreationState.Idle)
+
+        var lastReceivedEvent: MultiLiveEvent.Event? = null
+        sut.event.observeForever { lastReceivedEvent = it }
+
+        // When
+        sut.onCancelPressed()
+
+        // Then
+        assertThat(lastReceivedEvent).isEqualTo(OnCancelPressed)
     }
 
     private fun createSut(
