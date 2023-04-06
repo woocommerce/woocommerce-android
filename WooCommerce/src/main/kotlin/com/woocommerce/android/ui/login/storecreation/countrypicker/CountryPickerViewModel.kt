@@ -96,16 +96,27 @@ class CountryPickerViewModel @Inject constructor(
     fun onContinueClicked() {
         launch {
             if (FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
-                createStore(
-                    storeDomain = newStore.data.domain,
-                    storeName = newStore.data.name,
-                ).filterNotNull().collect {
-                    newStore.update(siteId = it)
-                    triggerEvent(NavigateToInstallationStep)
-                }
+                triggerEvent(NavigateToSummaryStep)
             } else {
                 triggerEvent(NavigateToDomainPickerStep)
             }
+        }
+    }
+
+
+    /**
+     * We're currently not using this method anymore,
+     * but we need to keep it until we have a final decision on
+     * the store free trial creation flow steps.
+     */
+    @Suppress("UnusedPrivateMember")
+    private suspend fun startFreeTrialSiteCreation() {
+        createStore(
+            storeDomain = newStore.data.domain,
+            storeName = newStore.data.name,
+        ).filterNotNull().collect {
+            newStore.update(siteId = it)
+            triggerEvent(NavigateToSummaryStep)
         }
     }
 
@@ -132,7 +143,7 @@ class CountryPickerViewModel @Inject constructor(
         )
 
     object NavigateToDomainPickerStep : MultiLiveEvent.Event()
-    object NavigateToInstallationStep : MultiLiveEvent.Event()
+    object NavigateToSummaryStep : MultiLiveEvent.Event()
 
     sealed class CountryPickerState {
         data class Contentful(
