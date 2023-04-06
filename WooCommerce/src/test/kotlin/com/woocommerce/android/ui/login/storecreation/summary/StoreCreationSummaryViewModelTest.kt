@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_CREATION_FAILED
 import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryViewModel.OnStoreCreationFailure
 import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryViewModel.OnStoreCreationSuccess
+import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryViewModel.ViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -90,6 +91,27 @@ internal class StoreCreationSummaryViewModelTest: BaseUnitTest() {
         verify(newStore).update(siteId = expectedSiteId)
     }
 
+    @Test
+    fun `when store creation starts, then viewState is updated as expected`() = testBlocking {
+        // Given
+        val expectedDomain = "test domain"
+        val expectedTitle = "test title"
+        createSutWithFullCreationStateBehavior(expectedDomain, expectedTitle)
+
+        val viewStateUpdates = mutableListOf<ViewState>()
+        sut.viewState.observeForever { viewStateUpdates.add(it) }
+
+        // When
+        sut.onTryForFreeButtonPressed()
+
+        // Then
+        assertThat(viewStateUpdates).containsExactly(
+            ViewState(isLoading = false),
+            ViewState(isLoading = true),
+            ViewState(isLoading = false)
+        )
+    }
+
     private fun createSut(
         expectedDomain: String,
         expectedTitle: String,
@@ -117,6 +139,39 @@ internal class StoreCreationSummaryViewModelTest: BaseUnitTest() {
                 } else {
                     flowOf(null)
                 }
+            }
+        }
+
+        sut = StoreCreationSummaryViewModel(
+            savedStateHandle = savedState,
+            createStore = createStore,
+            newStore = newStore
+        )
+    }
+
+    private fun createSutWithFullCreationStateBehavior(
+        expectedDomain: String,
+        expectedTitle: String
+    ) {
+        val creationStateFlow = MutableStateFlow<StoreCreationState>(StoreCreationState.Idle)
+
+        newStore = mock {
+            on { data } doReturn NewStore.NewStoreData(
+                domain = expectedDomain,
+                name = expectedTitle
+            )
+        }
+
+        createStore = mock {
+            on { state } doReturn creationStateFlow
+
+            onBlocking {
+                invoke(newStore.data.domain, newStore.data.name)
+            } doAnswer {
+                creationStateFlow.value = StoreCreationState.Idle
+                creationStateFlow.value = StoreCreationState.Loading
+                creationStateFlow.value = StoreCreationState.Finished
+                flowOf(123)
             }
         }
 
