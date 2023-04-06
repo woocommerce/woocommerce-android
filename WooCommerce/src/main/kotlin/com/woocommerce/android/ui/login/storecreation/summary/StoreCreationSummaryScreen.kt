@@ -1,11 +1,14 @@
 package com.woocommerce.android.ui.login.storecreation.summary
 
 import android.content.res.Configuration
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -102,38 +105,45 @@ private fun SummaryBody(modifier: Modifier) {
                 bottom = dimensionResource(id = R.dimen.major_100)
             )
         )
+
         SummaryFreeTrialFeatureList()
+
+        Icon(
+            painter = painterResource(id = R.drawable.ic_powered_by),
+            contentDescription = null,
+            tint = colorResource(id = R.color.color_on_surface_medium),
+        )
     }
 }
 
 @Composable
 private fun SummaryFreeTrialFeatureList() {
     Column {
-        FeatureRow(iconResourceId = R.drawable.ic_star, stringResourceId = R.string.free_trial_feature_premium_themes)
-        FeatureRow(iconResourceId = R.drawable.ic_box, stringResourceId = R.string.free_trial_feature_unlimited_products)
-        FeatureRow(iconResourceId = R.drawable.ic_truck, stringResourceId = R.string.free_trial_feature_shipping_labels)
-        FeatureRow(iconResourceId = R.drawable.ic_chart, stringResourceId = R.string.free_trial_feature_ecommerce_reports)
-        FeatureRow(iconResourceId = R.drawable.ic_dollar, stringResourceId = R.string.free_trial_feature_multiple_payment_options)
-        FeatureRow(iconResourceId = R.drawable.ic_gift, stringResourceId = R.string.free_trial_feature_subscription_product_kits)
-        FeatureRow(iconResourceId = R.drawable.ic_megaphone, stringResourceId = R.string.free_trial_feature_social_advertising)
-        FeatureRow(iconResourceId = R.drawable.ic_letter, stringResourceId = R.string.free_trial_feature_email_marketing)
-        FeatureRow(iconResourceId = R.drawable.ic_two_persons, stringResourceId = R.string.free_trial_feature_247_support)
-        FeatureRow(iconResourceId = R.drawable.ic_update_clock, stringResourceId = R.string.free_trial_feature_auto_updates_backups)
-        FeatureRow(iconResourceId = R.drawable.ic_cloud, stringResourceId = R.string.free_trial_feature_site_security)
-        FeatureRow(iconResourceId = R.drawable.ic_globe_2, stringResourceId = R.string.free_trial_feature_fast_to_launch)
+        FeatureRow(iconId = R.drawable.ic_star, stringId = R.string.free_trial_feature_premium_themes)
+        FeatureRow(iconId = R.drawable.ic_box, stringId = R.string.free_trial_feature_unlimited_products)
+        FeatureRow(iconId = R.drawable.ic_truck, stringId = R.string.free_trial_feature_shipping_labels)
+        FeatureRow(iconId = R.drawable.ic_chart, stringId = R.string.free_trial_feature_ecommerce_reports)
+        FeatureRow(iconId = R.drawable.ic_dollar, stringId = R.string.free_trial_feature_multiple_payment_options)
+        FeatureRow(iconId = R.drawable.ic_gift, stringId = R.string.free_trial_feature_subscription_product_kits)
+        FeatureRow(iconId = R.drawable.ic_megaphone, stringId = R.string.free_trial_feature_social_advertising)
+        FeatureRow(iconId = R.drawable.ic_letter, stringId = R.string.free_trial_feature_email_marketing)
+        FeatureRow(iconId = R.drawable.ic_two_persons, stringId = R.string.free_trial_feature_247_support)
+        FeatureRow(iconId = R.drawable.ic_update_clock, stringId = R.string.free_trial_feature_auto_updates_backups)
+        FeatureRow(iconId = R.drawable.ic_cloud, stringId = R.string.free_trial_feature_site_security)
+        FeatureRow(iconId = R.drawable.ic_globe_2, stringId = R.string.free_trial_feature_fast_to_launch)
     }
 }
 
 @Composable
 private fun FeatureRow(
-    iconResourceId: Int,
-    stringResourceId: Int
+    iconId: Int,
+    stringId: Int
 ) {
     Row(modifier = Modifier
         .padding(bottom = dimensionResource(id = R.dimen.major_75))
     ) {
         Icon(
-            painter = painterResource(id = iconResourceId),
+            painter = painterResource(id = iconId),
             contentDescription = null,
             tint = colorResource(id = R.color.color_primary),
             modifier = Modifier
@@ -142,7 +152,7 @@ private fun FeatureRow(
                 .size(dimensionResource(id = R.dimen.major_150))
         )
         Text(
-            text = stringResource(id =stringResourceId),
+            text = stringResource(id =stringId),
             textAlign = TextAlign.Start,
             modifier = Modifier.align(Alignment.CenterVertically)
         )
