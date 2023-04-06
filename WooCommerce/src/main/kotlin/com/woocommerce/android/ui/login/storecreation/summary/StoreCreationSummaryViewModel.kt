@@ -11,10 +11,8 @@ class StoreCreationSummaryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
     fun onCancelPressed() { triggerEvent(OnCancelPressed) }
-    fun onHelpPressed() { triggerEvent(OnHelpPressed) }
     fun onTryForFreeButtonPressed() { triggerEvent(OnTryForFreeButtonPressed) }
 
     object OnCancelPressed : MultiLiveEvent.Event()
-    object OnHelpPressed : MultiLiveEvent.Event()
     object OnTryForFreeButtonPressed : MultiLiveEvent.Event()
 }

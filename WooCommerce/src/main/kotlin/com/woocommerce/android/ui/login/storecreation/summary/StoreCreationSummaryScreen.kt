@@ -31,7 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
@@ -39,7 +39,6 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 fun StoreCreationSummaryScreen(viewModel: StoreCreationSummaryViewModel) {
     StoreCreationSummaryScreen(
         onCancelPressed = viewModel::onCancelPressed,
-        onHelpPressed = viewModel::onHelpPressed,
         onTryForFreeButtonPressed = viewModel::onTryForFreeButtonPressed
     )
 }
@@ -47,14 +46,10 @@ fun StoreCreationSummaryScreen(viewModel: StoreCreationSummaryViewModel) {
 @Composable
 private fun StoreCreationSummaryScreen(
     onCancelPressed: () -> Unit,
-    onHelpPressed: () -> Unit,
     onTryForFreeButtonPressed: () -> Unit
 ) {
     Scaffold(topBar = {
-        ToolbarWithHelpButton(
-            onNavigationButtonClick = onCancelPressed,
-            onHelpButtonClick = onHelpPressed,
-        )
+        Toolbar(onNavigationButtonClick = onCancelPressed)
     }) {
         Column(
             modifier = Modifier
@@ -218,7 +213,6 @@ fun StoreCreationSummary() {
     WooThemeWithBackground {
         StoreCreationSummaryScreen(
             onCancelPressed = {},
-            onHelpPressed = {},
             onTryForFreeButtonPressed = {}
         )
     }
