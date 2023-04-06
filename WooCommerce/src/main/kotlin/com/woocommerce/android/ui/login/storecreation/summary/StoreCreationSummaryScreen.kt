@@ -57,9 +57,10 @@ private fun StoreCreationSummaryScreen(
                 .background(MaterialTheme.colors.surface)
                 .fillMaxSize()
         ) {
-            Box(modifier = Modifier
-                .verticalScroll(rememberScrollState())
-                .weight(5f)
+            Box(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .weight(5f)
             ) {
                 SummaryBody(
                     modifier = Modifier
