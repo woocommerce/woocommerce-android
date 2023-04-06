@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -52,25 +53,26 @@ class ProductSubscriptionFragment : BaseProductFragment(R.layout.fragment_produc
                 period
             )
         }
-        binding.expireValue.text = if (subscription.length != null) {
+        binding.expireValue.text = if (subscription.length != null && subscription.length > 0) {
             getString(R.string.subscription_period, subscription.length.toString(), period)
         } else {
             getString(R.string.subscription_never_expire)
         }
-        binding.feeValue.text = if (subscription.signUpFee != null) {
+        binding.feeValue.text = if (subscription.signUpFee != null && subscription.signUpFee > BigDecimal.ZERO) {
             currencyFormatter.formatCurrency(subscription.signUpFee, viewModel.currencyCode, true)
         } else {
             getString(R.string.subscription_no_sign_up_fee)
         }
-        binding.freeTrialValue.text = if (subscription.trialLength != null && subscription.trialPeriod != null) {
-            getString(
-                R.string.subscription_period,
-                subscription.trialLength.toString(),
-                subscription.trialPeriod.getPeriodString(requireContext(), subscription.trialLength)
-            )
-        } else {
-            getString(R.string.subscription_no_trial)
-        }
+        binding.freeTrialValue.text =
+            if (subscription.trialLength != null && subscription.trialPeriod != null && subscription.trialLength > 0) {
+                getString(
+                    R.string.subscription_period,
+                    subscription.trialLength.toString(),
+                    subscription.trialPeriod.getPeriodString(requireContext(), subscription.trialLength)
+                )
+            } else {
+                getString(R.string.subscription_no_trial)
+            }
     }
 
     override fun getFragmentTitle() = getString(R.string.product_subscription_title)

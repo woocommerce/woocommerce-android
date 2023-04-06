@@ -68,26 +68,26 @@ class OrderDetailSubscriptionListAdapter(private val currencyFormatter: Currency
 
             viewBinding.subscriptionStatusTag.tag = SubscriptionStatusTag(subscription.status)
             with(viewBinding.subscriptionTotal) {
+                val periodText = subscription.billingPeriod.getPeriodString(context, subscription.billingInterval)
+                val periodDescription = if (subscription.billingInterval > 1) {
+                    context.getString(
+                        R.string.subscription_period_interval_multiple,
+                        subscription.billingInterval,
+                        periodText
+                    )
+                } else {
+                    context.getString(R.string.subscription_period_interval_single, periodText)
+                }
+
                 text = context.getString(
                     R.string.subscription_total,
                     currencyFormatter.formatCurrency(
                         amount = subscription.total,
                         currencyCode = subscription.currency,
                         applyDecimalFormatting = true
-                    )
+                    ),
+                    periodDescription
                 )
-            }
-            with(viewBinding.subscriptionPeriod) {
-                val period = subscription.billingPeriod.getPeriodString(context, subscription.billingInterval)
-                text = if (subscription.billingInterval > 1) {
-                    context.getString(
-                        R.string.subscription_period_interval_multiple,
-                        subscription.billingInterval,
-                        period
-                    )
-                } else {
-                    context.getString(R.string.subscription_period_interval_single, period)
-                }
             }
         }
     }
