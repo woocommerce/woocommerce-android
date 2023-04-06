@@ -3220,6 +3220,28 @@
     <string name="free_trial_days_left_plural">%1$d days</string>
 
     <!--
+    Free trial Summary
+    -->
+    <string name="free_trial_summary_title">Launch in days, grow for years</string>
+    <string name="free_trial_summary_advertise">We offer everything you need to build and grow an online store, powered by WooCommerce and hosted on WordPress.com.</string>
+    <string name="free_trial_summary_try_it">Try it for 14 days.</string>
+    <string name="free_trial_summary_try_button">Try For Free</string>
+    <string name="free_trial_summary_credit_card_message">No credit card required.</string>
+    <string name="free_trial_feature_premium_themes">Premium themes</string>
+    <string name="free_trial_feature_unlimited_products">Unlimited products</string>
+    <string name="free_trial_feature_shipping_labels">Shipping labels</string>
+    <string name="free_trial_feature_ecommerce_reports">Ecommerce reports</string>
+    <string name="free_trial_feature_multiple_payment_options">Multiple payment options</string>
+    <string name="free_trial_feature_subscription_product_kits">Subscription &amp; product kits</string>
+    <string name="free_trial_feature_social_advertising">Social advertising</string>
+    <string name="free_trial_feature_email_marketing">Email marketing</string>
+    <string name="free_trial_feature_247_support">24/7 support</string>
+    <string name="free_trial_feature_auto_updates_backups">Auto updates &amp; backups</string>
+    <string name="free_trial_feature_site_security">Site security</string>
+    <string name="free_trial_feature_fast_to_launch">Fast to launch</string>
+
+
+    <!--
     Upgrades
     -->
     <string name="upgrades_report_subscription_issue">Report subscription issue</string>
