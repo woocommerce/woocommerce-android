@@ -22,6 +22,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -30,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -62,6 +65,15 @@ private fun StoreCreationSummaryScreen(
                     .verticalScroll(rememberScrollState())
                     .weight(5f)
             ) {
+                Image(
+                    painter = painterResource(id = R.drawable.free_trial_summary_illustration),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .offset(x = dimensionResource(id = R.dimen.major_150))
+                        .scale(scaleX = if (isSystemInRTL()) -1f else 1f, scaleY = 1f)
+                )
+
                 SummaryBody(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -70,13 +82,6 @@ private fun StoreCreationSummaryScreen(
                             top = dimensionResource(id = R.dimen.free_trial_summary_title_top_padding),
                             bottom = dimensionResource(id = R.dimen.major_75)
                         )
-                )
-                Image(
-                    painter = painterResource(id = R.drawable.free_trial_summary_illustration),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .offset(x = dimensionResource(id = R.dimen.major_150))
                 )
             }
             SummaryBottom(
@@ -206,9 +211,15 @@ private fun SummaryBottom(
     }
 }
 
+@Composable
+fun isSystemInRTL(): Boolean {
+    return LocalLayoutDirection.current == LayoutDirection.Rtl
+}
+
 @Preview(name = "Light mode", uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Preview(name = "Small device", device = Devices.PIXEL)
+@Preview(name = "RTL mode", locale = "ar")
 @Composable
 fun StoreCreationSummary() {
     WooThemeWithBackground {
