@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.payments.cardreader.hub
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,7 +14,6 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.FeatureFeedbackSettings
-import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.feedback.FeedbackRepository
@@ -26,13 +24,13 @@ import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.CASH_ON_DELIVERY
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToast
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToastString
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.GapBetweenSections
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.HeaderItem
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.NonToggleableListItem
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.ToggleableListItem
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.OnboardingErrorAction
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.GapBetweenSections
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.HeaderItem
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.NonToggleableListItem
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.ToggleableListItem
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.OnboardingErrorAction
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub.OpenInHub.NONE
@@ -463,68 +461,6 @@ class CardReaderHubViewModel @Inject constructor(
         data class OpenGenericWebView(val url: String) : CardReaderHubEvents()
         data class ShowToastString(val message: String) : CardReaderHubEvents()
         data class ShowToast(@StringRes val message: Int) : CardReaderHubEvents()
-    }
-
-    data class CardReaderHubViewState(
-        val rows: List<ListItem>,
-        val isLoading: Boolean,
-        val onboardingErrorAction: OnboardingErrorAction?,
-    ) {
-        sealed class ListItem {
-            abstract val label: UiString?
-            abstract val icon: Int?
-            abstract val onClick: (() -> Unit)?
-            abstract val index: Int
-            abstract var isEnabled: Boolean
-
-            data class NonToggleableListItem(
-                @DrawableRes override val icon: Int,
-                override val label: UiString,
-                val description: UiString? = null,
-                override var isEnabled: Boolean = true,
-                override val index: Int,
-                override val onClick: () -> Unit,
-                val shortDivider: Boolean = false,
-            ) : ListItem()
-
-            data class ToggleableListItem(
-                @DrawableRes override val icon: Int,
-                override val label: UiString,
-                val description: UiString,
-                override var isEnabled: Boolean = true,
-                val isChecked: Boolean,
-                override val index: Int,
-                override val onClick: (() -> Unit)? = null,
-                val onToggled: (Boolean) -> Unit,
-                val onLearnMoreClicked: () -> Unit
-            ) : ListItem()
-
-            data class HeaderItem(
-                @DrawableRes override val icon: Int? = null,
-                override val label: UiString,
-                override val index: Int,
-                override var isEnabled: Boolean = false,
-                override val onClick: (() -> Unit)? = null
-            ) : ListItem()
-
-            data class GapBetweenSections(
-                @DrawableRes override val icon: Int? = null,
-                override val label: UiString? = null,
-                override val index: Int,
-                override var isEnabled: Boolean = false,
-                override val onClick: (() -> Unit)? = null
-            ) : ListItem()
-        }
-
-        data class OnboardingErrorAction(
-            val text: UiString?,
-            val onClick: () -> Unit,
-        )
-
-        data class LearnMoreIppState(
-            val label: UiString,
-            val onClick: () -> Unit,
-        )
     }
 
     enum class CashOnDeliverySource {
