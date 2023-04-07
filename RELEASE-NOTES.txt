@@ -1,4 +1,8 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+13.2
+-----
+
+
 13.1
 -----
 - [internal] Users can now create a Free Trial store from the app from the Get Started section of the app prologue. [https://github.com/woocommerce/woocommerce-android/pull/8759]
