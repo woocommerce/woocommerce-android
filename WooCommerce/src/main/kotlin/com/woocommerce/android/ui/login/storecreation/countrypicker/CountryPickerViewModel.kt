@@ -1,15 +1,11 @@
 package com.woocommerce.android.ui.login.storecreation.countrypicker
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin
-import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore
-import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Failed
-import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Loading
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
 import com.woocommerce.android.util.EmojiUtils
@@ -18,8 +14,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -31,28 +25,18 @@ class CountryPickerViewModel @Inject constructor(
     analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val newStore: NewStore,
     private val localCountriesRepository: LocalCountriesRepository,
-    private val emojiUtils: EmojiUtils,
-    private val createStore: CreateFreeTrialStore,
+    private val emojiUtils: EmojiUtils
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val DEFAULT_LOCATION_CODE = "US"
     }
 
-    private val availableCountries = MutableStateFlow(emptyList<StoreCreationCountry>())
+    private val _availableCountries = MutableStateFlow(emptyList<StoreCreationCountry>())
+    val availableCountries = _availableCountries.asLiveData()
 
-    val countryPickerState: LiveData<CountryPickerState> = combine(
-        availableCountries,
-        createStore.state
-    ) { countries, createStoreState ->
-        when (createStoreState) {
-            is Failed -> CountryPickerState.Error(createStoreState.type)
-            else -> CountryPickerState.Contentful(
-                storeName = newStore.data.name ?: "",
-                countries = countries,
-                creatingStoreInProgress = createStoreState is Loading
-            )
-        }
-    }.asLiveData()
+    val storeName
+        get() = newStore.data.name.orEmpty()
+
 
     init {
         analyticsTrackerWrapper.track(
@@ -68,7 +52,7 @@ class CountryPickerViewModel @Inject constructor(
                 loadedCountriesMap.containsKey(Locale.getDefault().country) -> Locale.getDefault().country
                 else -> DEFAULT_LOCATION_CODE
             }
-            availableCountries.update {
+            _availableCountries.update {
                 loadedCountriesMap.map { (code, name) ->
                     StoreCreationCountry(
                         name = name,
@@ -79,7 +63,7 @@ class CountryPickerViewModel @Inject constructor(
                 }
             }
             newStore.update(
-                country = availableCountries.value.first { it.isSelected }
+                country = _availableCountries.value.first { it.isSelected }
                     .toNewStoreCountry()
             )
         }
@@ -103,24 +87,8 @@ class CountryPickerViewModel @Inject constructor(
         }
     }
 
-    /**
-     * We're currently not using this method anymore,
-     * but we need to keep it until we have a final decision on
-     * the store free trial creation flow steps.
-     */
-    @Suppress("UnusedPrivateMember")
-    private suspend fun startFreeTrialSiteCreation() {
-        createStore(
-            storeDomain = newStore.data.domain,
-            storeName = newStore.data.name,
-        ).filterNotNull().collect {
-            newStore.update(siteId = it)
-            triggerEvent(NavigateToSummaryStep)
-        }
-    }
-
     fun onCountrySelected(country: StoreCreationCountry) {
-        availableCountries.update { currentCountryList ->
+        _availableCountries.update { currentCountryList ->
             currentCountryList.map {
                 when (it.code) {
                     country.code -> it.copy(isSelected = true)
