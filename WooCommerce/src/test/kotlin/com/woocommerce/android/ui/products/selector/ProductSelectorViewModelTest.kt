@@ -540,7 +540,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val sut = createViewModel(navArgs)
             sut.onProductClick(
                 item = generateProductListItem(id = 0L),
-                productSourceForTracking = ProductSourceForTracking.RECENT
+                productSourceForTracking = ProductSourceForTracking.LAST_SOLD
             )
             sut.onProductClick(
                 item = generateProductListItem(id = 1L),
@@ -553,7 +553,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 mapOf(
                     KEY_PRODUCT_COUNT to 2,
                     KEY_PRODUCT_SELECTOR_SOURCE to listOf(
-                        ProductSourceForTracking.RECENT.name,
+                        ProductSourceForTracking.LAST_SOLD.name,
                         ProductSourceForTracking.POPULAR.name
                     ),
                     KEY_PRODUCT_SELECTOR_FILTER_STATUS to false,
@@ -576,7 +576,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val sut = createViewModel(navArgs)
             sut.onProductClick(
                 item = generateProductListItem(id = 0L),
-                productSourceForTracking = ProductSourceForTracking.RECENT
+                productSourceForTracking = ProductSourceForTracking.LAST_SOLD
             )
             sut.onProductClick(
                 item = generateProductListItem(id = 2L),
@@ -593,7 +593,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 mapOf(
                     KEY_PRODUCT_COUNT to 3,
                     KEY_PRODUCT_SELECTOR_SOURCE to listOf(
-                        ProductSourceForTracking.RECENT.name,
+                        ProductSourceForTracking.LAST_SOLD.name,
                         ProductSourceForTracking.ALPHABETICAL.name,
                         ProductSourceForTracking.POPULAR.name
                     ),
@@ -754,7 +754,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 VariationSelectorViewModel.VariationSelectionResult(
                     productId = 0L,
                     selectedVariationIds = setOf(1L),
-                    productSourceForTracking = ProductSourceForTracking.RECENT
+                    productSourceForTracking = ProductSourceForTracking.LAST_SOLD
                 )
             )
             sut.onDoneButtonClick()
@@ -764,7 +764,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 mapOf(
                     KEY_PRODUCT_COUNT to 1,
                     KEY_PRODUCT_SELECTOR_SOURCE to listOf(
-                        ProductSourceForTracking.RECENT.name
+                        ProductSourceForTracking.LAST_SOLD.name
                     ),
                     KEY_PRODUCT_SELECTOR_FILTER_STATUS to false,
                 )
@@ -863,7 +863,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 VariationSelectorViewModel.VariationSelectionResult(
                     productId = 0L,
                     selectedVariationIds = setOf(1L),
-                    productSourceForTracking = ProductSourceForTracking.FILTER
+                    productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
                 )
             )
             sut.onDoneButtonClick()
@@ -873,7 +873,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 mapOf(
                     KEY_PRODUCT_COUNT to 1,
                     KEY_PRODUCT_SELECTOR_SOURCE to listOf(
-                        ProductSourceForTracking.FILTER.name
+                        ProductSourceForTracking.ALPHABETICAL.name
                     ),
                     KEY_PRODUCT_SELECTOR_FILTER_STATUS to true,
                 )

@@ -530,8 +530,7 @@ val Collection<ProductSelectorViewModel.SelectedItem>.variationIds: List<Long>
     }
 enum class ProductSourceForTracking {
     POPULAR,
-    RECENT,
+    LAST_SOLD,
     ALPHABETICAL,
     SEARCH,
-    FILTER,
 }

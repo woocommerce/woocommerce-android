@@ -209,7 +209,7 @@ private fun displayProductsSection(
         ProductType.RECENT -> Triple(
             state.recentProducts,
             stringResource(id = string.product_selector_recent_products_heading),
-            ProductSourceForTracking.RECENT
+            ProductSourceForTracking.LAST_SOLD
         )
     }
     Column(
