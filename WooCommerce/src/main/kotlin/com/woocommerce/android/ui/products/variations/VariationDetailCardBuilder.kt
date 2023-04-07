@@ -35,11 +35,14 @@ import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewDescriptionEditor
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewInventory
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewPricing
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewProductQuantityRules
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewShipping
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewSubscription
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
+import org.wordpress.android.fluxc.utils.putIfNotNull
 
 class VariationDetailCardBuilder(
     private val viewModel: VariationDetailViewModel,
@@ -50,7 +53,7 @@ class VariationDetailCardBuilder(
     private lateinit var originalSku: String
     private var parentProduct: Product? = null
 
-    fun buildPropertyCards(
+    suspend fun buildPropertyCards(
         variation: ProductVariation,
         originalSku: String,
         parentProduct: Product?
@@ -65,20 +68,21 @@ class VariationDetailCardBuilder(
         return cards
     }
 
-    private fun getSecondaryCard(variation: ProductVariation): ProductPropertyCard {
+    private suspend fun getSecondaryCard(variation: ProductVariation): ProductPropertyCard {
         return when (variation) {
             is SubscriptionProductVariation -> getVariableSubscriptionSecondaryCards(variation)
             else -> getDefaultSecondaryCards(variation)
         }
     }
 
-    private fun getDefaultSecondaryCards(variation: ProductVariation): ProductPropertyCard {
+    private suspend fun getDefaultSecondaryCards(variation: ProductVariation): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
                 variation.price(),
                 variation.warning(),
                 variation.attributes(),
+                variation.quantityRules(),
                 variation.visibility(),
                 variation.inventory(),
                 variation.shipping()
@@ -86,13 +90,16 @@ class VariationDetailCardBuilder(
         )
     }
 
-    private fun getVariableSubscriptionSecondaryCards(variation: SubscriptionProductVariation): ProductPropertyCard {
+    private suspend fun getVariableSubscriptionSecondaryCards(
+        variation: SubscriptionProductVariation
+    ): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
                 variation.subscription(),
                 variation.warning(),
                 variation.attributes(),
+                variation.quantityRules(),
                 variation.visibility(),
                 variation.inventory(),
                 variation.shipping()
@@ -319,6 +326,25 @@ class VariationDetailCardBuilder(
         }
     }
 
+    private suspend fun ProductVariation.quantityRules(): ProductProperty? {
+        val rules = viewModel.getQuantityRules(this.remoteProductId, this.remoteVariationId) ?: return null
+
+        val properties = buildMap {
+            putIfNotNull(resources.getString(string.min_quantity) to rules.min?.toString())
+            putIfNotNull(resources.getString(string.max_quantity) to rules.max?.toString())
+        }
+
+        return PropertyGroup(
+            title = string.product_quantity_rules_title,
+            icon = drawable.ic_gridicons_product,
+            properties = properties,
+            showTitle = true,
+            onClick = {
+                viewModel.onEditVariationCardClicked(ViewProductQuantityRules(rules))
+            }
+        )
+    }
+
     private fun SubscriptionProductVariation.subscription(): ProductProperty? =
         this.subscriptionDetails?.let { subscription ->
 
@@ -352,7 +378,7 @@ class VariationDetailCardBuilder(
                 showTitle = true,
                 onClick = {
                     viewModel.onEditVariationCardClicked(
-                        VariationNavigationTarget.ViewSubscription(subscription),
+                        ViewSubscription(subscription),
                         AnalyticsEvent.PRODUCT_DETAILS_VIEW_SUBSCRIPTIONS_TAPPED
                     )
                 }

@@ -578,6 +578,9 @@
         <action
             android:id="@+id/action_variationDetailFragment_to_productSubscriptionFragment"
             app:destination="@id/productSubscriptionFragment" />
+        <action
+            android:id="@+id/action_variationDetailFragment_to_productQuantityRulesFragment"
+            app:destination="@id/productQuantityRulesFragment" />
     </fragment>
     <fragment
         android:id="@+id/productAddonsFragment"
