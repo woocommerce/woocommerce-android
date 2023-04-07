@@ -1,0 +1,2 @@
+13.0:
+Goda nyheter för de som använder WooCommerce prenumerationstillägg. Vi har lagt till stöd för skrivskydd för WooCommerce prenumerationstillägget på skärmarna med orderinformation och produktinformation. Fler funktioner kommer snart!
