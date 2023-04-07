@@ -53,7 +53,9 @@
             app:argType="string" />
         <action
             android:id="@+id/action_jetpackActivationEligibilityErrorFragment_to_jetpack_activation"
-            app:destination="@id/nav_graph_jetpack_activation">
+            app:destination="@id/nav_graph_jetpack_activation"
+            app:popUpTo="@id/jetpackActivationEligibilityErrorFragment"
+            app:popUpToInclusive="true">
             <argument
                 android:name="siteUrl"
                 app:argType="string" />
