@@ -32,7 +32,6 @@ import javax.inject.Inject
 class JetpackBenefitsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val selectedSite: SelectedSite,
-    private val fetchJetpackStatus: FetchJetpackStatus,
     private val userEligibilityFetcher: UserEligibilityFetcher,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val fetchJetpackStatus: FetchJetpackStatus,
@@ -152,10 +151,6 @@ class JetpackBenefitsViewModel @Inject constructor(
         )
     }
 
-    fun onDismiss() {
-        wpComAccessToken.set(null)
-        triggerEvent(Exit)
-    }
     private fun logSuccess(it: Pair<JetpackStatus, JetpackStatusFetchResponse>) {
         if (isAppPasswords) {
             analyticsTrackerWrapper.track(
@@ -182,6 +177,7 @@ class JetpackBenefitsViewModel @Inject constructor(
 
     fun onDismiss() {
         triggerEvent(Exit)
+        wpComAccessToken.set(null)
 
         if (isAppPasswords) {
             analyticsTrackerWrapper.track(

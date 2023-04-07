@@ -91,7 +91,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var dateUtils: DateUtils
     @Inject lateinit var usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter
-    @Inject lateinit var jitmClickHandler: JitmClickHandler
     @Inject lateinit var appPrefsWrapper: AppPrefsWrapper
 
     private var _binding: FragmentMyStoreBinding? = null
