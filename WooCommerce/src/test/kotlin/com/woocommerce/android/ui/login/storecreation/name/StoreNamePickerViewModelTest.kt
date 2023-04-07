@@ -6,7 +6,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin
-import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository.SiteCreationData
 import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.NavigateToSummary
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel
@@ -24,7 +23,6 @@ import org.mockito.kotlin.verify
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class StoreNamePickerViewModelTest : BaseUnitTest() {
     private lateinit var sut: StoreNamePickerViewModel
-    private lateinit var newStore: NewStore
     private lateinit var analyticsTracker: AnalyticsTrackerWrapper
     private lateinit var prefsWrapper: AppPrefsWrapper
     private val savedState = SavedStateHandle()
@@ -39,11 +37,10 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
     @Before
     fun setUp() {
         prefsWrapper = mock()
-        newStore = mock()
         analyticsTracker = mock()
         sut = StoreNamePickerViewModel(
             savedStateHandle = savedState,
-            newStore = newStore,
+            newStore = mock(),
             analyticsTrackerWrapper = analyticsTracker,
             prefsWrapper = prefsWrapper
         )
@@ -70,6 +67,14 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
         prefsWrapper = mock {
             on { getStoreCreationSource() } doReturn storeCreationSource
         }
+        analyticsTracker = mock()
+
+        sut = StoreNamePickerViewModel(
+            savedStateHandle = savedState,
+            newStore = mock(),
+            analyticsTrackerWrapper = analyticsTracker,
+            prefsWrapper = prefsWrapper
+        )
 
         var latestEvent: MultiLiveEvent.Event? = null
         sut.event.observeForever { latestEvent = it }
@@ -78,6 +83,13 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
         sut.onCancelPressed()
 
         // Then
+        verify(analyticsTracker).track(
+            AnalyticsEvent.SITE_CREATION_STEP,
+            mapOf(
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_NAME
+            )
+        )
+
         verify(analyticsTracker).track(
             AnalyticsEvent.SITE_CREATION_DISMISSED,
             mapOf(
