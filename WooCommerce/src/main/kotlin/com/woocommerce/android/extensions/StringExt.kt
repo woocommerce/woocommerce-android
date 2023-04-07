@@ -1,6 +1,7 @@
 package com.woocommerce.android.extensions
 
 import org.apache.commons.text.StringEscapeUtils
+import java.util.Locale
 
 /**
  * Checks if a given string is a Float
@@ -80,3 +81,9 @@ fun String.semverCompareTo(otherVersion: String): Int {
 fun String.orNullIfEmpty(): String? = this.ifEmpty { null }
 
 fun String?.isNotNullOrEmpty() = this.isNullOrEmpty().not()
+
+fun String.toCamelCase(delimiter: String = " "): String {
+    return split(delimiter).joinToString(delimiter) { word ->
+        word.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+    }
+}

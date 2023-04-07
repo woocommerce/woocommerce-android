@@ -5,6 +5,9 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_SETUP_LOGIN_FLOW
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
@@ -34,8 +37,14 @@ class JetpackActivationWPComPasswordViewModel @Inject constructor(
     jetpackAccountRepository: JetpackActivationRepository,
     private val wpComLoginRepository: WPComLoginRepository,
     private val accountRepository: AccountRepository,
-    private val resourceProvider: ResourceProvider
-) : JetpackActivationWPComPostLoginViewModel(savedStateHandle, selectedSite, jetpackAccountRepository) {
+    private val resourceProvider: ResourceProvider,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+) : JetpackActivationWPComPostLoginViewModel(
+    savedStateHandle,
+    selectedSite,
+    jetpackAccountRepository,
+    analyticsTrackerWrapper
+) {
     companion object {
         private const val RESET_PASSWORD_URL = "https://wordpress.com/wp-login.php?action=lostpassword"
     }
@@ -70,6 +79,14 @@ class JetpackActivationWPComPasswordViewModel @Inject constructor(
 
     fun onCloseClick() {
         triggerEvent(Exit)
+
+        analyticsTrackerWrapper.track(
+            JETPACK_SETUP_LOGIN_FLOW,
+            mapOf(
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_JETPACK_SETUP_STEP_PASSWORD,
+                AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_DISMISS
+            )
+        )
     }
 
     fun onMagicLinkClick() {
@@ -88,6 +105,14 @@ class JetpackActivationWPComPasswordViewModel @Inject constructor(
     }
 
     fun onContinueClick() = launch {
+        analyticsTrackerWrapper.track(
+            JETPACK_SETUP_LOGIN_FLOW,
+            mapOf(
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_JETPACK_SETUP_STEP_PASSWORD,
+                AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_SUBMIT
+            )
+        )
+
         isLoadingDialogShown.value = true
         wpComLoginRepository.login(navArgs.emailOrUsername, password.value).fold(
             onSuccess = {
@@ -110,6 +135,14 @@ class JetpackActivationWPComPasswordViewModel @Inject constructor(
                         triggerEvent(ShowSnackbar(R.string.error_generic))
                     }
                 }
+
+                analyticsTrackerWrapper.track(
+                    JETPACK_SETUP_LOGIN_FLOW,
+                    mapOf(
+                        AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_JETPACK_SETUP_STEP_PASSWORD,
+                        AnalyticsTracker.KEY_FAILURE to (failure?.type?.name ?: "Unknown error")
+                    )
+                )
             }
         )
         isLoadingDialogShown.value = false

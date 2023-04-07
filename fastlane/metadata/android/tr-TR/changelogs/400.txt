@@ -1,0 +1,2 @@
+13.0:
+WooCommerce Subscriptions uzantısını kullanan kişiler için harika bir haber. Sipariş detayı ve ürün detayı ekranlarına WooCommerce Subsciptions eklentisi için salt okunur destek ekledik. Yakında daha fazla özellik gelecek!

@@ -24,9 +24,6 @@ class AppPrefsWrapper @Inject constructor() {
         url: String
     ) = AppPrefs.setReceiptUrl(localSiteId, remoteSiteId, selfHostedSiteId, orderId, url)
 
-    fun isCardReaderOnboardingCompleted(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
-        AppPrefs.isCardReaderOnboardingCompleted(localSiteId, remoteSiteId, selfHostedSiteId)
-
     fun isCardReaderWelcomeDialogShown() = AppPrefs.isCardReaderWelcomeDialogShown()
 
     fun isCardReaderPluginExplicitlySelected(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
@@ -225,6 +222,12 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getCustomDomainsSource(): DomainFlowSource = enumValueOf(AppPrefs.getCustomDomainsSource())
     fun getCustomDomainsSourceAsString(): String = AppPrefs.getCustomDomainsSource().lowercase()
+
+    fun setJetpackInstallationIsFromBanner(isFromBanner: Boolean) {
+        AppPrefs.setJetpackInstallationIsFromBanner(isFromBanner)
+    }
+
+    fun getJetpackInstallationIsFromBanner() = AppPrefs.getJetpackInstallationIsFromBanner()
 
     /**
      * Card Reader Upsell

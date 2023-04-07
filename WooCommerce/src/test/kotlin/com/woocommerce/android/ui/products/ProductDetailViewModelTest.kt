@@ -249,7 +249,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 generateVariationCandidates,
                 mock(),
                 tracker,
-                selectedSite
+                selectedSite,
+                mock()
             )
         )
 

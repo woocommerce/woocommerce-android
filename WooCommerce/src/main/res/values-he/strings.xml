@@ -1,11 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-28 15:54:03+0000
+Translation-Revision-Date: 2023-04-04 15:54:21+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="subscription_free_trial">תקופת ניסיון בחינם</string>
+    <string name="subscription_sign_up_fee">להרשמה בחינם</string>
+    <string name="subscription_expire">פקיעת תוקף לאחר</string>
+    <string name="subscription_price">מחיר המינוי</string>
+    <string name="subscription_period_multiple_years">שנים</string>
+    <string name="subscription_period_multiple_months">חודשים</string>
+    <string name="subscription_period_multiple_weeks">שבועות</string>
+    <string name="subscription_period_multiple_days">ימים</string>
+    <string name="subscription_period_year">שנה</string>
+    <string name="subscription_period_month">חודש</string>
+    <string name="subscription_period_week">שבוע</string>
+    <string name="subscription_period_day">יום</string>
+    <string name="subscription_status_custom">התאמה אישית</string>
+    <string name="subscription_status_pending_cancellation">בהמתנה לביטול</string>
+    <string name="subscription_status_expired">פג תוקף</string>
+    <string name="subscription_status_cancelled">בוטלו</string>
+    <string name="subscription_status_on_hold">בהמתנה</string>
+    <string name="subscription_status_active">פעיל</string>
+    <string name="no_variable_subscription_warning">ניתן להוסיף מינויים עם סוגים דרך לוח הבקרה באתר האינטרנט בלבד.</string>
+    <string name="subscription_details_info_notice">ניתן לערוך את המינויים של המוצר בלוח הבקרה באינטרנט.</string>
+    <string name="subscription_no_trial">ללא תקופת ניסיון בחינם</string>
+    <string name="subscription_no_sign_up_fee">לאל דמי הרשמה</string>
+    <string name="subscription_never_expire">ללא פקיעת תוקף</string>
+    <string name="product_subscription_description">⁦%1$s⁩ כל ⁦%2$s⁩ %3$s</string>
+    <string name="subscription_period_interval_multiple">כל ⁦%1$d⁩ %2$s</string>
+    <string name="subscription_period_interval_single">כל ⁦%1$s⁩</string>
+    <string name="subscription_id">מינוי מספר ⁦%1$d⁩</string>
+    <string name="order_subscription">מינוי</string>
+    <string name="store_onboarding_launch_store_ok">אישור</string>
+    <string name="simplified_login_prologue_title">מהמכירה הראשונה עד מחזור רווחים של מיליונים, השירות של WooCommerce עומד לצדך. כדאי להתרשם למה סוחרים סומכים עלינו בהפעלת 3.4 מיליון חנויות מקוונות.</string>
+    <string name="simplified_login_prologue_intro">למכור כל דבר, בכל מקום.</string>
+    <string name="product_type_subscription">מינוי</string>
+    <string name="otp_incorrect">קוד ה-OTP שגוי. יש לבדוק את המידע שהזנת ולנסות שוב.</string>
+    <string name="requesting_sms_otp_failure">הבקשה של הודעת הטקסט (SMS) נכשלה. יש לנסות שוב.</string>
+    <string name="requesting_sms_otp_success">נשלחה בקשה להודעת טקסט (SMS), יש לבדוק את ההודעות שלך לקבלת הקוד.</string>
+    <string name="product_subscription_title">מינוי</string>
+    <string name="card_reader_type_selection_bluetooth_reader_description">בקורא הכרטיסים אפשר לשלם על ידי הצמדה, שבב והעברת הכרטיס באמצעות כרטיסי חיוב וכרטיסי אשראי.</string>
+    <string name="card_reader_type_selection_tap_to_pay_description">לקבל תשלומים ללא מגע באופן מאובטח ישירות מהטלפון.</string>
+    <string name="card_reader_tap_to_pay_beta_features_subheading">לנסות את Tap To Pay באפליקציה</string>
+    <string name="card_reader_tap_to_pay_beta_features_heading">Tap To Pay</string>
+    <string name="card_reader_tap_to_pay_description_not_used">להשתמש בטלפון שלך כדי לקבל תשלום\nבכרטיסי אשראי. כדאי לנסות עכשיו.</string>
+    <string name="card_reader_tap_to_pay_share_feedback">לשלוח משוב לגבי השירות של Tap To Pay</string>
+    <string name="login_site_credentials_web_authorization_connection_rejected">אין אפשרות להתחבר מאחר שיצירת הסיסמה באפליקציה לא אושרה.</string>
+    <string name="login_site_credentials_fetching_site">מביא אתרים…</string>
+    <string name="login_site_credentials_fetching_site_failed">אירעה שגיאה בהבאת האתר</string>
+    <string name="login_site_credentials_use_web_authorization">לנסות שוב עם העמוד \'ניהול WP\'</string>
+    <string name="login_store_address">התחברות</string>
+    <string name="loading">טוען…</string>
     <string name="upgrades_plan_ended_name">התוקף של %s הסתיים</string>
     <string name="upgrades_current_plan_ended_caption">המינוי שלך הסתיים ולכן הגישה שלך לכל האפשרויות הוגבלה.</string>
     <string name="free_trial_days_left_plural">⁦%1$d⁩ ימים</string>
@@ -30,7 +78,7 @@ Language: he_IL
     <string name="upgrades_upgrade_now">זה הזמן לשדרג</string>
     <string name="upgrades_report_subscription_issue">לדווח על בעיה במינוי</string>
     <string name="free_trial_upgrade_now">זה הזמן לשדרג</string>
-    <string name="free_trial_days_left">נותרו ⁦%1$s⁩ ימים בתקופת הניסיון שלך.</string>
+    <string name="free_trial_days_left">נותרו ⁦%1$s⁩ בתקופת הניסיון שלך.</string>
     <string name="free_trial_trial_ended">תקופת הניסיון הסתיימה</string>
     <string name="free_trial_your_trial_ended">תקופת הניסיון שלך הסתיימה.</string>
     <string name="store_onboarding_launch_store_generic_error_description">אופס, אירעו כמה שגיאות לא צפויות.</string>
@@ -100,7 +148,7 @@ Language: he_IL
     <string name="card_reader_tap_to_pay_explanation_ready">הטלפון שלך מוכן לשימוש באפשרות Tap to Pay.\nהלקוחות שלך יוכלו להצמיד את הכרטיס שלהם\nלטלפון שלך כדי לשלם.</string>
     <string name="card_reader_tap_to_pay_explanation_title">לקבל תשלומים באמצעות כרטיס אשראי\nדרך הטלפון שלך</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
-    <string name="card_reader_tap_to_pay_description">להשתמש בטלפון שלך כדי לקבל תשלומים באמצעות כרטיס אשראי</string>
+    <string name="card_reader_tap_to_pay_description_used">להשתמש בטלפון שלך כדי לקבל תשלומים באמצעות כרטיסים.</string>
     <string name="card_reader_tap_to_pay">Tap To Pay</string>
     <string name="card_reader_hub_actions_category_header">פעולות</string>
     <string name="domain_registration_generic_error">אירעה שגיאה במהלך ההרשמה של הדומיין</string>
@@ -350,7 +398,7 @@ Language: he_IL
     <string name="card_reader_connect_scanning_built_in_hint">הפעולה לא דורשת זמן רב</string>
     <string name="card_reader_connect_scanning_built_in_header">מכין את קורא הכרטיסים המובנה…</string>
     <string name="card_reader_payment_collect_payment_built_in_state">קורא הכרטיסים המובנה מוכן</string>
-    <string name="card_reader_type_selection_bluetooth_reader">קורא Bluetooth</string>
+    <string name="card_reader_type_selection_bluetooth_reader">קורא כרטיסים</string>
     <string name="card_reader_type_selection_tap_to_pay">יש להצמיד את הכרטיס לביצוע תשלום</string>
     <string name="analytics_conversion_subtitle">שיעור המרה</string>
     <string name="analytics_session_card_title">הפעלות</string>
@@ -489,7 +537,6 @@ Language: he_IL
     <string name="store_creation_create_new_store_label">ליצור חנות חדשה</string>
     <string name="or_use_password_below_qr_code_scan_option">לחלופין, ניתן להתחבר באמצעות סיסמה</string>
     <string name="or_scan_qr_code_to_log_in">יש לסרוק את קוד ה-QR כדי להתחבר</string>
-    <string name="simplified_login_prologue_title">הפלטפורמה של WooCommerce היא פלטפורמה עם קוד פתוח למסחר אלקטרוני שניתנת להתאמה אישית ואשר נבנתה על WordPress.</string>
     <string name="simulated_reader_toast">הסימולציה של קורא הכרטיסים הושבתה</string>
     <string name="simulated_reader_key">סימולציה של מפתח הקורא</string>
     <string name="variations_bulk_update_stock_quantity_success">הכמות במלאי מעודכנת</string>
@@ -1735,7 +1782,6 @@ Language: he_IL
     <string name="login_jetpack_required_text">כדי להשתמש באפליקציה זו עבור ⁦%1$s⁩ עליך לחבר את התוסף של Jetpack לחנות שלך.</string>
     <string name="login_try_another_account">להתחברות באמצעות חשבון אחר</string>
     <string name="login_pick_store">יש לבחור חנות שאליה ברצונך להתחבר</string>
-    <string name="login_store_address">יש להזין את כתובת החנות</string>
     <string name="login_wpcom">להמשיך עם WordPress.com</string>
     <string name="product_type_variable_desc">מוצר עם סוגים כגון צבע או מידה</string>
     <string name="product_selection_count_single">%d המוצר נבחר</string>

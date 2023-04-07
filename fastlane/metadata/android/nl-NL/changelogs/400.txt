@@ -1,0 +1,2 @@
+13.0:
+Geweldig nieuws voor de mensen die de WooCommerce Subscriptions-extensie gebruiken. We hebben read-only ondersteuning voor de WooCommerce Subscriptions-extensie toegevoegd aan de schermen bestellingsgegevens en de productgegevens. Binnenkort nog meer functies!

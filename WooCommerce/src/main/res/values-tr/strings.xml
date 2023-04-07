@@ -1,11 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-29 09:54:21+0000
+Translation-Revision-Date: 2023-04-04 17:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="subscription_free_trial">Ücretsiz Deneme</string>
+    <string name="subscription_sign_up_fee">Kayıt ücreti</string>
+    <string name="subscription_expire">Şundan sonra sona erdir:</string>
+    <string name="subscription_price">Abonelik ücreti</string>
+    <string name="subscription_period_multiple_years">yıl</string>
+    <string name="subscription_period_multiple_months">ay</string>
+    <string name="subscription_period_multiple_weeks">hafta</string>
+    <string name="subscription_period_multiple_days">gün</string>
+    <string name="subscription_period_year">yıl</string>
+    <string name="subscription_period_month">ay</string>
+    <string name="subscription_period_week">hafta</string>
+    <string name="subscription_period_day">gün</string>
+    <string name="subscription_status_custom">Özel</string>
+    <string name="subscription_status_pending_cancellation">İptal İşlemi Bekleniyor</string>
+    <string name="subscription_status_expired">Süresi dolmuş</string>
+    <string name="subscription_status_cancelled">İptal edildi</string>
+    <string name="subscription_status_on_hold">Beklemede</string>
+    <string name="subscription_status_active">Aktif</string>
+    <string name="no_variable_subscription_warning">Web panosunda yalnızca değişken abonelikler ekleyebilirsiniz.</string>
+    <string name="subscription_details_info_notice">Ürün aboneliklerini web panosunda düzenleyebilirsiniz.</string>
+    <string name="subscription_no_trial">Deneme sürümü süresi yok</string>
+    <string name="subscription_no_sign_up_fee">Kayıt ücreti yok</string>
+    <string name="subscription_never_expire">Asla sona ermez</string>
+    <string name="product_subscription_description">%1$s her %2$s %3$s</string>
+    <string name="subscription_period_interval_multiple">Her %1$d %2$s</string>
+    <string name="subscription_period_interval_single">Her %1$s</string>
+    <string name="subscription_id"># aboneliği%1$d</string>
+    <string name="order_subscription">Abonelik</string>
+    <string name="store_onboarding_launch_store_ok">Tamam</string>
+    <string name="simplified_login_prologue_title">İlk satışınızdan milyonlarca gelire kadar Woo yanınızda. Satıcıların neden 3,4 milyon çevrimiçi mağazayı desteklemek için bize güvendiğini öğrenin.</string>
+    <string name="simplified_login_prologue_intro">İstediğiniz yerde istediğinizi satın.</string>
+    <string name="product_type_subscription">Abonelik</string>
+    <string name="otp_incorrect">OTP kodu yanlış. Lütfen bilgilerinizi tekrar kontrol edip yeniden deneyin.</string>
+    <string name="requesting_sms_otp_failure">SMS talebi başarısız oldu. Lütfen tekrar deneyin.</string>
+    <string name="requesting_sms_otp_success">SMS talep edildi, lütfen kod için mesajlarınıza bakın.</string>
+    <string name="product_subscription_title">Abonelik</string>
+    <string name="card_reader_type_selection_bluetooth_reader_description">Kart okuyucu, banka ve kredi kartlarıyla dokunarak, çiple ve kaydırarak yapılan ödemeleri kabul eder.</string>
+    <string name="card_reader_type_selection_tap_to_pay_description">Temassız ödemeleri doğrudan telefonunuzdan güvenli bir şekilde alın.</string>
+    <string name="card_reader_tap_to_pay_beta_features_subheading">Uygulamada Tap to Pay\'i test edin</string>
+    <string name="card_reader_tap_to_pay_beta_features_heading">Tap To Pay</string>
+    <string name="card_reader_tap_to_pay_description_not_used">Kart\nödemeleri almak için telefonunuzu kullanın. Şimdi deneyin.</string>
+    <string name="card_reader_tap_to_pay_share_feedback">Tap to Pay ile ilgili görüşlerinizi paylaşın</string>
+    <string name="login_site_credentials_web_authorization_connection_rejected">Uygulama şifresi oluşturma onaylanmadığından oturum açılamıyor.</string>
+    <string name="login_site_credentials_fetching_site">Site getiriliyor…</string>
+    <string name="login_site_credentials_fetching_site_failed">Web siteniz getirilirken bir hata oluştu.</string>
+    <string name="login_site_credentials_use_web_authorization">Pano sayfasıyla tekrar deneyin</string>
+    <string name="login_store_address">Oturum Aç</string>
+    <string name="loading">Yükleniyor…</string>
     <string name="upgrades_plan_ended_name">%s sona erdi</string>
     <string name="upgrades_current_plan_ended_caption">Aboneliğiniz sona erdi ve tüm özelliklere erişiminiz sınırlandırıldı.</string>
     <string name="free_trial_days_left_plural">%1$d gün</string>
@@ -30,7 +78,7 @@ Language: tr
     <string name="upgrades_upgrade_now">Hemen yükseltin</string>
     <string name="upgrades_report_subscription_issue">Abonelik sorunu bildir</string>
     <string name="free_trial_upgrade_now">Hemen Yükseltin</string>
-    <string name="free_trial_days_left">Deneme sürenizin %1$s günü kaldı.</string>
+    <string name="free_trial_days_left">Deneme sürenizde %1$s kaldı.</string>
     <string name="free_trial_trial_ended">Deneme süresi sonu</string>
     <string name="free_trial_your_trial_ended">Deneme süreniz sona erdi.</string>
     <string name="store_onboarding_launch_store_generic_error_description">Hay aksi, beklenmeyen bazı hatalar oluştu.</string>
@@ -100,7 +148,7 @@ Language: tr
     <string name="card_reader_tap_to_pay_explanation_ready">Telefonunuz Tap to Pay için hazır.\nMüşteriniz ödeme yapmak için\nkartını telefonunuza dokundurabilir.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Kart ödemelerini\ntelefonunuzla alın</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
-    <string name="card_reader_tap_to_pay_description">Kart ödemeleri almak için telefonunuzu kullanın</string>
+    <string name="card_reader_tap_to_pay_description_used">Kart ile ödeme almak için telefonunuzu kullanın.</string>
     <string name="card_reader_tap_to_pay">Tap To Pay</string>
     <string name="card_reader_hub_actions_category_header">EYLEMLER</string>
     <string name="domain_registration_generic_error">Alan adı kaydı sırasında bir hata oluştu</string>
@@ -350,7 +398,7 @@ Language: tr
     <string name="card_reader_connect_scanning_built_in_hint">Uzun sürmeyecek</string>
     <string name="card_reader_connect_scanning_built_in_header">Yerleşik okuyucu hazırlanıyor…</string>
     <string name="card_reader_payment_collect_payment_built_in_state">Yerleşik okuyucu hazır</string>
-    <string name="card_reader_type_selection_bluetooth_reader">Bluetooth Okuyucu</string>
+    <string name="card_reader_type_selection_bluetooth_reader">Kart Okuyucu</string>
     <string name="card_reader_type_selection_tap_to_pay">Ödemek İçin Dokunun</string>
     <string name="analytics_conversion_subtitle">Dönüşüm Oranı</string>
     <string name="analytics_session_card_title">Oturumlar</string>
@@ -489,7 +537,6 @@ Language: tr
     <string name="store_creation_create_new_store_label">Yeni bir mağaza oluştur</string>
     <string name="or_use_password_below_qr_code_scan_option">Veya şifre ile giriş yapın</string>
     <string name="or_scan_qr_code_to_log_in">Giriş yapmak için QR kodunu tarayın</string>
-    <string name="simplified_login_prologue_title">WooCommerce; WordPress için oluşturulmuş özelleştirilebilir, açık kaynaklı bir e-ticaret platformudur.</string>
     <string name="simulated_reader_toast">Simüle Kart Okuyucu devre dışı bırakıldı</string>
     <string name="simulated_reader_key">Simüle Okuyucu Anahtarı</string>
     <string name="variations_bulk_update_stock_quantity_success">Güncellenen stok miktarı</string>
@@ -1735,7 +1782,6 @@ Language: tr
     <string name="login_jetpack_required_text">Bu uygulamayı %1$s için kullanabilmek Jetpack eklentisinin mağazanıza bağlanmasını gerekir.</string>
     <string name="login_try_another_account">Başka bir hesapla giriş yap</string>
     <string name="login_pick_store">Bağlanmak için mağaza seçin</string>
-    <string name="login_store_address">Mağaza adresinizi girin</string>
     <string name="login_wpcom">WordPress.com ile devam et</string>
     <string name="product_type_variable_desc">Renk veya beden gibi çeşitleri olan bir ürün</string>
     <string name="product_selection_count_single">%d seçilen ürünler</string>

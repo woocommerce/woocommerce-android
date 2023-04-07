@@ -12,7 +12,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.model.UiString
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
@@ -20,8 +19,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
-import com.woocommerce.android.ui.jitm.JitmTracker
-import com.woocommerce.android.ui.jitm.QueryParamsEncoder
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.HasOrders
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.PluginNotActive
@@ -32,9 +29,7 @@ import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.Visito
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.VisitorsStatsSuccess
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
-import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -56,9 +51,6 @@ import org.apache.commons.text.StringEscapeUtils
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
-import org.wordpress.android.fluxc.store.JitmStore
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.util.FormatUtils
@@ -81,14 +73,9 @@ class MyStoreViewModel @Inject constructor(
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher,
-    private val jitmStore: JitmStore,
-    private val jitmTracker: JitmTracker,
-    private val myStoreUtmProvider: MyStoreUtmProvider,
-    private val queryParamsEncoder: QueryParamsEncoder,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
-        private const val JITM_MESSAGE_PATH = "woomobile:my_store:admin_notices"
         const val UTM_SOURCE = "my_store"
     }
 
@@ -102,9 +89,6 @@ class MyStoreViewModel @Inject constructor(
 
     private var _topPerformersState = MutableLiveData<TopPerformersState>()
     val topPerformersState: LiveData<TopPerformersState> = _topPerformersState
-
-    private val _bannerState: MutableLiveData<BannerState> = MutableLiveData()
-    val bannerState: LiveData<BannerState> = _bannerState
 
     private var _hasOrders = MutableLiveData<OrderState>()
     val hasOrders: LiveData<OrderState> = _hasOrders
@@ -127,7 +111,6 @@ class MyStoreViewModel @Inject constructor(
 
         _topPerformersState.value = TopPerformersState(isLoading = true)
 
-        fetchJitms()
         viewModelScope.launch {
             combine(
                 _activeStatsGranularity,
@@ -142,108 +125,6 @@ class MyStoreViewModel @Inject constructor(
             }
         }
         observeTopPerformerUpdates()
-    }
-
-    private fun fetchJitms() {
-        viewModelScope.launch {
-            val response = jitmStore.fetchJitmMessage(
-                selectedSite.get(),
-                JITM_MESSAGE_PATH,
-                queryParamsEncoder.getEncodedQueryParams(),
-            )
-            populateResultToUI(response)
-        }
-    }
-
-    private fun populateResultToUI(response: WooResult<Array<JITMApiResponse>>) {
-        if (response.isError) {
-            jitmTracker.trackJitmFetchFailure(UTM_SOURCE, response.error.type, response.error.message)
-            WooLog.e(WooLog.T.JITM, "Failed to fetch JITM for the message path $JITM_MESSAGE_PATH")
-            return
-        }
-
-        jitmTracker.trackJitmFetchSuccess(
-            UTM_SOURCE,
-            response.model?.getOrNull(0)?.id,
-            response.model?.size
-        )
-        response.model?.getOrNull(0)?.let { model: JITMApiResponse ->
-            jitmTracker.trackJitmDisplayed(
-                UTM_SOURCE,
-                model.id,
-                model.featureClass
-            )
-            _bannerState.value = BannerState.DisplayBannerState(
-                onPrimaryActionClicked = {
-                    onJitmCtaClicked(
-                        id = model.id,
-                        featureClass = model.featureClass,
-                        url = model.cta.link
-                    )
-                },
-                onDismissClicked = {
-                    onJitmDismissClicked(
-                        model.id,
-                        model.featureClass
-                    )
-                },
-                title = UiString.UiStringText(model.content.message),
-                description = UiString.UiStringText(model.content.description),
-                primaryActionLabel = UiString.UiStringText(model.cta.message),
-                chipLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
-            )
-        } ?: run {
-            _bannerState.value = BannerState.HideBannerState
-            WooLog.i(WooLog.T.JITM, "No JITM Campaign in progress")
-        }
-    }
-
-    private fun onJitmCtaClicked(
-        id: String,
-        featureClass: String,
-        url: String
-    ) {
-        jitmTracker.trackJitmCtaTapped(
-            UTM_SOURCE,
-            id,
-            featureClass
-        )
-        triggerEvent(
-            MyStoreEvent.OpenJITMAction(
-                myStoreUtmProvider.getUrlWithUtmParams(
-                    source = UTM_SOURCE,
-                    id = id,
-                    featureClass = featureClass,
-                    siteId = selectedSite.getIfExists()?.siteId,
-                    url = url
-                )
-            )
-        )
-    }
-
-    private fun onJitmDismissClicked(jitmId: String, featureClass: String) {
-        _bannerState.value = BannerState.HideBannerState
-        jitmTracker.trackJitmDismissTapped(UTM_SOURCE, jitmId, featureClass)
-        viewModelScope.launch {
-            jitmStore.dismissJitmMessage(selectedSite.get(), jitmId, featureClass).also { response ->
-                when {
-                    response.model != null && response.model!! -> {
-                        jitmTracker.trackJitmDismissSuccess(
-                            UTM_SOURCE,
-                            jitmId,
-                            featureClass
-                        )
-                    }
-                    else -> jitmTracker.trackJitmDismissFailure(
-                        UTM_SOURCE,
-                        jitmId,
-                        featureClass,
-                        response.error?.type,
-                        response.error?.message
-                    )
-                }
-            }
-        }
     }
 
     override fun onCleared() {
@@ -270,7 +151,6 @@ class MyStoreViewModel @Inject constructor(
     }
 
     fun onPullToRefresh() {
-        fetchJitms()
         usageTracksEventEmitter.interacted()
         analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
         resetForceRefresh()
@@ -523,7 +403,5 @@ class MyStoreViewModel @Inject constructor(
         ) : MyStoreEvent()
 
         data class OpenAnalytics(val analyticsPeriod: SelectionType) : MyStoreEvent()
-
-        data class OpenJITMAction(val url: String) : MyStoreEvent()
     }
 }

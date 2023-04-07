@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 
 object OrderCreateEditNavigator {
     fun navigate(fragment: Fragment, target: OrderCreateEditNavigationTarget) {
@@ -23,7 +24,8 @@ object OrderCreateEditNavigator {
             is SelectItems ->
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToProductSelectorFragment(
                     selectedItems = target.selectedItems.toTypedArray(),
-                    restrictions = target.restrictions.toTypedArray()
+                    restrictions = target.restrictions.toTypedArray(),
+                    productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation
                 )
             is EditFee ->
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationEditFeeFragment(

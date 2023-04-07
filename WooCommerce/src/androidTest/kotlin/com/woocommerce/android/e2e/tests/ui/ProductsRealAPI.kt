@@ -11,8 +11,8 @@ import com.woocommerce.android.e2e.helpers.useMockedAPI
 import com.woocommerce.android.e2e.helpers.util.ProductData
 import com.woocommerce.android.e2e.screens.TabNavComponent
 import com.woocommerce.android.e2e.screens.login.WelcomeScreen
-import com.woocommerce.android.e2e.screens.products.ProductFilterScreen
 import com.woocommerce.android.e2e.screens.products.ProductListScreen
+import com.woocommerce.android.e2e.screens.shared.FilterScreen
 import com.woocommerce.android.ui.login.LoginActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -69,8 +69,8 @@ class ProductsRealAPI : TestBase() {
         ProductListScreen()
             .leaveSearchMode()
 
-        ProductFilterScreen()
-            .leaveFilterScreen()
+        FilterScreen()
+            .leaveFilterScreenToProducts()
 
         WelcomeScreen
             .logoutIfNeeded(composeTestRule)

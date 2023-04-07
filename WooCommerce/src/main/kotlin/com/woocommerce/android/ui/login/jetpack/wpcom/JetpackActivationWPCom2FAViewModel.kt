@@ -5,6 +5,9 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_SETUP_LOGIN_FLOW
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.WPComLoginRepository
@@ -29,8 +32,14 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
     selectedSite: SelectedSite,
     jetpackAccountRepository: JetpackActivationRepository,
     private val wpComLoginRepository: WPComLoginRepository,
-    private val accountRepository: AccountRepository
-) : JetpackActivationWPComPostLoginViewModel(savedStateHandle, selectedSite, jetpackAccountRepository) {
+    private val accountRepository: AccountRepository,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+) : JetpackActivationWPComPostLoginViewModel(
+    savedStateHandle,
+    selectedSite,
+    jetpackAccountRepository,
+    analyticsTrackerWrapper
+) {
 
     private val navArgs: JetpackActivationWPCom2FAFragmentArgs by savedStateHandle.navArgs()
 
@@ -59,6 +68,14 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
 
     fun onCloseClick() {
         triggerEvent(Exit)
+
+        analyticsTrackerWrapper.track(
+            JETPACK_SETUP_LOGIN_FLOW,
+            mapOf(
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_JETPACK_SETUP_STEP_VERIFICATION_CODE,
+                AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_DISMISS
+            )
+        )
     }
 
     fun onSMSLinkClick() = launch {
@@ -78,6 +95,14 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
     }
 
     fun onContinueClick() = launch {
+        analyticsTrackerWrapper.track(
+            JETPACK_SETUP_LOGIN_FLOW,
+            mapOf(
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_JETPACK_SETUP_STEP_VERIFICATION_CODE,
+                AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_SUBMIT
+            )
+        )
+
         loadingMessage.value = R.string.logging_in
         wpComLoginRepository.submitTwoStepCode(
             emailOrUsername = navArgs.emailOrUsername,
@@ -97,6 +122,14 @@ class JetpackActivationWPCom2FAViewModel @Inject constructor(
                         triggerEvent(ShowSnackbar(R.string.error_generic))
                     }
                 }
+
+                analyticsTrackerWrapper.track(
+                    JETPACK_SETUP_LOGIN_FLOW,
+                    mapOf(
+                        AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_JETPACK_SETUP_STEP_VERIFICATION_CODE,
+                        AnalyticsTracker.KEY_TAP to (failure?.type?.name ?: "Unknown error")
+                    )
+                )
             }
         )
         loadingMessage.value = 0
