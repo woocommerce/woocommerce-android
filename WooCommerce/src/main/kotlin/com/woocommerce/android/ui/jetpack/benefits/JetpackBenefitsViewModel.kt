@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.jetpack.benefits
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_BENEFITS_LOGIN_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_INSTALL_BUTTON_TAPPED
@@ -35,7 +34,6 @@ class JetpackBenefitsViewModel @Inject constructor(
     private val fetchJetpackStatus: FetchJetpackStatus,
     private val userEligibilityFetcher: UserEligibilityFetcher,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val appPrefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
 
     private val _viewState = MutableStateFlow(
@@ -47,21 +45,21 @@ class JetpackBenefitsViewModel @Inject constructor(
     )
     val viewState = _viewState.asLiveData()
 
-    private val isFromBanner = appPrefsWrapper.getJetpackInstallationIsFromBanner()
+    private val isAppPasswords = selectedSite.connectionType == SiteConnectionType.ApplicationPasswords
 
     fun onInstallClick() = launch {
-        if (isFromBanner) {
-            AnalyticsTracker.track(stat = JETPACK_BENEFITS_LOGIN_BUTTON_TAPPED)
-        } else {
-            AnalyticsTracker.track(
-                stat = JETPACK_INSTALL_BUTTON_TAPPED,
-                properties = mapOf(AnalyticsTracker.KEY_JETPACK_INSTALLATION_SOURCE to "benefits_modal")
-            )
-        }
-
         when (selectedSite.connectionType) {
-            SiteConnectionType.JetpackConnectionPackage -> triggerEvent(StartJetpackActivationForJetpackCP)
+            SiteConnectionType.JetpackConnectionPackage -> {
+                AnalyticsTracker.track(
+                    stat = JETPACK_INSTALL_BUTTON_TAPPED,
+                    properties = mapOf(AnalyticsTracker.KEY_JETPACK_INSTALLATION_SOURCE to "benefits_modal")
+                )
+
+                triggerEvent(StartJetpackActivationForJetpackCP)
+            }
             SiteConnectionType.ApplicationPasswords -> {
+                AnalyticsTracker.track(stat = JETPACK_BENEFITS_LOGIN_BUTTON_TAPPED)
+
                 _viewState.update { it.copy(isLoadingDialogShown = true) }
 
                 val jetpackStatusResult = fetchJetpackStatus()
@@ -152,7 +150,7 @@ class JetpackBenefitsViewModel @Inject constructor(
     }
 
     private fun logSuccess(it: Pair<JetpackStatus, JetpackStatusFetchResponse>) {
-        if (isFromBanner) {
+        if (isAppPasswords) {
             analyticsTrackerWrapper.track(
                 stat = JETPACK_SETUP_CONNECTION_CHECK_COMPLETED,
                 properties = mapOf(
@@ -165,7 +163,7 @@ class JetpackBenefitsViewModel @Inject constructor(
     }
 
     private fun logError(message: String?) {
-        if (isFromBanner) {
+        if (isAppPasswords) {
             analyticsTrackerWrapper.track(
                 stat = JETPACK_SETUP_CONNECTION_CHECK_FAILED,
                 properties = mapOf(
@@ -178,7 +176,7 @@ class JetpackBenefitsViewModel @Inject constructor(
     fun onDismiss() {
         triggerEvent(Exit)
 
-        if (isFromBanner) {
+        if (isAppPasswords) {
             analyticsTrackerWrapper.track(
                 JETPACK_SETUP_LOGIN_FLOW,
                 mapOf(
