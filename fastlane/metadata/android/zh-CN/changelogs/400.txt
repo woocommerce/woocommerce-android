@@ -1,0 +1,2 @@
+13.0：
+对于使用 WooCommerce Subscriptions 扩展程序的用户来说，这是个好消息。 我们在订单详细信息和产品详细信息屏幕中添加了对 WooCommerce Subscipations 扩展程序的只读支持。 更多功能即将推出！

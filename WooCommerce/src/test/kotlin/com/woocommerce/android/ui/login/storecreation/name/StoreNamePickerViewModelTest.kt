@@ -11,7 +11,7 @@ import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.Store
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository.SiteCreationData
-import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.NavigateToStoreInstallation
+import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.NavigateToSummary
 import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.StoreNamePickerState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel
 import com.woocommerce.android.util.FeatureFlag
@@ -19,13 +19,12 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -47,16 +46,13 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
     @Before
     fun setUp() {
         prefsWrapper = mock()
-        createSutWith(expectedSiteCreationData)
+        createSut()
     }
 
     @Test
     fun `when onContinueClicked starts loading, then the state is updated to reflect it`() = testBlocking {
         // Given
-        createSutWith(
-            expectedSiteCreationData,
-            StoreCreationState.Loading
-        )
+        createSut(StoreCreationState.Loading)
 
         var latestState: StoreNamePickerState? = null
         sut.storePickerState.observeForever { latestState = it }
@@ -67,7 +63,7 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
 
         // Then
         verify(newStore).update(name = "Store name")
-        verify(createStore).invoke(
+        verify(createStore, never()).invoke(
             expectedSiteCreationData.domain,
             expectedSiteCreationData.title
         )
@@ -94,12 +90,12 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
 
         // Then
         verify(newStore).update(name = "Store name")
-        verify(newStore).update(siteId = 123)
-        verify(createStore).invoke(
+        verify(newStore, never()).update(siteId = 123)
+        verify(createStore, never()).invoke(
             expectedSiteCreationData.domain,
             expectedSiteCreationData.title
         )
-        assertThat(latestEvent).isEqualTo(NavigateToStoreInstallation)
+        assertThat(latestEvent).isEqualTo(NavigateToSummary)
         assertThat(latestState).isEqualTo(
             StoreNamePickerState.Contentful(
                 storeName = "Store name",
@@ -112,10 +108,7 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
     fun `when onContinueClicked happens and store creation fails, then error state is triggered`() = testBlocking {
         // Given
         val storeCreationErrorType = StoreCreationErrorType.FREE_TRIAL_ASSIGNMENT_FAILED
-        createSutWith(
-            expectedSiteCreationData,
-            StoreCreationState.Failed(storeCreationErrorType)
-        )
+        createSut(StoreCreationState.Failed(storeCreationErrorType))
 
         var latestEvent: MultiLiveEvent.Event? = null
         var latestState: StoreNamePickerState? = null
@@ -129,11 +122,11 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
 
         // Then
         verify(newStore).update(name = "Store name")
-        verify(createStore).invoke(
+        verify(createStore, never()).invoke(
             expectedSiteCreationData.domain,
             expectedSiteCreationData.title
         )
-        assertThat(latestEvent).isNull()
+        assertThat(latestEvent).isEqualTo(NavigateToSummary)
         assertThat(latestState).isEqualTo(StoreNamePickerState.Error(storeCreationErrorType))
     }
 
@@ -171,7 +164,7 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
         prefsWrapper = mock {
             on { getStoreCreationSource() } doReturn storeCreationSource
         }
-        createSutWith(expectedSiteCreationData)
+        createSut()
         var latestEvent: MultiLiveEvent.Event? = null
         sut.event.observeForever { latestEvent = it }
 
@@ -227,39 +220,15 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
         assertThat(latestEvent).isEqualTo(MultiLiveEvent.Event.NavigateToHelpScreen(HelpOrigin.STORE_CREATION))
     }
 
-    private fun createSutWith(
-        expectedSiteCreationData: SiteCreationData,
+    private fun createSut(
         expectedCreationState: StoreCreationState = StoreCreationState.Finished
     ) {
-        newStore = mock {
-            on { data } doReturn NewStore.NewStoreData(
-                domain = expectedSiteCreationData.domain,
-                name = expectedSiteCreationData.title
-            )
-        }
-
-        val creationStateFlow = MutableStateFlow<StoreCreationState>(StoreCreationState.Idle)
-
         createStore = mock {
-            on { state } doReturn creationStateFlow
-
-            onBlocking {
-                invoke(
-                    expectedSiteCreationData.domain,
-                    expectedSiteCreationData.title
-                )
-            } doAnswer {
-                creationStateFlow.value = expectedCreationState
-                if (expectedCreationState is StoreCreationState.Finished) {
-                    flowOf(123)
-                } else {
-                    flowOf(null)
-                }
-            }
+            on { state } doReturn MutableStateFlow(expectedCreationState)
         }
 
+        newStore = mock()
         analyticsTracker = mock()
-
         sut = StoreNamePickerViewModel(
             savedStateHandle = savedState,
             newStore = newStore,

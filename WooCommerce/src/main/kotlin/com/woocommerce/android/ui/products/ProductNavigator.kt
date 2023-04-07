@@ -369,6 +369,7 @@ class ProductNavigator @Inject constructor() {
                         target.productId,
                         target.selectedVariationIds.toLongArray(),
                         target.productSelectorFlow,
+                        target.productSourceForTracking,
                     )
                 )
             }

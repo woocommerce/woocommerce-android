@@ -66,6 +66,9 @@ class OrdersRealAPI : TestBase() {
 
     @After
     fun tearDown() {
+        OrderListScreen()
+            .leaveSearchMode()
+
         FilterScreen()
             .leaveFilterScreenToOrders()
 
@@ -100,6 +103,28 @@ class OrdersRealAPI : TestBase() {
             .tapFilters()
             .clearFilters()
             .tapShowOrders()
+            .assertOrderCard(order40)
+            .assertOrderCard(order41)
+            .assertOrdersCount(2)
+    }
+
+    @Test
+    fun e2eRealApiOrdersSearch() {
+        OrderListScreen()
+            // Make sure all orders are listed
+            .assertOrderCard(order40)
+            .assertOrderCard(order41)
+            .assertOrdersCount(2)
+            // Search by Customer Name (AKA Order Name)
+            .openSearchPane()
+            .enterSearchTerm(order40.customerName)
+            .assertOrderCard(order40)
+            .assertOrdersCount(1)
+            // Search for non-existing order
+            .enterAbsentSearchTerm("Absent Order")
+            .assertSearchResultsAbsent("Absent Order")
+            // Leave search and make sure all orders are listed
+            .leaveSearchMode()
             .assertOrderCard(order40)
             .assertOrderCard(order41)
             .assertOrdersCount(2)

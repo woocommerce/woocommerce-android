@@ -164,7 +164,7 @@ open class ProductVariation(
         } ?: attributes.filter { it.option != null }.joinToString(" - ") { o -> o.option!! }
     }
 
-    fun copy(
+    open fun copy(
         remoteProductId: Long = this.remoteProductId,
         remoteVariationId: Long = this.remoteVariationId,
         sku: String = this.sku,

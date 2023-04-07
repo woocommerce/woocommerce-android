@@ -223,6 +223,12 @@ class AppPrefsWrapper @Inject constructor() {
     fun getCustomDomainsSource(): DomainFlowSource = enumValueOf(AppPrefs.getCustomDomainsSource())
     fun getCustomDomainsSourceAsString(): String = AppPrefs.getCustomDomainsSource().lowercase()
 
+    fun setJetpackInstallationIsFromBanner(isFromBanner: Boolean) {
+        AppPrefs.setJetpackInstallationIsFromBanner(isFromBanner)
+    }
+
+    fun getJetpackInstallationIsFromBanner() = AppPrefs.getJetpackInstallationIsFromBanner()
+
     /**
      * Card Reader Upsell
      */
