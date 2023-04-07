@@ -49,7 +49,6 @@ class OrdersUITest : TestBase() {
 
     @Test
     fun e2eCreateOrderTest() {
-        val firstName = "Mira"
         val note = "Customer notes 123~"
         val status = "Processing"
         val ordersJSONArray = MocksReader().readOrderToArray()
@@ -57,6 +56,8 @@ class OrdersUITest : TestBase() {
         for (orderJSON in ordersJSONArray.iterator()) {
             val orderData = mapJSONToOrder(orderJSON)
 
+            // Note: we're not entering customer name due to
+            // https://github.com/woocommerce/woocommerce-android/issues/8724
             OrderListScreen()
                 .createFABTap()
                 .assertNewOrderScreen()
@@ -64,8 +65,6 @@ class OrdersUITest : TestBase() {
                 .addProductTap()
                 .assertProductsSelectorScreen(composeTestRule)
                 .selectProduct(composeTestRule, orderData.productName)
-                .clickAddCustomerDetails()
-                .addCustomerDetails(firstName)
                 .addCustomerNotes(note)
                 .addShipping()
                 .addFee()
