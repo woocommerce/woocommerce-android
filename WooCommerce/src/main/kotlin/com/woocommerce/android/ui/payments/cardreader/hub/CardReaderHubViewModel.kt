@@ -24,7 +24,6 @@ import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.CASH_ON_DELIVERY
-import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToast
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToastString
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem
@@ -94,11 +93,6 @@ class CardReaderHubViewModel @Inject constructor(
         )
     )
 
-    private val learnMoreIppState = CardReaderHubViewState.LearnMoreIppState(
-        label = UiStringRes(R.string.card_reader_connect_learn_more, containsHtml = true),
-        onClick = ::onLearnMoreIppClicked
-    )
-
     private val initialState
         get() = CardReaderHubViewState(
             rows = createHubListWhenSinglePluginInstalled(
@@ -107,7 +101,6 @@ class CardReaderHubViewModel @Inject constructor(
             ),
             isLoading = true,
             onboardingErrorAction = null,
-            learnMoreIppState = learnMoreIppState,
         )
     private val viewState = MutableLiveData(initialState)
 
@@ -270,7 +263,6 @@ class CardReaderHubViewModel @Inject constructor(
             },
             isLoading = false,
             onboardingErrorAction = null,
-            learnMoreIppState = learnMoreIppState,
         )
     }
 
@@ -290,18 +282,6 @@ class CardReaderHubViewModel @Inject constructor(
                 text = UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true),
                 onClick = { onOnboardingErrorClicked(state) }
             ),
-            learnMoreIppState = learnMoreIppState,
-        )
-    }
-
-    private fun onLearnMoreIppClicked() {
-        cardReaderTracker.trackIPPLearnMoreClicked(LEARN_MORE_SOURCE)
-        triggerEvent(
-            CardReaderHubEvents.OpenGenericWebView(
-                learnMoreUrlProvider.provideLearnMoreUrlFor(
-                    IN_PERSON_PAYMENTS
-                )
-            )
         )
     }
 
@@ -489,7 +469,6 @@ class CardReaderHubViewModel @Inject constructor(
         val rows: List<ListItem>,
         val isLoading: Boolean,
         val onboardingErrorAction: OnboardingErrorAction?,
-        val learnMoreIppState: LearnMoreIppState?,
     ) {
         sealed class ListItem {
             abstract val label: UiString?
@@ -556,7 +535,6 @@ class CardReaderHubViewModel @Inject constructor(
     companion object {
         const val UTM_CAMPAIGN = "payments_menu_item"
         const val UTM_SOURCE = "payments_menu"
-        const val LEARN_MORE_SOURCE = "payments_menu"
 
         private const val SHOW_FEEDBACK_AFTER_USAGE_DAYS = 30
     }
