@@ -22,7 +22,7 @@
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/price_title"
                     style="@style/Woo.Card.Title"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
                     android:text="@string/subscription_price" />
@@ -30,15 +30,22 @@
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/price_value"
                     style="@style/Woo.Card.Body"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:text="$50.00 every 3 months"
                     tools:visibility="visible" />
 
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginTop="@dimen/minor_100"
+                    android:layout_marginEnd="@dimen/major_100" />
+
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/expire_title"
                     style="@style/Woo.Card.Title"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
                     android:text="@string/subscription_expire" />
@@ -46,15 +53,22 @@
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/expire_value"
                     style="@style/Woo.Card.Body"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:text="Never expire"
                     tools:visibility="visible" />
 
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginTop="@dimen/minor_100"
+                    android:layout_marginEnd="@dimen/major_100" />
+
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/fee_title"
                     style="@style/Woo.Card.Title"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
                     android:text="@string/subscription_sign_up_fee" />
@@ -62,14 +76,22 @@
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/fee_value"
                     style="@style/Woo.Card.Body"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:text="No sign up fee"
                     tools:visibility="visible" />
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginTop="@dimen/minor_100"
+                    android:layout_marginEnd="@dimen/major_100" />
+
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/free_trial_title"
                     style="@style/Woo.Card.Title"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
                     android:text="@string/subscription_free_trial" />
@@ -77,7 +99,7 @@
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/free_trial_value"
                     style="@style/Woo.Card.Body"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:text="No trial period"
                     tools:visibility="visible" />

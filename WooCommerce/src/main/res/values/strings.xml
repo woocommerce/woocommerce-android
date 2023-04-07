@@ -3261,7 +3261,7 @@
     -->
     <string name="order_subscription">Subscription</string>
     <string name="subscription_id">Subscription #%1$d</string>
-    <string name="subscription_total" translatable="false">%1$s /</string>
+    <string name="subscription_total" translatable="false">%1$s /\n%2$s</string>
     <string name="subscription_period_interval_single">Every %1$s</string>
     <string name="subscription_period_interval_multiple">Every %1$d %2$s</string>
     <string name="subscription_end_date" translatable="false">&#160;- %1$s</string>

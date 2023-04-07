@@ -1,2 +1,0 @@
-12.9:
-Para este lançamento, nós nos concentramos em tornar sua experiência melhor ao gerenciar produtos. Além disso, agora é possível instalar o Jetpack do aplicativo se você quiser mais funcionalidades, como notificações em push e estatísticas de visitantes. Continue enviando seu feedback!
