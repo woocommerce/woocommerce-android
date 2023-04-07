@@ -8,7 +8,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin.STORE_CREATION
 import com.woocommerce.android.ui.login.storecreation.NewStore
-import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -77,17 +76,7 @@ class StoreNamePickerViewModel @Inject constructor(
 
     data class NavigateToDomainPicker(val domainInitialQuery: String) : MultiLiveEvent.Event()
 
-    object NavigateToStoreInstallation : MultiLiveEvent.Event()
-
     object NavigateToStoreProfiler : MultiLiveEvent.Event()
 
     object NavigateToSummary : MultiLiveEvent.Event()
-
-    sealed class StoreNamePickerState {
-        data class Contentful(
-            val storeName: String,
-            val isCreatingStore: Boolean
-        ) : StoreNamePickerState()
-        data class Error(val type: StoreCreationErrorType) : StoreNamePickerState()
-    }
 }
