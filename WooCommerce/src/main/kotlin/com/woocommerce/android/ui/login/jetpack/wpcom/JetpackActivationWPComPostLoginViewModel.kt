@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.login.jetpack.wpcom
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_SETUP_LOGIN_COMPLETED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.jetpack.GoToStore
@@ -13,10 +15,13 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 open class JetpackActivationWPComPostLoginViewModel(
     savedStateHandle: SavedStateHandle,
     private val selectedSite: SelectedSite,
-    private val jetpackActivationRepository: JetpackActivationRepository
+    private val jetpackActivationRepository: JetpackActivationRepository,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     @Suppress("ReturnCount")
     protected suspend fun onLoginSuccess(jetpackStatus: JetpackStatus): Result<Unit> {
+        analyticsTrackerWrapper.track(JETPACK_SETUP_LOGIN_COMPLETED)
+
         val siteUrl = selectedSite.get().url
         if (jetpackStatus.isJetpackConnected) {
             // Attempt returning the site from the DB if it exists, otherwise fetch it from API

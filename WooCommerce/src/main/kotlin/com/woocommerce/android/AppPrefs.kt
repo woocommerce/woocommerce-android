@@ -105,6 +105,7 @@ object AppPrefs {
         ENABLE_SIMULATED_INTERAC,
         CUSTOM_DOMAINS_SOURCE,
         IS_TAP_TO_PAY_BETA_ENABLED,
+        JETPACK_INSTALLATION_FROM_BANNER,
     }
 
     /**
@@ -858,6 +859,12 @@ object AppPrefs {
     }
 
     fun getCustomDomainsSource() = getString(DeletablePrefKey.CUSTOM_DOMAINS_SOURCE, AnalyticsTracker.VALUE_SETTINGS)
+
+    fun setJetpackInstallationIsFromBanner(isFromBanner: Boolean) {
+        setBoolean(DeletablePrefKey.JETPACK_INSTALLATION_FROM_BANNER, isFromBanner)
+    }
+
+    fun getJetpackInstallationIsFromBanner() = getBoolean(DeletablePrefKey.JETPACK_INSTALLATION_FROM_BANNER, false)
 
     private fun getActiveStatsGranularityFilterKey(currentSiteId: Int) =
         PrefKeyString("${DeletablePrefKey.ACTIVE_STATS_GRANULARITY}:$currentSiteId")

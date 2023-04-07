@@ -5,6 +5,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.OnChangedException
+import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_SETUP_LOGIN_FLOW
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.ui.login.WPComLoginRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -25,7 +28,8 @@ import javax.inject.Inject
 @HiltViewModel
 class JetpackActivationWPComEmailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val wpComLoginRepository: WPComLoginRepository
+    private val wpComLoginRepository: WPComLoginRepository,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: JetpackActivationWPComEmailFragmentArgs by savedStateHandle.navArgs()
 
@@ -50,6 +54,14 @@ class JetpackActivationWPComEmailViewModel @Inject constructor(
 
     fun onCloseClick() {
         triggerEvent(Exit)
+
+        analyticsTrackerWrapper.track(
+            JETPACK_SETUP_LOGIN_FLOW,
+            mapOf(
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_JETPACK_SETUP_STEP_EMAIL_ADDRESS,
+                AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_DISMISS
+            )
+        )
     }
 
     fun onContinueClick() = launch {
@@ -58,6 +70,14 @@ class JetpackActivationWPComEmailViewModel @Inject constructor(
             errorMessage.value = R.string.email_invalid
             return@launch
         }
+
+        analyticsTrackerWrapper.track(
+            JETPACK_SETUP_LOGIN_FLOW,
+            mapOf(
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_JETPACK_SETUP_STEP_EMAIL_ADDRESS,
+                AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_SUBMIT
+            )
+        )
 
         isLoadingDialogShown.value = true
         wpComLoginRepository.fetchAuthOptions(email).fold(
@@ -84,6 +104,14 @@ class JetpackActivationWPComEmailViewModel @Inject constructor(
                         triggerEvent(ShowSnackbar(R.string.error_generic))
                     }
                 }
+
+                analyticsTrackerWrapper.track(
+                    JETPACK_SETUP_LOGIN_FLOW,
+                    mapOf(
+                        AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_JETPACK_SETUP_STEP_EMAIL_ADDRESS,
+                        AnalyticsTracker.KEY_FAILURE to (failure?.type?.name ?: "Unknown error")
+                    )
+                )
             }
         )
         isLoadingDialogShown.value = false
