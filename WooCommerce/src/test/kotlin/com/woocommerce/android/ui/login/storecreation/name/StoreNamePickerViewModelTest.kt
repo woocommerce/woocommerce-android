@@ -6,9 +6,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin
-import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository.SiteCreationData
 import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.NavigateToSummary
-import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -26,13 +24,6 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
     private lateinit var analyticsTracker: AnalyticsTrackerWrapper
     private lateinit var prefsWrapper: AppPrefsWrapper
     private val savedState = SavedStateHandle()
-
-    private val expectedSiteCreationData = SiteCreationData(
-        siteDesign = PlansViewModel.NEW_SITE_THEME,
-        domain = "test domain",
-        title = "test title",
-        segmentId = null
-    )
 
     @Before
     fun setUp() {
