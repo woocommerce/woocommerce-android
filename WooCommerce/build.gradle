@@ -74,9 +74,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "13.0"
+            versionName "13.1-rc-1"
         }
-        versionCode 400
+        versionCode 401
 
         minSdkVersion gradle.ext.minSdkVersion
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
