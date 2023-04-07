@@ -1,3 +1,1 @@
-- [internal] Users can now create a Free Trial store from the app from the Get Started section of the app prologue. [https://github.com/woocommerce/woocommerce-android/pull/8759]
-- [**] Add Popular and Last sold sections to product selector screen [https://github.com/woocommerce/woocommerce-android/pull/8756]
-- [**] Jetpack activation now supported for merchants logging in with site credentials. [https://github.com/woocommerce/woocommerce-android/pull/8698]
+More love for In-Person Payments and orders this time around, including the option to select your most popular products when creating an order.
