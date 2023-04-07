@@ -1,11 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-28 11:54:03+0000
+Translation-Revision-Date: 2023-04-04 13:54:20+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="subscription_free_trial">تجربة مجانية</string>
+    <string name="subscription_sign_up_fee">رسوم التسجيل</string>
+    <string name="subscription_expire">تنتهي الصلاحية بعد</string>
+    <string name="subscription_price">سعر الاشتراك</string>
+    <string name="subscription_period_multiple_years">سنوات</string>
+    <string name="subscription_period_multiple_months">شهور</string>
+    <string name="subscription_period_multiple_weeks">أسابيع</string>
+    <string name="subscription_period_multiple_days">أيام</string>
+    <string name="subscription_period_year">سنة</string>
+    <string name="subscription_period_month">شهر</string>
+    <string name="subscription_period_week">أسبوع</string>
+    <string name="subscription_period_day">يوم</string>
+    <string name="subscription_status_custom">مخصص</string>
+    <string name="subscription_status_pending_cancellation">تعليق الإلغاء</string>
+    <string name="subscription_status_expired">منتهي الصلاحية</string>
+    <string name="subscription_status_cancelled">تم الإلغاء</string>
+    <string name="subscription_status_on_hold">موقوف</string>
+    <string name="subscription_status_active">نشط</string>
+    <string name="no_variable_subscription_warning">يمكن فقط إضافة اشتراكات متغيرة في لوحة تحكم الويب.</string>
+    <string name="subscription_details_info_notice">يمكنك تحرير اشتراكات المنتجات في لوحة تحكم الويب.</string>
+    <string name="subscription_no_trial">لا توجد فترة تشغيل تجريبي</string>
+    <string name="subscription_no_sign_up_fee">لا توجد رسوم تسجيل</string>
+    <string name="subscription_never_expire">عدم انتهاء الصلاحية</string>
+    <string name="product_subscription_description">⁦%1$s⁩ كل ⁦%2$s⁩ %3$s</string>
+    <string name="subscription_period_interval_multiple">كل ⁦%1$d⁩ %2$s</string>
+    <string name="subscription_period_interval_single">كل ⁦%1$s⁩</string>
+    <string name="subscription_id">رقم الاشتراك⁦%1$d⁩</string>
+    <string name="order_subscription">الاشتراك</string>
+    <string name="store_onboarding_launch_store_ok">موافق</string>
+    <string name="simplified_login_prologue_title">بدءًا من أول عملية بيع لك وصولاً إلى الملايين في الإيرادات، يكون Woo بجوارك. تعرّف على سبب ثقة التجار بنا لتشغيل 3.4 ملايين متجر على الإنترنت.</string>
+    <string name="simplified_login_prologue_intro">يمكنك بيع أي شيء في أي مكان.</string>
+    <string name="product_type_subscription">الاشتراك</string>
+    <string name="otp_incorrect">رمز OTP غير صالح. يرجى التحقق مجددًا من معلوماتك والمحاولة مرة أخرى.</string>
+    <string name="requesting_sms_otp_failure">فشل طلب الرسالة النصية القصيرة. ترجى المحاولة مجددًا.</string>
+    <string name="requesting_sms_otp_success">تم طلب رسالة نصية قصيرة، يرجى التحقق من الرسائل لديك لمعرفة الرمز.</string>
+    <string name="product_subscription_title">الاشتراك</string>
+    <string name="card_reader_type_selection_bluetooth_reader_description">يقبل قارئ البطاقات المدفوعات من خلال الضغط والرقائق والسحب باستخدام بطاقات الخصم والائتمان.</string>
+    <string name="card_reader_type_selection_tap_to_pay_description">اقبل مدفوعات لا حصر لها بأمان وبشكل مباشر من هاتفك.</string>
+    <string name="card_reader_tap_to_pay_beta_features_subheading">اختبار ميزة Tap To Pay في التطبيق</string>
+    <string name="card_reader_tap_to_pay_beta_features_heading">الضغط للدفع</string>
+    <string name="card_reader_tap_to_pay_description_not_used">استخدام هاتفك لقبول البطاقة\nالمدفوعات. جربها الآن.</string>
+    <string name="card_reader_tap_to_pay_share_feedback">مشاركة ملاحظات ميزة Tap To Pay</string>
+    <string name="login_site_credentials_web_authorization_connection_rejected">يتعذر تسجيل الدخول لأن إنشاء كلمة مرور التطبيق غير معتمد.</string>
+    <string name="login_site_credentials_fetching_site">جارٍ إحضار الموقع…</string>
+    <string name="login_site_credentials_fetching_site_failed">حدث خطأ في أثناء إحضار موقعك على الويب</string>
+    <string name="login_site_credentials_use_web_authorization">المحاولة مجددًا باستخدام صفحة مسؤول ووردبريس</string>
+    <string name="login_store_address">تسجيل الدخول</string>
+    <string name="loading">جاري التحميل…</string>
     <string name="upgrades_plan_ended_name">تم انتهاء %s</string>
     <string name="upgrades_current_plan_ended_caption">انتهى اشتراكك، وأصبح لديك وصول محدود إلى كل الميزات.</string>
     <string name="free_trial_days_left_plural">⁦%1$d⁩ من الأيام</string>
@@ -30,7 +78,7 @@ Language: ar
     <string name="upgrades_upgrade_now">قم بالترقية الآن</string>
     <string name="upgrades_report_subscription_issue">الإبلاغ بمشكلة في الاشتراك</string>
     <string name="free_trial_upgrade_now">قم بالترقية الآن</string>
-    <string name="free_trial_days_left">يتبقى ⁦%1$s⁩ من الأيام في الإصدار التجريبي لديك.</string>
+    <string name="free_trial_days_left">مازال %1$s⁩ أيام في إصدارك التجريبي.</string>
     <string name="free_trial_trial_ended">انتهى الإصدار التجريبي</string>
     <string name="free_trial_your_trial_ended">انتهى الإصدار التجريبي الخاص بك.</string>
     <string name="store_onboarding_launch_store_generic_error_description">عذرًا، حدثت بعض الأخطاء غير المتوقعة.</string>
@@ -100,7 +148,7 @@ Language: ar
     <string name="card_reader_tap_to_pay_explanation_ready">أصبح هاتفك جاهزًا لميزة Tap to Pay.\nيمكن لعميلك النقر على البطاقة\nعلى هاتفك للدفع.</string>
     <string name="card_reader_tap_to_pay_explanation_title">تحصيل المدفوعات بالبطاقة\nباستخدام هاتفك</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">الضغط للدفع</string>
-    <string name="card_reader_tap_to_pay_description">استخدام هاتفك لقبول المدفوعات بالبطاقة</string>
+    <string name="card_reader_tap_to_pay_description_used">استخدم هاتفك لقبول المدفوعات بالبطاقة.</string>
     <string name="card_reader_tap_to_pay">الضغط للدفع</string>
     <string name="card_reader_hub_actions_category_header">الإجراءات</string>
     <string name="domain_registration_generic_error">حدث خطأ في أثناء تسجيل النطاق</string>
@@ -489,7 +537,6 @@ Language: ar
     <string name="store_creation_create_new_store_label">إنشاء متجر جديد</string>
     <string name="or_use_password_below_qr_code_scan_option">أو تسجيل الدخول باستخدام كلمة المرور</string>
     <string name="or_scan_qr_code_to_log_in">مسح رمز الاستجابة السريعة ضوئيًا لتسجيل الدخول</string>
-    <string name="simplified_login_prologue_title">WooCommerce هو منصة تجارة إلكترونية قابلة للتخصيص ومفتوحة المصدر ومدمجة في ووردبريس.</string>
     <string name="simulated_reader_toast">تم تعطيل قارئ البطاقات المحاكي</string>
     <string name="simulated_reader_key">مفتاح القارئ المحاكي</string>
     <string name="variations_bulk_update_stock_quantity_success">كمية المخزون التي تم تحديثها</string>
@@ -1735,7 +1782,6 @@ Language: ar
     <string name="login_jetpack_required_text">لاستخدام هذا التطبيق مقابل ⁦%1$s⁩، ستحتاج إلى وجود إضافة Jetpack متصلة على متجرك.</string>
     <string name="login_try_another_account">تسجيل الدخول باستخدام حساب آخر</string>
     <string name="login_pick_store">تحديد متجر للاتصال به</string>
-    <string name="login_store_address">إدخال عنوان متجرك</string>
     <string name="login_wpcom">المتابعة باستخدام وردبرس.كوم</string>
     <string name="product_type_variable_desc">منتج يتضمن تباينات كاللون أو الحجم</string>
     <string name="product_selection_count_single">%d تم تحديد المنتج</string>
