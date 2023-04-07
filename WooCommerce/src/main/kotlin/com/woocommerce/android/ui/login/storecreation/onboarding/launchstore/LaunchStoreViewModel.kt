@@ -1,8 +1,14 @@
 package com.woocommerce.android.ui.login.storecreation.onboarding.launchstore
 
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.FREE_TRIAL_UPGRADE_NOW_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
@@ -27,12 +33,10 @@ class LaunchStoreViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val launchStoreOnboardingRepository: StoreOnboardingRepository,
     private val selectedSite: SelectedSite,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
     val userAgent: UserAgent
-) : ScopedViewModel(savedStateHandle) {
-    private companion object {
-        const val PLANS_URL = "https://wordpress.com/plans/"
-    }
+) : ScopedViewModel(savedStateHandle), DefaultLifecycleObserver {
 
     private val _viewState = MutableStateFlow(
         LaunchStoreState(
@@ -45,12 +49,24 @@ class LaunchStoreViewModel @Inject constructor(
     )
     val viewState = _viewState.asLiveData()
 
+    override fun onResume(owner: LifecycleOwner) {
+        _viewState.value = _viewState.value.copy(
+            isTrialPlan = selectedSite.get().isFreeTrial
+        )
+    }
+
     fun launchStore() {
         _viewState.value = _viewState.value.copy(isLoading = true)
         launch {
             val result = launchStoreOnboardingRepository.launchStore()
             when (result) {
-                Success -> _viewState.value = _viewState.value.copy(isStoreLaunched = true)
+                Success -> {
+                    analyticsTrackerWrapper.track(
+                        stat = AnalyticsEvent.STORE_ONBOARDING_TASK_COMPLETED,
+                        properties = mapOf(AnalyticsTracker.ONBOARDING_TASK_KEY to AnalyticsTracker.VALUE_LAUNCH_SITE)
+                    )
+                    _viewState.value = _viewState.value.copy(isStoreLaunched = true)
+                }
                 is Error -> {
                     when (result.type) {
                         ALREADY_LAUNCHED -> triggerEvent(
@@ -77,11 +93,11 @@ class LaunchStoreViewModel @Inject constructor(
     }
 
     fun onUpgradePlanBannerClicked() {
-        triggerEvent(
-            UpgradeToEcommercePlan(
-                url = PLANS_URL + selectedSite.get().siteId
-            )
+        analyticsTrackerWrapper.track(
+            FREE_TRIAL_UPGRADE_NOW_TAPPED,
+            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_BANNER)
         )
+        triggerEvent(UpgradeToEcommercePlan)
     }
 
     fun onBackPressed() {
@@ -102,6 +118,6 @@ class LaunchStoreViewModel @Inject constructor(
         val displayUrl: String
     )
 
-    data class UpgradeToEcommercePlan(val url: String) : MultiLiveEvent.Event()
+    object UpgradeToEcommercePlan : MultiLiveEvent.Event()
     data class ShareStoreUrl(val url: String) : MultiLiveEvent.Event()
 }

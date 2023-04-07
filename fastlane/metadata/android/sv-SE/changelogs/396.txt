@@ -1,2 +1,0 @@
-12.8:
-Den här versionen inkluderar en rad olika förbättringar av funktionen för beställningsskapande. Det är möjligt att välja flera produkter på en gång och söknings- och filtreringsalternativet har blivit snabbare. Vi har även korrigerat ett antal buggar och gjort flertalet förbättringar rörande tillgänglighet i sektionen Analys. Vi har lagt till den nya sektionen Uppgraderingar för WordPress.com-användare.

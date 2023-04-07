@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-21 09:54:04+0000
+Translation-Revision-Date: 2023-03-28 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="upgrades_plan_ended_name">%s 已結束</string>
+    <string name="upgrades_current_plan_ended_caption">你的訂閱已結束，存取所有功能時皆會受到限制。</string>
+    <string name="free_trial_days_left_plural">%1$d 天</string>
+    <string name="free_trial_one_day_left">1 天</string>
+    <string name="store_onboarding_get_paid_loading_label">載入中…</string>
+    <string name="store_onboarding_get_paid_title">付款設定</string>
+    <string name="store_onboarding_task_about_your_store_toolbar_title">關於你的商店</string>
+    <string name="store_creation_installation_rendering_preview_label">正在轉譯預覽…</string>
+    <string name="jetpack_benefits_open_wpadmin">開啟儀表板</string>
+    <string name="shipping_label_address_phone_required">請輸入電話號碼</string>
+    <string name="analytics_list_item_products_sold">%1$s、%2$s、%3$s、%4$s 皆已售出</string>
+    <string name="analytics_items">項目</string>
+    <string name="analytics_item">商品</string>
     <string name="upgrades_error_fetching_data">擷取計畫詳細資料時發生錯誤</string>
     <string name="upgrades_non_upgradeable_caption">你是第 %1$s 名訂閱者！ 你可存取我們的所有功能，直到 %2$s 為止。 </string>
     <string name="upgrades_trial_ended_caption">你的免費試用已結束，且對於功能的存取受限。 歡迎立即訂閱 %1$s。</string>
+    <string name="upgrades_upgradeable_caption">目前你正處於為期 %1$d 天的免費試用期。 免費試用期將於 %2$s後結束。 升級即可解鎖新功能，讓你的商店持續順利運作。</string>
     <string name="upgrades_subscription_status">訂購項目狀態</string>
     <string name="upgrades_title">升級</string>
     <string name="upgrades_troubleshooting">疑難排解</string>
@@ -1335,7 +1349,6 @@ Language: zh_TW
     <string name="card_reader_payment_fetch_order_loading_header">正在更新應用程式狀態</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">顧客已選取 %1$s</string>
     <string name="shipping_label_origin_address_phone_invalid">海關表格要求填寫 10 位數電話號碼</string>
-    <string name="shipping_label_address_phone_required">必須提供電話號碼，因為此貨件需要提交海關表格</string>
     <string name="shipping_label_create_customs_done">已填妥海關表格</string>
     <string name="print_receipt_label_info_step_7">如果從裝置列印時遇到問題，請聯絡印表機的客服人員。</string>
     <string name="print_receipt_label_info_step_6">如果無法列印，你可以將收據另存為 PDF，然後透過電子郵件傳送到其他裝置列印。</string>

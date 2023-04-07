@@ -3,6 +3,7 @@ package com.woocommerce.android
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
+import com.woocommerce.android.ui.prefs.domain.DomainFlowSource
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -22,9 +23,6 @@ class AppPrefsWrapper @Inject constructor() {
         orderId: Long,
         url: String
     ) = AppPrefs.setReceiptUrl(localSiteId, remoteSiteId, selfHostedSiteId, orderId, url)
-
-    fun isCardReaderOnboardingCompleted(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
-        AppPrefs.isCardReaderOnboardingCompleted(localSiteId, remoteSiteId, selfHostedSiteId)
 
     fun isCardReaderWelcomeDialogShown() = AppPrefs.isCardReaderWelcomeDialogShown()
 
@@ -218,11 +216,12 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getStoreCreationSource() = AppPrefs.getStoreCreationSource()
 
-    fun setCustomDomainsSource(source: String) {
-        AppPrefs.setCustomDomainsSource(source)
+    fun setCustomDomainsSource(source: DomainFlowSource) {
+        AppPrefs.setCustomDomainsSource(source.name)
     }
 
-    fun getCustomDomainsSource() = AppPrefs.getCustomDomainsSource()
+    fun getCustomDomainsSource(): DomainFlowSource = enumValueOf(AppPrefs.getCustomDomainsSource())
+    fun getCustomDomainsSourceAsString(): String = AppPrefs.getCustomDomainsSource().lowercase()
 
     fun setJetpackInstallationIsFromBanner(isFromBanner: Boolean) {
         AppPrefs.setJetpackInstallationIsFromBanner(isFromBanner)

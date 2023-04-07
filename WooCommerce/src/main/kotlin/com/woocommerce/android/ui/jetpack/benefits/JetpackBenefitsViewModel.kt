@@ -25,6 +25,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,6 +35,8 @@ class JetpackBenefitsViewModel @Inject constructor(
     private val fetchJetpackStatus: FetchJetpackStatus,
     private val userEligibilityFetcher: UserEligibilityFetcher,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val fetchJetpackStatus: FetchJetpackStatus,
+    private val wpComAccessToken: AccessToken
 ) : ScopedViewModel(savedStateHandle) {
 
     private val _viewState = MutableStateFlow(
@@ -149,6 +152,10 @@ class JetpackBenefitsViewModel @Inject constructor(
         )
     }
 
+    fun onDismiss() {
+        wpComAccessToken.set(null)
+        triggerEvent(Exit)
+    }
     private fun logSuccess(it: Pair<JetpackStatus, JetpackStatusFetchResponse>) {
         if (isAppPasswords) {
             analyticsTrackerWrapper.track(

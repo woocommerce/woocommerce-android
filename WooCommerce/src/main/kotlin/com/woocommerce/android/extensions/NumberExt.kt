@@ -33,4 +33,8 @@ infix fun <T> Comparable<T>?.greaterThan(other: T) =
     this?.let { it > other }
         ?: false
 
+infix fun <T> Comparable<T>?.lesserThan(other: T) =
+    this?.let { it < other }
+        ?: false
+
 const val PERCENTAGE_BASE = 100.0

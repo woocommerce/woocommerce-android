@@ -6,6 +6,9 @@ import com.woocommerce.android.model.SubscriptionDetails
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
+import com.woocommerce.android.ui.products.models.QuantityRules
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow
+import com.woocommerce.android.ui.products.selector.ProductSourceForTracking
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -20,6 +23,7 @@ sealed class ProductNavigationTarget : Event() {
     data class ShareProduct(val url: String, val title: String) : ProductNavigationTarget()
     data class ViewProductVariations(
         val remoteId: Long,
+        val productSelectorFlow: ProductSelectorFlow = ProductSelectorFlow.Undefined,
         val isReadOnlyMode: Boolean = false
     ) : ProductNavigationTarget()
 
@@ -78,7 +82,7 @@ sealed class ProductNavigationTarget : Event() {
     ) : ProductNavigationTarget()
 
     data class ViewProductReviews(val remoteId: Long) : ProductNavigationTarget()
-    object ViewProductAdd : ProductNavigationTarget()
+    data class ViewProductAdd(val source: AddProductSource) : ProductNavigationTarget()
     data class ViewGroupedProducts(val remoteId: Long, val groupedProductIds: List<Long>) : ProductNavigationTarget()
     data class ViewLinkedProducts(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductSelectionList(
@@ -113,7 +117,9 @@ sealed class ProductNavigationTarget : Event() {
 
     data class NavigateToVariationSelector(
         val productId: Long,
-        val selectedVariationIds: Set<Long>
+        val selectedVariationIds: Set<Long>,
+        val productSelectorFlow: ProductSelectorFlow = ProductSelectorFlow.Undefined,
+        val productSourceForTracking: ProductSourceForTracking,
     ) : ProductNavigationTarget()
 
     data class NavigateToProductFilter(
@@ -125,4 +131,6 @@ sealed class ProductNavigationTarget : Event() {
     ) : ProductNavigationTarget()
 
     data class ViewProductSubscription(val subscription: SubscriptionDetails) : ProductNavigationTarget()
+
+    data class ViewProductQuantityRules(val quantityRules: QuantityRules) : ProductNavigationTarget()
 }

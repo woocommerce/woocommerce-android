@@ -14,7 +14,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerViewModel.NavigateToDomainPickerStep
-import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerViewModel.NavigateToInstallationStep
+import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerViewModel.NavigateToSummaryStep
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -50,14 +50,14 @@ class CountryPickerFragment : BaseFragment() {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
                 is NavigateToDomainPickerStep -> navigateToDomainPickerStep()
-                is NavigateToInstallationStep -> navigateToInstallationStep()
+                is NavigateToSummaryStep -> navigateToInstallationStep()
             }
         }
     }
 
     private fun navigateToInstallationStep() {
         findNavController().navigateSafely(
-            CountryPickerFragmentDirections.actionCountryPickerFragmentToInstallationFragment()
+            CountryPickerFragmentDirections.actionCountryPickerFragmentToSummaryFragment()
         )
     }
 

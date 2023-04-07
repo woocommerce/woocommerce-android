@@ -12,7 +12,7 @@
         android:clickable="false"
         android:drawableStart="@drawable/ic_add"
         android:drawablePadding="@dimen/major_100"
-        android:textColor="@color/color_icon_secondary"
+        android:textColor="@color/color_icon_primary"
         tools:text="@string/order_detail_add_customer_note" />
 
     <com.woocommerce.android.widgets.WCSelectableTextView

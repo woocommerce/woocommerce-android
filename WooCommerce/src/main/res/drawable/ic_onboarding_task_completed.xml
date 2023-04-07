@@ -5,7 +5,7 @@
     android:width="24dp"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <path
-        android:fillColor="#674399"
+        android:fillColor="?colorPrimary"
         android:pathData="M12,1L12,1A11,11 0,0 1,23 12L23,12A11,11 0,0 1,12 23L12,23A11,11 0,0 1,1 12L1,12A11,11 0,0 1,12 1z" />
     <path
         android:fillColor="#ffffff"
@@ -14,6 +14,6 @@
     <path
         android:fillColor="#00000000"
         android:pathData="M12,1L12,1A11,11 0,0 1,23 12L23,12A11,11 0,0 1,12 23L12,23A11,11 0,0 1,1 12L1,12A11,11 0,0 1,12 1z"
-        android:strokeColor="#674399"
+        android:strokeColor="?colorPrimary"
         android:strokeWidth="1.5" />
 </vector>

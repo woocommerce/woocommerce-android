@@ -53,6 +53,7 @@ class JetpackActivationWPComEmailViewModel @Inject constructor(
     }
 
     fun onCloseClick() {
+        wpComLoginRepository.clearAccessToken()
         triggerEvent(Exit)
 
         analyticsTrackerWrapper.track(

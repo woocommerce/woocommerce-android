@@ -1,6 +1,12 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 13.1
+More love for In-Person Payments and orders this time around, including the option to select your most oppular products when creating an order. 
+
+## 13.0
+Great news for folks that are using WooCommerce Subscriptions extension. We have added read only support for the WooCommerce Subsciptions extension in the order detail and product detail screens. More features coming soon!
+
 ## 12.9
 For this release, we focused on making your experience smoother when managing products. Additionally, it's now possible to install Jetpack from the app if you would like additional functionality such as push notifications and visitor stats. Keep your feedback coming!
 

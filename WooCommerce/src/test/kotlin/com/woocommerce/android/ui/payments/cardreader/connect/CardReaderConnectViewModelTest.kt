@@ -56,6 +56,7 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectV
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.MultipleExternalReadersFoundState
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ScanningFailedState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
@@ -108,6 +109,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     }
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
+    private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
     private val locationId = "location_id"
     private val updateFrequency = CardReaderManager.SimulatorUpdateFrequency.RANDOM
     private val useInterac = false
@@ -679,7 +681,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given location fetching fails, when user clicks on connect to reader button, then show error state`() =
+    fun `given location fetching fails, when user clicks on connect to reader button, then show error state and invalidate cache`() =
         testBlocking {
             init()
             whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
@@ -690,10 +692,11 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             verify(cardReaderManager, never()).startConnectionToReader(reader, locationId)
             assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingFailedState::class.java)
+            cardReaderOnboardingChecker.invalidateCache()
         }
 
     @Test
-    fun `given location fetching missing address, when user clicks on connect button, then show address error state`() =
+    fun `given location fetching missing address, when user clicks on connect button, then show address error state and invalidate cache`() =
         testBlocking {
             init()
             whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
@@ -706,10 +709,11 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value).isInstanceOf(
                 MissingMerchantAddressError::class.java
             )
+            cardReaderOnboardingChecker.invalidateCache()
         }
 
     @Test
-    fun `given location fetching invalid postcode, when user clicks on connect button, then invalid pc error state`() =
+    fun `given location fetching invalid postcode, when user clicks on connect button, then invalid pc error state and invalidate cache`() =
         testBlocking {
             init()
             whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
@@ -722,6 +726,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value).isInstanceOf(
                 InvalidMerchantAddressPostCodeError::class.java
             )
+            cardReaderOnboardingChecker.invalidateCache()
         }
 
     @Test
@@ -1598,6 +1603,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             selectedSite,
             cardReaderManager,
             cardReaderTrackingInfoKeeper,
+            cardReaderOnboardingChecker,
             learnMoreUrlProvider,
         )
     }

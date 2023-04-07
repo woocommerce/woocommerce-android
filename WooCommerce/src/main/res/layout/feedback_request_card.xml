@@ -29,7 +29,6 @@
         android:layout_marginBottom="@dimen/major_75"
         android:text="@string/feedback_request_make_better"
         android:textAllCaps="false"
-        android:textColor="@color/color_secondary"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lbl_feedbackReq_title"
         app:layout_constraintEnd_toStartOf="@+id/feedbackReq_guideline"

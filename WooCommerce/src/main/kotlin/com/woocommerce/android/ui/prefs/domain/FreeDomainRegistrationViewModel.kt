@@ -78,7 +78,7 @@ class FreeDomainRegistrationViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             AnalyticsEvent.CUSTOM_DOMAINS_STEP,
             mapOf(
-                AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSource(),
+                AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSourceAsString(),
                 AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_CONTACT_INFO
             )
         )
@@ -103,7 +103,11 @@ class FreeDomainRegistrationViewModel @Inject constructor(
         if (isSuccess) {
             triggerEvent(NavigateToPurchaseSuccessScreen(navArgs.domainProductDetails.domainName))
         } else {
-            triggerEvent(NavigateToDomainDashboard)
+            triggerEvent(
+                NavigateToDomainDashboard(
+                    source = appPrefsWrapper.getCustomDomainsSource()
+                )
+            )
         }
     }
 
@@ -364,7 +368,7 @@ class FreeDomainRegistrationViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             AnalyticsEvent.CUSTOM_DOMAIN_PURCHASE_SUCCESS,
             mapOf(
-                AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSource(),
+                AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSourceAsString(),
                 AnalyticsTracker.KEY_USE_DOMAIN_CREDIT to true // the contact form is only used for credit purchases
             )
         )
@@ -374,7 +378,7 @@ class FreeDomainRegistrationViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             AnalyticsEvent.CUSTOM_DOMAIN_PURCHASE_FAILED,
             mapOf(
-                AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSource(),
+                AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSourceAsString(),
                 AnalyticsTracker.KEY_USE_DOMAIN_CREDIT to true, // the contact form is only used for credit purchases
                 AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                 AnalyticsTracker.KEY_ERROR_TYPE to type,
@@ -387,7 +391,7 @@ class FreeDomainRegistrationViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             AnalyticsEvent.DOMAIN_CONTACT_INFO_VALIDATION_FAILED,
             mapOf(
-                AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSource(),
+                AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getCustomDomainsSourceAsString(),
                 AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                 AnalyticsTracker.KEY_ERROR_TYPE to type,
                 AnalyticsTracker.KEY_ERROR_DESC to message
@@ -475,6 +479,6 @@ class FreeDomainRegistrationViewModel @Inject constructor(
     data class ShowCountryPickerDialog(val countries: List<SupportedDomainCountry>) : MultiLiveEvent.Event()
     data class ShowStatePickerDialog(val states: List<SupportedStateResponse>) : MultiLiveEvent.Event()
     data class NavigateToPurchaseSuccessScreen(val domain: String) : MultiLiveEvent.Event()
-    object NavigateToDomainDashboard : MultiLiveEvent.Event()
+    data class NavigateToDomainDashboard(val source: DomainFlowSource) : MultiLiveEvent.Event()
     object ShowTermsOfService : MultiLiveEvent.Event()
 }
