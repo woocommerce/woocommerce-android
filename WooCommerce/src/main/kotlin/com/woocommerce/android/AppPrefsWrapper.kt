@@ -224,6 +224,12 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getCustomDomainsSource() = AppPrefs.getCustomDomainsSource()
 
+    fun setJetpackInstallationIsFromBanner(isFromBanner: Boolean) {
+        AppPrefs.setJetpackInstallationIsFromBanner(isFromBanner)
+    }
+
+    fun getJetpackInstallationIsFromBanner() = AppPrefs.getJetpackInstallationIsFromBanner()
+
     /**
      * Card Reader Upsell
      */

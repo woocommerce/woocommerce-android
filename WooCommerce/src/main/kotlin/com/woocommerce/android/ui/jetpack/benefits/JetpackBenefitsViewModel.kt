@@ -3,8 +3,13 @@ package com.woocommerce.android.ui.jetpack.benefits
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_BENEFITS_LOGIN_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_INSTALL_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_SETUP_CONNECTION_CHECK_COMPLETED
+import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_SETUP_CONNECTION_CHECK_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_SETUP_LOGIN_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.model.UserRole
 import com.woocommerce.android.tools.SelectedSite
@@ -27,7 +32,8 @@ class JetpackBenefitsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val selectedSite: SelectedSite,
     private val fetchJetpackStatus: FetchJetpackStatus,
-    private val userEligibilityFetcher: UserEligibilityFetcher
+    private val userEligibilityFetcher: UserEligibilityFetcher,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle) {
 
     private val _viewState = MutableStateFlow(
@@ -39,15 +45,21 @@ class JetpackBenefitsViewModel @Inject constructor(
     )
     val viewState = _viewState.asLiveData()
 
-    fun onInstallClick() = launch {
-        AnalyticsTracker.track(
-            stat = JETPACK_INSTALL_BUTTON_TAPPED,
-            properties = mapOf(AnalyticsTracker.KEY_JETPACK_INSTALLATION_SOURCE to "benefits_modal")
-        )
+    private val isAppPasswords = selectedSite.connectionType == SiteConnectionType.ApplicationPasswords
 
+    fun onInstallClick() = launch {
         when (selectedSite.connectionType) {
-            SiteConnectionType.JetpackConnectionPackage -> triggerEvent(StartJetpackActivationForJetpackCP)
+            SiteConnectionType.JetpackConnectionPackage -> {
+                AnalyticsTracker.track(
+                    stat = JETPACK_INSTALL_BUTTON_TAPPED,
+                    properties = mapOf(AnalyticsTracker.KEY_JETPACK_INSTALLATION_SOURCE to "benefits_modal")
+                )
+
+                triggerEvent(StartJetpackActivationForJetpackCP)
+            }
             SiteConnectionType.ApplicationPasswords -> {
+                AnalyticsTracker.track(stat = JETPACK_BENEFITS_LOGIN_BUTTON_TAPPED)
+
                 _viewState.update { it.copy(isLoadingDialogShown = true) }
 
                 val jetpackStatusResult = fetchJetpackStatus()
@@ -74,6 +86,8 @@ class JetpackBenefitsViewModel @Inject constructor(
                                 jetpackStatus = it.first
                             )
                         )
+
+                        logSuccess(it)
                     }
                     JetpackStatusFetchResponse.FORBIDDEN -> {
                         launch {
@@ -85,9 +99,11 @@ class JetpackBenefitsViewModel @Inject constructor(
                                             user.roles.first().value
                                         )
                                     )
+                                    logError("${user.roles.first().value}: User not authorized to install Jetpack")
                                 },
                                 onFailure = {
                                     triggerEvent(ShowSnackbar(string.error_generic))
+                                    logError("HTTP 403")
                                 }
                             )
                         }
@@ -104,6 +120,8 @@ class JetpackBenefitsViewModel @Inject constructor(
                                                 jetpackStatus = it.first
                                             )
                                         )
+
+                                        logSuccess(it)
                                     } else {
                                         triggerEvent(
                                             OpenJetpackEligibilityError(
@@ -111,10 +129,13 @@ class JetpackBenefitsViewModel @Inject constructor(
                                                 user.roles.first().value
                                             )
                                         )
+
+                                        logError("${user.roles.first().value}: User not authorized to install Jetpack")
                                     }
                                 },
                                 onFailure = {
                                     triggerEvent(ShowSnackbar(string.error_generic))
+                                    logError("HTTP 404")
                                 }
                             )
                         }
@@ -123,11 +144,48 @@ class JetpackBenefitsViewModel @Inject constructor(
             },
             onFailure = {
                 triggerEvent(ShowSnackbar(string.error_generic))
+                logError(it.message)
             }
         )
     }
 
-    fun onDismiss() = triggerEvent(Exit)
+    private fun logSuccess(it: Pair<JetpackStatus, JetpackStatusFetchResponse>) {
+        if (isAppPasswords) {
+            analyticsTrackerWrapper.track(
+                stat = JETPACK_SETUP_CONNECTION_CHECK_COMPLETED,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_JETPACK_SETUP_IS_ALREADY_CONNECTED to it.first.isJetpackConnected,
+                    AnalyticsTracker.KEY_JETPACK_SETUP_REQUIRES_CONNECTION_ONLY to
+                        (it.first.isJetpackInstalled && !it.first.isJetpackConnected)
+                )
+            )
+        }
+    }
+
+    private fun logError(message: String?) {
+        if (isAppPasswords) {
+            analyticsTrackerWrapper.track(
+                stat = JETPACK_SETUP_CONNECTION_CHECK_FAILED,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_FAILURE to "Domain '${selectedSite.get().url}': ${message ?: "Unknown error"}"
+                )
+            )
+        }
+    }
+
+    fun onDismiss() {
+        triggerEvent(Exit)
+
+        if (isAppPasswords) {
+            analyticsTrackerWrapper.track(
+                JETPACK_SETUP_LOGIN_FLOW,
+                mapOf(
+                    AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_JETPACK_INSTALLATION_STEP_BENEFITS,
+                    AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_DISMISS
+                )
+            )
+        }
+    }
 
     data class ViewState(
         val isUsingJetpackCP: Boolean,
