@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import com.google.gson.Gson
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_UPDATE_ERROR
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_UPDATE_SUCCESS
@@ -36,6 +37,7 @@ import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT_S
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATED_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATE_PRODUCT_PASSWORD
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
+import org.wordpress.android.fluxc.model.WCMetaData
 import org.wordpress.android.fluxc.store.WCGlobalAttributeStore
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductSkuAvailabilityPayload
@@ -69,6 +71,8 @@ class ProductDetailRepository @Inject constructor(
 
     private var isFetchingTaxClassList = false
     private var remoteProductId: Long = 0L
+
+    private val gson by lazy { Gson() }
 
     var lastFetchProductErrorType: ProductErrorType? = null
 
@@ -283,6 +287,15 @@ class ProductDetailRepository @Inject constructor(
     fun getQuantityRules(remoteProductId: Long): QuantityRules? {
         return getCachedWCProductModel(remoteProductId)?.metadata
             ?.let { quantityRulesMapper.toAppModelFromProductMetadata(it) }
+    }
+
+    fun getProductMetadata(remoteProductId: Long): Map<String, Any>? {
+        val metadata = getCachedWCProductModel(remoteProductId)?.metadata ?: return null
+        val metadataArray = gson.fromJson(metadata, Array<WCMetaData>::class.java)
+
+        return metadataArray
+            .filter { metadataItem -> metadataItem.key.isNullOrEmpty().not() }
+            .associate { metadataItem -> metadataItem.key!! to metadataItem.value }
     }
 
     @SuppressWarnings("unused")
