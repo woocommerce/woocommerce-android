@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 13.1
+More love for In-Person Payments and orders this time around, including the option to select your most oppular products when creating an order. 
+
 ## 13.0
 Great news for folks that are using WooCommerce Subscriptions extension. We have added read only support for the WooCommerce Subsciptions extension in the order detail and product detail screens. More features coming soon!
 
