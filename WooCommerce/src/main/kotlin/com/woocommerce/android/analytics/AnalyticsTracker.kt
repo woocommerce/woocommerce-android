@@ -196,6 +196,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_CAUSE = "cause"
         const val KEY_SCENARIO = "scenario"
         const val KEY_REASON = "reason"
+        const val KEY_IS_FREE_TRIAL = "is_free_trial"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_SORT_NAME_ASC = "name,ascending"
@@ -311,6 +312,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         // -- Linked Products
         const val KEY_LINKED_PRODUCTS_ACTION = "action"
+
+        // -- Product Selector
+        const val KEY_PRODUCT_SELECTOR_SOURCE = "source"
+        const val KEY_PRODUCT_SELECTOR_FILTER_STATUS = "is_filter_active"
 
         enum class LinkedProductsAction(val value: String) {
             SHOWN("shown"),
@@ -490,6 +495,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_ADD_DOMAIN = "add_domain"
         const val VALUE_LAUNCH_SITE = "launch_site"
         const val VALUE_PAYMENTS = "payments"
+
+        // -- Product Selector
+        const val VALUE_PRODUCT_SELECTOR = "product_selector"
+        const val VALUE_VARIATION_SELECTOR = "variation_selector"
 
         var sendUsageStats: Boolean = true
             set(value) {

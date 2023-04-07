@@ -38,6 +38,9 @@
             <argument
                 android:name="restrictions"
                 app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorRestriction[]" />
+            <argument
+                android:name="productSelectorFlow"
+                app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorFlow" />
         </action>
         <action
             android:id="@+id/action_editCouponFragment_to_couponRestrictionsFragment"
