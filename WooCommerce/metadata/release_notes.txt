@@ -1,1 +1,3 @@
-Great news for folks that are using WooCommerce Subscriptions extension. We have added read only support for the WooCommerce Subsciptions extension in the order detail and product detail screens. More features coming soon!
+- [internal] Users can now create a Free Trial store from the app from the Get Started section of the app prologue. [https://github.com/woocommerce/woocommerce-android/pull/8759]
+- [**] Add Popular and Last sold sections to product selector screen [https://github.com/woocommerce/woocommerce-android/pull/8756]
+- [**] Jetpack activation now supported for merchants logging in with site credentials. [https://github.com/woocommerce/woocommerce-android/pull/8698]
