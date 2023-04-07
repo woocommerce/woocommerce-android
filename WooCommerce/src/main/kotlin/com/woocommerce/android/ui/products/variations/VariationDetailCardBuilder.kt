@@ -405,7 +405,7 @@ class VariationDetailCardBuilder(
                 showTitle = true,
                 onClick = {
                     viewModel.onEditVariationCardClicked(
-                        VariationNavigationTarget.ViewSubscription(subscription, salesDetails),
+                        ViewSubscription(subscription, salesDetails),
                         AnalyticsEvent.PRODUCT_DETAILS_VIEW_SUBSCRIPTIONS_TAPPED
                     )
                 }
