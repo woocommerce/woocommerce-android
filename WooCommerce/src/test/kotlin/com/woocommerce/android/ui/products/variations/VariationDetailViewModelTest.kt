@@ -104,7 +104,8 @@ class VariationDetailViewModelTest : BaseUnitTest() {
             currencyFormatter = mock(),
             parameterRepository = parameterRepository,
             resources = resourceProvider,
-            mediaFileUploadHandler = mediaFileUploadHandler
+            mediaFileUploadHandler = mediaFileUploadHandler,
+            getProductVariationQuantityRules = mock()
         )
     }
 

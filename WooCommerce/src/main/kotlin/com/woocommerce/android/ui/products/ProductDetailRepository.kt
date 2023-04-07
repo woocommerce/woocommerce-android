@@ -281,7 +281,8 @@ class ProductDetailRepository @Inject constructor(
         productStore.getShippingClassByRemoteId(selectedSite.get(), remoteShippingClassId)?.toAppModel()
 
     fun getQuantityRules(remoteProductId: Long): QuantityRules? {
-        return getCachedWCProductModel(remoteProductId)?.metadata?.let { quantityRulesMapper.toAppModel(it) }
+        return getCachedWCProductModel(remoteProductId)?.metadata
+            ?.let { quantityRulesMapper.toAppModelFromProductMetadata(it) }
     }
 
     @SuppressWarnings("unused")
