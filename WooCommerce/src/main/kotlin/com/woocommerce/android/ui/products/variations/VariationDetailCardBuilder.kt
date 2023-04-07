@@ -332,6 +332,7 @@ class VariationDetailCardBuilder(
         val properties = buildMap {
             putIfNotNull(resources.getString(string.min_quantity) to rules.min?.toString())
             putIfNotNull(resources.getString(string.max_quantity) to rules.max?.toString())
+            if (size < 2) putIfNotNull(resources.getString(string.group_of) to rules.groupOf?.toString())
         }
 
         return PropertyGroup(
