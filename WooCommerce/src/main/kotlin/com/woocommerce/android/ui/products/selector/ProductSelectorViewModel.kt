@@ -533,5 +533,4 @@ enum class ProductSourceForTracking {
     LAST_SOLD,
     ALPHABETICAL,
     SEARCH,
-    FILTER,
 }

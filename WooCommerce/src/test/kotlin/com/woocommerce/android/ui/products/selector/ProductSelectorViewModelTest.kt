@@ -863,7 +863,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 VariationSelectorViewModel.VariationSelectionResult(
                     productId = 0L,
                     selectedVariationIds = setOf(1L),
-                    productSourceForTracking = ProductSourceForTracking.FILTER
+                    productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
                 )
             )
             sut.onDoneButtonClick()
@@ -873,7 +873,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 mapOf(
                     KEY_PRODUCT_COUNT to 1,
                     KEY_PRODUCT_SELECTOR_SOURCE to listOf(
-                        ProductSourceForTracking.FILTER.name
+                        ProductSourceForTracking.ALPHABETICAL.name
                     ),
                     KEY_PRODUCT_SELECTOR_FILTER_STATUS to true,
                 )
