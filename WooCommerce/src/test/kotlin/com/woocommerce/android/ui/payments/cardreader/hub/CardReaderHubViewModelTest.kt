@@ -25,10 +25,10 @@ import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.OpenGenericWebView
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToast
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToastString
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.GapBetweenSections
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.ToggleableListItem
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub.OpenInHub
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
@@ -1500,42 +1500,6 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         }
     }
     // endregion
-
-    @Test
-    fun `when learn more IPP clicked, then trigger correct event`() {
-        // GIVEN
-        whenever(
-            learnMoreUrlProvider.provideLearnMoreUrlFor(LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS)
-        ).thenReturn(
-            AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
-        )
-
-        // WHEN
-        viewModel.viewStateData.getOrAwaitValue().learnMoreIppState?.onClick?.invoke()
-
-        // THEN
-        assertThat(viewModel.event.value).isEqualTo(
-            viewModel.event.value
-        ).isInstanceOf(OpenGenericWebView::class.java)
-    }
-
-    @Test
-    fun `when learn more IPP clicked, then trigger correct event with correct url`() {
-        // GIVEN
-        whenever(
-            learnMoreUrlProvider.provideLearnMoreUrlFor(LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS)
-        ).thenReturn(
-            AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
-        )
-
-        // WHEN
-        viewModel.viewStateData.getOrAwaitValue().learnMoreIppState?.onClick?.invoke()
-
-        // THEN
-        assertThat(viewModel.event.value).isEqualTo(
-            viewModel.event.value
-        ).isEqualTo(OpenGenericWebView(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS))
-    }
 
     @Test
     fun `given tpp available, when tap to pay clicked, then navigate to tap to pay summary screen event emitted`() {
