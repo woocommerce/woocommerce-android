@@ -8,8 +8,6 @@ import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository.Si
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.Companion.NEW_SITE_LANGUAGE_ID
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.Companion.NEW_SITE_THEME
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import java.util.TimeZone
 import javax.inject.Inject
@@ -18,9 +16,6 @@ import javax.inject.Inject
 class CreateFreeTrialStore @Inject constructor(
     private val repository: StoreCreationRepository
 ) {
-    private val _state = MutableStateFlow<StoreCreationState>(StoreCreationState.Idle)
-    val state: StateFlow<StoreCreationState> = _state
-
     /**
      * Triggers the creation of a new free trial site given a domain and a name.
      * If the site already exists, it will try to retrieve the site ID from the API.
@@ -33,7 +28,7 @@ class CreateFreeTrialStore @Inject constructor(
         storeDomain: String?,
         storeName: String?
     ) = flow {
-        _state.value = Loading
+        emit(Loading)
 
         val result = repository.createNewFreeTrialSite(
             SiteCreationData(null, NEW_SITE_THEME, storeDomain, storeName),
@@ -43,12 +38,10 @@ class CreateFreeTrialStore @Inject constructor(
 
         when (result) {
             is StoreCreationResult.Success -> {
-                _state.value = Finished
-                emit(result.data)
+                emit(Finished(result.data))
             }
             is StoreCreationResult.Failure -> {
-                _state.value = Failed(result.type)
-                emit(null)
+                emit(Failed(result.type))
             }
         }
     }
@@ -64,7 +57,7 @@ class CreateFreeTrialStore @Inject constructor(
     sealed class StoreCreationState {
         object Idle : StoreCreationState()
         object Loading : StoreCreationState()
-        object Finished : StoreCreationState()
+        data class Finished(val siteId: Long) : StoreCreationState()
         data class Failed(val type: StoreCreationErrorType) : StoreCreationState()
     }
 }
