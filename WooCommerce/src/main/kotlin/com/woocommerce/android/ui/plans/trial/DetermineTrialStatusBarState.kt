@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.plans.trial
 
 import com.woocommerce.android.extensions.isFreeTrial
+import com.woocommerce.android.tools.ConnectivityObserver
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivityViewModel.BottomBarState
 import com.woocommerce.android.ui.plans.domain.CalculatePlanRemainingPeriod
@@ -16,17 +17,27 @@ class DetermineTrialStatusBarState @Inject constructor(
     private val sitePlanRepository: SitePlanRepository,
     private val selectedSite: SelectedSite,
     private val calculatePlanRemainingPeriod: CalculatePlanRemainingPeriod,
+    private val observeConnectionStatus: ConnectivityObserver
 ) {
 
-    operator fun invoke(bottomBarState: Flow<BottomBarState>): Flow<TrialStatusBarState> =
-        selectedSite.observe().combine(bottomBarState) { selectedSite, state ->
-            if (state == BottomBarState.Hidden) {
+    operator fun invoke(bottomBarStateFlow: Flow<BottomBarState>): Flow<TrialStatusBarState> =
+        combine(
+            selectedSite.observe(),
+            bottomBarStateFlow,
+            observeConnectionStatus.observe()
+        ) { selectedSite, bottomBarState, connectionState ->
+
+            if (connectionState == ConnectivityObserver.Status.DISCONNECTED) {
                 TrialStatusBarState.Hidden
             } else {
-                if (selectedSite.isFreeTrial) {
-                    fetchFreeTrialDetails()
-                } else {
+                if (bottomBarState == BottomBarState.Hidden) {
                     TrialStatusBarState.Hidden
+                } else {
+                    if (selectedSite.isFreeTrial) {
+                        fetchFreeTrialDetails()
+                    } else {
+                        TrialStatusBarState.Hidden
+                    }
                 }
             }
         }
@@ -37,6 +48,7 @@ class DetermineTrialStatusBarState @Inject constructor(
                 val expireIn = calculatePlanRemainingPeriod(result.date)
                 TrialStatusBarState.Visible(expireIn.days)
             }
+
             NotTrial, is Error -> TrialStatusBarState.Hidden
         }
     }
