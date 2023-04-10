@@ -627,8 +627,6 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             assertThat(viewState?.recentProducts)?.isNotEmpty
         }
     }
-
-
     //endregion
 
     // region sort by popularity and recently sold, analytics
