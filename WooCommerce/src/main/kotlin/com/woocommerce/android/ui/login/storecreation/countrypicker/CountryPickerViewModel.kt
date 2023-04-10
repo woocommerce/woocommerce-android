@@ -7,7 +7,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.login.storecreation.NewStore
-import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
 import com.woocommerce.android.util.EmojiUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -36,7 +35,6 @@ class CountryPickerViewModel @Inject constructor(
 
     val storeName
         get() = newStore.data.name.orEmpty()
-
 
     init {
         analyticsTrackerWrapper.track(
@@ -111,16 +109,6 @@ class CountryPickerViewModel @Inject constructor(
 
     object NavigateToDomainPickerStep : MultiLiveEvent.Event()
     object NavigateToSummaryStep : MultiLiveEvent.Event()
-
-    sealed class CountryPickerState {
-        data class Contentful(
-            val storeName: String,
-            val countries: List<StoreCreationCountry>,
-            val creatingStoreInProgress: Boolean,
-        ) : CountryPickerState()
-
-        data class Error(val errorType: StoreCreationErrorType) : CountryPickerState()
-    }
 
     data class StoreCreationCountry(
         val name: String,
