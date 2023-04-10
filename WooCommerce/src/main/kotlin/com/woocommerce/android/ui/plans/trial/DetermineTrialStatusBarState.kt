@@ -27,18 +27,11 @@ class DetermineTrialStatusBarState @Inject constructor(
             observeConnectionStatus.observe()
         ) { selectedSite, bottomBarState, connectionState ->
 
-            if (connectionState == ConnectivityObserver.Status.DISCONNECTED) {
-                TrialStatusBarState.Hidden
-            } else {
-                if (bottomBarState == BottomBarState.Hidden) {
-                    TrialStatusBarState.Hidden
-                } else {
-                    if (selectedSite.isFreeTrial) {
-                        fetchFreeTrialDetails()
-                    } else {
-                        TrialStatusBarState.Hidden
-                    }
-                }
+            when {
+                connectionState == ConnectivityObserver.Status.DISCONNECTED -> TrialStatusBarState.Hidden
+                bottomBarState == BottomBarState.Hidden -> TrialStatusBarState.Hidden
+                selectedSite.isFreeTrial -> fetchFreeTrialDetails()
+                else -> TrialStatusBarState.Hidden
             }
         }
 
