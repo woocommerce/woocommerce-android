@@ -117,6 +117,7 @@ class CardReaderConnectViewModel @Inject constructor(
     val viewStateData: LiveData<CardReaderConnectViewState> = viewState
 
     init {
+        WooLog.d(WooLog.T.CARD_READER, "START CONNECTION")
         startFlow()
     }
 
@@ -254,6 +255,7 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private suspend fun startScanningIfNotStarted() {
+        WooLog.d(WooLog.T.CARD_READER, "START SCANNING")
         launch { listenToConnectionStatus() }
         launch { listenToSoftwareUpdateStatus() }
 
@@ -272,6 +274,7 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private suspend fun listenToConnectionStatus() {
         cardReaderManager.readerStatus.collect { status ->
+            WooLog.d(WooLog.T.CARD_READER, "READER STATUS: $status")
             when (status) {
                 is CardReaderStatus.Connected -> onReaderConnected(status.cardReader)
                 is CardReaderStatus.NotConnected -> {
@@ -302,6 +305,7 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun handleScanEvent(discoveryEvent: CardReaderDiscoveryEvents) {
+        WooLog.d(WooLog.T.CARD_READER, "Scanning event: $discoveryEvent")
         when (discoveryEvent) {
             Started -> {
                 if (viewState.value !is ScanningState) {
@@ -336,6 +340,7 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun onReadersFound(discoveryEvent: ReadersFound) {
+        WooLog.d(WooLog.T.CARD_READER, "Readers found: ${discoveryEvent.list.size}")
         if (viewState.value is ConnectingState) return
         val availableReaders = discoveryEvent.list.filter { it.id != null }
         val lastKnownReader = findLastKnowReader(availableReaders)
@@ -418,8 +423,10 @@ class CardReaderConnectViewModel @Inject constructor(
             if (cardReaderLocationId != null) {
                 cardReaderManager.startConnectionToReader(cardReader, cardReaderLocationId)
             } else {
+                WooLog.d(WooLog.T.CARD_READER, "No location id for card reader")
                 when (val result = locationRepository.getDefaultLocationId(getPaymentPluginType())) {
                     is CardReaderLocationRepository.LocationIdFetchingResult.Success -> {
+                        WooLog.d(WooLog.T.CARD_READER, "Location id: ${result.locationId}")
                         tracker.trackFetchingLocationSucceeded()
                         cardReaderManager.startConnectionToReader(cardReader, result.locationId)
                     }
