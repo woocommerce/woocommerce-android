@@ -20,9 +20,9 @@ class CreateFreeTrialStore @Inject constructor(
      * Triggers the creation of a new free trial site given a domain and a name.
      * If the site already exists, it will try to retrieve the site ID from the API.
      *
-     *  @return a [flow] that will emit the Store ID if the creation is successful, null otherwise
+     *  @return a [flow] that will emit the store creation state steps:
      *
-     *  To observe the creation progress, use [state]
+     *  [Loading] -> [Finished] or [Failed]
      */
     suspend operator fun invoke(
         storeDomain: String?,
@@ -55,7 +55,6 @@ class CreateFreeTrialStore @Inject constructor(
         ?: this
 
     sealed class StoreCreationState {
-        object Idle : StoreCreationState()
         object Loading : StoreCreationState()
         data class Finished(val siteId: Long) : StoreCreationState()
         data class Failed(val type: StoreCreationErrorType) : StoreCreationState()
