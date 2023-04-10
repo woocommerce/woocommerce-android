@@ -54,6 +54,13 @@ class ProductItemView @JvmOverloads constructor(
         showProductStockStatusPrice(product, currencyFormatter, currencyCode)
     }
 
+    fun bind(product: Product, isActivated: Boolean = false) {
+        showProductName(product.name)
+        showProductStockStatus(product)
+        showProductSku(product.sku)
+        showProductImage(product.firstImageUrl, isActivated)
+    }
+
     fun bind(
         productUIModel: ProductUIModel,
         currencyFormatter: CurrencyFormatter,
@@ -137,6 +144,24 @@ class ProductItemView @JvmOverloads constructor(
         return currencyCode?.let {
             currencyFormatter.buildBigDecimalFormatter(it)
         } ?: currencyFormatter.buildBigDecimalFormatter()
+    }
+
+    private fun showProductStockStatus(product: Product) {
+        val statusHtml = getProductStatusHtml(product.status)
+        val stock = getStockText(product)
+        val stockAndStatus = if (statusHtml != null) "$statusHtml $bullet $stock" else stock
+
+        with(binding.productStockAndStatus) {
+            if (stockAndStatus.isNotEmpty()) {
+                visibility = View.VISIBLE
+                text = HtmlCompat.fromHtml(
+                    stockAndStatus,
+                    HtmlCompat.FROM_HTML_MODE_LEGACY
+                )
+            } else {
+                visibility = View.GONE
+            }
+        }
     }
 
     private fun showProductStockStatusPrice(
