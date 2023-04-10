@@ -2,13 +2,11 @@ package com.woocommerce.android.ui.login.storecreation.installation
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,10 +20,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.annotatedStringRes
@@ -57,28 +53,26 @@ fun InstallationScreen(
     userAgent: UserAgent,
     authenticator: WPComWebViewAuthenticator
 ) {
-    viewModel.viewState.observeAsState().value?.let { state ->
-        Crossfade(targetState = state) { viewState ->
-            when (viewState) {
-                is SuccessState -> InstallationSummary(
-                    viewState.url,
-                    viewModel::onManageStoreButtonClicked,
-                    viewModel::onShowPreviewButtonClicked,
-                    viewModel::onUrlLoaded,
-                    userAgent,
-                    authenticator
-                )
-                is ErrorState -> StoreCreationErrorScreen(
-                    viewState.errorType,
-                    viewModel::onBackPressed,
-                    viewState.message,
-                    viewModel::onRetryButtonClicked
-                )
-                is CreatingStoreState -> CreateStoreState(
-                    viewState = viewState,
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
+    viewModel.viewState.observeAsState().value?.let { viewState ->
+        when (viewState) {
+            is SuccessState -> InstallationSummary(
+                viewState.url,
+                viewModel::onManageStoreButtonClicked,
+                viewModel::onShowPreviewButtonClicked,
+                viewModel::onUrlLoaded,
+                userAgent,
+                authenticator
+            )
+            is ErrorState -> StoreCreationErrorScreen(
+                viewState.errorType,
+                viewModel::onBackPressed,
+                viewState.message,
+                viewModel::onRetryButtonClicked
+            )
+            is CreatingStoreState -> CreateStoreState(
+                viewState = viewState,
+                modifier = Modifier.fillMaxSize()
+            )
         }
     }
 }
@@ -174,11 +168,6 @@ fun CreateStoreState(
     viewState: CreatingStoreState,
     modifier: Modifier = Modifier
 ) {
-    val progress by remember { mutableStateOf(viewState.progress / viewState.maxProgress) }
-    val animatedProgress = animateFloatAsState(
-        targetValue = progress,
-        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
-    ).value
     Box(modifier = modifier) {
         Image(
             modifier = Modifier.align(Alignment.TopEnd),
@@ -190,34 +179,69 @@ fun CreateStoreState(
             painter = painterResource(id = R.drawable.store_creation_loading_image_bottom_start),
             contentDescription = null,
         )
-        Column(
+        ConstraintLayout(
             modifier = Modifier
                 .padding(dimensionResource(id = R.dimen.major_250))
-                .align(Alignment.Center),
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_150)),
+                .fillMaxSize(),
         ) {
+            val (title, progress, description) = createRefs()
+            val margin = dimensionResource(id = R.dimen.major_150)
             Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .constrainAs(title) {
+                        bottom.linkTo(
+                            anchor = progress.top,
+                            margin = margin
+                        )
+                    },
                 text = stringResource(id = viewState.title),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.h5,
                 fontWeight = FontWeight.Bold,
             )
-            LinearProgressIndicator(
-                progress = animatedProgress,
-                modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.minor_100))
-                    .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
-                    .fillMaxWidth(),
-                color = MaterialTheme.colors.primary,
-                backgroundColor = colorResource(id = R.color.divider_color),
+            AnimatedProgress(
+                progress = viewState.progress,
+                modifier = Modifier.constrainAs(progress) {
+                    centerHorizontallyTo(parent)
+                    centerVerticallyTo(parent)
+                }
             )
             Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .constrainAs(description) {
+                        top.linkTo(
+                            anchor = progress.bottom,
+                            margin = margin
+                        )
+                    },
                 text = annotatedStringRes(stringResId = viewState.description),
                 style = MaterialTheme.typography.subtitle1,
                 color = colorResource(id = R.color.color_on_surface_medium)
             )
         }
     }
+}
+
+@Composable
+private fun AnimatedProgress(
+    progress: Float,
+    modifier: Modifier = Modifier
+) {
+    val animatedProgress = animateFloatAsState(
+        targetValue = progress,
+        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
+    ).value
+    LinearProgressIndicator(
+        progress = animatedProgress,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(dimensionResource(id = R.dimen.minor_100))
+            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))),
+        color = MaterialTheme.colors.primary,
+        backgroundColor = colorResource(id = R.color.creating_store_linear_progress_background),
+    )
 }
 
 @Composable
@@ -265,8 +289,8 @@ private fun CreateStoreStatePreview() {
     WooThemeWithBackground {
         CreateStoreState(
             viewState = CreatingStoreState(
-                progress = 0,
-                title = R.string.store_creation_in_progress_title_1,
+                progress = 0F,
+                title = R.string.store_creation_in_progress_title_3,
                 description = R.string.store_creation_in_progress_description_1
             ),
             modifier = Modifier
