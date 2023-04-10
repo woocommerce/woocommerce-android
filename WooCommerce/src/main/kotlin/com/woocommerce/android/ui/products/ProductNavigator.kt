@@ -400,6 +400,12 @@ class ProductNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
 
+            is ProductNavigationTarget.ViewBundleProducts -> {
+                ProductDetailFragmentDirections.actionProductDetailFragmentToProductBundleFragment(
+                    target.bundledProductsIds.toLongArray()
+                ).let { fragment.findNavController().navigateSafely(it) }
+            }
+
             is ExitProduct -> fragment.findNavController().navigateUp()
         }
     }

@@ -199,7 +199,7 @@ class ProductDetailCardBuilder(
         )
     }
 
-    private suspend fun getBundleProductsCard(product: Product) : ProductPropertyCard {
+    private suspend fun getBundleProductsCard(product: Product): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
@@ -788,7 +788,9 @@ class ProductDetailCardBuilder(
                 content,
                 drawable.ic_widgets
             ) {
-
+                viewModel.onEditProductCardClicked(
+                    ProductNavigationTarget.ViewBundleProducts(this.bundledProductsIds)
+                )
             }
         } else null
     }
