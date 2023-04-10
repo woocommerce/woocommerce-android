@@ -492,6 +492,36 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `given popular products, when filter is applied, then hide the popular products section`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+            ).initSavedStateHandle()
+            val ordersList = generateTestOrders() + generatePopularOrders()
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(ordersList)
+            whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(ProductTestUtils.generateProductList())
+
+            val sut = createViewModel(navArgs)
+            sut.onFiltersChanged(
+                stockStatus = "In stock",
+                productCategory = null,
+                productStatus = null,
+                productType = null,
+                productCategoryName = null
+            )
+
+            var viewState: ProductSelectorViewModel.ViewState? = null
+            sut.viewState.observeForever { state ->
+                viewState = state
+            }
+
+            assertThat(viewState?.popularProducts)?.isEmpty()
+        }
+    }
+
     //endregion
 
     // region sort by popularity and recently sold, analytics
