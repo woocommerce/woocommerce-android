@@ -90,7 +90,8 @@ object ProductHelper {
             variationIds = listOf(),
             downloads = listOf(),
             isPurchasable = false,
-            subscription = null
+            subscription = null,
+            bundleProductsIds = null
         )
     }
 }

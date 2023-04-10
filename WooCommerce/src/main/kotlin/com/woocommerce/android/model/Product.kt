@@ -81,7 +81,8 @@ data class Product(
     override val width: Float,
     override val height: Float,
     override val weight: Float,
-    val subscription: SubscriptionDetails?
+    val subscription: SubscriptionDetails?,
+    val bundleProductsIds: List<Long>?
 ) : Parcelable, IProduct {
     companion object {
         const val TAX_CLASS_DEFAULT = "standard"
@@ -140,7 +141,9 @@ data class Product(
             downloadLimit == product.downloadLimit &&
             downloadExpiry == product.downloadExpiry &&
             isDownloadable == product.isDownloadable &&
-            attributes == product.attributes
+            attributes == product.attributes &&
+            subscription == product.subscription &&
+            bundleProductsIds == product.bundleProductsIds
     }
 
     val hasCategories get() = categories.isNotEmpty()
@@ -326,6 +329,8 @@ data class Product(
                 downloads = updatedProduct.downloads,
                 downloadLimit = updatedProduct.downloadLimit,
                 downloadExpiry = updatedProduct.downloadExpiry,
+                subscription = updatedProduct.subscription,
+                bundleProductsIds = updatedProduct.bundleProductsIds
             )
         } ?: this.copy()
     }
@@ -556,7 +561,8 @@ fun WCProductModel.toAppModel(): Product {
         upsellProductIds = this.getUpsellProductIdList(),
         variationIds = this.getVariationIdList(),
         isPurchasable = this.purchasable,
-        subscription = subscription
+        subscription = subscription,
+        bundleProductsIds = listOf(27L,19L)
     )
 }
 
