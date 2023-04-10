@@ -31,7 +31,7 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
         // Given
         val expectedDomain = "test domain"
         val expectedTitle = "test title"
-        createSut(expectedDomain, expectedTitle, StoreCreationState.Idle)
+        createSut(expectedDomain, expectedTitle, StoreCreationState.Finished(123L))
 
         // When
         sut.onTryForFreeButtonPressed()
@@ -94,7 +94,7 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
         // Given
         val expectedDomain = "test domain"
         val expectedTitle = "test title"
-        createSut(expectedDomain, expectedTitle, StoreCreationState.Idle)
+        createSut(expectedDomain, expectedTitle, StoreCreationState.Finished(123L))
 
         var isLoading: Boolean? = null
         sut.isLoading.observeForever { isLoading = it }
@@ -162,7 +162,7 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
         // Given
         val expectedDomain = "test domain"
         val expectedTitle = "test title"
-        createSut(expectedDomain, expectedTitle, StoreCreationState.Idle)
+        createSut(expectedDomain, expectedTitle, StoreCreationState.Finished(123L))
 
         var lastReceivedEvent: MultiLiveEvent.Event? = null
         sut.event.observeForever { lastReceivedEvent = it }
