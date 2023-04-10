@@ -6,7 +6,6 @@ import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository.Si
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -118,9 +117,6 @@ internal class CreateFreeTrialStoreTest : BaseUnitTest() {
             siteTitle,
             StoreCreationResult.Failure(StoreCreationErrorType.SITE_ADDRESS_ALREADY_EXISTS)
         )
-        sut.state
-            .onEach { lastCreationState = it }
-            .launchIn(this)
 
         // When
         val job = sut(siteDomain, siteTitle)
