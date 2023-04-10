@@ -3326,5 +3326,6 @@
     <string name="product_bundle">Bundled products</string>
     <string name="product_bundle_single_count">1 product</string>
     <string name="product_bundle_multiple_count">%d products</string>
+    <string name="bundled_products_info_notice">You can edit bundled products in the web dashboard.</string>
 
 </resources>
