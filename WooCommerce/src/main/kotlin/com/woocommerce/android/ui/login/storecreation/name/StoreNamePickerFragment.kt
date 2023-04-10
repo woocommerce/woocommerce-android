@@ -12,6 +12,10 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.NavigateToDomainPicker
+import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.NavigateToStoreInstallation
+import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.NavigateToStoreProfiler
+import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.NavigateToSummary
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -44,12 +48,32 @@ class StoreNamePickerFragment : BaseFragment() {
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
-                is StoreNamePickerViewModel.NavigateToNextStep -> findNavController().navigateSafely(
-                    StoreNamePickerFragmentDirections.actionStoreNamePickerFragmentToDomainPickerFragment(
-                        event.domainInitialQuery
-                    )
-                )
+                is NavigateToDomainPicker -> navigateToDomainPicker(event.domainInitialQuery)
+                is NavigateToStoreProfiler -> navigateToStoreProfiler()
+                is NavigateToStoreInstallation -> navigateToInstallation()
+                is NavigateToSummary -> navigateToSummary()
             }
         }
+    }
+
+    private fun navigateToSummary() {
+        StoreNamePickerFragmentDirections.actionStoreNamePickerFragmentToSummaryFragment()
+            .let { findNavController().navigateSafely(it) }
+    }
+
+    private fun navigateToInstallation() {
+        StoreNamePickerFragmentDirections.actionStoreNamePickerFragmentToInstallationFragment()
+            .let { findNavController().navigateSafely(it) }
+    }
+
+    private fun navigateToStoreProfiler() {
+        StoreNamePickerFragmentDirections.actionStoreNamePickerFragmentToStoreProfilerCategoryFragment()
+            .let { findNavController().navigateSafely(it) }
+    }
+
+    private fun navigateToDomainPicker(domainInitialQuery: String) {
+        StoreNamePickerFragmentDirections.actionStoreNamePickerFragmentToDomainPickerFragment(
+            domainInitialQuery
+        ).let { findNavController().navigateSafely(it) }
     }
 }

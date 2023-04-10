@@ -5,8 +5,12 @@ import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_UPDATE
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_UPDATE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.model.SubscriptionProductVariation
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.products.models.QuantityRules
+import com.woocommerce.android.ui.products.models.QuantityRulesMapper
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCProductVariationModel
@@ -18,7 +22,8 @@ import javax.inject.Inject
 class VariationDetailRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
-    private val coroutineDispatchers: CoroutineDispatchers
+    private val coroutineDispatchers: CoroutineDispatchers,
+    private val quantityRulesMapper: QuantityRulesMapper
 ) {
     suspend fun fetchVariation(remoteProductId: Long, remoteVariationId: Long): OnVariationChanged {
         return productStore.fetchSingleVariation(
@@ -81,4 +86,34 @@ class VariationDetailRepository @Inject constructor(
         withContext(coroutineDispatchers.io) {
             getCachedWCVariation(remoteProductId, remoteVariationId)?.toAppModel()
         }
+
+    private suspend fun getSubscriptionProductVariation(
+        remoteProductId: Long,
+        remoteVariationId: Long
+    ): SubscriptionProductVariation? {
+        return withContext(coroutineDispatchers.io) {
+            productStore.getVariationByRemoteId(selectedSite.get(), remoteProductId, remoteVariationId)?.let { model ->
+                SubscriptionProductVariation(model)
+            }
+        }
+    }
+
+    suspend fun getVariationByProductType(remoteProductId: Long, remoteVariationId: Long): ProductVariation? {
+        return withContext(coroutineDispatchers.io) {
+            val productType = productStore.getProductByRemoteId(selectedSite.get(), remoteProductId).let { model ->
+                ProductType.fromString(model?.type ?: "")
+            }
+            when (productType) {
+                ProductType.VARIABLE_SUBSCRIPTION -> getSubscriptionProductVariation(remoteProductId, remoteVariationId)
+                else -> getVariation(remoteProductId, remoteVariationId)
+            }
+        }
+    }
+
+    suspend fun getQuantityRules(remoteProductId: Long, remoteVariationId: Long): QuantityRules? {
+        return withContext(coroutineDispatchers.io) {
+            getCachedWCVariation(remoteProductId, remoteVariationId)?.metadata
+                ?.let { quantityRulesMapper.toAppModelFromVariationMetadata(it) }
+        }
+    }
 }

@@ -1,0 +1,2 @@
+13.0:
+Ottime notizie per tutti coloro che utilizzano l'estensione Abbonamenti WooCommerce. Abbiamo aggiunto il supporto di sola lettura per l'estensione Abbonamenti WooCommerce nelle schermate dei dettagli dell'ordine e dei dettagli del prodotto. Maggiori funzionalità sono in arrivo!

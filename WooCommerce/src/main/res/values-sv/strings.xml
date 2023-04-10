@@ -1,14 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-21 13:54:03+0000
+Translation-Revision-Date: 2023-04-04 11:54:13+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="subscription_free_trial">Gratis provperiod</string>
+    <string name="subscription_sign_up_fee">Registreringsavgift</string>
+    <string name="subscription_expire">Löper ut efter</string>
+    <string name="subscription_price">Prenumerationspris</string>
+    <string name="subscription_period_multiple_years">år</string>
+    <string name="subscription_period_multiple_months">månader</string>
+    <string name="subscription_period_multiple_weeks">veckor</string>
+    <string name="subscription_period_multiple_days">dagar</string>
+    <string name="subscription_period_year">år</string>
+    <string name="subscription_period_month">månad</string>
+    <string name="subscription_period_week">vecka</string>
+    <string name="subscription_period_day">dag</string>
+    <string name="subscription_status_custom">Anpassad</string>
+    <string name="subscription_status_pending_cancellation">Väntar på att avslutas</string>
+    <string name="subscription_status_expired">Löpt ut</string>
+    <string name="subscription_status_cancelled">Avslutat</string>
+    <string name="subscription_status_on_hold">Pausad</string>
+    <string name="subscription_status_active">Aktiv</string>
+    <string name="no_variable_subscription_warning">Du kan endast lägga till variabla prenumerationer i webbadminpanelen.</string>
+    <string name="subscription_details_info_notice">Du kan redigera produktprenumerationer i webbadminpanelen.</string>
+    <string name="subscription_no_trial">Ingen gratis provperiod</string>
+    <string name="subscription_no_sign_up_fee">Ingen registreringsavgift</string>
+    <string name="subscription_never_expire">Löper aldrig ut</string>
+    <string name="product_subscription_description">%1$s varje %2$s %3$s</string>
+    <string name="subscription_period_interval_multiple">Varje %1$d %2$s</string>
+    <string name="subscription_period_interval_single">Varje %1$s</string>
+    <string name="subscription_id">Prenumeration #%1$d</string>
+    <string name="order_subscription">Prenumeration</string>
+    <string name="store_onboarding_launch_store_ok">OK</string>
+    <string name="simplified_login_prologue_title">Woo finns med dig hela vägen från din första försäljning till miljoner i intäkter. Se varför handlare förlitar sig på oss för att driva 3,4 miljoner onlinebutiker.</string>
+    <string name="simplified_login_prologue_intro">Sälj vad som helst var som helst</string>
+    <string name="product_type_subscription">Prenumeration</string>
+    <string name="otp_incorrect">OTP-koden är felaktig. Dubbelkontrollera din information och försök igen.</string>
+    <string name="requesting_sms_otp_failure">SMS-begäran misslyckades. Försök igen.</string>
+    <string name="requesting_sms_otp_success">SMS begärt, kolla dina meddelanden för att se koden.</string>
+    <string name="product_subscription_title">Prenumeration</string>
+    <string name="card_reader_type_selection_bluetooth_reader_description">Kortläsaren accepterar blipp, chipp och magnetremsa vid betalning med betal- och kreditkort.</string>
+    <string name="card_reader_type_selection_tap_to_pay_description">Ta emot säkra kontaktlösa betalningsmetoder direkt från din telefon.</string>
+    <string name="card_reader_tap_to_pay_beta_features_subheading">Testa Tryck för att betala i appen</string>
+    <string name="card_reader_tap_to_pay_beta_features_heading">Tryck för att betala</string>
+    <string name="card_reader_tap_to_pay_description_not_used">Använd din telefon för att ta emot kort\nbetalningar Testa nu.</string>
+    <string name="card_reader_tap_to_pay_share_feedback">Dela feedback om Tryck för att betala</string>
+    <string name="login_site_credentials_web_authorization_connection_rejected">Det går inte att logga in eftersom lösenordsskapandet i appen inte godkänts.</string>
+    <string name="login_site_credentials_fetching_site">Hämtar webbplats …</string>
+    <string name="login_site_credentials_fetching_site_failed">Ett fel inträffade när webbsidan skulle hämtas</string>
+    <string name="login_site_credentials_use_web_authorization">Testa igen med sidan med Adminpanelen</string>
+    <string name="login_store_address">Logga in</string>
+    <string name="loading">Laddar…</string>
+    <string name="upgrades_plan_ended_name">%s har avslutats</string>
+    <string name="upgrades_current_plan_ended_caption">Din prenumeration har avslutats och du har begränsad åtkomst till alla funktionerna.</string>
+    <string name="free_trial_days_left_plural">%1$d dagar</string>
+    <string name="free_trial_one_day_left">1 dag</string>
+    <string name="store_onboarding_get_paid_loading_label">Laddar in …</string>
+    <string name="store_onboarding_get_paid_title">Konfiguration av Payments</string>
+    <string name="store_onboarding_task_about_your_store_toolbar_title">Om din butik</string>
+    <string name="store_creation_installation_rendering_preview_label">Renderar förhandsgranskning…</string>
+    <string name="jetpack_benefits_open_wpadmin">Öppna wp-admin</string>
+    <string name="shipping_label_address_phone_required">Ett telefonnummer är obligatoriskt</string>
+    <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s, %4$s har sålts</string>
+    <string name="analytics_items">poster</string>
+    <string name="analytics_item">artikel</string>
     <string name="upgrades_error_fetching_data">Det gick inte att hämta paketinformationen</string>
     <string name="upgrades_non_upgradeable_caption">Du är %1$s-prenumerant. Du har tillgång till alla våra funktioner fram till %2$s. </string>
     <string name="upgrades_trial_ended_caption">Din kostnadsfria provperiod har avslutats och du har begränsad åtkomst till alla funktionerna. Prenumerera på %1$s nu.</string>
+    <string name="upgrades_upgradeable_caption">Du har en kostnadsfri provperiod på %1$d dagar. Din kostnadsfria provperiod löper ut om %2$s. Uppgradera för att låsa upp nya funktioner och hålla igång din butik.</string>
     <string name="upgrades_subscription_status">Prenumerationsstatus</string>
     <string name="upgrades_title">Uppgraderingar</string>
     <string name="upgrades_troubleshooting">Felsökning</string>
@@ -16,7 +78,7 @@ Language: sv_SE
     <string name="upgrades_upgrade_now">Uppgradera nu</string>
     <string name="upgrades_report_subscription_issue">Rapportera prenumerationsproblem</string>
     <string name="free_trial_upgrade_now">Uppgradera nu</string>
-    <string name="free_trial_days_left">%1$d dagar kvar av din provperiod.</string>
+    <string name="free_trial_days_left">%1$s kvar på din utvärdering.</string>
     <string name="free_trial_trial_ended">Provperioden avslutades</string>
     <string name="free_trial_your_trial_ended">Din provperiod har avslutats.</string>
     <string name="store_onboarding_launch_store_generic_error_description">Hoppsan, det uppstod några oväntade fel.</string>
@@ -86,7 +148,7 @@ Language: sv_SE
     <string name="card_reader_tap_to_pay_explanation_ready">Din telefon är redo för Tryck för att betala.\nDin kund kan trycka på sitt kort\npå din telefon för att betala.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Ta emot kortbetalningar\nmed din telefon</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tryck för att betala</string>
-    <string name="card_reader_tap_to_pay_description">Använd din telefon för att ta emot kortbetalningar</string>
+    <string name="card_reader_tap_to_pay_description_used">Använd din telefon för att ta emot kortbetalningar.</string>
     <string name="card_reader_tap_to_pay">Tryck för att betala</string>
     <string name="card_reader_hub_actions_category_header">ÅTGÄRDER</string>
     <string name="domain_registration_generic_error">Ett fel uppstod under domänregistrering</string>
@@ -336,7 +398,7 @@ Language: sv_SE
     <string name="card_reader_connect_scanning_built_in_hint">Det går snabbt</string>
     <string name="card_reader_connect_scanning_built_in_header">Förbereder den inbyggda läsaren…</string>
     <string name="card_reader_payment_collect_payment_built_in_state">Den inbyggda läsaren är redo</string>
-    <string name="card_reader_type_selection_bluetooth_reader">Bluetooth-läsare</string>
+    <string name="card_reader_type_selection_bluetooth_reader">Kortläsare</string>
     <string name="card_reader_type_selection_tap_to_pay">Tryck för att betala</string>
     <string name="analytics_conversion_subtitle">Omvandlingsfrekvens</string>
     <string name="analytics_session_card_title">Sessioner</string>
@@ -475,7 +537,6 @@ Language: sv_SE
     <string name="store_creation_create_new_store_label">Skapa en ny butik</string>
     <string name="or_use_password_below_qr_code_scan_option">Eller logga in med lösenord</string>
     <string name="or_scan_qr_code_to_log_in">Skanna QR-kod för att logga in</string>
-    <string name="simplified_login_prologue_title">WooCommerce är en anpassningsbar plattform med öppen källkod skapad på WordPress.</string>
     <string name="simulated_reader_toast">Den simulerade kortläsaren har inaktiverats</string>
     <string name="simulated_reader_key">Simulerad läsarnyckel</string>
     <string name="variations_bulk_update_stock_quantity_success">Lagerkvantiteten har uppdaterats</string>
@@ -1335,7 +1396,6 @@ Language: sv_SE
     <string name="card_reader_payment_fetch_order_loading_header">Uppdaterar appstatusen</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Din kund valde %1$s</string>
     <string name="shipping_label_origin_address_phone_invalid">Tullformulär kräver ett tiosiffrigt telefonnummer</string>
-    <string name="shipping_label_address_phone_required">Ett telefonnummer krävs eftersom denna försändelse kräver ett tullformulär</string>
     <string name="shipping_label_create_customs_done">Tullformulär ifyllt</string>
     <string name="print_receipt_label_info_step_7">Om du har problem med att skriva ut från din enhet kontaktar du kundsupporten för din skrivare.</string>
     <string name="print_receipt_label_info_step_6">Om utskrift inte är tillgänglig kan du alltid spara ditt kvitto som PDF och skicka det via e-post för att skriva ut det från en annan enhet.</string>
@@ -1722,7 +1782,6 @@ Language: sv_SE
     <string name="login_jetpack_required_text">För att använda den här appen för %1$s behöver du ha anslutit Jetpack-tillägget till din butik.</string>
     <string name="login_try_another_account">Logga in med ett annat konto</string>
     <string name="login_pick_store">Välj butik att ansluta</string>
-    <string name="login_store_address">Ange din butiks adress</string>
     <string name="login_wpcom">Fortsätt med WordPress.com</string>
     <string name="product_type_variable_desc">En produkt med variationer som färg eller storlek</string>
     <string name="product_selection_count_single">%d produkt vald</string>

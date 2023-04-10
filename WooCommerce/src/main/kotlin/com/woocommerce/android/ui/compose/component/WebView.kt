@@ -41,6 +41,7 @@ fun WCWebView(
     userAgent: UserAgent,
     modifier: Modifier = Modifier,
     onUrlLoaded: (String) -> Unit = {},
+    onPageFinished: (String) -> Unit = {},
     captureBackPresses: Boolean = true,
     wpComAuthenticator: WPComWebViewAuthenticator? = null,
     webViewNavigator: WebViewNavigator = rememberWebViewNavigator(),
@@ -100,6 +101,7 @@ fun WCWebView(
 
                         override fun onPageFinished(view: WebView?, url: String?) {
                             super.onPageFinished(view, url)
+                            url?.let { onPageFinished(it) }
                             canGoBack = view?.canGoBack() ?: false
                         }
                     }

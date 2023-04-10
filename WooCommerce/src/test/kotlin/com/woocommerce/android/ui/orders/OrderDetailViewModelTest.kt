@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.initSavedStateHandle
+import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
@@ -17,11 +18,15 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.model.WooPlugin
+import com.woocommerce.android.network.giftcard.GiftCardRestClient
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.common.giftcard.GiftCardRepository
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
+import com.woocommerce.android.ui.orders.details.GetOrderSubscriptions
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
@@ -44,6 +49,7 @@ import kotlinx.coroutines.test.advanceTimeBy
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.UseConstructor
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
@@ -60,6 +66,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
@@ -135,6 +142,16 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         isOrderDetailSkeletonShown = false
     )
 
+    private val getOrderSubscriptions: GetOrderSubscriptions = mock()
+    private val giftCardRestClient: GiftCardRestClient = mock()
+    private val giftCardRepository: GiftCardRepository = mock(
+        useConstructor = UseConstructor.withArguments(
+            selectedSite,
+            giftCardRestClient,
+            coroutinesTestRule.testDispatchers
+        )
+    )
+
     private fun createViewModel() {
         viewModel = spy(
             OrderDetailViewModel(
@@ -151,7 +168,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 cardReaderTracker,
                 analyticsTraWrapper,
                 shippingLabelOnboardingRepository,
-                orderDetailsTransactionLauncher
+                orderDetailsTransactionLauncher,
+                getOrderSubscriptions,
+                giftCardRepository
             )
         )
     }
@@ -1625,5 +1644,206 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         verify(orderDetailRepository, times(1)).fetchOrderShippingLabels(any())
         verify(orderDetailRepository, times(1)).fetchOrderShipmentTrackingList(any())
+    }
+
+    @Test
+    fun `when subscriptions plugin is installed and active, then fetch plugin data`() = testBlocking {
+        val subscriptions = WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName
+        pluginsInfo[subscriptions] = WooPlugin(
+            isInstalled = true,
+            isActive = true,
+            version = "1.0.0"
+        )
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(emptyList<Subscription>()).whenever(getOrderSubscriptions).invoke(any())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(getOrderSubscriptions).invoke(any())
+    }
+
+    @Test
+    fun `when subscriptions plugin is NOT active, then DON'T fetch plugin data`() = testBlocking {
+        val subscriptions = WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName
+        pluginsInfo[subscriptions] = WooPlugin(
+            isInstalled = true,
+            isActive = false,
+            version = "1.0.0"
+        )
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(getOrderSubscriptions, never()).invoke(any())
+    }
+
+    @Test
+    fun `when subscriptions fetched is NOT empty, then track subscription shown event`() = testBlocking {
+        val subscriptions = WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName
+        pluginsInfo[subscriptions] = WooPlugin(
+            isInstalled = true,
+            isActive = true,
+            version = "1.0.0"
+        )
+        val subscription: Subscription = mock()
+        val result = listOf(subscription)
+
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(result).whenever(getOrderSubscriptions).invoke(any())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAILS_SUBSCRIPTIONS_SHOWN)
+    }
+
+    @Test
+    fun `when subscriptions fetched is empty, then DON'T track subscription shown event`() = testBlocking {
+        val subscriptions = WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName
+        pluginsInfo[subscriptions] = WooPlugin(
+            isInstalled = true,
+            isActive = true,
+            version = "1.0.0"
+        )
+        val result = emptyList<Subscription>()
+
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(result).whenever(getOrderSubscriptions).invoke(any())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(analyticsTraWrapper, never()).track(AnalyticsEvent.ORDER_DETAILS_SUBSCRIPTIONS_SHOWN)
+    }
+
+    @Test
+    fun `when subscriptions fetched is null, then DON'T track subscription shown event`() = testBlocking {
+        val subscriptions = WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName
+        pluginsInfo[subscriptions] = WooPlugin(
+            isInstalled = true,
+            isActive = true,
+            version = "1.0.0"
+        )
+        val result = null
+
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(result).whenever(getOrderSubscriptions).invoke(any())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(analyticsTraWrapper, never()).track(AnalyticsEvent.ORDER_DETAILS_SUBSCRIPTIONS_SHOWN)
+    }
+
+    @Test
+    fun `when gift cards plugin is installed and active, then fetch plugin data`() = testBlocking {
+        val giftCards = WooCommerceStore.WooPlugin.WOO_GIFT_CARDS.pluginName
+        pluginsInfo[giftCards] = WooPlugin(
+            isInstalled = true,
+            isActive = true,
+            version = "1.0.0"
+        )
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(giftCardRepository).fetchGiftCardSummaryByOrderId(any(), anyOrNull())
+    }
+
+    @Test
+    fun `when gift cards plugin is NOT active, then DON'T fetch plugin data`() = testBlocking {
+        val giftCards = WooCommerceStore.WooPlugin.WOO_GIFT_CARDS.pluginName
+        pluginsInfo[giftCards] = WooPlugin(
+            isInstalled = true,
+            isActive = false,
+            version = "1.0.0"
+        )
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(giftCardRepository, never()).fetchGiftCardSummaryByOrderId(any(), anyOrNull())
+    }
+
+    @Test
+    fun `when gift cards fetched is NOT empty, then track gift cards shown event`() = testBlocking {
+        val giftCards = WooCommerceStore.WooPlugin.WOO_GIFT_CARDS.pluginName
+        pluginsInfo[giftCards] = WooPlugin(
+            isInstalled = true,
+            isActive = true,
+            version = "1.0.0"
+        )
+        val giftCard: GiftCardSummary = mock()
+        val result = WooResult(listOf(giftCard))
+
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(result).whenever(giftCardRepository).fetchGiftCardSummaryByOrderId(any(), anyOrNull())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(analyticsTraWrapper).track(AnalyticsEvent.ORDER_DETAILS_GIFT_CARD_SHOWN)
+    }
+
+    @Test
+    fun `when gift cards fetched is empty, then DON'T track gift cards shown event`() = testBlocking {
+        val giftCards = WooCommerceStore.WooPlugin.WOO_GIFT_CARDS.pluginName
+        pluginsInfo[giftCards] = WooPlugin(
+            isInstalled = true,
+            isActive = true,
+            version = "1.0.0"
+        )
+        val result = WooResult(emptyList<Subscription>())
+
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(result).whenever(giftCardRepository).fetchGiftCardSummaryByOrderId(any(), anyOrNull())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(analyticsTraWrapper, never()).track(AnalyticsEvent.ORDER_DETAILS_GIFT_CARD_SHOWN)
+    }
+
+    @Test
+    fun `when gift cards fetched is null, then DON'T track gift cards shown event`() = testBlocking {
+        val giftCards = WooCommerceStore.WooPlugin.WOO_GIFT_CARDS.pluginName
+        pluginsInfo[giftCards] = WooPlugin(
+            isInstalled = true,
+            isActive = true,
+            version = "1.0.0"
+        )
+        val result = WooResult(null)
+
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(result).whenever(giftCardRepository).fetchGiftCardSummaryByOrderId(any(), anyOrNull())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(analyticsTraWrapper, never()).track(AnalyticsEvent.ORDER_DETAILS_GIFT_CARD_SHOWN)
     }
 }

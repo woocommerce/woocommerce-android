@@ -246,7 +246,10 @@ class OrderCreateEditViewModel @Inject constructor(
     fun onProductsSelected(selectedItems: Collection<SelectedItem>) {
         tracker.track(
             ORDER_PRODUCT_ADD,
-            mapOf(KEY_FLOW to flow)
+            mapOf(
+                KEY_FLOW to flow,
+                KEY_PRODUCT_COUNT to selectedItems.size
+            )
         )
 
         viewModelScope.launch {

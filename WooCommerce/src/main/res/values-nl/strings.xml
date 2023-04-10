@@ -1,14 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-23 23:54:39+0000
+Translation-Revision-Date: 2023-04-04 15:54:39+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="subscription_free_trial">Gratis proefabonnement</string>
+    <string name="subscription_sign_up_fee">Aanmeldkosten</string>
+    <string name="subscription_expire">Verlopen na</string>
+    <string name="subscription_price">Abonnementsprijs</string>
+    <string name="subscription_period_multiple_years">jaren</string>
+    <string name="subscription_period_multiple_months">maanden</string>
+    <string name="subscription_period_multiple_weeks">weken</string>
+    <string name="subscription_period_multiple_days">dagen</string>
+    <string name="subscription_period_year">jaar</string>
+    <string name="subscription_period_month">maand</string>
+    <string name="subscription_period_week">week</string>
+    <string name="subscription_period_day">dag</string>
+    <string name="subscription_status_custom">Aangepast</string>
+    <string name="subscription_status_pending_cancellation">In afwachting van annuleren</string>
+    <string name="subscription_status_expired">Verlopen</string>
+    <string name="subscription_status_cancelled">Geannuleerd</string>
+    <string name="subscription_status_on_hold">In de wacht</string>
+    <string name="subscription_status_active">Actief</string>
+    <string name="no_variable_subscription_warning">Je kunt alleen variabele abonnementen toevoegen in het online dashboard.</string>
+    <string name="subscription_details_info_notice">Je kunt productabonnementen bewerken in het online dashboard.</string>
+    <string name="subscription_no_trial">Geen proefperiode</string>
+    <string name="subscription_no_sign_up_fee">Geen aanmeldkosten</string>
+    <string name="subscription_never_expire">Nooit verlopen</string>
+    <string name="product_subscription_description">%1$s elke %2$s %3$s</string>
+    <string name="subscription_period_interval_multiple">Elke %1$d %2$s</string>
+    <string name="subscription_period_interval_single">Elke %1$s</string>
+    <string name="subscription_id">Abonnementnummer%1$d</string>
+    <string name="order_subscription">Abonnement</string>
+    <string name="store_onboarding_launch_store_ok">OK</string>
+    <string name="simplified_login_prologue_title">Vanaf je eerste verkoop tot miljoenen in omzet, Woo is bij je. Zie waarom handelaren ons vertrouwen met het mogelijk maken van 3,4 miljoen webwinkels.</string>
+    <string name="simplified_login_prologue_intro">Alles verkopen, overal.</string>
+    <string name="product_type_subscription">Abonnement</string>
+    <string name="otp_incorrect">De OTP-code is niet correct. Controleer je gegevens en probeer het nogmaals.</string>
+    <string name="requesting_sms_otp_failure">Sms-aaanvraag mislukt. Probeer het nog eens.</string>
+    <string name="requesting_sms_otp_success">Sms aangevraagd, controleer je berichten voor de code.</string>
+    <string name="product_subscription_title">Abonnement</string>
+    <string name="card_reader_type_selection_bluetooth_reader_description">De kaartlezer accepteert tik-, chip- en veegbetalingen met debit-en creditcards.</string>
+    <string name="card_reader_type_selection_tap_to_pay_description">Accepteert contactloze betalingen veilig en rechtstreeks vanaf je telefoon.</string>
+    <string name="card_reader_tap_to_pay_beta_features_subheading">Test tik om te betalen in de app</string>
+    <string name="card_reader_tap_to_pay_beta_features_heading">Tik om te betalen</string>
+    <string name="card_reader_tap_to_pay_description_not_used">Gebruik je telefoon om pinbetalingen\nte accepteren Probeer het nu.</string>
+    <string name="card_reader_tap_to_pay_share_feedback">Deel feedback over tik om te betalen</string>
+    <string name="login_site_credentials_web_authorization_connection_rejected">Inloggen mislukt omdat het maken van een applicatiewachtwoord niet goedgekeurd is.</string>
+    <string name="login_site_credentials_fetching_site">Website ophalen…</string>
+    <string name="login_site_credentials_fetching_site_failed">Er heeft zich een fout voorgedaan tijdens het ophalen van je website</string>
+    <string name="login_site_credentials_use_web_authorization">Probeer het opnieuw met de WP beheerderspagina</string>
+    <string name="login_store_address">Inloggen</string>
+    <string name="loading">Laden…</string>
+    <string name="upgrades_plan_ended_name">%s beëindigd</string>
+    <string name="upgrades_current_plan_ended_caption">Je abonnement is verlopen en je hebt beperkte toegang tot alle functies.</string>
+    <string name="free_trial_days_left_plural">%1$d dagen</string>
+    <string name="free_trial_one_day_left">1 dag</string>
+    <string name="store_onboarding_get_paid_loading_label">Laden…</string>
+    <string name="store_onboarding_get_paid_title">Betalingsconfiguratie</string>
+    <string name="store_onboarding_task_about_your_store_toolbar_title">Over je winkel</string>
+    <string name="store_creation_installation_rendering_preview_label">Voorbeeldweergave renderen…</string>
+    <string name="jetpack_benefits_open_wpadmin">Wp-admin openen</string>
+    <string name="shipping_label_address_phone_required">Een telefoonnummer is vereist</string>
+    <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s, %4$s verkocht</string>
+    <string name="analytics_items">artikelen</string>
+    <string name="analytics_item">artikel</string>
     <string name="upgrades_error_fetching_data">Fout bij het ophalen van de abonnementsgegevens</string>
     <string name="upgrades_non_upgradeable_caption">Je bent een %1$s abonnee! Tot %2$s heb je toegang tot al onze functies. </string>
     <string name="upgrades_trial_ended_caption">Je proefversie is verlopen waardoor je nu maar beperkt toegang hebt tot alle functies. Nu abonneren op %1$s.</string>
+    <string name="upgrades_upgradeable_caption">Je gebruikt het gratis proefabonnement van %1$d dagen. Je gratis proefabonnement loopt af over %2$s. Upgrade om nieuwe functies te ontgrendelen en je winkel draaiende te houden.</string>
     <string name="upgrades_subscription_status">Abonnementsstatus</string>
     <string name="upgrades_title">Upgrades</string>
     <string name="upgrades_troubleshooting">Probleemoplossing</string>
@@ -16,7 +78,7 @@ Language: nl
     <string name="upgrades_upgrade_now">Upgrade nu</string>
     <string name="upgrades_report_subscription_issue">Meld probleem met abonnement</string>
     <string name="free_trial_upgrade_now">Upgrade nu</string>
-    <string name="free_trial_days_left">%1$d dagen resterend van je proefversie</string>
+    <string name="free_trial_days_left">%1$s resterend van je proefversie.</string>
     <string name="free_trial_trial_ended">Einde proefabonnement</string>
     <string name="free_trial_your_trial_ended">Je proefversie is beëindigd.</string>
     <string name="store_onboarding_launch_store_generic_error_description">Oeps, er zijn onverwachte fouten opgetreden.</string>
@@ -86,7 +148,7 @@ Language: nl
     <string name="card_reader_tap_to_pay_explanation_ready">Je telefoon is gereed voor Tap to Pay.\nDe klant kan met hun pas\njouw telefoon aantikken om te betalen.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Pinbetalingen verzamelen\nMet je telefoon</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tik om te betalen</string>
-    <string name="card_reader_tap_to_pay_description">Gebruik je telefoon om pinbetalingen te accepteren</string>
+    <string name="card_reader_tap_to_pay_description_used">Gebruik je telefoon om pinbetalingen te accepteren.</string>
     <string name="card_reader_tap_to_pay">Tik om te betalen</string>
     <string name="card_reader_hub_actions_category_header">ACTIES</string>
     <string name="domain_registration_generic_error">Er is een fout opgetreden tijdens domeinregistratie</string>
@@ -336,7 +398,7 @@ Language: nl
     <string name="card_reader_connect_scanning_built_in_hint">Dit duurt niet lang</string>
     <string name="card_reader_connect_scanning_built_in_header">Geïntegreerde lezer voorbereiden …</string>
     <string name="card_reader_payment_collect_payment_built_in_state">Geïntegreerde lezer is klaar</string>
-    <string name="card_reader_type_selection_bluetooth_reader">Lezer met bluetooth</string>
+    <string name="card_reader_type_selection_bluetooth_reader">Kaartlezer</string>
     <string name="card_reader_type_selection_tap_to_pay">Tik om te betalen</string>
     <string name="analytics_conversion_subtitle">Conversiescore</string>
     <string name="analytics_session_card_title">Sessies</string>
@@ -475,7 +537,6 @@ Language: nl
     <string name="store_creation_create_new_store_label">Een nieuwe winkel maken</string>
     <string name="or_use_password_below_qr_code_scan_option">Of log in met een wachtwoord</string>
     <string name="or_scan_qr_code_to_log_in">Scan de QR-code om in te loggen</string>
-    <string name="simplified_login_prologue_title">WooCommerce is een aanpasbaar, opensource eCommerce-platform gebaseerd op WordPress.</string>
     <string name="simulated_reader_toast">Gesimuleerde kaartlezer is uitgeschakeld</string>
     <string name="simulated_reader_key">Sleutel gesimuleerde lezer</string>
     <string name="variations_bulk_update_stock_quantity_success">Aantal op voorraad bijgewerkt</string>
@@ -1335,7 +1396,6 @@ Language: nl
     <string name="card_reader_payment_fetch_order_loading_header">Status in de app aan het bijwerken…</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Je klant heeft het volgende geselecteerd %1$s</string>
     <string name="shipping_label_origin_address_phone_invalid">Voor douaneformulieren is een tiencijferig telefoonnummer verplicht</string>
-    <string name="shipping_label_address_phone_required">Een telefoonnummer is verplicht omdat deze verzending een douaneformulier vereist</string>
     <string name="shipping_label_create_customs_done">Douaneformulier ingevuld</string>
     <string name="print_receipt_label_info_step_7">Als je problemen ervaart met afdrukken vanaf je apparaat, neem dan contact op met de klantenservice van uw printer.</string>
     <string name="print_receipt_label_info_step_6">Als afdrukken niet beschikbaar is, kan je je kwitantie altijd opslaan als pdf en hem per e-mail versturen om hem op een ander apparaat af te drukken.</string>
@@ -1722,7 +1782,6 @@ Language: nl
     <string name="login_jetpack_required_text">Om deze app te gebruiken voor %1$s, moet de Jetpack-plugin gekoppeld zijn aan je winkel.</string>
     <string name="login_try_another_account">Log in met een ander account</string>
     <string name="login_pick_store">Selecteer een winkel om mee te verbinden</string>
-    <string name="login_store_address">Voer het adres van je winkel in</string>
     <string name="login_wpcom">Doorgaan met WordPress.com</string>
     <string name="product_type_variable_desc">Een product met variaties zoals kleur of maat</string>
     <string name="product_selection_count_single">%d product geselecteerd</string>

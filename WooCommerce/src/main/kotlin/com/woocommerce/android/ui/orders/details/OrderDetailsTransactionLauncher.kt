@@ -51,7 +51,9 @@ class OrderDetailsTransactionLauncher @Inject constructor(
         NOTES_FETCHED,
         REFUNDS_FETCHED,
         SHIPMENT_TRACKINGS_FETCHED,
-        PACKAGE_CREATION_ELIGIBLE_FETCHED
+        PACKAGE_CREATION_ELIGIBLE_FETCHED,
+        SUBSCRIPTIONS_FETCHED,
+        GIFT_CARDS_FETCHED
     }
 
     fun onOrderFetched() = satisfyCondition(Conditions.ORDER_FETCHED)
@@ -65,6 +67,10 @@ class OrderDetailsTransactionLauncher @Inject constructor(
     fun onShipmentTrackingFetchingCompleted() = satisfyCondition(Conditions.SHIPMENT_TRACKINGS_FETCHED)
 
     fun onPackageCreationEligibleFetched() = satisfyCondition(Conditions.PACKAGE_CREATION_ELIGIBLE_FETCHED)
+
+    fun onSubscriptionsFetched() = satisfyCondition(Conditions.SUBSCRIPTIONS_FETCHED)
+
+    fun onGiftCardsFetched() = satisfyCondition(Conditions.GIFT_CARDS_FETCHED)
 
     fun clear() {
         validatorScope.cancel()

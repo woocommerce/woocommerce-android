@@ -1,6 +1,12 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 13.1
+More love for In-Person Payments and orders this time around, including the option to select your most popular products when creating an order.
+
+## 13.0
+Great news for folks that are using WooCommerce Subscriptions extension. We have added read only support for the WooCommerce Subsciptions extension in the order detail and product detail screens. More features coming soon!
+
 ## 12.9
 For this release, we focused on making your experience smoother when managing products. Additionally, it's now possible to install Jetpack from the app if you would like additional functionality such as push notifications and visitor stats. Keep your feedback coming!
 
@@ -8,10 +14,10 @@ For this release, we focused on making your experience smoother when managing pr
 This release includes a lot of improvements to the order creation functionality. It's possible to select multiple products at one go & an improved faster search & filter option. We also fixed a few bugs and made several enhancements for accessibility of the Analytics section. We’ve added a new Upgrades section to WordPress.com users.
 
 ## 12.7
-This release has several fixes and improvements that makes it easier for you to manage your store from the app. Please continue to send us feedback – we are listening! 
+This release has several fixes and improvements that makes it easier for you to manage your store from the app. Please continue to send us feedback – we are listening!
 
 ## 12.6
-Did you know you can create an order from the app? We made a few improvements to order creation to make your experience smoother. Please keep sending your feedback! We read every one of them! 
+Did you know you can create an order from the app? We made a few improvements to order creation to make your experience smoother. Please keep sending your feedback! We read every one of them!
 
 ## 12.5
 This release includes several bug fixes and improvements to make your experience smoother and more enjoyable. We're committed to continuously improving the WooCommerce app, and we have some exciting updates coming in the next few weeks. Stay tuned for more information!
@@ -52,7 +58,7 @@ Exciting news! It's possible to generate every variation combinations from your 
 We focused on some stability and performance issues to make your experience smoother. Please keep sharing feedback. We read every one of them.
 
 ## 11.3
-This release has several fixes that makes it easier for you to manage your store from the app. Please continue to send us feedback – we are listening! 
+This release has several fixes that makes it easier for you to manage your store from the app. Please continue to send us feedback – we are listening!
 
 ## 11.2
 
@@ -60,7 +66,7 @@ For this release, we focused on polishing a few things and taking care of minor 
 
 ## 11.1
 
-This release includes a lot of cool things for you to manage your store better! We added the option to bulk update stock quantity of variations. We have also added the option for you login via QR code. We've made various improvements to the orders and products search. 
+This release includes a lot of cool things for you to manage your store better! We added the option to bulk update stock quantity of variations. We have also added the option for you login via QR code. We've made various improvements to the orders and products search.
 
 ## 11.0
 
@@ -92,11 +98,11 @@ This release contains a handful of minor improvements to make your experience sm
 
 ## 10.3
 
-More stability fixes to help you log in much easier. Added the ability to set up Jetpack if it's not connected yet. And we fixed a bug where Jetpack can be incorrectly assumed as unavailable. Please keep your feedback coming! 
+More stability fixes to help you log in much easier. Added the ability to set up Jetpack if it's not connected yet. And we fixed a bug where Jetpack can be incorrectly assumed as unavailable. Please keep your feedback coming!
 
 ## 10.2
 
-Even though this release doesn’t have any new features, we still put a lot of love into it! We’ve added a new Help Center page that makes it easier for you to login to the app. You can also enable or disable the option to take card or cash payments on collection or delivery.   
+Even though this release doesn’t have any new features, we still put a lot of love into it! We’ve added a new Help Center page that makes it easier for you to login to the app. You can also enable or disable the option to take card or cash payments on collection or delivery.
 Lastly, we’ve made some tweaks to improve performance. Please keep sending your feedback! We read every one of them!
 
 ## 10.1

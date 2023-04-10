@@ -1,12 +1,23 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
-13.0
+13.2
 -----
 
+
+13.1
+-----
+- [internal] Users can now create a Free Trial store from the app from the Get Started section of the app prologue. [https://github.com/woocommerce/woocommerce-android/pull/8759]
+- [**] Add Popular and Last sold sections to product selector screen [https://github.com/woocommerce/woocommerce-android/pull/8756]
+- [**] Jetpack activation now supported for merchants logging in with site credentials. [https://github.com/woocommerce/woocommerce-android/pull/8698]
+13.0
+-----
+- [*][Internal] Added analytics events for Product Selector interactions [https://github.com/woocommerce/woocommerce-android/pull/8665]
+- [***] Add read-only support for the WooCommerce Subscription extension on order details and product details. [https://github.com/woocommerce/woocommerce-android/pull/8440]
 
 12.9
 -----
 - [*] Jetpack benefit banner and dialog are now available on the dashboard screen after logging in with site credentials. [https://github.com/woocommerce/woocommerce-android/pull/8596]
 - [*] Fixed item's stock status labels on product picker lists [https://github.com/woocommerce/woocommerce-android/pull/8627]
+- [*] Users can now log in to self-hosted sites without Jetpack by approving application password authorization to their sites. [https://github.com/woocommerce/woocommerce-android/pull/8618]
 - [***] Adds a new onboarding list on my store tab to guide the user setting up their store [https://github.com/woocommerce/woocommerce-android/pull/8645]
 
 12.8

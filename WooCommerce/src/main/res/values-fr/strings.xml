@@ -1,14 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-21 15:54:04+0000
+Translation-Revision-Date: 2023-04-03 16:54:05+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="subscription_free_trial">Essai gratuit</string>
+    <string name="subscription_sign_up_fee">Frais d’inscription</string>
+    <string name="subscription_expire">Expire après</string>
+    <string name="subscription_price">Prix du plan</string>
+    <string name="subscription_period_multiple_years">ans</string>
+    <string name="subscription_period_multiple_months">mois</string>
+    <string name="subscription_period_multiple_weeks">semaines</string>
+    <string name="subscription_period_multiple_days">jours</string>
+    <string name="subscription_period_year">année</string>
+    <string name="subscription_period_month">mois</string>
+    <string name="subscription_period_week">semaine</string>
+    <string name="subscription_period_day">jour</string>
+    <string name="subscription_status_custom">Personnalisé</string>
+    <string name="subscription_status_pending_cancellation">Annulation en attente</string>
+    <string name="subscription_status_expired">Expiré</string>
+    <string name="subscription_status_cancelled">Annulée</string>
+    <string name="subscription_status_on_hold">En attente</string>
+    <string name="subscription_status_active">Actif</string>
+    <string name="no_variable_subscription_warning">L’ajout de plans variables n’est possible que dans le tableau de bord Web.</string>
+    <string name="subscription_details_info_notice">Vous pouvez modifier les plans de produits dans le tableau de bord Web.</string>
+    <string name="subscription_no_trial">Pas de période d’essai</string>
+    <string name="subscription_no_sign_up_fee">Pas de frais d’inscription</string>
+    <string name="subscription_never_expire">N’expire jamais</string>
+    <string name="product_subscription_description">%1$s tous les %2$s %3$s</string>
+    <string name="subscription_period_interval_multiple">Tous les %1$d %2$s</string>
+    <string name="subscription_period_interval_single">Tous les %1$s</string>
+    <string name="subscription_id">Abonnement n° %1$d</string>
+    <string name="order_subscription">Abonnement</string>
+    <string name="store_onboarding_launch_store_ok">OK</string>
+    <string name="simplified_login_prologue_title">Woo vous accompagne, de votre toute première vente au développement colossal de votre chiffre d’affaires. Découvrez pourquoi les commerçants nous font confiance pour faire fonctionner 3,4 millions de boutiques en ligne.</string>
+    <string name="simplified_login_prologue_intro">Vendre tout, partout.</string>
+    <string name="product_type_subscription">Abonnement</string>
+    <string name="otp_incorrect">Le code OTP est incorrect. Veuillez vérifier vos informations et réessayer.</string>
+    <string name="requesting_sms_otp_failure">La demande de SMS a échoué. Veuillez réessayer.</string>
+    <string name="requesting_sms_otp_success">SMS demandé. Veuillez vérifier la présence du code dans vos messages.</string>
+    <string name="product_subscription_title">Abonnement</string>
+    <string name="card_reader_type_selection_bluetooth_reader_description">Le lecteur de cartes accepte les paiements par carte de débit et de crédit : en appuyant la carte contre le lecteur, en la faisant glisser ou en utilisant la puce.</string>
+    <string name="card_reader_type_selection_tap_to_pay_description">Acceptez des paiements sans contact en toute sécurité directement sur votre téléphone.</string>
+    <string name="card_reader_tap_to_pay_beta_features_subheading">Tester Appuyer pour payer dans l’application</string>
+    <string name="card_reader_tap_to_pay_beta_features_heading">Appuyer pour payer</string>
+    <string name="card_reader_tap_to_pay_description_not_used">Utilisez votre téléphone pour accepter des paiements\npar carte. Essayez dès maintenant.</string>
+    <string name="card_reader_tap_to_pay_share_feedback">Partager un avis sur Appuyer pour payer</string>
+    <string name="login_site_credentials_web_authorization_connection_rejected">Impossible de se connecter, car le mot de passe créé pour l’application n’est pas approuvé.</string>
+    <string name="login_site_credentials_fetching_site">Récupération du site…</string>
+    <string name="login_site_credentials_fetching_site_failed">Une erreur est survenue lors de la récupération de votre site Web</string>
+    <string name="login_site_credentials_use_web_authorization">Réessayer sur le tableau de bord</string>
+    <string name="login_store_address">Se connecter</string>
+    <string name="loading">Chargement…</string>
+    <string name="upgrades_plan_ended_name">%s s’est terminé</string>
+    <string name="upgrades_current_plan_ended_caption">Votre abonnement s’est terminé. Vous ne disposez désormais plus que d’un accès limité à l’ensemble des fonctionnalités.</string>
+    <string name="free_trial_days_left_plural">%1$d jours</string>
+    <string name="free_trial_one_day_left">1 jour</string>
+    <string name="store_onboarding_get_paid_loading_label">En cours de chargement…</string>
+    <string name="store_onboarding_get_paid_title">Configuration des paiements</string>
+    <string name="store_onboarding_task_about_your_store_toolbar_title">À propos de votre boutique</string>
+    <string name="store_creation_installation_rendering_preview_label">Affichage de l’aperçu…</string>
+    <string name="jetpack_benefits_open_wpadmin">Ouvrir le tableau de bord</string>
+    <string name="shipping_label_address_phone_required">Veuillez indiquer un numéro de téléphone</string>
+    <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s, %4$s vendu(e)(s)</string>
+    <string name="analytics_items">éléments</string>
+    <string name="analytics_item">article</string>
     <string name="upgrades_error_fetching_data">Erreur lors de l’extraction des détails du plan</string>
     <string name="upgrades_non_upgradeable_caption">Vous êtes abonné à %1$s ! Vous avez accès à toutes nos fonctionnalités jusqu’au %2$s. </string>
     <string name="upgrades_trial_ended_caption">Votre période d’essai est terminée. Vous avez un accès limité à toutes les fonctionnalités. Abonnez-vous à %1$s maintenant.</string>
+    <string name="upgrades_upgradeable_caption">Vous profitez de l’essai gratuit de %1$d jours. Votre période d’essai prend fin dans %2$s jour(s). Procédez à la mise à niveau pour déverrouiller de nouvelles fonctionnalités et continuer à gérer votre boutique.</string>
     <string name="upgrades_subscription_status">État de l’abonnement</string>
     <string name="upgrades_title">Options payantes</string>
     <string name="upgrades_troubleshooting">Résolution des problèmes</string>
@@ -16,7 +78,7 @@ Language: fr
     <string name="upgrades_upgrade_now">Choisir une option payante maintenant</string>
     <string name="upgrades_report_subscription_issue">Signaler un problème d’abonnement</string>
     <string name="free_trial_upgrade_now">Choisir une option payante maintenant</string>
-    <string name="free_trial_days_left">%1$d jours d’essai restants</string>
+    <string name="free_trial_days_left">%1$s restant dans votre essai.</string>
     <string name="free_trial_trial_ended">L’essai est terminé</string>
     <string name="free_trial_your_trial_ended">Votre essai est terminé.</string>
     <string name="store_onboarding_launch_store_generic_error_description">Oups. des erreurs inattendues se sont produites.</string>
@@ -86,7 +148,7 @@ Language: fr
     <string name="card_reader_tap_to_pay_explanation_ready">Vous pouvez utiliser la fonctionnalité Appuyer pour payer avec votre téléphone.\nVos clients peuvent placer leur carte\nsur votre téléphone pour payer.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Percevoir des paiements par carte\navec votre téléphone</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Appuyer pour payer</string>
-    <string name="card_reader_tap_to_pay_description">Utiliser votre téléphone pour accepter des paiements par carte</string>
+    <string name="card_reader_tap_to_pay_description_used">Utilisez votre téléphone pour accepter les paiements par carte.</string>
     <string name="card_reader_tap_to_pay">Appuyer pour payer</string>
     <string name="card_reader_hub_actions_category_header">ACTIONS</string>
     <string name="domain_registration_generic_error">Une erreur s’est produite lors de l’enregistrement du domaine</string>
@@ -336,7 +398,7 @@ Language: fr
     <string name="card_reader_connect_scanning_built_in_hint">Cela ne prendra pas longtemps</string>
     <string name="card_reader_connect_scanning_built_in_header">Préparation du lecteur intégré…</string>
     <string name="card_reader_payment_collect_payment_built_in_state">Le lecteur intégré est prêt</string>
-    <string name="card_reader_type_selection_bluetooth_reader">Lecteur Bluetooth</string>
+    <string name="card_reader_type_selection_bluetooth_reader">Lecteur de carte</string>
     <string name="card_reader_type_selection_tap_to_pay">Appuyer pour payer</string>
     <string name="analytics_conversion_subtitle">Taux de conversion</string>
     <string name="analytics_session_card_title">Sessions</string>
@@ -475,7 +537,6 @@ Language: fr
     <string name="store_creation_create_new_store_label">Créer une nouvelle boutique</string>
     <string name="or_use_password_below_qr_code_scan_option">Ou connectez-vous avec un mot de passe</string>
     <string name="or_scan_qr_code_to_log_in">Scannez le code QR pour vous connecter</string>
-    <string name="simplified_login_prologue_title">WooCommerce est une plateforme d’e-commerce open-source personnalisable basée sur WordPress.</string>
     <string name="simulated_reader_toast">Le simulateur de lecteur de carte a été désactivé</string>
     <string name="simulated_reader_key">Simulateur de lecteur de carte</string>
     <string name="variations_bulk_update_stock_quantity_success">Mise à jour de la quantité en stock</string>
@@ -1335,7 +1396,6 @@ Language: fr
     <string name="card_reader_payment_fetch_order_loading_header">Mise à jour de l’état de l’application</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Votre client a sélectionné %1$s</string>
     <string name="shipping_label_origin_address_phone_invalid">Les formulaires douaniers nécessitent un numéro de téléphone à 10 chiffres</string>
-    <string name="shipping_label_address_phone_required">Un numéro de téléphone est requis, car cet envoi nécessite un formulaire douanier</string>
     <string name="shipping_label_create_customs_done">Formulaire douanier rempli</string>
     <string name="print_receipt_label_info_step_7">Si vous rencontrez des difficultés d’impression depuis votre appareil, contactez l’assistance client de votre imprimante.</string>
     <string name="print_receipt_label_info_step_6">Si l’impression n’est pas disponible, vous pouvez toujours enregistrer votre reçu au format PDF et l’envoyer par e-mail pour l’imprimer depuis un autre appareil.</string>
@@ -1722,7 +1782,6 @@ Language: fr
     <string name="login_jetpack_required_text">Pour utiliser cette application pour %1$s, l’extension Jetpack doit être connectée sur votre boutique.</string>
     <string name="login_try_another_account">Se connecter avec un autre compte</string>
     <string name="login_pick_store">Sélectionner la boutique à connecter</string>
-    <string name="login_store_address">Saisissez l’adresse de votre boutique</string>
     <string name="login_wpcom">Continuer avec WordPress.com</string>
     <string name="product_type_variable_desc">Un produit avec des variantes comme la couleur ou la taille</string>
     <string name="product_selection_count_single">%d produit sélectionné</string>

@@ -26,9 +26,11 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDo
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductQuantityRules
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductReviews
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSubscription
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTags
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTypes
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
@@ -38,7 +40,9 @@ import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.OTHER
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
+import com.woocommerce.android.ui.products.ProductType.SUBSCRIPTION
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
@@ -54,8 +58,10 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
+import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 
+@SuppressWarnings("LargeClass")
 class ProductDetailCardBuilder(
     private val viewModel: ProductDetailViewModel,
     private val resources: ResourceProvider,
@@ -75,10 +81,11 @@ class ProductDetailCardBuilder(
 
         when (product.productType) {
             SIMPLE -> cards.addIfNotEmpty(getSimpleProductCard(product))
-            VARIABLE -> cards.addIfNotEmpty(getVariableProductCard(product))
+            VARIABLE, VARIABLE_SUBSCRIPTION -> cards.addIfNotEmpty(getVariableProductCard(product))
             GROUPED -> cards.addIfNotEmpty(getGroupedProductCard(product))
             EXTERNAL -> cards.addIfNotEmpty(getExternalProductCard(product))
-            OTHER -> cards.addIfNotEmpty(getOtherProductCard(product))
+            SUBSCRIPTION -> cards.addIfNotEmpty(getSubscriptionProductCard(product))
+            else -> cards.addIfNotEmpty(getOtherProductCard(product))
         }
 
         return cards
@@ -102,6 +109,7 @@ class ProductDetailCardBuilder(
                 if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.inventory(SIMPLE),
                 product.addons(),
+                product.quantityRules(),
                 product.shipping(),
                 product.categories(),
                 product.tags(),
@@ -121,6 +129,7 @@ class ProductDetailCardBuilder(
                 if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.inventory(GROUPED),
                 product.addons(),
+                product.quantityRules(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
@@ -139,6 +148,7 @@ class ProductDetailCardBuilder(
                 product.externalLink(),
                 product.inventory(EXTERNAL),
                 product.addons(),
+                product.quantityRules(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
@@ -158,7 +168,26 @@ class ProductDetailCardBuilder(
                 if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.inventory(VARIABLE),
                 product.addons(),
+                product.quantityRules(),
                 product.shipping(),
+                product.categories(),
+                product.tags(),
+                product.shortDescription(),
+                product.linkedProducts(),
+                product.productType()
+            ).filterNotEmpty()
+        )
+    }
+
+    private suspend fun getSubscriptionProductCard(product: Product): ProductPropertyCard {
+        return ProductPropertyCard(
+            type = SECONDARY,
+            properties = listOf(
+                if (viewModel.isProductUnderCreation) null else product.productReviews(),
+                product.subscription(),
+                product.inventory(SIMPLE),
+                product.addons(),
+                product.quantityRules(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
@@ -178,6 +207,7 @@ class ProductDetailCardBuilder(
             properties = listOf(
                 if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.addons(),
+                product.quantityRules(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
@@ -389,7 +419,8 @@ class ProductDetailCardBuilder(
             VARIABLE -> resources.getString(string.product_type_variable)
             GROUPED -> resources.getString(string.product_type_grouped)
             EXTERNAL -> resources.getString(string.product_type_external)
-            OTHER -> this.type.capitalize() // show the actual product type string for unsupported products
+            SUBSCRIPTION -> resources.getString(string.product_type_subscription)
+            else -> this.type.capitalize() // show the actual product type string for unsupported products
         }
     }
 
@@ -527,7 +558,8 @@ class ProductDetailCardBuilder(
     }
 
     // show product variations only if product type is variable and if there are variations for the product
-    private fun Product.variations(): ProductProperty {
+    private fun Product.variations(): ProductProperty? {
+        val isVariableSubscription = this.productType == VARIABLE_SUBSCRIPTION
         return if (this.numVariations > 0 && this.variationEnabledAttributes.isNotEmpty()) {
             val content = StringUtils.getQuantityString(
                 resourceProvider = resources,
@@ -542,13 +574,16 @@ class ProductDetailCardBuilder(
                 drawable.ic_gridicons_types
             ) {
                 viewModel.onEditProductCardClicked(
-                    ViewProductVariations(this.remoteId),
+                    ViewProductVariations(
+                        remoteId = this.remoteId,
+                        isReadOnlyMode = isVariableSubscription
+                    ),
                     PRODUCT_DETAIL_VIEW_PRODUCT_VARIANTS_TAPPED
                 )
             }
-        } else {
+        } else if (isVariableSubscription.not()) {
             emptyVariations()
-        }
+        } else null
     }
 
     private fun Product.emptyVariations() =
@@ -645,7 +680,47 @@ class ProductDetailCardBuilder(
             )
         }
 
+    private fun Product.subscription(): ProductProperty? =
+        this.subscription?.let { subscription ->
+
+            val period = subscription.period.getPeriodString(resources, subscription.periodInterval)
+            val price = resources.getString(
+                string.product_subscription_description,
+                currencyFormatter.formatCurrency(subscription.price, viewModel.currencyCode, true),
+                subscription.periodInterval.toString(),
+                period
+            )
+
+            val expire = if (subscription.length != null) {
+                resources.getString(string.subscription_period, subscription.length.toString(), period)
+            } else {
+                resources.getString(string.subscription_never_expire)
+            }
+
+            val properties = mapOf(
+                resources.getString(string.product_regular_price) to price,
+                resources.getString(string.subscription_expire) to expire
+            )
+
+            PropertyGroup(
+                title = string.product_subscription_title,
+                icon = drawable.ic_gridicons_money,
+                properties = properties,
+                showTitle = true,
+                onClick = {
+                    viewModel.onEditProductCardClicked(
+                        ViewProductSubscription(subscription),
+                        AnalyticsEvent.PRODUCT_DETAILS_VIEW_SUBSCRIPTIONS_TAPPED
+                    )
+                }
+            )
+        }
+
     private fun Product.warning(): ProductProperty? {
+        if (this.variationIds.isEmpty() && productType == VARIABLE_SUBSCRIPTION) {
+            return ProductProperty.Warning(resources.getString(string.no_variable_subscription_warning))
+        }
+
         val variations = variationRepository.getProductVariationList(this.remoteId)
 
         val missingPriceVariation = variations
@@ -654,6 +729,28 @@ class ProductDetailCardBuilder(
         return missingPriceVariation?.let {
             ProductProperty.Warning(resources.getString(string.variation_detail_price_warning))
         }
+    }
+
+    private suspend fun Product.quantityRules(): ProductProperty? {
+        val rules = viewModel.getQuantityRules(this.remoteId) ?: return null
+
+        val properties = buildMap {
+            putIfNotNull(resources.getString(string.min_quantity) to rules.min?.toString())
+            putIfNotNull(resources.getString(string.max_quantity) to rules.max?.toString())
+        }
+
+        return PropertyGroup(
+            title = string.product_quantity_rules_title,
+            icon = drawable.ic_gridicons_product,
+            properties = properties,
+            showTitle = true,
+            onClick = {
+                viewModel.onEditProductCardClicked(
+                    ViewProductQuantityRules(rules),
+                    AnalyticsEvent.PRODUCT_DETAIL_VIEW_QUANTITY_RULES_TAPPED
+                )
+            }
+        )
     }
 }
 

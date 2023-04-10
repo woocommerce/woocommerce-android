@@ -1,14 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-20 16:54:23+0000
+Translation-Revision-Date: 2023-04-04 13:54:22+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="subscription_free_trial">Gratis-Test</string>
+    <string name="subscription_sign_up_fee">Anmeldegebühr</string>
+    <string name="subscription_expire">Ablaufen nach</string>
+    <string name="subscription_price">Abonnementpreis</string>
+    <string name="subscription_period_multiple_years">Jahre</string>
+    <string name="subscription_period_multiple_months">Monate</string>
+    <string name="subscription_period_multiple_weeks">Wochen</string>
+    <string name="subscription_period_multiple_days">Tage</string>
+    <string name="subscription_period_year">Jahr</string>
+    <string name="subscription_period_month">Monat</string>
+    <string name="subscription_period_week">Woche</string>
+    <string name="subscription_period_day">Tag</string>
+    <string name="subscription_status_custom">Angepasst</string>
+    <string name="subscription_status_pending_cancellation">Ausstehende Kündigung</string>
+    <string name="subscription_status_expired">Abgelaufen</string>
+    <string name="subscription_status_cancelled">Storniert</string>
+    <string name="subscription_status_on_hold">Wartend</string>
+    <string name="subscription_status_active">Aktiv</string>
+    <string name="no_variable_subscription_warning">Du kannst nur variable Abonnements im Web-Dashboard hinzufügen.</string>
+    <string name="subscription_details_info_notice">Du kannst Produkt-Abonnements im Web-Dashboard bearbeiten.</string>
+    <string name="subscription_no_trial">Kein Testzeitraum</string>
+    <string name="subscription_no_sign_up_fee">Keine Registrierungsgebühr</string>
+    <string name="subscription_never_expire">Nie ablaufend</string>
+    <string name="product_subscription_description">%1$s alle %2$s %3$s</string>
+    <string name="subscription_period_interval_multiple">Alle %1$d %2$s</string>
+    <string name="subscription_period_interval_single">Jeden/Jedes %1$s</string>
+    <string name="subscription_id">Abonnement-Nr. %1$d</string>
+    <string name="order_subscription">Abonnement</string>
+    <string name="store_onboarding_launch_store_ok">OK</string>
+    <string name="simplified_login_prologue_title">Vom ersten Verkauf bis zu Millionen an Einnahmen – Woo ist immer bei dir. Erfahre, warum Verkäufer beim Betreiben von 3,4 Millionen Onlineshops auf uns vertrauen.</string>
+    <string name="simplified_login_prologue_intro">Verkaufe was du willst, wohin du willst.</string>
+    <string name="product_type_subscription">Abonnement</string>
+    <string name="otp_incorrect">Der Einmalpasswort-Code (OTP) ist falsch. Prüfe bitte deine Angaben und versuche es erneut.</string>
+    <string name="requesting_sms_otp_failure">SMS-Anfrage fehlgeschlagen. Bitte versuche es erneut.</string>
+    <string name="requesting_sms_otp_success">SMS angefordert. Bitte schau in deinen Nachrichten nach dem Code.</string>
+    <string name="product_subscription_title">Abonnement</string>
+    <string name="card_reader_type_selection_bluetooth_reader_description">Das Kartenlesegerät akzeptiert Debit- oder Kreditkartenzahlung, die per Auflegen, Chip oder Durchziehen erfolgen.</string>
+    <string name="card_reader_type_selection_tap_to_pay_description">Akzeptiere kontaktlose Zahlungen sicher und direkt über dein Mobiltelefon.</string>
+    <string name="card_reader_tap_to_pay_beta_features_subheading">Teste Tap To Pay in der App</string>
+    <string name="card_reader_tap_to_pay_beta_features_heading">Tap To Pay</string>
+    <string name="card_reader_tap_to_pay_description_not_used">Nutze dein Mobiltelefon zum Akzeptieren von\nKartenzahlungen. Teste es jetzt.</string>
+    <string name="card_reader_tap_to_pay_share_feedback">Teile Feedback zu Tap to Pay</string>
+    <string name="login_site_credentials_web_authorization_connection_rejected">Die Anmeldung ist nicht möglich, weil die Erstellung von Anwendungspasswörtern nicht genehmigt wurde.</string>
+    <string name="login_site_credentials_fetching_site">Website wird abgerufen …</string>
+    <string name="login_site_credentials_fetching_site_failed">Beim Abrufen der Website ist ein Fehler aufgetreten</string>
+    <string name="login_site_credentials_use_web_authorization">Versuche es über die WP Admin-Seite erneut</string>
+    <string name="login_store_address">Anmelden</string>
+    <string name="loading">Lädt…</string>
+    <string name="upgrades_plan_ended_name">%s wurde beendet</string>
+    <string name="upgrades_current_plan_ended_caption">Dein Abonnement wurde beendet. Du hast jetzt nur noch eingeschränkten Zugriff auf alle Funktionen.</string>
+    <string name="free_trial_days_left_plural">%1$d Tage</string>
+    <string name="free_trial_one_day_left">1 Tag</string>
+    <string name="store_onboarding_get_paid_loading_label">Wird geladen …</string>
+    <string name="store_onboarding_get_paid_title">Zahlungseinrichtung</string>
+    <string name="store_onboarding_task_about_your_store_toolbar_title">Infos zu deinem Shop</string>
+    <string name="store_creation_installation_rendering_preview_label">Vorschau wird angezeigt …</string>
+    <string name="jetpack_benefits_open_wpadmin">WP Admin öffnen</string>
+    <string name="shipping_label_address_phone_required">Telefonnummer erforderlich</string>
+    <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s und %4$s verkauft</string>
+    <string name="analytics_items">Artikel</string>
+    <string name="analytics_item">Artikel</string>
     <string name="upgrades_error_fetching_data">Fehler beim Abrufen der Tarifdetails</string>
     <string name="upgrades_non_upgradeable_caption">Du hast %1$s abonniert! Bis zum %2$s kannst du auf alle Funktionen zugreifen. </string>
     <string name="upgrades_trial_ended_caption">Dein Gratis-Test ist abgelaufen und du hast nun eingeschränkten Zugriff auf alle Funktionen. Abonniere jetzt %1$s.</string>
+    <string name="upgrades_upgradeable_caption">Du nutzt gerade den %1$d-tägigen Gratis-Test. Der Gratis-Test endet in %2$s. Führe ein Upgrade durch, um von neuen Funktionen zu profitieren und deinen Shop weiterhin zu betreiben.</string>
     <string name="upgrades_subscription_status">Abonnement-Status</string>
     <string name="upgrades_title">Upgrades</string>
     <string name="upgrades_troubleshooting">Problembehandlung</string>
@@ -16,7 +78,7 @@ Language: de
     <string name="upgrades_upgrade_now">Jetzt Upgrade durchführen</string>
     <string name="upgrades_report_subscription_issue">Problem mit Abonnement melden</string>
     <string name="free_trial_upgrade_now">Jetzt Upgrade durchführen</string>
-    <string name="free_trial_days_left">Noch %1$d Tage bis zum Ablauf deines Gratis-Tests.</string>
+    <string name="free_trial_days_left">Noch %1$s bis zum Ablauf des Testzeitraums.</string>
     <string name="free_trial_trial_ended">Gratis-Test abgelaufen</string>
     <string name="free_trial_your_trial_ended">Dein Gratis-Test ist abgelaufen.</string>
     <string name="store_onboarding_launch_store_generic_error_description">Ups, es sind unerwartete Fehler aufgetreten.</string>
@@ -86,7 +148,7 @@ Language: de
     <string name="card_reader_tap_to_pay_explanation_ready">Dein Mobiltelefon ist bereit für Tap to Pay.\nDeine Kunden können bezahlen, indem sie ihre Karte\nauf dein Mobiltelefon legen.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Empfange Kartenzahlungen\nmit deinem Mobiltelefon</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
-    <string name="card_reader_tap_to_pay_description">Akzeptiere Kartenzahlungen über dein Mobiltelefon</string>
+    <string name="card_reader_tap_to_pay_description_used">Akzeptiere Kartenzahlungen über dein Mobiltelefon.</string>
     <string name="card_reader_tap_to_pay">Tap To Pay</string>
     <string name="card_reader_hub_actions_category_header">AKTIONEN</string>
     <string name="domain_registration_generic_error">Bei der Domain-Registrierung ist ein Fehler aufgetreten</string>
@@ -336,7 +398,7 @@ Language: de
     <string name="card_reader_connect_scanning_built_in_hint">Das geht ganz schnell!</string>
     <string name="card_reader_connect_scanning_built_in_header">Der integrierte Kartenleser wird vorbereitet …</string>
     <string name="card_reader_payment_collect_payment_built_in_state">Der integrierte Kartenleser ist bereit</string>
-    <string name="card_reader_type_selection_bluetooth_reader">Bluetooth-Lesegerät</string>
+    <string name="card_reader_type_selection_bluetooth_reader">Kartenlesegerät</string>
     <string name="card_reader_type_selection_tap_to_pay">Tap To Pay</string>
     <string name="analytics_conversion_subtitle">Umrechnungskurs</string>
     <string name="analytics_session_card_title">Sitzungen</string>
@@ -475,7 +537,6 @@ Language: de
     <string name="store_creation_create_new_store_label">Neuen Shop einrichten</string>
     <string name="or_use_password_below_qr_code_scan_option">Oder mit Passwort anmelden</string>
     <string name="or_scan_qr_code_to_log_in">Zum Anmelden den QR-Code scannen</string>
-    <string name="simplified_login_prologue_title">WooCommerce ist eine anpassbare Open-Source-E-Commerce-Plattform, die auf WordPress basiert.</string>
     <string name="simulated_reader_toast">Simuliertes Kartenlesegerät wurde deaktiviert</string>
     <string name="simulated_reader_key">Schlüssel des simulierten Lesegeräts</string>
     <string name="variations_bulk_update_stock_quantity_success">Aktualisierte Lagerbestandsmenge</string>
@@ -1335,7 +1396,6 @@ Language: de
     <string name="card_reader_payment_fetch_order_loading_header">App-Status aktualisieren</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Dein Kunde hat %1$s ausgewählt</string>
     <string name="shipping_label_origin_address_phone_invalid">In Zollformularen muss eine zehnstellige Telefonnummer angegeben werden.</string>
-    <string name="shipping_label_address_phone_required">Die Telefonnummer ist erforderlich, weil für diese Lieferung ein Zollformular benötigt wird.</string>
     <string name="shipping_label_create_customs_done">Zollformular ausgefüllt</string>
     <string name="print_receipt_label_info_step_7">Wenn du Probleme beim Drucken von deinem Gerät aus hast, wende dich an den Kundensupport für deinen Drucker.</string>
     <string name="print_receipt_label_info_step_6">Wenn die Option „Drucken“ nicht verfügbar ist, kannst du deinen Beleg stattdessen als PDF speichern und ihn per E-Mail an ein anderes Gerät senden, um ihn von dort aus zu drucken.</string>
@@ -1722,7 +1782,6 @@ Language: de
     <string name="login_jetpack_required_text">Um diese App für %1$s zu verwenden, muss das Jetpack-Plugin in deinem Shop verbunden sein.</string>
     <string name="login_try_another_account">Mit einem anderen Konto anmelden</string>
     <string name="login_pick_store">Shop zum Verbinden auswählen</string>
-    <string name="login_store_address">Shop -Adresse eingeben</string>
     <string name="login_wpcom">Weiter mit WordPress.com</string>
     <string name="product_type_variable_desc">Ein Produkt mit Varianten wie Farbe oder Größe</string>
     <string name="product_selection_count_single">%d Produkt ausgewählt</string>

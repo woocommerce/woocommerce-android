@@ -35,6 +35,7 @@ import com.woocommerce.android.R
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.Matcher
+import org.hamcrest.Matchers
 import org.hamcrest.Matchers.`is`
 import tools.fastlane.screengrab.Screengrab
 import java.util.function.Supplier
@@ -123,6 +124,17 @@ open class Screen {
         idleFor(500) // allow for transitions
     }
 
+    fun clickByTextAndId(text: String, id: Int) {
+        val element = onView(
+            Matchers.allOf(
+                withText(text),
+                withId(id)
+            )
+        )
+
+        clickOn(element)
+    }
+
     fun scrollTo(elementID: Int) {
         waitForElementToBeDisplayed(elementID)
 
@@ -172,7 +184,7 @@ open class Screen {
         idleFor(1000) // allow for transitions
     }
 
-    private fun clickOn(viewInteraction: ViewInteraction) {
+    fun clickOn(viewInteraction: ViewInteraction) {
         waitForElementToBeDisplayed(viewInteraction)
         idleFor(500) // allow for transitions
         viewInteraction.perform(ViewActions.click(ViewActions.closeSoftKeyboard()))

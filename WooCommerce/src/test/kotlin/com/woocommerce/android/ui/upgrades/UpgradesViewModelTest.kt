@@ -243,30 +243,6 @@ class UpgradesViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when onPlanUpgraded is called, then the expected track event is called`() {
-        // When
-        sut.onPlanUpgraded()
-
-        // Then
-        verify(tracks).track(
-            AnalyticsEvent.PLAN_UPGRADE_SUCCESS,
-            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_UPGRADES_SCREEN)
-        )
-    }
-
-    @Test
-    fun `when onPlanUpgradeDismissed is called, then the expected track event is called`() {
-        // When
-        sut.onPlanUpgradeDismissed()
-
-        // Then
-        verify(tracks).track(
-            AnalyticsEvent.PLAN_UPGRADE_ABANDONED,
-            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_UPGRADES_SCREEN)
-        )
-    }
-
-    @Test
     fun `when onReportSubscriptionIssueClicked is called, then the expected track event is called`() {
         // When
         sut.onReportSubscriptionIssueClicked()

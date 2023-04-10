@@ -1,68 +1,68 @@
 <ar>
-12.8:
-يتضمن هذا الإصدار الكثير من التحسينات على وظيفة إنشاء الطلب. أصبح من الممكن تحديد منتجات متعددة دفعة واحدة وخيار بحث وتصفية محسّن بشكل أسرع. أصلحنا أيضًا بعض الأخطاء وأجرينا العديد من التحسينات للحصول على إمكانية الوصول إلى قسم "التحليلات". أضفنا قسم "الترقيات" الجديد إلى مستخدمي ووردبريس.كوم.
+13.0:
+أخبار رائعة للجمهور الذي يستخدم امتداد WooCommerce Subscriptions. لقد أضفنا دعمًا للقراءة فقط لامتداد WooCommerce Subscriptions في تفاصيل الطلب وشاشات تفاصيل المنتجات. مزيد من الميزات قريبًا!
 </ar>
 <de-DE>
-12.8:
-Diese Version enthält viele Verbesserung hinsichtlich der Funktion zur Erstellung von Bestellungen. Es ist nun möglich, mehrere Produkte gleichzeitig auszuwählen. Außerdem wurde die Such- und Filteroption optimiert und beschleunigt. Des Weiteren haben wir einige Fehler behoben und diverse Verbesserungen an der Zugänglichkeit des Analyse-Abschnitts vorgenommen. Für unsere WordPress.com-Benutzer haben wir einen neuen Upgrades-Abschnitt hinzugefügt.
+13.0:
+Es gibt tolle Neuigkeiten für Benutzer der WooCommerce Subscriptions-Erweiterung. Wir haben auf den Bildschirmen mit den Bestell- und Produktdetails Support mit Lesezugriff für die WooCommerce Subsciptions-Erweiterung hinzugefügt. Weitere Funktionen sind demnächst verfügbar!
 </de-DE>
 <es-ES>
-12.8:
-Esta versión cuenta con numerosas mejoras en la función Creación de pedidos. Ahora es posible elegir varios productos de una vez y aplicar la opción de búsqueda y filtro mejorada y más rápida. También hemos corregido algunos errores e introducido varias mejoras de accesibilidad en la sección Análisis. Hemos añadido una nueva sección Mejoras al perfil de usuario de WordPress.com.
+13.0:
+Buenas noticias para los usuarios de la extensión WooCommerce Subscriptions. Hemos añadido soporte de solo lectura para la extensión WooCommerce Subscriptions en las pantallas de detalles del pedido y detalles del producto. En breve incluiremos más funciones.
 </es-ES>
 <fr-FR>
-12.8:
-Cette version comprend de nombreuses améliorations de la fonctionnalité de création de commande. Il est possible de sélectionner plusieurs produits simultanément, et l’option de recherche et de filtrage a été améliorée et est à présent plus rapide. Nous avons également corrigé quelques bogues et apporté plusieurs améliorations pour accéder à la section Statistiques. Nous avons ajouté une nouvelle section Options payantes pour les utilisateurs de WordPress.com.
+13.0 : 
+Bonne nouvelle pour les utilisateurs de l’extension WooCommerce Subscriptions. Nous avons ajouté un accès en lecture seule à l’extension WooCommerce Subscriptions sur les pages des détails de la commande et du produit. D’autres fonctionnalités sont à venir !
 </fr-FR>
 <iw-IL>
-12.8:
-בגרסה הזאת הוספנו המון שיפורים לפונקציונליות של יצירת הזמנות. ניתן לבחור מספר מוצרים בפעולה אחת, ואפשרויות החיפוש והסינון מהירות וטובות יותר. בנוסף, תיקנו גם כמה באגים והוספנו שיפורים לנגישות במקטע 'נתונים אנליטיים'. הוספנו מקטע 'שדרוגים' חדש למשתמשי WordPress.com.
+13.0:
+חדשות טובות למשתמשים בהרחבה של WooCommerce Subscriptions. הוספנו תמיכה לקריאה בלבד בהרחבה של WooCommerce Subsciptions במסכים של פרטי ההזמנה ופרטי המוצר. בקרוב נשיק אפשרויות נוספות!
 </iw-IL>
 <id>
-12.8:
-Rilis ini menyertakan berbagai peningkatan dalam fungsi pembuatan pesanan. Anda kini dapat memilih beberapa produk sekaligus. Fitur pencarian & penyaringan juga lebih baik dan lebih cepat. Selain itu, kami memperbaiki sejumlah bug dan menyempurnakan  beberapa aspek aksesibilitas pada bagian Analytics. Kami juga menambahkan bagian Upgrade baru untuk pengguna WordPress.com.
+13.0:
+Kabar baik bagi pengguna ekstensi WooCommerce Subscriptions. Kami telah menambahkan dukungan hanya baca untuk ekstensi WooCommerce Subscriptions pada layar detail pemesanan dan detail produk. Segera hadir banyak fitur lainnya!
 </id>
 <it-IT>
-12.8:
-Questo rilascio include molti miglioramenti alla funzionalità di creazione degli ordini. È possibile selezionare più prodotti in una volta e un'opzione migliorata di ricerca più veloce e filtro. Abbiamo anche corretto alcuni bug e apportato vari miglioramenti all'accessibilità della sezione Analisi. Abbiamo aggiunto una nuova sezione Miglioramenti al profilo degli utenti WordPress.com.
+13.0:
+Ottime notizie per tutti coloro che utilizzano l'estensione Abbonamenti WooCommerce. Abbiamo aggiunto il supporto di sola lettura per l'estensione Abbonamenti WooCommerce nelle schermate dei dettagli dell'ordine e dei dettagli del prodotto. Maggiori funzionalità sono in arrivo!
 </it-IT>
 <ja-JP>
-12.8:
-今回のリリースでは、注文作成機能に数多くの改善が加えられています。 一度に複数の商品を選択できるようになり、検索の速度が上がり、フィルターのオプションも増えました。 また、いくつかのバグが修正され、アナリティクスセクションのアクセシビリティも向上しています。 WordPress.com ユーザー向けに新しいアップグレードセクションが追加されました。
+13.0:
+WooCommerce Subscriptions 拡張機能をお使いの皆さまに良いお知らせです。 注文詳細画面と商品情報画面に、WooCommerce Subsciptions 拡張機能の読み取り専用のサポートを追加しました。 その他の機能も近日中に公開予定です !
 </ja-JP>
 <ko-KR>
-12.8:
-이 릴리스에는 주문 생성 기능에 대한 많은 개선 사항이 포함되어 있습니다. 개선된 더 빠른 검색 및 필터 옵션으로 한 번에 여러 상품을 선택할 수 있습니다. 몇 가지 버그도 수정하고 분석 섹션의 접근성도 많이 개선했습니다. 워드프레스닷컴 사용자에 대한 새로운 업그레이드 섹션을 추가했습니다.
+13.0:
+우커머스 구독 확장 기능 사용자께 좋은 소식을 전해드립니다. 주문 상세 정보 화면과 상품 상세 정보 화면에 우커머스 구독 확장 기능 읽기 전용 지원을 추가했습니다. 더 많은 기능을 곧 공개할 예정입니다!
 </ko-KR>
 <nl-NL>
-12.8:
-This release includes a lot of improvements to the order creation functionality. It's possible to select multiple products at one go & an improved faster search & filter option. We also fixed a few bugs and made several enhancements for accessibility of the Analytics section. We’ve added a new Upgrades section to WordPress.com users.
+13.0:
+Geweldig nieuws voor de mensen die de WooCommerce Subscriptions-extensie gebruiken. We hebben read-only ondersteuning voor de WooCommerce Subscriptions-extensie toegevoegd aan de schermen bestellingsgegevens en de productgegevens. Binnenkort nog meer functies!
 </nl-NL>
 <pt-BR>
-12.8:
-Esta versão inclui muitos aprimoramentos na funcionalidade de criação de pedidos. Agora é possível selecionar vários produtos de uma vez só, além de uma opção de pesquisa e filtro mais rápida e aprimorada. Também corrigimos alguns bugs e fizemos várias melhorias para acessibilidade da seção de análise. Adicionamos uma nova seção de Upgrades para usuários do WordPress.com.
+13.0:
+Ótimas notícias para quem está usando a extensão do WooCommerce Subscriptions: adicionamos compatibilidade com o modo somente leitura à extensão do WooCommerce Subscriptions nas telas de dados do pedido e de detalhes do produto. Mais funcionalidades em breve!
 </pt-BR>
 <ru-RU>
-12.8:
-В этом выпуске улучшена процедура создания заказов. Теперь можно выбрать несколько товаров сразу, а поиск и фильтры стали работать быстрее. Также исправлено несколько ошибок и повышена доступность раздела аналитики. Для пользователей WordPress.com добавлен новый раздел «Покупки».
+13.0:
+Превосходные новости для всех, кто использует расширение WooCommerce Subscriptions. Мы добавили поддержку режима «только для чтения» для расширения WooCommerce Subsciptions на экранах описаний заказов и продуктов. Еще больше функций выйдет уже скоро!
 </ru-RU>
 <sv-SE>
-12.8:
-Den här versionen inkluderar en rad olika förbättringar av funktionen för beställningsskapande. Det är möjligt att välja flera produkter på en gång och söknings- och filtreringsalternativet har blivit snabbare. Vi har även korrigerat ett antal buggar och gjort flertalet förbättringar rörande tillgänglighet i sektionen Analys. Vi har lagt till den nya sektionen Uppgraderingar för WordPress.com-användare.
+13.0:
+Goda nyheter för de som använder WooCommerce prenumerationstillägg. Vi har lagt till stöd för skrivskydd för WooCommerce prenumerationstillägget på skärmarna med orderinformation och produktinformation. Fler funktioner kommer snart!
 </sv-SE>
 <tr-TR>
-12.8:
-Bu sürüm, sipariş oluşturma işlevinde birçok iyileştirme içerir. Tek seferde birden fazla ürün seçmek mümkün ve daha hızlı arama ve filtreleme seçeneği iyileştirildi. Ayrıca birkaç hatayı düzelttik ve Analiz bölümünün erişilebilirliği için çeşitli geliştirmeler yaptık. WordPress.com kullanıcılarına yeni bir Yükseltmeler bölümü ekledik.
+13.0:
+WooCommerce Subscriptions uzantısını kullanan kişiler için harika bir haber. Sipariş detayı ve ürün detayı ekranlarına WooCommerce Subsciptions eklentisi için salt okunur destek ekledik. Yakında daha fazla özellik gelecek!
 </tr-TR>
 <zh-CN>
-12.8：
-此版本包含一些订单创建功能的改进。 现在可以一次选择多个产品，并改进了快速搜索和过滤器选项。 我们还修复了一些错误，并对分析部分的可访问性进行了一些改进。 我们为 WordPress.com 用户添加了新的“升级”部分。
+13.0：
+对于使用 WooCommerce Subscriptions 扩展程序的用户来说，这是个好消息。 我们在订单详细信息和产品详细信息屏幕中添加了对 WooCommerce Subscipations 扩展程序的只读支持。 更多功能即将推出！
 </zh-CN>
 <zh-TW>
-12.8：
-此版本包含對於訂單建立功能的許多改善。 現在能夠一次選取多個產品，並提供更完善且快速的搜尋和篩選選項。 我們也修正了幾個錯誤並針對「分析」區段的存取能力進行了一些強化。 我們已為 WordPress.com 使用者增加全新的「升級」區段。
+13.0：
+使用 WooCommerce Subscriptions 擴充功能的使用者有福了。 我們已為 WooCommerce Subsciptions 擴充功能的訂單詳細資料和產品詳細資料頁面新增唯讀支援。 敬請期待更多功能！
 </zh-TW>
 <en-US>
-12.8:
-This release includes a lot of improvements to the order creation functionality. It's possible to select multiple products at one go & an improved faster search & filter option. We also fixed a few bugs and made several enhancements for accessibility of the Analytics section. Furthermore, WordPress.com users can now easily view the details of their plans by accessing the new 'Upgrades' screen in the Menu.
+13.0:
+Great news for folks that are using WooCommerce Subscriptions extension. We have added read only support for the WooCommerce Subsciptions extension in the order detail and product detail screens. More features coming soon!
 </en-US>

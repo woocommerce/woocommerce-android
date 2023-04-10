@@ -5,7 +5,7 @@ import com.woocommerce.android.e2e.helpers.util.Screen
 
 class PaymentSelectionScreen : Screen {
     companion object {
-        const val CARD_BUTTON = R.id.tvTapToPay
+        const val CARD_BUTTON = R.id.clCardReader
     }
 
     constructor() : super(CARD_BUTTON)

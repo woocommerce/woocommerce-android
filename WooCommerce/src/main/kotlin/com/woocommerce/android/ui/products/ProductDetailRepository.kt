@@ -14,6 +14,8 @@ import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.models.QuantityRules
+import com.woocommerce.android.ui.products.models.QuantityRulesMapper
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
@@ -54,7 +56,8 @@ class ProductDetailRepository @Inject constructor(
     private val globalAttributeStore: WCGlobalAttributeStore,
     private val selectedSite: SelectedSite,
     private val taxStore: WCTaxStore,
-    private val coroutineDispatchers: CoroutineDispatchers
+    private val coroutineDispatchers: CoroutineDispatchers,
+    private val quantityRulesMapper: QuantityRulesMapper,
 ) {
     private var continuationUpdateProduct: Continuation<Boolean>? = null
     private var continuationFetchProductPassword = ContinuationWrapper<String?>(PRODUCTS)
@@ -276,6 +279,11 @@ class ProductDetailRepository @Inject constructor(
      */
     fun getProductShippingClassByRemoteId(remoteShippingClassId: Long) =
         productStore.getShippingClassByRemoteId(selectedSite.get(), remoteShippingClassId)?.toAppModel()
+
+    fun getQuantityRules(remoteProductId: Long): QuantityRules? {
+        return getCachedWCProductModel(remoteProductId)?.metadata
+            ?.let { quantityRulesMapper.toAppModelFromProductMetadata(it) }
+    }
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)

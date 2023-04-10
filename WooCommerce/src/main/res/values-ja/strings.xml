@@ -1,14 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-23 09:54:05+0000
+Translation-Revision-Date: 2023-04-05 09:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="subscription_free_trial">無料お試し</string>
+    <string name="subscription_sign_up_fee">登録手数料</string>
+    <string name="subscription_expire">期限切れ後</string>
+    <string name="subscription_price">サブスクリプション価格</string>
+    <string name="subscription_period_multiple_years">年</string>
+    <string name="subscription_period_multiple_months">月</string>
+    <string name="subscription_period_multiple_weeks">週間</string>
+    <string name="subscription_period_multiple_days">日</string>
+    <string name="subscription_period_year">年</string>
+    <string name="subscription_period_month">月</string>
+    <string name="subscription_period_week">週</string>
+    <string name="subscription_period_day">日</string>
+    <string name="subscription_status_custom">カスタム</string>
+    <string name="subscription_status_pending_cancellation">キャンセル承認待ち</string>
+    <string name="subscription_status_expired">期限切れ</string>
+    <string name="subscription_status_cancelled">キャンセル</string>
+    <string name="subscription_status_on_hold">保留中</string>
+    <string name="subscription_status_active">有効</string>
+    <string name="no_variable_subscription_warning">ウェブダッシュボードではバリエーションのあるサブスクリプションのみを追加できます。</string>
+    <string name="subscription_details_info_notice">ウェブダッシュボードで商品のサブスクリプションを編集できます。</string>
+    <string name="subscription_no_trial">無料お試しなし</string>
+    <string name="subscription_no_sign_up_fee">登録手数料なし</string>
+    <string name="subscription_never_expire">有効期限が切れることはありません</string>
+    <string name="product_subscription_description">%2$s %3$sごとに%1$s</string>
+    <string name="subscription_period_interval_multiple">%1$d %2$sごと</string>
+    <string name="subscription_period_interval_single">%1$sごと</string>
+    <string name="subscription_id">定期購入 #%1$d</string>
+    <string name="order_subscription">サブスクリプション</string>
+    <string name="store_onboarding_launch_store_ok">OK</string>
+    <string name="simplified_login_prologue_title">はじめての販売から数百万ドルの収益まで、Woo はあなたと共にあります。 Woo がなぜマーチャントから支持され、340 にのぼるオンラインストアに利用されているかがお分かりいただけます。</string>
+    <string name="simplified_login_prologue_intro">あらゆるものを売り、あらゆる場所へ届ける</string>
+    <string name="product_type_subscription">サブスクリプション</string>
+    <string name="otp_incorrect">OTP コードが正しくありません。 入力した情報をもう一度確認してから、やり直してください。</string>
+    <string name="requesting_sms_otp_failure">SMS リクエストが失敗しました。 もう一度お試しください。</string>
+    <string name="requesting_sms_otp_success">SMS がリクエストされました。メッセージをチェックしてコードを確認してください。</string>
+    <string name="product_subscription_title">サブスクリプション</string>
+    <string name="card_reader_type_selection_bluetooth_reader_description">カードリーダーは、デビットカードとクレジットカードのタップ決済、チップ決済、スワイプ決済に対応しています。</string>
+    <string name="card_reader_type_selection_tap_to_pay_description">お使いのスマートフォンから非接触型決済を安全に直接受け付けることができます。</string>
+    <string name="card_reader_tap_to_pay_beta_features_subheading">アプリで Tap To Pay を試す</string>
+    <string name="card_reader_tap_to_pay_beta_features_heading">Tap To Pay</string>
+    <string name="card_reader_tap_to_pay_description_not_used">スマートフォンを使用してカード支払いを\n受け付けることができます。 今すぐお試しください。</string>
+    <string name="card_reader_tap_to_pay_share_feedback">Tap to Pay についてのフィードバックを共有する</string>
+    <string name="login_site_credentials_web_authorization_connection_rejected">アプリケーションパスワードの作成が承認されていないため、ログインできません。</string>
+    <string name="login_site_credentials_fetching_site">サイトを取得中…</string>
+    <string name="login_site_credentials_fetching_site_failed">ウェブサイトの取得中にエラーが発生しました</string>
+    <string name="login_site_credentials_use_web_authorization">WP 管理画面ページでもう一度お試しください</string>
+    <string name="login_store_address">ログイン</string>
+    <string name="loading">読込中…</string>
+    <string name="upgrades_plan_ended_name">%sが終了しました</string>
+    <string name="upgrades_current_plan_ended_caption">サブスクリプションが終了したため、ご利用いただける機能に制限がかかります。</string>
+    <string name="free_trial_days_left_plural">%1$d日</string>
+    <string name="free_trial_one_day_left">1日</string>
+    <string name="store_onboarding_get_paid_loading_label">読み込み中…</string>
+    <string name="store_onboarding_get_paid_title">決済設定</string>
+    <string name="store_onboarding_task_about_your_store_toolbar_title">ストアについて</string>
+    <string name="store_creation_installation_rendering_preview_label">プレビューをレンダリング中…</string>
+    <string name="jetpack_benefits_open_wpadmin">WP 管理画面を開く</string>
+    <string name="shipping_label_address_phone_required">電話番号は必須項目です</string>
+    <string name="analytics_list_item_products_sold">%1$s、%2$s、%3$s、%4$sが販売済み</string>
+    <string name="analytics_items">項目</string>
+    <string name="analytics_item">アイテム</string>
     <string name="upgrades_error_fetching_data">プラン詳細を取得中にエラーが発生しました</string>
     <string name="upgrades_non_upgradeable_caption">%1$s を購読しています。 %2$s まですべての機能をご利用いただけます。 </string>
     <string name="upgrades_trial_ended_caption">お試し期間が終了したため、ご利用いただける機能に制限がかかります。 今すぐ %1$s を購読しましょう。</string>
+    <string name="upgrades_upgradeable_caption">%1$d日間の無料お試しが開始しました。 お試し期間は%2$s日後に終了します。 アップグレードして新しい機能を利用し、ストアの運営を継続しましょう。</string>
     <string name="upgrades_subscription_status">定期購入ステータス</string>
     <string name="upgrades_title">アップグレード</string>
     <string name="upgrades_troubleshooting">トラブルシューティング</string>
@@ -16,7 +78,7 @@ Language: ja_JP
     <string name="upgrades_upgrade_now">今すぐアップグレード</string>
     <string name="upgrades_report_subscription_issue">購読に関する問題を報告</string>
     <string name="free_trial_upgrade_now">今すぐアップグレード</string>
-    <string name="free_trial_days_left">お試し期間はあと%1$d日です。</string>
+    <string name="free_trial_days_left">お試し期間はあと%1$sです。</string>
     <string name="free_trial_trial_ended">お試し期間終了</string>
     <string name="free_trial_your_trial_ended">お試し期間が終了しました。</string>
     <string name="store_onboarding_launch_store_generic_error_description">予期しないエラーが発生しました。</string>
@@ -86,7 +148,7 @@ Language: ja_JP
     <string name="card_reader_tap_to_pay_explanation_ready">お使いのスマートフォンでは今すぐ Tap to Pay を使用できます。\nお客様はスマートフォンで\nカードをタップして支払うことができます。</string>
     <string name="card_reader_tap_to_pay_explanation_title">スマートフォンでカードでの\n支払いを受け取る</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
-    <string name="card_reader_tap_to_pay_description">スマートフォンを使用してカードによる支払いを受け取る</string>
+    <string name="card_reader_tap_to_pay_description_used">スマートフォンを使用してカード支払いを受け取ることができます。</string>
     <string name="card_reader_tap_to_pay">Tap To Pay</string>
     <string name="card_reader_hub_actions_category_header">アクション</string>
     <string name="domain_registration_generic_error">ドメイン登録中にエラーが発生しました</string>
@@ -336,7 +398,7 @@ Language: ja_JP
     <string name="card_reader_connect_scanning_built_in_hint">長くはかかりません</string>
     <string name="card_reader_connect_scanning_built_in_header">内蔵リーダーを準備しています…</string>
     <string name="card_reader_payment_collect_payment_built_in_state">内蔵リーダーの準備が整いました</string>
-    <string name="card_reader_type_selection_bluetooth_reader">Bluetooth リーダー</string>
+    <string name="card_reader_type_selection_bluetooth_reader">カードリーダー</string>
     <string name="card_reader_type_selection_tap_to_pay">タップして支払う</string>
     <string name="analytics_conversion_subtitle">コンバージョン率</string>
     <string name="analytics_session_card_title">セッション</string>
@@ -475,7 +537,6 @@ Language: ja_JP
     <string name="store_creation_create_new_store_label">新しいストアを作成</string>
     <string name="or_use_password_below_qr_code_scan_option">またはパスワードでログイン</string>
     <string name="or_scan_qr_code_to_log_in">QR コードをスキャンしてログイン</string>
-    <string name="simplified_login_prologue_title">WooCommerce は WordPress に構築された、カスタマイズ可能かつオープンソースの eコマースプラットフォームです。</string>
     <string name="simulated_reader_toast">シミュレートされたカードリーダーは無効になりました</string>
     <string name="simulated_reader_key">シミュレートされたリーダーキー</string>
     <string name="variations_bulk_update_stock_quantity_success">更新された在庫数</string>
@@ -1335,7 +1396,6 @@ Language: ja_JP
     <string name="card_reader_payment_fetch_order_loading_header">アプリの状態を更新する</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">お客様が %1$s を選択しました</string>
     <string name="shipping_label_origin_address_phone_invalid">カスタムフォームには、10桁の電話番号を入力してください</string>
-    <string name="shipping_label_address_phone_required">この配送にはカスタムフォームが必要なため、電話番号が必須です</string>
     <string name="shipping_label_create_customs_done">カスタムフォームの入力が完了しました</string>
     <string name="print_receipt_label_info_step_7">デバイスからの印刷で問題が生じている場合は、プリンターのカスタマーサポートにお問い合わせください。</string>
     <string name="print_receipt_label_info_step_6">印刷できない場合はレシートを PDF として保存し、メールで送信して別のデバイスから印刷できます。</string>
@@ -1722,7 +1782,6 @@ Language: ja_JP
     <string name="login_jetpack_required_text">%1$sにこのアプリを使用するには、Jetpack プラグインをストアと連携する必要があります。</string>
     <string name="login_try_another_account">別のアカウントでログイン</string>
     <string name="login_pick_store">連携するストアを選択</string>
-    <string name="login_store_address">ストアの住所を入力</string>
     <string name="login_wpcom">WordPress.com で続ける</string>
     <string name="product_type_variable_desc">色やサイズのバリエーションがある商品</string>
     <string name="product_selection_count_single">%d 選択済みの商品</string>
