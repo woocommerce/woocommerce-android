@@ -3320,4 +3320,11 @@
     <string name="group_of">Group of</string>
     <string name="quantity_rules_info_notice">You can edit product\'s quantity rules in the web dashboard.</string>
 
+    <!--
+    Bundled products
+    -->
+    <string name="product_bundle">Bundled products</string>
+    <string name="product_bundle_single_count">1 product</string>
+    <string name="product_bundle_multiple_count">%d products</string>
+
 </resources>
