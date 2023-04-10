@@ -11,9 +11,9 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class StoreCreationSummaryViewModel @Inject constructor(
@@ -25,7 +25,7 @@ class StoreCreationSummaryViewModel @Inject constructor(
     val isLoading = _isLoading.asLiveData()
 
     fun onCancelPressed() { triggerEvent(OnCancelPressed) }
-    
+
     fun onTryForFreeButtonPressed() {
         launch {
             createStore(
