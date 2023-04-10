@@ -46,7 +46,8 @@ class JetpackActivationRepository @Inject constructor(
         val result = jetpackStore.fetchJetpackConnectionUrl(
             site,
             autoRegisterSiteIfNeeded = true,
-            useApplicationPasswords = useApplicationPasswords)
+            useApplicationPasswords = useApplicationPasswords
+        )
         return@runWithRetry when {
             result.isError -> {
                 WooLog.w(WooLog.T.LOGIN, "Fetching Jetpack Connection URL failed: ${result.error.message}")
