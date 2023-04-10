@@ -158,7 +158,7 @@ class ProductSelectorViewModel @Inject constructor(
         productsList: List<Product>,
         selectedIds: List<SelectedItem>
     ): List<ProductListItem> {
-        if (searchQuery.value.isNotNullOrEmpty()) {
+        if (searchQuery.value.isNotNullOrEmpty() || !filterState.value.filterOptions.isNullOrEmpty()) {
             return emptyList()
         }
         return productsList.map { it.toUiModel(selectedIds) }
