@@ -161,7 +161,10 @@ private fun BadgeIcon(bannerState: BannerState.DisplayBannerState) {
                             cornerRadius = CornerRadius(x = 8.dp.toPx(), y = 8.dp.toPx()),
                         )
                     }
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                    .padding(
+                        horizontal = dimensionResource(id = R.dimen.minor_100),
+                        vertical = dimensionResource(id = R.dimen.minor_50)
+                    )
             )
         }
         is BannerState.LabelOrRemoteIcon.Remote -> {
