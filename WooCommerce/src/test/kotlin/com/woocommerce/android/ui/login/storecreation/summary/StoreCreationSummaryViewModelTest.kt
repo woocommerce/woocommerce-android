@@ -11,7 +11,7 @@ import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSumma
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flow
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.doAnswer
@@ -111,7 +111,7 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
         // Given
         val expectedDomain = "test domain"
         val expectedTitle = "test title"
-        createSut(expectedDomain, expectedTitle, StoreCreationState.Loading)
+        createSut(expectedDomain, expectedTitle)
 
         var isLoading: Boolean? = null
         sut.isLoading.observeForever { isLoading = it }
@@ -177,7 +177,7 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
     private fun createSut(
         expectedDomain: String,
         expectedTitle: String,
-        expectedCreationState: StoreCreationState
+        expectedCreationState: StoreCreationState? = null
     ) {
         newStore = mock {
             on { data } doReturn NewStore.NewStoreData(
@@ -190,7 +190,10 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
             onBlocking {
                 invoke(newStore.data.domain, newStore.data.name)
             } doAnswer {
-                flowOf(expectedCreationState)
+                flow {
+                    emit(StoreCreationState.Loading)
+                    expectedCreationState?.let { emit(it) }
+                }
             }
         }
 
