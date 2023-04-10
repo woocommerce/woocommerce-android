@@ -562,7 +562,7 @@ fun WCProductModel.toAppModel(): Product {
         variationIds = this.getVariationIdList(),
         isPurchasable = this.purchasable,
         subscription = subscription,
-        bundledProductsIds = listOf(27L,19L)
+        bundledProductsIds = listOf(27L, 19L)
     )
 }
 
