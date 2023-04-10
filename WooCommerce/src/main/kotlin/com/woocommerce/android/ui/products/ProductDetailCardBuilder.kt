@@ -775,10 +775,10 @@ class ProductDetailCardBuilder(
     }
 
     private fun Product.bundleProducts(): ProductProperty? {
-        return if (this.bundleProductsIds != null && this.bundleProductsIds.isNotEmpty()) {
+        return if (this.bundledProductsIds != null && this.bundledProductsIds.isNotEmpty()) {
             val content = StringUtils.getQuantityString(
                 resourceProvider = resources,
-                quantity = bundleProductsIds.size,
+                quantity = bundledProductsIds.size,
                 default = string.product_bundle_multiple_count,
                 one = string.product_bundle_single_count
             )

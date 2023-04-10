@@ -91,7 +91,7 @@ object ProductHelper {
             downloads = listOf(),
             isPurchasable = false,
             subscription = null,
-            bundleProductsIds = null
+            bundledProductsIds = null
         )
     }
 }
