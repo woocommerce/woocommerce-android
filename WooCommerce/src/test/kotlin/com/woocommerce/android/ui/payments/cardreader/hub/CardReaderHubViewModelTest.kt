@@ -1414,7 +1414,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
                 .onClick!!.invoke()
 
             // THEN
-            verify(cardReaderTracker).trackIPPLearnMoreClicked("payment_methods")
+            verify(cardReaderTracker).trackIPPLearnMoreClicked("payments_menu")
         }
 
     @Test

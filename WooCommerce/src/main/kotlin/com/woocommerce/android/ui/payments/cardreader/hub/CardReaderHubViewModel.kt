@@ -17,7 +17,6 @@ import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.feedback.FeedbackRepository
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.Companion.LEARN_MORE_SOURCE
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
@@ -496,6 +495,7 @@ class CardReaderHubViewModel @Inject constructor(
     companion object {
         const val UTM_CAMPAIGN = "payments_menu_item"
         const val UTM_SOURCE = "payments_menu"
+        const val LEARN_MORE_SOURCE = "payments_menu"
 
         private const val SHOW_FEEDBACK_AFTER_USAGE_DAYS = 30
     }
