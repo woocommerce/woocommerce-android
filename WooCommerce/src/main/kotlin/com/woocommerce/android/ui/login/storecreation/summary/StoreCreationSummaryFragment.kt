@@ -11,6 +11,9 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryViewModel.OnCancelPressed
+import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryViewModel.OnStoreCreationFailure
+import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryViewModel.OnStoreCreationSuccess
 import com.woocommerce.android.ui.main.AppBarStatus
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -42,11 +45,16 @@ class StoreCreationSummaryFragment : BaseFragment() {
     private fun setupEventObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is StoreCreationSummaryViewModel.OnCancelPressed -> findNavController().popBackStack()
-                is StoreCreationSummaryViewModel.OnStoreCreationSuccess -> findNavController().navigateSafely(
+                is OnCancelPressed -> findNavController().popBackStack()
+                is OnStoreCreationSuccess -> findNavController().navigateSafely(
                     StoreCreationSummaryFragmentDirections.actionSummaryFragmentToInstallationFragment()
                 )
+                is OnStoreCreationFailure -> displayStoreCreationErrorDialog()
             }
         }
+    }
+
+    private fun displayStoreCreationErrorDialog() {
+        TODO("Not yet implemented")
     }
 }
