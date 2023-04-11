@@ -388,7 +388,8 @@ class ProductNavigator @Inject constructor() {
 
             is ProductNavigationTarget.ViewProductSubscription -> {
                 val action = ProductDetailFragmentDirections.actionProductDetailFragmentToProductSubscriptionFragment(
-                    target.subscription
+                    target.subscription,
+                    target.sale
                 )
                 fragment.findNavController().navigateSafely(action)
             }

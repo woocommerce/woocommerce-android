@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryDa
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.SaleDetails
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
@@ -364,16 +365,39 @@ class VariationDetailCardBuilder(
                 period
             )
 
+            val salePriceString = salePrice?.let {
+                val formattedSalePrice = parameters.currencyCode?.let {
+                    currencyFormatter.formatCurrency(salePrice, it, true)
+                } ?: subscription.price.toString()
+
+                resources.getString(
+                    string.product_subscription_description,
+                    formattedSalePrice,
+                    subscription.periodInterval.toString(),
+                    period
+                )
+            }
+
             val expire = if (subscription.length != null) {
                 resources.getString(string.subscription_period, subscription.length.toString(), period)
             } else {
                 resources.getString(string.subscription_never_expire)
             }
 
-            val properties = mapOf(
-                resources.getString(string.product_regular_price) to price,
-                resources.getString(string.subscription_expire) to expire
-            )
+            val properties = buildMap {
+                put(resources.getString(string.product_regular_price), price)
+                putIfNotNull(resources.getString(string.product_sale_price) to salePriceString)
+                put(resources.getString(string.subscription_expire), expire)
+            }
+
+            val salesDetails = if (isSaleScheduled || salePrice != null) {
+                SaleDetails(
+                    isSaleScheduled = isSaleScheduled,
+                    salePrice = salePrice,
+                    saleStartDateGmt = saleStartDateGmt,
+                    saleEndDateGmt = saleEndDateGmt
+                )
+            } else null
 
             PropertyGroup(
                 title = string.product_subscription_title,
@@ -382,7 +406,7 @@ class VariationDetailCardBuilder(
                 showTitle = true,
                 onClick = {
                     viewModel.onEditVariationCardClicked(
-                        ViewSubscription(subscription),
+                        ViewSubscription(subscription, salesDetails),
                         AnalyticsEvent.PRODUCT_DETAILS_VIEW_SUBSCRIPTIONS_TAPPED
                     )
                 }
