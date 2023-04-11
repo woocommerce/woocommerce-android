@@ -1,0 +1,2 @@
+13.0:
+Kabar baik bagi pengguna ekstensi WooCommerce Subscriptions. Kami telah menambahkan dukungan hanya baca untuk ekstensi WooCommerce Subscriptions pada layar detail pemesanan dan detail produk. Segera hadir banyak fitur lainnya!

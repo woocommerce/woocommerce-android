@@ -68,6 +68,7 @@ class JitmViewModel @Inject constructor(
                 model.id,
                 model.featureClass
             )
+
             _jitmState.value = BannerState.DisplayBannerState(
                 onPrimaryActionClicked = {
                     onJitmCtaClicked(
@@ -85,7 +86,8 @@ class JitmViewModel @Inject constructor(
                 title = UiString.UiStringText(model.content.message),
                 description = UiString.UiStringText(model.content.description),
                 primaryActionLabel = UiString.UiStringText(model.cta.message),
-                chipLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
+                backgroundImage = model.assets.getBackgroundImage(),
+                badgeIcon = model.assets.getBadgeIcon(),
             )
         } ?: run {
             _jitmState.value = BannerState.HideBannerState
@@ -141,9 +143,21 @@ class JitmViewModel @Inject constructor(
         }
     }
 
+    private fun Map<String, String>?.getBackgroundImage() =
+        this?.get(JITM_ASSETS_BACKGROUND_IMAGE_KEY)?.let { BannerState.LocalOrRemoteImage.Remote(it) }
+            ?: BannerState.LocalOrRemoteImage.Local(R.drawable.ic_banner_upsell_card_reader_illustration)
+
+    private fun Map<String, String>?.getBadgeIcon() =
+        this?.get(JITM_ASSETS_BADGE_IMAGE_KEY)?.let { BannerState.LabelOrRemoteIcon.Remote(it) }
+            ?: BannerState.LabelOrRemoteIcon.Label(
+                UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
+            )
+
     data class CtaClick(val url: String) : MultiLiveEvent.Event()
 
     companion object {
         const val JITM_MESSAGE_PATH_KEY = "jitm_message_path_key"
+        private const val JITM_ASSETS_BACKGROUND_IMAGE_KEY = "background_image_url"
+        private const val JITM_ASSETS_BADGE_IMAGE_KEY = "badge_image_url"
     }
 }

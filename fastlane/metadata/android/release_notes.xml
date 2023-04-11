@@ -1,68 +1,68 @@
 <ar>
-12.9:
-في هذا الإصدار، ركّزنا على جعل تجربتك أكثر سلاسة عند إدارة المنتجات. بالإضافة إلى ذلك، أصبح من الممكن الآن تثبيت Jetpack من التطبيق في حال رغبت في وظائف إضافية، مثل: تنبيهات الدفع وإحصاءات الزائرين. واصل إرسال ملاحظاتك!
+13.0:
+أخبار رائعة للجمهور الذي يستخدم امتداد WooCommerce Subscriptions. لقد أضفنا دعمًا للقراءة فقط لامتداد WooCommerce Subscriptions في تفاصيل الطلب وشاشات تفاصيل المنتجات. مزيد من الميزات قريبًا!
 </ar>
 <de-DE>
-12.9:
-In dieser Version haben wir dein Erlebnis, wenn du Produkte verwaltest, noch reibungsloser gestaltet. Zudem ist es jetzt möglich, Jetpack in der App zu installieren, wenn du von zusätzlichen Funktionen wie Push-Benachrichtigungen und Besucherstatistiken profitieren möchtest. Wir freuen uns auf weiteres Feedback!
+13.0:
+Es gibt tolle Neuigkeiten für Benutzer der WooCommerce Subscriptions-Erweiterung. Wir haben auf den Bildschirmen mit den Bestell- und Produktdetails Support mit Lesezugriff für die WooCommerce Subsciptions-Erweiterung hinzugefügt. Weitere Funktionen sind demnächst verfügbar!
 </de-DE>
 <es-ES>
-12.9:
-En esta versión, nuestro objetivo ha sido facilitar la gestión de los productos. Además, ahora puedes instalar Jetpack desde la aplicación para utilizar funciones adicionales, como notificaciones push y estadísticas de visitas. ¡Sigue mandándonos tus comentarios!
+13.0:
+Buenas noticias para los usuarios de la extensión WooCommerce Subscriptions. Hemos añadido soporte de solo lectura para la extensión WooCommerce Subscriptions en las pantallas de detalles del pedido y detalles del producto. En breve incluiremos más funciones.
 </es-ES>
 <fr-FR>
-12.9:
-Pour cette version, nous avons principalement voulu faciliter votre expérience lors de la création d’une commande et de la mise à jour de produits. En outre, il est désormais possible d’installer Jetpack à partir de l’application si vous souhaitez profiter de fonctionnalités supplémentaires, telles que les notifications push et les statistiques de trafic. Continuez de nous faire part de vos commentaires !
+13.0 : 
+Bonne nouvelle pour les utilisateurs de l’extension WooCommerce Subscriptions. Nous avons ajouté un accès en lecture seule à l’extension WooCommerce Subscriptions sur les pages des détails de la commande et du produit. D’autres fonctionnalités sont à venir !
 </fr-FR>
 <iw-IL>
-12.9:
-בגרסה הזאת התמקדנו בביצוע שיפורים בחוויית השימוש כאשר מנהלים מוצרים. בנוסף, כעת אפשר להתקין את Jetpack מהאפליקציה אם ברצונך להוסיף עוד פונקציונליות, כגון הודעות בדחיפה ונתונים סטטיסטיים של מבקרים. נשמח להמשיך לקבל משוב!
+13.0:
+חדשות טובות למשתמשים בהרחבה של WooCommerce Subscriptions. הוספנו תמיכה לקריאה בלבד בהרחבה של WooCommerce Subsciptions במסכים של פרטי ההזמנה ופרטי המוצר. בקרוב נשיק אפשרויות נוספות!
 </iw-IL>
 <id>
-12.9:
-Dalam rilis ini, kami berfokus pada upaya untuk mempermudah pengalaman Anda ketika mengelola produk. Selain itu, kini Anda dapat menginstal Jetpack dari aplikasi jika Anda menginginkan fungsionalitas tambahan, seperti pemberitahuan push dan statistik pengunjung. Terus kirimkan feedback Anda!
+13.0:
+Kabar baik bagi pengguna ekstensi WooCommerce Subscriptions. Kami telah menambahkan dukungan hanya baca untuk ekstensi WooCommerce Subscriptions pada layar detail pemesanan dan detail produk. Segera hadir banyak fitur lainnya!
 </id>
 <it-IT>
-12.9:
-Per questa versione, ci siamo concentrati sul rendere la tua esperienza più fluida durante la gestione dei prodotti. Inoltre, ora è possibile installare Jetpack dall'app se desideri funzionalità aggiuntive come notifiche push e statistiche dei visitatori. Mantieni il tuo feedback pronto.
+13.0:
+Ottime notizie per tutti coloro che utilizzano l'estensione Abbonamenti WooCommerce. Abbiamo aggiunto il supporto di sola lettura per l'estensione Abbonamenti WooCommerce nelle schermate dei dettagli dell'ordine e dei dettagli del prodotto. Maggiori funzionalità sono in arrivo!
 </it-IT>
 <ja-JP>
-12.9:
-今回のリリースでは、商品管理をよりスムーズに行えるようにすることに重点を置きました。 さらに、プッシュ通知や訪問者の統計などの追加機能をご希望の場合は、アプリから Jetpack をインストールできるようになりました。 今後もフィードバックをお聞かせください。
+13.0:
+WooCommerce Subscriptions 拡張機能をお使いの皆さまに良いお知らせです。 注文詳細画面と商品情報画面に、WooCommerce Subsciptions 拡張機能の読み取り専用のサポートを追加しました。 その他の機能も近日中に公開予定です !
 </ja-JP>
 <ko-KR>
-12.9:
-이 릴리스에서는 상품을 관리하는 환경을 더 원활하게 만드는 데 중점을 두었습니다. 아울러 이제는 추가 기능(예: 푸시 알림, 방문자 통계)이 필요하면 앱에서 젯팩을 설치할 수도 있습니다. 피드백을 계속 보내주세요!
+13.0:
+우커머스 구독 확장 기능 사용자께 좋은 소식을 전해드립니다. 주문 상세 정보 화면과 상품 상세 정보 화면에 우커머스 구독 확장 기능 읽기 전용 지원을 추가했습니다. 더 많은 기능을 곧 공개할 예정입니다!
 </ko-KR>
 <nl-NL>
-12.9:
-For this release, we focused on making your experience smoother when managing products. Additionally, it's now possible to install Jetpack from the app if you would like additional functionality such as push notifications and visitor stats. Blijf ons je feedback sturen!
+13.0:
+Geweldig nieuws voor de mensen die de WooCommerce Subscriptions-extensie gebruiken. We hebben read-only ondersteuning voor de WooCommerce Subscriptions-extensie toegevoegd aan de schermen bestellingsgegevens en de productgegevens. Binnenkort nog meer functies!
 </nl-NL>
 <pt-BR>
-12.9:
-Para este lançamento, nós nos concentramos em tornar sua experiência melhor ao gerenciar produtos. Além disso, agora é possível instalar o Jetpack do aplicativo se você quiser mais funcionalidades, como notificações em push e estatísticas de visitantes. Continue enviando seu feedback!
+13.0:
+Ótimas notícias para quem está usando a extensão do WooCommerce Subscriptions: adicionamos compatibilidade com o modo somente leitura à extensão do WooCommerce Subscriptions nas telas de dados do pedido e de detalhes do produto. Mais funcionalidades em breve!
 </pt-BR>
 <ru-RU>
-12.9:
-В этом выпуске мы постарались сделать так, чтобы вам было удобнее управлять товарами. Кроме того, теперь возможно установить Jetpack из приложения, если вам нужна дополнительная функциональность, например push-уведомления и статистика посещений. Продолжайте делиться обратной связью!
+13.0:
+Превосходные новости для всех, кто использует расширение WooCommerce Subscriptions. Мы добавили поддержку режима «только для чтения» для расширения WooCommerce Subsciptions на экранах описаний заказов и продуктов. Еще больше функций выйдет уже скоро!
 </ru-RU>
 <sv-SE>
-12.9:
-För den här versionen har vi fokuserat på att göra din upplevelse smidigare när du hanterar produkter. Dessutom är det nu möjligt att installera Jetpack från appen om du vill ha ytterligare funktioner såsom push-notiser och besöksstatistik. Fortsätt att lämna feedback.
+13.0:
+Goda nyheter för de som använder WooCommerce prenumerationstillägg. Vi har lagt till stöd för skrivskydd för WooCommerce prenumerationstillägget på skärmarna med orderinformation och produktinformation. Fler funktioner kommer snart!
 </sv-SE>
 <tr-TR>
-12.9:
-Bu sürümde, ürünleri yönetme deneyiminizi daha sorunsuz hale getirmeye odaklandık. Ek olarak, anlık bildirimler ve ziyaretçi istatistikleri gibi ek işlevler istiyorsanız Jetpack'i uygulamadan yüklemek artık mümkün. Görüşlerinizi bildirmeye devam edin!
+13.0:
+WooCommerce Subscriptions uzantısını kullanan kişiler için harika bir haber. Sipariş detayı ve ürün detayı ekranlarına WooCommerce Subsciptions eklentisi için salt okunur destek ekledik. Yakında daha fazla özellik gelecek!
 </tr-TR>
 <zh-CN>
-12.9：
-在这个版本中，我们专注于使您在管理产品时的体验更加顺畅。 此外，如果您想要其他功能（例如推送通知和访客统计信息），现在可以通过应用安装 Jetpack。 请尽情提供反馈！
+13.0：
+对于使用 WooCommerce Subscriptions 扩展程序的用户来说，这是个好消息。 我们在订单详细信息和产品详细信息屏幕中添加了对 WooCommerce Subscipations 扩展程序的只读支持。 更多功能即将推出！
 </zh-CN>
 <zh-TW>
-12.9：
-此版本著重於提升使用體驗，讓你在管理產品時的體驗更順暢。 另外，如果你想使用推播通知和訪客統計資料等其他功能，現在可以從應用程式安裝 Jetpack。 歡迎繼續給予我們指教！
+13.0：
+使用 WooCommerce Subscriptions 擴充功能的使用者有福了。 我們已為 WooCommerce Subsciptions 擴充功能的訂單詳細資料和產品詳細資料頁面新增唯讀支援。 敬請期待更多功能！
 </zh-TW>
 <en-US>
-12.9:
-For this release, we focused on making your experience smoother when managing products. Additionally, it's now possible to install Jetpack from the app if you would like additional functionality such as push notifications and visitor stats. Keep your feedback coming!
+13.0:
+Great news for folks that are using WooCommerce Subscriptions extension. We have added read only support for the WooCommerce Subsciptions extension in the order detail and product detail screens. More features coming soon!
 </en-US>

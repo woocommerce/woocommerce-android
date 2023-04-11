@@ -38,9 +38,9 @@ class ProductQuantityRulesFragment : BaseProductFragment(R.layout.fragment_produ
     }
 
     private fun initializeViews(quantityRules: QuantityRules) {
-        binding.minQuantityValue.text = quantityRules.min.toString()
-        binding.maxQuantityValue.text = quantityRules.max.toString()
-        binding.groupOfValue.text = quantityRules.groupOf.toString()
+        binding.minQuantityValue.text = quantityRules.min?.toString() ?: getString(R.string.empty_min_quantity)
+        binding.maxQuantityValue.text = quantityRules.max?.toString() ?: getString(R.string.empty_max_quantity)
+        binding.groupOfValue.text = quantityRules.groupOf?.toString() ?: getString(R.string.empty_group_of)
     }
 
     override fun getFragmentTitle() = getString(R.string.product_quantity_rules_title)

@@ -149,9 +149,12 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 primaryActionLabel = UiStringRes(
                     R.string.card_reader_upsell_card_reader_banner_cta
                 ),
-                chipLabel = UiStringRes(
-                    R.string.card_reader_upsell_card_reader_banner_new
-                )
+                backgroundImage = BannerState.LocalOrRemoteImage.Local(
+                    R.drawable.ic_banner_upsell_card_reader_illustration
+                ),
+                badgeIcon = BannerState.LabelOrRemoteIcon.Label(
+                    UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
+                ),
             )
         } else {
             HideBannerState

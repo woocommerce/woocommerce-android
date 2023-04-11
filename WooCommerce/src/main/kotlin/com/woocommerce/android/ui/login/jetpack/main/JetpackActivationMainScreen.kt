@@ -171,13 +171,28 @@ private fun ProgressState(
             )
         }
         Spacer(modifier = Modifier.weight(1f))
+        var showLoading by remember { mutableStateOf(false) }
         AnimatedVisibility(
             visible = viewState.isDone,
             enter = slideInVertically { fullHeight -> fullHeight },
             exit = slideOutVertically { fullHeight -> fullHeight }
         ) {
-            WCColoredButton(onClick = onContinueClick, modifier = Modifier.fillMaxWidth()) {
-                Text(text = stringResource(id = R.string.login_jetpack_installation_go_to_store_button))
+            WCColoredButton(
+                onClick = {
+                    showLoading = true
+                    onContinueClick()
+                },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !showLoading
+            ) {
+                if (showLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(size = dimensionResource(id = R.dimen.major_150)),
+                        color = colorResource(id = R.color.color_on_primary_surface),
+                    )
+                } else {
+                    Text(text = stringResource(id = R.string.login_jetpack_installation_go_to_store_button))
+                }
             }
         }
     }

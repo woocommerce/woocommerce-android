@@ -12,8 +12,8 @@ class QuantityRulesMapperTest : BaseUnitTest() {
     private val sut = QuantityRulesMapper(Gson())
 
     @Test
-    fun `when metadata has valid quantity rules keys then a QuantityRules is returned`() {
-        val result = sut.toAppModel(successMetadata)
+    fun `when product metadata has valid quantity rules keys then a QuantityRules is returned`() {
+        val result = sut.toAppModelFromProductMetadata(successProductMetadata)
         Assertions.assertThat(result).isNotNull
         result?.let { quantityRules ->
             Assertions.assertThat(quantityRules.min).isEqualTo(4)
@@ -23,14 +23,14 @@ class QuantityRulesMapperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when metadata has no quantity rules keys then null is returned`() {
-        val result = sut.toAppModel(noQuantityRulesKeysMetadata)
+    fun `when product metadata has no quantity rules keys then null is returned`() {
+        val result = sut.toAppModelFromProductMetadata(noQuantityRulesKeysMetadata)
         Assertions.assertThat(result).isNull()
     }
 
     @Test
-    fun `when metadata miss some keys then a QuantityRules is returned using null to fill missing values`() {
-        val result = sut.toAppModel(successMetadataPartial)
+    fun `when product metadata miss some keys then a QuantityRules is returned using null to fill missing values`() {
+        val result = sut.toAppModelFromProductMetadata(successProductMetadataPartial)
         Assertions.assertThat(result).isNotNull
         result?.let { quantityRules ->
             Assertions.assertThat(quantityRules.min).isNull()
@@ -39,12 +39,41 @@ class QuantityRulesMapperTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `when variation metadata has valid quantity rules keys then a QuantityRules is returned`() {
+        val result = sut.toAppModelFromVariationMetadata(successVariationMetadata)
+        Assertions.assertThat(result).isNotNull
+        result?.let { quantityRules ->
+            Assertions.assertThat(quantityRules.min).isEqualTo(6)
+            Assertions.assertThat(quantityRules.max).isEqualTo(30)
+            Assertions.assertThat(quantityRules.groupOf).isEqualTo(3)
+        }
+    }
+
+    @Test
+    fun `when variation metadata has no quantity rules keys then null is returned`() {
+        val result = sut.toAppModelFromVariationMetadata(noQuantityRulesKeysMetadata)
+        Assertions.assertThat(result).isNull()
+    }
+
+    @Test
+    fun `when variation metadata miss some keys then a QuantityRules is returned using null to fill missing values`() {
+        val result = sut.toAppModelFromVariationMetadata(successVariationMetadataPartial)
+        Assertions.assertThat(result).isNotNull
+        result?.let { quantityRules ->
+            Assertions.assertThat(quantityRules.min).isEqualTo(2)
+            Assertions.assertThat(quantityRules.max).isEqualTo(24)
+            Assertions.assertThat(quantityRules.groupOf).isNull()
+        }
+    }
+
     /**
+     * Product metadata
      *  groupOf = 2,
      *  min = 4,
      *  max = 20,
      */
-    private val successMetadata = """ [ {
+    private val successProductMetadata = """ [ {
                 "id": 14054,
                 "key": "group_of_quantity",
                 "value": "2"
@@ -112,11 +141,12 @@ class QuantityRulesMapperTest : BaseUnitTest() {
             """
 
     /**
+     * Product metadata
      *  groupOf = ,
      *  min = ,
      *  max = 20,
      */
-    private val successMetadataPartial = """ [ {
+    private val successProductMetadataPartial = """ [ {
                 "id": 14056,
                 "key": "maximum_allowed_quantity",
                 "value": "20"
@@ -135,6 +165,67 @@ class QuantityRulesMapperTest : BaseUnitTest() {
                 "id": 5187,
                 "key": "trial_length",
                 "value": "2"
+            }]
+            """
+
+    /**
+     * Variation metadata
+     *  groupOf = 3,
+     *  min = 6,
+     *  max = 30,
+     */
+    private val successVariationMetadata = """ [{
+                "id": 14056,
+                "key": "maximum_allowed_quantity",
+                "value": "20"
+            },
+            {
+                "id": 14245,
+                "key": "variation_group_of_quantity",
+                "value": "3"
+            },
+            {
+                "id": 14246,
+                "key": "variation_minimum_allowed_quantity",
+                "value": "6"
+            },
+            {
+                "id": 5187,
+                "key": "trial_length",
+                "value": "2"
+            },
+            {
+                "id": 14247,
+                "key": "variation_maximum_allowed_quantity",
+                "value": "30"
+            }]
+            """
+
+    /**
+     * Variation metadata
+     *  groupOf = ,
+     *  min = 2,
+     *  max = 24,
+     */
+    private val successVariationMetadataPartial = """ [{
+                "id": 14056,
+                "key": "maximum_allowed_quantity",
+                "value": "20"
+            },
+            {
+                "id": 14246,
+                "key": "variation_minimum_allowed_quantity",
+                "value": "2"
+            },
+            {
+                "id": 5187,
+                "key": "trial_length",
+                "value": "2"
+            },
+            {
+                "id": 14247,
+                "key": "variation_maximum_allowed_quantity",
+                "value": "24"
             }]
             """
 }

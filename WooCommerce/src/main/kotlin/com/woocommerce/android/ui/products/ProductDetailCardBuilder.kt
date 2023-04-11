@@ -737,6 +737,7 @@ class ProductDetailCardBuilder(
         val properties = buildMap {
             putIfNotNull(resources.getString(string.min_quantity) to rules.min?.toString())
             putIfNotNull(resources.getString(string.max_quantity) to rules.max?.toString())
+            if (size < 2) putIfNotNull(resources.getString(string.group_of) to rules.groupOf?.toString())
         }
 
         return PropertyGroup(
@@ -745,7 +746,10 @@ class ProductDetailCardBuilder(
             properties = properties,
             showTitle = true,
             onClick = {
-                viewModel.onEditProductCardClicked(ViewProductQuantityRules(rules))
+                viewModel.onEditProductCardClicked(
+                    ViewProductQuantityRules(rules),
+                    AnalyticsEvent.PRODUCT_DETAIL_VIEW_QUANTITY_RULES_TAPPED
+                )
             }
         )
     }
