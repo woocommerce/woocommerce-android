@@ -8,9 +8,11 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryViewModel.OnCancelPressed
 import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryViewModel.OnStoreCreationFailure
 import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryViewModel.OnStoreCreationSuccess
@@ -55,6 +57,11 @@ class StoreCreationSummaryFragment : BaseFragment() {
     }
 
     private fun displayStoreCreationErrorDialog() {
-        TODO("Not yet implemented")
+        WooDialog.showDialog(
+            activity = requireActivity(),
+            titleId = R.string.support_request_error_title,
+            messageId = R.string.support_request_error_message,
+            positiveButtonId = R.string.support_request_dialog_action
+        )
     }
 }
