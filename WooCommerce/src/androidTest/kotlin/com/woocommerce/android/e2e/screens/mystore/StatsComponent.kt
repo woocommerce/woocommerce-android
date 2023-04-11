@@ -10,7 +10,6 @@ class StatsComponent : Screen(STATS_DASHBOARD) {
 
     override fun recover() {
         super.recover()
-        clickOn(R.id.reviews)
         clickOn(R.id.dashboard)
     }
 
@@ -24,6 +23,7 @@ class StatsComponent : Screen(STATS_DASHBOARD) {
         // idleFor(1000)
         if (!waitForElementToBeDisplayedWithoutFailure(R.id.conversionValueTextView)) {
             recover()
+            scrollTo(R.id.stats_view_row)
             waitForElementToBeDisplayed(R.id.conversionValueTextView)
             // idle for a bit in order to load labels as well
             idleFor(3000)
@@ -31,6 +31,13 @@ class StatsComponent : Screen(STATS_DASHBOARD) {
             // idle for a bit in order to load labels as well
             idleFor(3000)
         }
+    }
+
+    fun switchToStatsDashboardTodayTab(): MyStoreScreen {
+        selectItemWithTitleInTabLayout(R.string.today, R.id.app_bar_layout)
+        waitForGraphToLoad()
+
+        return MyStoreScreen()
     }
 
     fun switchToStatsDashboardWeekTab(): MyStoreScreen {
@@ -42,6 +49,13 @@ class StatsComponent : Screen(STATS_DASHBOARD) {
 
     fun switchToStatsDashboardMonthTab(): MyStoreScreen {
         selectItemWithTitleInTabLayout(R.string.this_month, R.id.app_bar_layout)
+        waitForGraphToLoad()
+
+        return MyStoreScreen()
+    }
+
+    fun switchToStatsDashboardYearTab(): MyStoreScreen {
+        selectItemWithTitleInTabLayout(R.string.this_year, R.id.app_bar_layout)
         waitForGraphToLoad()
 
         return MyStoreScreen()

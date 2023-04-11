@@ -92,3 +92,15 @@ data class OrderData(
     val status = orderStatusMap[statusRaw]
     val total = "\$$totalRaw"
 }
+
+data class StatsSummaryData(
+    val revenue: String = "",
+    val orders: String = "",
+    val visitors: String = "",
+    val conversion: String = "",
+)
+
+data class StatsTopPerformerData(
+    val name: String = "",
+    val netSales: String = "",
+)
