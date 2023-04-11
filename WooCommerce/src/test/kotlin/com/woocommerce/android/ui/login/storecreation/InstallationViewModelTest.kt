@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login.storecreation
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STORE_LOADING_FAILED
@@ -14,6 +15,7 @@ import com.woocommerce.android.ui.login.storecreation.installation.InstallationV
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.SuccessState
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -153,7 +155,14 @@ class InstallationViewModelTest : BaseUnitTest() {
         advanceUntilIdle()
 
         // then
-        verify(installationTransactionLauncher).onStoreInstalled()
+        verify(installationTransactionLauncher).onStoreInstalled(
+            mapOf(
+                AnalyticsTracker.KEY_SOURCE to null,
+                AnalyticsTracker.KEY_URL to newStore.data.domain,
+                AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE,
+                AnalyticsTracker.KEY_IS_FREE_TRIAL to FeatureFlag.FREE_TRIAL_M2.isEnabled()
+            )
+        )
     }
 
     @Test

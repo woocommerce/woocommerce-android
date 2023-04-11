@@ -80,7 +80,6 @@ class InstallationViewModel @Inject constructor(
     private fun loadNewStore() {
         suspend fun processStoreCreationResult(result: StoreCreationResult<Unit>) {
             if (result is Success) {
-                installationTransactionLauncher.onStoreInstalled()
                 repository.selectSite(newStore.data.siteId!!)
 
                 val properties = mapOf(
@@ -89,7 +88,7 @@ class InstallationViewModel @Inject constructor(
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE,
                     AnalyticsTracker.KEY_IS_FREE_TRIAL to FeatureFlag.FREE_TRIAL_M2.isEnabled()
                 )
-                analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SITE_CREATED, properties)
+                installationTransactionLauncher.onStoreInstalled(properties)
 
                 _viewState.update { SuccessState(newStoreWpAdminUrl) }
             } else {
@@ -156,10 +155,6 @@ class InstallationViewModel @Inject constructor(
     fun onRetryButtonClicked() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_SITE_LOADING_RETRIED)
         loadNewStore()
-    }
-
-    override fun onCleared() {
-        installationTransactionLauncher.clear()
     }
 
     sealed interface ViewState : Parcelable {

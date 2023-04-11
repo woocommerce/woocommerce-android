@@ -777,7 +777,6 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     SITE_CREATION_IAP_PURCHASE_SUCCESS(siteless = true),
     SITE_CREATION_IAP_PURCHASE_ERROR(siteless = true),
     SITE_CREATION_PROFILER_DATA(siteless = true),
-    SITE_CREATION_WAITING_TIME,
 
     // Domain change
     CUSTOM_DOMAINS_STEP,
