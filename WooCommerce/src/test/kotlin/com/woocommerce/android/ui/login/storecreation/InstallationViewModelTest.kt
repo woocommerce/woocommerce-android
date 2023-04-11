@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STO
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STORE_NOT_READY
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Failure
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Success
+import com.woocommerce.android.ui.login.storecreation.installation.InstallationTransactionLauncher
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState
@@ -35,6 +36,7 @@ class InstallationViewModelTest : BaseUnitTest() {
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val selectedSite: SelectedSite = mock()
+    private val installationTransactionLauncher: InstallationTransactionLauncher = mock()
 
     private lateinit var viewModel: InstallationViewModel
 
@@ -52,7 +54,8 @@ class InstallationViewModelTest : BaseUnitTest() {
             newStore,
             analyticsTrackerWrapper,
             appPrefsWrapper,
-            selectedSite
+            selectedSite,
+            installationTransactionLauncher,
         )
     }
 
@@ -128,5 +131,42 @@ class InstallationViewModelTest : BaseUnitTest() {
         val expectedState = ErrorState(STORE_LOADING_FAILED)
 
         assertEquals(expectedState, observedState)
+    }
+
+    @Test
+    fun `when a site is during installation, start measuring the transaction time`() = testBlocking {
+        whenViewModelIsCreated()
+        viewModel.viewState.observeForever(observer)
+
+        verify(installationTransactionLauncher).onStoreInstallationRequested()
+    }
+
+    @Test
+    fun `when a site is after successful installation, finish measuring transaction time`() = testBlocking {
+        // given
+        whenever(repository.fetchSiteAfterCreation(newStore.data.siteId!!)).thenReturn(Success(Unit))
+        whenever(selectedSite.get()).thenReturn(SiteModel().apply { url = newStore.data.domain })
+
+        // when
+        whenViewModelIsCreated()
+        viewModel.viewState.observeForever(observer)
+        advanceUntilIdle()
+
+        // then
+        verify(installationTransactionLauncher).onStoreInstalled()
+    }
+
+    @Test
+    fun `when a site is not successfully installed, abandon performance transaction`() = testBlocking {
+        // given
+        whenever(repository.fetchSiteAfterCreation(newStore.data.siteId!!)).thenReturn(Failure(STORE_NOT_READY))
+
+        // when
+        whenViewModelIsCreated()
+        viewModel.viewState.observeForever(observer)
+        advanceUntilIdle()
+
+        // then
+        verify(installationTransactionLauncher).onStoreInstallationFailed()
     }
 }
