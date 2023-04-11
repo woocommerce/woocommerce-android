@@ -60,6 +60,7 @@ class ProductDetailRepository @Inject constructor(
     private val taxStore: WCTaxStore,
     private val coroutineDispatchers: CoroutineDispatchers,
     private val quantityRulesMapper: QuantityRulesMapper,
+    private val gson: Gson
 ) {
     private var continuationUpdateProduct: Continuation<Boolean>? = null
     private var continuationFetchProductPassword = ContinuationWrapper<String?>(PRODUCTS)
@@ -71,8 +72,6 @@ class ProductDetailRepository @Inject constructor(
 
     private var isFetchingTaxClassList = false
     private var remoteProductId: Long = 0L
-
-    private val gson by lazy { Gson() }
 
     var lastFetchProductErrorType: ProductErrorType? = null
 
