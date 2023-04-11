@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login.storecreation.installation
 
 import android.os.Parcelable
+import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
@@ -40,7 +41,8 @@ class InstallationViewModel @Inject constructor(
     private val newStore: NewStore,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val appPrefsWrapper: AppPrefsWrapper,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val installationTransactionLauncher: InstallationTransactionLauncher,
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val STORE_LOAD_RETRIES_LIMIT = 10
@@ -64,6 +66,8 @@ class InstallationViewModel @Inject constructor(
             }
         }.asLiveData()
 
+    val performanceObserver: LifecycleObserver = installationTransactionLauncher
+
     init {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.SITE_CREATION_STEP,
@@ -76,6 +80,7 @@ class InstallationViewModel @Inject constructor(
     private fun loadNewStore() {
         suspend fun processStoreCreationResult(result: StoreCreationResult<Unit>) {
             if (result is Success) {
+                installationTransactionLauncher.onStoreInstalled()
                 repository.selectSite(newStore.data.siteId!!)
 
                 val properties = mapOf(
@@ -88,6 +93,7 @@ class InstallationViewModel @Inject constructor(
 
                 _viewState.update { SuccessState(newStoreWpAdminUrl) }
             } else {
+                installationTransactionLauncher.onStoreInstallationFailed()
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.SITE_CREATION_FAILED,
                     mapOf(
@@ -104,6 +110,7 @@ class InstallationViewModel @Inject constructor(
         }
 
         launch {
+            installationTransactionLauncher.onStoreInstallationRequested()
             _viewState.update { LoadingState }
 
             // it takes a while (~45s) before a store is ready after a purchase, so we need to wait a bit
@@ -149,6 +156,10 @@ class InstallationViewModel @Inject constructor(
     fun onRetryButtonClicked() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_SITE_LOADING_RETRIED)
         loadNewStore()
+    }
+
+    override fun onCleared() {
+        installationTransactionLauncher.clear()
     }
 
     sealed interface ViewState : Parcelable {
