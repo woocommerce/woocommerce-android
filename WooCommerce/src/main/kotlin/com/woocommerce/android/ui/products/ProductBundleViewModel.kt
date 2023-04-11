@@ -9,6 +9,7 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
@@ -30,9 +31,15 @@ class ProductBundleViewModel @Inject constructor(
 
     init {
         launch {
-            val products = getProductByIds(productIds)
-            _productList.value = products
-            productListViewState = productListViewState.copy(isSkeletonShown = false)
+            getProductByIds(productIds)
+                .distinctUntilChanged()
+                .collect { status ->
+                if (status is GetProductByIds.GetProductsStatus.Succeeded) {
+                    _productList.value = status.products
+                }
+                productListViewState =
+                    productListViewState.copy(isSkeletonShown = status is GetProductByIds.GetProductsStatus.Loading)
+            }
         }
     }
 
