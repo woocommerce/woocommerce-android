@@ -415,23 +415,22 @@ class JetpackActivationMainViewModel @Inject constructor(
                 }
 
                 if (useApplicationPasswords) {
-                    // Depending on whether the site has site-connection or not, we should pass different URL to the
-                    // webview.
-                    //
-                    // If the site already has Jetpack site-connection, we can use the URL given by the API as-is.
-                    // We can tell that this is the case if the URL given by API starts with
-                    // JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX.
-                    //
-                    // If the site has no site-connection, the URL given by the API will be in the format of
-                    // https://{site_url}/wp-admin/admin.php?page=jetpack&action=register&_wpnonce={nonce}
-                    //
-                    // With application passwords login where we don't want to use cookie-nonce authentication,
-                    // the URL above is unusable to connect the site to Jetpack. See:
-                    // https://github.com/woocommerce/woocommerce-android/issues/7525
-                    //
-                    // As a workaround, we use a special URL that will let merchants to connect the site without
-                    // the app needing to do cookie-nonce authentication.
-                    // Reference: pe5sF9-1le-p2#comment-1942
+                    // Depending on the site's connection status, we should provide different URLs to the webview.
+                    // If the site already has a Jetpack site-connection, we can use the API-given URL as-is. We
+                    // know this is the case if the URL starts with JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX.
+
+                    // If the site lacks a connection, the API-provided URL will be in the format of
+                    // https://{site_url}/wp-admin/admin.php?page=jetpack&action=register&_wpnonce={nonce}.
+                    // For application password login, where we don't want to use cookie-nonce authentication, the URL
+                    // above cannot be used to connect the site to Jetpack.
+                    // See: https://github.com/woocommerce/woocommerce-android/issues/7525
+
+                    // As a workaround, we use a special URL that enables site connection without the app needing
+                    // cookie-nonce authentication. The format looks like below:
+                    // https://wordpress.com/jetpack/connect?url=<site_url>
+                    //  &mobile_redirect=woocommerce://jetpack-connected&from=mobile
+                    // See: pe5sF9-1le-p2#comment-1942
+
                     val chosenUrl =
                         if (connectionUrl.startsWith(JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX)) {
                             connectionUrl
@@ -441,9 +440,9 @@ class JetpackActivationMainViewModel @Inject constructor(
                                 "&from=mobile"
                         }
 
-                    // In the case of using the special URL, the validation URL will be MOBILE_REDIRECT, so we need
-                    // to set the comparison mode to be EQUALITY to make sure the webview exits only
-                    // when the redirect is happening.
+                    // In the special URL case, the validation URL must match the MOBILE_REDIRECT value. Therefore,
+                    // we set the comparison mode to EQUALITY to ensure the webview returns to the app only when the
+                    // redirect takes place.
                     val comparisonMode =
                         if (connectionUrl.startsWith(JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX)) {
                             UrlComparisonMode.PARTIAL
