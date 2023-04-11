@@ -59,9 +59,9 @@ class StoreCreationSummaryFragment : BaseFragment() {
     private fun displayStoreCreationErrorDialog() {
         WooDialog.showDialog(
             activity = requireActivity(),
-            titleId = R.string.support_request_error_title,
-            messageId = R.string.support_request_error_message,
-            positiveButtonId = R.string.support_request_dialog_action
+            titleId = R.string.free_trial_summary_store_creation_error_title,
+            messageId = R.string.free_trial_summary_store_creation_error_message,
+            positiveButtonId = R.string.free_trial_summary_store_creation_error_dialog_action
         )
     }
 }
