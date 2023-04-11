@@ -37,6 +37,14 @@ data class CardReaderHubViewState(
             val onLearnMoreClicked: () -> Unit
         ) : ListItem()
 
+        data class LearnMoreListItem(
+            @DrawableRes override val icon: Int,
+            override val label: UiString,
+            override val index: Int,
+            override val onClick: (() -> Unit)? = null,
+            override var isEnabled: Boolean = true,
+        ) : ListItem()
+
         data class HeaderItem(
             @DrawableRes override val icon: Int? = null,
             override val label: UiString,
@@ -56,11 +64,6 @@ data class CardReaderHubViewState(
 
     data class OnboardingErrorAction(
         val text: UiString?,
-        val onClick: () -> Unit,
-    )
-
-    data class LearnMoreIppState(
-        val label: UiString,
         val onClick: () -> Unit,
     )
 }

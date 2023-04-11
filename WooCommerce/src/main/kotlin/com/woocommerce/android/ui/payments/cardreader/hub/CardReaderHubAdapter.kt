@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.GapBetweenSections
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.HeaderItem
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.LearnMoreListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.ToggleableListItem
 
@@ -25,6 +26,9 @@ class CardReaderHubAdapter :
             is GapBetweenSections -> {
                 VIEW_TYPE_GAP_BETWEEN_SECTIONS
             }
+            is LearnMoreListItem -> {
+                VIEW_TYPE_LEARN_MORE
+            }
         }
     }
 
@@ -41,6 +45,9 @@ class CardReaderHubAdapter :
             }
             VIEW_TYPE_GAP_BETWEEN_SECTIONS -> {
                 CardReaderHubViewHolder.GapBetweenSectionsViewHolder(parent)
+            }
+            VIEW_TYPE_LEARN_MORE -> {
+                CardReaderHubViewHolder.LearnMoreViewHolder(parent)
             }
             else -> error("Unknown section")
         }
@@ -72,9 +79,10 @@ class CardReaderHubAdapter :
     }
 
     companion object {
+        const val VIEW_TYPE_HEADER = 0
         const val VIEW_TYPE_TOGGELABLE = 1
         const val VIEW_TYPE_NON_TOGGELABLE = 2
-        const val VIEW_TYPE_HEADER = 0
         const val VIEW_TYPE_GAP_BETWEEN_SECTIONS = 3
+        const val VIEW_TYPE_LEARN_MORE = 4
     }
 }

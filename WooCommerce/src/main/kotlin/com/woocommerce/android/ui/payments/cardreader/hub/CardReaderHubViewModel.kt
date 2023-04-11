@@ -17,6 +17,7 @@ import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.feedback.FeedbackRepository
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.Companion.LEARN_MORE_SOURCE
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
@@ -28,6 +29,7 @@ import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.GapBetweenSections
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.HeaderItem
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.LearnMoreListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.OnboardingErrorAction
@@ -87,7 +89,7 @@ class CardReaderHubViewModel @Inject constructor(
             index = 2,
             isChecked = false,
             onToggled = { (::onCashOnDeliveryToggled)(it) },
-            onLearnMoreClicked = ::onLearnMoreClicked
+            onLearnMoreClicked = ::onLearnMoreCodClicked
         )
     )
 
@@ -109,17 +111,6 @@ class CardReaderHubViewModel @Inject constructor(
 
     init {
         handleOpenInHubParameter()
-    }
-
-    private fun onLearnMoreClicked() {
-        cardReaderTracker.trackCashOnDeliveryLearnMoreTapped()
-        triggerEvent(
-            CardReaderHubEvents.OpenGenericWebView(
-                learnMoreUrlProvider.provideLearnMoreUrlFor(
-                    CASH_ON_DELIVERY
-                )
-            )
-        )
     }
 
     private suspend fun checkAndUpdateCashOnDeliveryOptionState() {
@@ -185,21 +176,9 @@ class CardReaderHubViewModel @Inject constructor(
             onClick = ::onManageCardReaderClicked
         )
     ).apply {
-        addCardReaderManuals()
         addTapToPay()
-    }
-
-    private fun MutableList<ListItem>.addCardReaderManuals() {
-        if (countryConfig is CardReaderConfigForSupportedCountry) {
-            add(
-                NonToggleableListItem(
-                    icon = R.drawable.ic_card_reader_manual,
-                    label = UiStringRes(R.string.settings_card_reader_manuals),
-                    index = 10,
-                    onClick = { onCardReaderManualsClicked(countryConfig) }
-                )
-            )
-        }
+        addCardReaderManuals()
+        addLearnMoreAboutIPP()
     }
 
     private fun MutableList<ListItem>.addTapToPay() {
@@ -226,6 +205,30 @@ class CardReaderHubViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    private fun MutableList<ListItem>.addCardReaderManuals() {
+        if (countryConfig is CardReaderConfigForSupportedCountry) {
+            add(
+                NonToggleableListItem(
+                    icon = R.drawable.ic_card_reader_manual,
+                    label = UiStringRes(R.string.settings_card_reader_manuals),
+                    index = 10,
+                    onClick = { onCardReaderManualsClicked(countryConfig) }
+                )
+            )
+        }
+    }
+
+    private fun MutableList<ListItem>.addLearnMoreAboutIPP() {
+        add(
+            LearnMoreListItem(
+                icon = R.drawable.ic_info_outline_20dp,
+                label = UiStringRes(R.string.card_reader_detail_learn_more, containsHtml = true),
+                index = 11,
+                onClick = ::onLearnMoreIppClicked
+            )
+        )
     }
 
     private fun createAdditionalItemWhenMultiplePluginsInstalled() =
@@ -299,6 +302,28 @@ class CardReaderHubViewModel @Inject constructor(
             CardReaderHubEvents.NavigateToPurchaseCardReaderFlow(
                 url = paymentMenuUtmProvider.getUrlWithUtmParams(cardReaderPurchaseUrl),
                 titleRes = R.string.card_reader_purchase_card_reader
+            )
+        )
+    }
+
+    private fun onLearnMoreCodClicked() {
+        cardReaderTracker.trackCashOnDeliveryLearnMoreTapped()
+        triggerEvent(
+            CardReaderHubEvents.OpenGenericWebView(
+                learnMoreUrlProvider.provideLearnMoreUrlFor(
+                    CASH_ON_DELIVERY
+                )
+            )
+        )
+    }
+
+    private fun onLearnMoreIppClicked() {
+        cardReaderTracker.trackIPPLearnMoreClicked(LEARN_MORE_SOURCE)
+        triggerEvent(
+            CardReaderHubEvents.OpenGenericWebView(
+                learnMoreUrlProvider.provideLearnMoreUrlFor(
+                    LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
+                )
             )
         )
     }

@@ -2,13 +2,16 @@ package com.woocommerce.android.ui.payments.cardreader.hub
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
 import androidx.annotation.LayoutRes
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.CardReaderHubHeaderBinding
 import com.woocommerce.android.databinding.CardReaderHubListItemBinding
 import com.woocommerce.android.databinding.CardReaderHubToggelableItemBinding
+import com.woocommerce.android.databinding.CardReaderLearnMoreSectionBinding
 import com.woocommerce.android.util.UiHelpers
 
 private const val DISABLED_BUTTON_ALPHA = 0.5f
@@ -83,6 +86,24 @@ abstract class CardReaderHubViewHolder(val parent: ViewGroup, @LayoutRes layout:
         CardReaderHubViewHolder(parent, R.layout.card_reader_hub_gap_between_sections) {
         override fun onBind(uiState: CardReaderHubViewState.ListItem) {
             // no-op
+        }
+    }
+
+    class LearnMoreViewHolder(parent: ViewGroup) :
+        CardReaderHubViewHolder(parent, R.layout.card_reader_learn_more_section) {
+
+        var binding: CardReaderLearnMoreSectionBinding = CardReaderLearnMoreSectionBinding.bind(itemView)
+        override fun onBind(uiState: CardReaderHubViewState.ListItem) {
+            uiState as CardReaderHubViewState.ListItem.LearnMoreListItem
+            UiHelpers.setTextOrHide(binding.learnMore, uiState.label)
+            binding.learnMore.setCompoundDrawablesWithIntrinsicBounds(
+                AppCompatResources.getDrawable(parent.context, uiState.icon),
+                null,
+                null,
+                null
+            )
+            binding.learnMore.setOnClickListener { uiState.onClick?.invoke() }
+            (binding.learnMore.layoutParams as MarginLayoutParams).topMargin = 0
         }
     }
 }
