@@ -4,12 +4,14 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentBundleProductListBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.products.adapters.SimpleProductListAdapter
+import com.woocommerce.android.ui.products.adapters.BundleProductListAdapter
+import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,7 +23,7 @@ class ProductBundleFragment : BaseFragment(R.layout.fragment_bundle_product_list
     private var _binding: FragmentBundleProductListBinding? = null
     private val binding get() = _binding!!
 
-    private val productListAdapter: SimpleProductListAdapter by lazy { SimpleProductListAdapter() }
+    private val productListAdapter: BundleProductListAdapter by lazy { BundleProductListAdapter() }
 
     override fun getFragmentTitle() = resources.getString(R.string.product_bundle)
 
@@ -33,6 +35,15 @@ class ProductBundleFragment : BaseFragment(R.layout.fragment_bundle_product_list
             layoutManager = LinearLayoutManager(requireActivity())
             adapter = productListAdapter
             isMotionEventSplittingEnabled = false
+            if (itemDecorationCount == 0) {
+                addItemDecoration(
+                    AlignedDividerDecoration(
+                        context,
+                        DividerItemDecoration.VERTICAL,
+                        R.id.productInfoContainer
+                    )
+                )
+            }
         }
 
         viewModel.productList.observe(viewLifecycleOwner) {
