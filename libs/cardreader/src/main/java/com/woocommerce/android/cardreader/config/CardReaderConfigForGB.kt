@@ -8,7 +8,7 @@ import kotlinx.parcelize.Parcelize
 object CardReaderConfigForGB : CardReaderConfigForSupportedCountry(
     currency = "GBP",
     countryCode = "GB",
-    supportedReaders = listOf(ReaderType.ExternalReader.StripeM2),
+    supportedReaders = listOf(ReaderType.ExternalReader.WisePade3),
     paymentMethodTypes = listOf(PaymentMethodType.CARD_PRESENT),
     supportedExtensions = listOf(
         SupportedExtension(
