@@ -16,7 +16,7 @@ class RefreshBundledProducts @Inject constructor(
         withContext(dispatchers.io) {
             val siteModel = selectedSite.get()
             val bundledProducts = productStore.observeBundledProducts(siteModel, productId).first()
-            val remoteIds = bundledProducts.map { it.bundledProductId.value }.distinct()
+            val remoteIds = bundledProducts.map { it.bundledProductId }.distinct()
             productStore.fetchProductListSynced(siteModel, remoteIds)
         }
     }

@@ -18,17 +18,17 @@ class GetBundledProducts @Inject constructor(
         val siteModel = selectedSite.get()
         return productStore.observeBundledProducts(siteModel, productId)
             .map { list ->
-                val remoteIds = list.map { it.bundledProductId.value }.distinct()
+                val remoteIds = list.map { it.bundledProductId }.distinct()
                 val products =
                     productStore.getProductsByRemoteIds(siteModel, remoteIds).associateBy { it.remoteProductId }
 
                 list.map { entity ->
-                    val product = products[entity.bundledProductId.value]
+                    val product = products[entity.bundledProductId]
                     val image = product?.getFirstImageUrl()
                     BundledProduct(
-                        id = entity.bundledItemId,
-                        parentProductId = entity.productId.value,
-                        bundledProductId = entity.bundledProductId.value,
+                        id = entity.id,
+                        parentProductId = productId,
+                        bundledProductId = entity.bundledProductId,
                         title = entity.title,
                         stockStatus = ProductStockStatus.fromString(entity.stockStatus.replace("_", "")),
                         imageUrl = image,
