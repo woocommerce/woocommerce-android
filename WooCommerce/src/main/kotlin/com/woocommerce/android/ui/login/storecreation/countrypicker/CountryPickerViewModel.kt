@@ -7,7 +7,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.login.storecreation.NewStore
-import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
 import com.woocommerce.android.util.EmojiUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -35,16 +34,8 @@ class CountryPickerViewModel @Inject constructor(
     private val availableCountries = MutableStateFlow(emptyList<StoreCreationCountry>())
 
     val countryPickerState = availableCountries
-        .map { countries ->
-            CountryPickerState.Contentful(
-                storeName = storeName,
-                countries = countries,
-                creatingStoreInProgress = false
-            )
-        }.asLiveData()
-
-    val storeName
-        get() = newStore.data.name.orEmpty()
+        .map { countries -> ViewState(newStore.data.name.orEmpty(), countries) }
+        .asLiveData()
 
     init {
         analyticsTrackerWrapper.track(
@@ -107,16 +98,6 @@ class CountryPickerViewModel @Inject constructor(
         newStore.update(country = country.toNewStoreCountry())
     }
 
-    sealed class CountryPickerState {
-        data class Contentful(
-            val storeName: String,
-            val countries: List<StoreCreationCountry>,
-            val creatingStoreInProgress: Boolean,
-        ) : CountryPickerState()
-
-        data class Error(val errorType: StoreCreationErrorType) : CountryPickerState()
-    }
-
     private fun StoreCreationCountry.toNewStoreCountry() =
         NewStore.Country(
             name = name,
@@ -125,6 +106,11 @@ class CountryPickerViewModel @Inject constructor(
 
     object NavigateToDomainPickerStep : MultiLiveEvent.Event()
     object NavigateToSummaryStep : MultiLiveEvent.Event()
+
+    data class ViewState(
+        val storeName: String,
+        val countries: List<StoreCreationCountry>
+    )
 
     data class StoreCreationCountry(
         val name: String,

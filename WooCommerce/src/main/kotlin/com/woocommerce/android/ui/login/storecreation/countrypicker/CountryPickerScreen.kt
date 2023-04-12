@@ -33,7 +33,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerViewModel.CountryPickerState
 import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerViewModel.StoreCreationCountry
 
 @Composable
@@ -59,7 +58,7 @@ fun CountryPickerScreen(viewModel: CountryPickerViewModel) {
 
 @Composable
 private fun CountryPickerForm(
-    state: CountryPickerState.Contentful,
+    state: CountryPickerViewModel.ViewState,
     onContinueClicked: () -> Unit,
     onCountrySelected: (StoreCreationCountry) -> Unit,
     modifier: Modifier = Modifier,
@@ -211,7 +210,7 @@ private fun CountryItem(
 fun CountryPickerPreview() {
     WooThemeWithBackground {
         CountryPickerForm(
-            state = CountryPickerState.Contentful(
+            state = CountryPickerViewModel.ViewState(
                 countries = listOf(
                     StoreCreationCountry(
                         name = "Canada",
@@ -238,8 +237,7 @@ fun CountryPickerPreview() {
                         isSelected = false
                     )
                 ),
-                storeName = "Store name",
-                creatingStoreInProgress = false
+                storeName = "Store name"
             ),
             onContinueClicked = {},
             onCountrySelected = {},
