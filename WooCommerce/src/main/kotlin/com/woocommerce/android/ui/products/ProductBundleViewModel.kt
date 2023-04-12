@@ -32,7 +32,6 @@ class ProductBundleViewModel @Inject constructor(
     init {
         productListViewState = productListViewState.copy(isSkeletonShown = true)
         launch {
-            refreshBundledProducts(navArgs.productId)
             getBundledProducts(navArgs.productId)
                 .distinctUntilChanged()
                 .collectLatest { bundledProducts ->
@@ -40,6 +39,7 @@ class ProductBundleViewModel @Inject constructor(
                     productListViewState = productListViewState.copy(isSkeletonShown = false)
                 }
         }
+        launch { refreshBundledProducts(navArgs.productId) }
     }
 
     @Parcelize
