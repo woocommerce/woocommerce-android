@@ -92,14 +92,16 @@ fun MoreMenuScreen(
     Column {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         MoreMenuHeader(onSwitchStore, state, onSettingsClick)
-        MoreMenuSection(
-            title = "Settings",
-            items = state.moreMenuItems.filter { it.menuSection is Settings }
-        )
-        MoreMenuSection(
-            title = "General",
-            items = state.moreMenuItems.filter { it.menuSection is General }
-        )
+
+        state.moreMenuItems
+            .filter { it.menuSection is Settings && it.isEnabled }
+            .takeIf { it.isNotEmpty() }
+            ?.let { MoreMenuSection(title = "Settings", items = it) }
+
+        state.moreMenuItems
+            .filter { it.menuSection is General && it.isEnabled }
+            .takeIf { it.isNotEmpty() }
+            ?.let { MoreMenuSection(title = "General", items = it) }
     }
 }
 
