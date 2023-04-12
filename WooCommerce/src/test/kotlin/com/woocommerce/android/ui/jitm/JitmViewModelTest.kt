@@ -9,7 +9,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jitm.JitmViewModel.Companion.JITM_MESSAGE_PATH_KEY
 import com.woocommerce.android.ui.mystore.MyStoreUtmProvider
 import com.woocommerce.android.ui.mystore.MyStoreViewModel
-import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -64,7 +63,7 @@ class JitmViewModelTest : BaseUnitTest() {
 
             whenViewModelIsCreated()
 
-            assertThat(sut.jitmState.value).isInstanceOf(BannerState::class.java)
+            assertThat(sut.jitmState.value).isInstanceOf(Banner::class.java)
         }
     }
 
@@ -100,7 +99,7 @@ class JitmViewModelTest : BaseUnitTest() {
 
             whenViewModelIsCreated()
 
-            assertThat(sut.jitmState.value).isInstanceOf(BannerState.HideBannerState::class.java)
+            assertThat(sut.jitmState.value).isInstanceOf(Banner.Hide::class.java)
         }
     }
 
@@ -124,7 +123,7 @@ class JitmViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
 
             assertThat(
-                ((sut.jitmState.value as BannerState) as BannerState.DisplayBannerState).title
+                ((sut.jitmState.value as Banner) as Banner.Display).title
             ).isEqualTo(
                 UiString.UiStringText(text = testJitmMessage, containsHtml = false)
             )
@@ -152,14 +151,14 @@ class JitmViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
 
             assertThat(
-                ((sut.jitmState.value as BannerState) as BannerState.DisplayBannerState).backgroundImage
+                ((sut.jitmState.value as Banner) as Banner.Display).backgroundImage
             ).isEqualTo(
-                BannerState.LocalOrRemoteImage.Remote(imageUrl)
+                Banner.LocalOrRemoteImage.Remote(imageUrl)
             )
             assertThat(
-                ((sut.jitmState.value as BannerState) as BannerState.DisplayBannerState).badgeIcon
+                ((sut.jitmState.value as Banner) as Banner.Display).badgeIcon
             ).isEqualTo(
-                BannerState.LabelOrRemoteIcon.Label(
+                Banner.LabelOrRemoteIcon.Label(
                     UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
                 )
             )
@@ -187,14 +186,14 @@ class JitmViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
 
             assertThat(
-                ((sut.jitmState.value as BannerState) as BannerState.DisplayBannerState).badgeIcon
+                ((sut.jitmState.value as Banner) as Banner.Display).badgeIcon
             ).isEqualTo(
-                BannerState.LabelOrRemoteIcon.Remote(imageUrl)
+                Banner.LabelOrRemoteIcon.Remote(imageUrl)
             )
             assertThat(
-                ((sut.jitmState.value as BannerState) as BannerState.DisplayBannerState).backgroundImage
+                ((sut.jitmState.value as Banner) as Banner.Display).backgroundImage
             ).isEqualTo(
-                BannerState.LocalOrRemoteImage.Local(R.drawable.ic_banner_upsell_card_reader_illustration)
+                Banner.LocalOrRemoteImage.Local(R.drawable.ic_banner_upsell_card_reader_illustration)
             )
         }
     }
@@ -219,7 +218,7 @@ class JitmViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
 
             assertThat(
-                ((sut.jitmState.value as BannerState) as BannerState.DisplayBannerState).description
+                ((sut.jitmState.value as Banner) as Banner.Display).description
             ).isEqualTo(
                 UiString.UiStringText(text = testJitmDescription, containsHtml = false)
             )
@@ -246,7 +245,7 @@ class JitmViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
 
             assertThat(
-                ((sut.jitmState.value as BannerState) as BannerState.DisplayBannerState).primaryActionLabel
+                ((sut.jitmState.value as Banner) as Banner.Display).primaryActionLabel
             ).isEqualTo(
                 UiString.UiStringText(text = testJitmCtaLabel, containsHtml = false)
             )
@@ -276,7 +275,7 @@ class JitmViewModelTest : BaseUnitTest() {
             ).thenReturn("")
 
             whenViewModelIsCreated()
-            ((sut.jitmState.value as BannerState) as BannerState.DisplayBannerState).onPrimaryActionClicked.invoke()
+            ((sut.jitmState.value as Banner) as Banner.Display).onPrimaryActionClicked.invoke()
 
             assertThat(sut.event.value).isInstanceOf(JitmViewModel.CtaClick::class.java)
         }
@@ -313,7 +312,7 @@ class JitmViewModelTest : BaseUnitTest() {
             )
 
             whenViewModelIsCreated()
-            ((sut.jitmState.value as BannerState) as BannerState.DisplayBannerState).onPrimaryActionClicked.invoke()
+            ((sut.jitmState.value as Banner) as Banner.Display).onPrimaryActionClicked.invoke()
 
             assertThat(sut.event.value as JitmViewModel.CtaClick).isEqualTo(
                 JitmViewModel.CtaClick("${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US")
@@ -361,9 +360,9 @@ class JitmViewModelTest : BaseUnitTest() {
             )
 
             whenViewModelIsCreated()
-            ((sut.jitmState.value as BannerState) as BannerState.DisplayBannerState).onDismissClicked.invoke()
+            ((sut.jitmState.value as Banner) as Banner.Display).onDismissClicked.invoke()
 
-            assertThat(sut.jitmState.value).isInstanceOf(BannerState.HideBannerState::class.java)
+            assertThat(sut.jitmState.value).isInstanceOf(Banner.Hide::class.java)
         }
     }
 
@@ -584,7 +583,7 @@ class JitmViewModelTest : BaseUnitTest() {
             ).thenReturn("")
 
             whenViewModelIsCreated()
-            ((sut.jitmState.value as BannerState) as BannerState.DisplayBannerState).onPrimaryActionClicked.invoke()
+            ((sut.jitmState.value as Banner) as Banner.Display).onPrimaryActionClicked.invoke()
 
             verify(jitmTracker).trackJitmCtaTapped(
                 any(), any(), any()
@@ -619,7 +618,7 @@ class JitmViewModelTest : BaseUnitTest() {
             ).thenReturn("")
 
             whenViewModelIsCreated()
-            ((sut.jitmState.value as BannerState) as BannerState.DisplayBannerState).onPrimaryActionClicked.invoke()
+            ((sut.jitmState.value as Banner) as Banner.Display).onPrimaryActionClicked.invoke()
 
             verify(jitmTracker).trackJitmCtaTapped(
                 MyStoreViewModel.UTM_SOURCE, "12345", "woomobile_ipp"
@@ -640,7 +639,7 @@ class JitmViewModelTest : BaseUnitTest() {
             )
 
             whenViewModelIsCreated()
-            ((sut.jitmState.value as BannerState) as BannerState.DisplayBannerState).onDismissClicked.invoke()
+            ((sut.jitmState.value as Banner) as Banner.Display).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissTapped(
                 any(), any(), any()
@@ -665,7 +664,7 @@ class JitmViewModelTest : BaseUnitTest() {
             )
 
             whenViewModelIsCreated()
-            ((sut.jitmState.value as BannerState) as BannerState.DisplayBannerState).onDismissClicked.invoke()
+            ((sut.jitmState.value as Banner) as Banner.Display).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissTapped(
                 MyStoreViewModel.UTM_SOURCE, "12345", "woomobile_ipp"
@@ -689,7 +688,7 @@ class JitmViewModelTest : BaseUnitTest() {
             )
 
             whenViewModelIsCreated()
-            ((sut.jitmState.value as BannerState) as BannerState.DisplayBannerState).onDismissClicked.invoke()
+            ((sut.jitmState.value as Banner) as Banner.Display).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissSuccess(
                 any(), any(), any()
@@ -717,7 +716,7 @@ class JitmViewModelTest : BaseUnitTest() {
             )
 
             whenViewModelIsCreated()
-            ((sut.jitmState.value as BannerState) as BannerState.DisplayBannerState).onDismissClicked.invoke()
+            ((sut.jitmState.value as Banner) as Banner.Display).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissSuccess(
                 MyStoreViewModel.UTM_SOURCE, "12345", "woomobile_ipp"
@@ -741,7 +740,7 @@ class JitmViewModelTest : BaseUnitTest() {
             )
 
             whenViewModelIsCreated()
-            ((sut.jitmState.value as BannerState) as BannerState.DisplayBannerState).onDismissClicked.invoke()
+            ((sut.jitmState.value as Banner) as Banner.Display).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissFailure(
                 anyString(), anyString(), anyString(), eq(null), eq(null)
@@ -769,7 +768,7 @@ class JitmViewModelTest : BaseUnitTest() {
             )
 
             whenViewModelIsCreated()
-            ((sut.jitmState.value as BannerState) as BannerState.DisplayBannerState).onDismissClicked.invoke()
+            ((sut.jitmState.value as Banner) as Banner.Display).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissFailure(
                 anyString(), anyString(), anyString(), any(), eq(null)
@@ -803,7 +802,7 @@ class JitmViewModelTest : BaseUnitTest() {
             )
 
             whenViewModelIsCreated()
-            ((sut.jitmState.value as BannerState) as BannerState.DisplayBannerState).onDismissClicked.invoke()
+            ((sut.jitmState.value as Banner) as Banner.Display).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissFailure(
                 MyStoreViewModel.UTM_SOURCE, "12345", "woomobile_ipp", WooErrorType.GENERIC_ERROR, "Generic error"
@@ -831,7 +830,7 @@ class JitmViewModelTest : BaseUnitTest() {
             )
 
             whenViewModelIsCreated()
-            ((sut.jitmState.value as BannerState) as BannerState.DisplayBannerState).onDismissClicked.invoke()
+            ((sut.jitmState.value as Banner) as Banner.Display).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissFailure(
                 MyStoreViewModel.UTM_SOURCE, "12345", "woomobile_ipp", null, null

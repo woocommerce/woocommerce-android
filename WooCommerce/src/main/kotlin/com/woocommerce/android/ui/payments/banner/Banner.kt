@@ -36,11 +36,12 @@ import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.jitm.JitmState
 import com.woocommerce.android.util.UiHelpers
 
 @Composable
-fun Banner(bannerState: BannerState) {
-    if (bannerState is BannerState.DisplayBannerState) {
+fun Banner(bannerState: JitmState.Banner) {
+    if (bannerState is JitmState.Banner.Displayed) {
         Card(
             modifier = Modifier.fillMaxWidth(),
         ) {
@@ -122,9 +123,9 @@ fun Banner(bannerState: BannerState) {
 }
 
 @Composable
-private fun BackgroundImage(bannerState: BannerState.DisplayBannerState) {
+private fun BackgroundImage(bannerState: JitmState.Banner.Displayed) {
     when (val icon = bannerState.backgroundImage) {
-        is BannerState.LocalOrRemoteImage.Local -> {
+        is JitmState.Banner.LocalOrRemoteImage.Local -> {
             Image(
                 painter = painterResource(id = icon.drawableId),
                 contentDescription = null,
@@ -132,7 +133,7 @@ private fun BackgroundImage(bannerState: BannerState.DisplayBannerState) {
                 modifier = Modifier.width(154.dp)
             )
         }
-        is BannerState.LocalOrRemoteImage.Remote -> {
+        is JitmState.Banner.LocalOrRemoteImage.Remote -> {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(icon.url)
@@ -145,9 +146,9 @@ private fun BackgroundImage(bannerState: BannerState.DisplayBannerState) {
 }
 
 @Composable
-private fun BadgeIcon(bannerState: BannerState.DisplayBannerState) {
+private fun BadgeIcon(bannerState: JitmState.Banner.Displayed) {
     when (val icon = bannerState.badgeIcon) {
-        is BannerState.LabelOrRemoteIcon.Label -> {
+        is JitmState.Banner.LabelOrRemoteIcon.Label -> {
             val bcgColor = colorResource(id = R.color.woo_purple_10)
             Text(
                 text = UiHelpers.getTextOfUiString(LocalContext.current, icon.label),
@@ -167,7 +168,7 @@ private fun BadgeIcon(bannerState: BannerState.DisplayBannerState) {
                     )
             )
         }
-        is BannerState.LabelOrRemoteIcon.Remote -> {
+        is JitmState.Banner.LabelOrRemoteIcon.Remote -> {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(icon.url)
@@ -185,16 +186,16 @@ private fun BadgeIcon(bannerState: BannerState.DisplayBannerState) {
 fun PaymentScreenBannerPreview() {
     WooThemeWithBackground {
         Banner(
-            BannerState.DisplayBannerState(
+            JitmState.Banner.Displayed(
                 onPrimaryActionClicked = {},
                 onDismissClicked = {},
                 title = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_title),
                 description = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_description),
                 primaryActionLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_cta),
-                backgroundImage = BannerState.LocalOrRemoteImage.Local(
+                backgroundImage = JitmState.Banner.LocalOrRemoteImage.Local(
                     R.drawable.ic_banner_upsell_card_reader_illustration
                 ),
-                badgeIcon = BannerState.LabelOrRemoteIcon.Label(
+                badgeIcon = JitmState.Banner.LabelOrRemoteIcon.Label(
                     UiString.UiStringRes(
                         R.string.card_reader_upsell_card_reader_banner_new
                     )

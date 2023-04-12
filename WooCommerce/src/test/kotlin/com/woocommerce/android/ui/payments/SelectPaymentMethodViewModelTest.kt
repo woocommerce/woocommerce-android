@@ -22,7 +22,7 @@ import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.OpenPurc
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.ViewState.Loading
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.ViewState.Success
 import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
-import com.woocommerce.android.ui.payments.banner.BannerState
+import com.woocommerce.android.ui.jitm.Banner
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
@@ -837,7 +837,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             // WHEN
             val viewModel = initViewModel(Payment(1L, ORDER))
             (
-                (viewModel.viewStateData.value as Success).bannerState as BannerState.DisplayBannerState
+                (viewModel.viewStateData.value as Success).bannerState as Banner.Display
                 ).onPrimaryActionClicked.invoke()
 
             // Then
@@ -859,7 +859,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             // WHEN
             val viewModel = initViewModel(Payment(1L, ORDER))
             (
-                (viewModel.viewStateData.value as Success).bannerState as BannerState.DisplayBannerState
+                (viewModel.viewStateData.value as Success).bannerState as Banner.Display
                 ).onDismissClicked.invoke()
 
             // Then
@@ -905,7 +905,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
             val viewModel = initViewModel(Payment(1L, ORDER))
             (
-                (viewModel.viewStateData.value as Success).bannerState as BannerState.DisplayBannerState
+                (viewModel.viewStateData.value as Success).bannerState as Banner.Display
                 ).onDismissClicked.invoke()
 
             assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isTrue
@@ -960,7 +960,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             // THEN
             assertThat(
                 (viewModel.viewStateData.value as Success).bannerState
-            ).isInstanceOf(BannerState.DisplayBannerState::class.java)
+            ).isInstanceOf(Banner.Display::class.java)
         }
 
     @Test
@@ -977,7 +977,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             // THEN
             assertThat(
                 (viewModel.viewStateData.value as Success).bannerState
-            ).isInstanceOf(BannerState.HideBannerState::class.java)
+            ).isInstanceOf(Banner.Hide::class.java)
         }
 
     @Test
@@ -994,7 +994,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             // THEN
             assertThat(
                 (viewModel.viewStateData.value as Success).bannerState
-            ).isInstanceOf(BannerState.HideBannerState::class.java)
+            ).isInstanceOf(Banner.Hide::class.java)
         }
 
     @Test
@@ -1016,7 +1016,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             // WHEN
             val viewModel = initViewModel(Payment(orderId, ORDER))
             (
-                (viewModel.viewStateData.value as Success).bannerState as BannerState.DisplayBannerState
+                (viewModel.viewStateData.value as Success).bannerState as Banner.Display
                 ).onPrimaryActionClicked.invoke()
 
             // THEN
@@ -1037,7 +1037,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             // WHEN
             val viewModel = initViewModel(Payment(orderId, ORDER))
             val title = (
-                (viewModel.viewStateData.value as Success).bannerState as BannerState.DisplayBannerState
+                (viewModel.viewStateData.value as Success).bannerState as Banner.Display
                 ).title
 
             // THEN
@@ -1063,7 +1063,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             // WHEN
             val viewModel = initViewModel(Payment(orderId, ORDER))
             val description = (
-                (viewModel.viewStateData.value as Success).bannerState as BannerState.DisplayBannerState
+                (viewModel.viewStateData.value as Success).bannerState as Banner.Display
                 ).description
 
             // THEN
@@ -1089,7 +1089,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             // WHEN
             val viewModel = initViewModel(Payment(orderId, ORDER))
             val primaryActionLabel = (
-                (viewModel.viewStateData.value as Success).bannerState as BannerState.DisplayBannerState
+                (viewModel.viewStateData.value as Success).bannerState as Banner.Display
                 ).primaryActionLabel
 
             // THEN
@@ -1115,12 +1115,12 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             // WHEN
             val viewModel = initViewModel(Payment(orderId, ORDER))
             val badgeIcon = (
-                (viewModel.viewStateData.value as Success).bannerState as BannerState.DisplayBannerState
+                (viewModel.viewStateData.value as Success).bannerState as Banner.Display
                 ).badgeIcon
 
             // THEN
             assertThat(badgeIcon).isEqualTo(
-                BannerState.LabelOrRemoteIcon.Label(
+                Banner.LabelOrRemoteIcon.Label(
                     UiString.UiStringRes(stringRes = R.string.card_reader_upsell_card_reader_banner_new)
                 )
             )

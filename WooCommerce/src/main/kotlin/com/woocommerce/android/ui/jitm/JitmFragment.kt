@@ -15,7 +15,6 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.jitm.JitmViewModel.Companion.JITM_MESSAGE_PATH_KEY
 import com.woocommerce.android.ui.payments.banner.Banner
-import com.woocommerce.android.ui.payments.banner.BannerState
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -26,8 +25,15 @@ class JitmFragment : Fragment() {
         ComposeView(requireContext())
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        viewModel.jitmState.observe(viewLifecycleOwner) { bannerState ->
-            applyBannerComposeUI(bannerState)
+        viewModel.jitmState.observe(viewLifecycleOwner) { jitmState ->
+            when (jitmState) {
+                is JitmState.Banner.Displayed -> {
+                    applyBannerComposeUI(jitmState)
+                }
+                is JitmState.Modal -> TODO()
+                JitmState.Hidden -> requireView().hide()
+            }
+
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
@@ -50,19 +56,15 @@ class JitmFragment : Fragment() {
         viewModel.fetchJitms()
     }
 
-    private fun applyBannerComposeUI(state: BannerState) {
-        if (state is BannerState.DisplayBannerState) {
-            (requireView() as ComposeView).apply {
-                show()
-                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-                setContent {
-                    WooThemeWithBackground {
-                        Banner(bannerState = state)
-                    }
+    private fun applyBannerComposeUI(state: JitmState.Banner.Displayed) {
+        (requireView() as ComposeView).apply {
+            show()
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                WooThemeWithBackground {
+                    Banner(bannerState = state)
                 }
             }
-        } else {
-            requireView().hide()
         }
     }
 

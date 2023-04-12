@@ -23,6 +23,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
+import com.woocommerce.android.ui.jitm.JitmState
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.DismissCardReaderUpsellBanner
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.DismissCardReaderUpsellBannerViaDontShowAgain
@@ -39,7 +40,6 @@ import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.SharePay
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.ViewState.Loading
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.ViewState.Success
 import com.woocommerce.android.ui.payments.banner.Banner
-import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.ui.payments.banner.PaymentsScreenBannerDismissDialog
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectDialogFragment
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
@@ -81,13 +81,15 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
         setupResultHandlers()
     }
 
-    private fun applyBannerComposeUI(state: BannerState) {
-        binding.upsellCardReaderComposeView.upsellCardReaderBannerView.apply {
-            // Dispose of the Composition when the view's LifecycleOwner is destroyed
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                WooThemeWithBackground {
-                    Banner(bannerState = state)
+    private fun applyBannerComposeUI(state: JitmState) {
+        if (state is JitmState.Banner) {
+            binding.upsellCardReaderComposeView.upsellCardReaderBannerView.apply {
+                // Dispose of the Composition when the view's LifecycleOwner is destroyed
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    WooThemeWithBackground {
+                        Banner(bannerState = state)
+                    }
                 }
             }
         }
