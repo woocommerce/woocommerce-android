@@ -5,6 +5,8 @@ import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.Store
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Loading
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_ADDRESS_ALREADY_EXISTS
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository.SiteCreationData
+import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Failure
+import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Success
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.Companion.NEW_SITE_LANGUAGE_ID
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.Companion.NEW_SITE_THEME
 import kotlinx.coroutines.flow.flow
@@ -35,21 +37,17 @@ class CreateFreeTrialStore @Inject constructor(
         ).recoverIfSiteExists(storeDomain)
 
         when (result) {
-            is StoreCreationResult.Success -> {
-                emit(Finished(result.data))
-            }
-            is StoreCreationResult.Failure -> {
-                emit(Failed(result.type))
-            }
+            is Success -> emit(Finished(result.data))
+            is Failure -> emit(Failed(result.type))
         }
     }
 
     private suspend fun StoreCreationResult<Long>.recoverIfSiteExists(
         storeDomain: String?
-    ) = run { this as? StoreCreationResult.Failure<Long> }
+    ) = run { this as? Failure<Long> }
         ?.takeIf { it.type == SITE_ADDRESS_ALREADY_EXISTS }
         ?.let { repository.getSiteByUrl(storeDomain) }
-        ?.let { StoreCreationResult.Success(it.siteId) }
+        ?.let { Success(it.siteId) }
         ?: this
 
     sealed class StoreCreationState {
