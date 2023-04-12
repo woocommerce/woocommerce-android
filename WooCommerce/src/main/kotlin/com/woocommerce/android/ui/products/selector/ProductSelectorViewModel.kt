@@ -204,7 +204,7 @@ class ProductSelectorViewModel @Inject constructor(
 
     private fun Product.toUiModel(selectedItems: Collection<SelectedItem>): ProductListItem {
         fun getProductSelection(): SelectionState {
-            return if (productType == VARIABLE && numVariations > 0) {
+            return if ((productType == VARIABLE || productType == VARIABLE_SUBSCRIPTION) && numVariations > 0) {
                 val intersection = variationIds.intersect(selectedItems.variationIds.toSet())
                 when {
                     intersection.isEmpty() -> UNSELECTED
