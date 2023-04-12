@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login.storecreation
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
@@ -112,6 +113,7 @@ class InstallationViewModelTest : BaseUnitTest() {
         val expectedState = ErrorState(STORE_NOT_READY)
 
         assertEquals(expectedState, observedState)
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.SITE_CREATION_TIMED_OUT)
     }
 
     @Test

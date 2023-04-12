@@ -122,6 +122,9 @@ class InstallationViewModel @Inject constructor(
                     (result as Failure).type == STORE_LOADING_FAILED || // permanent error
                     retries == STORE_LOAD_RETRIES_LIMIT // site found but is not ready & retry limit reached
                 ) {
+                    if (retries == STORE_LOAD_RETRIES_LIMIT) {
+                        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_TIMED_OUT)
+                    }
                     processStoreCreationResult(result)
                     break
                 }
