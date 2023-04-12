@@ -1,13 +1,14 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 13.2
 -----
-
+[*] Added RTL languages support in search fields [https://github.com/woocommerce/woocommerce-android/pull/8770]
 
 13.1
 -----
 - [internal] Users can now create a Free Trial store from the app from the Get Started section of the app prologue. [https://github.com/woocommerce/woocommerce-android/pull/8759]
 - [**] Add Popular and Last sold sections to product selector screen [https://github.com/woocommerce/woocommerce-android/pull/8756]
 - [**] Jetpack activation now supported for merchants logging in with site credentials. [https://github.com/woocommerce/woocommerce-android/pull/8698]
+
 13.0
 -----
 - [*][Internal] Added analytics events for Product Selector interactions [https://github.com/woocommerce/woocommerce-android/pull/8665]
