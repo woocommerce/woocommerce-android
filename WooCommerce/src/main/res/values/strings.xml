@@ -2279,7 +2279,6 @@
     <string name="jetpack_benefits_modal_multiple_stores_title">Multiple stores</string>
     <string name="jetpack_benefits_modal_multiple_stores_subtitle">Get access to all of your WooCommerce stores.</string>
     <string name="jetpack_benefits_modal_login">Log In to Continue</string>
-    <string name="jetpack_benefits_open_wpadmin">Open wp-admin</string>
 
     <string name="jetpack_install_start_title">Install Jetpack</string>
     <string name="jetpack_install_start_subtitle">Install the free Jetpack plugin to &lt;strong&gt;%s&lt;/strong&gt; to experience the best mobile experience.</string>
@@ -2303,6 +2302,9 @@
     <string name="jetpack_install_progress_option_wp_admin_install">Install</string>
     <string name="jetpack_install_progress_option_wp_admin_activate">Activate</string>
     <string name="jetpack_install_progress_failed_option_contact_support">Contact Support</string>
+
+    <string name="jetpack_install_role_eligibility_error_message">It looks like your role doesn\'t allow you to install Jetpack. \nPlease contact your administrator for help.</string>
+    <string name="jetpack_install_role_eligibility_learn_more">Learn more about roles and permission</string>
 
     <!-- Inbox -->
     <string name="inbox_screen_title">Inbox</string>
@@ -2439,6 +2441,9 @@
     <string name="product_selector_search_failed">Searching products failed</string>
     <string name="product_selector_empty_state">No products found</string>
     <string name="product_selector_clear_filters_button_title">Clear Filters</string>
+    <string name="product_selector_popular_products_heading">Popular</string>
+    <string name="product_selector_recent_products_heading">Last Sold</string>
+    <string name="product_selector_products_heading">Products</string>
 
     <!-- WC Shipping installation flow -->
     <string name="install_wc_shipping_flow_onboarding_screen_title">Fulfill your orders with WooCommerce Shipping</string>
@@ -3223,6 +3228,28 @@
     <string name="free_trial_days_left_plural">%1$d days</string>
 
     <!--
+    Free trial Summary
+    -->
+    <string name="free_trial_summary_title">Launch in days, grow for years</string>
+    <string name="free_trial_summary_advertise">We offer everything you need to build and grow an online store, powered by WooCommerce and hosted on WordPress.com.</string>
+    <string name="free_trial_summary_try_it">Try it for 14 days.</string>
+    <string name="free_trial_summary_try_button">Try For Free</string>
+    <string name="free_trial_summary_credit_card_message">No credit card required.</string>
+    <string name="free_trial_feature_premium_themes">Premium themes</string>
+    <string name="free_trial_feature_unlimited_products">Unlimited products</string>
+    <string name="free_trial_feature_shipping_labels">Shipping labels</string>
+    <string name="free_trial_feature_ecommerce_reports">Ecommerce reports</string>
+    <string name="free_trial_feature_multiple_payment_options">Multiple payment options</string>
+    <string name="free_trial_feature_subscription_product_kits">Subscription &amp; product kits</string>
+    <string name="free_trial_feature_social_advertising">Social advertising</string>
+    <string name="free_trial_feature_email_marketing">Email marketing</string>
+    <string name="free_trial_feature_247_support">24/7 support</string>
+    <string name="free_trial_feature_auto_updates_backups">Auto updates &amp; backups</string>
+    <string name="free_trial_feature_site_security">Site security</string>
+    <string name="free_trial_feature_fast_to_launch">Fast to launch</string>
+
+
+    <!--
     Upgrades
     -->
     <string name="upgrades_report_subscription_issue">Report subscription issue</string>
@@ -3242,7 +3269,7 @@
     -->
     <string name="order_subscription">Subscription</string>
     <string name="subscription_id">Subscription #%1$d</string>
-    <string name="subscription_total" translatable="false">%1$s /</string>
+    <string name="subscription_total" translatable="false">%1$s /\n%2$s</string>
     <string name="subscription_period_interval_single">Every %1$s</string>
     <string name="subscription_period_interval_multiple">Every %1$d %2$s</string>
     <string name="subscription_end_date" translatable="false">&#160;- %1$s</string>
@@ -3298,5 +3325,9 @@
     <string name="max_quantity">Maximum quantity</string>
     <string name="group_of">Group of</string>
     <string name="quantity_rules_info_notice">You can edit product\'s quantity rules in the web dashboard.</string>
+
+    <string name="empty_min_quantity">No minimum</string>
+    <string name="empty_max_quantity">No maximum</string>
+    <string name="empty_group_of">Not grouped</string>
 
 </resources>

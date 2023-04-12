@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow
+import com.woocommerce.android.ui.products.selector.ProductSourceForTracking
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -118,6 +119,7 @@ sealed class ProductNavigationTarget : Event() {
         val productId: Long,
         val selectedVariationIds: Set<Long>,
         val productSelectorFlow: ProductSelectorFlow = ProductSelectorFlow.Undefined,
+        val productSourceForTracking: ProductSourceForTracking,
     ) : ProductNavigationTarget()
 
     data class NavigateToProductFilter(
@@ -128,7 +130,10 @@ sealed class ProductNavigationTarget : Event() {
         val productCategoryName: String?
     ) : ProductNavigationTarget()
 
-    data class ViewProductSubscription(val subscription: SubscriptionDetails) : ProductNavigationTarget()
+    data class ViewProductSubscription(
+        val subscription: SubscriptionDetails,
+        val sale: SaleDetails? = null
+    ) : ProductNavigationTarget()
 
     data class ViewProductQuantityRules(val quantityRules: QuantityRules) : ProductNavigationTarget()
 }

@@ -1,11 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-27 15:54:04+0000
+Translation-Revision-Date: 2023-04-04 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="subscription_free_trial">Percobaan gratis</string>
+    <string name="subscription_sign_up_fee">Biaya pendaftaran</string>
+    <string name="subscription_expire">Kedaluwarsa setelah</string>
+    <string name="subscription_price">Harga langganan</string>
+    <string name="subscription_period_multiple_years">tahun</string>
+    <string name="subscription_period_multiple_months">bulan</string>
+    <string name="subscription_period_multiple_weeks">minggu</string>
+    <string name="subscription_period_multiple_days">hari</string>
+    <string name="subscription_period_year">tahun</string>
+    <string name="subscription_period_month">bulan</string>
+    <string name="subscription_period_week">minggu</string>
+    <string name="subscription_period_day">hari</string>
+    <string name="subscription_status_custom">Kustom</string>
+    <string name="subscription_status_pending_cancellation">Pembatalan yang Tertunda</string>
+    <string name="subscription_status_expired">Kedaluwarsa</string>
+    <string name="subscription_status_cancelled">Dibatalkan</string>
+    <string name="subscription_status_on_hold">Ditangguhkan</string>
+    <string name="subscription_status_active">Aktif</string>
+    <string name="no_variable_subscription_warning">Anda hanya dapat menambahkan langganan variabel di dasbor web.</string>
+    <string name="subscription_details_info_notice">Anda dapat menyunting langganan produk di dasbor web.</string>
+    <string name="subscription_no_trial">Tidak ada periode percobaan</string>
+    <string name="subscription_no_sign_up_fee">Tidak ada biaya pendaftaran</string>
+    <string name="subscription_never_expire">Tidak akan kedaluwarsa</string>
+    <string name="product_subscription_description">%1$s setiap %2$s %3$s</string>
+    <string name="subscription_period_interval_multiple">Setiap %1$d %2$s</string>
+    <string name="subscription_period_interval_single">Setiap %1$s</string>
+    <string name="subscription_id">Langganan #%1$d</string>
+    <string name="order_subscription">Langganan</string>
+    <string name="store_onboarding_launch_store_ok">OK</string>
+    <string name="simplified_login_prologue_title">Woo selalu menyertai mulai dari rintisan hingga jutaan penjualan Anda. Inilah alasan kami dipercaya para penjual untuk memperkuat 3,4 juta toko online mereka.</string>
+    <string name="simplified_login_prologue_intro">Jual apa pun, di mana pun.</string>
+    <string name="product_type_subscription">Langganan</string>
+    <string name="otp_incorrect">Kode OTP salah. Periksa kembali informasi Anda dan coba lagi.</string>
+    <string name="requesting_sms_otp_failure">Permintaan SMS gagal. Harap coba lagi.</string>
+    <string name="requesting_sms_otp_success">SMS diajukan, harap cek pesan Anda untuk melihat kodenya.</string>
+    <string name="product_subscription_title">Langganan</string>
+    <string name="card_reader_type_selection_bluetooth_reader_description">Pembaca kartu menerima pembayaran dengan chip serta secara mengetuk dan menggesek menggunakan kartu debit atau kartu kredit.</string>
+    <string name="card_reader_type_selection_tap_to_pay_description">Terima pembayaran nirsentuh dengan aman langsung dari ponsel Anda. </string>
+    <string name="card_reader_tap_to_pay_beta_features_subheading">Coba Ketuk untuk Bayar di aplikasi</string>
+    <string name="card_reader_tap_to_pay_beta_features_heading">Ketuk untuk Bayar</string>
+    <string name="card_reader_tap_to_pay_description_not_used">Gunakan ponsel Anda untuk menerima pembayaran dengan\nkartu. Coba sekarang.</string>
+    <string name="card_reader_tap_to_pay_share_feedback">Berikan umpan balik tentang Ketuk untuk Bayar</string>
+    <string name="login_site_credentials_web_authorization_connection_rejected">Tidak dapat login karena pembuatan kata sandi aplikasi tidak disetujui.</string>
+    <string name="login_site_credentials_fetching_site">Mengambil situs…</string>
+    <string name="login_site_credentials_fetching_site_failed">Terjadi error saat mengambil situs web Anda.</string>
+    <string name="login_site_credentials_use_web_authorization">Coba lagi menggunakan halaman WP Admin</string>
+    <string name="login_store_address">Login</string>
+    <string name="loading">Memuat…</string>
     <string name="upgrades_plan_ended_name">%s berakhir</string>
     <string name="upgrades_current_plan_ended_caption">Langganan Anda berakhir dan Anda dapat mengakses semua fitur secara terbatas.</string>
     <string name="free_trial_days_left_plural">%1$d hari</string>
@@ -30,7 +78,7 @@ Language: id
     <string name="upgrades_upgrade_now">Upgrade sekarang</string>
     <string name="upgrades_report_subscription_issue">Laporkan masalah langganan</string>
     <string name="free_trial_upgrade_now">Upgrade Sekarang</string>
-    <string name="free_trial_days_left">Masa percobaan Anda tersisa %1$s hari.</string>
+    <string name="free_trial_days_left">%1$s tersisa dalam periode percobaan Anda.</string>
     <string name="free_trial_trial_ended">Masa percobaan berakhir</string>
     <string name="free_trial_your_trial_ended">Masa percobaan Anda telah berakhir.</string>
     <string name="store_onboarding_launch_store_generic_error_description">Waduh, terjadi error tak terduga.</string>
@@ -100,7 +148,7 @@ Language: id
     <string name="card_reader_tap_to_pay_explanation_ready">Ketuk untuk Membayar sudah tersedia di ponsel Anda.\nPelanggan dapat menempelkan kartunya\nke ponsel Anda untuk membayar.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Terima pembayaran dengan kartu\nmenggunakan ponsel Anda</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Ketuk Untuk Membayar</string>
-    <string name="card_reader_tap_to_pay_description">Gunakan ponsel Anda untuk menerima pembayaran dengan kartu</string>
+    <string name="card_reader_tap_to_pay_description_used">Gunakan ponsel Anda untuk menerima pembayaran dengan kartu.</string>
     <string name="card_reader_tap_to_pay">Ketuk Untuk Membayar</string>
     <string name="card_reader_hub_actions_category_header">TINDAKAN</string>
     <string name="domain_registration_generic_error">Terjadi error saat registrasi domain</string>
@@ -350,7 +398,7 @@ Language: id
     <string name="card_reader_connect_scanning_built_in_hint">Tidak butuh waktu lama</string>
     <string name="card_reader_connect_scanning_built_in_header">Mempersiapkan pembaca bawaan…</string>
     <string name="card_reader_payment_collect_payment_built_in_state">Pembaca bawaan telah siap</string>
-    <string name="card_reader_type_selection_bluetooth_reader">Pembaca Bluetooth</string>
+    <string name="card_reader_type_selection_bluetooth_reader">Pembaca Kartu</string>
     <string name="card_reader_type_selection_tap_to_pay">Ketuk Untuk Membayar</string>
     <string name="analytics_conversion_subtitle">Angka Konversi</string>
     <string name="analytics_session_card_title">Sesi</string>
@@ -489,7 +537,6 @@ Language: id
     <string name="store_creation_create_new_store_label">Buat toko baru</string>
     <string name="or_use_password_below_qr_code_scan_option">Atau, login dengan kata sandi</string>
     <string name="or_scan_qr_code_to_log_in">Pindai kode QR untuk login</string>
-    <string name="simplified_login_prologue_title">WooCommerce adalah platform eCommerce open-source yang dapat disesuaikan dan dibuat berdasarkan WordPress.</string>
     <string name="simulated_reader_toast">Pembaca Kartu Simulasi telah dinonaktifkan</string>
     <string name="simulated_reader_key">Kunci Pembaca Simulasi</string>
     <string name="variations_bulk_update_stock_quantity_success">Jumlah stok diperbarui</string>
@@ -1735,7 +1782,6 @@ Language: id
     <string name="login_jetpack_required_text">Untuk menggunakan aplikasi ini untuk %1$s, Anda perlu menghubungkan plugin Jetpack ke toko Anda.</string>
     <string name="login_try_another_account">Login dengan akun lain</string>
     <string name="login_pick_store">Pilih toko untuk menghubungkan</string>
-    <string name="login_store_address">Masukkan alamat toko Anda</string>
     <string name="login_wpcom">Lanjutkan dengan WordPress.com</string>
     <string name="product_type_variable_desc">Produk dengan variasi seperti warna atau ukuran</string>
     <string name="product_selection_count_single">%d produk dipilih</string>

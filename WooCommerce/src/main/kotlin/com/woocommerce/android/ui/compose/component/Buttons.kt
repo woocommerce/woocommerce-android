@@ -25,10 +25,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.ripple.LocalRippleTheme
+import androidx.compose.material.ripple.RippleAlpha
+import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.intl.Locale
@@ -45,27 +51,41 @@ fun WCColoredButton(
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    colors: ButtonColors = ButtonDefaults.buttonColors(
-        backgroundColor = MaterialTheme.colors.secondary,
-        contentColor = MaterialTheme.colors.onPrimary,
-        disabledBackgroundColor = MaterialTheme.colors.secondary.copy(alpha = 0.38f),
-        disabledContentColor = MaterialTheme.colors.onPrimary
-    ),
+    colors: ButtonColors = ButtonDefaults.buttonColors(),
+    rippleColor: Color = MaterialTheme.colors.primaryVariant,
     content: @Composable RowScope.() -> Unit
 ) {
-    Button(
-        onClick = onClick,
-        enabled = enabled,
-        colors = colors,
-        elevation = null,
-        interactionSource = interactionSource,
-        contentPadding = contentPadding,
-        modifier = modifier
-    ) {
-        ProvideTextStyle(
-            value = MaterialTheme.typography.subtitle2
+    val contentColor by colors.contentColor(enabled = enabled)
+    val rippleTheme = remember(rippleColor, contentColor) {
+        object : RippleTheme {
+            @Composable
+            override fun defaultColor(): Color = RippleTheme.defaultRippleColor(
+                rippleColor,
+                MaterialTheme.colors.isLight
+            )
+
+            @Composable
+            override fun rippleAlpha(): RippleAlpha = RippleTheme.defaultRippleAlpha(
+                rippleColor,
+                MaterialTheme.colors.isLight
+            )
+        }
+    }
+    CompositionLocalProvider(LocalRippleTheme provides rippleTheme) {
+        Button(
+            onClick = onClick,
+            enabled = enabled,
+            colors = colors,
+            elevation = null,
+            interactionSource = interactionSource,
+            contentPadding = contentPadding,
+            modifier = modifier
         ) {
-            content()
+            ProvideTextStyle(
+                value = MaterialTheme.typography.subtitle2
+            ) {
+                content()
+            }
         }
     }
 }
@@ -80,10 +100,7 @@ fun WCColoredButton(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     enabled: Boolean = true,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    colors: ButtonColors = ButtonDefaults.buttonColors(
-        backgroundColor = MaterialTheme.colors.secondary,
-        contentColor = MaterialTheme.colors.onPrimary
-    )
+    colors: ButtonColors = ButtonDefaults.buttonColors()
 ) {
     WCColoredButton(
         onClick = onClick,
@@ -112,7 +129,7 @@ fun WCOutlinedButton(
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    colors: ButtonColors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.secondary),
+    colors: ButtonColors = ButtonDefaults.outlinedButtonColors(),
     content: @Composable RowScope.() -> Unit
 ) {
     OutlinedButton(
@@ -141,7 +158,7 @@ fun WCOutlinedButton(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     enabled: Boolean = true,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    colors: ButtonColors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.secondary),
+    colors: ButtonColors = ButtonDefaults.outlinedButtonColors(),
 ) {
     WCOutlinedButton(
         onClick = onClick,
@@ -170,7 +187,7 @@ fun WCTextButton(
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.TextButtonContentPadding,
-    colors: ButtonColors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colors.secondary),
+    colors: ButtonColors = ButtonDefaults.textButtonColors(),
     content: @Composable RowScope.() -> Unit
 ) {
     TextButton(
@@ -193,7 +210,7 @@ fun WCTextButton(
     allCaps: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.TextButtonContentPadding,
-    colors: ButtonColors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colors.secondary),
+    colors: ButtonColors = ButtonDefaults.textButtonColors(),
 ) {
     TextButton(
         onClick = onClick,
@@ -217,7 +234,7 @@ fun WCTextButton(
     allCaps: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.TextButtonContentPadding,
-    colors: ButtonColors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colors.secondary),
+    colors: ButtonColors = ButtonDefaults.textButtonColors(),
 ) {
     TextButton(
         onClick = onClick,

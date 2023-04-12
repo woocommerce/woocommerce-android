@@ -4,71 +4,74 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/major_100">
+    android:focusable="true"
+    android:padding="@dimen/major_100"
+    android:screenReaderFocusable="true"
+    tools:ignore="UnusedAttribute">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/subscription_start_date"
         style="@style/Woo.TextView.Caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         android:layout_marginStart="0dp"
         android:layout_marginTop="0dp"
-        tools:text="Feb 28, 2023" />
+        android:focusable="false"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Feb 28, 2023"
+        android:nextFocusDown="@+id/subscription_end_date"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/subscription_end_date"
         style="@style/Woo.TextView.Caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@id/subscription_start_date"
-        app:layout_constraintTop_toTopOf="parent"
         android:layout_marginStart="0dp"
         android:layout_marginTop="0dp"
-        tools:text=" - Dec 28, 2023" />
+        android:focusable="false"
+        app:layout_constraintStart_toEndOf="@id/subscription_start_date"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text=" - Dec 28, 2023"
+        android:nextFocusDown="@+id/subscription_id"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/subscription_id"
         style="@style/Woo.ListItem.Title"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        tools:text="Subscription #345"
-        app:layout_constraintStart_toStartOf="parent"
         android:layout_marginStart="0dp"
         android:layout_marginTop="@dimen/minor_100"
-        app:layout_constraintTop_toBottomOf="@id/subscription_start_date"/>
-
-    <com.woocommerce.android.widgets.tags.TagView
-        android:id="@+id/subscription_status_tag"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/minor_100"
-        tools:tagText="Active"
-        app:tagTextColor="@color/tagView_text"
+        android:ellipsize="end"
+        android:focusable="false"
+        android:lines="1"
+        app:layout_constraintEnd_toStartOf="@+id/subscription_total"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/subscription_id" />
+        app:layout_constraintTop_toBottomOf="@id/subscription_start_date"
+        tools:text="Subscription #345" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/subscription_total"
         style="@style/Woo.ListItem.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="0dp"
+        android:focusable="false"
+        app:layout_constraintBaseline_toBaselineOf="@id/subscription_id"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginEnd="0dp"
-        app:layout_constraintBaseline_toBaselineOf="@id/subscription_id"
-        tools:text="$60.00 /" />
+        tools:text="$1000000000000000000000060.00 /\n Every month"
+        android:textAlignment="viewEnd"
+        android:labelFor="@+id/subscription_period"/>
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/subscription_period"
-        style="@style/Woo.ListItem.Title"
+    <com.woocommerce.android.widgets.tags.TagView
+        android:id="@+id/subscription_status_tag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="@+id/subscription_total"
-        app:layout_constraintTop_toBottomOf="@+id/subscription_total"
-        android:layout_marginEnd="0dp"
-        android:layout_marginTop="0dp"
-        tools:text="Every 4 months" />
-
+        android:layout_marginTop="@dimen/minor_100"
+        android:focusable="false"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/subscription_id"
+        app:tagTextColor="@color/tagView_text"
+        tools:tagText="Active" />
 </androidx.constraintlayout.widget.ConstraintLayout>

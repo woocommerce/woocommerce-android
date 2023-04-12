@@ -6,7 +6,9 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R.string
+import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.extensions.isInteger
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToProductFilter
@@ -39,7 +41,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.map
@@ -48,6 +49,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.OrderEntity
+import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
@@ -58,14 +61,17 @@ class ProductSelectorViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val currencyFormatter: CurrencyFormatter,
     private val wooCommerceStore: WooCommerceStore,
+    private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite,
     private val listHandler: ProductListHandler,
     private val variationSelectorRepository: VariationSelectorRepository,
     private val resourceProvider: ResourceProvider,
     private val tracker: ProductSelectorTracker,
+    private val productsMapper: ProductsMapper
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val STATE_UPDATE_DELAY = 100L
+        private const val NUMBER_OF_SUGGESTED_ITEMS = 5
     }
 
     private val currencyCode by lazy {
@@ -89,13 +95,19 @@ class ProductSelectorViewModel @Inject constructor(
             productsRestrictions.map { restriction -> restriction(product) }.fold(true) { acc, result -> acc && result }
         }
     }
+    private val popularProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
+    private val recentProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
+
+    private val selectedItemsSource: MutableMap<Long, ProductSourceForTracking> = mutableMapOf()
 
     private var fetchProductsJob: Job? = null
     private var loadMoreJob: Job? = null
 
     val viewState = combine(
         flow = products,
-        flow2 = loadingState.withIndex()
+        flow2 = popularProducts,
+        flow3 = recentProducts,
+        flow4 = loadingState.withIndex()
             .debounce {
                 if (it.index != 0 && it.value == IDLE) {
                     // When resetting to IDLE, wait a bit to make sure the list has been fetched from DB
@@ -103,13 +115,15 @@ class ProductSelectorViewModel @Inject constructor(
                 } else 0L
             }
             .map { it.value },
-        flow3 = selectedItems,
-        flow4 = filterState,
-        flow5 = searchQuery
-    ) { products, loadingState, selectedIds, filterState, searchQuery ->
+        flow5 = selectedItems,
+        flow6 = filterState,
+        flow7 = searchQuery
+    ) { products, popularProducts, recentProducts, loadingState, selectedIds, filterState, searchQuery ->
         ViewState(
             loadingState = loadingState,
             products = products.map { it.toUiModel(selectedIds) },
+            popularProducts = getPopularProductsToDisplay(popularProducts, selectedIds),
+            recentProducts = getRecentProductsToDisplay(recentProducts, selectedIds),
             selectedItemsCount = selectedIds.size,
             filterState = filterState,
             searchQuery = searchQuery
@@ -120,8 +134,71 @@ class ProductSelectorViewModel @Inject constructor(
         monitorSearchQuery()
         monitorProductFilters()
         viewModelScope.launch {
+            loadPopularProducts()
+            loadRecentProducts()
             fetchProducts(forceRefresh = true)
         }
+    }
+
+    private fun getPopularProductsToDisplay(
+        popularProducts: List<Product>,
+        selectedIds: List<SelectedItem>
+    ): List<ProductListItem> {
+        return getProductItemsIfSearchQueryIsNotEmpty(popularProducts, selectedIds)
+    }
+
+    private fun getRecentProductsToDisplay(
+        recentProducts: List<Product>,
+        selectedIds: List<SelectedItem>
+    ): List<ProductListItem> {
+        return getProductItemsIfSearchQueryIsNotEmpty(recentProducts, selectedIds)
+    }
+
+    private fun getProductItemsIfSearchQueryIsNotEmpty(
+        productsList: List<Product>,
+        selectedIds: List<SelectedItem>
+    ): List<ProductListItem> {
+        if (searchQuery.value.isNotNullOrEmpty()) {
+            return emptyList()
+        }
+        return productsList.map { it.toUiModel(selectedIds) }
+    }
+
+    private suspend fun loadRecentProducts() {
+        val recentlySoldOrders = getRecentlySoldOrders().take(NUMBER_OF_SUGGESTED_ITEMS)
+        recentProducts.value = productsMapper.mapProductIdsToProduct(
+            getProductIdsFromRecentlySoldOrders(
+                recentlySoldOrders
+            ).distinctBy { it }
+        )
+    }
+
+    private suspend fun loadPopularProducts() {
+        val recentlySoldOrders = getRecentlySoldOrders()
+        val productIdsWithPurchaseCount = getProductIdsWithNumberOfPurchases(recentlySoldOrders)
+        val topPopularProductsSorted = productIdsWithPurchaseCount
+            .asSequence()
+            .map { it.toPair() }
+            .toList()
+            .sortedByDescending { it.second }
+            .take(NUMBER_OF_SUGGESTED_ITEMS)
+            .toMap()
+        popularProducts.value = productsMapper.mapProductIdsToProduct(topPopularProductsSorted.keys.toList())
+    }
+
+    private suspend fun getRecentlySoldOrders() =
+        orderStore.getPaidOrdersForSiteDesc(selectedSite.get()).filter { it.datePaid.isNotNullOrEmpty() }
+
+    private fun getProductIdsWithNumberOfPurchases(recentlySoldOrdersList: List<OrderEntity>): Map<Long, Int> =
+        recentlySoldOrdersList.asSequence()
+            .flatMap { it.getLineItemList().mapNotNull { it.productId } }
+            .groupingBy { it }
+            .eachCount()
+
+    private fun getProductIdsFromRecentlySoldOrders(
+        recentlySoldOrdersList: List<OrderEntity>
+    ) = recentlySoldOrdersList.flatMap { orderEntity ->
+        orderEntity.getLineItemList().mapNotNull { it.productId }
     }
 
     private fun Product.toUiModel(selectedItems: Collection<SelectedItem>): ProductListItem {
@@ -201,13 +278,15 @@ class ProductSelectorViewModel @Inject constructor(
         )
     }
 
-    fun onProductClick(item: ProductListItem) {
+    fun onProductClick(item: ProductListItem, productSourceForTracking: ProductSourceForTracking) {
+        val productSource = updateProductSourceIfSearchIsEnabled(productSourceForTracking)
         if (item.type == VARIABLE && item.numVariations > 0) {
             triggerEvent(
                 NavigateToVariationSelector(
                     item.id,
                     item.selectedVariationIds,
-                    productSelectorFlow
+                    productSelectorFlow,
+                    productSource
                 )
             )
         } else if (item.type != VARIABLE) {
@@ -217,9 +296,11 @@ class ProductSelectorViewModel @Inject constructor(
                 }
                 if (selectedProductItems.map { it.id }.contains(item.id)) {
                     tracker.trackItemUnselected(productSelectorFlow)
+                    selectedItemsSource.remove(item.id)
                     val productItemToUnselect = selectedProductItems.filter { it.id == item.id }.toSet()
                     selectedItems.value - productItemToUnselect
                 } else {
+                    selectedItemsSource[item.id] = productSource
                     tracker.trackItemSelected(productSelectorFlow)
                     selectedItems.value + SelectedItem.Product(item.id)
                 }
@@ -227,10 +308,29 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
 
+    private fun updateProductSourceIfSearchIsEnabled(productSource: ProductSourceForTracking):
+        ProductSourceForTracking {
+        return when {
+            searchQuery.value.isNotNullOrEmpty() -> {
+                ProductSourceForTracking.SEARCH
+            }
+            else -> {
+                productSource
+            }
+        }
+    }
+
     fun onDoneButtonClick() {
-        tracker.trackDoneButtonClicked(productSelectorFlow, selectedItems.value.size)
+        tracker.trackDoneButtonClicked(
+            productSelectorFlow,
+            selectedItems.value,
+            selectedItemsSource.values.toList(),
+            isFilterActive()
+        )
         triggerEvent(ExitWithResult(selectedItems.value))
     }
+
+    private fun isFilterActive() = !filterState.value.filterOptions.isNullOrEmpty()
 
     fun onSearchQueryChanged(query: String) {
         searchQuery.value = query
@@ -276,8 +376,16 @@ class ProductSelectorViewModel @Inject constructor(
                     it is SelectedItem.ProductVariation && it.productId == result.productId
                 }
 
+                oldItems.forEach {
+                    selectedItemsSource.remove(it.id)
+                }
+
                 val newItems = result.selectedVariationIds.map { variationId ->
-                    SelectedItem.ProductVariation(productId = result.productId, variationId = variationId)
+                    selectedItemsSource[variationId] = result.productSourceForTracking
+                    SelectedItem.ProductVariation(
+                        productId = result.productId,
+                        variationId = variationId,
+                    )
                 }
 
                 selectedItems.value - oldItems.toSet() + newItems
@@ -346,6 +454,8 @@ class ProductSelectorViewModel @Inject constructor(
     data class ViewState(
         val loadingState: LoadingState,
         val products: List<ProductListItem>,
+        val popularProducts: List<ProductListItem>,
+        val recentProducts: List<ProductListItem>,
         val selectedItemsCount: Int,
         val filterState: FilterState,
         val searchQuery: String
@@ -376,13 +486,20 @@ class ProductSelectorViewModel @Inject constructor(
     @Parcelize
     sealed class SelectedItem(val id: Long) : Parcelable {
         @Parcelize
-        data class ProductOrVariation(val productOrVariationId: Long) : SelectedItem(productOrVariationId)
+        data class ProductOrVariation(
+            val productOrVariationId: Long,
+        ) : SelectedItem(productOrVariationId)
 
         @Parcelize
-        data class Product(val productId: Long) : SelectedItem(productId)
+        data class Product(
+            val productId: Long,
+        ) : SelectedItem(productId)
 
         @Parcelize
-        data class ProductVariation(val productId: Long, val variationId: Long) : SelectedItem(variationId)
+        data class ProductVariation(
+            val productId: Long,
+            val variationId: Long,
+        ) : SelectedItem(variationId)
     }
 
     @Parcelize
@@ -411,3 +528,9 @@ val Collection<ProductSelectorViewModel.SelectedItem>.variationIds: List<Long>
         return filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductOrVariation>().map { it.id } +
             filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductVariation>().map { it.variationId }
     }
+enum class ProductSourceForTracking {
+    POPULAR,
+    LAST_SOLD,
+    ALPHABETICAL,
+    SEARCH,
+}

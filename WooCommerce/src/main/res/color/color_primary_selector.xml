@@ -3,7 +3,7 @@
     <item
         android:state_enabled="false"
         android:alpha="@dimen/alpha_emphasis_disabled"
-        android:color="@color/color_on_surface"/>
+        android:color="?colorOnSurface"/>
     <item
-        android:color="@color/color_secondary"/>
+        android:color="?colorPrimary"/>
 </selector>

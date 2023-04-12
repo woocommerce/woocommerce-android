@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.jitm
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jitm.JitmViewModel.Companion.JITM_MESSAGE_PATH_KEY
@@ -126,6 +127,74 @@ class JitmViewModelTest : BaseUnitTest() {
                 ((sut.jitmState.value as BannerState) as BannerState.DisplayBannerState).title
             ).isEqualTo(
                 UiString.UiStringText(text = testJitmMessage, containsHtml = false)
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm success response with background image, when viewmodel init, then proper jitm background image is used in UI`() {
+        testBlocking {
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            val imageUrl = "https://test.com/image.png"
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(
+                        provideJitmApiResponse(
+                            content = provideJitmContent(),
+                            assets = mapOf("background_image_url" to imageUrl)
+                        )
+                    )
+                )
+            )
+
+            whenViewModelIsCreated()
+
+            assertThat(
+                ((sut.jitmState.value as BannerState) as BannerState.DisplayBannerState).backgroundImage
+            ).isEqualTo(
+                BannerState.LocalOrRemoteImage.Remote(imageUrl)
+            )
+            assertThat(
+                ((sut.jitmState.value as BannerState) as BannerState.DisplayBannerState).badgeIcon
+            ).isEqualTo(
+                BannerState.LabelOrRemoteIcon.Label(
+                    UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm success response with badge image, when viewmodel init, then proper jitm badge icon is used in UI`() {
+        testBlocking {
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            val imageUrl = "https://test.com/image.png"
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(
+                        provideJitmApiResponse(
+                            content = provideJitmContent(),
+                            assets = mapOf("badge_image_url" to imageUrl)
+                        )
+                    )
+                )
+            )
+
+            whenViewModelIsCreated()
+
+            assertThat(
+                ((sut.jitmState.value as BannerState) as BannerState.DisplayBannerState).badgeIcon
+            ).isEqualTo(
+                BannerState.LabelOrRemoteIcon.Remote(imageUrl)
+            )
+            assertThat(
+                ((sut.jitmState.value as BannerState) as BannerState.DisplayBannerState).backgroundImage
+            ).isEqualTo(
+                BannerState.LocalOrRemoteImage.Local(R.drawable.ic_banner_upsell_card_reader_illustration)
             )
         }
     }
@@ -782,6 +851,7 @@ class JitmViewModelTest : BaseUnitTest() {
     }
 
     private fun provideJitmApiResponse(
+        template: String = "",
         content: JITMContent = provideJitmContent(),
         jitmCta: JITMCta = provideJitmCta(),
         timeToLive: Int = 0,
@@ -791,8 +861,10 @@ class JitmViewModelTest : BaseUnitTest() {
         maxDismissal: Int = 2,
         isDismissible: Boolean = false,
         url: String = "",
-        jitmStatsUrl: String = ""
+        jitmStatsUrl: String = "",
+        assets: Map<String, String>? = null,
     ) = JITMApiResponse(
+        template = template,
         content = content,
         cta = jitmCta,
         timeToLive = timeToLive,
@@ -802,16 +874,22 @@ class JitmViewModelTest : BaseUnitTest() {
         maxDismissal = maxDismissal,
         isDismissible = isDismissible,
         url = url,
-        jitmStatsUrl = jitmStatsUrl
+        jitmStatsUrl = jitmStatsUrl,
+        assets = assets
     )
 
     private fun provideJitmContent(
         message: String = "",
         description: String = "",
         icon: String = "",
+        iconPath: String = "",
         title: String = ""
     ) = JITMContent(
-        message = message, description = description, icon = icon, title = title
+        message = message,
+        description = description,
+        icon = icon,
+        iconPath = iconPath,
+        title = title,
     )
 
     private fun provideJitmCta(
