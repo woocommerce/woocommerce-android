@@ -45,7 +45,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextDirection.Companion.Content
+import androidx.compose.ui.text.style.TextDirection.Companion.ContentOrLtr
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -203,7 +203,7 @@ fun WCSearchField(
         onValueChange = onValueChange,
         textStyle = TextStyle(
             color = colorResource(id = R.color.color_on_surface_medium),
-            textDirection = Content
+            textDirection = ContentOrLtr
         ),
         modifier = modifier
             .defaultMinSize(minHeight = dimensionResource(id = R.dimen.major_250))
