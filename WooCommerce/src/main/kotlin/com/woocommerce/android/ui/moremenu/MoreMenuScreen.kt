@@ -91,25 +91,23 @@ fun MoreMenuScreen(
     onSwitchStore: () -> Unit,
     onSettingsClick: () -> Unit
 ) {
-    Column {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         MoreMenuHeader(onSwitchStore, state, onSettingsClick)
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-        ) {
-            state.moreMenuItems
-                .filter { it.menuSection is Settings && it.isEnabled }
-                .takeIf { it.isNotEmpty() }
-                ?.let { MoreMenuSection(title = "Settings", items = it) }
+        state.moreMenuItems
+            .filter { it.menuSection is Settings && it.isEnabled }
+            .takeIf { it.isNotEmpty() }
+            ?.let { MoreMenuSection(title = "Settings", items = it) }
 
-            state.moreMenuItems
-                .filter { it.menuSection is General && it.isEnabled }
-                .takeIf { it.isNotEmpty() }
-                ?.let { MoreMenuSection(title = "General", items = it) }
-        }
+        state.moreMenuItems
+            .filter { it.menuSection is General && it.isEnabled }
+            .takeIf { it.isNotEmpty() }
+            ?.let { MoreMenuSection(title = "General", items = it) }
     }
 }
 
