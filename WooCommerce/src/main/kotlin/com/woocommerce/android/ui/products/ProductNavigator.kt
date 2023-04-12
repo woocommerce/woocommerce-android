@@ -402,7 +402,7 @@ class ProductNavigator @Inject constructor() {
 
             is ProductNavigationTarget.ViewBundleProducts -> {
                 ProductDetailFragmentDirections.actionProductDetailFragmentToProductBundleFragment(
-                    target.bundledProductsIds.toLongArray()
+                    target.productId
                 ).let { fragment.findNavController().navigateSafely(it) }
             }
 
