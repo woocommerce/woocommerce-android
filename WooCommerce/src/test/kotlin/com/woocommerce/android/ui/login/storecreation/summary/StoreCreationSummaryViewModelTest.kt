@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.login.storecreation.summary
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState
 import com.woocommerce.android.ui.login.storecreation.NewStore
@@ -25,6 +27,7 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
     private lateinit var sut: StoreCreationSummaryViewModel
     private lateinit var createStore: CreateFreeTrialStore
     private lateinit var newStore: NewStore
+    private lateinit var tracker: AnalyticsTrackerWrapper
     private val savedState = SavedStateHandle()
 
     @Test
@@ -39,6 +42,18 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
 
         // Then
         verify(createStore).invoke(expectedDomain, expectedTitle)
+    }
+
+    @Test
+    fun `when onTryForFreeButtonPressed is called, then track expected event`() = testBlocking {
+        // Given
+        createSut("", "", StoreCreationState.Idle)
+
+        // When
+        sut.onTryForFreeButtonPressed()
+
+        // Then
+        verify(tracker).track(AnalyticsEvent.SITE_CREATION_TRY_FOR_FREE_TAPPED)
     }
 
     @Test
@@ -183,6 +198,8 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
     ) {
         val creationStateFlow = MutableStateFlow<StoreCreationState>(StoreCreationState.Idle)
 
+        tracker = mock()
+
         newStore = mock {
             on { data } doReturn NewStore.NewStoreData(
                 domain = expectedDomain,
@@ -208,7 +225,8 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
         sut = StoreCreationSummaryViewModel(
             savedStateHandle = savedState,
             createStore = createStore,
-            newStore = newStore
+            newStore = newStore,
+            tracker = tracker,
         )
     }
 }
