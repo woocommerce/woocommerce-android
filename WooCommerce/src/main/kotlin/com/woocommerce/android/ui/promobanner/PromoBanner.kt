@@ -16,7 +16,7 @@ fun PromoBanner(
     onDismissClick: () -> Unit
 ) {
     Banner(
-        JitmState.Banner.Displayed(
+        JitmState.Banner(
             onPrimaryActionClicked = onCtaClick,
             onDismissClicked = onDismissClick,
             title = UiString.UiStringRes(bannerType.titleRes),

@@ -135,7 +135,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
             canShowCardReaderUpsellBanner(System.currentTimeMillis()) &&
             isPaymentCollectableWithCardReader
         ) {
-            JitmState.Banner.Displayed(
+            JitmState.Banner(
                 onPrimaryActionClicked = { onCtaClicked(AnalyticsTracker.KEY_BANNER_PAYMENTS) },
                 onDismissClicked = { onDismissClicked() },
                 title = UiStringRes(
@@ -167,7 +167,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     )
 
     private fun trackBannerShownIfDisplayed() {
-        if ((viewState.value as? Success)?.bannerState is JitmState.Banner.Displayed) {
+        if ((viewState.value as? Success)?.bannerState is JitmState.Banner) {
             analyticsTrackerWrapper.track(
                 AnalyticsEvent.FEATURE_CARD_SHOWN,
                 mapOf(

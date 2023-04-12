@@ -75,10 +75,9 @@ class JitmViewModel @Inject constructor(
                     title = UiString.UiStringText(model.content.message),
                     description = UiString.UiStringText(model.content.description),
                     primaryActionLabel = UiString.UiStringText(model.cta.message),
-                    backgroundImage = model.assets?.get(JITM_ASSETS_BACKGROUND_IMAGE_KEY).orEmpty(),
-                    badgeIcon = model.assets?.get(JITM_ASSETS_BADGE_IMAGE_KEY).orEmpty(),
+                    backgroundImageUrl = model.assets?.get(JITM_ASSETS_BACKGROUND_IMAGE_KEY),
                 )
-                else -> JitmState.Banner.Displayed(
+                else -> JitmState.Banner(
                     onPrimaryActionClicked = { onJitmCtaClicked(model) },
                     onDismissClicked = { onJitmDismissClicked(model) },
                     title = UiString.UiStringText(model.content.message),
