@@ -52,7 +52,6 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.JetpackStore.JetpackConnectionUrlError
 import org.wordpress.android.fluxc.store.JetpackStore.JetpackUserError
 import org.wordpress.android.util.UrlUtils
-import java.net.URI
 import javax.inject.Inject
 
 @HiltViewModel
@@ -402,6 +401,7 @@ class JetpackActivationMainViewModel @Inject constructor(
         }
     }
 
+    @Suppress("LongMethod")
     private suspend fun startJetpackConnection() {
         WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: start Jetpack Connection")
         val currentSite = site.await()
@@ -454,7 +454,7 @@ class JetpackActivationMainViewModel @Inject constructor(
                         ShowJetpackConnectionWebView(
                             url = chosenUrl,
                             connectionValidationUrls = listOf(MOBILE_REDIRECT),
-                            urlComparisonMode = UrlComparisonMode.EQUALITY
+                            urlComparisonMode = comparisonMode
                         )
                     )
                 } else {
