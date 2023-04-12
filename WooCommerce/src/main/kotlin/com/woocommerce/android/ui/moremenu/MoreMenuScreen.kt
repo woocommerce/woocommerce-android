@@ -67,6 +67,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.moremenu.MenuSection.General
+import com.woocommerce.android.ui.moremenu.MenuSection.Settings
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuViewState
 
 @ExperimentalFoundationApi
@@ -90,13 +92,14 @@ fun MoreMenuScreen(
     Column {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         MoreMenuHeader(onSwitchStore, state, onSettingsClick)
-        MoreMenuItems(state)
+        Text("General")
+        MoreMenuItems(state.moreMenuItems.filter { it.menuSection is General })
     }
 }
 
 @ExperimentalFoundationApi
 @Composable
-private fun MoreMenuItems(state: MoreMenuViewState) {
+private fun MoreMenuItems(items: List<MenuUiButton>) {
     LazyColumn(
         contentPadding = PaddingValues(
             horizontal = dimensionResource(id = R.dimen.major_100),
@@ -105,7 +108,7 @@ private fun MoreMenuItems(state: MoreMenuViewState) {
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75))
     ) {
         itemsIndexed(
-            state.moreMenuItems.filter { it.isEnabled }
+            items.filter { it.isEnabled }
         ) { _, item ->
             MoreMenuButton(
                 text = item.text,
@@ -377,7 +380,7 @@ private fun MoreMenuPreview() {
             MenuUiButton(
                 text = R.string.more_menu_button_upgrades,
                 icon = R.drawable.ic_more_menu_upgrades,
-                menuSection = MenuSection.Settings
+                menuSection = Settings
             ),
         ),
         siteName = "Example Site",
