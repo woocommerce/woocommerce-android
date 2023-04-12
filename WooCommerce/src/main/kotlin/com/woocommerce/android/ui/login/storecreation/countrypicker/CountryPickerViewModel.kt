@@ -34,7 +34,7 @@ class CountryPickerViewModel @Inject constructor(
     private val availableCountries = MutableStateFlow(emptyList<StoreCreationCountry>())
 
     val countryPickerState = availableCountries
-        .map { countries -> ViewState(newStore.data.name.orEmpty(), countries) }
+        .map { CountryPickerState(newStore.data.name.orEmpty(), it) }
         .asLiveData()
 
     init {
@@ -107,7 +107,7 @@ class CountryPickerViewModel @Inject constructor(
     object NavigateToDomainPickerStep : MultiLiveEvent.Event()
     object NavigateToSummaryStep : MultiLiveEvent.Event()
 
-    data class ViewState(
+    data class CountryPickerState(
         val storeName: String,
         val countries: List<StoreCreationCountry>
     )
