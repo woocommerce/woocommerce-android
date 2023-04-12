@@ -117,7 +117,12 @@ private fun MoreMenuSection(
             )
         )
     ) {
-        Text(title)
+        Text(
+            text = title,
+            style = MaterialTheme.typography.subtitle1,
+            color = colorResource(id = R.color.color_on_surface),
+            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100))
+        )
 
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75))
