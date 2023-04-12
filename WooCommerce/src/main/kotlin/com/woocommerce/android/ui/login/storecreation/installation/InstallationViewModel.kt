@@ -1,9 +1,12 @@
 package com.woocommerce.android.ui.login.storecreation.installation
 
+import android.os.CountDownTimer
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -15,9 +18,8 @@ import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Failure
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Success
+import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.CreatingStoreState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.InitialState
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.LoadingState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.SuccessState
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -43,9 +45,77 @@ class InstallationViewModel @Inject constructor(
     private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
+        private const val DELAY_BETWEEN_PROGRESS_UPDATES = 200L
         private const val STORE_LOAD_RETRIES_LIMIT = 10
-        private const val INITIAL_STORE_CREATION_DELAY = 40000L
+        private const val START_POLLING_DELAY = 40000L
+        private const val FAKE_LOADING_TOTAL_TIME = 60000L
         private const val SITE_CHECK_DEBOUNCE = 5000L
+    }
+
+    private var progress = 0F
+
+    @Suppress("MagicNumber")
+    private val uiUpdaterTimer = object : CountDownTimer(
+        FAKE_LOADING_TOTAL_TIME,
+        DELAY_BETWEEN_PROGRESS_UPDATES
+    ) {
+        override fun onTick(millisUntilFinished: Long) {
+            progress += 0.003F
+            when {
+                millisUntilFinished > 50000 -> {
+                    _viewState.update {
+                        CreatingStoreState(
+                            progress = progress,
+                            title = string.store_creation_in_progress_title_1,
+                            description = string.store_creation_in_progress_description_1
+                        )
+                    }
+                }
+                millisUntilFinished > 40000 -> {
+                    _viewState.update {
+                        CreatingStoreState(
+                            progress = progress,
+                            title = string.store_creation_in_progress_title_2,
+                            description = string.store_creation_in_progress_description_2
+                        )
+                    }
+                }
+                millisUntilFinished > 30000 ->
+                    _viewState.update {
+                        CreatingStoreState(
+                            progress = progress,
+                            title = string.store_creation_in_progress_title_3,
+                            description = string.store_creation_in_progress_description_3
+                        )
+                    }
+                millisUntilFinished > 20000 ->
+                    _viewState.update {
+                        CreatingStoreState(
+                            progress = progress,
+                            title = string.store_creation_in_progress_title_4,
+                            description = string.store_creation_in_progress_description_4
+                        )
+                    }
+                millisUntilFinished > 10000 ->
+                    _viewState.update {
+                        CreatingStoreState(
+                            progress = progress,
+                            title = string.store_creation_in_progress_title_5,
+                            description = string.store_creation_in_progress_description_5
+                        )
+                    }
+                else ->
+                    _viewState.update {
+                        CreatingStoreState(
+                            progress = progress,
+                            title = string.store_creation_in_progress_title_6,
+                            description = string.store_creation_in_progress_description_6
+                        )
+                    }
+            }
+        }
+
+        override fun onFinish() = Unit
     }
 
     private val newStoreUrl
@@ -54,12 +124,18 @@ class InstallationViewModel @Inject constructor(
     private val newStoreWpAdminUrl
         get() = newStoreUrl.slashJoin("wp-admin/")
 
-    private val _viewState = savedState.getStateFlow<ViewState>(this, InitialState)
+    private val _viewState = savedState.getStateFlow<ViewState>(
+        this,
+        CreatingStoreState(
+            progress = 0F,
+            title = string.store_creation_in_progress_title_1,
+            description = string.store_creation_in_progress_description_1
+        )
+    )
+
     val viewState = _viewState
         .onEach {
-            if (it is InitialState) {
-                loadNewStore()
-            } else if (it is SuccessState && FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
+            if (it is SuccessState && FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
                 triggerEvent(NavigateToNewStore)
             }
         }.asLiveData()
@@ -71,11 +147,21 @@ class InstallationViewModel @Inject constructor(
                 AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_INSTALLATION
             )
         )
+        loadNewStore()
     }
 
     private fun loadNewStore() {
         suspend fun processStoreCreationResult(result: StoreCreationResult<Unit>) {
             if (result is Success) {
+                @Suppress("MagicNumber")
+                delay(1000)
+                CreatingStoreState(
+                    progress = 1f,
+                    title = string.store_creation_in_progress_title_6,
+                    description = string.store_creation_in_progress_description_6
+                )
+                uiUpdaterTimer.cancel()
+
                 repository.selectSite(newStore.data.siteId!!)
 
                 val properties = mapOf(
@@ -85,7 +171,6 @@ class InstallationViewModel @Inject constructor(
                     AnalyticsTracker.KEY_IS_FREE_TRIAL to FeatureFlag.FREE_TRIAL_M2.isEnabled()
                 )
                 analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SITE_CREATED, properties)
-
                 _viewState.update { SuccessState(newStoreWpAdminUrl) }
             } else {
                 analyticsTrackerWrapper.track(
@@ -102,14 +187,10 @@ class InstallationViewModel @Inject constructor(
                 newStore.clear()
             }
         }
-
         launch {
-            _viewState.update { LoadingState }
-
-            // it takes a while (~45s) before a store is ready after a purchase, so we need to wait a bit
-            delay(INITIAL_STORE_CREATION_DELAY)
-
-            // keep fetching the user's sites until the new site is properly configured or the retry limit is reached
+            uiUpdaterTimer.start()
+            delay(START_POLLING_DELAY)
+//           keep fetching the user 's sites until the new site is properly configured or the retry limit is reached
             for (retries in 1..STORE_LOAD_RETRIES_LIMIT) {
                 val result = repository.fetchSiteAfterCreation(newStore.data.siteId!!)
                 if (result is Success || // Woo store is ready
@@ -119,7 +200,6 @@ class InstallationViewModel @Inject constructor(
                     processStoreCreationResult(result)
                     break
                 }
-
                 delay(SITE_CHECK_DEBOUNCE)
             }
         }
@@ -153,10 +233,11 @@ class InstallationViewModel @Inject constructor(
 
     sealed interface ViewState : Parcelable {
         @Parcelize
-        object InitialState : ViewState
-
-        @Parcelize
-        object LoadingState : ViewState
+        data class CreatingStoreState(
+            val progress: Float,
+            @StringRes val title: Int,
+            @StringRes val description: Int
+        ) : ViewState
 
         @Parcelize
         data class ErrorState(val errorType: StoreCreationErrorType, val message: String? = null) : ViewState

@@ -168,7 +168,7 @@ fun CreateStoreState(
     viewState: CreatingStoreState,
     modifier: Modifier = Modifier
 ) {
-    Box(modifier = modifier) {
+    Box(modifier = modifier.background(MaterialTheme.colors.surface)) {
         Image(
             modifier = Modifier.align(Alignment.TopEnd),
             painter = painterResource(id = R.drawable.store_creation_loading_image_top_end),
@@ -235,11 +235,11 @@ private fun AnimatedProgress(
     ).value
     LinearProgressIndicator(
         progress = animatedProgress,
+        color = MaterialTheme.colors.primary,
         modifier = modifier
             .fillMaxWidth()
             .height(dimensionResource(id = R.dimen.minor_100))
             .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))),
-        color = MaterialTheme.colors.primary,
         backgroundColor = colorResource(id = R.color.creating_store_linear_progress_background),
     )
 }
@@ -285,6 +285,7 @@ private fun PreviewWebView(
 @Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
+@Suppress("unused")
 private fun CreateStoreStatePreview() {
     WooThemeWithBackground {
         CreateStoreState(

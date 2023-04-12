@@ -2929,11 +2929,17 @@
     <string name="store_creation_exit_dialog_message">You will lose all your store information.</string>
     <string name="store_creation_confirm_and_leave">Confirm and leave</string>
     <string name="store_creation_in_progress_title_1">Woo! We are creating your store</string>
-    <string name="store_creation_in_progress_title_2">Applying the finishing touches</string>
-    <string name="store_creation_in_progress_title_3">Turning on the lights</string>
-    <string name="store_creation_in_progress_description_1">&lt;b&gt;#FunWooFact:&lt;/b&gt; Did you know that Woo powers more than 3.5 million stores worldwide? You’re in good company.</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#FunWooFact:&lt;/b&gt; There are more than 150 WooCommerce meetups held all over the world! A great way to meet fellow store owners.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#FunWooFact:&lt;/b&gt; Our favorite color is purple 💜</string>
+    <string name="store_creation_in_progress_title_2">Building the foundations</string>
+    <string name="store_creation_in_progress_title_3">Organizing the stock room</string>
+    <string name="store_creation_in_progress_title_4">Applying the finishing touches</string>
+    <string name="store_creation_in_progress_title_5">Turning on the lights</string>
+    <string name="store_creation_in_progress_title_6">Opening the doors</string>
+    <string name="store_creation_in_progress_description_1">&lt;b&gt;#FunWooFact:&lt;/b&gt; Did you know that Woo powers almost 4 million stores worldwide? You’re in good company.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#FunWooFact:&lt;/b&gt; Did you know that Woo was founded by two South Africans and a Norwegian? Here are three alternative ways to say “store” in those countries – Winkel, ivenkile, and butikk.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#FunWooFact:&lt;/b&gt; Are you Team Cat or Team Dog? The Woo team is split 50/50!</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#FunWooFact:&lt;/b&gt; There are more than 150 WooCommerce meetups held all over the world! A great way to meet fellow store owners.</string>
+    <string name="store_creation_in_progress_description_5">&lt;b&gt;#FunWooFact:&lt;/b&gt; The Woo team is made up of over 350 talented individuals, distributed across 30+ countries.</string>
+    <string name="store_creation_in_progress_description_6">&lt;b&gt;#FunWooFact:&lt;/b&gt; Our favorite color is purple.</string>
 
     <string name="store_creation_domain_picker_title">Choose a domain</string>
     <string name="store_creation_domain_picker_subtitle">This is where people will find you on the Internet. Don\'t worry, you can change it later.</string>
