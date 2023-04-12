@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login.storecreation
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
@@ -112,6 +113,7 @@ class InstallationViewModelTest : BaseUnitTest() {
         val expectedState = ErrorState(STORE_NOT_READY)
 
         assertEquals(expectedState, observedState)
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.SITE_CREATION_TIMED_OUT)
     }
 
     @Test
@@ -177,5 +179,25 @@ class InstallationViewModelTest : BaseUnitTest() {
 
         // then
         verify(installationTransactionLauncher).onStoreInstallationFailed()
+    }
+
+    @Test
+    fun `when a Woo site is found after installation, but has out-of-sync properties, report a tracks event`() = testBlocking {
+        whenever(repository.fetchSiteAfterCreation(newStore.data.siteId!!)).thenReturn(Success(Unit))
+        whenever(selectedSite.get()).thenReturn(
+            SiteModel().apply {
+                setIsWpComStore(false)
+                hasWooCommerce = false
+                name = "different than provided by user"
+                url = newStore.data.domain
+            }
+        )
+
+        whenViewModelIsCreated()
+
+        viewModel.viewState.observeForever(observer)
+        advanceUntilIdle()
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.SITE_CREATION_PROPERTIES_OUT_OF_SYNC)
     }
 }
