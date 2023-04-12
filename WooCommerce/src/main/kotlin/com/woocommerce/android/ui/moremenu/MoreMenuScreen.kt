@@ -129,9 +129,7 @@ private fun MoreMenuSection(
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75))
         ) {
-            itemsIndexed(
-                items.filter { it.isEnabled }
-            ) { _, item ->
+            itemsIndexed(items) { _, item ->
                 MoreMenuButton(
                     text = item.text,
                     iconDrawable = item.icon,
