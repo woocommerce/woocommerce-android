@@ -30,7 +30,7 @@ class FetchJetpackStatus @Inject constructor(
         SUCCESS, NOT_FOUND, FORBIDDEN
     }
     suspend operator fun invoke(): Result<Pair<JetpackStatus, JetpackStatusFetchResponse>> {
-        return jetpackStore.fetchJetpackUser(selectedSite.get()).let { result ->
+        return jetpackStore.fetchJetpackUser(selectedSite.get(), useApplicationPasswords = true).let { result ->
             when {
                 result.error?.errorCode == NOT_FOUND_STATUS_CODE -> {
                     Result.success(
