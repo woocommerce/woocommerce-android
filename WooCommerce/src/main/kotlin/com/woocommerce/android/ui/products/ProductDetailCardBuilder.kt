@@ -774,11 +774,12 @@ class ProductDetailCardBuilder(
         )
     }
 
-    private fun Product.bundleProducts(): ProductProperty? {
-        return if (this.bundledProductsIds != null && this.bundledProductsIds.isNotEmpty()) {
+    private suspend fun Product.bundleProducts(): ProductProperty? {
+        val bundledProductsSize = viewModel.getBundledProductsSize(this.remoteId)
+        return if (bundledProductsSize > 0) {
             val content = StringUtils.getQuantityString(
                 resourceProvider = resources,
-                quantity = bundledProductsIds.size,
+                quantity = bundledProductsSize,
                 default = string.product_bundle_multiple_count,
                 one = string.product_bundle_single_count
             )
@@ -789,7 +790,7 @@ class ProductDetailCardBuilder(
                 drawable.ic_widgets
             ) {
                 viewModel.onEditProductCardClicked(
-                    ProductNavigationTarget.ViewBundleProducts(this.bundledProductsIds)
+                    ProductNavigationTarget.ViewBundleProducts(this.remoteId)
                 )
             }
         } else null
