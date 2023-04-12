@@ -92,32 +92,49 @@ fun MoreMenuScreen(
     Column {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         MoreMenuHeader(onSwitchStore, state, onSettingsClick)
-        Text("General")
-        MoreMenuItems(state.moreMenuItems.filter { it.menuSection is General })
+        MoreMenuItems(
+            title = "Settings",
+            items = state.moreMenuItems.filter { it.menuSection is Settings }
+        )
+        MoreMenuItems(
+            title = "General",
+            items = state.moreMenuItems.filter { it.menuSection is General }
+        )
     }
 }
 
 @ExperimentalFoundationApi
 @Composable
-private fun MoreMenuItems(items: List<MenuUiButton>) {
-    LazyColumn(
-        contentPadding = PaddingValues(
-            horizontal = dimensionResource(id = R.dimen.major_100),
-            vertical = dimensionResource(id = R.dimen.major_100)
-        ),
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75))
-    ) {
-        itemsIndexed(
-            items.filter { it.isEnabled }
-        ) { _, item ->
-            MoreMenuButton(
-                text = item.text,
-                iconDrawable = item.icon,
-                badgeState = item.badgeState,
-                onClick = item.onClick
+private fun MoreMenuItems(
+    title: String,
+    items: List<MenuUiButton>
+) {
+    Column(
+        modifier = Modifier.padding(
+            PaddingValues(
+                horizontal = dimensionResource(id = R.dimen.major_100),
+                vertical = dimensionResource(id = R.dimen.major_100)
             )
+        )
+    ) {
+        Text(title)
+
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75))
+        ) {
+            itemsIndexed(
+                items.filter { it.isEnabled }
+            ) { _, item ->
+                MoreMenuButton(
+                    text = item.text,
+                    iconDrawable = item.icon,
+                    badgeState = item.badgeState,
+                    onClick = item.onClick
+                )
+            }
         }
     }
+
 }
 
 @Composable
