@@ -654,7 +654,7 @@
         android:name="com.woocommerce.android.ui.products.ProductBundleFragment"
         android:label="ProductBundleFragment" >
         <argument
-            android:name="bundledProductsIds"
-            app:argType="long[]" />
+            android:name="productId"
+            app:argType="long" />
     </fragment>
 </navigation>

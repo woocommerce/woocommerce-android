@@ -14,13 +14,15 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
 
     fun bind(
         product: Product,
-        currencyFormatter: CurrencyFormatter? = null,
+        currencyFormatter: CurrencyFormatter,
         isActivated: Boolean = false
     ) {
         viewBinding.root.isActivated = isActivated
-        currencyFormatter?.let {
-            viewBinding.productItemView.bind(product = product, currencyFormatter = it, isActivated = isActivated)
-        } ?: viewBinding.productItemView.bind(product = product, isActivated = isActivated)
+        viewBinding.productItemView.bind(
+            product = product,
+            currencyFormatter = currencyFormatter,
+            isActivated = isActivated
+        )
 
         ViewCompat.setTransitionName(
             viewBinding.root,
