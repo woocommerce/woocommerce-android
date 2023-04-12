@@ -46,7 +46,8 @@ class GetProductQuantityRulesTest : BaseUnitTest() {
                 any(),
                 eq(WooCommerceStore.WooPlugin.WOO_MIN_MAX_QUANTITIES)
             )
-        ).doReturn(plugin)
+        )
+            .doReturn(plugin)
 
         val result = sut.invoke(productId)
 
@@ -63,7 +64,8 @@ class GetProductQuantityRulesTest : BaseUnitTest() {
                 any(),
                 eq(WooCommerceStore.WooPlugin.WOO_MIN_MAX_QUANTITIES)
             )
-        ).doReturn(plugin)
+        )
+            .doReturn(plugin)
         whenever(productDetailRepository.getQuantityRules(productId)).doReturn(quantityRules)
 
         val result = sut.invoke(productId)
