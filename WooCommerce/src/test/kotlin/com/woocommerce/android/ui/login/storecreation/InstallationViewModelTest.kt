@@ -180,4 +180,24 @@ class InstallationViewModelTest : BaseUnitTest() {
         // then
         verify(installationTransactionLauncher).onStoreInstallationFailed()
     }
+
+    @Test
+    fun `when a Woo site is found after installation, but has out-of-sync properties, report a tracks event`() = testBlocking {
+        whenever(repository.fetchSiteAfterCreation(newStore.data.siteId!!)).thenReturn(Success(Unit))
+        whenever(selectedSite.get()).thenReturn(
+            SiteModel().apply {
+                setIsWpComStore(false)
+                hasWooCommerce = false
+                name = "different than provided by user"
+                url = newStore.data.domain
+            }
+        )
+
+        whenViewModelIsCreated()
+
+        viewModel.viewState.observeForever(observer)
+        advanceUntilIdle()
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.SITE_CREATION_PROPERTIES_OUT_OF_SYNC)
+    }
 }

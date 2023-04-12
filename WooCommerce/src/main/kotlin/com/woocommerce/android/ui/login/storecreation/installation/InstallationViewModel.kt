@@ -90,6 +90,12 @@ class InstallationViewModel @Inject constructor(
                 )
                 installationTransactionLauncher.onStoreInstalled(properties)
 
+                selectedSite.get().let {
+                    if (!it.isWpComStore && !it.hasWooCommerce && it.name != newStore.data.name) {
+                        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_PROPERTIES_OUT_OF_SYNC)
+                    }
+                }
+
                 _viewState.update { SuccessState(newStoreWpAdminUrl) }
             } else {
                 installationTransactionLauncher.onStoreInstallationFailed()
