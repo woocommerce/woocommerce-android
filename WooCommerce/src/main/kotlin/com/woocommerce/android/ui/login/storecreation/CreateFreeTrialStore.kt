@@ -7,12 +7,10 @@ import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SIT
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository.SiteCreationData
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.Companion.NEW_SITE_LANGUAGE_ID
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.Companion.NEW_SITE_THEME
-import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.flow
 import java.util.TimeZone
 import javax.inject.Inject
 
-@ViewModelScoped
 class CreateFreeTrialStore @Inject constructor(
     private val repository: StoreCreationRepository
 ) {
