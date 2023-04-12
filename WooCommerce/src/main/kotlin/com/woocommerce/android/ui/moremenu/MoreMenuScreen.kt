@@ -32,8 +32,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
@@ -93,15 +95,21 @@ fun MoreMenuScreen(
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         MoreMenuHeader(onSwitchStore, state, onSettingsClick)
 
-        state.moreMenuItems
-            .filter { it.menuSection is Settings && it.isEnabled }
-            .takeIf { it.isNotEmpty() }
-            ?.let { MoreMenuSection(title = "Settings", items = it) }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+        ) {
+            state.moreMenuItems
+                .filter { it.menuSection is Settings && it.isEnabled }
+                .takeIf { it.isNotEmpty() }
+                ?.let { MoreMenuSection(title = "Settings", items = it) }
 
-        state.moreMenuItems
-            .filter { it.menuSection is General && it.isEnabled }
-            .takeIf { it.isNotEmpty() }
-            ?.let { MoreMenuSection(title = "General", items = it) }
+            state.moreMenuItems
+                .filter { it.menuSection is General && it.isEnabled }
+                .takeIf { it.isNotEmpty() }
+                ?.let { MoreMenuSection(title = "General", items = it) }
+        }
     }
 }
 
