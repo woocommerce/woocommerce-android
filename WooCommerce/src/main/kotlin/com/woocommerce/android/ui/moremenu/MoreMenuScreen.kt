@@ -261,14 +261,11 @@ private fun MoreMenuButton(
         colors = ButtonDefaults.buttonColors(
             backgroundColor = colorResource(id = R.color.more_menu_button_background)
         ),
-        modifier = Modifier.height(dimensionResource(id = R.dimen.more_menu_button_height)),
         shape = RoundedCornerShape(dimensionResource(id = R.dimen.major_75))
     ) {
         Box(Modifier.fillMaxSize()) {
             MoreMenuBadge(badgeState = badgeState)
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
+            Row(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
@@ -286,12 +283,17 @@ private fun MoreMenuButton(
                             .align(Alignment.Center)
                     )
                 }
-                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text(
-                    text = stringResource(id = text),
-                    fontSize = 13.sp,
-                    textAlign = TextAlign.Center,
-                )
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = stringResource(id = text),
+                        fontSize = 13.sp,
+                        textAlign = TextAlign.Center,
+                    )
+                    Text(text = "The description of the button")
+                }
             }
         }
     }
