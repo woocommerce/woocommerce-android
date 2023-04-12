@@ -33,7 +33,6 @@ class JitmFragment : Fragment() {
                 is JitmState.Modal -> TODO()
                 JitmState.Hidden -> requireView().hide()
             }
-
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {

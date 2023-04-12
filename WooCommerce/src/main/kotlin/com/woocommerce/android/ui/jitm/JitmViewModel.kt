@@ -70,45 +70,23 @@ class JitmViewModel @Inject constructor(
 
             _jitmState.value = when (model.template) {
                 JITM_TEMPLATE_MODAL -> JitmState.Modal(
-                    onPrimaryActionClicked = {
-                        onJitmCtaClicked(
-                            id = model.id,
-                            featureClass = model.featureClass,
-                            url = model.cta.link
-                        )
-                    },
-                    onDismissClicked = {
-                        onJitmDismissClicked(
-                            model.id,
-                            model.featureClass
-                        )
-                    },
+                    onPrimaryActionClicked = { onJitmCtaClicked(model) },
+                    onDismissClicked = { onJitmDismissClicked(model) },
                     title = UiString.UiStringText(model.content.message),
                     description = UiString.UiStringText(model.content.description),
                     primaryActionLabel = UiString.UiStringText(model.cta.message),
                     backgroundImage = model.assets?.get(JITM_ASSETS_BACKGROUND_IMAGE_KEY).orEmpty(),
                     badgeIcon = model.assets?.get(JITM_ASSETS_BADGE_IMAGE_KEY).orEmpty(),
                 )
-                else ->JitmState.Banner.Displayed(
-                        onPrimaryActionClicked = {
-                            onJitmCtaClicked(
-                                id = model.id,
-                                featureClass = model.featureClass,
-                                url = model.cta.link
-                            )
-                        },
-                        onDismissClicked = {
-                            onJitmDismissClicked(
-                                model.id,
-                                model.featureClass
-                            )
-                        },
-                        title = UiString.UiStringText(model.content.message),
-                        description = UiString.UiStringText(model.content.description),
-                        primaryActionLabel = UiString.UiStringText(model.cta.message),
-                        backgroundImage = model.assets.getBackgroundImage(),
-                        badgeIcon = model.assets.getBadgeIcon(),
-                    )
+                else -> JitmState.Banner.Displayed(
+                    onPrimaryActionClicked = { onJitmCtaClicked(model) },
+                    onDismissClicked = { onJitmDismissClicked(model) },
+                    title = UiString.UiStringText(model.content.message),
+                    description = UiString.UiStringText(model.content.description),
+                    primaryActionLabel = UiString.UiStringText(model.cta.message),
+                    backgroundImage = model.assets.getBackgroundImage(),
+                    badgeIcon = model.assets.getBadgeIcon(),
+                )
             }
         } ?: run {
             _jitmState.value = JitmState.Hidden
@@ -116,46 +94,42 @@ class JitmViewModel @Inject constructor(
         }
     }
 
-    private fun onJitmCtaClicked(
-        id: String,
-        featureClass: String,
-        url: String
-    ) {
+    private fun onJitmCtaClicked(model: JITMApiResponse) {
         jitmTracker.trackJitmCtaTapped(
             MyStoreViewModel.UTM_SOURCE,
-            id,
-            featureClass
+            model.id,
+            model.featureClass
         )
         triggerEvent(
             CtaClick(
                 myStoreUtmProvider.getUrlWithUtmParams(
                     source = MyStoreViewModel.UTM_SOURCE,
-                    id = id,
-                    featureClass = featureClass,
+                    id = model.id,
+                    featureClass = model.featureClass,
                     siteId = selectedSite.getIfExists()?.siteId,
-                    url = url
+                    url = model.url
                 )
             )
         )
     }
 
-    private fun onJitmDismissClicked(jitmId: String, featureClass: String) {
+    private fun onJitmDismissClicked(model: JITMApiResponse) {
         _jitmState.value = JitmState.Hidden
-        jitmTracker.trackJitmDismissTapped(MyStoreViewModel.UTM_SOURCE, jitmId, featureClass)
+        jitmTracker.trackJitmDismissTapped(MyStoreViewModel.UTM_SOURCE, model.id, model.featureClass)
         launch {
-            jitmStore.dismissJitmMessage(selectedSite.get(), jitmId, featureClass).also { response ->
+            jitmStore.dismissJitmMessage(selectedSite.get(), model.id, model.featureClass).also { response ->
                 when {
                     response.model != null && response.model!! -> {
                         jitmTracker.trackJitmDismissSuccess(
                             MyStoreViewModel.UTM_SOURCE,
-                            jitmId,
-                            featureClass
+                            model.id,
+                            model.featureClass
                         )
                     }
                     else -> jitmTracker.trackJitmDismissFailure(
                         MyStoreViewModel.UTM_SOURCE,
-                        jitmId,
-                        featureClass,
+                        model.id,
+                        model.featureClass,
                         response.error?.type,
                         response.error?.message
                     )
