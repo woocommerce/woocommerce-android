@@ -810,7 +810,8 @@ class ProductDetailCardBuilder(
                 drawable.ic_widgets
             ) {
                 viewModel.onEditProductCardClicked(
-                    ProductNavigationTarget.ViewBundleProducts(this.remoteId)
+                    ProductNavigationTarget.ViewBundleProducts(this.remoteId),
+                    AnalyticsEvent.PRODUCT_DETAIL_VIEW_BUNDLED_PRODUCTS_TAPPED
                 )
             }
         } else null
