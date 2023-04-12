@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.NotAvailable
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.APPENDING
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.IDLE
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.LOADING
@@ -280,7 +281,7 @@ class ProductSelectorViewModel @Inject constructor(
 
     fun onProductClick(item: ProductListItem, productSourceForTracking: ProductSourceForTracking) {
         val productSource = updateProductSourceIfSearchIsEnabled(productSourceForTracking)
-        if (item.type == VARIABLE && item.numVariations > 0) {
+        if ((item.type == VARIABLE || item.type == VARIABLE_SUBSCRIPTION) && item.numVariations > 0) {
             triggerEvent(
                 NavigateToVariationSelector(
                     item.id,

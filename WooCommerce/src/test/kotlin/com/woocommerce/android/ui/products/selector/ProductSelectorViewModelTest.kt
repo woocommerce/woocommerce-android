@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
+import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem
@@ -235,6 +236,62 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         verify(tracker).track(
             AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_CLEAR_SELECTION_BUTTON_TAPPED,
             mapOf("source" to "product_selector")
+        )
+    }
+
+    @Test
+    fun `when variable product is tapped, should redirect to variation picker`() = testBlocking {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            restrictions = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        ).initSavedStateHandle()
+        val popularOrdersList = generatePopularOrders()
+        val ordersList = generateTestOrders()
+        val totalOrders = ordersList + popularOrdersList
+        whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+
+        val sut = createViewModel(navArgs)
+        sut.onProductClick(
+            item = ProductListItem(1, "", ProductType.VARIABLE, numVariations = 2),
+            productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
+        )
+
+        assertThat(sut.event.value).isEqualTo(
+            ProductNavigationTarget.NavigateToVariationSelector(
+                productId = 1,
+                selectedVariationIds = emptySet(),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+                productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
+            )
+        )
+    }
+
+    @Test
+    fun `when variable subscription is tapped, should redirect to variation picker`() = testBlocking {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            restrictions = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        ).initSavedStateHandle()
+        val popularOrdersList = generatePopularOrders()
+        val ordersList = generateTestOrders()
+        val totalOrders = ordersList + popularOrdersList
+        whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+
+        val sut = createViewModel(navArgs)
+        sut.onProductClick(
+            item = ProductListItem(23, "", ProductType.VARIABLE_SUBSCRIPTION, numVariations = 2),
+            productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
+        )
+
+        assertThat(sut.event.value).isEqualTo(
+            ProductNavigationTarget.NavigateToVariationSelector(
+                productId = 23,
+                selectedVariationIds = emptySet(),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+                productSourceForTracking = ProductSourceForTracking.ALPHABETICAL
+            )
         )
     }
 
