@@ -2200,6 +2200,7 @@
     <string name="product_type_virtual">Virtual</string>
     <string name="product_type_downloadable">Downloadable</string>
     <string name="product_type_subscription">Subscription</string>
+    <string name="product_type_composite">Composite product</string>
 
     <!-- Product type bottom sheets -->
     <string name="product_type_list_header">Select a product type</string>
@@ -3323,5 +3324,13 @@
     <string name="empty_min_quantity">No minimum</string>
     <string name="empty_max_quantity">No maximum</string>
     <string name="empty_group_of">Not grouped</string>
+
+    <!--
+    Composite products
+    -->
+    <string name="product_components">Components</string>
+    <string name="product_component_single_count">1 component</string>
+    <string name="product_component_multiple_count">%d components</string>
+    <string name="component_products_info_notice">You can edit components in the web dashboard.</string>
 
 </resources>
