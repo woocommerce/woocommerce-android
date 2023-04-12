@@ -9,9 +9,9 @@ import com.woocommerce.android.ui.moremenu.MenuSection.General
 data class MenuUiButton(
     @StringRes val text: Int,
     @DrawableRes val icon: Int,
-    val menuSection: MenuSection = General,
     val badgeState: BadgeState? = null,
     val isEnabled: Boolean = true,
+    val menuSection: MenuSection = General,
     val onClick: () -> Unit = {},
 )
 
