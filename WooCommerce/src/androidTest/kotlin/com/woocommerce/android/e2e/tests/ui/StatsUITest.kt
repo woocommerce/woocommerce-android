@@ -46,31 +46,26 @@ class StatsUITest : TestBase() {
             .gotoMyStoreScreen()
     }
 
-    private val todayStats = StatsSummaryData(
-        revenue = "$111.00",
-        orders = "44",
-        visitors = "440",
-    )
-
-    private val weekStats = StatsSummaryData(
-        revenue = "$6,470.00",
-        orders = "440",
-        visitors = "440",
-    )
-
-    private val yearStats = StatsSummaryData(
-        revenue = "$10,391.92",
-        orders = "6000",
-        visitors = "12000",
-    )
-
-    private val malayaShades = StatsTopPerformerData(
-        name = "Malaya shades",
-        netSales = "Net sales: $540.00",
-    )
-
     @Test
     fun e2eStatsTabsSummary() {
+        val todayStats = StatsSummaryData(
+            revenue = "$111.00",
+            orders = "44",
+            visitors = "440",
+        )
+
+        val weekStats = StatsSummaryData(
+            revenue = "$6,470.00",
+            orders = "440",
+            visitors = "440",
+        )
+
+        val yearStats = StatsSummaryData(
+            revenue = "$10,391.92",
+            orders = "6000",
+            visitors = "12000",
+        )
+
         MyStoreScreen()
             .stats.switchToStatsDashboardTodayTab()
             .assertStatsSummary(todayStats)
@@ -82,6 +77,11 @@ class StatsUITest : TestBase() {
 
     @Test
     fun e2eStatsTabsTopPerformers() {
+        val malayaShades = StatsTopPerformerData(
+            name = "Malaya shades",
+            netSales = "Net sales: $540.00",
+        )
+
         MyStoreScreen()
             .stats.switchToStatsDashboardTodayTab()
             .assertTopPerformer(malayaShades)

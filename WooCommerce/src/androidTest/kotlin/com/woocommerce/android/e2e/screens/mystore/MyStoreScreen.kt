@@ -88,6 +88,10 @@ class MyStoreScreen : Screen(MY_STORE) {
 
     fun assertTopPerformer(topPerformer: StatsTopPerformerData): MyStoreScreen {
         scrollTo(R.id.topPerformers_recycler)
+        // This idle is not needed for execution. Without it, the scroll,
+        // assertion, and scroll back (at the end) happen so fast, that it'll
+        // be impossible to see what's going on on the screen in FTL recordings,
+        // if needed. The test will pass w/o it.
         idleFor(1000)
 
         Espresso.onView(
@@ -108,7 +112,7 @@ class MyStoreScreen : Screen(MY_STORE) {
                         ),
                         ViewMatchers.withChild(
                             Matchers.allOf(
-                                // With expected product net sales value as a child
+                                // And with expected product net sales value as a child
                                 ViewMatchers.withId(R.id.netSalesTextView),
                                 ViewMatchers.withText(topPerformer.netSales)
                             )
