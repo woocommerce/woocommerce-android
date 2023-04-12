@@ -6,8 +6,8 @@ import androidx.test.espresso.matcher.ViewMatchers
 import com.woocommerce.android.R
 import com.woocommerce.android.e2e.helpers.util.Screen
 import com.woocommerce.android.e2e.helpers.util.StatsSummaryData
-import com.woocommerce.android.e2e.helpers.util.StatsTopPerformerData
 import org.hamcrest.Matchers
+import org.json.JSONArray
 
 class MyStoreScreen : Screen(MY_STORE) {
     companion object {
@@ -86,7 +86,7 @@ class MyStoreScreen : Screen(MY_STORE) {
         return this
     }
 
-    fun assertTopPerformer(topPerformer: StatsTopPerformerData): MyStoreScreen {
+    fun assertTopPerformers(topPerformersJSONArray: JSONArray): MyStoreScreen {
         scrollTo(R.id.topPerformers_recycler)
         // This idle is not needed for execution. Without it, the scroll,
         // assertion, and scroll back (at the end) happen so fast, that it'll
@@ -94,34 +94,40 @@ class MyStoreScreen : Screen(MY_STORE) {
         // if needed. The test will pass w/o it.
         idleFor(1000)
 
-        Espresso.onView(
-            Matchers.allOf(
-                // Assert there's a Top Performers container element
-                ViewMatchers.withId(R.id.topPerformers_recycler),
+        for (i in 0 until topPerformersJSONArray.length()) {
+            val innerArray = topPerformersJSONArray.getJSONArray(i)
+            val topPerformerName = innerArray.getJSONObject(0).getString("value")
+            val topPerformerSales = innerArray.getJSONObject(2).getString("value")
 
-                ViewMatchers.hasDescendant(
-                    Matchers.allOf(
-                        // Which has a product container
-                        ViewMatchers.withId(R.id.product_container),
-                        ViewMatchers.withChild(
-                            Matchers.allOf(
-                                // With expected product name value as a child
-                                ViewMatchers.withId(R.id.text_ProductName),
-                                ViewMatchers.withText(topPerformer.name)
-                            )
-                        ),
-                        ViewMatchers.withChild(
-                            Matchers.allOf(
-                                // And with expected product net sales value as a child
-                                ViewMatchers.withId(R.id.netSalesTextView),
-                                ViewMatchers.withText(topPerformer.netSales)
+            Espresso.onView(
+                Matchers.allOf(
+                    // Assert there's a Top Performers container element
+                    ViewMatchers.withId(R.id.topPerformers_recycler),
+
+                    ViewMatchers.hasDescendant(
+                        Matchers.allOf(
+                            // Which has a product container
+                            ViewMatchers.withId(R.id.product_container),
+                            ViewMatchers.withChild(
+                                Matchers.allOf(
+                                    // With expected product name value as a child
+                                    ViewMatchers.withId(R.id.text_ProductName),
+                                    ViewMatchers.withText(topPerformerName)
+                                )
+                            ),
+                            ViewMatchers.withChild(
+                                Matchers.allOf(
+                                    // And with expected product net sales value as a child
+                                    ViewMatchers.withId(R.id.netSalesTextView),
+                                    ViewMatchers.withText("Net sales: $$topPerformerSales.00")
+                                )
                             )
                         )
-                    )
-                ),
+                    ),
+                )
             )
-        )
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+                .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        }
 
         scrollTo(R.id.stats_view_row)
         return this

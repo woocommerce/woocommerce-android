@@ -7,8 +7,8 @@ import androidx.test.rule.ActivityTestRule
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.e2e.helpers.InitializationRule
 import com.woocommerce.android.e2e.helpers.TestBase
+import com.woocommerce.android.e2e.helpers.util.MocksReader
 import com.woocommerce.android.e2e.helpers.util.StatsSummaryData
-import com.woocommerce.android.e2e.helpers.util.StatsTopPerformerData
 import com.woocommerce.android.e2e.screens.TabNavComponent
 import com.woocommerce.android.e2e.screens.login.WelcomeScreen
 import com.woocommerce.android.e2e.screens.mystore.MyStoreScreen
@@ -47,7 +47,7 @@ class StatsUITest : TestBase() {
     }
 
     @Test
-    fun e2eStatsTabsSummary() {
+    fun e2eStatsSummary() {
         val todayStats = StatsSummaryData(
             revenue = "$111.00",
             orders = "44",
@@ -76,18 +76,11 @@ class StatsUITest : TestBase() {
     }
 
     @Test
-    fun e2eStatsTabsTopPerformers() {
-        val malayaShades = StatsTopPerformerData(
-            name = "Malaya shades",
-            netSales = "Net sales: $540.00",
-        )
+    fun e2eStatsTopPerformers() {
+        val topPerformersJSONArray = MocksReader().readStatsTopPerformersToArray()
 
         MyStoreScreen()
             .stats.switchToStatsDashboardTodayTab()
-            .assertTopPerformer(malayaShades)
-            .stats.switchToStatsDashboardWeekTab()
-            .assertTopPerformer(malayaShades)
-            .stats.switchToStatsDashboardYearTab()
-            .assertTopPerformer(malayaShades)
+            .assertTopPerformers(topPerformersJSONArray)
     }
 }
