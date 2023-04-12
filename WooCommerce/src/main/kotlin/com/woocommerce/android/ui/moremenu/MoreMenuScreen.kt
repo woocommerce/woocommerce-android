@@ -92,11 +92,11 @@ fun MoreMenuScreen(
     Column {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         MoreMenuHeader(onSwitchStore, state, onSettingsClick)
-        MoreMenuItems(
+        MoreMenuSection(
             title = "Settings",
             items = state.moreMenuItems.filter { it.menuSection is Settings }
         )
-        MoreMenuItems(
+        MoreMenuSection(
             title = "General",
             items = state.moreMenuItems.filter { it.menuSection is General }
         )
@@ -105,7 +105,7 @@ fun MoreMenuScreen(
 
 @ExperimentalFoundationApi
 @Composable
-private fun MoreMenuItems(
+private fun MoreMenuSection(
     title: String,
     items: List<MenuUiButton>
 ) {
