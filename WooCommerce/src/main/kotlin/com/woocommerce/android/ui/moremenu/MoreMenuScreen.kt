@@ -271,7 +271,7 @@ private fun MoreMenuButton(
             ) {
                 Box(
                     modifier = Modifier
-                        .size(dimensionResource(id = R.dimen.major_350))
+                        .size(dimensionResource(id = R.dimen.major_250))
                         .clip(CircleShape)
                         .background(colorResource(id = R.color.more_menu_button_icon_background))
                 ) {
@@ -279,20 +279,24 @@ private fun MoreMenuButton(
                         painter = painterResource(id = iconDrawable),
                         contentDescription = stringResource(id = text),
                         modifier = Modifier
-                            .size(dimensionResource(id = R.dimen.major_200))
+                            .size(dimensionResource(id = R.dimen.major_125))
                             .align(Alignment.Center)
                     )
                 }
                 Column(
                     horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.Center
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100))
                 ) {
                     Text(
                         text = stringResource(id = text),
-                        fontSize = 13.sp,
                         textAlign = TextAlign.Center,
                     )
-                    Text(text = "The description of the button")
+                    Text(
+                        text = "The description of the button",
+                        style = MaterialTheme.typography.caption,
+                        textAlign = TextAlign.Center,
+                    )
                 }
             }
         }
