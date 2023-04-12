@@ -1114,16 +1114,14 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
             // WHEN
             val viewModel = initViewModel(Payment(orderId, ORDER))
-            val chipLabel = (
+            val badgeIcon = (
                 (viewModel.viewStateData.value as Success).bannerState as BannerState.DisplayBannerState
-                ).chipLabel
+                ).badgeIcon
 
             // THEN
-            assertThat(chipLabel).isEqualTo(
-                UiString.UiStringRes(
-                    stringRes = R.string.card_reader_upsell_card_reader_banner_new,
-                    params = emptyList(),
-                    containsHtml = false
+            assertThat(badgeIcon).isEqualTo(
+                BannerState.LabelOrRemoteIcon.Label(
+                    UiString.UiStringRes(stringRes = R.string.card_reader_upsell_card_reader_banner_new)
                 )
             )
         }

@@ -640,6 +640,11 @@
         <argument
             android:name="subscription"
             app:argType="com.woocommerce.android.model.SubscriptionDetails" />
+        <argument
+            android:name="saleDetails"
+            app:argType="com.woocommerce.android.ui.products.SaleDetails"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
     <fragment
         android:id="@+id/productQuantityRulesFragment"
