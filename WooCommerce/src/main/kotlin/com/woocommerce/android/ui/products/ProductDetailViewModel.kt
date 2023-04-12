@@ -30,6 +30,7 @@ import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadFailure
 import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadProgress
 import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadSuccess
+import com.woocommerce.android.model.ComponentProduct
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductAttributeTerm
@@ -126,7 +127,8 @@ class ProductDetailViewModel @Inject constructor(
     private val duplicateProduct: DuplicateProduct,
     private val tracker: AnalyticsTrackerWrapper,
     private val selectedSite: SelectedSite,
-    private val getProductQuantityRules: GetProductQuantityRules
+    private val getProductQuantityRules: GetProductQuantityRules,
+    private val getComponentProducts: GetComponentProducts
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -2196,6 +2198,10 @@ class ProductDetailViewModel @Inject constructor(
     suspend fun getQuantityRules(productRemoteID: Long): QuantityRules? {
         if (FeatureFlag.QUANTITY_RULES_READ_ONLY_SUPPORT.isEnabled().not()) return null
         return getProductQuantityRules(productRemoteID)
+    }
+
+    suspend fun getComponents(remoteId: Long): List<ComponentProduct>? {
+        return getComponentProducts(remoteId)
     }
 
     /**
