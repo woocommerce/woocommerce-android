@@ -94,11 +94,12 @@ data class OrderData(
 }
 
 data class StatsSummaryData(
-    val revenue: String = "",
-    val orders: String = "",
-    val visitors: String = "",
-    val conversion: String = "",
-)
+    val revenue: String,
+    val orders: String,
+    val visitors: String,
+) {
+    val conversion = ((orders.toDouble() / visitors.toDouble()) * 100).toInt().toString() + "%"
+}
 
 data class StatsTopPerformerData(
     val name: String = "",

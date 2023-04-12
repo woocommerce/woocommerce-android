@@ -47,24 +47,21 @@ class StatsUITest : TestBase() {
     }
 
     private val todayStats = StatsSummaryData(
-        revenue = "$23.00",
-        orders = "2",
-        visitors = "4370",
-        conversion = "0%",
+        revenue = "$111.00",
+        orders = "44",
+        visitors = "440",
     )
 
     private val weekStats = StatsSummaryData(
         revenue = "$6,470.00",
-        orders = "16",
-        visitors = "4370",
-        conversion = "0.4%",
+        orders = "440",
+        visitors = "440",
     )
 
     private val yearStats = StatsSummaryData(
         revenue = "$10,391.92",
-        orders = "123",
-        visitors = "75",
-        conversion = "100%",
+        orders = "6000",
+        visitors = "12000",
     )
 
     private val malayaShades = StatsTopPerformerData(
