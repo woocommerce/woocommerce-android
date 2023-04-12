@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.login.storecreation.NewStore
+import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
 import com.woocommerce.android.util.EmojiUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
+import kotlinx.coroutines.flow.map
 
 @HiltViewModel
 class CountryPickerViewModel @Inject constructor(
@@ -30,8 +32,16 @@ class CountryPickerViewModel @Inject constructor(
         const val DEFAULT_LOCATION_CODE = "US"
     }
 
-    private val _availableCountries = MutableStateFlow(emptyList<StoreCreationCountry>())
-    val availableCountries = _availableCountries.asLiveData()
+    private val availableCountries = MutableStateFlow(emptyList<StoreCreationCountry>())
+
+    val countryPickerState = availableCountries
+        .map { countries ->
+            CountryPickerState.Contentful(
+                storeName = storeName,
+                countries = countries,
+                creatingStoreInProgress = false
+            )
+        }.asLiveData()
 
     val storeName
         get() = newStore.data.name.orEmpty()
@@ -50,7 +60,7 @@ class CountryPickerViewModel @Inject constructor(
                 loadedCountriesMap.containsKey(Locale.getDefault().country) -> Locale.getDefault().country
                 else -> DEFAULT_LOCATION_CODE
             }
-            _availableCountries.update {
+            availableCountries.update {
                 loadedCountriesMap.map { (code, name) ->
                     StoreCreationCountry(
                         name = name,
@@ -61,7 +71,7 @@ class CountryPickerViewModel @Inject constructor(
                 }
             }
             newStore.update(
-                country = _availableCountries.value.first { it.isSelected }
+                country = availableCountries.value.first { it.isSelected }
                     .toNewStoreCountry()
             )
         }
@@ -86,7 +96,7 @@ class CountryPickerViewModel @Inject constructor(
     }
 
     fun onCountrySelected(country: StoreCreationCountry) {
-        _availableCountries.update { currentCountryList ->
+        availableCountries.update { currentCountryList ->
             currentCountryList.map {
                 when (it.code) {
                     country.code -> it.copy(isSelected = true)
@@ -97,8 +107,14 @@ class CountryPickerViewModel @Inject constructor(
         newStore.update(country = country.toNewStoreCountry())
     }
 
-    fun onExitTriggered() {
-        triggerEvent(MultiLiveEvent.Event.Exit)
+    sealed class CountryPickerState {
+        data class Contentful(
+            val storeName: String,
+            val countries: List<StoreCreationCountry>,
+            val creatingStoreInProgress: Boolean,
+        ) : CountryPickerState()
+
+        data class Error(val errorType: StoreCreationErrorType) : CountryPickerState()
     }
 
     private fun StoreCreationCountry.toNewStoreCountry() =
