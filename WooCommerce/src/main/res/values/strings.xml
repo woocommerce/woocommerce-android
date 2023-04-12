@@ -2200,6 +2200,7 @@
     <string name="product_type_virtual">Virtual</string>
     <string name="product_type_downloadable">Downloadable</string>
     <string name="product_type_subscription">Subscription</string>
+    <string name="product_type_bundle">Bundle</string>
 
     <!-- Product type bottom sheets -->
     <string name="product_type_list_header">Select a product type</string>
