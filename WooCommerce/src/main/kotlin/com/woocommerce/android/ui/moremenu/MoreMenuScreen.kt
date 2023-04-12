@@ -139,7 +139,6 @@ private fun MoreMenuSection(
             }
         }
     }
-
 }
 
 @Composable
