@@ -2201,6 +2201,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     suspend fun getBundledProductsSize(remoteId: Long): Int {
+        if (FeatureFlag.BUNDLED_PRODUCTS_READ_ONLY_SUPPORT.isEnabled().not()) return 0
         return getBundledProductsCount(remoteId)
     }
 
