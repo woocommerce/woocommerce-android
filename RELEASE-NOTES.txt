@@ -1,7 +1,7 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 13.2
 -----
-
+- [**] Fix adding variable subscription products to an order [https://github.com/woocommerce/woocommerce-android/pull/8798]
 
 13.1
 -----
