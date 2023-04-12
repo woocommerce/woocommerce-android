@@ -47,6 +47,7 @@ import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable
 import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.NotAvailable
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -109,11 +110,13 @@ class SelectPaymentMethodViewModel @Inject constructor(
                         order = orderStore.getOrderByIdAndSite(param.orderId, selectedSite.get())!!.let {
                             orderMapper.toAppModel(it)
                         }
-                        val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
+                        val siteSettings = wooCommerceStore.getSiteSettings(selectedSite.get())
+                        val currencyCode = siteSettings?.currencyCode ?: ""
                         orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode)
                         viewState.value = buildSuccessState(
                             currencyCode = currencyCode,
-                            isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order),
+                            isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order) &&
+                                    isCardReaderPaymentEnabledByFeatureFlag(siteSettings?.countryCode),
                             isPaymentCollectableWithTapToPay = isTapToPayAvailable()
                         )
                         trackBannerShownIfDisplayed()
@@ -122,6 +125,14 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 }
             }
         }.exhaustive
+    }
+
+    private fun isCardReaderPaymentEnabledByFeatureFlag(countryCode: String?): Boolean {
+        return if (countryCode != "GB") {
+            true
+        } else {
+            FeatureFlag.IPP_UK.isEnabled()
+        }
     }
 
     private fun buildSuccessState(
