@@ -8,9 +8,14 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.dialog.WooDialog
+import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryViewModel.OnCancelPressed
+import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryViewModel.OnStoreCreationFailure
+import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryViewModel.OnStoreCreationSuccess
 import com.woocommerce.android.ui.main.AppBarStatus
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -42,11 +47,21 @@ class StoreCreationSummaryFragment : BaseFragment() {
     private fun setupEventObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is StoreCreationSummaryViewModel.OnCancelPressed -> findNavController().popBackStack()
-                is StoreCreationSummaryViewModel.OnStoreCreationSuccess -> findNavController().navigateSafely(
+                is OnCancelPressed -> findNavController().popBackStack()
+                is OnStoreCreationSuccess -> findNavController().navigateSafely(
                     StoreCreationSummaryFragmentDirections.actionSummaryFragmentToInstallationFragment()
                 )
+                is OnStoreCreationFailure -> displayStoreCreationErrorDialog()
             }
         }
+    }
+
+    private fun displayStoreCreationErrorDialog() {
+        WooDialog.showDialog(
+            activity = requireActivity(),
+            titleId = R.string.free_trial_summary_store_creation_error_title,
+            messageId = R.string.free_trial_summary_store_creation_error_message,
+            positiveButtonId = R.string.free_trial_summary_store_creation_error_dialog_action
+        )
     }
 }
