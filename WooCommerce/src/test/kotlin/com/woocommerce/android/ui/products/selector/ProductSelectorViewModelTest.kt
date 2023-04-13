@@ -90,7 +90,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         sut.viewState.observeForever { state ->
             assertThat(state.products).isNotEmpty
             assertThat(
-                state.products.filter { it.type == ProductType.VARIABLE && it.numVariations == 0 }
+                state.products.filter { (it.type == ProductType.VARIABLE || it.type == ProductType.VARIABLE_SUBSCRIPTION) && it.numVariations == 0 }
             ).isEmpty()
         }
     }
@@ -108,7 +108,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         sut.viewState.observeForever { state ->
             assertThat(state.products).isNotEmpty
             assertThat(
-                state.products.filter { it.type == ProductType.VARIABLE && it.numVariations == 0 }
+                state.products.filter { (it.type == ProductType.VARIABLE || it.type == ProductType.VARIABLE_SUBSCRIPTION) && it.numVariations == 0 }
             ).isEmpty()
             assertThat(state.products.filter { it.id == DRAFT_PRODUCT.remoteId }).isEmpty()
         }
