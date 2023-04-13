@@ -31,24 +31,26 @@
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/componentInformation"
-        android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/componentImageFrame"
-        app:layout_constraintEnd_toStartOf="@+id/imgProperty"
+        android:orientation="vertical"
+        android:paddingVertical="@dimen/major_100"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:paddingVertical="@dimen/major_100">
+        app:layout_constraintEnd_toStartOf="@+id/imgProperty"
+        app:layout_constraintStart_toEndOf="@+id/componentImageFrame"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="@dimen/major_100">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/componentName"
             style="@style/Woo.ListItem.Title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/minor_00"
+            android:layout_marginStart="@dimen/minor_00"
             android:ellipsize="end"
             android:includeFontPadding="false"
             android:maxLines="2"
-            android:layout_marginVertical="@dimen/minor_00"
             tools:text="Awesome Sauce and all that jazz is all I gotta tell you how do we go " />
 
 
@@ -57,10 +59,11 @@
             style="@style/Woo.ListItem.Body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/minor_00"
             android:layout_marginTop="@dimen/minor_75"
             android:layout_marginBottom="@dimen/minor_00"
-            android:maxLines="2"
             android:ellipsize="end"
+            android:maxLines="2"
             tools:text="Out of stock this is a really long version to see what happens when we move o" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
@@ -70,8 +73,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/major_75"
-        android:src="@drawable/ic_arrow_right"
         android:contentDescription="@string/product_property_edit"
+        android:src="@drawable/ic_arrow_right"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
