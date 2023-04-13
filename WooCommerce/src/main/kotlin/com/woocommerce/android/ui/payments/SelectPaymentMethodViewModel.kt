@@ -57,6 +57,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -115,8 +116,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
                         orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode)
                         viewState.value = buildSuccessState(
                             currencyCode = currencyCode,
-                            isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order) &&
-                                    isCardReaderPaymentEnabledByFeatureFlag(siteSettings?.countryCode),
+                            isPaymentCollectableWithCardReader =
+                            isPaymentCollectibleWithCardReader(siteSettings),
                             isPaymentCollectableWithTapToPay = isTapToPayAvailable()
                         )
                         trackBannerShownIfDisplayed()
@@ -127,12 +128,14 @@ class SelectPaymentMethodViewModel @Inject constructor(
         }.exhaustive
     }
 
+    private suspend fun isPaymentCollectibleWithCardReader(siteSettings: WCSettingsModel?) =
+        cardPaymentCollectibilityChecker.isCollectable(order) &&
+                isCardReaderPaymentEnabledByFeatureFlag(siteSettings?.countryCode)
+
     private fun isCardReaderPaymentEnabledByFeatureFlag(countryCode: String?): Boolean {
-        return if (countryCode != "GB") {
-            true
-        } else {
-            FeatureFlag.IPP_UK.isEnabled()
-        }
+        if (countryCode == "GB" && !FeatureFlag.IPP_UK.isEnabled()) return false
+
+        return true
     }
 
     private fun buildSuccessState(
