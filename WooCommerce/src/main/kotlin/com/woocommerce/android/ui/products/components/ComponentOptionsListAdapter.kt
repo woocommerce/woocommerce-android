@@ -11,6 +11,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ComponentOptionItemViewBinding
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.ui.products.ComponentOption
 import org.wordpress.android.util.PhotonUtils
 
 class ComponentOptionsListAdapter :

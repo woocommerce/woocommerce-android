@@ -12,7 +12,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentComponentDetailsBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.model.QueryType
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.products.ComponentOptions
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,7 +27,6 @@ class ComponentDetailsFragment : BaseFragment(R.layout.fragment_component_detail
     private val binding get() = _binding!!
 
     private val skeletonView = SkeletonView()
-
     override fun getFragmentTitle() = resources.getString(R.string.product_component_settings)
 
     private val componentsOptionsListAdapter: ComponentOptionsListAdapter by lazy { ComponentOptionsListAdapter() }
@@ -34,9 +35,16 @@ class ComponentDetailsFragment : BaseFragment(R.layout.fragment_component_detail
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentComponentDetailsBinding.bind(view)
 
+        binding.componentDetailsRefreshLayout.apply {
+            // Set the scrolling view in the custom refresh SwipeRefreshLayout
+            scrollUpChild = binding.componentDetails
+            setOnRefreshListener { viewModel.pullToRefresh() }
+        }
+
         binding.componentOptionsRecycler.run {
             layoutManager = LinearLayoutManager(requireActivity())
             adapter = componentsOptionsListAdapter
+            isNestedScrollingEnabled = false
             isMotionEventSplittingEnabled = false
             if (itemDecorationCount == 0) {
                 addItemDecoration(
@@ -59,23 +67,45 @@ class ComponentDetailsFragment : BaseFragment(R.layout.fragment_component_detail
         }
 
         viewModel.componentOptions.observe(viewLifecycleOwner) { componentOptions ->
-            binding.componentOptionsType.text = componentOptions.type
-            componentOptions.default?.let {
-                binding.componentOptionsDefault.text = it.title
-            } ?: run {
-                binding.componentOptionsDefaultLabel.isVisible = false
-                binding.componentOptionsDefault.isVisible = false
-            }
-            componentsOptionsListAdapter.submitList(componentOptions.options)
+            showComponentOptionsInfo(componentOptions)
         }
 
         viewModel.componentDetailsViewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
+            new.isSkeletonShown.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
+            new.isRefreshing.takeIfNotEqualTo(old?.isRefreshing) {
+                binding.componentDetailsRefreshLayout.isRefreshing = it
+            }
         }
     }
 
-    private fun showComponentImage(imageUrl: String?) {
+    private fun showComponentOptionsInfo(componentOptions: ComponentOptions) {
+        val noListInfo = componentOptions.options.isEmpty()
+        val noDefaultOptionInfo = componentOptions.default == null
+        val noComponentOptionInfo = noListInfo && noDefaultOptionInfo
 
+        binding.componentOptionsSection.isVisible = noComponentOptionInfo.not()
+
+        if (noComponentOptionInfo) return
+
+        binding.componentOptionsType.text = when (componentOptions.type) {
+            QueryType.PRODUCT -> getString(R.string.component_type_products)
+            QueryType.CATEGORY -> getString(R.string.component_type_categories)
+        }
+        binding.componentOptionsType.isVisible = noListInfo.not()
+
+        componentOptions.default?.let {
+            binding.componentOptionsDefault.text = it
+        } ?: run {
+            binding.componentOptionsDefaultLabel.isVisible = false
+            binding.componentOptionsDefault.isVisible = false
+        }
+
+        componentsOptionsListAdapter.submitList(componentOptions.options)
+        binding.componentOptionsRecyclerDivider.isVisible = noListInfo.not()
+        binding.componentOptionsRecycler.isVisible = noListInfo.not()
+    }
+
+    private fun showComponentImage(imageUrl: String?) {
         when {
             imageUrl.isNullOrEmpty() -> {
                 binding.componentImage.isVisible = false
