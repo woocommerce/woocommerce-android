@@ -130,7 +130,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     private suspend fun isPaymentCollectibleWithCardReader(siteSettings: WCSettingsModel?) =
         cardPaymentCollectibilityChecker.isCollectable(order) &&
-                isCardReaderPaymentEnabledByFeatureFlag(siteSettings?.countryCode)
+            isCardReaderPaymentEnabledByFeatureFlag(siteSettings?.countryCode)
 
     private fun isCardReaderPaymentEnabledByFeatureFlag(countryCode: String?): Boolean {
         if (countryCode == "GB" && !FeatureFlag.IPP_UK.isEnabled()) return false

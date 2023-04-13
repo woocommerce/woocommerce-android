@@ -41,9 +41,9 @@ class ShouldShowFeedbackBannerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given the store's country code is not US or CA, then the banner should not be shown`() = testBlocking {
+    fun `given the store's country code is not US or CA or GB, then the banner should not be shown`() = testBlocking {
         // given
-        whenever(wooCommerceStore.getSiteSettings(siteModel)?.countryCode).thenReturn("GB")
+        whenever(wooCommerceStore.getSiteSettings(siteModel)?.countryCode).thenReturn("FR")
 
         // when
         val result = sut()

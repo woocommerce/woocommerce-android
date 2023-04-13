@@ -172,11 +172,12 @@ class CardReaderPaymentReaderTypeStateProviderTest {
     fun `given built in card reader type, when provideFailedPaymentState, then return BuiltInReaderPaymentFailedState`() {
         // GIVEN
         val cardReaderType = CardReaderType.BUILT_IN
+        val error = PaymentFlowError.AmountTooSmall(R.string.card_reader_payment_failed_amount_too_small_us_ca)
 
         // WHEN
         val result = provider.provideFailedPaymentState(
             cardReaderType,
-            errorType = PaymentFlowError.AmountTooSmall,
+            errorType = error,
             amountLabel = "amountLabel",
             primaryLabel = androidx.navigation.dynamicfeatures.fragment.R.string.ok,
             {},
@@ -186,18 +187,19 @@ class CardReaderPaymentReaderTypeStateProviderTest {
         assertThat(result).isInstanceOf(BuiltInReaderFailedPaymentState::class.java)
         assertThat(result.amountWithCurrencyLabel).isEqualTo("amountLabel")
         assertThat(result.primaryActionLabel).isEqualTo(androidx.navigation.dynamicfeatures.fragment.R.string.ok)
-        assertThat(result.paymentStateLabel).isEqualTo(PaymentFlowError.AmountTooSmall.message)
+        assertThat(result.paymentStateLabel).isEqualTo(error.message)
     }
 
     @Test
     fun `given external card reader type, when provideFailedPaymentState, then return ExternalReaderPaymentFailedState`() {
         // GIVEN
         val cardReaderType = CardReaderType.EXTERNAL
+        val error = PaymentFlowError.AmountTooSmall(R.string.card_reader_payment_failed_amount_too_small_us_ca)
 
         // WHEN
         val result = provider.provideFailedPaymentState(
             cardReaderType,
-            errorType = PaymentFlowError.AmountTooSmall,
+            errorType = error,
             amountLabel = "amountLabel",
             primaryLabel = androidx.navigation.dynamicfeatures.fragment.R.string.ok,
             {},
@@ -207,7 +209,7 @@ class CardReaderPaymentReaderTypeStateProviderTest {
         assertThat(result).isInstanceOf(ExternalReaderFailedPaymentState::class.java)
         assertThat(result.amountWithCurrencyLabel).isEqualTo("amountLabel")
         assertThat(result.primaryActionLabel).isEqualTo(androidx.navigation.dynamicfeatures.fragment.R.string.ok)
-        assertThat(result.paymentStateLabel).isEqualTo(PaymentFlowError.AmountTooSmall.message)
+        assertThat(result.paymentStateLabel).isEqualTo(error.message)
     }
 
     @Test
