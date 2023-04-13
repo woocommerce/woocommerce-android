@@ -795,13 +795,13 @@ class ProductDetailCardBuilder(
     }
 
     private suspend fun Product.componentProducts(): ProductProperty? {
-        val componentProducts = viewModel.getComponents(this.remoteId)
-        return if (componentProducts.isNullOrEmpty()) {
+        val components = viewModel.getComponents(this.remoteId)
+        return if (components.isNullOrEmpty()) {
             null
         } else {
             val content = StringUtils.getQuantityString(
                 resourceProvider = resources,
-                quantity = componentProducts.size,
+                quantity = components.size,
                 default = string.product_component_multiple_count,
                 one = string.product_component_single_count
             )
@@ -811,7 +811,7 @@ class ProductDetailCardBuilder(
                 content,
                 drawable.ic_widgets
             ) {
-
+                viewModel.onEditProductCardClicked(ProductNavigationTarget.ViewProductComponents(components))
             }
         }
     }

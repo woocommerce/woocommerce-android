@@ -96,6 +96,9 @@
         <action
             android:id="@+id/action_productDetailFragment_to_productQuantityRulesFragment"
             app:destination="@id/productQuantityRulesFragment" />
+        <action
+            android:id="@+id/action_productDetailFragment_to_compositeProductFragment"
+            app:destination="@id/compositeProductFragment" />
     </fragment>
     <fragment
         android:id="@+id/variationListFragment"
@@ -650,5 +653,13 @@
         <argument
             android:name="quantityRules"
             app:argType="com.woocommerce.android.ui.products.models.QuantityRules" />
+    </fragment>
+    <fragment
+        android:id="@+id/compositeProductFragment"
+        android:name="com.woocommerce.android.ui.products.CompositeProductFragment"
+        android:label="CompositeProductFragment" >
+        <argument
+            android:name="components"
+            app:argType="com.woocommerce.android.model.Component[]" />
     </fragment>
 </navigation>
