@@ -92,19 +92,25 @@ fun MoreMenuScreen(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
             .verticalScroll(rememberScrollState())
+            .fillMaxSize()
     ) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         MoreMenuHeader(onSwitchStore, state, onSettingsClick)
 
-        state.settingsMenuItems
-            .takeIf { it.isNotEmpty() }
-            ?.let { MoreMenuSection(title = "Settings", items = it) }
+        if (state.settingsMenuItems.isNotEmpty()) {
+            MoreMenuSection(
+                title = "Settings",
+                items = state.settingsMenuItems
+            )
+        }
 
-        state.generalMenuItems
-            .takeIf { it.isNotEmpty() }
-            ?.let { MoreMenuSection(title = "General", items = it) }
+        if (state.generalMenuItems.isNotEmpty()) {
+            MoreMenuSection(
+                title = "General",
+                items = state.generalMenuItems
+            )
+        }
     }
 }
 
