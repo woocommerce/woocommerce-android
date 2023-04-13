@@ -129,19 +129,19 @@ class MoreMenuViewModel @Inject constructor(
 
     private fun SiteModel.getSelectedSiteAbsoluteUrl(): String = runCatching { URL(url).host }.getOrDefault("")
 
-    fun onSettingsClick() {
-        AnalyticsTracker.track(
-            AnalyticsEvent.HUB_MENU_SETTINGS_TAPPED
-        )
-        triggerEvent(MoreMenuEvent.NavigateToSettingsEvent)
-    }
-
     fun onSwitchStoreClick() {
         AnalyticsTracker.track(
             AnalyticsEvent.HUB_MENU_SWITCH_STORE_TAPPED
         )
         appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_SWITCHING_STORE)
         triggerEvent(MoreMenuEvent.StartSitePickerEvent)
+    }
+
+    private fun onSettingsClick() {
+        AnalyticsTracker.track(
+            AnalyticsEvent.HUB_MENU_SETTINGS_TAPPED
+        )
+        triggerEvent(MoreMenuEvent.NavigateToSettingsEvent)
     }
 
     private fun onPaymentsButtonClick() {

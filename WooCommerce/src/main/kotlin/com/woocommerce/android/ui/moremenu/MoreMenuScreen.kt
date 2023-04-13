@@ -75,8 +75,7 @@ fun MoreMenuScreen(viewModel: MoreMenuViewModel) {
     val moreMenuState by viewModel.moreMenuViewState.observeAsState(initial = (MoreMenuViewState()))
     MoreMenuScreen(
         moreMenuState,
-        viewModel::onSwitchStoreClick,
-        viewModel::onSettingsClick
+        viewModel::onSwitchStoreClick
     )
 }
 
@@ -84,8 +83,7 @@ fun MoreMenuScreen(viewModel: MoreMenuViewModel) {
 @Composable
 fun MoreMenuScreen(
     state: MoreMenuViewState,
-    onSwitchStore: () -> Unit,
-    onSettingsClick: () -> Unit
+    onSwitchStore: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -93,7 +91,7 @@ fun MoreMenuScreen(
             .fillMaxSize()
     ) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-        MoreMenuHeader(onSwitchStore, state, onSettingsClick)
+        MoreMenuHeader(onSwitchStore, state)
 
         if (state.settingsMenuItems.isNotEmpty()) {
             MoreMenuSection(
@@ -145,8 +143,7 @@ private fun MoreMenuSection(
 @Composable
 private fun MoreMenuHeader(
     onSwitchStore: () -> Unit,
-    state: MoreMenuViewState,
-    onSettingsClick: () -> Unit
+    state: MoreMenuViewState
 ) {
     Box(
         modifier = Modifier
@@ -402,5 +399,5 @@ private fun MoreMenuPreview() {
         siteUrl = "woocommerce.com",
         userAvatarUrl = "" // To force displaying placeholder image
     )
-    MoreMenuScreen(state, {}, {})
+    MoreMenuScreen(state, {})
 }
