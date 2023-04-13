@@ -811,7 +811,10 @@ class ProductDetailCardBuilder(
                 content,
                 drawable.ic_widgets
             ) {
-                viewModel.onEditProductCardClicked(ProductNavigationTarget.ViewProductComponents(components))
+                viewModel.onEditProductCardClicked(
+                    ProductNavigationTarget.ViewProductComponents(components),
+                    AnalyticsEvent.PRODUCT_DETAILS_VIEW_COMPONENTS_TAPPED
+                )
             }
         }
     }
