@@ -1,29 +1,23 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.model.Component
-import com.woocommerce.android.model.QueryType
+import com.woocommerce.android.model.ComponentMapper
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
 class GetComponentProducts @Inject constructor(
+    private val selectedSite: SelectedSite,
+    private val productStore: WCProductStore,
     private val dispatchers: CoroutineDispatchers
 ) {
     suspend operator fun invoke(productId: Long): List<Component> {
-        println(productId)
         return withContext(dispatchers.io) {
-            delay(500)
-            List(6) { n ->
-                Component(
-                    id = n.toLong(),
-                    title = "Component $n",
-                    description = "This component $n is very helpful",
-                    queryType = if (n % 2 == 0) QueryType.PRODUCT else QueryType.CATEGORY,
-                    queryIds = (0..n + 1).toList().map { it * 1L },
-                    defaultOption = n.toLong(),
-                    thumbnailUrl = null
-                )
+            val siteModel = selectedSite.get()
+            productStore.getCompositeProducts(siteModel,productId).map {
+                ComponentMapper.toAppModel(it)
             }
         }
     }

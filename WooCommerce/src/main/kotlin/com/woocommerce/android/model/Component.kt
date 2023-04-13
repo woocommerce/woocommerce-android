@@ -10,7 +10,7 @@ data class Component(
     val description: String,
     val queryType: QueryType,
     val queryIds: List<Long>,
-    val defaultOption: Long,
+    val defaultOptionId: Long?,
     val thumbnailUrl: String?
 ):Parcelable
 
@@ -19,6 +19,6 @@ enum class QueryType(val value: String){
     CATEGORY("category_ids");
     companion object {
         private val valueMap = QueryType.values().associateBy(QueryType::value)
-        fun fromValue(value: String) = valueMap[value]
+        fun fromValue(value: String) = valueMap[value] ?: PRODUCT
     }
 }
