@@ -67,7 +67,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.moremenu.MenuSection.Settings
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuViewState
 
 @ExperimentalFoundationApi
@@ -400,11 +399,10 @@ private fun MoreMenuPreview() {
                 )
             ),
             MenuUiButton(R.string.more_menu_button_coupons, R.drawable.ic_more_menu_coupons),
-            MenuUiButton(
-                text = R.string.more_menu_button_upgrades,
-                icon = R.drawable.ic_more_menu_upgrades,
-                menuSection = Settings
-            ),
+        ),
+        settingsMenuItems = listOf(
+            MenuUiButton(R.string.more_menu_button_settings, R.drawable.ic_more_screen_settings),
+            MenuUiButton(text = R.string.more_menu_button_upgrades, icon = R.drawable.ic_more_menu_upgrades)
         ),
         siteName = "Example Site",
         siteUrl = "woocommerce.com",
