@@ -18,6 +18,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
 import org.wordpress.android.fluxc.store.JitmStore
 import javax.inject.Inject
 
+private typealias Assets = Map<String, String>?
+
 @HiltViewModel
 class JitmViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -137,11 +139,11 @@ class JitmViewModel @Inject constructor(
         }
     }
 
-    private fun Map<String, String>?.getBackgroundImage() =
+    private fun Assets.getBackgroundImage() =
         this?.get(JITM_ASSETS_BACKGROUND_IMAGE_KEY)?.let { JitmState.Banner.LocalOrRemoteImage.Remote(it) }
             ?: JitmState.Banner.LocalOrRemoteImage.Local(R.drawable.ic_banner_upsell_card_reader_illustration)
 
-    private fun Map<String, String>?.getBadgeIcon() =
+    private fun Assets.getBadgeIcon() =
         this?.get(JITM_ASSETS_BADGE_IMAGE_KEY)?.let { JitmState.Banner.LabelOrRemoteIcon.Remote(it) }
             ?: JitmState.Banner.LabelOrRemoteIcon.Label(
                 UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
