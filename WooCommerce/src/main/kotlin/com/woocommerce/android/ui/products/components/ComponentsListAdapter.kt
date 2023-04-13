@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products.components
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -49,14 +50,17 @@ class ComponentViewHolder(val viewBinding: ComponentItemViewBinding) : RecyclerV
 
     fun bind(component: Component) {
         viewBinding.componentName.text = component.title
-        showDescription(component.description)
+        showDescriptionHTML(component.description)
         showProductImage(component.thumbnailUrl)
     }
 
-    private fun showDescription(description: String) {
+    private fun showDescriptionHTML(description: String) {
         if (description.isNotEmpty()) {
             viewBinding.componentDescription.isVisible = true
-            viewBinding.componentDescription.text = description
+            viewBinding.componentDescription.text = HtmlCompat.fromHtml(
+                description,
+                HtmlCompat.FROM_HTML_MODE_COMPACT
+            )
         } else {
             viewBinding.componentDescription.isVisible = false
         }
