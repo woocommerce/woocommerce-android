@@ -31,6 +31,11 @@ class InstallationFragment : BaseFragment() {
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        lifecycle.addObserver(viewModel.performanceObserver)
+        super.onCreate(savedInstanceState)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
