@@ -39,7 +39,8 @@ enum class FeatureFlag {
             IPP_FEEDBACK_BANNER,
             FREE_TRIAL_M2,
             STORE_CREATION_ONBOARDING,
-            REST_API_I2 -> true
+            REST_API_I2,
+            STORE_CREATION_PROFILER -> true
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
@@ -48,8 +49,7 @@ enum class FeatureFlag {
             GIFT_CARD_READ_ONLY_SUPPORT,
             QUANTITY_RULES_READ_ONLY_SUPPORT -> PackageUtils.isDebugBuild()
 
-            IAP_FOR_STORE_CREATION,
-            STORE_CREATION_PROFILER -> false
+            IAP_FOR_STORE_CREATION -> false
         }
     }
 }
