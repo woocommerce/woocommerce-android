@@ -1,11 +1,11 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 13.2
 -----
-[*] Added RTL languages support in search fields [https://github.com/woocommerce/woocommerce-android/pull/8770]
+- [*] Added RTL languages support in search fields [https://github.com/woocommerce/woocommerce-android/pull/8770]
+- [*][internal] Visual improvements to the Payments Hub Screen [https://github.com/woocommerce/woocommerce-android/pull/8768]
 
 13.1
 -----
-- [*][internal] Visual improvements to the Payments Hub Screen [https://github.com/woocommerce/woocommerce-android/pull/8768]
 
 13.1
 -----
