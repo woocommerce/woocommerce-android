@@ -69,7 +69,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.moremenu.MenuSection.General
 import com.woocommerce.android.ui.moremenu.MenuSection.Settings
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuViewState
 
@@ -99,13 +98,11 @@ fun MoreMenuScreen(
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         MoreMenuHeader(onSwitchStore, state, onSettingsClick)
 
-        state.moreMenuItems
-            .filter { it.menuSection is Settings && it.isEnabled }
+        state.settingsMenuItems
             .takeIf { it.isNotEmpty() }
             ?.let { MoreMenuSection(title = "Settings", items = it) }
 
-        state.moreMenuItems
-            .filter { it.menuSection is General && it.isEnabled }
+        state.generalMenuItems
             .takeIf { it.isNotEmpty() }
             ?.let { MoreMenuSection(title = "General", items = it) }
     }
