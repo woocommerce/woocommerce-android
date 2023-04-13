@@ -30,6 +30,7 @@
     </FrameLayout>
 
     <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/componentInformation"
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

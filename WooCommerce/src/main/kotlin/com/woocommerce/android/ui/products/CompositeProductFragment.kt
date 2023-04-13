@@ -38,7 +38,7 @@ class CompositeProductFragment : BaseFragment(R.layout.fragment_componets_list),
                     AlignedDividerDecoration(
                         context,
                         DividerItemDecoration.VERTICAL,
-                        R.id.componentName
+                        R.id.componentInformation
                     )
                 )
             }
