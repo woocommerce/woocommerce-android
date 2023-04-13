@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.components
 
 import android.os.Bundle
 import android.view.View
@@ -10,12 +10,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentComponetsListBinding
 import com.woocommerce.android.model.Component
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.products.adapters.ComponentsListAdapter
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CompositeProductFragment :
+class ComponentListFragment :
     BaseFragment(R.layout.fragment_componets_list),
     ComponentsListAdapter.OnComponentClickListener {
     val viewModel: ComponentListViewModel by viewModels()

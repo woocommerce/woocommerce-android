@@ -656,7 +656,7 @@
     </fragment>
     <fragment
         android:id="@+id/compositeProductFragment"
-        android:name="com.woocommerce.android.ui.products.CompositeProductFragment"
+        android:name="com.woocommerce.android.ui.products.components.ComponentListFragment"
         android:label="CompositeProductFragment" >
         <argument
             android:name="components"
