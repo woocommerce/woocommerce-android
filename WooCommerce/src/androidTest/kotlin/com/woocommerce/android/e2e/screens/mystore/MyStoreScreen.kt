@@ -88,11 +88,6 @@ class MyStoreScreen : Screen(MY_STORE) {
 
     fun assertTopPerformers(topPerformersJSONArray: JSONArray): MyStoreScreen {
         scrollTo(R.id.topPerformers_recycler)
-        // This idle is not needed for execution. Without it, the scroll,
-        // assertion, and scroll back (at the end) happen so fast, that it'll
-        // be impossible to see what's going on on the screen in FTL recordings,
-        // if needed. The test will pass w/o it.
-        idleFor(1000)
 
         for (i in 0 until topPerformersJSONArray.length()) {
             val innerArray = topPerformersJSONArray.getJSONArray(i)
