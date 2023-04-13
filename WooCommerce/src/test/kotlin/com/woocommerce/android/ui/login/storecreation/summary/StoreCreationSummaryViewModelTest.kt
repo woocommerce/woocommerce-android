@@ -46,7 +46,7 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
     @Test
     fun `when onTryForFreeButtonPressed is called, then track expected event`() = testBlocking {
         // Given
-        createSut("", "", StoreCreationState.Idle)
+        createSut("", "", StoreCreationState.Loading)
 
         // When
         sut.onTryForFreeButtonPressed()
