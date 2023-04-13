@@ -47,10 +47,11 @@ class MoreMenuViewModel @Inject constructor(
             moreMenuRepository.observeCouponBetaSwitch(),
         ) { count, selectedSite, isCouponsEnabled ->
             MoreMenuViewState(
-                moreMenuItems = generateMenuButtons(
+                generalMenuItems = generateGeneralMenuButtons(
                     unseenReviewsCount = count,
                     isCouponsEnabled = isCouponsEnabled,
                 ),
+                settingsMenuItems = generateSettingsMenuButtons(),
                 siteName = selectedSite.getSelectedSiteName(),
                 siteUrl = selectedSite.getSelectedSiteAbsoluteUrl(),
                 userAvatarUrl = accountStore.account.avatarUrl,
@@ -58,9 +59,9 @@ class MoreMenuViewModel @Inject constructor(
             )
         }.asLiveData()
 
-    private suspend fun generateMenuButtons(
+    private suspend fun generateGeneralMenuButtons(
         unseenReviewsCount: Int,
-        isCouponsEnabled: Boolean,
+        isCouponsEnabled: Boolean
     ) = listOf(
         MenuUiButton(
             text = R.string.more_menu_button_payments,
@@ -94,7 +95,10 @@ class MoreMenuViewModel @Inject constructor(
             icon = R.drawable.ic_more_menu_inbox,
             isEnabled = moreMenuRepository.isInboxEnabled(),
             onClick = ::onInboxButtonClick
-        ),
+        )
+    )
+
+    private fun generateSettingsMenuButtons() = listOf(
         MenuUiButton(
             text = R.string.more_menu_button_settings,
             icon = R.drawable.ic_more_screen_settings,
@@ -191,22 +195,18 @@ class MoreMenuViewModel @Inject constructor(
     }
 
     private fun isPaymentBadgeVisible() = moreMenuViewState.value
-        ?.moreMenuItems
+        ?.generalMenuItems
         ?.find { it.text == R.string.more_menu_button_payments }
         ?.badgeState != null
 
     data class MoreMenuViewState(
-        val moreMenuItems: List<MenuUiButton> = emptyList(),
+        val generalMenuItems: List<MenuUiButton> = emptyList(),
+        val settingsMenuItems: List<MenuUiButton> = emptyList(),
         val siteName: String = "",
         val siteUrl: String = "",
         val userAvatarUrl: String = "",
         val isStoreSwitcherEnabled: Boolean = false
-    ) {
-        val settingsMenuItems = moreMenuItems
-            .filter { it.menuSection == MenuSection.Settings && it.isEnabled }
-        val generalMenuItems = moreMenuItems
-            .filter { it.menuSection == MenuSection.General && it.isEnabled }
-    }
+    )
 
     sealed class MoreMenuEvent : MultiLiveEvent.Event() {
         object NavigateToSettingsEvent : MoreMenuEvent()
