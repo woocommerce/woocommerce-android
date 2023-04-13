@@ -30,7 +30,7 @@ import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadFailure
 import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadProgress
 import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadSuccess
-import com.woocommerce.android.model.ComponentProduct
+import com.woocommerce.android.model.Component
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductAttributeTerm
@@ -2200,7 +2200,7 @@ class ProductDetailViewModel @Inject constructor(
         return getProductQuantityRules(productRemoteID)
     }
 
-    suspend fun getComponents(remoteId: Long): List<ComponentProduct>? {
+    suspend fun getComponents(remoteId: Long): List<Component>? {
         return getComponentProducts(remoteId)
     }
 

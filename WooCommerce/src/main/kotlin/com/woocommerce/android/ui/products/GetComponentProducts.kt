@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.products
 
-import com.woocommerce.android.model.ComponentProduct
+import com.woocommerce.android.model.Component
 import com.woocommerce.android.model.QueryType
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.delay
@@ -10,12 +10,12 @@ import javax.inject.Inject
 class GetComponentProducts @Inject constructor(
     private val dispatchers: CoroutineDispatchers
 ) {
-    suspend operator fun invoke(productId: Long): List<ComponentProduct> {
+    suspend operator fun invoke(productId: Long): List<Component> {
         println(productId)
         return withContext(dispatchers.io) {
             delay(500)
             List(6) { n ->
-                ComponentProduct(
+                Component(
                     id = n.toLong(),
                     title = "Component $n",
                     description = "This component $n is very helpful",
