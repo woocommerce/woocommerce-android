@@ -7,7 +7,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
-import com.woocommerce.android.databinding.FragmentComponetsListBinding
+import com.woocommerce.android.databinding.FragmentComponentListBinding
 import com.woocommerce.android.model.Component
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.widgets.AlignedDividerDecoration
@@ -15,10 +15,10 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ComponentListFragment :
-    BaseFragment(R.layout.fragment_componets_list),
+    BaseFragment(R.layout.fragment_component_list),
     ComponentsListAdapter.OnComponentClickListener {
     val viewModel: ComponentListViewModel by viewModels()
-    private var _binding: FragmentComponetsListBinding? = null
+    private var _binding: FragmentComponentListBinding? = null
     private val binding get() = _binding!!
 
     override fun getFragmentTitle() = resources.getString(R.string.product_components)
@@ -27,7 +27,7 @@ class ComponentListFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = FragmentComponetsListBinding.bind(view)
+        _binding = FragmentComponentListBinding.bind(view)
 
         binding.productsRecycler.run {
             layoutManager = LinearLayoutManager(requireActivity())
