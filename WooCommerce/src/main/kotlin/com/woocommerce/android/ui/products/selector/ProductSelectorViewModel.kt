@@ -145,21 +145,21 @@ class ProductSelectorViewModel @Inject constructor(
         popularProducts: List<Product>,
         selectedIds: List<SelectedItem>
     ): List<ProductListItem> {
-        return getProductItemsIfSearchQueryIsNotEmpty(popularProducts, selectedIds)
+        return getProductItemsIfSearchQueryEmptyOrNoFilter(popularProducts, selectedIds)
     }
 
     private fun getRecentProductsToDisplay(
         recentProducts: List<Product>,
         selectedIds: List<SelectedItem>
     ): List<ProductListItem> {
-        return getProductItemsIfSearchQueryIsNotEmpty(recentProducts, selectedIds)
+        return getProductItemsIfSearchQueryEmptyOrNoFilter(recentProducts, selectedIds)
     }
 
-    private fun getProductItemsIfSearchQueryIsNotEmpty(
+    private fun getProductItemsIfSearchQueryEmptyOrNoFilter(
         productsList: List<Product>,
         selectedIds: List<SelectedItem>
     ): List<ProductListItem> {
-        if (searchQuery.value.isNotNullOrEmpty()) {
+        if (searchQuery.value.isNotNullOrEmpty() || !filterState.value.filterOptions.isNullOrEmpty()) {
             return emptyList()
         }
         return productsList.map { it.toUiModel(selectedIds) }

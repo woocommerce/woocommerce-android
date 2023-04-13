@@ -549,6 +549,141 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `given popular products, when filter is applied, then hide the popular products section`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+            ).initSavedStateHandle()
+            val ordersList = generateTestOrders() + generatePopularOrders()
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(ordersList)
+            whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(ProductTestUtils.generateProductList())
+
+            val sut = createViewModel(navArgs)
+            sut.onFiltersChanged(
+                stockStatus = "In stock",
+                productCategory = null,
+                productStatus = null,
+                productType = null,
+                productCategoryName = null
+            )
+
+            var viewState: ProductSelectorViewModel.ViewState? = null
+            sut.viewState.observeForever { state ->
+                viewState = state
+            }
+
+            assertThat(viewState?.popularProducts)?.isEmpty()
+        }
+    }
+
+    @Test
+    fun `given popular products, when filter is cleared, then show the popular products section`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+            ).initSavedStateHandle()
+            val ordersList = generateTestOrders() + generatePopularOrders()
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(ordersList)
+            whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(ProductTestUtils.generateProductList())
+
+            val sut = createViewModel(navArgs)
+            sut.onFiltersChanged(
+                stockStatus = "In stock",
+                productCategory = null,
+                productStatus = null,
+                productType = null,
+                productCategoryName = null
+            )
+
+            var viewState: ProductSelectorViewModel.ViewState? = null
+            sut.viewState.observeForever { state ->
+                viewState = state
+            }
+
+            assertThat(viewState?.popularProducts)?.isEmpty()
+            sut.onFiltersChanged(
+                stockStatus = null,
+                productCategory = null,
+                productStatus = null,
+                productType = null,
+                productCategoryName = null
+            )
+            assertThat(viewState?.popularProducts)?.isNotEmpty
+        }
+    }
+
+    @Test
+    fun `given last sold products, when filter is applied, then hide the last sold products section`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+            ).initSavedStateHandle()
+            val ordersList = generateTestOrders()
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(ordersList)
+            whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(ProductTestUtils.generateProductList())
+
+            val sut = createViewModel(navArgs)
+            sut.onFiltersChanged(
+                stockStatus = "In stock",
+                productCategory = null,
+                productStatus = null,
+                productType = null,
+                productCategoryName = null
+            )
+
+            var viewState: ProductSelectorViewModel.ViewState? = null
+            sut.viewState.observeForever { state ->
+                viewState = state
+            }
+
+            assertThat(viewState?.recentProducts)?.isEmpty()
+        }
+    }
+
+    @Test
+    fun `given last sold products, when filter is cleared, then show the last sold products section`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+            ).initSavedStateHandle()
+            val ordersList = generateTestOrders()
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(ordersList)
+            whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(ProductTestUtils.generateProductList())
+
+            val sut = createViewModel(navArgs)
+            sut.onFiltersChanged(
+                stockStatus = "In stock",
+                productCategory = null,
+                productStatus = null,
+                productType = null,
+                productCategoryName = null
+            )
+
+            var viewState: ProductSelectorViewModel.ViewState? = null
+            sut.viewState.observeForever { state ->
+                viewState = state
+            }
+
+            assertThat(viewState?.recentProducts)?.isEmpty()
+            sut.onFiltersChanged(
+                stockStatus = null,
+                productCategory = null,
+                productStatus = null,
+                productType = null,
+                productCategoryName = null
+            )
+            assertThat(viewState?.recentProducts)?.isNotEmpty
+        }
+    }
     //endregion
 
     // region sort by popularity and recently sold, analytics
