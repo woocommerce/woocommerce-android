@@ -102,13 +102,11 @@ class MoreMenuViewModel @Inject constructor(
         MenuUiButton(
             text = R.string.more_menu_button_settings,
             icon = R.drawable.ic_more_screen_settings,
-            menuSection = MenuSection.Settings,
             onClick = ::onSettingsClick
         ),
         MenuUiButton(
             text = R.string.more_menu_button_upgrades,
             icon = R.drawable.ic_more_menu_upgrades,
-            menuSection = MenuSection.Settings,
             isEnabled = moreMenuRepository.isUpgradesEnabled(),
             onClick = ::onUpgradesButtonClick
         )
