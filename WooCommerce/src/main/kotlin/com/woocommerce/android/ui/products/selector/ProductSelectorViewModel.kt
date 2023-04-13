@@ -204,7 +204,7 @@ class ProductSelectorViewModel @Inject constructor(
 
     private fun Product.toUiModel(selectedItems: Collection<SelectedItem>): ProductListItem {
         fun getProductSelection(): SelectionState {
-            return if ((productType == VARIABLE || productType == VARIABLE_SUBSCRIPTION) && numVariations > 0) {
+            return if (isVariable() && numVariations > 0) {
                 val intersection = variationIds.intersect(selectedItems.variationIds.toSet())
                 when {
                     intersection.isEmpty() -> UNSELECTED
@@ -219,8 +219,11 @@ class ProductSelectorViewModel @Inject constructor(
 
         val stockStatus = when (stockStatus) {
             InStock -> {
-                if (productType == VARIABLE) {
-                    resourceProvider.getString(string.product_stock_status_instock_with_variations, numVariations)
+                if (isVariable()) {
+                    resourceProvider.getString(
+                        string.product_stock_status_instock_with_variations,
+                        numVariations
+                    )
                 } else {
                     getStockStatusLabel()
                 }
@@ -290,7 +293,7 @@ class ProductSelectorViewModel @Inject constructor(
                     productSource
                 )
             )
-        } else if (item.type != VARIABLE) {
+        } else if (item.type != VARIABLE && item.type != VARIABLE_SUBSCRIPTION) {
             selectedItems.update { items ->
                 val selectedProductItems = items.filter {
                     it is SelectedItem.ProductOrVariation || it is SelectedItem.Product
@@ -514,7 +517,7 @@ class ProductSelectorViewModel @Inject constructor(
         @Parcelize
         object NoVariableProductsWithNoVariations : ProductSelectorRestriction() {
             override fun invoke(product: Product): Boolean {
-                return !(product.productType == VARIABLE && product.numVariations == 0)
+                return !(product.isVariable() && product.numVariations == 0)
             }
         }
     }
@@ -523,6 +526,8 @@ class ProductSelectorViewModel @Inject constructor(
         OrderCreation, CouponEdition, Undefined
     }
 }
+
+private fun Product.isVariable() = productType == VARIABLE || productType == VARIABLE_SUBSCRIPTION
 
 val Collection<ProductSelectorViewModel.SelectedItem>.variationIds: List<Long>
     get() {
