@@ -105,6 +105,7 @@
     <string name="more_menu_button_coupons">Coupons</string>
     <string name="more_menu_button_reviews">Reviews</string>
     <string name="more_menu_button_upgrades">Upgrades</string>
+    <string name="more_menu_button_settings">Settings</string>
     <string name="more_menu_avatar">User profile picture</string>
     <string name="version_with_name_param">Version %s</string>
     <string name="share_store_button">Share your store</string>
