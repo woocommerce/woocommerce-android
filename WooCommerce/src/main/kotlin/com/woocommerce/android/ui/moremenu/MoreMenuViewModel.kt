@@ -195,7 +195,12 @@ class MoreMenuViewModel @Inject constructor(
         val siteUrl: String = "",
         val userAvatarUrl: String = "",
         val isStoreSwitcherEnabled: Boolean = false
-    )
+    ) {
+        val settingsMenuItems = moreMenuItems
+            .filter { it.menuSection == MenuSection.Settings && it.isEnabled }
+        val generalMenuItems = moreMenuItems
+            .filter { it.menuSection == MenuSection.General && it.isEnabled }
+    }
 
     sealed class MoreMenuEvent : MultiLiveEvent.Event() {
         object NavigateToSettingsEvent : MoreMenuEvent()
