@@ -174,12 +174,6 @@ private fun MoreMenuHeader(
             siteUrl = state.siteUrl,
             isStoreSwitcherEnabled = state.isStoreSwitcherEnabled
         )
-        SettingsButton(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(end = dimensionResource(id = R.dimen.minor_100)),
-            onSettingsClick = onSettingsClick
-        )
     }
 }
 
