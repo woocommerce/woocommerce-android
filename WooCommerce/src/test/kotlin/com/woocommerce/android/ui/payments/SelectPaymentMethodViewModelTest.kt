@@ -22,7 +22,6 @@ import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.Navigate
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.OpenPurchaseCardReaderLink
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.ViewState.Loading
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.ViewState.Success
-import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
