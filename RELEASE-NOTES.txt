@@ -4,6 +4,7 @@
 - [**] Fix adding variable subscription products to an order [https://github.com/woocommerce/woocommerce-android/pull/8798]
 - [*] Added RTL languages support in search fields [https://github.com/woocommerce/woocommerce-android/pull/8770]
 - [*][internal] Visual improvements to the Payments Hub Screen [https://github.com/woocommerce/woocommerce-android/pull/8768]
+- [****] Extend support of in-person card reader payments to the UK [https://github.com/woocommerce/woocommerce-android/pull/8662]
 
 13.1
 -----
