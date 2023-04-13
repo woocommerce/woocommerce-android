@@ -128,7 +128,7 @@ private fun MoreMenuSection(
 
         items.forEach { item ->
             MoreMenuButton(
-                text = item.text,
+                text = item.title,
                 iconDrawable = item.icon,
                 badgeState = item.badgeState,
                 onClick = item.onClick
@@ -351,7 +351,9 @@ private fun MoreMenuPreview() {
     val state = MoreMenuViewState(
         generalMenuItems = listOf(
             MenuUiButton(
-                R.string.more_menu_button_payments, R.drawable.ic_more_menu_payments,
+                R.string.more_menu_button_payments,
+                R.string.more_menu_button_payments_description,
+                R.drawable.ic_more_menu_payments,
                 BadgeState(
                     badgeSize = R.dimen.major_110,
                     backgroundColor = R.color.color_secondary,
@@ -360,10 +362,20 @@ private fun MoreMenuPreview() {
                     animateAppearance = true
                 )
             ),
-            MenuUiButton(R.string.more_menu_button_wс_admin, R.drawable.ic_more_menu_wp_admin),
-            MenuUiButton(R.string.more_menu_button_store, R.drawable.ic_more_menu_store),
             MenuUiButton(
-                R.string.more_menu_button_reviews, R.drawable.ic_more_menu_reviews,
+                R.string.more_menu_button_wс_admin,
+                R.string.more_menu_button_wc_admin_description,
+                R.drawable.ic_more_menu_wp_admin
+            ),
+            MenuUiButton(
+                R.string.more_menu_button_store,
+                R.string.more_menu_button_store_description,
+                R.drawable.ic_more_menu_store
+            ),
+            MenuUiButton(
+                R.string.more_menu_button_reviews,
+                R.string.more_menu_button_reviews_description,
+                R.drawable.ic_more_menu_reviews,
                 BadgeState(
                     badgeSize = R.dimen.major_150,
                     backgroundColor = R.color.color_primary,
@@ -372,11 +384,23 @@ private fun MoreMenuPreview() {
                     animateAppearance = false
                 )
             ),
-            MenuUiButton(R.string.more_menu_button_coupons, R.drawable.ic_more_menu_coupons),
+            MenuUiButton(
+                R.string.more_menu_button_coupons,
+                R.string.more_menu_button_coupons_description,
+                R.drawable.ic_more_menu_coupons
+            ),
         ),
         settingsMenuItems = listOf(
-            MenuUiButton(R.string.more_menu_button_settings, R.drawable.ic_more_screen_settings),
-            MenuUiButton(text = R.string.more_menu_button_upgrades, icon = R.drawable.ic_more_menu_upgrades)
+            MenuUiButton(
+                R.string.more_menu_button_settings,
+                R.string.more_menu_button_settings_description,
+                R.drawable.ic_more_screen_settings
+            ),
+            MenuUiButton(
+                R.string.more_menu_button_upgrades,
+                R.string.more_menu_button_upgrades_description,
+                R.drawable.ic_more_menu_upgrades
+            )
         ),
         siteName = "Example Site",
         siteUrl = "woocommerce.com",
