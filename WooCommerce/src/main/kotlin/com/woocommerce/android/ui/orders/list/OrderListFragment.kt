@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog.showDialog
 import com.woocommerce.android.ui.feedback.SurveyType
+import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
@@ -73,11 +74,17 @@ class OrderListFragment :
         const val STATE_KEY_SEARCH_QUERY = "search-query"
         const val STATE_KEY_IS_SEARCHING = "is_searching"
         const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
+
+        private const val JITM_MESSAGE_PATH = "woomobile:my_store:admin_notices"
+        private const val JITM_FRAGMENT_TAG = "jitm_fragment"
     }
 
-    @Inject internal lateinit var uiMessageResolver: UIMessageResolver
-    @Inject internal lateinit var selectedSite: SelectedSite
-    @Inject internal lateinit var currencyFormatter: CurrencyFormatter
+    @Inject
+    internal lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    internal lateinit var selectedSite: SelectedSite
+    @Inject
+    internal lateinit var currencyFormatter: CurrencyFormatter
 
     private val viewModel: OrderListViewModel by viewModels()
     private var snackBar: Snackbar? = null
@@ -132,6 +139,12 @@ class OrderListFragment :
         enterTransition = fadeThroughTransition
         exitTransition = fadeThroughTransition
         reenterTransition = fadeThroughTransition
+    }
+
+    private fun initJitm() {
+        childFragmentManager.beginTransaction()
+            .replace(R.id.jitmFragment, JitmFragment.newInstance(JITM_MESSAGE_PATH), JITM_FRAGMENT_TAG)
+            .commit()
     }
 
     override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
@@ -205,6 +218,7 @@ class OrderListFragment :
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+        initJitm()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

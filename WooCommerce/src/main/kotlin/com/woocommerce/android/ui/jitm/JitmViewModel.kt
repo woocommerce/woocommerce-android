@@ -70,14 +70,16 @@ class JitmViewModel @Inject constructor(
                 model.featureClass
             )
 
-            _jitmState.value = when (model.template) {
+//            _jitmState.value = when (model.template) {
+            _jitmState.value = when ("modal") {
                 JITM_TEMPLATE_MODAL -> JitmState.Modal(
                     onPrimaryActionClicked = { onJitmCtaClicked(model) },
                     onDismissClicked = { onJitmDismissClicked(model) },
                     title = UiString.UiStringText(model.content.message),
-                    description = UiString.UiStringText(model.content.description),
-                    primaryActionLabel = UiString.UiStringText(model.cta.message),
-                    backgroundImageUrl = model.assets?.get(JITM_ASSETS_BACKGROUND_IMAGE_KEY),
+                    description = UiString.UiStringText("Did you know that you can take payments using your phone?"),
+                    primaryActionLabel = UiString.UiStringText("Try Tap To Pay"),
+//                    backgroundImageUrl = model.assets?.get(JITM_ASSETS_BACKGROUND_IMAGE_KEY),
+                    backgroundImageUrl = "https://i.ibb.co/GvkKQ8G/Frame-333.png"
                 )
                 else -> JitmState.Banner(
                     onPrimaryActionClicked = { onJitmCtaClicked(model) },
@@ -108,35 +110,36 @@ class JitmViewModel @Inject constructor(
                     id = model.id,
                     featureClass = model.featureClass,
                     siteId = selectedSite.getIfExists()?.siteId,
-                    url = model.url
+                    url = "https://woocommerce.com/mobile/payments/tap-to-pay"
                 )
             )
         )
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private fun onJitmDismissClicked(model: JITMApiResponse) {
         _jitmState.value = JitmState.Hidden
-        jitmTracker.trackJitmDismissTapped(MyStoreViewModel.UTM_SOURCE, model.id, model.featureClass)
-        launch {
-            jitmStore.dismissJitmMessage(selectedSite.get(), model.id, model.featureClass).also { response ->
-                when {
-                    response.model != null && response.model!! -> {
-                        jitmTracker.trackJitmDismissSuccess(
-                            MyStoreViewModel.UTM_SOURCE,
-                            model.id,
-                            model.featureClass
-                        )
-                    }
-                    else -> jitmTracker.trackJitmDismissFailure(
-                        MyStoreViewModel.UTM_SOURCE,
-                        model.id,
-                        model.featureClass,
-                        response.error?.type,
-                        response.error?.message
-                    )
-                }
-            }
-        }
+//        jitmTracker.trackJitmDismissTapped(MyStoreViewModel.UTM_SOURCE, model.id, model.featureClass)
+//        launch {
+//            jitmStore.dismissJitmMessage(selectedSite.get(), model.id, model.featureClass).also { response ->
+//                when {
+//                    response.model != null && response.model!! -> {
+//                        jitmTracker.trackJitmDismissSuccess(
+//                            MyStoreViewModel.UTM_SOURCE,
+//                            model.id,
+//                            model.featureClass
+//                        )
+//                    }
+//                    else -> jitmTracker.trackJitmDismissFailure(
+//                        MyStoreViewModel.UTM_SOURCE,
+//                        model.id,
+//                        model.featureClass,
+//                        response.error?.type,
+//                        response.error?.message
+//                    )
+//                }
+//            }
+//        }
     }
 
     private fun Assets.getBackgroundImage() =
