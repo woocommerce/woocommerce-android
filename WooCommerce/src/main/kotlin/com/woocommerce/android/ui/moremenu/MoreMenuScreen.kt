@@ -30,8 +30,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -131,21 +129,16 @@ private fun MoreMenuSection(
         Text(
             text = title,
             style = MaterialTheme.typography.subtitle1,
-            color = colorResource(id = R.color.color_on_surface),
-            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100))
+            color = colorResource(id = R.color.color_on_surface)
         )
 
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75))
-        ) {
-            itemsIndexed(items) { _, item ->
-                MoreMenuButton(
-                    text = item.text,
-                    iconDrawable = item.icon,
-                    badgeState = item.badgeState,
-                    onClick = item.onClick
-                )
-            }
+        items.forEach { item ->
+            MoreMenuButton(
+                text = item.text,
+                iconDrawable = item.icon,
+                badgeState = item.badgeState,
+                onClick = item.onClick
+            )
         }
     }
 }
@@ -288,6 +281,7 @@ private fun MoreMenuButton(
     badgeState: BadgeState?,
     onClick: () -> Unit,
 ) {
+    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_75)))
     Button(
         onClick = onClick,
         contentPadding = PaddingValues(dimensionResource(id = R.dimen.major_75)),
