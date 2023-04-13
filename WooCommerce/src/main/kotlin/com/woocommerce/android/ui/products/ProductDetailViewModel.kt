@@ -2201,6 +2201,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     suspend fun getComponents(remoteId: Long): List<Component>? {
+        if (FeatureFlag.COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT.isEnabled().not()) return null
         return getComponentProducts(remoteId)
     }
 

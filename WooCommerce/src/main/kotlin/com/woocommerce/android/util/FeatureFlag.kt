@@ -23,6 +23,7 @@ enum class FeatureFlag {
     ANALYTICS_HUB_FEEDBACK_BANNER,
     GIFT_CARD_READ_ONLY_SUPPORT,
     QUANTITY_RULES_READ_ONLY_SUPPORT,
+    COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT,
     STORE_CREATION_PROFILER;
 
     fun isEnabled(context: Context? = null): Boolean {
@@ -46,7 +47,8 @@ enum class FeatureFlag {
             IPP_TAP_TO_PAY,
             ANALYTICS_HUB_FEEDBACK_BANNER,
             GIFT_CARD_READ_ONLY_SUPPORT,
-            QUANTITY_RULES_READ_ONLY_SUPPORT -> PackageUtils.isDebugBuild()
+            QUANTITY_RULES_READ_ONLY_SUPPORT,
+            COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION,
             STORE_CREATION_PROFILER -> false
