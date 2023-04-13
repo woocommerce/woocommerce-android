@@ -34,30 +34,24 @@ class StatsComponent : Screen(STATS_DASHBOARD) {
     }
 
     fun switchToStatsDashboardTodayTab(): MyStoreScreen {
-        selectItemWithTitleInTabLayout(R.string.today, R.id.app_bar_layout)
-        waitForGraphToLoad()
-
-        return MyStoreScreen()
+        return switchToStatsDashboardTab(R.string.today)
     }
 
     fun switchToStatsDashboardWeekTab(): MyStoreScreen {
-        selectItemWithTitleInTabLayout(R.string.this_week, R.id.app_bar_layout)
-        waitForGraphToLoad()
-
-        return MyStoreScreen()
+        return switchToStatsDashboardTab(R.string.this_week)
     }
 
     fun switchToStatsDashboardMonthTab(): MyStoreScreen {
-        selectItemWithTitleInTabLayout(R.string.this_month, R.id.app_bar_layout)
-        waitForGraphToLoad()
-
-        return MyStoreScreen()
+        return switchToStatsDashboardTab(R.string.this_month)
     }
 
     fun switchToStatsDashboardYearTab(): MyStoreScreen {
-        selectItemWithTitleInTabLayout(R.string.this_year, R.id.app_bar_layout)
-        waitForGraphToLoad()
+        return switchToStatsDashboardTab(R.string.this_year)
+    }
 
+    private fun switchToStatsDashboardTab(tabName: Int): MyStoreScreen {
+        selectItemWithTitleInTabLayout(tabName, R.id.app_bar_layout)
+        waitForGraphToLoad()
         return MyStoreScreen()
     }
 }
