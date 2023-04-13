@@ -430,10 +430,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         // -- Upsell banner
         const val KEY_BANNER_SOURCE = "source"
-        const val KEY_BANNER_ORDER_LIST = "order_list"
-        const val KEY_BANNER_SETTINGS = "settings"
         const val KEY_BANNER_CAMPAIGN_NAME = "campaign_name"
-        const val KEY_BANNER_UPSELL_CARD_READERS = "upsell_card_readers"
         const val KEY_BANNER_REMIND_LATER = "remind_later"
         const val KEY_BANNER_LINKED_PRODUCTS_PROMO = "linked_products_promo"
 
