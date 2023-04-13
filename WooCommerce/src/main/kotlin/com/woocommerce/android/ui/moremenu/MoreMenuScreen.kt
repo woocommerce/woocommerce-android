@@ -92,14 +92,14 @@ fun MoreMenuScreen(
 
         if (state.settingsMenuItems.isNotEmpty()) {
             MoreMenuSection(
-                title = "Settings",
+                title = stringResource(id = R.string.more_menu_settings_section_title),
                 items = state.settingsMenuItems
             )
         }
 
         if (state.generalMenuItems.isNotEmpty()) {
             MoreMenuSection(
-                title = "General",
+                title = stringResource(id = R.string.more_menu_general_section_title),
                 items = state.generalMenuItems
             )
         }
@@ -128,7 +128,8 @@ private fun MoreMenuSection(
 
         items.forEach { item ->
             MoreMenuButton(
-                text = item.title,
+                title = item.title,
+                description = item.description,
                 iconDrawable = item.icon,
                 badgeState = item.badgeState,
                 onClick = item.onClick
@@ -249,7 +250,8 @@ private fun MoreMenuUserAvatar(avatarUrl: String) {
 
 @Composable
 private fun MoreMenuButton(
-    @StringRes text: Int,
+    @StringRes title: Int,
+    @StringRes description: Int,
     @DrawableRes iconDrawable: Int,
     badgeState: BadgeState?,
     onClick: () -> Unit,
@@ -277,7 +279,7 @@ private fun MoreMenuButton(
                 ) {
                     Image(
                         painter = painterResource(id = iconDrawable),
-                        contentDescription = stringResource(id = text),
+                        contentDescription = stringResource(id = title),
                         modifier = Modifier
                             .size(dimensionResource(id = R.dimen.major_125))
                             .align(Alignment.Center)
@@ -289,11 +291,11 @@ private fun MoreMenuButton(
                     modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100))
                 ) {
                     Text(
-                        text = stringResource(id = text),
+                        text = stringResource(id = title),
                         textAlign = TextAlign.Center,
                     )
                     Text(
-                        text = "The description of the button",
+                        text = stringResource(id = description),
                         style = MaterialTheme.typography.caption,
                         textAlign = TextAlign.Center,
                     )
