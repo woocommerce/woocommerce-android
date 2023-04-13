@@ -129,7 +129,8 @@ class JetpackActivationMainFragment : BaseFragment() {
                 urlsToTriggerExit = event.connectionValidationUrls.toTypedArray(),
                 title = getString(R.string.login_jetpack_installation_approve_connection),
                 displayMode = DisplayMode.MODAL,
-                urlComparisonMode = event.urlComparisonMode
+                urlComparisonMode = event.urlComparisonMode,
+                clearCache = event.clearCache
             ),
             navOptions = NavOptions.Builder()
                 .setEnterAnim(R.anim.slide_up)

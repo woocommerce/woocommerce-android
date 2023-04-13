@@ -66,7 +66,7 @@ class JetpackActivationMainViewModel @Inject constructor(
     companion object {
         private const val JETPACK_SLUG = "jetpack"
         private const val JETPACK_NAME = "jetpack/jetpack"
-        private const val JETPACK_PLANS_URL = "wordpress.com/jetpack/connect/plans"
+        private const val JETPACK_PLANS_URL = "https://wordpress.com/jetpack/connect/plans"
         private const val JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX = "https://jetpack.wordpress.com/jetpack.authorize"
         private const val MOBILE_REDIRECT = "woocommerce://jetpack-connected"
         private const val DELAY_AFTER_CONNECTION_MS = 500L
@@ -440,20 +440,25 @@ class JetpackActivationMainViewModel @Inject constructor(
                                 "&from=mobile"
                         }
 
-                    // In the special URL case, the validation URL must match the MOBILE_REDIRECT value. Therefore,
-                    // we set the comparison mode to EQUALITY to ensure the webview returns to the app only when the
-                    // redirect takes place.
+                    // We use STARTS_WITH for the special URL case, to make sure MOBILE_REDIRECT is only used
+                    // as validation if it's at the start of the URL, not as a parameter in the special URL.
                     val comparisonMode =
                         if (connectionUrl.startsWith(JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX)) {
                             UrlComparisonMode.PARTIAL
                         } else {
-                            UrlComparisonMode.EQUALITY
+                            UrlComparisonMode.STARTS_WITH
                         }
+
+                    // Occasionally, while connecting Jetpack, the webview may redirect to the Jetpack plans page
+                    // instead of MOBILE_REDIRECT. We are uncertain about the cause. However, since this redirect
+                    // occurs after the site connects, let's use the plans page as a validation URL too.
+
                     triggerEvent(
                         ShowJetpackConnectionWebView(
                             url = chosenUrl,
-                            connectionValidationUrls = listOf(MOBILE_REDIRECT),
-                            urlComparisonMode = comparisonMode
+                            connectionValidationUrls = listOf(MOBILE_REDIRECT, JETPACK_PLANS_URL),
+                            urlComparisonMode = comparisonMode,
+                            clearCache = true
                         )
                     )
                 } else {
@@ -618,7 +623,8 @@ class JetpackActivationMainViewModel @Inject constructor(
     data class ShowJetpackConnectionWebView(
         val url: String,
         val connectionValidationUrls: List<String>,
-        val urlComparisonMode: UrlComparisonMode = UrlComparisonMode.PARTIAL
+        val urlComparisonMode: UrlComparisonMode = UrlComparisonMode.PARTIAL,
+        val clearCache: Boolean = false
     ) : MultiLiveEvent.Event()
 
     data class GoToPasswordScreen(val email: String) : MultiLiveEvent.Event()
