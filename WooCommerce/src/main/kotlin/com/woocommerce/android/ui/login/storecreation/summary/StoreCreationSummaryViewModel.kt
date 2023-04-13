@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.login.storecreation.summary
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Loading
 import com.woocommerce.android.ui.login.storecreation.NewStore
@@ -16,7 +18,8 @@ import javax.inject.Inject
 class StoreCreationSummaryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val newStore: NewStore,
-    private val createStore: CreateFreeTrialStore
+    private val createStore: CreateFreeTrialStore,
+    private val tracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     val isLoading = createStore.state
         .map { it is Loading }
@@ -24,6 +27,7 @@ class StoreCreationSummaryViewModel @Inject constructor(
 
     fun onCancelPressed() { triggerEvent(OnCancelPressed) }
     fun onTryForFreeButtonPressed() {
+        tracker.track(AnalyticsEvent.SITE_CREATION_TRY_FOR_FREE_TAPPED)
         launch {
             createStore(
                 storeDomain = newStore.data.domain,

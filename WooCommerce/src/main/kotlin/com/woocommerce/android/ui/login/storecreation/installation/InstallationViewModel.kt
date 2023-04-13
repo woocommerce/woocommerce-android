@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login.storecreation.installation
 
 import android.os.Parcelable
+import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
@@ -40,7 +41,8 @@ class InstallationViewModel @Inject constructor(
     private val newStore: NewStore,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val appPrefsWrapper: AppPrefsWrapper,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val installationTransactionLauncher: InstallationTransactionLauncher,
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val STORE_LOAD_RETRIES_LIMIT = 10
@@ -64,6 +66,8 @@ class InstallationViewModel @Inject constructor(
             }
         }.asLiveData()
 
+    val performanceObserver: LifecycleObserver = installationTransactionLauncher
+
     init {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.SITE_CREATION_STEP,
@@ -84,10 +88,17 @@ class InstallationViewModel @Inject constructor(
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE,
                     AnalyticsTracker.KEY_IS_FREE_TRIAL to FeatureFlag.FREE_TRIAL_M2.isEnabled()
                 )
-                analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SITE_CREATED, properties)
+                installationTransactionLauncher.onStoreInstalled(properties)
+
+                selectedSite.get().let {
+                    if (!it.isWpComStore && !it.hasWooCommerce && it.name != newStore.data.name) {
+                        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_PROPERTIES_OUT_OF_SYNC)
+                    }
+                }
 
                 _viewState.update { SuccessState(newStoreWpAdminUrl) }
             } else {
+                installationTransactionLauncher.onStoreInstallationFailed()
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.SITE_CREATION_FAILED,
                     mapOf(
@@ -104,6 +115,7 @@ class InstallationViewModel @Inject constructor(
         }
 
         launch {
+            installationTransactionLauncher.onStoreInstallationRequested()
             _viewState.update { LoadingState }
 
             // it takes a while (~45s) before a store is ready after a purchase, so we need to wait a bit
@@ -116,6 +128,9 @@ class InstallationViewModel @Inject constructor(
                     (result as Failure).type == STORE_LOADING_FAILED || // permanent error
                     retries == STORE_LOAD_RETRIES_LIMIT // site found but is not ready & retry limit reached
                 ) {
+                    if (retries == STORE_LOAD_RETRIES_LIMIT) {
+                        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_TIMED_OUT)
+                    }
                     processStoreCreationResult(result)
                     break
                 }
