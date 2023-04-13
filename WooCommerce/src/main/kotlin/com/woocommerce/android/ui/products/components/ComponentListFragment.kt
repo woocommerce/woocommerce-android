@@ -2,12 +2,13 @@ package com.woocommerce.android.ui.products.components
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentComponentListBinding
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Component
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.widgets.AlignedDividerDecoration
@@ -50,7 +51,9 @@ class ComponentListFragment :
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ViewComponentDetails -> {
-                    Toast.makeText(context, "Navigate to ${event.component.title}", Toast.LENGTH_SHORT).show()
+                    ComponentListFragmentDirections.actionCompositeProductFragmentToComponentDetailsFragment(
+                        event.component
+                    ).let { findNavController().navigateSafely(it) }
                 }
                 else -> event.isHandled = false
             }

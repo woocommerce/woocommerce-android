@@ -3329,6 +3329,7 @@
     Composite products
     -->
     <string name="product_components">Components</string>
+    <string name="product_component_settings">Component settings</string>
     <string name="product_component_single_count">1 component</string>
     <string name="product_component_multiple_count">%d components</string>
     <string name="component_products_info_notice">You can edit components in the web dashboard.</string>

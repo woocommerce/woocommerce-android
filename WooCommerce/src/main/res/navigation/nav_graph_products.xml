@@ -661,5 +661,16 @@
         <argument
             android:name="components"
             app:argType="com.woocommerce.android.model.Component[]" />
+        <action
+            android:id="@+id/action_compositeProductFragment_to_componentDetailsFragment"
+            app:destination="@id/componentDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/componentDetailsFragment"
+        android:name="com.woocommerce.android.ui.products.components.ComponentDetailsFragment"
+        android:label="ComponentDetailsFragment" >
+        <argument
+            android:name="component"
+            app:argType="com.woocommerce.android.model.Component" />
     </fragment>
 </navigation>
