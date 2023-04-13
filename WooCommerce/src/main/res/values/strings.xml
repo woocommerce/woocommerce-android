@@ -3333,5 +3333,9 @@
     <string name="product_component_single_count">1 component</string>
     <string name="product_component_multiple_count">%d components</string>
     <string name="component_products_info_notice">You can edit components in the web dashboard.</string>
+    <string name="component_options">Component options</string>
+    <string name="component_default_option">Default option</string>
+    <string name="component_type_products">Products</string>
+    <string name="component_type_categories">Categories</string>
 
 </resources>
