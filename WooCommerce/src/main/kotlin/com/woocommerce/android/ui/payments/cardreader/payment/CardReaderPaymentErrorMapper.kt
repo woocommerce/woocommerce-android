@@ -1,5 +1,11 @@
 package com.woocommerce.android.ui.payments.cardreader.payment
 
+import com.woocommerce.android.R
+import com.woocommerce.android.cardreader.config.CardReaderConfig
+import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
+import com.woocommerce.android.cardreader.config.CardReaderConfigForGB
+import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
+import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.AmountTooSmall
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined
@@ -7,11 +13,14 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPayment
 import javax.inject.Inject
 
 class CardReaderPaymentErrorMapper @Inject constructor() {
-    fun mapPaymentErrorToUiError(errorType: CardPaymentStatus.CardPaymentStatusErrorType): PaymentFlowError =
+    fun mapPaymentErrorToUiError(
+        errorType: CardPaymentStatus.CardPaymentStatusErrorType,
+        config: CardReaderConfig,
+    ): PaymentFlowError =
         when (errorType) {
             CardPaymentStatus.CardPaymentStatusErrorType.NoNetwork -> PaymentFlowError.NoNetwork
             is CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError ->
-                mapPaymentDeclinedErrorType(errorType)
+                mapPaymentDeclinedErrorType(errorType, config)
             CardPaymentStatus.CardPaymentStatusErrorType.CardReadTimeOut,
             CardPaymentStatus.CardPaymentStatusErrorType.Generic -> PaymentFlowError.Generic
             CardPaymentStatus.CardPaymentStatusErrorType.Server -> PaymentFlowError.Server
@@ -27,9 +36,22 @@ class CardReaderPaymentErrorMapper @Inject constructor() {
 
     @Suppress("ComplexMethod")
     private fun mapPaymentDeclinedErrorType(
-        cardPaymentStatusErrorType: CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError
+        cardPaymentStatusErrorType: CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError,
+        config: CardReaderConfig,
     ) = when (cardPaymentStatusErrorType) {
-        AmountTooSmall -> PaymentFlowError.AmountTooSmall
+        AmountTooSmall -> {
+            if (config is CardReaderConfigForSupportedCountry) {
+                val message = when (config) {
+                    CardReaderConfigForUSA, CardReaderConfigForCanada -> {
+                        R.string.card_reader_payment_failed_amount_too_small_us_ca
+                    }
+                    CardReaderConfigForGB -> R.string.card_reader_payment_failed_amount_too_small_uk
+                }
+                PaymentFlowError.AmountTooSmall(message)
+            } else {
+                PaymentFlowError.Unknown
+            }
+        }
         Unknown -> PaymentFlowError.Unknown
 
         CardDeclined.CardNotSupported -> PaymentFlowError.Declined.CardNotSupported

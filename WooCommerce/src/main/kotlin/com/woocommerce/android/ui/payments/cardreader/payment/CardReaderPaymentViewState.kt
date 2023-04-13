@@ -301,7 +301,7 @@ sealed class PaymentFlowError(@StringRes val message: Int) {
     object Server : PaymentFlowError(R.string.card_reader_payment_failed_server_error_state)
     object Generic : PaymentFlowError(R.string.card_reader_payment_failed_unexpected_error_state)
     object Canceled : PaymentFlowError(R.string.card_reader_payment_failed_canceled)
-    object AmountTooSmall : Declined(R.string.card_reader_payment_failed_amount_too_small), NonRetryableError
+    data class AmountTooSmall(@StringRes val errorMessage: Int) : Declined(errorMessage), NonRetryableError
 
     object Unknown : Declined(R.string.card_reader_payment_failed_unknown)
     sealed class Declined(message: Int) : PaymentFlowError(message) {
