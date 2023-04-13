@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="?selectableItemBackground">
 
     <FrameLayout
         android:id="@+id/componentImageFrame"
@@ -36,6 +37,7 @@
         android:ellipsize="end"
         android:includeFontPadding="false"
         android:maxLines="2"
+        android:layout_marginTop="@dimen/major_125"
         android:layout_marginBottom="@dimen/minor_00"
         tools:text="Awesome Sauce and all that jazz is all I gotta tell you how do we go "
         app:layout_constraintTop_toTopOf="parent"
@@ -49,7 +51,8 @@
         style="@style/Woo.ListItem.Body"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="@dimen/minor_100"
+        android:layout_marginTop="@dimen/minor_100"
+        android:layout_marginBottom="@dimen/major_125"
         tools:text="Out of stock this is a really long version to see what happens when we move o"
         app:layout_constraintTop_toBottomOf="@+id/componentName"
         app:layout_constraintStart_toEndOf="@+id/componentImageFrame"
@@ -64,10 +67,8 @@
         android:layout_marginEnd="@dimen/major_75"
         android:src="@drawable/ic_arrow_right"
         android:contentDescription="@string/product_property_edit"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
