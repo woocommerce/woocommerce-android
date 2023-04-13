@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -54,14 +54,14 @@ class ComponentViewHolder(val viewBinding: ComponentItemViewBinding) : RecyclerV
         showProductImage(component.thumbnailUrl)
     }
 
-    private fun showDescriptionHTML(description: String){
-        if(description.isNotEmpty()){
+    private fun showDescriptionHTML(description: String) {
+        if (description.isNotEmpty()) {
             viewBinding.componentDescription.isVisible = true
             viewBinding.componentDescription.text = HtmlCompat.fromHtml(
                 description,
                 HtmlCompat.FROM_HTML_MODE_COMPACT
             )
-        }else{
+        } else {
             viewBinding.componentDescription.isVisible = false
         }
     }
@@ -90,13 +90,15 @@ class ComponentViewHolder(val viewBinding: ComponentItemViewBinding) : RecyclerV
 
 object ComponentItemDiffCallback : DiffUtil.ItemCallback<Component>() {
     override fun areItemsTheSame(
-        oldItem: Component, newItem: Component
+        oldItem: Component,
+        newItem: Component
     ): Boolean {
         return oldItem.id == newItem.id
     }
 
     override fun areContentsTheSame(
-        oldItem: Component, newItem: Component
+        oldItem: Component,
+        newItem: Component
     ): Boolean {
         return oldItem == newItem
     }

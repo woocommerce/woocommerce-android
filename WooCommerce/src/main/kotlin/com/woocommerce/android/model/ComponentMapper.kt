@@ -4,7 +4,7 @@ import com.woocommerce.android.extensions.fastStripHtml
 import org.wordpress.android.fluxc.model.WCProductComponent
 
 object ComponentMapper {
-    fun toAppModel(databaseModel: WCProductComponent): Component{
+    fun toAppModel(databaseModel: WCProductComponent): Component {
         return Component(
             id = databaseModel.id,
             title = databaseModel.title.fastStripHtml(),

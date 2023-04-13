@@ -16,7 +16,7 @@ class GetComponentProducts @Inject constructor(
     suspend operator fun invoke(productId: Long): List<Component> {
         return withContext(dispatchers.io) {
             val siteModel = selectedSite.get()
-            productStore.getCompositeProducts(siteModel,productId).map {
+            productStore.getCompositeProducts(siteModel, productId).map {
                 ComponentMapper.toAppModel(it)
             }
         }

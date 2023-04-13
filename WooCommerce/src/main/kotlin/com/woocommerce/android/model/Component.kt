@@ -12,9 +12,9 @@ data class Component(
     val queryIds: List<Long>,
     val defaultOptionId: Long?,
     val thumbnailUrl: String?
-):Parcelable
+) : Parcelable
 
-enum class QueryType(val value: String){
+enum class QueryType(val value: String) {
     PRODUCT("product_ids"),
     CATEGORY("category_ids");
     companion object {

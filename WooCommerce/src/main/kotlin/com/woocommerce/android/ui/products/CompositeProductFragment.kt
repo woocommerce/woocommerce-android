@@ -15,7 +15,8 @@ import com.woocommerce.android.widgets.AlignedDividerDecoration
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CompositeProductFragment : BaseFragment(R.layout.fragment_componets_list),
+class CompositeProductFragment :
+    BaseFragment(R.layout.fragment_componets_list),
     ComponentsListAdapter.OnComponentClickListener {
     val viewModel: ComponentListViewModel by viewModels()
     private var _binding: FragmentComponetsListBinding? = null
