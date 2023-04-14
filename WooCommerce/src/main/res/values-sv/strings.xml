@@ -1210,7 +1210,6 @@ Language: sv_SE
     <string name="support_system_status_report">Systemstatusrapport</string>
     <string name="card_reader_welcome_dialog_text">Grattis, du kan nu ta emot kredit- och betalkortsbetalningar med WooCommerce Payments!</string>
     <string name="card_reader_welcome_dialog_header">Ta emot betalningar med en kortläsare</string>
-    <string name="card_reader_payment_failed_amount_too_small">Beloppet måste vara minst 0,50 USD</string>
     <string name="card_reader_payment_payment_failed_ok">OK</string>
     <string name="settings_whats_new_icon_description">Bild på ny funktionsikon</string>
     <string name="settings_switch_store">Växla butik</string>

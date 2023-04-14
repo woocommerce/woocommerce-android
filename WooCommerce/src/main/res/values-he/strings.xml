@@ -1210,7 +1210,6 @@ Language: he_IL
     <string name="support_system_status_report">דוח מצב המערכת</string>
     <string name="card_reader_welcome_dialog_text">ברכותינו, כעת באפשרותך לקבל תשלומים בכרטיס אשראי ובכרטיס חיוב עם WooCommerce Payments!</string>
     <string name="card_reader_welcome_dialog_header">לגבות תשלומים באמצעות קורא כרטיסים</string>
-    <string name="card_reader_payment_failed_amount_too_small">הסכום חייב להיות לפחות 0.50 $</string>
     <string name="card_reader_payment_payment_failed_ok">אישור</string>
     <string name="settings_whats_new_icon_description">תמונת הסמל של האפשרות החדשה</string>
     <string name="settings_switch_store">להחליף חנות</string>

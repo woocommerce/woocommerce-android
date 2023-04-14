@@ -1210,7 +1210,6 @@ Language: tr
     <string name="support_system_status_report">Sistem durum raporu</string>
     <string name="card_reader_welcome_dialog_text">Tebrikler, artık WooCommerce Payments ile banka ve kredi kartı ödemelerini kabul edebilirsiniz!</string>
     <string name="card_reader_welcome_dialog_header">Ödeme bir kart okuyucu ile alın</string>
-    <string name="card_reader_payment_failed_amount_too_small">Tutar en az 0,50 ABD doları olmalıdır</string>
     <string name="card_reader_payment_payment_failed_ok">Tamam</string>
     <string name="settings_whats_new_icon_description">Yeni özellik simgesinin görseli</string>
     <string name="settings_switch_store">Mağaza değiştir</string>

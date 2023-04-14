@@ -1210,7 +1210,6 @@ Language: id
     <string name="support_system_status_report">Laporan status sistem</string>
     <string name="card_reader_welcome_dialog_text">Selamat, Anda sekarang dapat menerima pembayaran kartu debit dan kredit menggunakan WooCommerce Payments!</string>
     <string name="card_reader_welcome_dialog_header">Kumpulkan pembayaran dengan pembaca kartu</string>
-    <string name="card_reader_payment_failed_amount_too_small">Jumlah minimal $0,50</string>
     <string name="card_reader_payment_payment_failed_ok">Oke</string>
     <string name="settings_whats_new_icon_description">Gambar ikon fitur baru</string>
     <string name="settings_switch_store">Beralih toko</string>

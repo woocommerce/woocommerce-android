@@ -1210,7 +1210,6 @@ Language: nl
     <string name="support_system_status_report">Systeemstatusrapport</string>
     <string name="card_reader_welcome_dialog_text">Gefeliciteerd, je kunt nu betalingen van creditcards en betaalpassen aannemen met WooCommerce Payments!</string>
     <string name="card_reader_welcome_dialog_header">Ontvang betalingen met een kaartlezer</string>
-    <string name="card_reader_payment_failed_amount_too_small">Bedrag moet minstens $ 0,50 bedragen.</string>
     <string name="card_reader_payment_payment_failed_ok">OK</string>
     <string name="settings_whats_new_icon_description">Nieuwe afbeelding van functiepictogram</string>
     <string name="settings_switch_store">Winkel wijzigen</string>
