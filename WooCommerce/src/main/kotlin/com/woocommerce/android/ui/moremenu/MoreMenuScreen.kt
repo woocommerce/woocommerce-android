@@ -16,7 +16,6 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -54,7 +53,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
@@ -162,21 +160,6 @@ private fun MoreMenuHeader(
             )
         }
     }
-//    Box(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .clickable(
-//                enabled = state.isStoreSwitcherEnabled,
-//                onClickLabel = stringResource(id = R.string.settings_switch_store),
-//                role = Role.Button,
-//                onClick = onSwitchStore
-//            )
-//            .padding(
-//
-//            ),
-//    ) {
-//
-//    }
 }
 
 @Composable
