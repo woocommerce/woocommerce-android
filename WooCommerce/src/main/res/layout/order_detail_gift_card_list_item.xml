@@ -10,13 +10,15 @@
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/gift_card_code"
         style="@style/Woo.ListItem.Title"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         tools:text="E7MR-FSHR-X26J-JRGN"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginStart="0dp"
         android:layout_marginTop="@dimen/minor_100"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/gift_card_used"
+        app:layout_constraintHorizontal_bias="0.0"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/gift_card_used"
