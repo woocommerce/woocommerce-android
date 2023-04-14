@@ -32,6 +32,8 @@ class StoreCreationSummaryViewModel @Inject constructor(
             createStore(
                 storeDomain = newStore.data.domain,
                 storeName = newStore.data.name,
+                profilerData = newStore.data.profilerData,
+                countryCode = newStore.data.country?.code
             ).collect { siteId ->
                 siteId?.let {
                     newStore.update(siteId = it)

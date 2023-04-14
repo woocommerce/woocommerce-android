@@ -264,6 +264,8 @@ class StoreCreationRepository @Inject constructor(
         val segmentId: Long?,
         val siteDesign: String?,
         val domain: String?,
-        val title: String?
+        val title: String?,
+        val profilerData: NewStore.ProfilerData? = null,
+        val countryCode: String? = null,
     ) : Parcelable
 }

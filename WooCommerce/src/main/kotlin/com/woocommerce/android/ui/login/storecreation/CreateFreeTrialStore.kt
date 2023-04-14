@@ -31,12 +31,21 @@ class CreateFreeTrialStore @Inject constructor(
      */
     suspend operator fun invoke(
         storeDomain: String?,
-        storeName: String?
+        storeName: String?,
+        profilerData: NewStore.ProfilerData? = null,
+        countryCode: String? = null
     ) = flow {
         _state.value = Loading
 
         val result = repository.createNewFreeTrialSite(
-            SiteCreationData(null, NEW_SITE_THEME, storeDomain, storeName),
+            SiteCreationData(
+                segmentId = null,
+                siteDesign = NEW_SITE_THEME,
+                domain = storeDomain,
+                title = storeName,
+                profilerData = profilerData,
+                countryCode = countryCode
+            ),
             NEW_SITE_LANGUAGE_ID,
             TimeZone.getDefault().id
         ).recoverIfSiteExists(storeDomain)
