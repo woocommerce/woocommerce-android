@@ -20,7 +20,8 @@ import org.wordpress.android.fluxc.utils.AppLogWrapper
 
 class CardReaderPaymentErrorMapperTest {
     private val resources: ResourceProvider = mock {
-        on { getString(R.string.card_reader_payment_failed_amount_too_small) }.thenReturn("Amount must be at least %1\$s")
+        on { getString(R.string.card_reader_payment_failed_amount_too_small) }
+            .thenReturn("Amount must be at least %1\$s")
     }
     private val logger: AppLogWrapper = mock()
     private val currencyFormatter: SiteIndependentCurrencyFormatter = mock()
