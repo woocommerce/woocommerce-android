@@ -401,6 +401,12 @@ class ProductNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
 
+            is ProductNavigationTarget.ViewBundleProducts -> {
+                ProductDetailFragmentDirections.actionProductDetailFragmentToProductBundleFragment(
+                    target.productId
+                ).let { fragment.findNavController().navigateSafely(it) }
+            }
+
             is ProductNavigationTarget.ViewProductComponents -> {
                 val action = ProductDetailFragmentDirections.actionProductDetailFragmentToCompositeProductFragment(
                     target.components.toTypedArray()

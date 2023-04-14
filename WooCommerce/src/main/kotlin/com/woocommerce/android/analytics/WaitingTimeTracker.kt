@@ -13,13 +13,14 @@ class WaitingTimeTracker(
         waitingStartedTimestamp = currentTimeInMillis()
     }
 
-    fun end() = waitingStartedTimestamp?.elapsedWaitingTime?.let {
-        AnalyticsTracker.track(
-            trackEvent,
-            mapOf(AnalyticsTracker.KEY_WAITING_TIME to it)
-        )
-        waitingStartedTimestamp = null
-    }
+    fun end(additionalProperties: Map<String, *> = emptyMap<String, String>()) =
+        waitingStartedTimestamp?.elapsedWaitingTime?.let {
+            AnalyticsTracker.track(
+                trackEvent,
+                additionalProperties + mapOf(AnalyticsTracker.KEY_WAITING_TIME to it)
+            )
+            waitingStartedTimestamp = null
+        }
 
     fun abort() {
         waitingStartedTimestamp = null

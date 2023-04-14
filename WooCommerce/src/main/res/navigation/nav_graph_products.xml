@@ -97,6 +97,9 @@
             android:id="@+id/action_productDetailFragment_to_productQuantityRulesFragment"
             app:destination="@id/productQuantityRulesFragment" />
         <action
+            android:id="@+id/action_productDetailFragment_to_productBundleFragment"
+            app:destination="@id/productBundleFragment" />
+        <action
             android:id="@+id/action_productDetailFragment_to_compositeProductFragment"
             app:destination="@id/compositeProductFragment" />
     </fragment>
@@ -653,6 +656,14 @@
         <argument
             android:name="quantityRules"
             app:argType="com.woocommerce.android.ui.products.models.QuantityRules" />
+    </fragment>
+    <fragment
+        android:id="@+id/productBundleFragment"
+        android:name="com.woocommerce.android.ui.products.ProductBundleFragment"
+        android:label="ProductBundleFragment" >
+        <argument
+            android:name="productId"
+            app:argType="long" />
     </fragment>
     <fragment
         android:id="@+id/compositeProductFragment"
