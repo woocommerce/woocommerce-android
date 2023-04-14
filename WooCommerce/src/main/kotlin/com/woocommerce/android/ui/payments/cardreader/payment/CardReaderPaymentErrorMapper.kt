@@ -2,17 +2,23 @@ package com.woocommerce.android.ui.payments.cardreader.payment
 
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.config.CardReaderConfig
-import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
-import com.woocommerce.android.cardreader.config.CardReaderConfigForGB
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
-import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.AmountTooSmall
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.Unknown
+import com.woocommerce.android.model.UiString.UiStringText
+import com.woocommerce.android.util.SiteIndependentCurrencyFormatter
+import com.woocommerce.android.viewmodel.ResourceProvider
+import org.wordpress.android.fluxc.utils.AppLogWrapper
+import org.wordpress.android.util.AppLog
 import javax.inject.Inject
 
-class CardReaderPaymentErrorMapper @Inject constructor() {
+class CardReaderPaymentErrorMapper @Inject constructor(
+    private val resources: ResourceProvider,
+    private val currencyFormatter: SiteIndependentCurrencyFormatter,
+    private val logger: AppLogWrapper,
+) {
     fun mapPaymentErrorToUiError(
         errorType: CardPaymentStatus.CardPaymentStatusErrorType,
         config: CardReaderConfig,
@@ -39,19 +45,8 @@ class CardReaderPaymentErrorMapper @Inject constructor() {
         cardPaymentStatusErrorType: CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError,
         config: CardReaderConfig,
     ) = when (cardPaymentStatusErrorType) {
-        AmountTooSmall -> {
-            if (config is CardReaderConfigForSupportedCountry) {
-                val message = when (config) {
-                    CardReaderConfigForUSA, CardReaderConfigForCanada -> {
-                        R.string.card_reader_payment_failed_amount_too_small_us_ca
-                    }
-                    CardReaderConfigForGB -> R.string.card_reader_payment_failed_amount_too_small_uk
-                }
-                PaymentFlowError.AmountTooSmall(message)
-            } else {
-                PaymentFlowError.Unknown
-            }
-        }
+        AmountTooSmall -> generateAmountToSmallErrorFor(config)
+
         Unknown -> PaymentFlowError.Unknown
 
         CardDeclined.CardNotSupported -> PaymentFlowError.Declined.CardNotSupported
@@ -70,4 +65,23 @@ class CardReaderPaymentErrorMapper @Inject constructor() {
         CardDeclined.TestModeLiveCard -> PaymentFlowError.Declined.TestModeLiveCard
         CardDeclined.TooManyPinTries -> PaymentFlowError.Declined.TooManyPinTries
     }
+
+    private fun generateAmountToSmallErrorFor(config: CardReaderConfig) =
+        if (config is CardReaderConfigForSupportedCountry) {
+            val minChargeAmountString = currencyFormatter.formatAmountWithCurrency(
+                config.minimumAllowedChargeAmount.toDouble(),
+                config.currency
+            )
+            val message =
+                resources.getString(R.string.card_reader_payment_failed_amount_too_small)
+                    .format(minChargeAmountString)
+
+            PaymentFlowError.AmountTooSmall(UiStringText(message))
+        } else {
+            logger.e(
+                AppLog.T.READER,
+                "Card reader config should be instance of CardReaderConfigForSupportedCountry"
+            )
+            PaymentFlowError.Unknown
+        }
 }

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.payments.cardreader.payment
 
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString.UiStringRes
+import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderCapturingPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderCollectPaymentState
@@ -172,7 +173,7 @@ class CardReaderPaymentReaderTypeStateProviderTest {
     fun `given built in card reader type, when provideFailedPaymentState, then return BuiltInReaderPaymentFailedState`() {
         // GIVEN
         val cardReaderType = CardReaderType.BUILT_IN
-        val error = PaymentFlowError.AmountTooSmall(R.string.card_reader_payment_failed_amount_too_small_us_ca)
+        val error = PaymentFlowError.AmountTooSmall(UiStringText("Amount must be at least US$0.50"))
 
         // WHEN
         val result = provider.provideFailedPaymentState(
@@ -194,7 +195,7 @@ class CardReaderPaymentReaderTypeStateProviderTest {
     fun `given external card reader type, when provideFailedPaymentState, then return ExternalReaderPaymentFailedState`() {
         // GIVEN
         val cardReaderType = CardReaderType.EXTERNAL
-        val error = PaymentFlowError.AmountTooSmall(R.string.card_reader_payment_failed_amount_too_small_us_ca)
+        val error = PaymentFlowError.AmountTooSmall(UiStringText("Amount must be at least US$0.50"))
 
         // WHEN
         val result = provider.provideFailedPaymentState(

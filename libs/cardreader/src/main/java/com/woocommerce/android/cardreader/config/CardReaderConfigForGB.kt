@@ -3,6 +3,7 @@ package com.woocommerce.android.cardreader.config
 import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentMethodType
 import kotlinx.parcelize.Parcelize
+import java.math.BigDecimal
 
 @Parcelize
 object CardReaderConfigForGB : CardReaderConfigForSupportedCountry(
@@ -16,4 +17,5 @@ object CardReaderConfigForGB : CardReaderConfigForSupportedCountry(
             supportedSince = "4.4.0"
         ),
     ),
+    minimumAllowedChargeAmount = BigDecimal("0.30")
 )

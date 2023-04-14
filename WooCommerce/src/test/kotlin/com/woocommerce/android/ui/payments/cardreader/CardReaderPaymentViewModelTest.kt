@@ -42,6 +42,8 @@ import com.woocommerce.android.cardreader.payments.RefundParams
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.UiString.UiStringRes
+import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
@@ -446,7 +448,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat((viewModel.viewStateData.value as ExternalReaderFailedPaymentState).paymentStateLabel)
-                .isEqualTo(R.string.order_error_fetch_generic)
+                .isEqualTo(UiStringRes(R.string.order_error_fetch_generic))
         }
 
     @Test
@@ -459,7 +461,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat((viewModel.viewStateData.value as BuiltInReaderFailedPaymentState).paymentStateLabel)
-                .isEqualTo(R.string.order_error_fetch_generic)
+                .isEqualTo(UiStringRes(R.string.order_error_fetch_generic))
         }
 
     @Test
@@ -1111,7 +1113,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given external reader, when payment fails because of AMOUNT_TOO_SMALL, then error is mapped correctly`() =
         testBlocking {
-            val error = AmountTooSmall(R.string.card_reader_payment_failed_amount_too_small_us_ca)
+            val error = AmountTooSmall(UiStringText("Amount must be at least US$0.50"))
             whenever(errorMapper.mapPaymentErrorToUiError(DeclinedByBackendError.AmountTooSmall, cardReaderConfig))
                 .thenReturn(error)
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -1129,7 +1131,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given built in reader, when payment fails because of AMOUNT_TOO_SMALL, then error is mapped correctly`() =
         testBlocking {
-            val error = AmountTooSmall(R.string.card_reader_payment_failed_amount_too_small_us_ca)
+            val error = AmountTooSmall(UiStringText("Amount must be at least US$0.50"))
             whenever(errorMapper.mapPaymentErrorToUiError(DeclinedByBackendError.AmountTooSmall, cardReaderConfig))
                 .thenReturn(error)
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -1148,7 +1150,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given external reader, when payment fails because of AMOUNT_TOO_SMALL, then failed state has ok button`() =
         testBlocking {
-            val error = AmountTooSmall(R.string.card_reader_payment_failed_amount_too_small_us_ca)
+            val error = AmountTooSmall(UiStringText("Amount must be at least US$0.50"))
             whenever(errorMapper.mapPaymentErrorToUiError(DeclinedByBackendError.AmountTooSmall, cardReaderConfig))
                 .thenReturn(error)
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -1166,7 +1168,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given built in reader, when payment fails because of AMOUNT_TOO_SMALL, then failed state has ok button`() =
         testBlocking {
-            val error = AmountTooSmall(R.string.card_reader_payment_failed_amount_too_small_us_ca)
+            val error = AmountTooSmall(UiStringText("Amount must be at least US$0.50"))
             whenever(errorMapper.mapPaymentErrorToUiError(DeclinedByBackendError.AmountTooSmall, cardReaderConfig))
                 .thenReturn(error)
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -1220,7 +1222,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given external reader, when payment fails because of AMOUNT_TOO_SMALL, then clicking on ok button triggers exit event`() =
         testBlocking {
-            val error = AmountTooSmall(R.string.card_reader_payment_failed_amount_too_small_us_ca)
+            val error = AmountTooSmall(UiStringText("Amount must be at least US$0.50"))
             whenever(errorMapper.mapPaymentErrorToUiError(DeclinedByBackendError.AmountTooSmall, cardReaderConfig))
                 .thenReturn(error)
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -1236,7 +1238,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given built in reader, when payment fails because of AMOUNT_TOO_SMALL, then clicking on ok button triggers exit event`() =
         testBlocking {
-            val error = AmountTooSmall(R.string.card_reader_payment_failed_amount_too_small_us_ca)
+            val error = AmountTooSmall(UiStringText("Amount must be at least US$0.50"))
             whenever(errorMapper.mapPaymentErrorToUiError(DeclinedByBackendError.AmountTooSmall, cardReaderConfig))
                 .thenReturn(error)
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -1399,7 +1401,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         assertThat(viewState.amountWithCurrencyLabel).describedAs("amountWithCurrencyLabel").isNull()
         assertThat(viewState.illustration).describedAs("illustration").isNull()
         assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
-            .isEqualTo(R.string.card_reader_payment_collect_payment_loading_payment_state)
+            .isEqualTo(UiStringRes(R.string.card_reader_payment_collect_payment_loading_payment_state))
         assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
             .isEqualTo(R.dimen.major_275)
         assertThat(viewState.hintLabel).describedAs("hintLabel")
@@ -1442,7 +1444,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.illustration).describedAs("illustration")
                 .isEqualTo(R.drawable.img_card_reader_available)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
-                .isEqualTo(R.string.card_reader_payment_collect_payment_state)
+                .isEqualTo(UiStringRes(R.string.card_reader_payment_collect_payment_state))
             assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
                 .isEqualTo(R.dimen.major_275)
             assertThat(viewState.hintLabel).describedAs("hintLabel")
@@ -1482,7 +1484,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.illustration).describedAs("illustration")
                 .isEqualTo(R.drawable.img_card_reader_available)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
-                .isEqualTo(R.string.card_reader_payment_processing_payment_state)
+                .isEqualTo(UiStringRes(R.string.card_reader_payment_processing_payment_state))
             assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
                 .isEqualTo(R.dimen.major_275)
             assertThat(viewState.hintLabel).describedAs("hintLabel")
@@ -1521,7 +1523,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.illustration).describedAs("illustration")
                 .isEqualTo(R.drawable.img_card_reader_available)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
-                .isEqualTo(R.string.card_reader_payment_capturing_payment_state)
+                .isEqualTo(UiStringRes(R.string.card_reader_payment_capturing_payment_state))
             assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
                 .isEqualTo(R.dimen.major_275)
             assertThat(viewState.hintLabel).describedAs("hintLabel")
@@ -1563,7 +1565,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.img_products_error)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
-                .isEqualTo(R.string.card_reader_payment_failed_unexpected_error_state)
+                .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_unexpected_error_state))
             assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
                 .isEqualTo(R.dimen.major_100)
             assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
@@ -1592,7 +1594,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.illustration).describedAs("illustration")
                 .isEqualTo(R.drawable.img_card_reader_tpp_payment_failed)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
-                .isEqualTo(R.string.card_reader_payment_failed_unexpected_error_state)
+                .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_unexpected_error_state))
             assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
                 .isEqualTo(R.dimen.major_100)
             assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
@@ -1613,7 +1615,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             val viewState = viewModel.viewStateData.value!!
 
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
-                .isEqualTo(R.string.card_reader_payment_failed_no_network_state)
+                .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_no_network_state))
         }
 
     @Test
@@ -1629,7 +1631,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             val viewState = viewModel.viewStateData.value!!
 
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
-                .isEqualTo(R.string.card_reader_payment_failed_unknown)
+                .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_unknown))
         }
 
     @Test
@@ -1645,7 +1647,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             val viewState = viewModel.viewStateData.value!!
 
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
-                .isEqualTo(R.string.card_reader_payment_failed_server_error_state)
+                .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_server_error_state))
         }
 
     @Test
@@ -3224,7 +3226,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.img_products_error)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
-                .isEqualTo(R.string.card_reader_interac_refund_refund_failed_unexpected_error_state)
+                .isEqualTo(UiStringRes(R.string.card_reader_interac_refund_refund_failed_unexpected_error_state))
             assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
                 .isEqualTo(R.dimen.major_100)
             assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
@@ -3285,7 +3287,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.illustration).describedAs("illustration")
                 .isEqualTo(R.drawable.img_card_reader_available)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
-                .isEqualTo(R.string.card_reader_payment_collect_payment_state)
+                .isEqualTo(UiStringRes(R.string.card_reader_payment_collect_payment_state))
             assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
                 .isEqualTo(R.dimen.major_275)
             assertThat(viewState.hintLabel).describedAs("hintLabel")
@@ -3326,7 +3328,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(viewState.illustration).describedAs("illustration")
                 .isEqualTo(R.drawable.img_card_reader_available)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
-                .isEqualTo(R.string.card_reader_interac_refund_refund_processing_state)
+                .isEqualTo(UiStringRes(R.string.card_reader_interac_refund_refund_processing_state))
             assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
                 .isEqualTo(R.dimen.major_275)
             assertThat(viewState.hintLabel).describedAs("hintLabel")
@@ -3456,7 +3458,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.img_products_error)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
-                .isEqualTo(R.string.card_reader_interac_refund_refund_failed_unexpected_error_state)
+                .isEqualTo(UiStringRes(R.string.card_reader_interac_refund_refund_failed_unexpected_error_state))
             assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
                 .isEqualTo(R.dimen.major_100)
             assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()
@@ -3497,7 +3499,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 .isEqualTo("$DUMMY_CURRENCY_SYMBOL$DUMMY_TOTAL")
             assertThat(viewState.illustration).describedAs("illustration").isEqualTo(R.drawable.img_products_error)
             assertThat(viewState.paymentStateLabel).describedAs("paymentStateLabel")
-                .isEqualTo(R.string.card_reader_interac_refund_refund_failed_invalid_amount)
+                .isEqualTo(UiStringRes(R.string.card_reader_interac_refund_refund_failed_invalid_amount))
             assertThat(viewState.paymentStateLabelTopMargin).describedAs("paymentStateLabelTopMargin")
                 .isEqualTo(R.dimen.major_100)
             assertThat(viewState.hintLabel).describedAs("hintLabel").isNull()

@@ -5,6 +5,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.model.UiString.UiStringRes
 
 interface TrackableState {
     val nameForTracking: String
@@ -17,7 +18,7 @@ interface InteracRefundFlow : TrackableState
 sealed class ViewState(
     @StringRes open val hintLabel: Int? = null,
     @StringRes open val headerLabel: Int? = null,
-    @StringRes val paymentStateLabel: Int? = null,
+    val paymentStateLabel: UiString? = null,
     open val receiptSentAutomaticallyHint: UiString? = null,
     @DimenRes val paymentStateLabelTopMargin: Int = R.dimen.major_275,
     @DrawableRes val illustration: Int? = null,
@@ -36,7 +37,7 @@ sealed class ViewState(
     ) : ViewState(
         headerLabel = R.string.card_reader_payment_collect_payment_loading_header,
         hintLabel = R.string.card_reader_payment_collect_payment_loading_hint,
-        paymentStateLabel = R.string.card_reader_payment_collect_payment_loading_payment_state,
+        paymentStateLabel = UiStringRes(R.string.card_reader_payment_collect_payment_loading_payment_state),
         isProgressVisible = true,
         secondaryActionLabel = R.string.cancel
     ),
@@ -83,7 +84,7 @@ sealed class ViewState(
         override val hintLabel: Int = R.string.card_reader_payment_collect_payment_hint,
         override val onSecondaryActionClicked: (() -> Unit),
     ) : ViewState(
-        paymentStateLabel = R.string.card_reader_payment_collect_payment_state,
+        paymentStateLabel = UiStringRes(R.string.card_reader_payment_collect_payment_state),
         illustration = R.drawable.img_card_reader_available,
         secondaryActionLabel = R.string.cancel,
     ),
@@ -97,7 +98,7 @@ sealed class ViewState(
         override val headerLabel: Int = R.string.card_reader_payment_collect_payment_header,
         override val hintLabel: Int = R.string.card_reader_payment_collect_payment_built_in_hint,
     ) : ViewState(
-        paymentStateLabel = R.string.card_reader_payment_collect_payment_built_in_state,
+        paymentStateLabel = UiStringRes(R.string.card_reader_payment_collect_payment_built_in_state),
         illustration = R.drawable.img_card_reader_tpp_collecting_payment,
     ),
         PaymentFlow {
@@ -111,7 +112,7 @@ sealed class ViewState(
     ) : ViewState(
         hintLabel = R.string.card_reader_payment_processing_payment_hint,
         headerLabel = R.string.card_reader_payment_processing_payment_header,
-        paymentStateLabel = R.string.card_reader_payment_processing_payment_state,
+        paymentStateLabel = UiStringRes(R.string.card_reader_payment_processing_payment_state),
         illustration = R.drawable.img_card_reader_available,
         secondaryActionLabel = R.string.cancel,
     ),
@@ -125,7 +126,7 @@ sealed class ViewState(
     ) : ViewState(
         hintLabel = R.string.card_reader_payment_processing_payment_hint,
         headerLabel = R.string.card_reader_payment_processing_payment_header,
-        paymentStateLabel = R.string.card_reader_payment_processing_payment_state,
+        paymentStateLabel = UiStringRes(R.string.card_reader_payment_processing_payment_state),
         illustration = R.drawable.img_card_reader_tpp_collecting_payment,
     ),
         PaymentFlow {
@@ -137,7 +138,7 @@ sealed class ViewState(
         ViewState(
             hintLabel = R.string.card_reader_payment_capturing_payment_hint,
             headerLabel = R.string.card_reader_payment_capturing_payment_header,
-            paymentStateLabel = R.string.card_reader_payment_capturing_payment_state,
+            paymentStateLabel = UiStringRes(R.string.card_reader_payment_capturing_payment_state),
             illustration = R.drawable.img_card_reader_available
         ),
         PaymentFlow {
@@ -149,7 +150,7 @@ sealed class ViewState(
         ViewState(
             hintLabel = R.string.card_reader_payment_capturing_payment_hint,
             headerLabel = R.string.card_reader_payment_capturing_payment_header,
-            paymentStateLabel = R.string.card_reader_payment_capturing_payment_state,
+            paymentStateLabel = UiStringRes(R.string.card_reader_payment_capturing_payment_state),
             illustration = R.drawable.img_card_reader_tpp_collecting_payment
         ),
         PaymentFlow {
@@ -223,7 +224,7 @@ sealed class ViewState(
     object ReFetchingOrderState : ViewState(
         headerLabel = R.string.card_reader_payment_fetch_order_loading_header,
         hintLabel = R.string.card_reader_payment_fetch_order_loading_hint,
-        paymentStateLabel = R.string.card_reader_payment_fetch_order_loading_payment_state,
+        paymentStateLabel = UiStringRes(R.string.card_reader_payment_fetch_order_loading_payment_state),
         isProgressVisible = true
     )
 
@@ -235,7 +236,7 @@ sealed class ViewState(
         ViewState(
             headerLabel = R.string.card_reader_interac_refund_refund_loading_header,
             hintLabel = R.string.card_reader_payment_collect_payment_loading_hint,
-            paymentStateLabel = R.string.card_reader_payment_collect_payment_loading_payment_state,
+            paymentStateLabel = UiStringRes(R.string.card_reader_payment_collect_payment_loading_payment_state),
             isProgressVisible = true,
             secondaryActionLabel = R.string.cancel,
         ),
@@ -266,7 +267,7 @@ sealed class ViewState(
         override val headerLabel: Int = R.string.card_reader_interac_refund_refund_payment,
         override val onSecondaryActionClicked: (() -> Unit),
     ) : ViewState(
-        paymentStateLabel = R.string.card_reader_payment_collect_payment_state,
+        paymentStateLabel = UiStringRes(R.string.card_reader_payment_collect_payment_state),
         illustration = R.drawable.img_card_reader_available,
         secondaryActionLabel = R.string.cancel,
     ),
@@ -279,7 +280,7 @@ sealed class ViewState(
         ViewState(
             hintLabel = R.string.card_reader_payment_processing_payment_hint,
             headerLabel = R.string.card_reader_interac_refund_refund_payment,
-            paymentStateLabel = R.string.card_reader_interac_refund_refund_processing_state,
+            paymentStateLabel = UiStringRes(R.string.card_reader_interac_refund_refund_processing_state),
             illustration = R.drawable.img_card_reader_available
         ),
         InteracRefundFlow {
@@ -295,42 +296,46 @@ sealed class ViewState(
     )
 }
 
-sealed class PaymentFlowError(@StringRes val message: Int) {
-    object FetchingOrderFailed : PaymentFlowError(R.string.order_error_fetch_generic)
-    object NoNetwork : PaymentFlowError(R.string.card_reader_payment_failed_no_network_state)
-    object Server : PaymentFlowError(R.string.card_reader_payment_failed_server_error_state)
-    object Generic : PaymentFlowError(R.string.card_reader_payment_failed_unexpected_error_state)
-    object Canceled : PaymentFlowError(R.string.card_reader_payment_failed_canceled)
-    data class AmountTooSmall(@StringRes val errorMessage: Int) : Declined(errorMessage), NonRetryableError
+sealed class PaymentFlowError(val message: UiString) {
+    object FetchingOrderFailed : PaymentFlowError(UiStringRes(R.string.order_error_fetch_generic))
+    object NoNetwork : PaymentFlowError(UiStringRes(R.string.card_reader_payment_failed_no_network_state))
+    object Server : PaymentFlowError(UiStringRes(R.string.card_reader_payment_failed_server_error_state))
+    object Generic : PaymentFlowError(UiStringRes(R.string.card_reader_payment_failed_unexpected_error_state))
+    object Canceled : PaymentFlowError(UiStringRes(R.string.card_reader_payment_failed_canceled))
+    data class AmountTooSmall(val errorMessage: UiString) : Declined(errorMessage), NonRetryableError
 
-    object Unknown : Declined(R.string.card_reader_payment_failed_unknown)
-    sealed class Declined(message: Int) : PaymentFlowError(message) {
-        object Temporary : Declined(R.string.card_reader_payment_failed_temporary)
-        object Fraud : Declined(R.string.card_reader_payment_failed_fraud), NonRetryableError
-        object Generic : Declined(R.string.card_reader_payment_failed_generic)
-        object InvalidAccount : Declined(R.string.card_reader_payment_failed_invalid_account), NonRetryableError
+    object Unknown : Declined(UiStringRes(R.string.card_reader_payment_failed_unknown))
+    sealed class Declined(message: UiString) : PaymentFlowError(message) {
+        object Temporary : Declined(UiStringRes(R.string.card_reader_payment_failed_temporary))
+        object Fraud : Declined(UiStringRes(R.string.card_reader_payment_failed_fraud)), NonRetryableError
+        object Generic : Declined(UiStringRes(R.string.card_reader_payment_failed_generic))
+        object InvalidAccount :
+            Declined(UiStringRes(R.string.card_reader_payment_failed_invalid_account)),
+            NonRetryableError
 
-        object CardNotSupported : Declined(R.string.card_reader_payment_failed_card_not_supported)
+        object CardNotSupported : Declined(UiStringRes(R.string.card_reader_payment_failed_card_not_supported))
         object CurrencyNotSupported :
-            Declined(R.string.card_reader_payment_failed_currency_not_supported), NonRetryableError
+            Declined(UiStringRes(R.string.card_reader_payment_failed_currency_not_supported)), NonRetryableError
 
         object DuplicateTransaction :
-            Declined(R.string.card_reader_payment_failed_duplicate_transaction), NonRetryableError
+            Declined(UiStringRes(R.string.card_reader_payment_failed_duplicate_transaction)), NonRetryableError
 
-        object ExpiredCard : Declined(R.string.card_reader_payment_failed_expired_card)
+        object ExpiredCard : Declined(UiStringRes(R.string.card_reader_payment_failed_expired_card))
         object IncorrectPostalCode :
-            Declined(R.string.card_reader_payment_failed_incorrect_postal_code), NonRetryableError
+            Declined(UiStringRes(R.string.card_reader_payment_failed_incorrect_postal_code)), NonRetryableError
 
-        object InsufficientFunds : Declined(R.string.card_reader_payment_failed_insufficient_funds)
-        object InvalidAmount : Declined(R.string.card_reader_payment_failed_invalid_amount), NonRetryableError
+        object InsufficientFunds : Declined(UiStringRes(R.string.card_reader_payment_failed_insufficient_funds))
+        object InvalidAmount :
+            Declined(UiStringRes(R.string.card_reader_payment_failed_invalid_amount)),
+            NonRetryableError
 
-        object PinRequired : Declined(R.string.card_reader_payment_failed_pin_required)
-        object TooManyPinTries : Declined(R.string.card_reader_payment_failed_too_many_pin_tries)
-        object TestCard : Declined(R.string.card_reader_payment_failed_test_card)
-        object TestModeLiveCard : Declined(R.string.card_reader_payment_failed_test_mode_live_card)
+        object PinRequired : Declined(UiStringRes(R.string.card_reader_payment_failed_pin_required))
+        object TooManyPinTries : Declined(UiStringRes(R.string.card_reader_payment_failed_too_many_pin_tries))
+        object TestCard : Declined(UiStringRes(R.string.card_reader_payment_failed_test_card))
+        object TestModeLiveCard : Declined(UiStringRes(R.string.card_reader_payment_failed_test_mode_live_card))
     }
 
-    sealed class BuiltInReader(message: Int) : PaymentFlowError(message) {
+    sealed class BuiltInReader(@StringRes message: Int) : PaymentFlowError(UiStringRes(message)) {
         object NfcDisabled : BuiltInReader(R.string.card_reader_payment_failed_nfc_disabled)
         object DeviceIsNotSupported :
             BuiltInReader(R.string.card_reader_payment_failed_device_is_not_supported), NonRetryableError
@@ -342,20 +347,21 @@ sealed class PaymentFlowError(@StringRes val message: Int) {
     interface NonRetryableError
 }
 
-sealed class InteracRefundFlowError(@StringRes val message: Int) {
-    object FetchingOrderFailed : InteracRefundFlowError(R.string.order_error_fetch_generic)
-    object NoNetwork : InteracRefundFlowError(R.string.card_reader_payment_failed_no_network_state)
-    object Server : InteracRefundFlowError(R.string.card_reader_payment_failed_server_error_state)
-    object Generic : InteracRefundFlowError(R.string.card_reader_interac_refund_refund_failed_unexpected_error_state)
+sealed class InteracRefundFlowError(val message: UiString) {
+    object FetchingOrderFailed : InteracRefundFlowError(UiStringRes(R.string.order_error_fetch_generic))
+    object NoNetwork :
+        InteracRefundFlowError(UiStringRes(R.string.card_reader_payment_failed_no_network_state))
+    object Server : InteracRefundFlowError(UiStringRes(R.string.card_reader_payment_failed_server_error_state))
+    object Generic : InteracRefundFlowError(
+        UiStringRes(R.string.card_reader_interac_refund_refund_failed_unexpected_error_state)
+    )
     object NonRetryableGeneric :
-        InteracRefundFlowError(
-            R.string.card_reader_interac_refund_refund_failed_unexpected_error_state
-        ),
+        InteracRefundFlowError(UiStringRes(R.string.card_reader_interac_refund_refund_failed_unexpected_error_state)),
         NonRetryableError
 
-    object Cancelled : InteracRefundFlowError(R.string.card_reader_interac_refund_refund_failed_cancelled)
+    object Cancelled : InteracRefundFlowError(UiStringRes(R.string.card_reader_interac_refund_refund_failed_cancelled))
     object Unknown : Declined(R.string.card_reader_interac_refund_refund_failed_header)
-    sealed class Declined(message: Int) : InteracRefundFlowError(message) {
+    sealed class Declined(@StringRes message: Int) : InteracRefundFlowError(UiStringRes(message)) {
         object Temporary : Declined(R.string.card_reader_payment_failed_temporary)
         object Fraud : Declined(R.string.card_reader_interac_refund_refund_failed_fraud), NonRetryableError
         object Generic : Declined(R.string.card_reader_interac_refund_refund_failed_generic)

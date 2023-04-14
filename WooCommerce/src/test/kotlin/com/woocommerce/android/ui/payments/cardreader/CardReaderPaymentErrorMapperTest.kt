@@ -1,20 +1,31 @@
 package com.woocommerce.android.ui.payments.cardreader
 
 import com.woocommerce.android.R
-import com.woocommerce.android.cardreader.config.CardReaderConfig
 import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
 import com.woocommerce.android.cardreader.config.CardReaderConfigForGB
+import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
+import com.woocommerce.android.model.UiString.UiStringRes
+import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentErrorMapper
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
+import com.woocommerce.android.util.SiteIndependentCurrencyFormatter
+import com.woocommerce.android.viewmodel.ResourceProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.utils.AppLogWrapper
 
 class CardReaderPaymentErrorMapperTest {
-    private val mapper = CardReaderPaymentErrorMapper()
-    private var config: CardReaderConfig = mock()
+    private val resources: ResourceProvider = mock {
+        on { getString(R.string.card_reader_payment_failed_amount_too_small) }.thenReturn("Amount must be at least %1\$s")
+    }
+    private val logger: AppLogWrapper = mock()
+    private val currencyFormatter: SiteIndependentCurrencyFormatter = mock()
+    private val mapper = CardReaderPaymentErrorMapper(resources, currencyFormatter, logger)
+    private var config: CardReaderConfigForSupportedCountry = mock()
 
     @Test
     fun `given CardReaderTimeOut error, when map to ui error, then Generic error returned`() {
@@ -27,7 +38,7 @@ class CardReaderPaymentErrorMapperTest {
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Generic)
         assertThat((result as PaymentFlowError.Generic).message)
-            .isEqualTo(R.string.card_reader_payment_failed_unexpected_error_state)
+            .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_unexpected_error_state))
     }
 
     @Test
@@ -41,7 +52,7 @@ class CardReaderPaymentErrorMapperTest {
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.NoNetwork)
         assertThat((result as PaymentFlowError.NoNetwork).message)
-            .isEqualTo(R.string.card_reader_payment_failed_no_network_state)
+            .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_no_network_state))
     }
 
     @Test
@@ -55,7 +66,7 @@ class CardReaderPaymentErrorMapperTest {
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Server)
         assertThat((result as PaymentFlowError.Server).message)
-            .isEqualTo(R.string.card_reader_payment_failed_server_error_state)
+            .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_server_error_state))
     }
 
     @Test
@@ -69,7 +80,7 @@ class CardReaderPaymentErrorMapperTest {
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Generic)
         assertThat((result as PaymentFlowError.Generic).message)
-            .isEqualTo(R.string.card_reader_payment_failed_unexpected_error_state)
+            .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_unexpected_error_state))
     }
 
     @Test
@@ -77,16 +88,21 @@ class CardReaderPaymentErrorMapperTest {
         // GIVEN
         val error = CardPaymentStatusErrorType.DeclinedByBackendError.AmountTooSmall
         config = CardReaderConfigForGB
-
+        whenever(
+            currencyFormatter.formatAmountWithCurrency(
+                config.minimumAllowedChargeAmount.toDouble(),
+                config.currency
+            )
+        ).thenReturn("£0.30")
         // WHEN
         val result = mapper.mapPaymentErrorToUiError(error, config)
 
         // THEN
         assertThat(result).isEqualTo(
-            PaymentFlowError.AmountTooSmall(R.string.card_reader_payment_failed_amount_too_small_uk)
+            PaymentFlowError.AmountTooSmall(UiStringText("Amount must be at least £0.30"))
         )
         assertThat((result as PaymentFlowError.AmountTooSmall).message)
-            .isEqualTo(R.string.card_reader_payment_failed_amount_too_small_uk)
+            .isEqualTo(UiStringText("Amount must be at least £0.30"))
     }
 
     @Test
@@ -94,16 +110,22 @@ class CardReaderPaymentErrorMapperTest {
         // GIVEN
         val error = CardPaymentStatusErrorType.DeclinedByBackendError.AmountTooSmall
         config = CardReaderConfigForUSA
+        whenever(
+            currencyFormatter.formatAmountWithCurrency(
+                config.minimumAllowedChargeAmount.toDouble(),
+                config.currency
+            )
+        ).thenReturn("US$0.50")
 
         // WHEN
         val result = mapper.mapPaymentErrorToUiError(error, config)
 
         // THEN
         assertThat(result).isEqualTo(
-            PaymentFlowError.AmountTooSmall(R.string.card_reader_payment_failed_amount_too_small_us_ca)
+            PaymentFlowError.AmountTooSmall(UiStringText("Amount must be at least US$0.50"))
         )
         assertThat((result as PaymentFlowError.AmountTooSmall).message)
-            .isEqualTo(R.string.card_reader_payment_failed_amount_too_small_us_ca)
+            .isEqualTo(UiStringText("Amount must be at least US$0.50"))
     }
 
     @Test
@@ -111,16 +133,22 @@ class CardReaderPaymentErrorMapperTest {
         // GIVEN
         val error = CardPaymentStatusErrorType.DeclinedByBackendError.AmountTooSmall
         config = CardReaderConfigForCanada
+        whenever(
+            currencyFormatter.formatAmountWithCurrency(
+                config.minimumAllowedChargeAmount.toDouble(),
+                config.currency
+            )
+        ).thenReturn("CA$0.50")
 
         // WHEN
         val result = mapper.mapPaymentErrorToUiError(error, config)
 
         // THEN
         assertThat(result).isEqualTo(
-            PaymentFlowError.AmountTooSmall(R.string.card_reader_payment_failed_amount_too_small_us_ca)
+            PaymentFlowError.AmountTooSmall(UiStringText("Amount must be at least CA$0.50"))
         )
         assertThat((result as PaymentFlowError.AmountTooSmall).message)
-            .isEqualTo(R.string.card_reader_payment_failed_amount_too_small_us_ca)
+            .isEqualTo(UiStringText("Amount must be at least CA$0.50"))
     }
 
     @Test
@@ -134,7 +162,7 @@ class CardReaderPaymentErrorMapperTest {
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.Temporary)
         assertThat((result as PaymentFlowError.Declined.Temporary).message)
-            .isEqualTo(R.string.card_reader_payment_failed_temporary)
+            .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_temporary))
     }
 
     @Test
@@ -148,7 +176,7 @@ class CardReaderPaymentErrorMapperTest {
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.Fraud)
         assertThat((result as PaymentFlowError.Declined.Fraud).message)
-            .isEqualTo(R.string.card_reader_payment_failed_fraud)
+            .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_fraud))
     }
 
     @Test
@@ -162,7 +190,7 @@ class CardReaderPaymentErrorMapperTest {
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.Generic)
         assertThat((result as PaymentFlowError.Declined.Generic).message)
-            .isEqualTo(R.string.card_reader_payment_failed_generic)
+            .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_generic))
     }
 
     @Test
@@ -176,7 +204,7 @@ class CardReaderPaymentErrorMapperTest {
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.InvalidAccount)
         assertThat((result as PaymentFlowError.Declined.InvalidAccount).message)
-            .isEqualTo(R.string.card_reader_payment_failed_invalid_account)
+            .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_invalid_account))
     }
 
     @Test
@@ -190,7 +218,7 @@ class CardReaderPaymentErrorMapperTest {
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.CardNotSupported)
         assertThat((result as PaymentFlowError.Declined.CardNotSupported).message)
-            .isEqualTo(R.string.card_reader_payment_failed_card_not_supported)
+            .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_card_not_supported))
     }
 
     @Test
@@ -204,7 +232,7 @@ class CardReaderPaymentErrorMapperTest {
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.CurrencyNotSupported)
         assertThat((result as PaymentFlowError.Declined.CurrencyNotSupported).message)
-            .isEqualTo(R.string.card_reader_payment_failed_currency_not_supported)
+            .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_currency_not_supported))
     }
 
     @Test
@@ -218,7 +246,7 @@ class CardReaderPaymentErrorMapperTest {
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.DuplicateTransaction)
         assertThat((result as PaymentFlowError.Declined.DuplicateTransaction).message)
-            .isEqualTo(R.string.card_reader_payment_failed_duplicate_transaction)
+            .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_duplicate_transaction))
     }
 
     @Test
@@ -232,7 +260,7 @@ class CardReaderPaymentErrorMapperTest {
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.ExpiredCard)
         assertThat((result as PaymentFlowError.Declined.ExpiredCard).message)
-            .isEqualTo(R.string.card_reader_payment_failed_expired_card)
+            .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_expired_card))
     }
 
     @Test
@@ -246,7 +274,7 @@ class CardReaderPaymentErrorMapperTest {
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.IncorrectPostalCode)
         assertThat((result as PaymentFlowError.Declined.IncorrectPostalCode).message)
-            .isEqualTo(R.string.card_reader_payment_failed_incorrect_postal_code)
+            .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_incorrect_postal_code))
     }
 
     @Test
@@ -260,7 +288,7 @@ class CardReaderPaymentErrorMapperTest {
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.InvalidAmount)
         assertThat((result as PaymentFlowError.Declined.InvalidAmount).message)
-            .isEqualTo(R.string.card_reader_payment_failed_invalid_amount)
+            .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_invalid_amount))
     }
 
     @Test
@@ -274,7 +302,7 @@ class CardReaderPaymentErrorMapperTest {
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.PinRequired)
         assertThat((result as PaymentFlowError.Declined.PinRequired).message)
-            .isEqualTo(R.string.card_reader_payment_failed_pin_required)
+            .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_pin_required))
     }
 
     @Test
@@ -288,7 +316,7 @@ class CardReaderPaymentErrorMapperTest {
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.TooManyPinTries)
         assertThat((result as PaymentFlowError.Declined.TooManyPinTries).message)
-            .isEqualTo(R.string.card_reader_payment_failed_too_many_pin_tries)
+            .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_too_many_pin_tries))
     }
 
     @Test
@@ -302,7 +330,7 @@ class CardReaderPaymentErrorMapperTest {
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.TestCard)
         assertThat((result as PaymentFlowError.Declined.TestCard).message)
-            .isEqualTo(R.string.card_reader_payment_failed_test_card)
+            .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_test_card))
     }
 
     @Test
@@ -316,7 +344,7 @@ class CardReaderPaymentErrorMapperTest {
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.TestModeLiveCard)
         assertThat((result as PaymentFlowError.Declined.TestModeLiveCard).message)
-            .isEqualTo(R.string.card_reader_payment_failed_test_mode_live_card)
+            .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_test_mode_live_card))
     }
 
     @Test
@@ -330,7 +358,7 @@ class CardReaderPaymentErrorMapperTest {
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Unknown)
         assertThat((result as PaymentFlowError.Unknown).message)
-            .isEqualTo(R.string.card_reader_payment_failed_unknown)
+            .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_unknown))
     }
 
     @Test
@@ -344,7 +372,7 @@ class CardReaderPaymentErrorMapperTest {
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Canceled)
         assertThat((result as PaymentFlowError.Canceled).message)
-            .isEqualTo(R.string.card_reader_payment_failed_canceled)
+            .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_canceled))
     }
 
     @Test
@@ -358,7 +386,7 @@ class CardReaderPaymentErrorMapperTest {
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.BuiltInReader.NfcDisabled)
         assertThat((result as PaymentFlowError.BuiltInReader.NfcDisabled).message)
-            .isEqualTo(R.string.card_reader_payment_failed_nfc_disabled)
+            .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_nfc_disabled))
     }
 
     @Test
@@ -372,7 +400,7 @@ class CardReaderPaymentErrorMapperTest {
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.BuiltInReader.DeviceIsNotSupported)
         assertThat((result as PaymentFlowError.BuiltInReader.DeviceIsNotSupported).message)
-            .isEqualTo(R.string.card_reader_payment_failed_device_is_not_supported)
+            .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_device_is_not_supported))
     }
 
     @Test
@@ -386,6 +414,6 @@ class CardReaderPaymentErrorMapperTest {
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.BuiltInReader.InvalidAppSetup)
         assertThat((result as PaymentFlowError.BuiltInReader.InvalidAppSetup).message)
-            .isEqualTo(R.string.card_reader_payment_failed_app_setup_is_invalid)
+            .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_app_setup_is_invalid))
     }
 }
