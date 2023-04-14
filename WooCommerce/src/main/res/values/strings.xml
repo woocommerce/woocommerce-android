@@ -2200,6 +2200,7 @@
     <string name="product_type_virtual">Virtual</string>
     <string name="product_type_downloadable">Downloadable</string>
     <string name="product_type_subscription">Subscription</string>
+    <string name="product_type_bundle">Bundle</string>
 
     <!-- Product type bottom sheets -->
     <string name="product_type_list_header">Select a product type</string>
@@ -3326,5 +3327,13 @@
     <string name="empty_min_quantity">No minimum</string>
     <string name="empty_max_quantity">No maximum</string>
     <string name="empty_group_of">Not grouped</string>
+
+    <!--
+    Bundled products
+    -->
+    <string name="product_bundle">Bundled products</string>
+    <string name="product_bundle_single_count">1 product</string>
+    <string name="product_bundle_multiple_count">%d products</string>
+    <string name="bundled_products_info_notice">You can edit bundled products in the web dashboard.</string>
 
 </resources>
