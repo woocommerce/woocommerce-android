@@ -1,2 +1,0 @@
-13.0：
-使用 WooCommerce Subscriptions 擴充功能的使用者有福了。 我們已為 WooCommerce Subsciptions 擴充功能的訂單詳細資料和產品詳細資料頁面新增唯讀支援。 敬請期待更多功能！

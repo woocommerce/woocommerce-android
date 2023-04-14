@@ -1,68 +1,68 @@
 <ar>
-13.0:
-أخبار رائعة للجمهور الذي يستخدم امتداد WooCommerce Subscriptions. لقد أضفنا دعمًا للقراءة فقط لامتداد WooCommerce Subscriptions في تفاصيل الطلب وشاشات تفاصيل المنتجات. مزيد من الميزات قريبًا!
+13.1:
+مزيد من الإعجاب تجاه المدفوعات الشخصية والطلبات في هذه المرة، بما في ذلك خيار تحديد منتجاتك الأكثر شيوعًا عند إنشاء طلب.
 </ar>
 <de-DE>
-13.0:
-Es gibt tolle Neuigkeiten für Benutzer der WooCommerce Subscriptions-Erweiterung. Wir haben auf den Bildschirmen mit den Bestell- und Produktdetails Support mit Lesezugriff für die WooCommerce Subsciptions-Erweiterung hinzugefügt. Weitere Funktionen sind demnächst verfügbar!
+13.1:
+Diesmal haben wir uns um persönliche Zahlungen und Bestellungen gekümmert, einschließlich der Option, beim Erstellen einer Bestellung die beliebtesten Produkte auszuwählen.
 </de-DE>
 <es-ES>
-13.0:
-Buenas noticias para los usuarios de la extensión WooCommerce Subscriptions. Hemos añadido soporte de solo lectura para la extensión WooCommerce Subscriptions en las pantallas de detalles del pedido y detalles del producto. En breve incluiremos más funciones.
+13.1:
+Esta vez, hemos prestado especial atención a los pedidos y pagos en persona, incluida la opción de elegir los productos más populares al crear un pedido.
 </es-ES>
 <fr-FR>
-13.0 : 
-Bonne nouvelle pour les utilisateurs de l’extension WooCommerce Subscriptions. Nous avons ajouté un accès en lecture seule à l’extension WooCommerce Subscriptions sur les pages des détails de la commande et du produit. D’autres fonctionnalités sont à venir !
+13.1 :
+Nous nous sommes penchés sur les paiements en personne et les commandes, notamment sur l’option vous permettant de sélectionner vos produits les plus populaires lors de la création d’une commande.
 </fr-FR>
 <iw-IL>
-13.0:
-חדשות טובות למשתמשים בהרחבה של WooCommerce Subscriptions. הוספנו תמיכה לקריאה בלבד בהרחבה של WooCommerce Subsciptions במסכים של פרטי ההזמנה ופרטי המוצר. בקרוב נשיק אפשרויות נוספות!
+13.1:
+הפעם הקדשנו יותר תשומת לב ל'תשלומים באופן אישי' ולהזמנות, כולל אפשרות לבחור את המוצרים הפופולריים ביותר בעת יצירת הזמנה.
 </iw-IL>
 <id>
-13.0:
-Kabar baik bagi pengguna ekstensi WooCommerce Subscriptions. Kami telah menambahkan dukungan hanya baca untuk ekstensi WooCommerce Subscriptions pada layar detail pemesanan dan detail produk. Segera hadir banyak fitur lainnya!
+13.1:
+Semakin banyak yang menyukai pemesanan dan pembayaran langsung kali ini, termasuk pilihan untuk memesan produk terpopuler Anda saat membuat pesanan.
 </id>
 <it-IT>
-13.0:
-Ottime notizie per tutti coloro che utilizzano l'estensione Abbonamenti WooCommerce. Abbiamo aggiunto il supporto di sola lettura per l'estensione Abbonamenti WooCommerce nelle schermate dei dettagli dell'ordine e dei dettagli del prodotto. Maggiori funzionalità sono in arrivo!
+13.1:
+Più attenzione per Pagamenti di persona e ordini di persona questa volta, inclusa l'opzione per selezionare i prodotti più popolari durante la creazione di un ordine.
 </it-IT>
 <ja-JP>
-13.0:
-WooCommerce Subscriptions 拡張機能をお使いの皆さまに良いお知らせです。 注文詳細画面と商品情報画面に、WooCommerce Subsciptions 拡張機能の読み取り専用のサポートを追加しました。 その他の機能も近日中に公開予定です !
+13.1:
+今回は、注文作成時に最も人気の商品を選択できるオプションなど、オフラインでの支払いや注文に関する機能がさらに充実しています。
 </ja-JP>
 <ko-KR>
-13.0:
-우커머스 구독 확장 기능 사용자께 좋은 소식을 전해드립니다. 주문 상세 정보 화면과 상품 상세 정보 화면에 우커머스 구독 확장 기능 읽기 전용 지원을 추가했습니다. 더 많은 기능을 곧 공개할 예정입니다!
+13.1:
+주문을 생성할 때 가장 인기 있는 상품을 선택하는 옵션을 포함하여 이번에는 직접 결제와 주문에 더 많은 정성을 쏟았습니다.
 </ko-KR>
 <nl-NL>
-13.0:
-Geweldig nieuws voor de mensen die de WooCommerce Subscriptions-extensie gebruiken. We hebben read-only ondersteuning voor de WooCommerce Subscriptions-extensie toegevoegd aan de schermen bestellingsgegevens en de productgegevens. Binnenkort nog meer functies!
+13.1:
+Meer aandacht voor persoonlijke betalingen en bestellingen dit keer, waaronder de optie om je meest populaire producten te selecteren bij het creëren van een bestelling
 </nl-NL>
 <pt-BR>
-13.0:
-Ótimas notícias para quem está usando a extensão do WooCommerce Subscriptions: adicionamos compatibilidade com o modo somente leitura à extensão do WooCommerce Subscriptions nas telas de dados do pedido e de detalhes do produto. Mais funcionalidades em breve!
+13.1:
+Muito amor por pedidos e pagamentos presenciais nesta versão, incluindo a opção de selecionar seus produtos mais populares ao criar um pedido.
 </pt-BR>
 <ru-RU>
-13.0:
-Превосходные новости для всех, кто использует расширение WooCommerce Subscriptions. Мы добавили поддержку режима «только для чтения» для расширения WooCommerce Subsciptions на экранах описаний заказов и продуктов. Еще больше функций выйдет уже скоро!
+13.1:
+В этом выпуске мы уделили внимание очным платежам и заказам, в том числе добавили возможность выбирать самые популярные товары во время заказа.
 </ru-RU>
 <sv-SE>
-13.0:
-Goda nyheter för de som använder WooCommerce prenumerationstillägg. Vi har lagt till stöd för skrivskydd för WooCommerce prenumerationstillägget på skärmarna med orderinformation och produktinformation. Fler funktioner kommer snart!
+13.1:
+Den här gången har vi lagt mer tid på personliga betalningar och beställningar, inklusive möjligheten att välja dina mest populära produkter vid skapande av en beställning.
 </sv-SE>
 <tr-TR>
-13.0:
-WooCommerce Subscriptions uzantısını kullanan kişiler için harika bir haber. Sipariş detayı ve ürün detayı ekranlarına WooCommerce Subsciptions eklentisi için salt okunur destek ekledik. Yakında daha fazla özellik gelecek!
+13.1:
+Bir sipariş oluştururken en popüler ürünlerinizi seçme seçeneği de dahil olmak üzere bu sefer Şahsen Ödemeler ve siparişlere daha fazla ilgi gösterdik.
 </tr-TR>
 <zh-CN>
-13.0：
-对于使用 WooCommerce Subscriptions 扩展程序的用户来说，这是个好消息。 我们在订单详细信息和产品详细信息屏幕中添加了对 WooCommerce Subscipations 扩展程序的只读支持。 更多功能即将推出！
+13.1：
+此次重点更新了现场付款和订单相关内容，提供了在下单时可以选择您的最热门产品的选项。
 </zh-CN>
 <zh-TW>
-13.0：
-使用 WooCommerce Subscriptions 擴充功能的使用者有福了。 我們已為 WooCommerce Subsciptions 擴充功能的訂單詳細資料和產品詳細資料頁面新增唯讀支援。 敬請期待更多功能！
+13.1：
+這次你會更喜愛「親自收款」和訂單功能，包括可在建立訂單時選取最熱門產品的選項。
 </zh-TW>
 <en-US>
-13.0:
-Great news for folks that are using WooCommerce Subscriptions extension. We have added read only support for the WooCommerce Subsciptions extension in the order detail and product detail screens. More features coming soon!
+13.1:
+More love for In-Person Payments and orders this time around, including the option to select your most popular products when creating an order.
 </en-US>
