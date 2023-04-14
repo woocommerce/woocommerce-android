@@ -36,6 +36,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTy
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
+import com.woocommerce.android.ui.products.ProductType.BUNDLE
 import com.woocommerce.android.ui.products.ProductType.COMPOSITE
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
@@ -86,6 +87,7 @@ class ProductDetailCardBuilder(
             GROUPED -> cards.addIfNotEmpty(getGroupedProductCard(product))
             EXTERNAL -> cards.addIfNotEmpty(getExternalProductCard(product))
             SUBSCRIPTION -> cards.addIfNotEmpty(getSubscriptionProductCard(product))
+            BUNDLE -> cards.addIfNotEmpty(getBundleProductsCard(product))
             COMPOSITE -> cards.addIfNotEmpty(getCompositeProductsCard(product))
             else -> cards.addIfNotEmpty(getOtherProductCard(product))
         }
@@ -187,6 +189,25 @@ class ProductDetailCardBuilder(
             properties = listOf(
                 if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.subscription(),
+                product.inventory(SIMPLE),
+                product.addons(),
+                product.quantityRules(),
+                product.categories(),
+                product.tags(),
+                product.shortDescription(),
+                product.linkedProducts(),
+                product.productType()
+            ).filterNotEmpty()
+        )
+    }
+
+    private suspend fun getBundleProductsCard(product: Product): ProductPropertyCard {
+        return ProductPropertyCard(
+            type = SECONDARY,
+            properties = listOf(
+                product.bundleProducts(),
+                product.price(),
+                if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.inventory(SIMPLE),
                 product.addons(),
                 product.quantityRules(),
@@ -792,6 +813,29 @@ class ProductDetailCardBuilder(
                 )
             }
         )
+    }
+
+    private suspend fun Product.bundleProducts(): ProductProperty? {
+        val bundledProductsSize = viewModel.getBundledProductsSize(this.remoteId)
+        return if (bundledProductsSize > 0) {
+            val content = StringUtils.getQuantityString(
+                resourceProvider = resources,
+                quantity = bundledProductsSize,
+                default = string.product_bundle_multiple_count,
+                one = string.product_bundle_single_count
+            )
+
+            ComplexProperty(
+                string.product_bundle,
+                content,
+                drawable.ic_widgets
+            ) {
+                viewModel.onEditProductCardClicked(
+                    ProductNavigationTarget.ViewBundleProducts(this.remoteId),
+                    AnalyticsEvent.PRODUCT_DETAIL_VIEW_BUNDLED_PRODUCTS_TAPPED
+                )
+            }
+        } else null
     }
 
     private suspend fun Product.componentProducts(): ProductProperty? {

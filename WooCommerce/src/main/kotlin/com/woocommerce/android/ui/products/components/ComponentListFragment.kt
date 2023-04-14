@@ -19,16 +19,13 @@ class ComponentListFragment :
     BaseFragment(R.layout.fragment_component_list),
     ComponentsListAdapter.OnComponentClickListener {
     val viewModel: ComponentListViewModel by viewModels()
-    private var _binding: FragmentComponentListBinding? = null
-    private val binding get() = _binding!!
 
     override fun getFragmentTitle() = resources.getString(R.string.product_components)
 
-    private val componentsListAdapter: ComponentsListAdapter by lazy { ComponentsListAdapter(this) }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = FragmentComponentListBinding.bind(view)
+        val binding = FragmentComponentListBinding.bind(view)
+        val componentsListAdapter = ComponentsListAdapter(this)
 
         binding.productsRecycler.run {
             layoutManager = LinearLayoutManager(requireActivity())
@@ -58,11 +55,6 @@ class ComponentListFragment :
                 else -> event.isHandled = false
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
     }
 
     override fun onComponentClickListener(component: Component) {
