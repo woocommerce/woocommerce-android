@@ -143,33 +143,44 @@ private fun MoreMenuHeader(
     onSwitchStore: () -> Unit,
     state: MoreMenuViewState
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(
-                enabled = state.isStoreSwitcherEnabled,
-                onClickLabel = stringResource(id = R.string.settings_switch_store),
-                role = Role.Button,
-                onClick = onSwitchStore
-            )
-            .padding(
-                top = dimensionResource(id = R.dimen.major_100),
-                bottom = dimensionResource(id = R.dimen.major_100)
-            ),
+    Button(
+        onClick = onSwitchStore,
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = colorResource(id = R.color.more_menu_button_background)
+        ),
+        shape = RoundedCornerShape(dimensionResource(id = R.dimen.major_75)),
+        modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
     ) {
-        StoreDetailsHeader(
-            modifier = Modifier
-                .align(Alignment.CenterStart)
-                .padding(
-                    start = dimensionResource(id = R.dimen.minor_100),
-                    end = dimensionResource(id = R.dimen.major_325)
-                ),
-            userAvatarUrl = state.userAvatarUrl,
-            siteName = state.siteName,
-            siteUrl = state.siteUrl,
-            isStoreSwitcherEnabled = state.isStoreSwitcherEnabled
-        )
+        Box(Modifier.fillMaxSize()) {
+            StoreDetailsHeader(
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(
+                        start = dimensionResource(id = R.dimen.minor_100),
+                        end = dimensionResource(id = R.dimen.major_325)
+                    ),
+                userAvatarUrl = state.userAvatarUrl,
+                siteName = state.siteName,
+                siteUrl = state.siteUrl,
+                isStoreSwitcherEnabled = state.isStoreSwitcherEnabled
+            )
+        }
     }
+//    Box(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .clickable(
+//                enabled = state.isStoreSwitcherEnabled,
+//                onClickLabel = stringResource(id = R.string.settings_switch_store),
+//                role = Role.Button,
+//                onClick = onSwitchStore
+//            )
+//            .padding(
+//
+//            ),
+//    ) {
+//
+//    }
 }
 
 @Composable
