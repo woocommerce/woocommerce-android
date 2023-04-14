@@ -4,7 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/major_100">
+    android:padding="@dimen/major_100"
+    android:screenReaderFocusable="true"
+    android:focusable="true"
+    tools:ignore="UnusedAttribute">
 
 
     <com.google.android.material.textview.MaterialTextView
@@ -18,7 +21,8 @@
         android:layout_marginTop="@dimen/minor_100"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/gift_card_used"
-        app:layout_constraintHorizontal_bias="0.0"/>
+        app:layout_constraintHorizontal_bias="0.0"
+        android:focusable="false"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/gift_card_used"
@@ -30,6 +34,7 @@
         android:layout_marginEnd="0dp"
         android:textStyle="bold"
         app:layout_constraintBaseline_toBaselineOf="@id/gift_card_code"
-        tools:text="- $60.00" />
+        tools:text="- $60.00"
+        android:focusable="false"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
