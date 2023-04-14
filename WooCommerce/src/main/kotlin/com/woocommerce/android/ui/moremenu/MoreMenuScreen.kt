@@ -90,17 +90,17 @@ fun MoreMenuScreen(
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         MoreMenuHeader(onSwitchStore, state)
 
-        if (state.settingsMenuItems.isNotEmpty()) {
+        if (state.enabledSettingsItems.isNotEmpty()) {
             MoreMenuSection(
                 title = stringResource(id = R.string.more_menu_settings_section_title),
-                items = state.settingsMenuItems
+                items = state.enabledSettingsItems
             )
         }
 
-        if (state.generalMenuItems.isNotEmpty()) {
+        if (state.enabledGeneralItems.isNotEmpty()) {
             MoreMenuSection(
                 title = stringResource(id = R.string.more_menu_general_section_title),
-                items = state.generalMenuItems
+                items = state.enabledGeneralItems
             )
         }
     }
