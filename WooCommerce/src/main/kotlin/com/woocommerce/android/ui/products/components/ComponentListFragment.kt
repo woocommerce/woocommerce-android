@@ -22,11 +22,10 @@ class ComponentListFragment :
 
     override fun getFragmentTitle() = resources.getString(R.string.product_components)
 
-    private val componentsListAdapter: ComponentsListAdapter by lazy { ComponentsListAdapter(this) }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentComponentListBinding.bind(view)
+        val componentsListAdapter = ComponentsListAdapter(this)
 
         binding.productsRecycler.run {
             layoutManager = LinearLayoutManager(requireActivity())
