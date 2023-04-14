@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-04 11:54:13+0000
+Translation-Revision-Date: 2023-04-11 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="quantity_rules_info_notice">Du kan redigera produktkvantitetsregler i webbadminpanelen.</string>
+    <string name="group_of">Grupp om</string>
+    <string name="max_quantity">Största kvantitet</string>
+    <string name="min_quantity">Minsta kvantitet</string>
+    <string name="product_quantity_rules_title">Kvantitetsregler</string>
+    <string name="gift_cards">Presentkort</string>
+    <string name="order_gift_card">Presentkort</string>
+    <string name="free_trial_feature_fast_to_launch">Snabb lansering</string>
+    <string name="free_trial_feature_site_security">Webbplatssäkerhet</string>
+    <string name="free_trial_feature_auto_updates_backups">Automatiska uppdateringar och säkerhetskopieringar</string>
+    <string name="free_trial_feature_247_support">Support dygnet runt</string>
+    <string name="free_trial_feature_email_marketing">E-postmarknadsföring</string>
+    <string name="free_trial_feature_social_advertising">Social annonsering</string>
+    <string name="free_trial_feature_subscription_product_kits">Prenumeration och produktkit</string>
+    <string name="free_trial_feature_multiple_payment_options">Flera betalningsalternativ</string>
+    <string name="free_trial_feature_ecommerce_reports">E-handelsrapporter</string>
+    <string name="free_trial_feature_shipping_labels">Fraktsedlar</string>
+    <string name="free_trial_feature_unlimited_products">Obegränsat antal produkter</string>
+    <string name="free_trial_feature_premium_themes">Premiumteman</string>
+    <string name="free_trial_summary_credit_card_message">Inget kreditkort krävs.</string>
+    <string name="free_trial_summary_try_button">Prova gratis</string>
+    <string name="free_trial_summary_try_it">Prova det i 14 dagar.</string>
+    <string name="free_trial_summary_advertise">Vi tillhandahåller allt du behöver för att bygga och utveckla en onlinebutik som drivs med WooCommerce och har WordPress.com som webbhotell.</string>
+    <string name="free_trial_summary_title">Lansering på några dagar, med åratal av tillväxtmöjligheter</string>
+    <string name="product_selector_products_heading">Produkter</string>
+    <string name="product_selector_recent_products_heading">Senast sålda</string>
+    <string name="product_selector_popular_products_heading">Populär</string>
+    <string name="jetpack_install_role_eligibility_learn_more">Lär dig mer om roller och behörighet</string>
+    <string name="jetpack_install_role_eligibility_error_message">Det verkar som att din roll inte tillåter dig att installera Jetpack.\nKontakta din administratör för hjälp.</string>
+    <string name="card_reader_tap_to_pay_description">Du kan testa att använda Tryck för att betala med ett litet\nbelopp här.</string>
+    <string name="card_reader_test_tap_to_pay">Testa Tryck för att betala</string>
     <string name="subscription_free_trial">Gratis provperiod</string>
     <string name="subscription_sign_up_fee">Registreringsavgift</string>
     <string name="subscription_expire">Löper ut efter</string>
@@ -46,7 +77,6 @@ Language: sv_SE
     <string name="card_reader_type_selection_tap_to_pay_description">Ta emot säkra kontaktlösa betalningsmetoder direkt från din telefon.</string>
     <string name="card_reader_tap_to_pay_beta_features_subheading">Testa Tryck för att betala i appen</string>
     <string name="card_reader_tap_to_pay_beta_features_heading">Tryck för att betala</string>
-    <string name="card_reader_tap_to_pay_description_not_used">Använd din telefon för att ta emot kort\nbetalningar Testa nu.</string>
     <string name="card_reader_tap_to_pay_share_feedback">Dela feedback om Tryck för att betala</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Det går inte att logga in eftersom lösenordsskapandet i appen inte godkänts.</string>
     <string name="login_site_credentials_fetching_site">Hämtar webbplats …</string>
@@ -62,7 +92,6 @@ Language: sv_SE
     <string name="store_onboarding_get_paid_title">Konfiguration av Payments</string>
     <string name="store_onboarding_task_about_your_store_toolbar_title">Om din butik</string>
     <string name="store_creation_installation_rendering_preview_label">Renderar förhandsgranskning…</string>
-    <string name="jetpack_benefits_open_wpadmin">Öppna wp-admin</string>
     <string name="shipping_label_address_phone_required">Ett telefonnummer är obligatoriskt</string>
     <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s, %4$s har sålts</string>
     <string name="analytics_items">poster</string>
@@ -148,8 +177,6 @@ Language: sv_SE
     <string name="card_reader_tap_to_pay_explanation_ready">Din telefon är redo för Tryck för att betala.\nDin kund kan trycka på sitt kort\npå din telefon för att betala.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Ta emot kortbetalningar\nmed din telefon</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tryck för att betala</string>
-    <string name="card_reader_tap_to_pay_description_used">Använd din telefon för att ta emot kortbetalningar.</string>
-    <string name="card_reader_tap_to_pay">Tryck för att betala</string>
     <string name="card_reader_hub_actions_category_header">ÅTGÄRDER</string>
     <string name="domain_registration_generic_error">Ett fel uppstod under domänregistrering</string>
     <string name="domain_registration_state_picker_dialog_title">Välj delstat</string>
