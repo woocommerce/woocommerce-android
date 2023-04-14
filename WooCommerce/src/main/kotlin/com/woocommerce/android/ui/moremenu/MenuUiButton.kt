@@ -6,7 +6,8 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 
 data class MenuUiButton(
-    @StringRes val text: Int,
+    @StringRes val title: Int,
+    @StringRes val description: Int,
     @DrawableRes val icon: Int,
     val badgeState: BadgeState? = null,
     val isEnabled: Boolean = true,

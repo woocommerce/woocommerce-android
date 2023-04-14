@@ -95,17 +95,6 @@
     <string name="product_bulk_update_status">Update status</string>
     <string name="product_bulk_update_status_updated">Status updated!</string>
     <string name="review_notifications">Reviews</string>
-    <string name="more_menu">Menu</string>
-    <string name="more_menu_button_woo_admin">WooCommerce Admin</string>
-    <string name="more_menu_button_wс_admin">WC Admin</string>
-    <string name="more_menu_button_payments">Payments</string>
-    <string name="more_menu_button_analytics">Analytics</string>
-    <string name="more_menu_button_inbox">Inbox</string>
-    <string name="more_menu_button_store">View Store</string>
-    <string name="more_menu_button_coupons">Coupons</string>
-    <string name="more_menu_button_reviews">Reviews</string>
-    <string name="more_menu_button_upgrades">Upgrades</string>
-    <string name="more_menu_avatar">User profile picture</string>
     <string name="version_with_name_param">Version %s</string>
     <string name="share_store_button">Share your store</string>
     <string name="share_store_dialog_title">Share your store\'s URL</string>
@@ -3335,5 +3324,41 @@
     <string name="product_bundle_single_count">1 product</string>
     <string name="product_bundle_multiple_count">%d products</string>
     <string name="bundled_products_info_notice">You can edit bundled products in the web dashboard.</string>
+
+
+    <!--
+    More Menu
+    -->
+    <string name="more_menu">Menu</string>
+    <string name="more_menu_button_woo_admin">WooCommerce Admin</string>
+    <string name="more_menu_avatar">User profile picture</string>
+    <string name="more_menu_button_analytics">Analytics</string>
+
+    <string name="more_menu_settings_section_title">Settings</string>
+    <string name="more_menu_general_section_title">General</string>
+
+    <string name="more_menu_button_wс_admin">WC Admin</string>
+    <string name="more_menu_button_wc_admin_description">Manage more on admin</string>
+
+    <string name="more_menu_button_payments">Payments</string>
+    <string name="more_menu_button_payments_description">Join the mobile payments</string>
+
+    <string name="more_menu_button_inbox">Inbox</string>
+    <string name="more_menu_button_inbox_description">Stay up-to-date</string>
+
+    <string name="more_menu_button_store">View Store</string>
+    <string name="more_menu_button_store_description">View your store</string>
+
+    <string name="more_menu_button_coupons">Coupons</string>
+    <string name="more_menu_button_coupons_description">Boost sales with special offers</string>
+
+    <string name="more_menu_button_reviews">Reviews</string>
+    <string name="more_menu_button_reviews_description">Capture reviews for your store</string>
+
+    <string name="more_menu_button_upgrades">Upgrades</string>
+    <string name="more_menu_button_upgrades_description">Manage your plans</string>
+
+    <string name="more_menu_button_settings">Settings</string>
+    <string name="more_menu_button_settings_description">Update your preferences</string>
 
 </resources>
