@@ -108,7 +108,7 @@ class JitmViewModel @Inject constructor(
                     id = model.id,
                     featureClass = model.featureClass,
                     siteId = selectedSite.getIfExists()?.siteId,
-                    url = model.url
+                    url = model.cta.link
                 )
             )
         )

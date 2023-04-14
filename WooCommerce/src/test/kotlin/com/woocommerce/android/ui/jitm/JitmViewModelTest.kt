@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.jitm
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppUrls
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
@@ -358,6 +357,8 @@ class JitmViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given jitm displayed, when jitm cta clicked, then proper url is passedto OpenJITM event`() {
+        val jitmCtaLink = "https://woocommerce.com/products/hardware/US"
+        val jitmCtaLinkWithUtmParams = "https://woocommerce.com/products/hardware/US?utm_campaign=compaign"
         testBlocking {
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(selectedSite.getIfExists()).thenReturn(SiteModel())
@@ -368,7 +369,7 @@ class JitmViewModelTest : BaseUnitTest() {
                     model = arrayOf(
                         provideJitmApiResponse(
                             jitmCta = provideJitmCta(
-                                link = "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
+                                link = jitmCtaLink
                             )
                         )
                     )
@@ -380,17 +381,17 @@ class JitmViewModelTest : BaseUnitTest() {
                     anyString(),
                     anyString(),
                     any(),
-                    anyString(),
+                    eq(jitmCtaLink),
                 )
             ).thenReturn(
-                "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
+                jitmCtaLinkWithUtmParams
             )
 
             whenViewModelIsCreated()
             (sut.jitmState.value as JitmState.Banner).onPrimaryActionClicked.invoke()
 
             assertThat(sut.event.value as JitmViewModel.CtaClick).isEqualTo(
-                JitmViewModel.CtaClick("${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US")
+                JitmViewModel.CtaClick(jitmCtaLinkWithUtmParams)
             )
         }
     }
