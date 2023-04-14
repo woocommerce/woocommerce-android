@@ -3242,6 +3242,9 @@
     <string name="free_trial_feature_auto_updates_backups">Auto updates &amp; backups</string>
     <string name="free_trial_feature_site_security">Site security</string>
     <string name="free_trial_feature_fast_to_launch">Fast to launch</string>
+    <string name="free_trial_summary_store_creation_error_title">Something went wrong</string>
+    <string name="free_trial_summary_store_creation_error_message">Sorry, we cannot create your store right now, please try again later.</string>
+    <string name="free_trial_summary_store_creation_error_dialog_action">Got It!</string>
 
 
     <!--

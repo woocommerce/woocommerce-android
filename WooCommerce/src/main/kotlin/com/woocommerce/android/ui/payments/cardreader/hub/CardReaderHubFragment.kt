@@ -6,6 +6,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isInvisible
+import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -121,7 +122,15 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
 
     private fun observeViewState(binding: FragmentCardReaderHubBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { state ->
-            (binding.cardReaderHubRv.adapter as CardReaderHubAdapter).setItems(state.rows)
+            with(binding.cardReaderHubRv) {
+                (adapter as CardReaderHubAdapter).setItems(state.rows)
+                updatePadding(
+                    bottom = resources.getDimensionPixelSize(
+                        if (state.onboardingErrorAction?.text != null) R.dimen.major_400
+                        else R.dimen.major_100
+                    )
+                )
+            }
             binding.cardReaderHubLoading.isInvisible = !state.isLoading
             with(binding.cardReaderHubOnboardingFailedTv) {
                 movementMethod = LinkMovementMethod.getInstance()
@@ -131,10 +140,6 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                     setOnClickListener { onboardingErrorAction.onClick() }
                 }
                 UiHelpers.setTextOrHide(this, onboardingErrorAction?.text)
-            }
-            with(binding.learnMoreIppTv) {
-                learnMore.setOnClickListener { state.learnMoreIppState?.onClick?.invoke() }
-                UiHelpers.setTextOrHide(binding.learnMoreIppTv.learnMore, state.learnMoreIppState?.label)
             }
         }
     }
