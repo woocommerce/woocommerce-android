@@ -145,6 +145,7 @@ private fun MoreMenuHeader(
 ) {
     Button(
         onClick = onSwitchStore,
+        enabled = state.isStoreSwitcherEnabled,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = colorResource(id = R.color.more_menu_button_background)
         ),
@@ -154,15 +155,10 @@ private fun MoreMenuHeader(
         Box(Modifier.fillMaxSize()) {
             StoreDetailsHeader(
                 modifier = Modifier
-                    .align(Alignment.CenterStart)
-                    .padding(
-                        start = dimensionResource(id = R.dimen.minor_100),
-                        end = dimensionResource(id = R.dimen.major_325)
-                    ),
+                    .align(Alignment.CenterStart),
                 userAvatarUrl = state.userAvatarUrl,
                 siteName = state.siteName,
-                siteUrl = state.siteUrl,
-                isStoreSwitcherEnabled = state.isStoreSwitcherEnabled
+                siteUrl = state.siteUrl
             )
         }
     }
@@ -188,8 +184,7 @@ private fun StoreDetailsHeader(
     modifier: Modifier,
     userAvatarUrl: String,
     siteName: String,
-    siteUrl: String,
-    isStoreSwitcherEnabled: Boolean
+    siteUrl: String
 ) {
     Row(modifier = modifier) {
         MoreMenuUserAvatar(avatarUrl = userAvatarUrl)
@@ -205,13 +200,6 @@ private fun StoreDetailsHeader(
                 style = MaterialTheme.typography.body2,
                 modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_50))
             )
-            if (isStoreSwitcherEnabled) {
-                Text(
-                    text = stringResource(R.string.settings_switch_store),
-                    color = MaterialTheme.colors.primary,
-                    style = MaterialTheme.typography.body2,
-                )
-            }
         }
     }
 }
