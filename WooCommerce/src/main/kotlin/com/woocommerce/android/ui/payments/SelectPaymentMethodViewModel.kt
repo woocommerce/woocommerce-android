@@ -47,7 +47,6 @@ import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable
 import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.NotAvailable
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -57,7 +56,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -111,13 +109,11 @@ class SelectPaymentMethodViewModel @Inject constructor(
                         order = orderStore.getOrderByIdAndSite(param.orderId, selectedSite.get())!!.let {
                             orderMapper.toAppModel(it)
                         }
-                        val siteSettings = wooCommerceStore.getSiteSettings(selectedSite.get())
-                        val currencyCode = siteSettings?.currencyCode ?: ""
+                        val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
                         orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode)
                         viewState.value = buildSuccessState(
                             currencyCode = currencyCode,
-                            isPaymentCollectableWithCardReader =
-                            isPaymentCollectibleWithCardReader(siteSettings),
+                            isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order),
                             isPaymentCollectableWithTapToPay = isTapToPayAvailable()
                         )
                         trackBannerShownIfDisplayed()
@@ -126,16 +122,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 }
             }
         }.exhaustive
-    }
-
-    private suspend fun isPaymentCollectibleWithCardReader(siteSettings: WCSettingsModel?) =
-        cardPaymentCollectibilityChecker.isCollectable(order) &&
-            isCardReaderPaymentEnabledByFeatureFlag(siteSettings?.countryCode)
-
-    private fun isCardReaderPaymentEnabledByFeatureFlag(countryCode: String?): Boolean {
-        if (countryCode == "GB" && !FeatureFlag.IPP_UK.isEnabled()) return false
-
-        return true
     }
 
     private fun buildSuccessState(
