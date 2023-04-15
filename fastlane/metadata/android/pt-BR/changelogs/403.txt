@@ -1,0 +1,2 @@
+13.1:
+Muito amor por pedidos e pagamentos presenciais nesta versão, incluindo a opção de selecionar seus produtos mais populares ao criar um pedido.

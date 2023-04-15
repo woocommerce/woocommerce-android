@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-04 13:54:20+0000
+Translation-Revision-Date: 2023-04-10 15:54:16+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="quantity_rules_info_notice">يمكنك تحرير قواعد كميات المنتجات في لوحة تحكم الويب.</string>
+    <string name="group_of">مجموعة</string>
+    <string name="max_quantity">الحد الأقصى للكمية</string>
+    <string name="min_quantity">الحد الأدنى للكمية</string>
+    <string name="product_quantity_rules_title">قواعد الكميات</string>
+    <string name="gift_cards">بطاقات الهدايا</string>
+    <string name="order_gift_card">بطاقة الهدايا</string>
+    <string name="free_trial_feature_fast_to_launch">سرعة في البدء</string>
+    <string name="free_trial_feature_site_security">أمان الموقع</string>
+    <string name="free_trial_feature_auto_updates_backups">التحديثات وعمليات النسخ الاحتياطي التلقائية</string>
+    <string name="free_trial_feature_247_support">دعم على مدار الساعة طوال أيام الأسبوع</string>
+    <string name="free_trial_feature_email_marketing">التسويق عبر البريد الإلكتروني</string>
+    <string name="free_trial_feature_social_advertising">الإعلانات الاجتماعية</string>
+    <string name="free_trial_feature_subscription_product_kits">الاشتراكات ومجموعات أدوات المنتجات</string>
+    <string name="free_trial_feature_multiple_payment_options">خيارات الدفع المتعددة</string>
+    <string name="free_trial_feature_ecommerce_reports">تقارير التجارة الإلكترونية</string>
+    <string name="free_trial_feature_shipping_labels">بطاقات الشحن</string>
+    <string name="free_trial_feature_unlimited_products">منتجات غير محدودة</string>
+    <string name="free_trial_feature_premium_themes">قوالب مميزة</string>
+    <string name="free_trial_summary_credit_card_message">لن يلزم بطاقة ائتمان.</string>
+    <string name="free_trial_summary_try_button">التجربة مجانًا</string>
+    <string name="free_trial_summary_try_it">جرِّبه لمدة 14 يومًا.</string>
+    <string name="free_trial_summary_advertise">نقدّم كل ما تحتاج إليه لإنشاء متجر على الإنترنت وتطويره، ويكون مدعومًا من WooCommerce ومستضافًا على ووردبريس.كوم.</string>
+    <string name="free_trial_summary_title">البدء في غضون أيام، والتطوير لمدة أعوام</string>
+    <string name="product_selector_products_heading">المنتجات</string>
+    <string name="product_selector_recent_products_heading">آخر عملية بيع</string>
+    <string name="product_selector_popular_products_heading">شائع</string>
+    <string name="jetpack_install_role_eligibility_learn_more">معرفة المزيد حول القواعد والصلاحية</string>
+    <string name="jetpack_install_role_eligibility_error_message">يبدو أن الدور الخاص بك لا يسمح لك بتثبيت Jetpack. \nيرجى الاتصال بالمسؤول لديك للحصول على مساعدة. </string>
+    <string name="card_reader_tap_to_pay_description">يمكنك اختبار ميزة Tap To Pay باستخدام\nالكمية هنا.</string>
+    <string name="card_reader_test_tap_to_pay">اختبار ميزة Tap To Pay لديك</string>
     <string name="subscription_free_trial">تجربة مجانية</string>
     <string name="subscription_sign_up_fee">رسوم التسجيل</string>
     <string name="subscription_expire">تنتهي الصلاحية بعد</string>
@@ -46,7 +77,6 @@ Language: ar
     <string name="card_reader_type_selection_tap_to_pay_description">اقبل مدفوعات لا حصر لها بأمان وبشكل مباشر من هاتفك.</string>
     <string name="card_reader_tap_to_pay_beta_features_subheading">اختبار ميزة Tap To Pay في التطبيق</string>
     <string name="card_reader_tap_to_pay_beta_features_heading">الضغط للدفع</string>
-    <string name="card_reader_tap_to_pay_description_not_used">استخدام هاتفك لقبول البطاقة\nالمدفوعات. جربها الآن.</string>
     <string name="card_reader_tap_to_pay_share_feedback">مشاركة ملاحظات ميزة Tap To Pay</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">يتعذر تسجيل الدخول لأن إنشاء كلمة مرور التطبيق غير معتمد.</string>
     <string name="login_site_credentials_fetching_site">جارٍ إحضار الموقع…</string>
@@ -62,7 +92,6 @@ Language: ar
     <string name="store_onboarding_get_paid_title">إعداد المدفوعات</string>
     <string name="store_onboarding_task_about_your_store_toolbar_title">نبذة عن متجرك</string>
     <string name="store_creation_installation_rendering_preview_label">جارٍ استدعاء المعاينة…</string>
-    <string name="jetpack_benefits_open_wpadmin">فتح مسؤول ووردبريس</string>
     <string name="shipping_label_address_phone_required">رقم الهاتف مطلوب</string>
     <string name="analytics_list_item_products_sold">تم بيع ⁦%1$s⁩ و⁦%2$s⁩ و⁦%3$s⁩ و⁦%4$s⁩</string>
     <string name="analytics_items">عناصر</string>
@@ -148,8 +177,6 @@ Language: ar
     <string name="card_reader_tap_to_pay_explanation_ready">أصبح هاتفك جاهزًا لميزة Tap to Pay.\nيمكن لعميلك النقر على البطاقة\nعلى هاتفك للدفع.</string>
     <string name="card_reader_tap_to_pay_explanation_title">تحصيل المدفوعات بالبطاقة\nباستخدام هاتفك</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">الضغط للدفع</string>
-    <string name="card_reader_tap_to_pay_description_used">استخدم هاتفك لقبول المدفوعات بالبطاقة.</string>
-    <string name="card_reader_tap_to_pay">الضغط للدفع</string>
     <string name="card_reader_hub_actions_category_header">الإجراءات</string>
     <string name="domain_registration_generic_error">حدث خطأ في أثناء تسجيل النطاق</string>
     <string name="domain_registration_state_picker_dialog_title">تحديد الولاية</string>

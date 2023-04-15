@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-04 15:54:30+0000
+Translation-Revision-Date: 2023-04-10 18:54:23+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="quantity_rules_info_notice">Você pode editar as regras de quantidade do produto no painel da versão web.</string>
+    <string name="group_of">Grupo de</string>
+    <string name="max_quantity">Quantidade máxima</string>
+    <string name="min_quantity">Quantidade mínima</string>
+    <string name="product_quantity_rules_title">Regras de quantidade</string>
+    <string name="gift_cards">Vales-presentes</string>
+    <string name="order_gift_card">Vale-presente</string>
+    <string name="free_trial_feature_fast_to_launch">Lançamento rápido</string>
+    <string name="free_trial_feature_site_security">Segurança do site</string>
+    <string name="free_trial_feature_auto_updates_backups">Backups e atualizações automáticas</string>
+    <string name="free_trial_feature_247_support">Suporte 24 horas por dia</string>
+    <string name="free_trial_feature_email_marketing">Marketing por e-mail</string>
+    <string name="free_trial_feature_social_advertising">Publicidade social</string>
+    <string name="free_trial_feature_subscription_product_kits">Kits de produtos e assinaturas</string>
+    <string name="free_trial_feature_multiple_payment_options">Várias opções de pagamento</string>
+    <string name="free_trial_feature_ecommerce_reports">Relatórios de comércio eletrônico</string>
+    <string name="free_trial_feature_shipping_labels">Etiquetas de envio</string>
+    <string name="free_trial_feature_unlimited_products">Produtos ilimitados</string>
+    <string name="free_trial_feature_premium_themes">Temas premium</string>
+    <string name="free_trial_summary_credit_card_message">Não é necessário ter cartão de crédito.</string>
+    <string name="free_trial_summary_try_button">Experimente gratuitamente</string>
+    <string name="free_trial_summary_try_it">Experimente por 14 dias.</string>
+    <string name="free_trial_summary_advertise">Oferecemos tudo que você precisa para criar sua loja online e faze-la crescer, desenvolvida pelo WooCommerce e hospedada no WordPress.com.</string>
+    <string name="free_trial_summary_title">Lance sua loja em poucos dias e cresça por bastante tempo</string>
+    <string name="product_selector_products_heading">Produtos</string>
+    <string name="product_selector_recent_products_heading">Última venda</string>
+    <string name="product_selector_popular_products_heading">Populares</string>
+    <string name="jetpack_install_role_eligibility_learn_more">Saiba mais sobre funções e permissão</string>
+    <string name="jetpack_install_role_eligibility_error_message">Parece que sua função não permite instalar o Jetpack. \nFale com o administrador para obter ajuda.</string>
+    <string name="card_reader_tap_to_pay_description">Você pode tesar o Tap To Pay com um pequeno\nvalor aqui.</string>
+    <string name="card_reader_test_tap_to_pay">Testar o seu Tap To Pay</string>
     <string name="subscription_free_trial">Teste gratuito</string>
     <string name="subscription_sign_up_fee">Taxa de inscrição</string>
     <string name="subscription_expire">Expirar após</string>
@@ -46,7 +77,6 @@ Language: pt_BR
     <string name="card_reader_type_selection_tap_to_pay_description">Aceite pagamentos feitos por aproximação com segurança e diretamente do seu celular.</string>
     <string name="card_reader_tap_to_pay_beta_features_subheading">Teste o Tap to Pay no app</string>
     <string name="card_reader_tap_to_pay_beta_features_heading">Tap to Pay</string>
-    <string name="card_reader_tap_to_pay_description_not_used">Use seu celular para aceitar pagamentos\ncom cartão. Experimente agora.</string>
     <string name="card_reader_tap_to_pay_share_feedback">Compartilhe seu feedback sobre o Tap to Pay</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Não foi possível fazer login porque a criação da senha do aplicativo não foi aprovada.</string>
     <string name="login_site_credentials_fetching_site">Buscando site…</string>
@@ -62,7 +92,6 @@ Language: pt_BR
     <string name="store_onboarding_get_paid_title">Configurações de pagamentos</string>
     <string name="store_onboarding_task_about_your_store_toolbar_title">Sobre sua loja</string>
     <string name="store_creation_installation_rendering_preview_label">Processando visualização…</string>
-    <string name="jetpack_benefits_open_wpadmin">Abrir wp-admin</string>
     <string name="shipping_label_address_phone_required">Um número de telefone é necessário</string>
     <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s, %4$s vendidos</string>
     <string name="analytics_items">itens</string>
@@ -148,8 +177,6 @@ Language: pt_BR
     <string name="card_reader_tap_to_pay_explanation_ready">Seu telefone está pronto para usar o Toque para pagar.\nSeu cliente pode tocar no cartão dele\nno seu telefone para pagar.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Receba pagamentos com cartão\nusando seu telefone</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Toque para pagar</string>
-    <string name="card_reader_tap_to_pay_description_used">Use seu celular para aceitar pagamentos com cartão.</string>
-    <string name="card_reader_tap_to_pay">Toque para pagar</string>
     <string name="card_reader_hub_actions_category_header">AÇÕES</string>
     <string name="domain_registration_generic_error">Ocorreu um erro durante o registro de domínio</string>
     <string name="domain_registration_state_picker_dialog_title">Selecionar o estado</string>

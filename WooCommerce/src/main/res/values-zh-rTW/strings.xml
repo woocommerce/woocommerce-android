@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-06 11:54:05+0000
+Translation-Revision-Date: 2023-04-11 13:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="quantity_rules_info_notice">你可以在網頁儀表板中編輯產品的數量規則。</string>
+    <string name="group_of">數量單位</string>
+    <string name="max_quantity">數量上限</string>
+    <string name="min_quantity">數量下限</string>
+    <string name="product_quantity_rules_title">數量規則</string>
+    <string name="gift_cards">禮物卡</string>
+    <string name="order_gift_card">禮物卡</string>
+    <string name="free_trial_feature_fast_to_launch">快速上線</string>
+    <string name="free_trial_feature_site_security">網站安全</string>
+    <string name="free_trial_feature_auto_updates_backups">自動更新和備份</string>
+    <string name="free_trial_feature_247_support">24 小時全年無休的支援</string>
+    <string name="free_trial_feature_email_marketing">電子郵件行銷</string>
+    <string name="free_trial_feature_social_advertising">社群媒體廣告</string>
+    <string name="free_trial_feature_subscription_product_kits">訂購和產品套件</string>
+    <string name="free_trial_feature_multiple_payment_options">多種付款選項</string>
+    <string name="free_trial_feature_ecommerce_reports">電子商務報告</string>
+    <string name="free_trial_feature_shipping_labels">運送標籤</string>
+    <string name="free_trial_feature_unlimited_products">不限制產品數量</string>
+    <string name="free_trial_feature_premium_themes">進階版佈景主題</string>
+    <string name="free_trial_summary_credit_card_message">無需使用信用卡。</string>
+    <string name="free_trial_summary_try_button">免費試用</string>
+    <string name="free_trial_summary_try_it">立即試用 14 天。</string>
+    <string name="free_trial_summary_advertise">我們提供打造和經營線上商店所需的一切工具，由 WooCommerce 提供技術支援，並託管於 WordPress.com。</string>
+    <string name="free_trial_summary_title">幾天內上線，經營好幾年</string>
+    <string name="product_selector_products_heading">產品</string>
+    <string name="product_selector_recent_products_heading">上次售出</string>
+    <string name="product_selector_popular_products_heading">熱門</string>
+    <string name="jetpack_install_role_eligibility_learn_more">深入瞭解角色和權限</string>
+    <string name="jetpack_install_role_eligibility_error_message">你的角色似乎不允許安裝 Jetpack。 \n請聯絡管理員尋求協助。</string>
+    <string name="card_reader_tap_to_pay_description">你可以在此小額測試「Tap to Pay」(輕觸付款)\n功能。</string>
+    <string name="card_reader_test_tap_to_pay">測試「Tap to Pay」(輕觸付款) 功能</string>
     <string name="subscription_free_trial">免費試用</string>
     <string name="subscription_sign_up_fee">註冊費</string>
     <string name="subscription_expire">到期時間：</string>
@@ -46,7 +77,6 @@ Language: zh_TW
     <string name="card_reader_type_selection_tap_to_pay_description">直接從手機安全地接受零接觸付款。</string>
     <string name="card_reader_tap_to_pay_beta_features_subheading">在應用程式中測試「Tap to Pay」(輕觸付款) 功能</string>
     <string name="card_reader_tap_to_pay_beta_features_heading">「Tap to Pay」(輕觸付款) 功能</string>
-    <string name="card_reader_tap_to_pay_description_not_used">使用手機接受信用卡\n付款。 立即試用。</string>
     <string name="card_reader_tap_to_pay_share_feedback">分享「Tap to Pay」(輕觸付款) 功能意見回饋</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">無法登入，因為未核准建立應用程式密碼。</string>
     <string name="login_site_credentials_fetching_site">正在擷取網站…</string>
@@ -62,7 +92,6 @@ Language: zh_TW
     <string name="store_onboarding_get_paid_title">付款設定</string>
     <string name="store_onboarding_task_about_your_store_toolbar_title">關於你的商店</string>
     <string name="store_creation_installation_rendering_preview_label">正在轉譯預覽…</string>
-    <string name="jetpack_benefits_open_wpadmin">開啟儀表板</string>
     <string name="shipping_label_address_phone_required">請輸入電話號碼</string>
     <string name="analytics_list_item_products_sold">%1$s、%2$s、%3$s、%4$s 皆已售出</string>
     <string name="analytics_items">項目</string>
@@ -148,8 +177,6 @@ Language: zh_TW
     <string name="card_reader_tap_to_pay_explanation_ready">你的手機已可使用「點選支付」功能。\n你的顧客可以在手機上點選信用卡\n來付款。</string>
     <string name="card_reader_tap_to_pay_explanation_title">使用手機\n收取信用卡款項</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">點選支付</string>
-    <string name="card_reader_tap_to_pay_description_used">使用手機接受信用卡付款。</string>
-    <string name="card_reader_tap_to_pay">點選支付</string>
     <string name="card_reader_hub_actions_category_header">動作</string>
     <string name="domain_registration_generic_error">註冊網域時發生錯誤</string>
     <string name="domain_registration_state_picker_dialog_title">選取州/省</string>

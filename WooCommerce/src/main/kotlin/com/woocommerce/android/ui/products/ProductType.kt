@@ -12,6 +12,7 @@ enum class ProductType(@StringRes val stringResource: Int = 0, val value: String
     VARIABLE(R.string.product_type_variable, CoreProductType.VARIABLE.value),
     SUBSCRIPTION(R.string.product_type_subscription, "subscription"),
     VARIABLE_SUBSCRIPTION(R.string.product_type_subscription, "variable-subscription"),
+    BUNDLE(R.string.product_type_bundle, CoreProductType.BUNDLE.value),
     OTHER;
 
     companion object {
@@ -23,6 +24,7 @@ enum class ProductType(@StringRes val stringResource: Int = 0, val value: String
                 "simple" -> SIMPLE
                 "subscription" -> SUBSCRIPTION
                 "variable-subscription" -> VARIABLE_SUBSCRIPTION
+                "bundle" -> BUNDLE
                 else -> OTHER
             }
         }

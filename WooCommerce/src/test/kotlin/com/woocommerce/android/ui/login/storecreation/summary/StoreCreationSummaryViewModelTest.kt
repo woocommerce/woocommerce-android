@@ -13,8 +13,7 @@ import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSumma
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flow
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.doAnswer
@@ -35,7 +34,7 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
         // Given
         val expectedDomain = "test domain"
         val expectedTitle = "test title"
-        createSut(expectedDomain, expectedTitle, StoreCreationState.Idle)
+        createSut(expectedDomain, expectedTitle, StoreCreationState.Finished(123L))
 
         // When
         sut.onTryForFreeButtonPressed()
@@ -47,7 +46,7 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
     @Test
     fun `when onTryForFreeButtonPressed is called, then track expected event`() = testBlocking {
         // Given
-        createSut("", "", StoreCreationState.Idle)
+        createSut("", "", StoreCreationState.Loading)
 
         // When
         sut.onTryForFreeButtonPressed()
@@ -61,7 +60,7 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
         // Given
         val expectedDomain = "test domain"
         val expectedTitle = "test title"
-        createSut(expectedDomain, expectedTitle, StoreCreationState.Finished)
+        createSut(expectedDomain, expectedTitle, StoreCreationState.Finished(123L))
 
         var lastReceivedEvent: MultiLiveEvent.Event? = null
         sut.event.observeForever { lastReceivedEvent = it }
@@ -96,7 +95,7 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
         val expectedDomain = "test domain"
         val expectedTitle = "test title"
         val expectedSiteId = 321321321L
-        createSut(expectedDomain, expectedTitle, StoreCreationState.Finished, expectedSiteId)
+        createSut(expectedDomain, expectedTitle, StoreCreationState.Finished(expectedSiteId))
 
         // When
         sut.onTryForFreeButtonPressed()
@@ -110,7 +109,7 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
         // Given
         val expectedDomain = "test domain"
         val expectedTitle = "test title"
-        createSut(expectedDomain, expectedTitle, StoreCreationState.Idle)
+        createSut(expectedDomain, expectedTitle, StoreCreationState.Finished(123L))
 
         var isLoading: Boolean? = null
         sut.isLoading.observeForever { isLoading = it }
@@ -127,7 +126,7 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
         // Given
         val expectedDomain = "test domain"
         val expectedTitle = "test title"
-        createSut(expectedDomain, expectedTitle, StoreCreationState.Loading)
+        createSut(expectedDomain, expectedTitle)
 
         var isLoading: Boolean? = null
         sut.isLoading.observeForever { isLoading = it }
@@ -161,7 +160,7 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
         // Given
         val expectedDomain = "test domain"
         val expectedTitle = "test title"
-        createSut(expectedDomain, expectedTitle, StoreCreationState.Finished)
+        createSut(expectedDomain, expectedTitle, StoreCreationState.Finished(123L))
 
         var isLoading: Boolean? = null
         sut.isLoading.observeForever { isLoading = it }
@@ -178,7 +177,7 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
         // Given
         val expectedDomain = "test domain"
         val expectedTitle = "test title"
-        createSut(expectedDomain, expectedTitle, StoreCreationState.Idle)
+        createSut(expectedDomain, expectedTitle, StoreCreationState.Finished(123L))
 
         var lastReceivedEvent: MultiLiveEvent.Event? = null
         sut.event.observeForever { lastReceivedEvent = it }
@@ -193,11 +192,8 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
     private fun createSut(
         expectedDomain: String,
         expectedTitle: String,
-        expectedCreationState: StoreCreationState,
-        createdSiteId: Long = 123
+        expectedCreationState: StoreCreationState? = null
     ) {
-        val creationStateFlow = MutableStateFlow<StoreCreationState>(StoreCreationState.Idle)
-
         tracker = mock()
 
         newStore = mock {
@@ -208,16 +204,12 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
         }
 
         createStore = mock {
-            on { state } doReturn creationStateFlow
-
             onBlocking {
                 invoke(newStore.data.domain, newStore.data.name)
             } doAnswer {
-                creationStateFlow.value = expectedCreationState
-                if (expectedCreationState is StoreCreationState.Finished) {
-                    flowOf(createdSiteId)
-                } else {
-                    flowOf(null)
+                flow {
+                    emit(StoreCreationState.Loading)
+                    expectedCreationState?.let { emit(it) }
                 }
             }
         }
