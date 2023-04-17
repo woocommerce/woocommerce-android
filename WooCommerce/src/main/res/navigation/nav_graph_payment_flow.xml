@@ -312,7 +312,7 @@
         android:name="com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryFragment"
         android:label="TapToPaySummaryFragment">
         <action
-            android:id="@+id/action_tapToPaySummaryFragment_to_simplePaymentFragment"
+            android:id="@+id/action_tapToPaySummaryFragment_to_simplePaymentsFragment"
             app:destination="@+id/simplePaymentsFragment" />
     </fragment>
 
