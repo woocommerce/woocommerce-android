@@ -809,5 +809,8 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
 
     // Quantity rules (Min/Max extension)
     PRODUCT_DETAIL_VIEW_QUANTITY_RULES_TAPPED,
-    PRODUCT_VARIATION_VIEW_QUANTITY_RULES_TAPPED
+    PRODUCT_VARIATION_VIEW_QUANTITY_RULES_TAPPED,
+
+    // Bundled products
+    PRODUCT_DETAIL_VIEW_BUNDLED_PRODUCTS_TAPPED
 }

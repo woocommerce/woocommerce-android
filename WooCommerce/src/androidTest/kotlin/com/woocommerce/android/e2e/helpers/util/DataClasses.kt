@@ -92,3 +92,11 @@ data class OrderData(
     val status = orderStatusMap[statusRaw]
     val total = "\$$totalRaw"
 }
+
+data class StatsSummaryData(
+    val revenue: String,
+    val orders: String,
+    val visitors: String,
+) {
+    val conversion = ((orders.toDouble() / visitors.toDouble()) * 100).toInt().toString() + "%"
+}

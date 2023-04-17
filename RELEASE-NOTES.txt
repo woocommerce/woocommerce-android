@@ -1,9 +1,16 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+13.3
+-----
+
+
 13.2
 -----
 - [**] Fix adding variable subscription products to an order [https://github.com/woocommerce/woocommerce-android/pull/8798]
 - [*] Added RTL languages support in search fields [https://github.com/woocommerce/woocommerce-android/pull/8770]
 - [*][internal] Visual improvements to the Payments Hub Screen [https://github.com/woocommerce/woocommerce-android/pull/8768]
+- [*] Orders: Adds read-only support for the Gift cards extension in the Order details. [https://github.com/woocommerce/woocommerce-android/pull/8684]
+- [*] Products: Adds read-only support for the Max/min quantity rules extension in the Products details. [https://github.com/woocommerce/woocommerce-android/pull/8715]
+- [*] Products: Adds read-only support for the Bundled Products extension in the Products details. [https://github.com/woocommerce/woocommerce-android/pull/8806]
 
 13.1
 -----

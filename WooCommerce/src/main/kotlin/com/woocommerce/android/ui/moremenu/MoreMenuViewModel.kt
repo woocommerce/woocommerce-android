@@ -47,10 +47,11 @@ class MoreMenuViewModel @Inject constructor(
             moreMenuRepository.observeCouponBetaSwitch(),
         ) { count, selectedSite, isCouponsEnabled ->
             MoreMenuViewState(
-                moreMenuItems = generateMenuButtons(
+                generalMenuItems = generateGeneralMenuButtons(
                     unseenReviewsCount = count,
                     isCouponsEnabled = isCouponsEnabled,
                 ),
+                settingsMenuItems = generateSettingsMenuButtons(),
                 siteName = selectedSite.getSelectedSiteName(),
                 siteUrl = selectedSite.getSelectedSiteAbsoluteUrl(),
                 userAvatarUrl = accountStore.account.avatarUrl,
@@ -58,45 +59,61 @@ class MoreMenuViewModel @Inject constructor(
             )
         }.asLiveData()
 
-    private suspend fun generateMenuButtons(
+    private suspend fun generateGeneralMenuButtons(
         unseenReviewsCount: Int,
-        isCouponsEnabled: Boolean,
+        isCouponsEnabled: Boolean
     ) = listOf(
         MenuUiButton(
-            text = R.string.more_menu_button_payments,
+            title = R.string.more_menu_button_payments,
+            description = R.string.more_menu_button_payments_description,
             icon = R.drawable.ic_more_menu_payments,
             onClick = ::onPaymentsButtonClick,
         ),
         MenuUiButton(
-            text = R.string.more_menu_button_wс_admin,
+            title = R.string.more_menu_button_wс_admin,
+            description = R.string.more_menu_button_wc_admin_description,
             icon = R.drawable.ic_more_menu_wp_admin,
             onClick = ::onViewAdminButtonClick
         ),
         MenuUiButton(
-            text = R.string.more_menu_button_store,
+            title = R.string.more_menu_button_store,
+            description = R.string.more_menu_button_store_description,
             icon = R.drawable.ic_more_menu_store,
             onClick = ::onViewStoreButtonClick
         ),
         MenuUiButton(
-            text = R.string.more_menu_button_coupons,
+            title = R.string.more_menu_button_coupons,
+            description = R.string.more_menu_button_coupons_description,
             icon = R.drawable.ic_more_menu_coupons,
             isEnabled = isCouponsEnabled,
             onClick = ::onCouponsButtonClick
         ),
         MenuUiButton(
-            text = R.string.more_menu_button_reviews,
+            title = R.string.more_menu_button_reviews,
+            description = R.string.more_menu_button_reviews_description,
             icon = R.drawable.ic_more_menu_reviews,
             badgeState = buildUnseenReviewsBadgeState(unseenReviewsCount),
             onClick = ::onReviewsButtonClick
         ),
         MenuUiButton(
-            text = R.string.more_menu_button_inbox,
+            title = R.string.more_menu_button_inbox,
+            description = R.string.more_menu_button_inbox_description,
             icon = R.drawable.ic_more_menu_inbox,
             isEnabled = moreMenuRepository.isInboxEnabled(),
             onClick = ::onInboxButtonClick
+        )
+    )
+
+    private fun generateSettingsMenuButtons() = listOf(
+        MenuUiButton(
+            title = R.string.more_menu_button_settings,
+            description = R.string.more_menu_button_settings_description,
+            icon = R.drawable.ic_more_screen_settings,
+            onClick = ::onSettingsClick
         ),
         MenuUiButton(
-            text = R.string.more_menu_button_upgrades,
+            title = R.string.more_menu_button_upgrades,
+            description = R.string.more_menu_button_upgrades_description,
             icon = R.drawable.ic_more_menu_upgrades,
             isEnabled = moreMenuRepository.isUpgradesEnabled(),
             onClick = ::onUpgradesButtonClick
@@ -120,19 +137,19 @@ class MoreMenuViewModel @Inject constructor(
 
     private fun SiteModel.getSelectedSiteAbsoluteUrl(): String = runCatching { URL(url).host }.getOrDefault("")
 
-    fun onSettingsClick() {
-        AnalyticsTracker.track(
-            AnalyticsEvent.HUB_MENU_SETTINGS_TAPPED
-        )
-        triggerEvent(MoreMenuEvent.NavigateToSettingsEvent)
-    }
-
     fun onSwitchStoreClick() {
         AnalyticsTracker.track(
             AnalyticsEvent.HUB_MENU_SWITCH_STORE_TAPPED
         )
         appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_SWITCHING_STORE)
         triggerEvent(MoreMenuEvent.StartSitePickerEvent)
+    }
+
+    private fun onSettingsClick() {
+        AnalyticsTracker.track(
+            AnalyticsEvent.HUB_MENU_SETTINGS_TAPPED
+        )
+        triggerEvent(MoreMenuEvent.NavigateToSettingsEvent)
     }
 
     private fun onPaymentsButtonClick() {
@@ -184,17 +201,21 @@ class MoreMenuViewModel @Inject constructor(
     }
 
     private fun isPaymentBadgeVisible() = moreMenuViewState.value
-        ?.moreMenuItems
-        ?.find { it.text == R.string.more_menu_button_payments }
+        ?.generalMenuItems
+        ?.find { it.title == R.string.more_menu_button_payments }
         ?.badgeState != null
 
     data class MoreMenuViewState(
-        val moreMenuItems: List<MenuUiButton> = emptyList(),
+        val generalMenuItems: List<MenuUiButton> = emptyList(),
+        val settingsMenuItems: List<MenuUiButton> = emptyList(),
         val siteName: String = "",
         val siteUrl: String = "",
         val userAvatarUrl: String = "",
         val isStoreSwitcherEnabled: Boolean = false
-    )
+    ) {
+        val enabledGeneralItems = generalMenuItems.filter { it.isEnabled }
+        val enabledSettingsItems = settingsMenuItems.filter { it.isEnabled }
+    }
 
     sealed class MoreMenuEvent : MultiLiveEvent.Event() {
         object NavigateToSettingsEvent : MoreMenuEvent()
