@@ -131,7 +131,7 @@ class InstallationViewModel @Inject constructor(
         launch {
             installationTransactionLauncher.onStoreInstallationRequested()
 
-            // it takes a while (~45s) before a store is ready after a purchase, so we need to wait a bit
+            // takes around (~45s) for the atomic site migration, this delay is to avoid unnecessary requests
             delay(INITIAL_STORE_CREATION_DELAY)
 
             // keep fetching the user's sites until the new site is properly configured or the retry limit is reached
@@ -144,13 +144,24 @@ class InstallationViewModel @Inject constructor(
                     if (retries == STORE_LOAD_RETRIES_LIMIT) {
                         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_TIMED_OUT)
                     }
+                    onLoadingFinished()
                     processStoreCreationResult(result)
-                    storeCreationLoadingTimer.cancelTimer()
                     break
                 }
                 delay(SITE_CHECK_DEBOUNCE)
             }
         }
+    }
+
+    private fun onLoadingFinished() {
+        _viewState.update {
+            StoreCreationLoadingState(
+                progress = 1F,
+                title = string.store_creation_in_progress_title_5,
+                description = string.store_creation_in_progress_description_5
+            )
+        }
+        storeCreationLoadingTimer.cancelTimer()
     }
 
     fun onUrlLoaded(url: String) {
