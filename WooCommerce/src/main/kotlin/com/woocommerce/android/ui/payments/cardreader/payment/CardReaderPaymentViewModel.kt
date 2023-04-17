@@ -91,7 +91,6 @@ import javax.inject.Inject
 private const val ARTIFICIAL_RETRY_DELAY = 500L
 private const val CANADA_FEE_FLAT_IN_CENTS = 15L
 
-@Suppress("LargeClass")
 @HiltViewModel
 class CardReaderPaymentViewModel
 @Inject constructor(
@@ -481,17 +480,9 @@ class CardReaderPaymentViewModel
             { retry(orderId, billingEmail, it, amountLabel) }
         } ?: { initPaymentFlow(isRetry = true) }
         val config = cardReaderConfigProvider.provideCountryConfigFor(getStoreCountryCode())
-        if (config !is CardReaderConfigForSupportedCountry) {
-            viewState.postValue(
-                cardReaderPaymentReaderTypeStateProvider.provideFailedPaymentState(
-                    cardReaderType = arguments.cardReaderType,
-                    errorType = PaymentFlowError.Unknown,
-                    amountLabel = amountLabel,
-                    onPrimaryActionClicked = { onBackPressed() }
-                )
-            )
-            WooLog.e(WooLog.T.CARD_READER, "State mismatch: received unsupported country config")
-            return
+
+        require(config is CardReaderConfigForSupportedCountry) {
+            "State mismatch: received unsupported country config"
         }
 
         val errorType = errorMapper.mapPaymentErrorToUiError(error.type, config)
