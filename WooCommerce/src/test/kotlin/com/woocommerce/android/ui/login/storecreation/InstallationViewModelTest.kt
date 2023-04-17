@@ -116,8 +116,8 @@ class InstallationViewModelTest : BaseUnitTest() {
             verify(storeCreationLoadingTimer).cancelTimer()
             val expectedState = ErrorState(STORE_NOT_READY)
             assertEquals(expectedState, viewModel.viewState.value)
-        verify(analyticsTrackerWrapper).track(AnalyticsEvent.SITE_CREATION_TIMED_OUT)
-    }
+            verify(analyticsTrackerWrapper).track(AnalyticsEvent.SITE_CREATION_TIMED_OUT)
+        }
 
     @Test
     fun `when a site fetching returns an error, the flow fails immediately`() = testBlocking {
@@ -187,22 +187,23 @@ class InstallationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when a Woo site is found after installation, but has out-of-sync properties, report a tracks event`() = testBlocking {
-        whenever(repository.fetchSiteAfterCreation(newStore.data.siteId!!)).thenReturn(Success(Unit))
-        whenever(selectedSite.get()).thenReturn(
-            SiteModel().apply {
-                setIsWpComStore(false)
-                hasWooCommerce = false
-                name = "different than provided by user"
-                url = newStore.data.domain
-            }
-        )
+    fun `when a Woo site is found after installation, but has out-of-sync properties, report a tracks event`() =
+        testBlocking {
+            whenever(repository.fetchSiteAfterCreation(newStore.data.siteId!!)).thenReturn(Success(Unit))
+            whenever(selectedSite.get()).thenReturn(
+                SiteModel().apply {
+                    setIsWpComStore(false)
+                    hasWooCommerce = false
+                    name = "different than provided by user"
+                    url = newStore.data.domain
+                }
+            )
 
-        whenViewModelIsCreated()
+            whenViewModelIsCreated()
 
-        viewModel.viewState.observeForever(observer)
-        advanceUntilIdle()
+            viewModel.viewState.observeForever(observer)
+            advanceUntilIdle()
 
-        verify(analyticsTrackerWrapper).track(AnalyticsEvent.SITE_CREATION_PROPERTIES_OUT_OF_SYNC)
-    }
+            verify(analyticsTrackerWrapper).track(AnalyticsEvent.SITE_CREATION_PROPERTIES_OUT_OF_SYNC)
+        }
 }
