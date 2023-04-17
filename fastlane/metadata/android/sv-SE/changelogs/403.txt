@@ -1,0 +1,2 @@
+13.1:
+Den här gången har vi lagt mer tid på personliga betalningar och beställningar, inklusive möjligheten att välja dina mest populära produkter vid skapande av en beställning.

@@ -177,6 +177,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 mock(),
                 tracker,
                 selectedSite,
+                mock(),
                 mock()
             )
         )

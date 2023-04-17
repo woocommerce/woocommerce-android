@@ -136,4 +136,6 @@ sealed class ProductNavigationTarget : Event() {
     ) : ProductNavigationTarget()
 
     data class ViewProductQuantityRules(val quantityRules: QuantityRules) : ProductNavigationTarget()
+
+    data class ViewBundleProducts(val productId: Long) : ProductNavigationTarget()
 }

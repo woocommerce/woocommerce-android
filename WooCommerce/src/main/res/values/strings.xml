@@ -95,17 +95,6 @@
     <string name="product_bulk_update_status">Update status</string>
     <string name="product_bulk_update_status_updated">Status updated!</string>
     <string name="review_notifications">Reviews</string>
-    <string name="more_menu">Menu</string>
-    <string name="more_menu_button_woo_admin">WooCommerce Admin</string>
-    <string name="more_menu_button_wс_admin">WC Admin</string>
-    <string name="more_menu_button_payments">Payments</string>
-    <string name="more_menu_button_analytics">Analytics</string>
-    <string name="more_menu_button_inbox">Inbox</string>
-    <string name="more_menu_button_store">View Store</string>
-    <string name="more_menu_button_coupons">Coupons</string>
-    <string name="more_menu_button_reviews">Reviews</string>
-    <string name="more_menu_button_upgrades">Upgrades</string>
-    <string name="more_menu_avatar">User profile picture</string>
     <string name="version_with_name_param">Version %s</string>
     <string name="share_store_button">Share your store</string>
     <string name="share_store_dialog_title">Share your store\'s URL</string>
@@ -575,7 +564,7 @@
     <string name="domains_free_with_credits">Free for the first year</string>
     <string name="domains_purchase_successful_heading">Congratulations on your purchase</string>
     <string name="domains_purchase_successful_delay_notice">Your site address is being set up. It may take up 30 minutes for your domain to start working.</string>
-    <string name="domains_purchase_successful_settings_notice">You can find the domain settings in Settings -> Domains</string>
+    <string name="domains_purchase_successful_settings_notice">You can find the domain settings in Settings -&gt; Domains</string>
     <string name="domain_registration_privacy_protection_title">Privacy Protection</string>
     <string name="domain_registration_privacy_protection_description">Domain owners have to share contact information in a public database of all domains.
         With Privacy Protection, we publish our own information instead of yours and privately forward any communication to you.</string>
@@ -1182,7 +1171,7 @@
     <string name="card_reader_tap_to_pay_explanation_title">Collect card payments\nwith your phone</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Your phone is ready for Tap to Pay.\nYour customer can tap their card\non your phone to pay.</string>
     <string name="card_reader_tap_to_pay_explanation_try_and_refund">Try a payment using your card and\nrefund it when you’re done.</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> You can find Tap to Pay on Android in\nMenu > Payments, or Collect Payment and\nchoose Tap to Pay.</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find"> You can find Tap to Pay on Android in\nMenu &gt; Payments, or Collect Payment and\nchoose Tap to Pay.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Try a payment</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Something went wrong. Please try again later.</string>
     <string name="card_reader_tap_to_pay_beta_features_heading">Tap To Pay</string>
@@ -2200,6 +2189,7 @@
     <string name="product_type_virtual">Virtual</string>
     <string name="product_type_downloadable">Downloadable</string>
     <string name="product_type_subscription">Subscription</string>
+    <string name="product_type_bundle">Bundle</string>
 
     <!-- Product type bottom sheets -->
     <string name="product_type_list_header">Select a product type</string>
@@ -3269,7 +3259,7 @@
     <string name="subscription_total" translatable="false">%1$s /\n%2$s</string>
     <string name="subscription_period_interval_single">Every %1$s</string>
     <string name="subscription_period_interval_multiple">Every %1$d %2$s</string>
-    <string name="subscription_end_date" translatable="false">&#160;- %1$s</string>
+    <string name="subscription_end_date" translatable="false"> - %1$s</string>
     <string name="product_subscription_description">%1$s every %2$s %3$s</string>
     <string name="subscription_period" translatable="false">%1$s %2$s</string>
     <string name="subscription_never_expire">Never expire</string>
@@ -3326,5 +3316,49 @@
     <string name="empty_min_quantity">No minimum</string>
     <string name="empty_max_quantity">No maximum</string>
     <string name="empty_group_of">Not grouped</string>
+
+    <!--
+    Bundled products
+    -->
+    <string name="product_bundle">Bundled products</string>
+    <string name="product_bundle_single_count">1 product</string>
+    <string name="product_bundle_multiple_count">%d products</string>
+    <string name="bundled_products_info_notice">You can edit bundled products in the web dashboard.</string>
+
+
+    <!--
+    More Menu
+    -->
+    <string name="more_menu">Menu</string>
+    <string name="more_menu_button_woo_admin">WooCommerce Admin</string>
+    <string name="more_menu_avatar">User profile picture</string>
+    <string name="more_menu_button_analytics">Analytics</string>
+
+    <string name="more_menu_settings_section_title">Settings</string>
+    <string name="more_menu_general_section_title">General</string>
+
+    <string name="more_menu_button_wс_admin">WC Admin</string>
+    <string name="more_menu_button_wc_admin_description">Manage more on admin</string>
+
+    <string name="more_menu_button_payments">Payments</string>
+    <string name="more_menu_button_payments_description">Join the mobile payments</string>
+
+    <string name="more_menu_button_inbox">Inbox</string>
+    <string name="more_menu_button_inbox_description">Stay up-to-date</string>
+
+    <string name="more_menu_button_store">View Store</string>
+    <string name="more_menu_button_store_description">View your store</string>
+
+    <string name="more_menu_button_coupons">Coupons</string>
+    <string name="more_menu_button_coupons_description">Boost sales with special offers</string>
+
+    <string name="more_menu_button_reviews">Reviews</string>
+    <string name="more_menu_button_reviews_description">Capture reviews for your store</string>
+
+    <string name="more_menu_button_upgrades">Upgrades</string>
+    <string name="more_menu_button_upgrades_description">Manage your plans</string>
+
+    <string name="more_menu_button_settings">Settings</string>
+    <string name="more_menu_button_settings_description">Update your preferences</string>
 
 </resources>

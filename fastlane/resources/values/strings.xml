@@ -95,17 +95,6 @@
     <string name="product_bulk_update_status">Update status</string>
     <string name="product_bulk_update_status_updated">Status updated!</string>
     <string name="review_notifications">Reviews</string>
-    <string name="more_menu">Menu</string>
-    <string name="more_menu_button_woo_admin">WooCommerce Admin</string>
-    <string name="more_menu_button_wс_admin">WC Admin</string>
-    <string name="more_menu_button_payments">Payments</string>
-    <string name="more_menu_button_analytics">Analytics</string>
-    <string name="more_menu_button_inbox">Inbox</string>
-    <string name="more_menu_button_store">View Store</string>
-    <string name="more_menu_button_coupons">Coupons</string>
-    <string name="more_menu_button_reviews">Reviews</string>
-    <string name="more_menu_button_upgrades">Upgrades</string>
-    <string name="more_menu_avatar">User profile picture</string>
     <string name="version_with_name_param">Version %s</string>
     <string name="share_store_button">Share your store</string>
     <string name="share_store_dialog_title">Share your store\'s URL</string>
@@ -2200,6 +2189,7 @@
     <string name="product_type_virtual">Virtual</string>
     <string name="product_type_downloadable">Downloadable</string>
     <string name="product_type_subscription">Subscription</string>
+    <string name="product_type_bundle">Bundle</string>
 
     <!-- Product type bottom sheets -->
     <string name="product_type_list_header">Select a product type</string>
@@ -3241,6 +3231,9 @@
     <string name="free_trial_feature_auto_updates_backups">Auto updates &amp; backups</string>
     <string name="free_trial_feature_site_security">Site security</string>
     <string name="free_trial_feature_fast_to_launch">Fast to launch</string>
+    <string name="free_trial_summary_store_creation_error_title">Something went wrong</string>
+    <string name="free_trial_summary_store_creation_error_message">Sorry, we cannot create your store right now, please try again later.</string>
+    <string name="free_trial_summary_store_creation_error_dialog_action">Got It!</string>
 
 
     <!--
@@ -3319,5 +3312,53 @@
     <string name="max_quantity">Maximum quantity</string>
     <string name="group_of">Group of</string>
     <string name="quantity_rules_info_notice">You can edit product\'s quantity rules in the web dashboard.</string>
+
+    <string name="empty_min_quantity">No minimum</string>
+    <string name="empty_max_quantity">No maximum</string>
+    <string name="empty_group_of">Not grouped</string>
+
+    <!--
+    Bundled products
+    -->
+    <string name="product_bundle">Bundled products</string>
+    <string name="product_bundle_single_count">1 product</string>
+    <string name="product_bundle_multiple_count">%d products</string>
+    <string name="bundled_products_info_notice">You can edit bundled products in the web dashboard.</string>
+
+
+    <!--
+    More Menu
+    -->
+    <string name="more_menu">Menu</string>
+    <string name="more_menu_button_woo_admin">WooCommerce Admin</string>
+    <string name="more_menu_avatar">User profile picture</string>
+    <string name="more_menu_button_analytics">Analytics</string>
+
+    <string name="more_menu_settings_section_title">Settings</string>
+    <string name="more_menu_general_section_title">General</string>
+
+    <string name="more_menu_button_wс_admin">WC Admin</string>
+    <string name="more_menu_button_wc_admin_description">Manage more on admin</string>
+
+    <string name="more_menu_button_payments">Payments</string>
+    <string name="more_menu_button_payments_description">Join the mobile payments</string>
+
+    <string name="more_menu_button_inbox">Inbox</string>
+    <string name="more_menu_button_inbox_description">Stay up-to-date</string>
+
+    <string name="more_menu_button_store">View Store</string>
+    <string name="more_menu_button_store_description">View your store</string>
+
+    <string name="more_menu_button_coupons">Coupons</string>
+    <string name="more_menu_button_coupons_description">Boost sales with special offers</string>
+
+    <string name="more_menu_button_reviews">Reviews</string>
+    <string name="more_menu_button_reviews_description">Capture reviews for your store</string>
+
+    <string name="more_menu_button_upgrades">Upgrades</string>
+    <string name="more_menu_button_upgrades_description">Manage your plans</string>
+
+    <string name="more_menu_button_settings">Settings</string>
+    <string name="more_menu_button_settings_description">Update your preferences</string>
 
 </resources>
