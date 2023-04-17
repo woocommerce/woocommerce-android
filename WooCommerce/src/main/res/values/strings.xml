@@ -1184,6 +1184,7 @@
     <string name="card_reader_type_selection_tap_to_pay_description">Securely accept contactless payments directly from your phone.</string>
     <string name="card_reader_type_selection_bluetooth_reader">Card Reader</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">Card reader accepts tap, chip, and swipe payments with debit and credit cards.</string>
+    <string name="tap_to_pay_refund_reason">Test Tap To Pay payment auto refund</string>
 
     <!--
             Card Reader Interac refund
@@ -3360,5 +3361,4 @@
 
     <string name="more_menu_button_settings">Settings</string>
     <string name="more_menu_button_settings_description">Update your preferences</string>
-
 </resources>

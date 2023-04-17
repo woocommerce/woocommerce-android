@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.Navigate
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderPaymentFlow
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderRefundFlow
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToOrderDetails
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToTapToPaySummary
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.OpenGenericWebView
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.OpenPurchaseCardReaderLink
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.SharePaymentUrl
@@ -179,6 +180,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                 is ShowDialog -> {
                     event.showDialog()
                 }
+
                 is ShowSnackbar -> {
                     Snackbar.make(
                         binding.container,
@@ -186,9 +188,11 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                         BaseTransientBottomBar.LENGTH_LONG
                     ).show()
                 }
+
                 is SharePaymentUrl -> {
                     sharePaymentUrl(event.storeName, event.paymentUrl)
                 }
+
                 is NavigateToCardReaderPaymentFlow -> {
                     val action =
                         SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToCardReaderPaymentFlow(
@@ -197,6 +201,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                         )
                     findNavController().navigate(action)
                 }
+
                 is NavigateToCardReaderHubFlow -> {
                     val action =
                         SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToCardReaderHubFlow(
@@ -204,6 +209,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                         )
                     findNavController().navigate(action)
                 }
+
                 is NavigateToCardReaderRefundFlow -> {
                     val action =
                         SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToCardReaderRefundFlow(
@@ -212,10 +218,12 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                         )
                     findNavController().navigate(action)
                 }
+
                 is NavigateBackToOrderList -> {
                     val action = SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderList()
                     findNavController().navigateSafely(action)
                 }
+
                 is NavigateBackToHub -> {
                     val action = SelectPaymentMethodFragmentDirections
                         .actionSelectPaymentMethodFragmentToCardReaderHubFragment(
@@ -223,17 +231,21 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                         )
                     findNavController().navigateSafely(action)
                 }
+
                 DismissCardReaderUpsellBanner -> {
                     applyBannerDismissDialogComposeUI()
                 }
+
                 DismissCardReaderUpsellBannerViaRemindMeLater -> {
                     binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
                     binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
                 }
+
                 DismissCardReaderUpsellBannerViaDontShowAgain -> {
                     binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
                     binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
                 }
+
                 is OpenPurchaseCardReaderLink -> {
                     findNavController().navigate(
                         NavGraphMainDirections.actionGlobalWPComWebViewFragment(
@@ -242,15 +254,24 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                         )
                     )
                 }
+
                 is OpenGenericWebView -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
+
                 is NavigateToOrderDetails -> {
                     val action = SelectPaymentMethodFragmentDirections
                         .actionSelectPaymentMethodFragmentToOrderDetailFragment(
                             orderId = event.orderId
                         )
                     findNavController().navigateSafely(action)
+                }
+
+                is NavigateToTapToPaySummary -> {
+                    findNavController().navigateSafely(
+                        SelectPaymentMethodFragmentDirections
+                            .actionSelectPaymentMethodFragmentToTapToPaySummaryFragment()
+                    )
                 }
             }
         }
