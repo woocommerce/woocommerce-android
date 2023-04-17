@@ -16,16 +16,14 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.utils.AppLogWrapper
 
 class CardReaderPaymentErrorMapperTest {
     private val resources: ResourceProvider = mock {
         on { getString(R.string.card_reader_payment_failed_amount_too_small) }
             .thenReturn("Amount must be at least %1\$s")
     }
-    private val logger: AppLogWrapper = mock()
     private val currencyFormatter: SiteIndependentCurrencyFormatter = mock()
-    private val mapper = CardReaderPaymentErrorMapper(resources, currencyFormatter, logger)
+    private val mapper = CardReaderPaymentErrorMapper(resources, currencyFormatter)
     private var config: CardReaderConfigForSupportedCountry = mock()
 
     @Test
