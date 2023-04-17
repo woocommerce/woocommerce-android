@@ -91,8 +91,6 @@ class InstallationViewModel @Inject constructor(
     private fun loadNewStore() {
         suspend fun processStoreCreationResult(result: StoreCreationResult<Unit>) {
             if (result is Success) {
-                storeCreationLoadingCountDownTimer.cancelTimer()
-
                 repository.selectSite(newStore.data.siteId!!)
 
                 val properties = mapOf(
@@ -129,6 +127,7 @@ class InstallationViewModel @Inject constructor(
                     retries == STORE_LOAD_RETRIES_LIMIT // site found but is not ready & retry limit reached
                 ) {
                     processStoreCreationResult(result)
+                    storeCreationLoadingCountDownTimer.cancelTimer()
                     break
                 }
                 delay(SITE_CHECK_DEBOUNCE)
