@@ -55,12 +55,12 @@
         Icon-related resources that use the secondary color should be assigned
         this resource.
     -->
-    <color name="color_icon_secondary">@color/color_secondary_selector</color>
+    <color name="color_icon_primary">@color/color_primary_selector</color>
 
     <!--
         Toolbar and bottom bar icons should be assigned this resource.
     -->
-    <color name="color_icon_menu">@color/color_secondary</color>
+    <color name="color_icon_menu">@color/color_primary</color>
 
     <!--
         Toolbar icons for login menus
@@ -226,5 +226,12 @@
     -->
     <color name="or_divider_line">#DADBDC</color>
     <color name="or_divider_text">#898A8D</color>
+
+    <!--
+    Free Trial
+    -->
+    <color name="free_trial_banner_background">@color/woo_purple_0</color>
+    <color name="free_trial_banner_link_text">@color/woo_purple_60</color>
+    <color name="free_trial_banner_content">@color/color_on_surface</color>
 
 </resources>

@@ -26,10 +26,12 @@ import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewImageGallery
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewMediaUploadErrors
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.Optional
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -55,7 +57,8 @@ class VariationDetailViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val parameterRepository: ParameterRepository,
     private val mediaFileUploadHandler: MediaFileUploadHandler,
-    private val resources: ResourceProvider
+    private val resources: ResourceProvider,
+    private val getProductVariationQuantityRules: GetProductVariationQuantityRules
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_VARIATION_PARAMETERS = "key_variation_parameters"
@@ -313,7 +316,7 @@ class VariationDetailViewModel @Inject constructor(
 
     private fun loadVariation(remoteProductId: Long, remoteVariationId: Long) {
         launch {
-            val variationInDb = variationRepository.getVariation(remoteProductId, remoteVariationId)
+            val variationInDb = variationRepository.getVariationByProductType(remoteProductId, remoteVariationId)
             if (variationInDb != null) {
                 originalVariation = variationInDb
                 showVariation(variationInDb)
@@ -337,7 +340,7 @@ class VariationDetailViewModel @Inject constructor(
     private suspend fun fetchVariation(remoteProductId: Long, remoteVariationId: Long) {
         if (networkStatus.isConnected()) {
             variationRepository.fetchVariation(remoteProductId, remoteVariationId)
-            originalVariation = variationRepository.getVariation(remoteProductId, remoteVariationId)
+            originalVariation = variationRepository.getVariationByProductType(remoteProductId, remoteVariationId)
         } else {
             triggerEvent(Event.ShowSnackbar(string.offline_error))
         }
@@ -403,6 +406,11 @@ class VariationDetailViewModel @Inject constructor(
                 }
             }
             .launchIn(this)
+    }
+
+    suspend fun getQuantityRules(remoteProductId: Long, remoteVariationId: Long): QuantityRules? {
+        if (FeatureFlag.QUANTITY_RULES_READ_ONLY_SUPPORT.isEnabled().not()) return null
+        return getProductVariationQuantityRules(remoteProductId, remoteVariationId)
     }
 
     object HideImageUploadErrorSnackbar : Event()

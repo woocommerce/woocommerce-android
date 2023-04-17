@@ -35,7 +35,7 @@ import javax.inject.Inject
 class StoreOnboardingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val onboardingRepository: StoreOnboardingRepository,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle), DefaultLifecycleObserver {
     companion object {
         const val NUMBER_ITEMS_IN_COLLAPSED_MODE = 3
@@ -46,7 +46,7 @@ class StoreOnboardingViewModel @Inject constructor(
 
     init {
         launch {
-            onboardingRepository.onboardingTasksCacheFlow
+            onboardingRepository.observeOnboardingTasks()
                 .collectLatest { tasks ->
                     _viewState.value = OnboardingState(
                         show = tasks.any { !it.isComplete } && FeatureFlag.STORE_CREATION_ONBOARDING.isEnabled(),

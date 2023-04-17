@@ -34,23 +34,40 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 @Composable
 fun StoreNamePickerScreen(viewModel: StoreNamePickerViewModel) {
     viewModel.storeName.observeAsState().value?.let { storeName ->
-        Scaffold(topBar = {
-            ToolbarWithHelpButton(
-                onNavigationButtonClick = viewModel::onCancelPressed,
-                onHelpButtonClick = viewModel::onHelpPressed,
-            )
-        }) { padding ->
-            NamePickerForm(
-                storeName = storeName,
-                onStoreNameChanged = viewModel::onStoreNameChanged,
-                onContinueClicked = viewModel::onContinueClicked,
-                modifier = Modifier
-                    .background(MaterialTheme.colors.surface)
-                    .fillMaxSize()
-                    .padding(padding)
-                    .padding(dimensionResource(id = R.dimen.major_125))
-            )
-        }
+        StoreNamePickerScreen(
+            storeName = storeName,
+            onCancelPressed = viewModel::onCancelPressed,
+            onHelpPressed = viewModel::onHelpPressed,
+            onStoreNameChanged = viewModel::onStoreNameChanged,
+            onContinueClicked = viewModel::onContinueClicked
+        )
+    }
+}
+
+@Composable
+private fun StoreNamePickerScreen(
+    storeName: String,
+    onCancelPressed: () -> Unit,
+    onHelpPressed: () -> Unit,
+    onStoreNameChanged: (String) -> Unit,
+    onContinueClicked: () -> Unit
+) {
+    Scaffold(topBar = {
+        ToolbarWithHelpButton(
+            onNavigationButtonClick = onCancelPressed,
+            onHelpButtonClick = onHelpPressed,
+        )
+    }) { padding ->
+        NamePickerForm(
+            storeName = storeName,
+            onStoreNameChanged = onStoreNameChanged,
+            onContinueClicked = onContinueClicked,
+            modifier = Modifier
+                .background(MaterialTheme.colors.surface)
+                .fillMaxSize()
+                .padding(padding)
+                .padding(dimensionResource(id = R.dimen.major_125))
+        )
     }
 }
 

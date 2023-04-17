@@ -176,7 +176,9 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 generateVariationCandidates,
                 mock(),
                 tracker,
-                selectedSite
+                selectedSite,
+                mock(),
+                mock()
             )
         )
 

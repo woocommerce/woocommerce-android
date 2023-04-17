@@ -27,7 +27,7 @@
                 android:padding="@dimen/major_100"
                 android:text="@string/simple_payments_choose_method" />
 
-            <View
+            <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/divider1"
                 android:layout_width="wrap_content"
                 android:layout_height="1dp"
@@ -46,49 +46,149 @@
                 android:padding="@dimen/major_100"
                 android:text="@string/cash" />
 
-            <View
+            <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/divider2"
                 android:layout_width="wrap_content"
                 android:layout_height="1dp"
                 android:background="@color/divider_color" />
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/tvTapToPay"
-                style="@style/Woo.Card.Body.Bold"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clTapToPay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="0dp"
-                android:background="?attr/selectableItemBackground"
-                android:drawableStart="@drawable/ic_baseline_contactless"
-                android:drawableEnd="@drawable/ic_arrow_right"
-                android:drawablePadding="@dimen/major_100"
-                android:padding="@dimen/major_100"
-                android:text="@string/card_reader_type_selection_tap_to_pay" />
+                android:background="?attr/selectableItemBackground">
 
-            <View
-                android:id="@+id/divider3"
-                android:layout_width="wrap_content"
-                android:layout_height="1dp"
-                android:background="@color/divider_color" />
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivTapToPayIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/minor_10"
+                    android:paddingVertical="@dimen/major_110"
+                    android:paddingStart="@dimen/major_110"
+                    android:paddingEnd="@dimen/major_110"
+                    app:layout_constraintBottom_toBottomOf="@id/tvTapToPayHeader"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tvTapToPayHeader"
+                    app:srcCompat="@drawable/ic_baseline_contactless" />
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/tvBtReader"
-                style="@style/Woo.Card.Body.Bold"
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvTapToPayHeader"
+                    style="@style/Woo.Card.Body.Bold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/major_100"
+                    android:text="@string/card_reader_type_selection_tap_to_pay"
+                    app:layout_constraintBottom_toTopOf="@id/tvTapToPayDescription"
+                    app:layout_constraintEnd_toStartOf="@id/ivTapToPayArrow"
+                    app:layout_constraintStart_toEndOf="@id/ivTapToPayIcon"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="packed"
+                    app:layout_goneMarginBottom="@dimen/major_100" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvTapToPayDescription"
+                    style="@style/Woo.TextView.Body2"
+                    android:layout_width="@dimen/minor_00"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginBottom="@dimen/major_100"
+                    android:textColor="@color/color_surface_variant"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@id/tvTapToPayHeader"
+                    app:layout_constraintStart_toStartOf="@id/tvTapToPayHeader"
+                    app:layout_constraintTop_toBottomOf="@id/tvTapToPayHeader"
+                    android:text="@string/card_reader_type_selection_tap_to_pay_description" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivTapToPayArrow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="@dimen/major_100"
+                    android:paddingEnd="@dimen/major_100"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_arrow_right" />
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clCardReader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="0dp"
-                android:background="?attr/selectableItemBackground"
-                android:drawableStart="@drawable/ic_gridicons_credit_card"
-                android:drawableEnd="@drawable/ic_arrow_right"
-                android:drawablePadding="@dimen/major_100"
-                android:padding="@dimen/major_100"
-                android:text="@string/card_reader_type_selection_bluetooth_reader" />
+                android:background="?attr/selectableItemBackground">
 
-            <View
-                android:id="@+id/divider4"
-                android:layout_width="wrap_content"
-                android:layout_height="1dp"
-                android:background="@color/divider_color" />
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/tvCardReaderIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/minor_10"
+                    android:paddingVertical="@dimen/major_100"
+                    android:paddingStart="@dimen/major_100"
+                    android:paddingEnd="@dimen/major_100"
+                    app:layout_constraintBottom_toBottomOf="@id/tvCardReaderHeader"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tvCardReaderHeader"
+                    app:srcCompat="@drawable/ic_gridicons_credit_card" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvCardReaderHeader"
+                    style="@style/Woo.Card.Body.Bold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/major_100"
+                    android:text="@string/card_reader_type_selection_bluetooth_reader"
+                    app:layout_constraintBottom_toTopOf="@id/tvCardReaderDescription"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/tvCardReaderIcon"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="packed"
+                    app:layout_goneMarginBottom="@dimen/major_100" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvCardReaderDescription"
+                    style="@style/Woo.TextView.Body2"
+                    android:layout_width="@dimen/minor_00"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginBottom="@dimen/major_100"
+                    android:textColor="@color/color_surface_variant"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/ivCardReaderArrow"
+                    app:layout_constraintStart_toStartOf="@id/tvCardReaderHeader"
+                    app:layout_constraintTop_toBottomOf="@id/tvCardReaderHeader"
+                    android:text="@string/card_reader_type_selection_bluetooth_reader_description" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivCardReaderArrow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="@dimen/major_100"
+                    android:paddingEnd="@dimen/major_100"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_arrow_right" />
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textShare"
@@ -103,7 +203,7 @@
                 android:padding="@dimen/major_100"
                 android:text="@string/simple_payments_share_payment_link" />
 
-            <View
+            <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/divider5"
                 android:layout_width="wrap_content"
                 android:layout_height="1dp"
@@ -120,16 +220,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/container" />
-
-        <include
-            android:id="@+id/upsellCardReaderComposeView"
-            layout="@layout/fragment_card_reader_upsell_banner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/major_100"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/learn_more_ipp_payment_methods_tv" />
 
         <ProgressBar
             android:id="@+id/pbLoading"

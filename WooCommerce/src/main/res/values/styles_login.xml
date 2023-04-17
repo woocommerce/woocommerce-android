@@ -23,9 +23,11 @@
         <item name="colorAccent">@color/color_primary</item>
         <item name="colorControlNormal">@color/color_primary</item>
         <item name="android:colorControlActivated">@color/color_primary</item>
+        <item name="android:textColorLink">@color/color_primary</item>
 
         <item name="alertDialogTheme">@style/Theme.Woo.Dialog</item>
         <item name="materialAlertDialogTheme">@style/Theme.Woo.Dialog</item>
+
 
         <!-- Typography -->
         <item name="textAppearanceHeadline1">@style/TextAppearance.Woo.Headline1</item>
@@ -67,16 +69,14 @@
 
     <!-- Buttons -->
     <style name="Widget.LoginFlow.Button.Primary" parent="Widget.MaterialComponents.Button.UnelevatedButton">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.LoginFlow.Button.Secondary</item>
         <item name="android:textAppearance">?attr/textAppearanceButton</item>
-        <item name="backgroundTint">@color/button_colored_bg_selector</item>
         <item name="android:textColor">@color/color_on_primary_high</item>
         <item name="android:height">@dimen/button_height_major_100</item>
         <item name="android:textAllCaps">false</item>
+        <item name="rippleColor">@color/color_primary_variant</item>
     </style>
 
     <style name="Widget.LoginFlow.Button.Secondary" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.LoginFlow.Button.OnSurface</item>
         <item name="android:textAppearance">?attr/textAppearanceButton</item>
         <item name="android:height">@dimen/button_height_major_100</item>
         <item name="android:textAllCaps">false</item>
@@ -84,7 +84,5 @@
 
     <style name="Widget.LoginFlow.Button.Tertiary" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:textAppearance">?attr/textAppearanceBody2</item>
-        <item name="textColor">@color/color_secondary</item>
-        <item name="android:textColor">@color/color_secondary</item>
     </style>
 </resources>

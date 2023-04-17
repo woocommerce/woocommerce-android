@@ -1,2 +1,0 @@
-12.8:
-Rilis ini menyertakan berbagai peningkatan dalam fungsi pembuatan pesanan. Anda kini dapat memilih beberapa produk sekaligus. Fitur pencarian & penyaringan juga lebih baik dan lebih cepat. Selain itu, kami memperbaiki sejumlah bug dan menyempurnakan  beberapa aspek aksesibilitas pada bagian Analytics. Kami juga menambahkan bagian Upgrade baru untuk pengguna WordPress.com.

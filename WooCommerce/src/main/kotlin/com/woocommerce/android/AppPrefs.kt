@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
 import androidx.preference.PreferenceManager
-import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.valueOf
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE
@@ -28,6 +27,7 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.PRODUCT_SORTING_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.UPDATE_SIMULATED_READER_OPTION
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED
+import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_TASKS_COMPLETED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.orNullIfEmpty
@@ -36,6 +36,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
+import com.woocommerce.android.ui.prefs.domain.DomainFlowSource
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.PreferenceUtils
@@ -104,6 +105,8 @@ object AppPrefs {
         UPDATE_SIMULATED_READER_OPTION,
         ENABLE_SIMULATED_INTERAC,
         CUSTOM_DOMAINS_SOURCE,
+        IS_TAP_TO_PAY_BETA_ENABLED,
+        JETPACK_INSTALLATION_FROM_BANNER,
         NOTIFICATIONS_PERMISSION_BAR,
     }
 
@@ -174,6 +177,12 @@ object AppPrefs {
 
         // Whether onboarding tasks have been completed or not for a given site
         STORE_ONBOARDING_TASKS_COMPLETED,
+
+        // Was store onboarding shown at least once
+        STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE,
+
+        // Time when the last successful payment was made with a card reader
+        CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME,
     }
 
     fun init(context: Context) {
@@ -221,6 +230,10 @@ object AppPrefs {
     var isCouponsEnabled: Boolean
         get() = getBoolean(IS_COUPONS_ENABLED, false)
         set(value) = setBoolean(IS_COUPONS_ENABLED, value)
+
+    var isTapToPayEnabled: Boolean
+        get() = getBoolean(DeletablePrefKey.IS_TAP_TO_PAY_BETA_ENABLED, false)
+        set(value) = setBoolean(DeletablePrefKey.IS_TAP_TO_PAY_BETA_ENABLED, value)
 
     var isSimulatedReaderEnabled: Boolean
         get() = getBoolean(DeletablePrefKey.USE_SIMULATED_READER, false)
@@ -577,15 +590,6 @@ object AppPrefs {
         )
     }
 
-    fun isCardReaderOnboardingCompleted(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long): Boolean {
-        val completedStatus = getCardReaderOnboardingStatus(
-            localSiteId,
-            remoteSiteId,
-            selfHostedSiteId
-        )
-        return completedStatus == CARD_READER_ONBOARDING_COMPLETED
-    }
-
     fun isCardReaderWelcomeDialogShown() = getBoolean(UndeletablePrefKey.CARD_READER_WELCOME_SHOWN, false)
 
     fun isCardReaderPluginExplicitlySelected(
@@ -853,7 +857,13 @@ object AppPrefs {
         setString(DeletablePrefKey.CUSTOM_DOMAINS_SOURCE, source)
     }
 
-    fun getCustomDomainsSource() = getString(DeletablePrefKey.CUSTOM_DOMAINS_SOURCE, AnalyticsTracker.VALUE_SETTINGS)
+    fun getCustomDomainsSource() = getString(DeletablePrefKey.CUSTOM_DOMAINS_SOURCE, DomainFlowSource.SETTINGS.name)
+
+    fun setJetpackInstallationIsFromBanner(isFromBanner: Boolean) {
+        setBoolean(DeletablePrefKey.JETPACK_INSTALLATION_FROM_BANNER, isFromBanner)
+    }
+
+    fun getJetpackInstallationIsFromBanner() = getBoolean(DeletablePrefKey.JETPACK_INSTALLATION_FROM_BANNER, false)
 
     fun setWasNotificationsPermissionBarDismissed(source: Boolean) {
         setBoolean(DeletablePrefKey.NOTIFICATIONS_PERMISSION_BAR, source)
@@ -907,6 +917,26 @@ object AppPrefs {
 
     private fun getStoreOnboardingKeyFor(siteId: Int) =
         PrefKeyString("$STORE_ONBOARDING_TASKS_COMPLETED:$siteId")
+
+    fun setStoreOnboardingShown(siteId: Int) {
+        setBoolean(
+            key = PrefKeyString("$STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE:$siteId"),
+            value = true
+        )
+    }
+
+    fun getStoreOnboardingShown(siteId: Int): Boolean =
+        getBoolean(
+            key = PrefKeyString("$STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE:$siteId"),
+            default = false
+        )
+
+    fun getCardReaderLastSuccessfulPaymentTime() =
+        getLong(UndeletablePrefKey.CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME, 0L)
+
+    fun setCardReaderSuccessfulPaymentTime() {
+        setLong(UndeletablePrefKey.CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME, System.currentTimeMillis())
+    }
 
     /**
      * Remove all user and site-related preferences.

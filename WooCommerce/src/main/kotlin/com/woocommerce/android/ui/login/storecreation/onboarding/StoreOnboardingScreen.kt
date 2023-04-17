@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -51,6 +52,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.component.WcTag
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.AboutYourStoreTaskRes
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.Companion.NUMBER_ITEMS_IN_COLLAPSED_MODE
@@ -136,15 +138,12 @@ fun StoreOnboardingCollapsed(
                     .fillMaxWidth()
             )
             if (onboardingState.tasks.size > NUMBER_ITEMS_IN_COLLAPSED_MODE || taskToDisplay.size == 1) {
-                Text(
-                    modifier = Modifier
-                        .clickable { onViewAllClicked() }
-                        .padding(dimensionResource(id = R.dimen.major_100)),
-                    text = stringResource(R.string.store_onboarding_task_view_all, onboardingState.tasks.size),
-                    style = MaterialTheme.typography.subtitle1,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colors.primary,
-                )
+                WCTextButton(
+                    contentPadding = PaddingValues(0.dp),
+                    onClick = onViewAllClicked
+                ) {
+                    Text(text = stringResource(R.string.store_onboarding_task_view_all, onboardingState.tasks.size))
+                }
             }
         }
         Box(
@@ -277,7 +276,6 @@ fun OnboardingTaskCollapsedProgressHeader(
             modifier = Modifier
                 .height(dimensionResource(id = R.dimen.minor_100))
                 .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))),
-            color = MaterialTheme.colors.primary,
             backgroundColor = colorResource(id = R.color.divider_color),
         )
         Text(
@@ -318,7 +316,6 @@ fun OnboardingTaskProgressHeader(
             modifier = Modifier
                 .height(dimensionResource(id = R.dimen.minor_100))
                 .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))),
-            color = MaterialTheme.colors.primary,
             backgroundColor = colorResource(id = R.color.divider_color),
         )
         Text(

@@ -6,13 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
-import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentSelectPaymentMethodBinding
@@ -21,12 +19,8 @@ import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.DismissCardReaderUpsellBanner
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.DismissCardReaderUpsellBannerViaDontShowAgain
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.DismissCardReaderUpsellBannerViaRemindMeLater
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateBackToHub
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateBackToOrderList
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderHubFlow
@@ -34,13 +28,9 @@ import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.Navigate
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderRefundFlow
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToOrderDetails
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.OpenGenericWebView
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.OpenPurchaseCardReaderLink
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.SharePaymentUrl
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.ViewState.Loading
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.ViewState.Success
-import com.woocommerce.android.ui.payments.banner.Banner
-import com.woocommerce.android.ui.payments.banner.BannerState
-import com.woocommerce.android.ui.payments.banner.PaymentsScreenBannerDismissDialog
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectDialogFragment
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -68,41 +58,13 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
     ): View {
         _binding = FragmentSelectPaymentMethodBinding.inflate(inflater, container, false)
 
-        val view = binding.root
-        if (viewModel.shouldShowUpsellCardReaderDismissDialog.value == true) {
-            applyBannerDismissDialogComposeUI()
-        }
-        return view
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpObservers(binding)
         setupResultHandlers()
-    }
-
-    private fun applyBannerComposeUI(state: BannerState) {
-        binding.upsellCardReaderComposeView.upsellCardReaderBannerView.apply {
-            // Dispose of the Composition when the view's LifecycleOwner is destroyed
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                WooThemeWithBackground {
-                    Banner(bannerState = state)
-                }
-            }
-        }
-    }
-
-    private fun applyBannerDismissDialogComposeUI() {
-        binding.upsellCardReaderComposeView.upsellCardReaderDismissView.apply {
-            // Dispose of the Composition when the view's LifecycleOwner is destroyed
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                WooThemeWithBackground {
-                    PaymentsScreenBannerDismissDialog(viewModel)
-                }
-            }
-        }
     }
 
     private fun setUpObservers(binding: FragmentSelectPaymentMethodBinding) {
@@ -139,21 +101,19 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
             viewModel.onCashPaymentClicked()
         }
 
-        with(binding.tvTapToPay) {
+        with(binding.clTapToPay) {
             isVisible = state.isPaymentCollectableWithTapToPay
             setOnClickListener {
                 viewModel.onTapToPayClicked()
             }
         }
-        binding.divider3.isVisible = state.isPaymentCollectableWithTapToPay
 
-        with(binding.tvBtReader) {
+        with(binding.clCardReader) {
             isVisible = state.isPaymentCollectableWithExternalCardReader
             setOnClickListener {
                 viewModel.onBtReaderClicked()
             }
         }
-        binding.divider4.isVisible = state.isPaymentCollectableWithExternalCardReader
 
         with(binding.textShare) {
             isVisible = state.paymentUrl.isNotEmpty()
@@ -166,8 +126,6 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
             learnMore.setOnClickListener { state.learMoreIpp.onClick.invoke() }
             UiHelpers.setTextOrHide(binding.learnMoreIppPaymentMethodsTv.learnMore, state.learMoreIpp.label)
         }
-
-        applyBannerComposeUI(state.bannerState)
     }
 
     @Suppress("LongMethod", "ComplexMethod")
@@ -222,25 +180,6 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                             event.cardReaderFlowParam
                         )
                     findNavController().navigateSafely(action)
-                }
-                DismissCardReaderUpsellBanner -> {
-                    applyBannerDismissDialogComposeUI()
-                }
-                DismissCardReaderUpsellBannerViaRemindMeLater -> {
-                    binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
-                    binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
-                }
-                DismissCardReaderUpsellBannerViaDontShowAgain -> {
-                    binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
-                    binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
-                }
-                is OpenPurchaseCardReaderLink -> {
-                    findNavController().navigate(
-                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                            urlToLoad = event.url,
-                            title = resources.getString(event.titleRes)
-                        )
-                    )
                 }
                 is OpenGenericWebView -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)

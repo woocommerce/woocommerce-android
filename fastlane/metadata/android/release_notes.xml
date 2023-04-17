@@ -1,68 +1,68 @@
 <ar>
-12.8:
-يتضمن هذا الإصدار الكثير من التحسينات على وظيفة إنشاء الطلب. أصبح من الممكن تحديد منتجات متعددة دفعة واحدة وخيار بحث وتصفية محسّن بشكل أسرع. أصلحنا أيضًا بعض الأخطاء وأجرينا العديد من التحسينات للحصول على إمكانية الوصول إلى قسم "التحليلات". أضفنا قسم "الترقيات" الجديد إلى مستخدمي ووردبريس.كوم.
+13.1:
+مزيد من الإعجاب تجاه المدفوعات الشخصية والطلبات في هذه المرة، بما في ذلك خيار تحديد منتجاتك الأكثر شيوعًا عند إنشاء طلب.
 </ar>
 <de-DE>
-12.8:
-Diese Version enthält viele Verbesserung hinsichtlich der Funktion zur Erstellung von Bestellungen. Es ist nun möglich, mehrere Produkte gleichzeitig auszuwählen. Außerdem wurde die Such- und Filteroption optimiert und beschleunigt. Des Weiteren haben wir einige Fehler behoben und diverse Verbesserungen an der Zugänglichkeit des Analyse-Abschnitts vorgenommen. Für unsere WordPress.com-Benutzer haben wir einen neuen Upgrades-Abschnitt hinzugefügt.
+13.1:
+Diesmal haben wir uns um persönliche Zahlungen und Bestellungen gekümmert, einschließlich der Option, beim Erstellen einer Bestellung die beliebtesten Produkte auszuwählen.
 </de-DE>
 <es-ES>
-12.8:
-Esta versión cuenta con numerosas mejoras en la función Creación de pedidos. Ahora es posible elegir varios productos de una vez y aplicar la opción de búsqueda y filtro mejorada y más rápida. También hemos corregido algunos errores e introducido varias mejoras de accesibilidad en la sección Análisis. Hemos añadido una nueva sección Mejoras al perfil de usuario de WordPress.com.
+13.1:
+Esta vez, hemos prestado especial atención a los pedidos y pagos en persona, incluida la opción de elegir los productos más populares al crear un pedido.
 </es-ES>
 <fr-FR>
-12.8:
-Cette version comprend de nombreuses améliorations de la fonctionnalité de création de commande. Il est possible de sélectionner plusieurs produits simultanément, et l’option de recherche et de filtrage a été améliorée et est à présent plus rapide. Nous avons également corrigé quelques bogues et apporté plusieurs améliorations pour accéder à la section Statistiques. Nous avons ajouté une nouvelle section Options payantes pour les utilisateurs de WordPress.com.
+13.1 :
+Nous nous sommes penchés sur les paiements en personne et les commandes, notamment sur l’option vous permettant de sélectionner vos produits les plus populaires lors de la création d’une commande.
 </fr-FR>
 <iw-IL>
-12.8:
-בגרסה הזאת הוספנו המון שיפורים לפונקציונליות של יצירת הזמנות. ניתן לבחור מספר מוצרים בפעולה אחת, ואפשרויות החיפוש והסינון מהירות וטובות יותר. בנוסף, תיקנו גם כמה באגים והוספנו שיפורים לנגישות במקטע 'נתונים אנליטיים'. הוספנו מקטע 'שדרוגים' חדש למשתמשי WordPress.com.
+13.1:
+הפעם הקדשנו יותר תשומת לב ל'תשלומים באופן אישי' ולהזמנות, כולל אפשרות לבחור את המוצרים הפופולריים ביותר בעת יצירת הזמנה.
 </iw-IL>
 <id>
-12.8:
-Rilis ini menyertakan berbagai peningkatan dalam fungsi pembuatan pesanan. Anda kini dapat memilih beberapa produk sekaligus. Fitur pencarian & penyaringan juga lebih baik dan lebih cepat. Selain itu, kami memperbaiki sejumlah bug dan menyempurnakan  beberapa aspek aksesibilitas pada bagian Analytics. Kami juga menambahkan bagian Upgrade baru untuk pengguna WordPress.com.
+13.1:
+Semakin banyak yang menyukai pemesanan dan pembayaran langsung kali ini, termasuk pilihan untuk memesan produk terpopuler Anda saat membuat pesanan.
 </id>
 <it-IT>
-12.8:
-Questo rilascio include molti miglioramenti alla funzionalità di creazione degli ordini. È possibile selezionare più prodotti in una volta e un'opzione migliorata di ricerca più veloce e filtro. Abbiamo anche corretto alcuni bug e apportato vari miglioramenti all'accessibilità della sezione Analisi. Abbiamo aggiunto una nuova sezione Miglioramenti al profilo degli utenti WordPress.com.
+13.1:
+Più attenzione per Pagamenti di persona e ordini di persona questa volta, inclusa l'opzione per selezionare i prodotti più popolari durante la creazione di un ordine.
 </it-IT>
 <ja-JP>
-12.8:
-今回のリリースでは、注文作成機能に数多くの改善が加えられています。 一度に複数の商品を選択できるようになり、検索の速度が上がり、フィルターのオプションも増えました。 また、いくつかのバグが修正され、アナリティクスセクションのアクセシビリティも向上しています。 WordPress.com ユーザー向けに新しいアップグレードセクションが追加されました。
+13.1:
+今回は、注文作成時に最も人気の商品を選択できるオプションなど、オフラインでの支払いや注文に関する機能がさらに充実しています。
 </ja-JP>
 <ko-KR>
-12.8:
-이 릴리스에는 주문 생성 기능에 대한 많은 개선 사항이 포함되어 있습니다. 개선된 더 빠른 검색 및 필터 옵션으로 한 번에 여러 상품을 선택할 수 있습니다. 몇 가지 버그도 수정하고 분석 섹션의 접근성도 많이 개선했습니다. 워드프레스닷컴 사용자에 대한 새로운 업그레이드 섹션을 추가했습니다.
+13.1:
+주문을 생성할 때 가장 인기 있는 상품을 선택하는 옵션을 포함하여 이번에는 직접 결제와 주문에 더 많은 정성을 쏟았습니다.
 </ko-KR>
 <nl-NL>
-12.8:
-This release includes a lot of improvements to the order creation functionality. It's possible to select multiple products at one go & an improved faster search & filter option. We also fixed a few bugs and made several enhancements for accessibility of the Analytics section. We’ve added a new Upgrades section to WordPress.com users.
+13.1:
+Meer aandacht voor persoonlijke betalingen en bestellingen dit keer, waaronder de optie om je meest populaire producten te selecteren bij het creëren van een bestelling
 </nl-NL>
 <pt-BR>
-12.8:
-Esta versão inclui muitos aprimoramentos na funcionalidade de criação de pedidos. Agora é possível selecionar vários produtos de uma vez só, além de uma opção de pesquisa e filtro mais rápida e aprimorada. Também corrigimos alguns bugs e fizemos várias melhorias para acessibilidade da seção de análise. Adicionamos uma nova seção de Upgrades para usuários do WordPress.com.
+13.1:
+Muito amor por pedidos e pagamentos presenciais nesta versão, incluindo a opção de selecionar seus produtos mais populares ao criar um pedido.
 </pt-BR>
 <ru-RU>
-12.8:
-В этом выпуске улучшена процедура создания заказов. Теперь можно выбрать несколько товаров сразу, а поиск и фильтры стали работать быстрее. Также исправлено несколько ошибок и повышена доступность раздела аналитики. Для пользователей WordPress.com добавлен новый раздел «Покупки».
+13.1:
+В этом выпуске мы уделили внимание очным платежам и заказам, в том числе добавили возможность выбирать самые популярные товары во время заказа.
 </ru-RU>
 <sv-SE>
-12.8:
-Den här versionen inkluderar en rad olika förbättringar av funktionen för beställningsskapande. Det är möjligt att välja flera produkter på en gång och söknings- och filtreringsalternativet har blivit snabbare. Vi har även korrigerat ett antal buggar och gjort flertalet förbättringar rörande tillgänglighet i sektionen Analys. Vi har lagt till den nya sektionen Uppgraderingar för WordPress.com-användare.
+13.1:
+Den här gången har vi lagt mer tid på personliga betalningar och beställningar, inklusive möjligheten att välja dina mest populära produkter vid skapande av en beställning.
 </sv-SE>
 <tr-TR>
-12.8:
-Bu sürüm, sipariş oluşturma işlevinde birçok iyileştirme içerir. Tek seferde birden fazla ürün seçmek mümkün ve daha hızlı arama ve filtreleme seçeneği iyileştirildi. Ayrıca birkaç hatayı düzelttik ve Analiz bölümünün erişilebilirliği için çeşitli geliştirmeler yaptık. WordPress.com kullanıcılarına yeni bir Yükseltmeler bölümü ekledik.
+13.1:
+Bir sipariş oluştururken en popüler ürünlerinizi seçme seçeneği de dahil olmak üzere bu sefer Şahsen Ödemeler ve siparişlere daha fazla ilgi gösterdik.
 </tr-TR>
 <zh-CN>
-12.8：
-此版本包含一些订单创建功能的改进。 现在可以一次选择多个产品，并改进了快速搜索和过滤器选项。 我们还修复了一些错误，并对分析部分的可访问性进行了一些改进。 我们为 WordPress.com 用户添加了新的“升级”部分。
+13.1：
+此次重点更新了现场付款和订单相关内容，提供了在下单时可以选择您的最热门产品的选项。
 </zh-CN>
 <zh-TW>
-12.8：
-此版本包含對於訂單建立功能的許多改善。 現在能夠一次選取多個產品，並提供更完善且快速的搜尋和篩選選項。 我們也修正了幾個錯誤並針對「分析」區段的存取能力進行了一些強化。 我們已為 WordPress.com 使用者增加全新的「升級」區段。
+13.1：
+這次你會更喜愛「親自收款」和訂單功能，包括可在建立訂單時選取最熱門產品的選項。
 </zh-TW>
 <en-US>
-12.8:
-This release includes a lot of improvements to the order creation functionality. It's possible to select multiple products at one go & an improved faster search & filter option. We also fixed a few bugs and made several enhancements for accessibility of the Analytics section. Furthermore, WordPress.com users can now easily view the details of their plans by accessing the new 'Upgrades' screen in the Menu.
+13.1:
+More love for In-Person Payments and orders this time around, including the option to select your most popular products when creating an order.
 </en-US>
