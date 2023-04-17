@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-05 09:54:04+0000
+Translation-Revision-Date: 2023-04-12 13:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="quantity_rules_info_notice">Правила, регулирующие количество товара, можно редактировать в консоли.</string>
+    <string name="group_of">Количество в комплекте</string>
+    <string name="max_quantity">Максимальное количество</string>
+    <string name="min_quantity">Минимальное количество</string>
+    <string name="product_quantity_rules_title">Правила количества</string>
+    <string name="gift_cards">Подарочные карты</string>
+    <string name="order_gift_card">Подарочная карта</string>
+    <string name="free_trial_feature_fast_to_launch">Быстрый запуск</string>
+    <string name="free_trial_feature_site_security">Безопасность сайта</string>
+    <string name="free_trial_feature_auto_updates_backups">Автоматическое обновление и резервное копирование</string>
+    <string name="free_trial_feature_247_support">Круглосуточная поддержка</string>
+    <string name="free_trial_feature_email_marketing">Рассылки по эл. почте</string>
+    <string name="free_trial_feature_social_advertising">Реклама в социальных сетях</string>
+    <string name="free_trial_feature_subscription_product_kits">Комплекты подписок и товаров</string>
+    <string name="free_trial_feature_multiple_payment_options">Несколько способов оплаты</string>
+    <string name="free_trial_feature_ecommerce_reports">Отчёты eCommerce</string>
+    <string name="free_trial_feature_shipping_labels">Транспортные этикетки</string>
+    <string name="free_trial_feature_unlimited_products">Неограниченное количество продуктов</string>
+    <string name="free_trial_feature_premium_themes">Премиум-темы</string>
+    <string name="free_trial_summary_credit_card_message">Кредитная карта не требуется.</string>
+    <string name="free_trial_summary_try_button">Попробуйте бесплатно</string>
+    <string name="free_trial_summary_try_it">Пользуйтесь бесплатно в течение 14 дней.</string>
+    <string name="free_trial_summary_advertise">Мы предлагаем все для создания и развития интернет-магазина на платформе WooCommerce с хостингом на WordPress.com.</string>
+    <string name="free_trial_summary_title">Запуск за несколько дней и бесконечные возможности развития</string>
+    <string name="product_selector_products_heading">Товары</string>
+    <string name="product_selector_recent_products_heading">Последние продажи</string>
+    <string name="product_selector_popular_products_heading">Хит продаж</string>
+    <string name="jetpack_install_role_eligibility_learn_more">Подробно о ролях и разрешениях</string>
+    <string name="jetpack_install_role_eligibility_error_message">Кажется, ваша роль не позволяет вам установить Jetpack. \nОбратитесь к администратору за помощью.</string>
+    <string name="card_reader_tap_to_pay_description">Проверьте «Оплату в касание», перечислив небольшую\nсумму.</string>
+    <string name="card_reader_test_tap_to_pay">Проверить «Оплату в касание»</string>
     <string name="subscription_free_trial">Бесплатная проба</string>
     <string name="subscription_sign_up_fee">Стоимость регистрации</string>
     <string name="subscription_expire">Прекратить после</string>
@@ -46,7 +77,6 @@ Language: ru
     <string name="card_reader_type_selection_tap_to_pay_description">Принимайте бесконтактные платежи прямо в телефоне.</string>
     <string name="card_reader_tap_to_pay_beta_features_subheading">Попробуйте функцию «Оплата в касание» в приложении</string>
     <string name="card_reader_tap_to_pay_beta_features_heading">Оплата в касание</string>
-    <string name="card_reader_tap_to_pay_description_not_used">Для получения платежей по карте используйте\nсвой телефон.  Попробуйте уже сейчас.</string>
     <string name="card_reader_tap_to_pay_share_feedback">Поделитесь отзывом о функции «Оплата в касание»</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Не удалось войти, поскольку не разрешается создавать пароль приложения.</string>
     <string name="login_site_credentials_fetching_site">Получение сайта…</string>
@@ -62,7 +92,6 @@ Language: ru
     <string name="store_onboarding_get_paid_title">Настройка платежей</string>
     <string name="store_onboarding_task_about_your_store_toolbar_title">О магазине</string>
     <string name="store_creation_installation_rendering_preview_label">Подготовка к просмотру…</string>
-    <string name="jetpack_benefits_open_wpadmin">Открыть консоль</string>
     <string name="shipping_label_address_phone_required">Укажите номер телефона</string>
     <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s, %4$s проданы</string>
     <string name="analytics_items">элементов</string>
@@ -148,8 +177,6 @@ Language: ru
     <string name="card_reader_tap_to_pay_explanation_ready">Ваш телефон готов выполнить операцию «Оплата в касание».\nВаш клиент может задействовать свою карту\nна вашем телефоне, чтобы выполнить платёж.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Получение платежей по карте\nна вашем телефоне</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Оплата в касание</string>
-    <string name="card_reader_tap_to_pay_description_used">Для получения платежей по карте используйте свой телефон.</string>
-    <string name="card_reader_tap_to_pay">Оплата в касание</string>
     <string name="card_reader_hub_actions_category_header">ДЕЙСТВИЯ</string>
     <string name="domain_registration_generic_error">Во время регистрации домена произошла ошибка</string>
     <string name="domain_registration_state_picker_dialog_title">Выберите округ/область</string>
