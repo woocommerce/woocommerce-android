@@ -4,17 +4,21 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STORE_LOADING_FAILED
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STORE_NOT_READY
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Failure
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Success
+import com.woocommerce.android.ui.login.storecreation.installation.InstallationTransactionLauncher
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.StoreCreationLoadingState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.SuccessState
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.ui.login.storecreation.installation.StoreCreationLoadingCountDownTimer
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -39,6 +43,7 @@ class InstallationViewModelTest : BaseUnitTest() {
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val selectedSite: SelectedSite = mock()
     private val storeCreationLoadingCountDownTimer: StoreCreationLoadingCountDownTimer = mock()
+    private val installationTransactionLauncher: InstallationTransactionLauncher = mock()
 
     private lateinit var viewModel: InstallationViewModel
 
@@ -61,7 +66,8 @@ class InstallationViewModelTest : BaseUnitTest() {
             analyticsTrackerWrapper,
             appPrefsWrapper,
             selectedSite,
-            storeCreationLoadingCountDownTimer
+            storeCreationLoadingCountDownTimer,
+            installationTransactionLauncher,
         )
     }
 
@@ -110,7 +116,8 @@ class InstallationViewModelTest : BaseUnitTest() {
             verify(storeCreationLoadingCountDownTimer).cancelTimer()
             val expectedState = ErrorState(STORE_NOT_READY)
             assertEquals(expectedState, viewModel.viewState.value)
-        }
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.SITE_CREATION_TIMED_OUT)
+    }
 
     @Test
     fun `when a site fetching returns an error, the flow fails immediately`() = testBlocking {
@@ -134,4 +141,68 @@ class InstallationViewModelTest : BaseUnitTest() {
 
             verify(storeCreationLoadingCountDownTimer).startTimer()
         }
+
+    @Test
+    fun `when a site is during installation, start measuring the transaction time`() = testBlocking {
+        whenViewModelIsCreated()
+        viewModel.viewState.observeForever(observer)
+
+        verify(installationTransactionLauncher).onStoreInstallationRequested()
+    }
+
+    @Test
+    fun `when a site is after successful installation, finish measuring transaction time`() = testBlocking {
+        // given
+        whenever(repository.fetchSiteAfterCreation(newStore.data.siteId!!)).thenReturn(Success(Unit))
+        whenever(selectedSite.get()).thenReturn(SiteModel().apply { url = newStore.data.domain })
+
+        // when
+        whenViewModelIsCreated()
+        viewModel.viewState.observeForever(observer)
+        advanceUntilIdle()
+
+        // then
+        verify(installationTransactionLauncher).onStoreInstalled(
+            mapOf(
+                AnalyticsTracker.KEY_SOURCE to null,
+                AnalyticsTracker.KEY_URL to newStore.data.domain,
+                AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE,
+                AnalyticsTracker.KEY_IS_FREE_TRIAL to FeatureFlag.FREE_TRIAL_M2.isEnabled()
+            )
+        )
+    }
+
+    @Test
+    fun `when a site is not successfully installed, abandon performance transaction`() = testBlocking {
+        // given
+        whenever(repository.fetchSiteAfterCreation(newStore.data.siteId!!)).thenReturn(Failure(STORE_NOT_READY))
+
+        // when
+        whenViewModelIsCreated()
+        viewModel.viewState.observeForever(observer)
+        advanceUntilIdle()
+
+        // then
+        verify(installationTransactionLauncher).onStoreInstallationFailed()
+    }
+
+    @Test
+    fun `when a Woo site is found after installation, but has out-of-sync properties, report a tracks event`() = testBlocking {
+        whenever(repository.fetchSiteAfterCreation(newStore.data.siteId!!)).thenReturn(Success(Unit))
+        whenever(selectedSite.get()).thenReturn(
+            SiteModel().apply {
+                setIsWpComStore(false)
+                hasWooCommerce = false
+                name = "different than provided by user"
+                url = newStore.data.domain
+            }
+        )
+
+        whenViewModelIsCreated()
+
+        viewModel.viewState.observeForever(observer)
+        advanceUntilIdle()
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.SITE_CREATION_PROPERTIES_OUT_OF_SYNC)
+    }
 }

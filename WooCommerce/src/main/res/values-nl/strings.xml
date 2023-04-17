@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-04 15:54:39+0000
+Translation-Revision-Date: 2023-04-11 16:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="quantity_rules_info_notice">Je kunt gebundelde producten bewerken in de nieuwe online dashboard.</string>
+    <string name="group_of">Aantal stuks</string>
+    <string name="max_quantity">Maximaal aantal</string>
+    <string name="min_quantity">Minimaal aantal</string>
+    <string name="product_quantity_rules_title">Regels Aantal</string>
+    <string name="gift_cards">Cadeaubonnen</string>
+    <string name="order_gift_card">Cadeaubon</string>
+    <string name="free_trial_feature_fast_to_launch">Snelle lancering</string>
+    <string name="free_trial_feature_site_security">Sitebeveiliging</string>
+    <string name="free_trial_feature_auto_updates_backups">Automatische updates &amp; back-ups</string>
+    <string name="free_trial_feature_247_support">24/7 ondersteuning</string>
+    <string name="free_trial_feature_email_marketing">E-mailmarketing</string>
+    <string name="free_trial_feature_social_advertising">Sociale reclame</string>
+    <string name="free_trial_feature_subscription_product_kits">Abonnementproducten</string>
+    <string name="free_trial_feature_multiple_payment_options">Meerdere betaalopties</string>
+    <string name="free_trial_feature_ecommerce_reports">Ecommerce-rapporten</string>
+    <string name="free_trial_feature_shipping_labels">Verzendlabels</string>
+    <string name="free_trial_feature_unlimited_products">Onbeperkte producten</string>
+    <string name="free_trial_feature_premium_themes">Premium-thema\'s</string>
+    <string name="free_trial_summary_credit_card_message">Geen creditcard vereist</string>
+    <string name="free_trial_summary_try_button">Probeer gratis</string>
+    <string name="free_trial_summary_try_it">Probeer het 14 dagen gratis of</string>
+    <string name="free_trial_summary_advertise">Wij bieden alles wat je nodig hebt om een online winkel op te bouwen en te laten groeien, mogelijk gemaakt door WooCommerce en gehost door WordPress.com.</string>
+    <string name="free_trial_summary_title">Lanceer snel en blijf jaren groeien</string>
+    <string name="product_selector_products_heading">Producten</string>
+    <string name="product_selector_recent_products_heading">Laatst verkocht</string>
+    <string name="product_selector_popular_products_heading">Populair</string>
+    <string name="jetpack_install_role_eligibility_learn_more">Meer informatie over rollen en machtigingen</string>
+    <string name="jetpack_install_role_eligibility_error_message">Het lijkt erop dat je gebruikersrol niet gemachtigd is om Jetpack te installeren. \nNeem contact op met je beheerder voor ondersteuning.</string>
+    <string name="card_reader_tap_to_pay_description">Je kunt tik om te betalen hier testen\nmet een klein bedrag.</string>
+    <string name="card_reader_test_tap_to_pay">Test tik om te betalen</string>
     <string name="subscription_free_trial">Gratis proefabonnement</string>
     <string name="subscription_sign_up_fee">Aanmeldkosten</string>
     <string name="subscription_expire">Verlopen na</string>
@@ -46,7 +77,6 @@ Language: nl
     <string name="card_reader_type_selection_tap_to_pay_description">Accepteert contactloze betalingen veilig en rechtstreeks vanaf je telefoon.</string>
     <string name="card_reader_tap_to_pay_beta_features_subheading">Test tik om te betalen in de app</string>
     <string name="card_reader_tap_to_pay_beta_features_heading">Tik om te betalen</string>
-    <string name="card_reader_tap_to_pay_description_not_used">Gebruik je telefoon om pinbetalingen\nte accepteren Probeer het nu.</string>
     <string name="card_reader_tap_to_pay_share_feedback">Deel feedback over tik om te betalen</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Inloggen mislukt omdat het maken van een applicatiewachtwoord niet goedgekeurd is.</string>
     <string name="login_site_credentials_fetching_site">Website ophalen…</string>
@@ -62,7 +92,6 @@ Language: nl
     <string name="store_onboarding_get_paid_title">Betalingsconfiguratie</string>
     <string name="store_onboarding_task_about_your_store_toolbar_title">Over je winkel</string>
     <string name="store_creation_installation_rendering_preview_label">Voorbeeldweergave renderen…</string>
-    <string name="jetpack_benefits_open_wpadmin">Wp-admin openen</string>
     <string name="shipping_label_address_phone_required">Een telefoonnummer is vereist</string>
     <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s, %4$s verkocht</string>
     <string name="analytics_items">artikelen</string>
@@ -148,8 +177,6 @@ Language: nl
     <string name="card_reader_tap_to_pay_explanation_ready">Je telefoon is gereed voor Tap to Pay.\nDe klant kan met hun pas\njouw telefoon aantikken om te betalen.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Pinbetalingen verzamelen\nMet je telefoon</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tik om te betalen</string>
-    <string name="card_reader_tap_to_pay_description_used">Gebruik je telefoon om pinbetalingen te accepteren.</string>
-    <string name="card_reader_tap_to_pay">Tik om te betalen</string>
     <string name="card_reader_hub_actions_category_header">ACTIES</string>
     <string name="domain_registration_generic_error">Er is een fout opgetreden tijdens domeinregistratie</string>
     <string name="domain_registration_state_picker_dialog_title">Selecteer provincie</string>
