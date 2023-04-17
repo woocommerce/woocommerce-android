@@ -42,8 +42,8 @@ import com.woocommerce.android.ui.compose.component.WebViewProgressIndicator.Cir
 import com.woocommerce.android.ui.compose.drawShadow
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorScreen
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.CreatingStoreState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState
+import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.StoreCreationLoadingState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.SuccessState
 import org.wordpress.android.fluxc.network.UserAgent
 
@@ -63,13 +63,15 @@ fun InstallationScreen(
                 userAgent,
                 authenticator
             )
+
             is ErrorState -> StoreCreationErrorScreen(
                 viewState.errorType,
                 viewModel::onBackPressed,
                 viewState.message,
                 viewModel::onRetryButtonClicked
             )
-            is CreatingStoreState -> CreateStoreState(
+
+            is StoreCreationLoadingState -> CreateStoreState(
                 viewState = viewState,
                 modifier = Modifier.fillMaxSize()
             )
@@ -165,7 +167,7 @@ private fun InstallationSummary(
 
 @Composable
 fun CreateStoreState(
-    viewState: CreatingStoreState,
+    viewState: StoreCreationLoadingState,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.background(MaterialTheme.colors.surface)) {
@@ -289,7 +291,7 @@ private fun PreviewWebView(
 private fun CreateStoreStatePreview() {
     WooThemeWithBackground {
         CreateStoreState(
-            viewState = CreatingStoreState(
+            viewState = StoreCreationLoadingState(
                 progress = 0F,
                 title = R.string.store_creation_in_progress_title_3,
                 description = R.string.store_creation_in_progress_description_1

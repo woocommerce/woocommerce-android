@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.login.storecreation.installation
 
-import android.os.CountDownTimer
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
@@ -18,8 +17,8 @@ import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Failure
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Success
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.CreatingStoreState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState
+import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.StoreCreationLoadingState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.SuccessState
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -42,80 +41,13 @@ class InstallationViewModel @Inject constructor(
     private val newStore: NewStore,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val appPrefsWrapper: AppPrefsWrapper,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val storeCreationLoadingCountDownTimer: StoreCreationLoadingCountDownTimer
 ) : ScopedViewModel(savedStateHandle) {
-    companion object {
-        private const val DELAY_BETWEEN_PROGRESS_UPDATES = 200L
-        private const val STORE_LOAD_RETRIES_LIMIT = 10
-        private const val START_POLLING_DELAY = 40000L
-        private const val FAKE_LOADING_TOTAL_TIME = 60000L
-        private const val SITE_CHECK_DEBOUNCE = 5000L
-    }
-
-    private var progress = 0F
-
-    @Suppress("MagicNumber")
-    private val uiUpdaterTimer = object : CountDownTimer(
-        FAKE_LOADING_TOTAL_TIME,
-        DELAY_BETWEEN_PROGRESS_UPDATES
-    ) {
-        override fun onTick(millisUntilFinished: Long) {
-            progress += 0.003F
-            when {
-                millisUntilFinished > 50000 -> {
-                    _viewState.update {
-                        CreatingStoreState(
-                            progress = progress,
-                            title = string.store_creation_in_progress_title_1,
-                            description = string.store_creation_in_progress_description_1
-                        )
-                    }
-                }
-                millisUntilFinished > 40000 -> {
-                    _viewState.update {
-                        CreatingStoreState(
-                            progress = progress,
-                            title = string.store_creation_in_progress_title_2,
-                            description = string.store_creation_in_progress_description_2
-                        )
-                    }
-                }
-                millisUntilFinished > 30000 ->
-                    _viewState.update {
-                        CreatingStoreState(
-                            progress = progress,
-                            title = string.store_creation_in_progress_title_3,
-                            description = string.store_creation_in_progress_description_3
-                        )
-                    }
-                millisUntilFinished > 20000 ->
-                    _viewState.update {
-                        CreatingStoreState(
-                            progress = progress,
-                            title = string.store_creation_in_progress_title_4,
-                            description = string.store_creation_in_progress_description_4
-                        )
-                    }
-                millisUntilFinished > 10000 ->
-                    _viewState.update {
-                        CreatingStoreState(
-                            progress = progress,
-                            title = string.store_creation_in_progress_title_5,
-                            description = string.store_creation_in_progress_description_5
-                        )
-                    }
-                else ->
-                    _viewState.update {
-                        CreatingStoreState(
-                            progress = progress,
-                            title = string.store_creation_in_progress_title_6,
-                            description = string.store_creation_in_progress_description_6
-                        )
-                    }
-            }
-        }
-
-        override fun onFinish() = Unit
+    private companion object {
+        const val STORE_LOAD_RETRIES_LIMIT = 10
+        const val START_POLLING_DELAY = 40000L
+        const val SITE_CHECK_DEBOUNCE = 5000L
     }
 
     private val newStoreUrl
@@ -126,7 +58,7 @@ class InstallationViewModel @Inject constructor(
 
     private val _viewState = savedState.getStateFlow<ViewState>(
         this,
-        CreatingStoreState(
+        StoreCreationLoadingState(
             progress = 0F,
             title = string.store_creation_in_progress_title_1,
             description = string.store_creation_in_progress_description_1
@@ -147,20 +79,19 @@ class InstallationViewModel @Inject constructor(
                 AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_INSTALLATION
             )
         )
+        launch {
+            storeCreationLoadingCountDownTimer.observe()
+                .collect {
+                    _viewState.value = it
+                }
+        }
         loadNewStore()
     }
 
     private fun loadNewStore() {
         suspend fun processStoreCreationResult(result: StoreCreationResult<Unit>) {
             if (result is Success) {
-                @Suppress("MagicNumber")
-                delay(1000)
-                CreatingStoreState(
-                    progress = 1f,
-                    title = string.store_creation_in_progress_title_6,
-                    description = string.store_creation_in_progress_description_6
-                )
-                uiUpdaterTimer.cancel()
+                storeCreationLoadingCountDownTimer.cancelTimer()
 
                 repository.selectSite(newStore.data.siteId!!)
 
@@ -187,8 +118,8 @@ class InstallationViewModel @Inject constructor(
                 newStore.clear()
             }
         }
+        storeCreationLoadingCountDownTimer.startTimer()
         launch {
-            uiUpdaterTimer.start()
             delay(START_POLLING_DELAY)
 //           keep fetching the user 's sites until the new site is properly configured or the retry limit is reached
             for (retries in 1..STORE_LOAD_RETRIES_LIMIT) {
@@ -233,7 +164,7 @@ class InstallationViewModel @Inject constructor(
 
     sealed interface ViewState : Parcelable {
         @Parcelize
-        data class CreatingStoreState(
+        data class StoreCreationLoadingState(
             val progress: Float,
             @StringRes val title: Int,
             @StringRes val description: Int
