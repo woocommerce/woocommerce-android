@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.config.CardReaderConfig
+import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
@@ -175,7 +175,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val cardReaderPaymentReceiptHelper: CardReaderPaymentReceiptHelper = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
     private val cardReaderConfigFactory: CardReaderCountryConfigProvider = mock()
-    private val cardReaderConfig: CardReaderConfig = CardReaderConfigForUSA
+    private val cardReaderConfig: CardReaderConfigForSupportedCountry = CardReaderConfigForUSA
 
     @Suppress("LongMethod")
     @Before
