@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
@@ -84,6 +85,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.utils.AppLogWrapper
+import org.wordpress.android.util.AppLog
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -479,6 +482,19 @@ class CardReaderPaymentViewModel
             { retry(orderId, billingEmail, it, amountLabel) }
         } ?: { initPaymentFlow(isRetry = true) }
         val config = cardReaderConfigProvider.provideCountryConfigFor(getStoreCountryCode())
+        if (config !is CardReaderConfigForSupportedCountry) {
+            viewState.postValue(
+                cardReaderPaymentReaderTypeStateProvider.provideFailedPaymentState(
+                    cardReaderType = arguments.cardReaderType,
+                    errorType = PaymentFlowError.Unknown,
+                    amountLabel = amountLabel,
+                    onPrimaryActionClicked = { onBackPressed() }
+                )
+            )
+            WooLog.e(WooLog.T.CARD_READER, "State mismatch: received unsupported country config")
+            return
+        }
+
         val errorType = errorMapper.mapPaymentErrorToUiError(error.type, config)
         if (errorType is PaymentFlowError.NonRetryableError) {
             viewState.postValue(
