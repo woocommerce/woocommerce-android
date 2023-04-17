@@ -63,7 +63,7 @@ class CardReaderPaymentErrorMapper @Inject constructor(
     }
 
     private fun generateAmountToSmallErrorFor(config: CardReaderConfigForSupportedCountry):
-            PaymentFlowError.AmountTooSmall {
+        PaymentFlowError.AmountTooSmall {
         val minChargeAmountString = currencyFormatter.formatAmountWithCurrency(
             config.minimumAllowedChargeAmount.toDouble(),
             config.currency

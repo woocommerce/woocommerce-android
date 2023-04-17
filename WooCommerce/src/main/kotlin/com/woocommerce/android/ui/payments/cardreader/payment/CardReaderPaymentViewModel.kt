@@ -85,14 +85,13 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import org.wordpress.android.fluxc.utils.AppLogWrapper
-import org.wordpress.android.util.AppLog
 import java.math.BigDecimal
 import javax.inject.Inject
 
 private const val ARTIFICIAL_RETRY_DELAY = 500L
 private const val CANADA_FEE_FLAT_IN_CENTS = 15L
 
+@Suppress("LargeClass")
 @HiltViewModel
 class CardReaderPaymentViewModel
 @Inject constructor(
