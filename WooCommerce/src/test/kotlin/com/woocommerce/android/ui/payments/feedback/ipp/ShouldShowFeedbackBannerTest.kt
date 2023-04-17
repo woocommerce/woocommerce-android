@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.payments.feedback.ipp
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
 import com.woocommerce.android.extensions.daysAgo
+import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
@@ -28,7 +29,7 @@ class ShouldShowFeedbackBannerTest : BaseUnitTest() {
         prefs = appPrefs,
         wooCommerceStore = wooCommerceStore,
         siteModel = siteModel,
-        cardReaderConfig = CardReaderConfigFactory()
+        cardReaderConfig = CardReaderCountryConfigProvider(CardReaderConfigFactory())
     )
 
     @Before
