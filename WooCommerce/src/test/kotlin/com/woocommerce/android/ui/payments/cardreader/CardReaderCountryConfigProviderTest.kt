@@ -62,5 +62,4 @@ class CardReaderCountryConfigProviderTest {
         // THEN
         assertThat(config).isInstanceOf(CardReaderConfigForGB::class.java)
     }
-
 }
