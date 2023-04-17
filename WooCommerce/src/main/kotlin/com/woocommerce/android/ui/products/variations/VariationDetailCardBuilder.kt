@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryDa
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.SaleDetails
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
@@ -35,11 +36,14 @@ import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewDescriptionEditor
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewInventory
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewPricing
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewProductQuantityRules
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewShipping
+import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewSubscription
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
+import org.wordpress.android.fluxc.utils.putIfNotNull
 
 class VariationDetailCardBuilder(
     private val viewModel: VariationDetailViewModel,
@@ -50,7 +54,7 @@ class VariationDetailCardBuilder(
     private lateinit var originalSku: String
     private var parentProduct: Product? = null
 
-    fun buildPropertyCards(
+    suspend fun buildPropertyCards(
         variation: ProductVariation,
         originalSku: String,
         parentProduct: Product?
@@ -65,20 +69,21 @@ class VariationDetailCardBuilder(
         return cards
     }
 
-    private fun getSecondaryCard(variation: ProductVariation): ProductPropertyCard {
+    private suspend fun getSecondaryCard(variation: ProductVariation): ProductPropertyCard {
         return when (variation) {
             is SubscriptionProductVariation -> getVariableSubscriptionSecondaryCards(variation)
             else -> getDefaultSecondaryCards(variation)
         }
     }
 
-    private fun getDefaultSecondaryCards(variation: ProductVariation): ProductPropertyCard {
+    private suspend fun getDefaultSecondaryCards(variation: ProductVariation): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
                 variation.price(),
                 variation.warning(),
                 variation.attributes(),
+                variation.quantityRules(),
                 variation.visibility(),
                 variation.inventory(),
                 variation.shipping()
@@ -86,13 +91,16 @@ class VariationDetailCardBuilder(
         )
     }
 
-    private fun getVariableSubscriptionSecondaryCards(variation: SubscriptionProductVariation): ProductPropertyCard {
+    private suspend fun getVariableSubscriptionSecondaryCards(
+        variation: SubscriptionProductVariation
+    ): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
                 variation.subscription(),
                 variation.warning(),
                 variation.attributes(),
+                variation.quantityRules(),
                 variation.visibility(),
                 variation.inventory(),
                 variation.shipping()
@@ -319,6 +327,29 @@ class VariationDetailCardBuilder(
         }
     }
 
+    private suspend fun ProductVariation.quantityRules(): ProductProperty? {
+        val rules = viewModel.getQuantityRules(this.remoteProductId, this.remoteVariationId) ?: return null
+
+        val properties = buildMap {
+            putIfNotNull(resources.getString(string.min_quantity) to rules.min?.toString())
+            putIfNotNull(resources.getString(string.max_quantity) to rules.max?.toString())
+            if (size < 2) putIfNotNull(resources.getString(string.group_of) to rules.groupOf?.toString())
+        }
+
+        return PropertyGroup(
+            title = string.product_quantity_rules_title,
+            icon = drawable.ic_gridicons_product,
+            properties = properties,
+            showTitle = true,
+            onClick = {
+                viewModel.onEditVariationCardClicked(
+                    ViewProductQuantityRules(rules),
+                    AnalyticsEvent.PRODUCT_VARIATION_VIEW_QUANTITY_RULES_TAPPED
+                )
+            }
+        )
+    }
+
     private fun SubscriptionProductVariation.subscription(): ProductProperty? =
         this.subscriptionDetails?.let { subscription ->
 
@@ -334,16 +365,39 @@ class VariationDetailCardBuilder(
                 period
             )
 
+            val salePriceString = salePrice?.let {
+                val formattedSalePrice = parameters.currencyCode?.let {
+                    currencyFormatter.formatCurrency(salePrice, it, true)
+                } ?: subscription.price.toString()
+
+                resources.getString(
+                    string.product_subscription_description,
+                    formattedSalePrice,
+                    subscription.periodInterval.toString(),
+                    period
+                )
+            }
+
             val expire = if (subscription.length != null) {
                 resources.getString(string.subscription_period, subscription.length.toString(), period)
             } else {
                 resources.getString(string.subscription_never_expire)
             }
 
-            val properties = mapOf(
-                resources.getString(string.product_regular_price) to price,
-                resources.getString(string.subscription_expire) to expire
-            )
+            val properties = buildMap {
+                put(resources.getString(string.product_regular_price), price)
+                putIfNotNull(resources.getString(string.product_sale_price) to salePriceString)
+                put(resources.getString(string.subscription_expire), expire)
+            }
+
+            val salesDetails = if (isSaleScheduled || salePrice != null) {
+                SaleDetails(
+                    isSaleScheduled = isSaleScheduled,
+                    salePrice = salePrice,
+                    saleStartDateGmt = saleStartDateGmt,
+                    saleEndDateGmt = saleEndDateGmt
+                )
+            } else null
 
             PropertyGroup(
                 title = string.product_subscription_title,
@@ -352,7 +406,7 @@ class VariationDetailCardBuilder(
                 showTitle = true,
                 onClick = {
                     viewModel.onEditVariationCardClicked(
-                        VariationNavigationTarget.ViewSubscription(subscription),
+                        ViewSubscription(subscription, salesDetails),
                         AnalyticsEvent.PRODUCT_DETAILS_VIEW_SUBSCRIPTIONS_TAPPED
                     )
                 }

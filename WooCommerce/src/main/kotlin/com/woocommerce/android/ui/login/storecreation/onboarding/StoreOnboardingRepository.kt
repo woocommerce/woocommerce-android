@@ -28,7 +28,9 @@ class StoreOnboardingRepository @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) {
 
-    var onboardingTasksCacheFlow: MutableStateFlow<List<OnboardingTask>> = MutableStateFlow(emptyList())
+    private val onboardingTasksCacheFlow: MutableStateFlow<List<OnboardingTask>> = MutableStateFlow(emptyList())
+
+    fun observeOnboardingTasks() = onboardingTasksCacheFlow
 
     suspend fun fetchOnboardingTasks() {
         WooLog.d(WooLog.T.ONBOARDING, "Fetching onboarding tasks")
@@ -65,8 +67,14 @@ class StoreOnboardingRepository @Inject constructor(
                         "All onboarding tasks are completed for siteId: ${selectedSite.getSelectedSiteId()}"
                     )
                     appPrefsWrapper.markAllOnboardingTasksCompleted(selectedSite.getSelectedSiteId())
-                    analyticsTrackerWrapper.track(stat = STORE_ONBOARDING_COMPLETED)
+                    if (appPrefsWrapper.getStoreOnboardingShown(selectedSite.getSelectedSiteId())) {
+                        analyticsTrackerWrapper.track(stat = STORE_ONBOARDING_COMPLETED)
+                    }
                 }
+                if (mobileSupportedTasks.any { !it.isComplete }) {
+                    appPrefsWrapper.setStoreOnboardingShown(selectedSite.getSelectedSiteId())
+                }
+
                 onboardingTasksCacheFlow.emit(mobileSupportedTasks)
             }
         }

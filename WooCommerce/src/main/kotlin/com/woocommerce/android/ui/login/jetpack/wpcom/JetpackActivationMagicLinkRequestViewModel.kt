@@ -6,6 +6,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_SETUP_LOGIN_FLOW
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.MagicLinkFlow
 import com.woocommerce.android.ui.login.MagicLinkSource
 import com.woocommerce.android.ui.login.WPComLoginRepository
@@ -27,7 +30,8 @@ import javax.inject.Inject
 class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val resourceProvider: ResourceProvider,
-    private val wpComLoginRepository: WPComLoginRepository
+    private val wpComLoginRepository: WPComLoginRepository,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
 
     private val navArgs: JetpackActivationMagicLinkRequestFragmentArgs by savedStateHandle.navArgs()
@@ -60,9 +64,25 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
 
     fun onCloseClick() {
         triggerEvent(Exit)
+
+        analyticsTrackerWrapper.track(
+            JETPACK_SETUP_LOGIN_FLOW,
+            mapOf(
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_JETPACK_SETUP_STEP_MAGIC_LINK,
+                AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_DISMISS
+            )
+        )
     }
 
     private fun requestMagicLink() = launch {
+        analyticsTrackerWrapper.track(
+            JETPACK_SETUP_LOGIN_FLOW,
+            mapOf(
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_JETPACK_SETUP_STEP_MAGIC_LINK,
+                AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_SUBMIT
+            )
+        )
+
         _viewState.value = ViewState.MagicLinkRequestState(
             emailOrUsername = navArgs.emailOrUsername,
             avatarUrl = avatarUrlFromEmail(navArgs.emailOrUsername),
@@ -90,6 +110,14 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
             onFailure = {
                 _viewState.update { (it as ViewState.MagicLinkRequestState).copy(isLoadingDialogShown = false) }
                 triggerEvent(ShowSnackbar(R.string.error_generic))
+
+                analyticsTrackerWrapper.track(
+                    JETPACK_SETUP_LOGIN_FLOW,
+                    mapOf(
+                        AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_JETPACK_SETUP_STEP_MAGIC_LINK,
+                        AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_SUBMIT
+                    )
+                )
             }
         )
     }

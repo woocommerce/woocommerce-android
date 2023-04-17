@@ -1,0 +1,2 @@
+13.1:
+Più attenzione per Pagamenti di persona e ordini di persona questa volta, inclusa l'opzione per selezionare i prodotti più popolari durante la creazione di un ordine.

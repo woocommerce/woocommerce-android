@@ -42,8 +42,7 @@ fun JetpackBenefitsScreen(viewModel: JetpackBenefitsViewModel) {
         JetpackBenefitsScreen(
             viewState = it,
             onInstallClick = viewModel::onInstallClick,
-            onDismissClick = viewModel::onDismiss,
-            onOpenWPAdminJetpackActivationClick = viewModel::onOpenWpAdminJetpackActivationClicked
+            onDismissClick = viewModel::onDismiss
         )
     }
 }
@@ -52,8 +51,7 @@ fun JetpackBenefitsScreen(viewModel: JetpackBenefitsViewModel) {
 fun JetpackBenefitsScreen(
     viewState: JetpackBenefitsViewModel.ViewState,
     onInstallClick: () -> Unit = {},
-    onDismissClick: () -> Unit = {},
-    onOpenWPAdminJetpackActivationClick: () -> Unit = {}
+    onDismissClick: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -129,10 +127,6 @@ fun JetpackBenefitsScreen(
                     )
                 )
             }
-        }
-
-        WCColoredButton(onClick = onOpenWPAdminJetpackActivationClick, modifier = Modifier.fillMaxWidth()) {
-            Text(text = stringResource(R.string.jetpack_benefits_open_wpadmin))
         }
 
         WCOutlinedButton(onClick = onDismissClick, modifier = Modifier.fillMaxWidth()) {

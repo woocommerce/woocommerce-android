@@ -140,7 +140,8 @@ data class Product(
             downloadLimit == product.downloadLimit &&
             downloadExpiry == product.downloadExpiry &&
             isDownloadable == product.isDownloadable &&
-            attributes == product.attributes
+            attributes == product.attributes &&
+            subscription == product.subscription
     }
 
     val hasCategories get() = categories.isNotEmpty()
@@ -326,6 +327,7 @@ data class Product(
                 downloads = updatedProduct.downloads,
                 downloadLimit = updatedProduct.downloadLimit,
                 downloadExpiry = updatedProduct.downloadExpiry,
+                subscription = updatedProduct.subscription
             )
         } ?: this.copy()
     }

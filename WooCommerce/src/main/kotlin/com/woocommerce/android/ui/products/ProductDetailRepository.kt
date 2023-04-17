@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import com.google.gson.Gson
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_UPDATE_ERROR
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_UPDATE_SUCCESS
@@ -14,6 +15,8 @@ import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.models.QuantityRules
+import com.woocommerce.android.ui.products.models.QuantityRulesMapper
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
@@ -34,6 +37,7 @@ import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT_S
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATED_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATE_PRODUCT_PASSWORD
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
+import org.wordpress.android.fluxc.model.WCMetaData
 import org.wordpress.android.fluxc.store.WCGlobalAttributeStore
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductSkuAvailabilityPayload
@@ -54,7 +58,9 @@ class ProductDetailRepository @Inject constructor(
     private val globalAttributeStore: WCGlobalAttributeStore,
     private val selectedSite: SelectedSite,
     private val taxStore: WCTaxStore,
-    private val coroutineDispatchers: CoroutineDispatchers
+    private val coroutineDispatchers: CoroutineDispatchers,
+    private val quantityRulesMapper: QuantityRulesMapper,
+    private val gson: Gson
 ) {
     private var continuationUpdateProduct: Continuation<Boolean>? = null
     private var continuationFetchProductPassword = ContinuationWrapper<String?>(PRODUCTS)
@@ -276,6 +282,20 @@ class ProductDetailRepository @Inject constructor(
      */
     fun getProductShippingClassByRemoteId(remoteShippingClassId: Long) =
         productStore.getShippingClassByRemoteId(selectedSite.get(), remoteShippingClassId)?.toAppModel()
+
+    fun getQuantityRules(remoteProductId: Long): QuantityRules? {
+        return getCachedWCProductModel(remoteProductId)?.metadata
+            ?.let { quantityRulesMapper.toAppModelFromProductMetadata(it) }
+    }
+
+    fun getProductMetadata(remoteProductId: Long): Map<String, Any>? {
+        val metadata = getCachedWCProductModel(remoteProductId)?.metadata ?: return null
+        val metadataArray = gson.fromJson(metadata, Array<WCMetaData>::class.java)
+
+        return metadataArray
+            .filter { metadataItem -> metadataItem.key.isNullOrEmpty().not() }
+            .associate { metadataItem -> metadataItem.key!! to metadataItem.value }
+    }
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)

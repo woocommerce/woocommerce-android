@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDo
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductExternalLink
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductInventory
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductPricing
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductQuantityRules
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductReviews
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShipping
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductShortDescriptionEditor
@@ -35,6 +36,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductTy
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVariations
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
+import com.woocommerce.android.ui.products.ProductType.BUNDLE
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.OTHER
@@ -57,8 +59,10 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
+import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 
+@SuppressWarnings("LargeClass")
 class ProductDetailCardBuilder(
     private val viewModel: ProductDetailViewModel,
     private val resources: ResourceProvider,
@@ -82,6 +86,7 @@ class ProductDetailCardBuilder(
             GROUPED -> cards.addIfNotEmpty(getGroupedProductCard(product))
             EXTERNAL -> cards.addIfNotEmpty(getExternalProductCard(product))
             SUBSCRIPTION -> cards.addIfNotEmpty(getSubscriptionProductCard(product))
+            BUNDLE -> cards.addIfNotEmpty(getBundleProductsCard(product))
             else -> cards.addIfNotEmpty(getOtherProductCard(product))
         }
 
@@ -106,6 +111,7 @@ class ProductDetailCardBuilder(
                 if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.inventory(SIMPLE),
                 product.addons(),
+                product.quantityRules(),
                 product.shipping(),
                 product.categories(),
                 product.tags(),
@@ -125,6 +131,7 @@ class ProductDetailCardBuilder(
                 if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.inventory(GROUPED),
                 product.addons(),
+                product.quantityRules(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
@@ -143,6 +150,7 @@ class ProductDetailCardBuilder(
                 product.externalLink(),
                 product.inventory(EXTERNAL),
                 product.addons(),
+                product.quantityRules(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
@@ -162,6 +170,7 @@ class ProductDetailCardBuilder(
                 if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.inventory(VARIABLE),
                 product.addons(),
+                product.quantityRules(),
                 product.shipping(),
                 product.categories(),
                 product.tags(),
@@ -180,6 +189,26 @@ class ProductDetailCardBuilder(
                 product.subscription(),
                 product.inventory(SIMPLE),
                 product.addons(),
+                product.quantityRules(),
+                product.categories(),
+                product.tags(),
+                product.shortDescription(),
+                product.linkedProducts(),
+                product.productType()
+            ).filterNotEmpty()
+        )
+    }
+
+    private suspend fun getBundleProductsCard(product: Product): ProductPropertyCard {
+        return ProductPropertyCard(
+            type = SECONDARY,
+            properties = listOf(
+                product.bundleProducts(),
+                product.price(),
+                if (viewModel.isProductUnderCreation) null else product.productReviews(),
+                product.inventory(SIMPLE),
+                product.addons(),
+                product.quantityRules(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
@@ -199,6 +228,7 @@ class ProductDetailCardBuilder(
             properties = listOf(
                 if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.addons(),
+                product.quantityRules(),
                 product.categories(),
                 product.tags(),
                 product.shortDescription(),
@@ -682,16 +712,35 @@ class ProductDetailCardBuilder(
                 period
             )
 
+            val salePriceString = salePrice?.let {
+                resources.getString(
+                    string.product_subscription_description,
+                    currencyFormatter.formatCurrency(salePrice, viewModel.currencyCode, true),
+                    subscription.periodInterval.toString(),
+                    period
+                )
+            }
+
             val expire = if (subscription.length != null) {
                 resources.getString(string.subscription_period, subscription.length.toString(), period)
             } else {
                 resources.getString(string.subscription_never_expire)
             }
 
-            val properties = mapOf(
-                resources.getString(string.product_regular_price) to price,
-                resources.getString(string.subscription_expire) to expire
-            )
+            val properties: Map<String, String> = buildMap {
+                put(resources.getString(string.product_regular_price), price)
+                putIfNotNull(resources.getString(string.product_sale_price) to salePriceString)
+                put(resources.getString(string.subscription_expire), expire)
+            }
+
+            val salesDetails = if (isSaleScheduled || salePrice != null) {
+                SaleDetails(
+                    isSaleScheduled = isSaleScheduled,
+                    salePrice = salePrice,
+                    saleStartDateGmt = saleStartDateGmt,
+                    saleEndDateGmt = saleEndDateGmt
+                )
+            } else null
 
             PropertyGroup(
                 title = string.product_subscription_title,
@@ -700,7 +749,7 @@ class ProductDetailCardBuilder(
                 showTitle = true,
                 onClick = {
                     viewModel.onEditProductCardClicked(
-                        ViewProductSubscription(subscription),
+                        ViewProductSubscription(subscription, salesDetails),
                         AnalyticsEvent.PRODUCT_DETAILS_VIEW_SUBSCRIPTIONS_TAPPED
                     )
                 }
@@ -720,6 +769,52 @@ class ProductDetailCardBuilder(
         return missingPriceVariation?.let {
             ProductProperty.Warning(resources.getString(string.variation_detail_price_warning))
         }
+    }
+
+    private suspend fun Product.quantityRules(): ProductProperty? {
+        val rules = viewModel.getQuantityRules(this.remoteId) ?: return null
+
+        val properties = buildMap {
+            putIfNotNull(resources.getString(string.min_quantity) to rules.min?.toString())
+            putIfNotNull(resources.getString(string.max_quantity) to rules.max?.toString())
+            if (size < 2) putIfNotNull(resources.getString(string.group_of) to rules.groupOf?.toString())
+        }
+
+        return PropertyGroup(
+            title = string.product_quantity_rules_title,
+            icon = drawable.ic_gridicons_product,
+            properties = properties,
+            showTitle = true,
+            onClick = {
+                viewModel.onEditProductCardClicked(
+                    ViewProductQuantityRules(rules),
+                    AnalyticsEvent.PRODUCT_DETAIL_VIEW_QUANTITY_RULES_TAPPED
+                )
+            }
+        )
+    }
+
+    private suspend fun Product.bundleProducts(): ProductProperty? {
+        val bundledProductsSize = viewModel.getBundledProductsSize(this.remoteId)
+        return if (bundledProductsSize > 0) {
+            val content = StringUtils.getQuantityString(
+                resourceProvider = resources,
+                quantity = bundledProductsSize,
+                default = string.product_bundle_multiple_count,
+                one = string.product_bundle_single_count
+            )
+
+            ComplexProperty(
+                string.product_bundle,
+                content,
+                drawable.ic_widgets
+            ) {
+                viewModel.onEditProductCardClicked(
+                    ProductNavigationTarget.ViewBundleProducts(this.remoteId),
+                    AnalyticsEvent.PRODUCT_DETAIL_VIEW_BUNDLED_PRODUCTS_TAPPED
+                )
+            }
+        } else null
     }
 }
 

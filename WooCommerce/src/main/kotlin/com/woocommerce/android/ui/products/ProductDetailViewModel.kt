@@ -52,6 +52,7 @@ import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
@@ -65,6 +66,7 @@ import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -86,6 +88,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
@@ -123,7 +126,9 @@ class ProductDetailViewModel @Inject constructor(
     private val generateVariationCandidates: GenerateVariationCandidates,
     private val duplicateProduct: DuplicateProduct,
     private val tracker: AnalyticsTrackerWrapper,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val getProductQuantityRules: GetProductQuantityRules,
+    private val getBundledProductsCount: GetBundledProductsCount
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -684,6 +689,7 @@ class ProductDetailViewModel @Inject constructor(
             is ProductExitEvent.ExitProductDownloadsSettings -> Unit // Do nothing
             is ProductExitEvent.ExitProductRenameAttribute -> Unit // Do nothing
             is ProductExitEvent.ExitProductSubscriptions -> Unit // Do nothing
+            is ProductExitEvent.ExitProductQuantityRules -> Unit // Do nothing
         }
         eventName?.let { tracker.track(it, mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)) }
         triggerEvent(event)
@@ -2189,6 +2195,16 @@ class ProductDetailViewModel @Inject constructor(
         )
     }
 
+    suspend fun getQuantityRules(productRemoteID: Long): QuantityRules? {
+        if (FeatureFlag.QUANTITY_RULES_READ_ONLY_SUPPORT.isEnabled().not()) return null
+        return getProductQuantityRules(productRemoteID)
+    }
+
+    suspend fun getBundledProductsSize(remoteId: Long): Int {
+        if (FeatureFlag.BUNDLED_PRODUCTS_READ_ONLY_SUPPORT.isEnabled().not()) return 0
+        return getBundledProductsCount(remoteId)
+    }
+
     /**
      * Sealed class that handles the back navigation for the product detail screens while providing a common
      * interface for managing them as a single type. Currently used in all the product sub detail screens when
@@ -2219,6 +2235,8 @@ class ProductDetailViewModel @Inject constructor(
         object ExitProductAddons : ProductExitEvent()
 
         object ExitProductSubscriptions : ProductExitEvent()
+
+        object ExitProductQuantityRules : ProductExitEvent()
     }
 
     object RefreshMenu : Event()

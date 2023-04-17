@@ -1,25 +1,19 @@
 package com.woocommerce.android.ui.login.storecreation.countrypicker
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin
-import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore
-import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Failed
-import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Loading
 import com.woocommerce.android.ui.login.storecreation.NewStore
-import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
 import com.woocommerce.android.util.EmojiUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -31,8 +25,7 @@ class CountryPickerViewModel @Inject constructor(
     analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val newStore: NewStore,
     private val localCountriesRepository: LocalCountriesRepository,
-    private val emojiUtils: EmojiUtils,
-    private val createStore: CreateFreeTrialStore,
+    private val emojiUtils: EmojiUtils
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val DEFAULT_LOCATION_CODE = "US"
@@ -40,19 +33,9 @@ class CountryPickerViewModel @Inject constructor(
 
     private val availableCountries = MutableStateFlow(emptyList<StoreCreationCountry>())
 
-    val countryPickerState: LiveData<CountryPickerState> = combine(
-        availableCountries,
-        createStore.state
-    ) { countries, createStoreState ->
-        when (createStoreState) {
-            is Failed -> CountryPickerState.Error(createStoreState.type)
-            else -> CountryPickerState.Contentful(
-                storeName = newStore.data.name ?: "",
-                countries = countries,
-                creatingStoreInProgress = createStoreState is Loading
-            )
-        }
-    }.asLiveData()
+    val countryPickerState = availableCountries
+        .map { CountryPickerState(newStore.data.name.orEmpty(), it) }
+        .asLiveData()
 
     init {
         analyticsTrackerWrapper.track(
@@ -96,13 +79,7 @@ class CountryPickerViewModel @Inject constructor(
     fun onContinueClicked() {
         launch {
             if (FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
-                createStore(
-                    storeDomain = newStore.data.domain,
-                    storeName = newStore.data.name,
-                ).filterNotNull().collect {
-                    newStore.update(siteId = it)
-                    triggerEvent(NavigateToInstallationStep)
-                }
+                triggerEvent(NavigateToSummaryStep)
             } else {
                 triggerEvent(NavigateToDomainPickerStep)
             }
@@ -121,10 +98,6 @@ class CountryPickerViewModel @Inject constructor(
         newStore.update(country = country.toNewStoreCountry())
     }
 
-    fun onExitTriggered() {
-        triggerEvent(MultiLiveEvent.Event.Exit)
-    }
-
     private fun StoreCreationCountry.toNewStoreCountry() =
         NewStore.Country(
             name = name,
@@ -132,17 +105,12 @@ class CountryPickerViewModel @Inject constructor(
         )
 
     object NavigateToDomainPickerStep : MultiLiveEvent.Event()
-    object NavigateToInstallationStep : MultiLiveEvent.Event()
+    object NavigateToSummaryStep : MultiLiveEvent.Event()
 
-    sealed class CountryPickerState {
-        data class Contentful(
-            val storeName: String,
-            val countries: List<StoreCreationCountry>,
-            val creatingStoreInProgress: Boolean,
-        ) : CountryPickerState()
-
-        data class Error(val errorType: StoreCreationErrorType) : CountryPickerState()
-    }
+    data class CountryPickerState(
+        val storeName: String,
+        val countries: List<StoreCreationCountry>
+    )
 
     data class StoreCreationCountry(
         val name: String,

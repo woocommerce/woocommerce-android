@@ -1,11 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-03-28 09:54:04+0000
+Translation-Revision-Date: 2023-04-11 13:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="quantity_rules_info_notice">웹 알림판에서 상품의 수량 규칙을 편집할 수 있습니다.</string>
+    <string name="group_of">그룹</string>
+    <string name="max_quantity">최대 수량</string>
+    <string name="min_quantity">최소 수량</string>
+    <string name="product_quantity_rules_title">수량 규칙</string>
+    <string name="gift_cards">상품권</string>
+    <string name="order_gift_card">상품권</string>
+    <string name="free_trial_feature_fast_to_launch">빠르게 시작</string>
+    <string name="free_trial_feature_site_security">사이트 보안</string>
+    <string name="free_trial_feature_auto_updates_backups">자동 업데이트 및 백업</string>
+    <string name="free_trial_feature_247_support">연중무휴 지원</string>
+    <string name="free_trial_feature_email_marketing">이메일 마케팅</string>
+    <string name="free_trial_feature_social_advertising">소셜 광고</string>
+    <string name="free_trial_feature_subscription_product_kits">구독 및 상품 키트</string>
+    <string name="free_trial_feature_multiple_payment_options">여러 가지 결제 옵션</string>
+    <string name="free_trial_feature_ecommerce_reports">전자상거래 보고서</string>
+    <string name="free_trial_feature_shipping_labels">배송 레이블</string>
+    <string name="free_trial_feature_unlimited_products">무제한 상품</string>
+    <string name="free_trial_feature_premium_themes">프리미엄 테마</string>
+    <string name="free_trial_summary_credit_card_message">신용카드가 필요 없습니다.</string>
+    <string name="free_trial_summary_try_button">무료 체험</string>
+    <string name="free_trial_summary_try_it">14일 동안 사용해 보세요.</string>
+    <string name="free_trial_summary_advertise">온라인 스토어 구축과 성장에 필요한 모든 것이 제공됩니다. 우커머스에서 지원하고 워드프레스닷컴에서 호스팅합니다.</string>
+    <string name="free_trial_summary_title">며칠 만에 시작, 몇 년 동안 성장</string>
+    <string name="product_selector_products_heading">상품</string>
+    <string name="product_selector_recent_products_heading">마지막 판매</string>
+    <string name="product_selector_popular_products_heading">인기</string>
+    <string name="jetpack_install_role_eligibility_learn_more">역할 및 권한 더 알아보기</string>
+    <string name="jetpack_install_role_eligibility_error_message">젯팩 설치가 허용되는 역할이 아닌 것 같습니다. \n도움말은 관리자에게 문의하세요.</string>
+    <string name="card_reader_tap_to_pay_description">여기에서 소액으로\nTap To Pay를 테스트할 수 있습니다.</string>
+    <string name="card_reader_test_tap_to_pay">Tap To Pay 테스트</string>
+    <string name="subscription_free_trial">무료 평가판</string>
+    <string name="subscription_sign_up_fee">등록 수수료</string>
+    <string name="subscription_expire">만료까지 남은 시간</string>
+    <string name="subscription_price">구독 가격</string>
+    <string name="subscription_period_multiple_years">연 단위</string>
+    <string name="subscription_period_multiple_months">월 단위</string>
+    <string name="subscription_period_multiple_weeks">주 단위</string>
+    <string name="subscription_period_multiple_days">일 단위</string>
+    <string name="subscription_period_year">연</string>
+    <string name="subscription_period_month">월</string>
+    <string name="subscription_period_week">주</string>
+    <string name="subscription_period_day">일</string>
+    <string name="subscription_status_custom">사용자 정의</string>
+    <string name="subscription_status_pending_cancellation">취소 대기 중</string>
+    <string name="subscription_status_expired">만료됨</string>
+    <string name="subscription_status_cancelled">취소됨</string>
+    <string name="subscription_status_on_hold">보류 중</string>
+    <string name="subscription_status_active">활성</string>
+    <string name="no_variable_subscription_warning">가변 구독은 웹 알림판에서만 추가하실 수 있습니다.</string>
+    <string name="subscription_details_info_notice">웹 알림판에서 상품 구독을 편집하실 수 있습니다.</string>
+    <string name="subscription_no_trial">평가판 기간 없음</string>
+    <string name="subscription_no_sign_up_fee">등록 수수료 없음</string>
+    <string name="subscription_never_expire">만료 기간 없음</string>
+    <string name="product_subscription_description">%1$s %2$s마다 %3$s</string>
+    <string name="subscription_period_interval_multiple">%1$d마다 %2$s</string>
+    <string name="subscription_period_interval_single">%1$s마다</string>
+    <string name="subscription_id">구독 #%1$d</string>
+    <string name="order_subscription">구독</string>
+    <string name="store_onboarding_launch_store_ok">확인</string>
+    <string name="simplified_login_prologue_title">첫 번째 판매부터 수백만 상당의 수익까지 Woo가 함께합니다. 340만 개의 온라인 스토어 판매자가 신뢰하는 이유를 확인하세요.</string>
+    <string name="simplified_login_prologue_intro">무엇이든 어디서나 판매하세요.</string>
+    <string name="product_type_subscription">구독</string>
+    <string name="otp_incorrect">OTP 코드가 올바르지 않습니다. 정보를 다시 확인하고 다시 시도하세요.</string>
+    <string name="requesting_sms_otp_failure">SMS 요청에 실패했습니다. 다시 시도하세요.</string>
+    <string name="requesting_sms_otp_success">SMS가 요청되었습니다. 메시지에서 코드를 확인하세요.</string>
+    <string name="product_subscription_title">구독</string>
+    <string name="card_reader_type_selection_bluetooth_reader_description">체크카드와 신용카드를 카드 리더에 올려놓거나 밀어 넣거나 살짝 밀어서 결제할 수 있습니다.</string>
+    <string name="card_reader_type_selection_tap_to_pay_description">스마트폰에서 직접 비접촉 결제를 안전하게 수락하세요.</string>
+    <string name="card_reader_tap_to_pay_beta_features_subheading">앱에서 Tap To Pay 테스트</string>
+    <string name="card_reader_tap_to_pay_beta_features_heading">Tap To Pay</string>
+    <string name="card_reader_tap_to_pay_share_feedback">Tap to Pay 피드백 공유</string>
+    <string name="login_site_credentials_web_authorization_connection_rejected">애플리케이션 비밀번호 생성이 승인되지 않아서 로그인할 수 없습니다.</string>
+    <string name="login_site_credentials_fetching_site">사이트를 가져오는 중…</string>
+    <string name="login_site_credentials_fetching_site_failed">웹사이트를 가져오는 동안 오류 발생</string>
+    <string name="login_site_credentials_use_web_authorization">WP 관리자 페이지에서 다시 시도</string>
+    <string name="login_store_address">로그인</string>
+    <string name="loading">로드 중입니다…</string>
     <string name="upgrades_plan_ended_name">%s 종료됨</string>
     <string name="upgrades_current_plan_ended_caption">구독이 종료되었으며, 모든 기능에 대한 접근 권한이 제한되었습니다.</string>
     <string name="free_trial_days_left_plural">%1$d일</string>
@@ -14,7 +92,6 @@ Language: ko_KR
     <string name="store_onboarding_get_paid_title">결제 설정</string>
     <string name="store_onboarding_task_about_your_store_toolbar_title">스토어 소개</string>
     <string name="store_creation_installation_rendering_preview_label">미리보기 렌더링 중…</string>
-    <string name="jetpack_benefits_open_wpadmin">WP 관리자 열기</string>
     <string name="shipping_label_address_phone_required">전화번호는 필수 사항입니다.</string>
     <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s, %4$s 판매됨</string>
     <string name="analytics_items">아이템</string>
@@ -30,7 +107,7 @@ Language: ko_KR
     <string name="upgrades_upgrade_now">지금 업그레이드</string>
     <string name="upgrades_report_subscription_issue">구독 문제 신고</string>
     <string name="free_trial_upgrade_now">지금 업그레이드</string>
-    <string name="free_trial_days_left">평가판이 %1$s일 남았습니다.</string>
+    <string name="free_trial_days_left">%1$s회 시도가 남았습니다.</string>
     <string name="free_trial_trial_ended">평가판 종료됨</string>
     <string name="free_trial_your_trial_ended">평가판이 종료되었습니다.</string>
     <string name="store_onboarding_launch_store_generic_error_description">죄송합니다. 예기치 않은 오류가 발생했습니다.</string>
@@ -100,8 +177,6 @@ Language: ko_KR
     <string name="card_reader_tap_to_pay_explanation_ready">회원님의 휴대폰에서 Tap to Pay가 준비되었습니다.\n고객이 회원님의 휴대폰에서 자신의 카드를\n눌러서 결제할 수 있습니다.</string>
     <string name="card_reader_tap_to_pay_explanation_title">휴대폰으로\n카드 결제 받기</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
-    <string name="card_reader_tap_to_pay_description">회원님의 휴대폰을 사용하여 카드 결제 수락</string>
-    <string name="card_reader_tap_to_pay">Tap To Pay</string>
     <string name="card_reader_hub_actions_category_header">작업</string>
     <string name="domain_registration_generic_error">도메인 등록 중 오류 발생</string>
     <string name="domain_registration_state_picker_dialog_title">주 선택</string>
@@ -350,7 +425,7 @@ Language: ko_KR
     <string name="card_reader_connect_scanning_built_in_hint">오래 걸리지 않음</string>
     <string name="card_reader_connect_scanning_built_in_header">기본 제공 리더 준비 중…</string>
     <string name="card_reader_payment_collect_payment_built_in_state">기본 제공 리더 준비됨</string>
-    <string name="card_reader_type_selection_bluetooth_reader">블루투스 리더</string>
+    <string name="card_reader_type_selection_bluetooth_reader">카드 리더</string>
     <string name="card_reader_type_selection_tap_to_pay">눌러서 결제</string>
     <string name="analytics_conversion_subtitle">전환율</string>
     <string name="analytics_session_card_title">세션</string>
@@ -489,7 +564,6 @@ Language: ko_KR
     <string name="store_creation_create_new_store_label">새 스토어 생성</string>
     <string name="or_use_password_below_qr_code_scan_option">또는 비밀번호로 로그인</string>
     <string name="or_scan_qr_code_to_log_in">QR 코드 스캔으로 로그인</string>
-    <string name="simplified_login_prologue_title">우커머스는 워드프레스에 구축된 사용자 정의 가능한 오픈 소스 전자상거래 플랫폼입니다.</string>
     <string name="simulated_reader_toast">시뮬레이션한 카드 리더가 비활성화되었습니다.</string>
     <string name="simulated_reader_key">시뮬레이션한 리더 키</string>
     <string name="variations_bulk_update_stock_quantity_success">업데이트한 재고 수량</string>
@@ -1735,7 +1809,6 @@ Language: ko_KR
     <string name="login_jetpack_required_text">%1$s에 이 앱을 사용하려면 젯팩 플러그인을 스토어에 연결해야 합니다.</string>
     <string name="login_try_another_account">다른 계정으로 로그인</string>
     <string name="login_pick_store">연결할 스토어 선택</string>
-    <string name="login_store_address">스토어 주소 입력</string>
     <string name="login_wpcom">워드프레스닷컴으로 계속하기</string>
     <string name="product_type_variable_desc">색상이나 크기와 같은 선택사항이 있는 제품</string>
     <string name="product_selection_count_single">%d 제품 선택됨</string>

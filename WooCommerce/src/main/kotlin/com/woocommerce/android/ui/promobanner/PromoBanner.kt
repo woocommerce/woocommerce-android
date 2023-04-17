@@ -6,8 +6,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.jitm.JitmState
 import com.woocommerce.android.ui.payments.banner.Banner
-import com.woocommerce.android.ui.payments.banner.BannerState
 
 @Composable
 fun PromoBanner(
@@ -16,13 +16,18 @@ fun PromoBanner(
     onDismissClick: () -> Unit
 ) {
     Banner(
-        BannerState.DisplayBannerState(
+        JitmState.Banner(
             onPrimaryActionClicked = onCtaClick,
             onDismissClicked = onDismissClick,
             title = UiString.UiStringRes(bannerType.titleRes),
             description = UiString.UiStringRes(bannerType.messageRes),
             primaryActionLabel = UiString.UiStringRes(R.string.set_up_now),
-            chipLabel = UiString.UiStringRes(R.string.tip)
+            backgroundImage = JitmState.Banner.LocalOrRemoteImage.Local(
+                R.drawable.ic_banner_upsell_card_reader_illustration
+            ),
+            badgeIcon = JitmState.Banner.LabelOrRemoteIcon.Label(
+                UiString.UiStringRes(R.string.tip)
+            ),
         )
     )
 }

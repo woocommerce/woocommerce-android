@@ -81,7 +81,15 @@ class VariationNavigator @Inject constructor() {
             }
             is VariationNavigationTarget.ViewSubscription -> {
                 val action = VariationDetailFragmentDirections
-                    .actionVariationDetailFragmentToProductSubscriptionFragment(target.subscription)
+                    .actionVariationDetailFragmentToProductSubscriptionFragment(
+                        target.subscription,
+                        target.sale
+                    )
+                fragment.findNavController().navigateSafely(action)
+            }
+            is VariationNavigationTarget.ViewProductQuantityRules -> {
+                val action = VariationDetailFragmentDirections
+                    .actionVariationDetailFragmentToProductQuantityRulesFragment(target.quantityRules)
                 fragment.findNavController().navigateSafely(action)
             }
         }

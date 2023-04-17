@@ -223,6 +223,12 @@ class AppPrefsWrapper @Inject constructor() {
     fun getCustomDomainsSource(): DomainFlowSource = enumValueOf(AppPrefs.getCustomDomainsSource())
     fun getCustomDomainsSourceAsString(): String = AppPrefs.getCustomDomainsSource().lowercase()
 
+    fun setJetpackInstallationIsFromBanner(isFromBanner: Boolean) {
+        AppPrefs.setJetpackInstallationIsFromBanner(isFromBanner)
+    }
+
+    fun getJetpackInstallationIsFromBanner() = AppPrefs.getJetpackInstallationIsFromBanner()
+
     /**
      * Card Reader Upsell
      */
@@ -320,4 +326,10 @@ class AppPrefsWrapper @Inject constructor() {
     }
 
     fun isOnboardingCompleted(siteId: Int): Boolean = AppPrefs.areOnboardingTaskCompletedFor(siteId)
+
+    fun setStoreOnboardingShown(siteId: Int) {
+        AppPrefs.setStoreOnboardingShown(siteId)
+    }
+
+    fun getStoreOnboardingShown(siteId: Int): Boolean = AppPrefs.getStoreOnboardingShown(siteId)
 }

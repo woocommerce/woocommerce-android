@@ -25,11 +25,10 @@ import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.OpenGenericWebView
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToast
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToastString
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.GapBetweenSections
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.NonToggleableListItem
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.GapBetweenSections
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.NonToggleableListItem
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub.OpenInHub
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
@@ -1398,6 +1397,49 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when learn more ipp clicked, then learn more button tracked with source`() =
+        testBlocking {
+            // GIVEN
+            val url = "https://www.example.com"
+            whenever(
+                learnMoreUrlProvider.provideLearnMoreUrlFor(
+                    LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
+                )
+            ).thenReturn(url)
+            initViewModel()
+
+            // WHEN
+            (viewModel.viewStateData.getOrAwaitValue()).rows
+                .first { it is CardReaderHubViewState.ListItem.LearnMoreListItem }
+                .onClick!!.invoke()
+
+            // THEN
+            verify(cardReaderTracker).trackIPPLearnMoreClicked("payments_menu")
+        }
+
+    @Test
+    fun `when learn more ipp clicked, then open web view event emitted`() =
+        testBlocking {
+            // GIVEN
+            val url = "https://www.example.com"
+            whenever(
+                learnMoreUrlProvider.provideLearnMoreUrlFor(
+                    LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
+                )
+            ).thenReturn(url)
+            initViewModel()
+
+            // WHEN
+            (viewModel.viewStateData.getOrAwaitValue()).rows
+                .first { it is CardReaderHubViewState.ListItem.LearnMoreListItem }
+                .onClick!!.invoke()
+
+            // THEN
+            val event = viewModel.event.getOrAwaitValue()
+            assertThat((event as OpenGenericWebView).url).isEqualTo(url)
+        }
+
+    @Test
     fun `given ttp available and multiple plugin, when view model started, then rows shows sorted by index`() =
         testBlocking {
             // GIVEN
@@ -1423,7 +1465,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             // THEN
             val rows = (viewModel.viewStateData.getOrAwaitValue()).rows
-            assertThat(rows.map { it.index }).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+            assertThat(rows.map { it.index }).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
         }
 
     @Test
@@ -1503,42 +1545,6 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     // endregion
 
     @Test
-    fun `when learn more IPP clicked, then trigger correct event`() {
-        // GIVEN
-        whenever(
-            learnMoreUrlProvider.provideLearnMoreUrlFor(LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS)
-        ).thenReturn(
-            AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
-        )
-
-        // WHEN
-        viewModel.viewStateData.getOrAwaitValue().learnMoreIppState?.onClick?.invoke()
-
-        // THEN
-        assertThat(viewModel.event.value).isEqualTo(
-            viewModel.event.value
-        ).isInstanceOf(OpenGenericWebView::class.java)
-    }
-
-    @Test
-    fun `when learn more IPP clicked, then trigger correct event with correct url`() {
-        // GIVEN
-        whenever(
-            learnMoreUrlProvider.provideLearnMoreUrlFor(LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS)
-        ).thenReturn(
-            AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
-        )
-
-        // WHEN
-        viewModel.viewStateData.getOrAwaitValue().learnMoreIppState?.onClick?.invoke()
-
-        // THEN
-        assertThat(viewModel.event.value).isEqualTo(
-            viewModel.event.value
-        ).isEqualTo(OpenGenericWebView(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS))
-    }
-
-    @Test
     fun `given tpp available, when tap to pay clicked, then navigate to tap to pay summary screen event emitted`() {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
@@ -1582,6 +1588,25 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
                 .filter { it.label != UiStringRes(R.string.card_reader_test_tap_to_pay) }
                 .map { it.description }
         ).allMatch { it == null }
+    }
+
+    @Test
+    fun `when view model initiated, then learn more item visible`() {
+        // WHEN
+        initViewModel()
+
+        // THEN
+        val rows = (viewModel.viewStateData.getOrAwaitValue()).rows
+        val learnMoreListItems = rows.filterIsInstance<CardReaderHubViewState.ListItem.LearnMoreListItem>()
+        assertThat(learnMoreListItems).hasSize(1)
+        assertThat(learnMoreListItems[0].label).isEqualTo(
+            UiStringRes(
+                R.string.card_reader_detail_learn_more,
+                containsHtml = true
+            )
+        )
+        assertThat(learnMoreListItems[0].icon).isEqualTo(R.drawable.ic_info_outline_20dp)
+        assertThat(learnMoreListItems[0].index).isEqualTo(11)
     }
 
     @Test
