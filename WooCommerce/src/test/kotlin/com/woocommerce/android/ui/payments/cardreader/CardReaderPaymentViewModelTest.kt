@@ -174,13 +174,13 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val cardReaderPaymentOrderHelper: CardReaderPaymentOrderHelper = mock()
     private val cardReaderPaymentReceiptHelper: CardReaderPaymentReceiptHelper = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
-    private val cardReaderConfigFactory: CardReaderCountryConfigProvider = mock()
+    private val cardReaderConfigProvider: CardReaderCountryConfigProvider = mock()
     private val cardReaderConfig: CardReaderConfigForSupportedCountry = CardReaderConfigForUSA
 
     @Suppress("LongMethod")
     @Before
     fun setUp() = testBlocking {
-        whenever(cardReaderConfigFactory.provideCountryConfigFor("US"))
+        whenever(cardReaderConfigProvider.provideCountryConfigFor("US"))
             .thenReturn(CardReaderConfigForUSA)
 
         viewModel = CardReaderPaymentViewModel(
@@ -202,7 +202,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             cardReaderPaymentOrderHelper = cardReaderPaymentOrderHelper,
             cardReaderPaymentReceiptHelper = cardReaderPaymentReceiptHelper,
             cardReaderOnboardingChecker = cardReaderOnboardingChecker,
-            cardReaderConfigProvider = cardReaderConfigFactory,
+            cardReaderConfigProvider = cardReaderConfigProvider,
         )
 
         whenever(orderRepository.getOrderById(any())).thenReturn(mockedOrder)
@@ -3958,7 +3958,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             cardReaderPaymentOrderHelper = cardReaderPaymentOrderHelper,
             cardReaderPaymentReceiptHelper = cardReaderPaymentReceiptHelper,
             cardReaderOnboardingChecker = cardReaderOnboardingChecker,
-            cardReaderConfigProvider = cardReaderConfigFactory,
+            cardReaderConfigProvider = cardReaderConfigProvider,
         )
     }
 
@@ -3985,7 +3985,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             cardReaderPaymentOrderHelper = cardReaderPaymentOrderHelper,
             cardReaderPaymentReceiptHelper = cardReaderPaymentReceiptHelper,
             cardReaderOnboardingChecker = cardReaderOnboardingChecker,
-            cardReaderConfigProvider = cardReaderConfigFactory,
+            cardReaderConfigProvider = cardReaderConfigProvider,
         )
     }
 }
