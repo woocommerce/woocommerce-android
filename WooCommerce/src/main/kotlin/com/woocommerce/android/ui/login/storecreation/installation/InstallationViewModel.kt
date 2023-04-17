@@ -43,12 +43,12 @@ class InstallationViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val selectedSite: SelectedSite,
-    private val storeCreationLoadingCountDownTimer: StoreCreationLoadingCountDownTimer,
+    private val storeCreationLoadingTimer: StoreCreationLoadingTimer,
     private val installationTransactionLauncher: InstallationTransactionLauncher,
 ) : ScopedViewModel(savedStateHandle) {
     private companion object {
         const val STORE_LOAD_RETRIES_LIMIT = 10
-        const val START_POLLING_DELAY = 40000L
+        const val INITIAL_STORE_CREATION_DELAY = 40000L
         const val SITE_CHECK_DEBOUNCE = 5000L
     }
 
@@ -84,12 +84,12 @@ class InstallationViewModel @Inject constructor(
             )
         )
         launch {
-            storeCreationLoadingCountDownTimer.observe()
+            storeCreationLoadingTimer.observe()
                 .collect {
                     _viewState.value = it
                 }
         }
-        storeCreationLoadingCountDownTimer.startTimer()
+        storeCreationLoadingTimer.startTimer()
         loadNewStore()
     }
 
@@ -130,7 +130,6 @@ class InstallationViewModel @Inject constructor(
         }
         launch {
             installationTransactionLauncher.onStoreInstallationRequested()
-            _viewState.update { LoadingState }
 
             // it takes a while (~45s) before a store is ready after a purchase, so we need to wait a bit
             delay(INITIAL_STORE_CREATION_DELAY)
@@ -146,7 +145,7 @@ class InstallationViewModel @Inject constructor(
                         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_TIMED_OUT)
                     }
                     processStoreCreationResult(result)
-                    storeCreationLoadingCountDownTimer.cancelTimer()
+                    storeCreationLoadingTimer.cancelTimer()
                     break
                 }
                 delay(SITE_CHECK_DEBOUNCE)
@@ -181,9 +180,6 @@ class InstallationViewModel @Inject constructor(
     }
 
     sealed interface ViewState : Parcelable {
-        @Parcelize
-        object InitialState : ViewState
-
         @Parcelize
         data class StoreCreationLoadingState(
             val progress: Float,
