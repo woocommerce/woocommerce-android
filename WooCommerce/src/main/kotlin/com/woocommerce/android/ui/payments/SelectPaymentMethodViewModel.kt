@@ -24,12 +24,10 @@ import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.OrderDurationRecorder
+import com.woocommerce.android.ui.jitm.JitmState
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.ViewState.Loading
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.ViewState.Success
 import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
-import com.woocommerce.android.ui.payments.banner.BannerState
-import com.woocommerce.android.ui.payments.banner.BannerState.DisplayBannerState
-import com.woocommerce.android.ui.payments.banner.BannerState.HideBannerState
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
@@ -137,7 +135,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
             canShowCardReaderUpsellBanner(System.currentTimeMillis()) &&
             isPaymentCollectableWithCardReader
         ) {
-            DisplayBannerState(
+            JitmState.Banner(
                 onPrimaryActionClicked = { onCtaClicked(AnalyticsTracker.KEY_BANNER_PAYMENTS) },
                 onDismissClicked = { onDismissClicked() },
                 title = UiStringRes(
@@ -149,15 +147,15 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 primaryActionLabel = UiStringRes(
                     R.string.card_reader_upsell_card_reader_banner_cta
                 ),
-                backgroundImage = BannerState.LocalOrRemoteImage.Local(
+                backgroundImage = JitmState.Banner.LocalOrRemoteImage.Local(
                     R.drawable.ic_banner_upsell_card_reader_illustration
                 ),
-                badgeIcon = BannerState.LabelOrRemoteIcon.Label(
+                badgeIcon = JitmState.Banner.LabelOrRemoteIcon.Label(
                     UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
                 ),
             )
         } else {
-            HideBannerState
+            JitmState.Hidden
         },
         learMoreIpp = LearMoreIpp(
             label = UiStringRes(
@@ -169,7 +167,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     )
 
     private fun trackBannerShownIfDisplayed() {
-        if ((viewState.value as? Success)?.bannerState is DisplayBannerState) {
+        if ((viewState.value as? Success)?.bannerState is JitmState.Banner) {
             analyticsTrackerWrapper.track(
                 AnalyticsEvent.FEATURE_CARD_SHOWN,
                 mapOf(
@@ -432,7 +430,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
             val orderTotal: String,
             val isPaymentCollectableWithExternalCardReader: Boolean,
             val isPaymentCollectableWithTapToPay: Boolean,
-            val bannerState: BannerState,
+            val bannerState: JitmState,
             val learMoreIpp: LearMoreIpp,
         ) : ViewState()
     }
