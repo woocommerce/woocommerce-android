@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.login.storecreation.installation.ObserveSiteIn
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.junit.Test
@@ -218,19 +219,24 @@ class InstallationViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when a Woo site is found after installation, but has out-of-sync properties, report a tracks event`() =
+    fun `when a Woo site is found after installation, but has out-of-sync properties, report a tracks event and do it only once`() =
         testBlocking {
+            val installationStateEmitter =
+                MutableSharedFlow<ObserveSiteInstallation.InstallationState>()
             observeSiteInstallation.stub {
                 onBlocking {
                     invoke(
                         any(),
                         any()
                     )
-                }.thenReturn(flowOf(ObserveSiteInstallation.InstallationState.OutOfSync))
+                }.thenReturn(installationStateEmitter)
             }
 
             whenViewModelIsCreated()
             advanceUntilIdle()
+            repeat(2) {
+                installationStateEmitter.emit(ObserveSiteInstallation.InstallationState.OutOfSync)
+            }
 
             verify(analyticsTrackerWrapper).track(AnalyticsEvent.SITE_CREATION_PROPERTIES_OUT_OF_SYNC)
         }

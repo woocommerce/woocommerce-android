@@ -49,6 +49,7 @@ class InstallationViewModel @Inject constructor(
         get() = newStoreUrl.slashJoin("wp-admin/")
 
     private val _viewState = savedState.getStateFlow<ViewState>(this, InitialState)
+
     val viewState = _viewState
         .onEach {
             if (it is InitialState) {
@@ -59,6 +60,8 @@ class InstallationViewModel @Inject constructor(
         }.asLiveData()
 
     val performanceObserver: LifecycleObserver = installationTransactionLauncher
+
+    private var hasReportedDesync = false
 
     init {
         analyticsTrackerWrapper.track(
@@ -106,7 +109,10 @@ class InstallationViewModel @Inject constructor(
                 }
 
                 is InstallationState.OutOfSync -> {
-                    analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_PROPERTIES_OUT_OF_SYNC)
+                    if (!hasReportedDesync) {
+                        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_PROPERTIES_OUT_OF_SYNC)
+                        hasReportedDesync = true
+                    }
                 }
             }
         }
