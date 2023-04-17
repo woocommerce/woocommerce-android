@@ -85,6 +85,7 @@ class InstallationViewModel @Inject constructor(
                     _viewState.value = it
                 }
         }
+        storeCreationLoadingCountDownTimer.startTimer()
         loadNewStore()
     }
 
@@ -116,7 +117,6 @@ class InstallationViewModel @Inject constructor(
                 newStore.clear()
             }
         }
-        storeCreationLoadingCountDownTimer.startTimer()
         launch {
             delay(START_POLLING_DELAY)
 //           keep fetching the user 's sites until the new site is properly configured or the retry limit is reached

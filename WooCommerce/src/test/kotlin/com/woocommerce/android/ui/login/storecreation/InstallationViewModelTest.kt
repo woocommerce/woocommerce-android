@@ -91,7 +91,6 @@ class InstallationViewModelTest : BaseUnitTest() {
             viewModel.viewState.observeForever(observer)
             advanceUntilIdle()
 
-
             verify(storeCreationLoadingCountDownTimer).cancelTimer()
             val expectedState = SuccessState(newStore.data.domain!!.slashJoin("wp-admin/"))
             assertEquals(expectedState, viewModel.viewState.value)
@@ -127,4 +126,12 @@ class InstallationViewModelTest : BaseUnitTest() {
         val expectedState = ErrorState(STORE_LOADING_FAILED)
         assertEquals(expectedState, viewModel.viewState.value)
     }
+
+    @Test
+    fun `when viewmodel is created, loading timer is initiated`() =
+        testBlocking {
+            whenViewModelIsCreated()
+
+            verify(storeCreationLoadingCountDownTimer).startTimer()
+        }
 }
