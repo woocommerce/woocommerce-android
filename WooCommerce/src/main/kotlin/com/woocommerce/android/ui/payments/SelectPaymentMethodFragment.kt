@@ -189,29 +189,9 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                         )
                     findNavController().navigateSafely(action)
                 }
-                DismissCardReaderUpsellBanner -> {
-                    applyBannerDismissDialogComposeUI()
-                }
-                DismissCardReaderUpsellBannerViaRemindMeLater -> {
-                    binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
-                    binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
-                }
-                DismissCardReaderUpsellBannerViaDontShowAgain -> {
-                    binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
-                    binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
-                }
-                is OpenPurchaseCardReaderLink -> {
-                    findNavController().navigate(
-                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                            urlToLoad = event.url,
-                            title = resources.getString(event.titleRes)
-                        )
-                    )
-                }
                 is OpenGenericWebView -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
-
                 is NavigateToOrderDetails -> {
                     val action = SelectPaymentMethodFragmentDirections
                         .actionSelectPaymentMethodFragmentToOrderDetailFragment(
@@ -219,7 +199,6 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                         )
                     findNavController().navigateSafely(action)
                 }
-
                 is NavigateToTapToPaySummary -> {
                     findNavController().navigateSafely(
                         SelectPaymentMethodFragmentDirections
