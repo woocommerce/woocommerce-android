@@ -18,7 +18,9 @@ import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -138,34 +140,37 @@ class BarcodeScanningFragment : BaseFragment(R.layout.fragment_barcode_scanning)
                         .fillMaxWidth()
                         .padding(32.dp)
                 )
-                Button(
-                    onClick = {
-                        viewModel.addToCartClick()
-                    }
+                Row(
+                    modifier =Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
-                    Text(
-                        text = "Add to cart",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                    )
-                }
+                    Button(
+                        onClick = {
+                            viewModel.addToCartClick()
+                        }
+                    ) {
+                        Text(
+                            text = "Add to cart",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier
+                                .padding(8.dp)
+                        )
+                    }
 
-                Button(
-                    onClick = {
-                        viewModel.onDoneClick()
+                    Button(
+                        onClick = {
+                            viewModel.onDoneClick()
+                        }
+                    ) {
+                        Text(
+                            text = "Done",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier
+                                .padding(8.dp)
+                        )
                     }
-                ) {
-                    Text(
-                        text = "Done",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                    )
                 }
             }
         }
