@@ -7,18 +7,6 @@
     android:background="@color/color_surface">
 
     <ImageView
-        android:id="@+id/image_prologue"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/prologue_logo_height"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/image_minor_40"
-        android:importantForAccessibility="no"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/img_woo_logo" />
-
-    <ImageView
         android:id="@+id/image_prologue_bg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -32,15 +20,29 @@
         app:srcCompat="@drawable/img_prologue_bg" />
 
     <ImageView
+        android:id="@+id/image_prologue"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/prologue_logo_height"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/image_minor_40"
+        android:importantForAccessibility="no"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/imageView"
+        app:srcCompat="@drawable/img_woo_logo" />
+
+    <ImageView
         android:id="@+id/imageView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/major_400"
         android:adjustViewBounds="true"
+        android:layout_marginTop="@dimen/major_300"
         android:importantForAccessibility="no"
         android:src="@drawable/img_prologue"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/image_prologue_bg"
         app:layout_constraintTop_toBottomOf="@id/image_prologue"
         app:layout_constraintBottom_toTopOf="@id/prologueIntro"
         app:layout_constraintWidth_percent="0.8"/>
@@ -61,8 +63,8 @@
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/prologueTitle"
         style="@style/Woo.TextView.Subtitle1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:gravity="center_horizontal"
         android:textAlignment="gravity"
         android:text="@string/simplified_login_prologue_title"
@@ -70,8 +72,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/prologueIntro"
-        app:layout_constraintBottom_toTopOf="@id/loginButtons"
-        app:layout_constraintWidth_percent="0.55" />
+        app:layout_constraintBottom_toTopOf="@id/loginButtons"/>
 
     <LinearLayout
         android:id="@+id/loginButtons"
