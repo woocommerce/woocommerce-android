@@ -1,0 +1,2 @@
+13.1:
+Esta vez, hemos prestado especial atención a los pedidos y pagos en persona, incluida la opción de elegir los productos más populares al crear un pedido.

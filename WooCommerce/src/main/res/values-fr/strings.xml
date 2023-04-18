@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-03 16:54:05+0000
+Translation-Revision-Date: 2023-04-11 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="quantity_rules_info_notice">Vous pouvez modifier les règles de quantité des produits dans le tableau de bord Web.</string>
+    <string name="group_of">Groupe de</string>
+    <string name="max_quantity">Quantité maximale</string>
+    <string name="min_quantity">Quantité minimale</string>
+    <string name="product_quantity_rules_title">Règles de quantité</string>
+    <string name="gift_cards">Cartes-cadeaux</string>
+    <string name="order_gift_card">Carte-cadeau</string>
+    <string name="free_trial_feature_fast_to_launch">Lancement rapide</string>
+    <string name="free_trial_feature_site_security">Sécurité du site</string>
+    <string name="free_trial_feature_auto_updates_backups">Mises à jour et sauvegardes automatiques</string>
+    <string name="free_trial_feature_247_support">Assistance 24h/24, 7j/7</string>
+    <string name="free_trial_feature_email_marketing">Marketing par e-mail</string>
+    <string name="free_trial_feature_social_advertising">Publicité sur les réseaux sociaux</string>
+    <string name="free_trial_feature_subscription_product_kits">Abonnements et kits de produits</string>
+    <string name="free_trial_feature_multiple_payment_options">Options de paiement multiples</string>
+    <string name="free_trial_feature_ecommerce_reports">Rapports eCommerce</string>
+    <string name="free_trial_feature_shipping_labels">Étiquettes de livraison</string>
+    <string name="free_trial_feature_unlimited_products">Produits illimités</string>
+    <string name="free_trial_feature_premium_themes">Thèmes premium</string>
+    <string name="free_trial_summary_credit_card_message">Aucune carte de crédit requise.</string>
+    <string name="free_trial_summary_try_button">Faites un essai gratuit</string>
+    <string name="free_trial_summary_try_it">Faites un essai pendant 14 jours.</string>
+    <string name="free_trial_summary_advertise">Nous vous proposons tout ce dont vous avez besoin pour créer et développer une boutique en ligne propulsée par WooCommerce et hébergée sur WordPress.com.</string>
+    <string name="free_trial_summary_title">Un lancement en quelques jours pour une croissance pendant des années</string>
+    <string name="product_selector_products_heading">Produits</string>
+    <string name="product_selector_recent_products_heading">Dernières ventes</string>
+    <string name="product_selector_popular_products_heading">Populaires</string>
+    <string name="jetpack_install_role_eligibility_learn_more">Plus d’infos sur les rôles et les autorisations</string>
+    <string name="jetpack_install_role_eligibility_error_message">Il semblerait que votre rôle ne vous permette pas d’installer Jetpack. \nVeuillez contacter votre administrateur pour obtenir de l’aide.</string>
+    <string name="card_reader_tap_to_pay_description">Vous pouvez tester la fonctionnalité Appuyer pour payer avec un faible\nmontant ici.</string>
+    <string name="card_reader_test_tap_to_pay">Testez votre fonctionnalité Appuyer pour payer</string>
     <string name="subscription_free_trial">Essai gratuit</string>
     <string name="subscription_sign_up_fee">Frais d’inscription</string>
     <string name="subscription_expire">Expire après</string>
@@ -46,7 +77,6 @@ Language: fr
     <string name="card_reader_type_selection_tap_to_pay_description">Acceptez des paiements sans contact en toute sécurité directement sur votre téléphone.</string>
     <string name="card_reader_tap_to_pay_beta_features_subheading">Tester Appuyer pour payer dans l’application</string>
     <string name="card_reader_tap_to_pay_beta_features_heading">Appuyer pour payer</string>
-    <string name="card_reader_tap_to_pay_description_not_used">Utilisez votre téléphone pour accepter des paiements\npar carte. Essayez dès maintenant.</string>
     <string name="card_reader_tap_to_pay_share_feedback">Partager un avis sur Appuyer pour payer</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Impossible de se connecter, car le mot de passe créé pour l’application n’est pas approuvé.</string>
     <string name="login_site_credentials_fetching_site">Récupération du site…</string>
@@ -62,7 +92,6 @@ Language: fr
     <string name="store_onboarding_get_paid_title">Configuration des paiements</string>
     <string name="store_onboarding_task_about_your_store_toolbar_title">À propos de votre boutique</string>
     <string name="store_creation_installation_rendering_preview_label">Affichage de l’aperçu…</string>
-    <string name="jetpack_benefits_open_wpadmin">Ouvrir le tableau de bord</string>
     <string name="shipping_label_address_phone_required">Veuillez indiquer un numéro de téléphone</string>
     <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s, %4$s vendu(e)(s)</string>
     <string name="analytics_items">éléments</string>
@@ -148,8 +177,6 @@ Language: fr
     <string name="card_reader_tap_to_pay_explanation_ready">Vous pouvez utiliser la fonctionnalité Appuyer pour payer avec votre téléphone.\nVos clients peuvent placer leur carte\nsur votre téléphone pour payer.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Percevoir des paiements par carte\navec votre téléphone</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Appuyer pour payer</string>
-    <string name="card_reader_tap_to_pay_description_used">Utilisez votre téléphone pour accepter les paiements par carte.</string>
-    <string name="card_reader_tap_to_pay">Appuyer pour payer</string>
     <string name="card_reader_hub_actions_category_header">ACTIONS</string>
     <string name="domain_registration_generic_error">Une erreur s’est produite lors de l’enregistrement du domaine</string>
     <string name="domain_registration_state_picker_dialog_title">Sélectionner un État</string>
@@ -1210,7 +1237,6 @@ Language: fr
     <string name="support_system_status_report">Rapport sur l’état du système</string>
     <string name="card_reader_welcome_dialog_text">Félicitations, vous pouvez désormais accepter les paiements par carte de débit et de crédit avec WooCommerce Payments.</string>
     <string name="card_reader_welcome_dialog_header">Percevez des paiements à l’aide d’un lecteur de carte</string>
-    <string name="card_reader_payment_failed_amount_too_small">Le montant doit s’élever à au moins 0,50 $.</string>
     <string name="card_reader_payment_payment_failed_ok">OK</string>
     <string name="settings_whats_new_icon_description">Image de l’icône Nouvelle fonctionnalité</string>
     <string name="settings_switch_store">Changer de boutique</string>

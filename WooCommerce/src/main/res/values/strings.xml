@@ -95,17 +95,6 @@
     <string name="product_bulk_update_status">Update status</string>
     <string name="product_bulk_update_status_updated">Status updated!</string>
     <string name="review_notifications">Reviews</string>
-    <string name="more_menu">Menu</string>
-    <string name="more_menu_button_woo_admin">WooCommerce Admin</string>
-    <string name="more_menu_button_wс_admin">WC Admin</string>
-    <string name="more_menu_button_payments">Payments</string>
-    <string name="more_menu_button_analytics">Analytics</string>
-    <string name="more_menu_button_inbox">Inbox</string>
-    <string name="more_menu_button_store">View Store</string>
-    <string name="more_menu_button_coupons">Coupons</string>
-    <string name="more_menu_button_reviews">Reviews</string>
-    <string name="more_menu_button_upgrades">Upgrades</string>
-    <string name="more_menu_avatar">User profile picture</string>
     <string name="version_with_name_param">Version %s</string>
     <string name="share_store_button">Share your store</string>
     <string name="share_store_dialog_title">Share your store\'s URL</string>
@@ -575,7 +564,7 @@
     <string name="domains_free_with_credits">Free for the first year</string>
     <string name="domains_purchase_successful_heading">Congratulations on your purchase</string>
     <string name="domains_purchase_successful_delay_notice">Your site address is being set up. It may take up 30 minutes for your domain to start working.</string>
-    <string name="domains_purchase_successful_settings_notice">You can find the domain settings in Settings -> Domains</string>
+    <string name="domains_purchase_successful_settings_notice">You can find the domain settings in Settings -&gt; Domains</string>
     <string name="domain_registration_privacy_protection_title">Privacy Protection</string>
     <string name="domain_registration_privacy_protection_description">Domain owners have to share contact information in a public database of all domains.
         With Privacy Protection, we publish our own information instead of yours and privately forward any communication to you.</string>
@@ -1182,7 +1171,7 @@
     <string name="card_reader_tap_to_pay_explanation_title">Collect card payments\nwith your phone</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Your phone is ready for Tap to Pay.\nYour customer can tap their card\non your phone to pay.</string>
     <string name="card_reader_tap_to_pay_explanation_try_and_refund">Try a payment using your card and\nrefund it when you’re done.</string>
-    <string name="card_reader_tap_to_pay_explanation_where_to_find"> You can find Tap to Pay on Android in\nMenu > Payments, or Collect Payment and\nchoose Tap to Pay.</string>
+    <string name="card_reader_tap_to_pay_explanation_where_to_find"> You can find Tap to Pay on Android in\nMenu &gt; Payments, or Collect Payment and\nchoose Tap to Pay.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Try a payment</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Something went wrong. Please try again later.</string>
     <string name="card_reader_tap_to_pay_beta_features_heading">Tap To Pay</string>
@@ -1254,7 +1243,7 @@
     <string name="card_reader_payment_failed_server_error_state">No connection to server</string>
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Card declined</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Sorry, this payment couldn\’t be processed</string>
-    <string name="card_reader_payment_failed_amount_too_small">Amount must be at least $0.50</string>
+    <string name="card_reader_payment_failed_amount_too_small">Amount must be at least %1$s</string>
     <string name="card_reader_payment_failed_temporary">Trying again may succeed</string>
     <string name="card_reader_payment_failed_fraud">Try another means of payment</string>
     <string name="card_reader_payment_failed_generic">Payment was declined for an unspecified reason</string>
@@ -2930,6 +2919,18 @@
     <string name="store_creation_exit_dialog_title">Do you want to leave?</string>
     <string name="store_creation_exit_dialog_message">You will lose all your store information.</string>
     <string name="store_creation_confirm_and_leave">Confirm and leave</string>
+    <string name="store_creation_in_progress_title_1">Woo! We are creating your store</string>
+    <string name="store_creation_in_progress_title_2">Building the foundations</string>
+    <string name="store_creation_in_progress_title_3">Organizing the stock room</string>
+    <string name="store_creation_in_progress_title_4">Applying the finishing touches</string>
+    <string name="store_creation_in_progress_title_5">Turning on the lights</string>
+    <string name="store_creation_in_progress_title_6">Opening the doors</string>
+    <string name="store_creation_in_progress_description_1">&lt;b&gt;#FunWooFact:&lt;/b&gt; Did you know that Woo powers almost 4 million stores worldwide? You’re in good company.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#FunWooFact:&lt;/b&gt; Did you know that Woo was founded by two South Africans and a Norwegian? Here are three alternative ways to say “store” in those countries – Winkel, ivenkile, and butikk.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#FunWooFact:&lt;/b&gt; Are you Team Cat or Team Dog? The Woo team is split 50/50!</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#FunWooFact:&lt;/b&gt; There are more than 150 WooCommerce meetups held all over the world! A great way to meet fellow store owners.</string>
+    <string name="store_creation_in_progress_description_5">&lt;b&gt;#FunWooFact:&lt;/b&gt; The Woo team is made up of over 350 talented individuals, distributed across 30+ countries.</string>
+    <string name="store_creation_in_progress_description_6">&lt;b&gt;#FunWooFact:&lt;/b&gt; Our favorite color is purple. 💜</string>
 
     <string name="store_creation_domain_picker_title">Choose a domain</string>
     <string name="store_creation_domain_picker_subtitle">This is where people will find you on the Internet. Don\'t worry, you can change it later.</string>
@@ -3271,7 +3272,7 @@
     <string name="subscription_total" translatable="false">%1$s /\n%2$s</string>
     <string name="subscription_period_interval_single">Every %1$s</string>
     <string name="subscription_period_interval_multiple">Every %1$d %2$s</string>
-    <string name="subscription_end_date" translatable="false">&#160;- %1$s</string>
+    <string name="subscription_end_date" translatable="false"> - %1$s</string>
     <string name="product_subscription_description">%1$s every %2$s %3$s</string>
     <string name="subscription_period" translatable="false">%1$s %2$s</string>
     <string name="subscription_never_expire">Never expire</string>
@@ -3336,6 +3337,41 @@
     <string name="product_bundle_single_count">1 product</string>
     <string name="product_bundle_multiple_count">%d products</string>
     <string name="bundled_products_info_notice">You can edit bundled products in the web dashboard.</string>
+
+    <!--
+    More Menu
+    -->
+    <string name="more_menu">Menu</string>
+    <string name="more_menu_button_woo_admin">WooCommerce Admin</string>
+    <string name="more_menu_avatar">User profile picture</string>
+    <string name="more_menu_button_analytics">Analytics</string>
+
+    <string name="more_menu_settings_section_title">Settings</string>
+    <string name="more_menu_general_section_title">General</string>
+
+    <string name="more_menu_button_wс_admin">WC Admin</string>
+    <string name="more_menu_button_wc_admin_description">Manage more on admin</string>
+
+    <string name="more_menu_button_payments">Payments</string>
+    <string name="more_menu_button_payments_description">Join the mobile payments</string>
+
+    <string name="more_menu_button_inbox">Inbox</string>
+    <string name="more_menu_button_inbox_description">Stay up-to-date</string>
+
+    <string name="more_menu_button_store">View Store</string>
+    <string name="more_menu_button_store_description">View your store</string>
+
+    <string name="more_menu_button_coupons">Coupons</string>
+    <string name="more_menu_button_coupons_description">Boost sales with special offers</string>
+
+    <string name="more_menu_button_reviews">Reviews</string>
+    <string name="more_menu_button_reviews_description">Capture reviews for your store</string>
+
+    <string name="more_menu_button_upgrades">Upgrades</string>
+    <string name="more_menu_button_upgrades_description">Manage your plans</string>
+
+    <string name="more_menu_button_settings">Settings</string>
+    <string name="more_menu_button_settings_description">Update your preferences</string>
 
     <!--
     Composite products

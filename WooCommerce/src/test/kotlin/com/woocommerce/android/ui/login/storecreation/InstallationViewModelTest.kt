@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login.storecreation
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -15,22 +16,24 @@ import com.woocommerce.android.ui.login.storecreation.installation.InstallationT
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState
+import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.StoreCreationLoadingState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.SuccessState
+import com.woocommerce.android.ui.login.storecreation.installation.StoreCreationLoadingTimer
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
+import org.junit.Before
 import org.junit.Test
 import org.mockito.internal.verification.Times
 import org.mockito.kotlin.any
-import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
 @ExperimentalCoroutinesApi
 class InstallationViewModelTest : BaseUnitTest() {
@@ -39,15 +42,20 @@ class InstallationViewModelTest : BaseUnitTest() {
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val selectedSite: SelectedSite = mock()
+    private val storeCreationLoadingTimer: StoreCreationLoadingTimer = mock()
     private val installationTransactionLauncher: InstallationTransactionLauncher = mock()
 
     private lateinit var viewModel: InstallationViewModel
 
     private var observer: Observer<ViewState> = mock()
-    private val captor = argumentCaptor<ViewState>()
 
-    companion object {
-        private const val SITE_ID = 123L
+    private companion object {
+        const val SITE_ID = 123L
+        val INITIAL_LOADING_STATE = StoreCreationLoadingState(
+            progress = 0F,
+            title = string.store_creation_in_progress_title_1,
+            description = string.store_creation_in_progress_description_1
+        )
     }
 
     private fun whenViewModelIsCreated() {
@@ -58,6 +66,7 @@ class InstallationViewModelTest : BaseUnitTest() {
             analyticsTrackerWrapper,
             appPrefsWrapper,
             selectedSite,
+            storeCreationLoadingTimer,
             installationTransactionLauncher,
         )
     }
@@ -72,49 +81,43 @@ class InstallationViewModelTest : BaseUnitTest() {
         )
     }
 
-    @Test
-    fun `when a Woo site is found after installation, a success state is displayed`() = testBlocking {
-        whenever(repository.fetchSiteAfterCreation(newStore.data.siteId!!)).thenReturn(Success(Unit))
-        whenever(selectedSite.get()).thenReturn(SiteModel().apply { url = newStore.data.domain })
-
-        whenViewModelIsCreated()
-
-        viewModel.viewState.observeForever(observer)
-        advanceUntilIdle()
-
-        verify(observer, Times(3)).onChanged(captor.capture())
-
-        val observedState = captor.lastValue as? SuccessState
-        assertNotNull(observedState)
-
-        verify(repository, Times(1)).fetchSiteAfterCreation(newStore.data.siteId!!)
-
-        val expectedState = SuccessState(newStore.data.domain!!.slashJoin("wp-admin/"))
-
-        assertEquals(expectedState, observedState)
+    @Before
+    fun setup() {
+        whenever(storeCreationLoadingTimer.observe()).thenReturn(flowOf(INITIAL_LOADING_STATE))
     }
 
     @Test
-    fun `when a site is found but not ready after 10 tries, an error state is displayed`() = testBlocking {
-        whenever(repository.fetchSiteAfterCreation(newStore.data.siteId!!)).thenReturn(Failure(STORE_NOT_READY))
+    fun `when a Woo site is found after installation, a success state is displayed and loading canceled`() =
+        testBlocking {
+            whenever(repository.fetchSiteAfterCreation(newStore.data.siteId!!)).thenReturn(Success(Unit))
+            whenever(selectedSite.get()).thenReturn(SiteModel().apply { url = newStore.data.domain })
 
-        whenViewModelIsCreated()
+            whenViewModelIsCreated()
 
-        viewModel.viewState.observeForever(observer)
-        advanceUntilIdle()
+            viewModel.viewState.observeForever(observer)
+            advanceUntilIdle()
 
-        verify(observer, Times(3)).onChanged(captor.capture())
+            verify(storeCreationLoadingTimer).cancelTimer()
+            val expectedState = SuccessState(newStore.data.domain!!.slashJoin("wp-admin/"))
+            assertEquals(expectedState, viewModel.viewState.value)
+        }
 
-        val observedState = captor.lastValue as? ErrorState
-        assertNotNull(observedState)
+    @Test
+    fun `when a site is found but not ready after 10 tries, an error state is displayed and timer is cancelled`() =
+        testBlocking {
+            whenever(repository.fetchSiteAfterCreation(newStore.data.siteId!!)).thenReturn(Failure(STORE_NOT_READY))
 
-        verify(repository, Times(10)).fetchSiteAfterCreation(any())
+            whenViewModelIsCreated()
 
-        val expectedState = ErrorState(STORE_NOT_READY)
+            viewModel.viewState.observeForever(observer)
+            advanceUntilIdle()
 
-        assertEquals(expectedState, observedState)
-        verify(analyticsTrackerWrapper).track(AnalyticsEvent.SITE_CREATION_TIMED_OUT)
-    }
+            verify(repository, Times(10)).fetchSiteAfterCreation(any())
+            verify(storeCreationLoadingTimer).cancelTimer()
+            val expectedState = ErrorState(STORE_NOT_READY)
+            assertEquals(expectedState, viewModel.viewState.value)
+            verify(analyticsTrackerWrapper).track(AnalyticsEvent.SITE_CREATION_TIMED_OUT)
+        }
 
     @Test
     fun `when a site fetching returns an error, the flow fails immediately`() = testBlocking {
@@ -125,17 +128,19 @@ class InstallationViewModelTest : BaseUnitTest() {
         viewModel.viewState.observeForever(observer)
         advanceUntilIdle()
 
-        verify(observer, Times(3)).onChanged(captor.capture())
-
-        val observedState = captor.lastValue as? ErrorState
-        assertNotNull(observedState)
-
         verify(repository, Times(1)).fetchSiteAfterCreation(any())
-
+        verify(storeCreationLoadingTimer).cancelTimer()
         val expectedState = ErrorState(STORE_LOADING_FAILED)
-
-        assertEquals(expectedState, observedState)
+        assertEquals(expectedState, viewModel.viewState.value)
     }
+
+    @Test
+    fun `when viewmodel is created, loading timer is initiated`() =
+        testBlocking {
+            whenViewModelIsCreated()
+
+            verify(storeCreationLoadingTimer).startTimer()
+        }
 
     @Test
     fun `when a site is during installation, start measuring the transaction time`() = testBlocking {
@@ -182,22 +187,23 @@ class InstallationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when a Woo site is found after installation, but has out-of-sync properties, report a tracks event`() = testBlocking {
-        whenever(repository.fetchSiteAfterCreation(newStore.data.siteId!!)).thenReturn(Success(Unit))
-        whenever(selectedSite.get()).thenReturn(
-            SiteModel().apply {
-                setIsWpComStore(false)
-                hasWooCommerce = false
-                name = "different than provided by user"
-                url = newStore.data.domain
-            }
-        )
+    fun `when a Woo site is found after installation, but has out-of-sync properties, report a tracks event`() =
+        testBlocking {
+            whenever(repository.fetchSiteAfterCreation(newStore.data.siteId!!)).thenReturn(Success(Unit))
+            whenever(selectedSite.get()).thenReturn(
+                SiteModel().apply {
+                    setIsWpComStore(false)
+                    hasWooCommerce = false
+                    name = "different than provided by user"
+                    url = newStore.data.domain
+                }
+            )
 
-        whenViewModelIsCreated()
+            whenViewModelIsCreated()
 
-        viewModel.viewState.observeForever(observer)
-        advanceUntilIdle()
+            viewModel.viewState.observeForever(observer)
+            advanceUntilIdle()
 
-        verify(analyticsTrackerWrapper).track(AnalyticsEvent.SITE_CREATION_PROPERTIES_OUT_OF_SYNC)
-    }
+            verify(analyticsTrackerWrapper).track(AnalyticsEvent.SITE_CREATION_PROPERTIES_OUT_OF_SYNC)
+        }
 }

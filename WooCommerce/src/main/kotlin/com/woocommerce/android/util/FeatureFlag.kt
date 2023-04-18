@@ -17,6 +17,7 @@ enum class FeatureFlag {
     IAP_FOR_STORE_CREATION,
     IPP_TAP_TO_PAY,
     IPP_FEEDBACK_BANNER,
+    IPP_UK,
     STORE_CREATION_ONBOARDING,
     FREE_TRIAL_M2,
     REST_API_I2,
@@ -41,16 +42,16 @@ enum class FeatureFlag {
             IPP_FEEDBACK_BANNER,
             FREE_TRIAL_M2,
             STORE_CREATION_ONBOARDING,
-            REST_API_I2 -> true
-
-            MORE_MENU_INBOX,
-            WC_SHIPPING_BANNER,
-            IPP_TAP_TO_PAY,
-            ANALYTICS_HUB_FEEDBACK_BANNER,
+            REST_API_I2,
             GIFT_CARD_READ_ONLY_SUPPORT,
             QUANTITY_RULES_READ_ONLY_SUPPORT,
             BUNDLED_PRODUCTS_READ_ONLY_SUPPORT,
-            COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT -> PackageUtils.isDebugBuild()
+            IPP_UK,
+            ANALYTICS_HUB_FEEDBACK_BANNER -> true
+
+            MORE_MENU_INBOX,
+            WC_SHIPPING_BANNER,
+            IPP_TAP_TO_PAY -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION,
             STORE_CREATION_PROFILER -> false
