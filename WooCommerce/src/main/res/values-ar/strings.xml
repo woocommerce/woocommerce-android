@@ -1237,7 +1237,6 @@ Language: ar
     <string name="support_system_status_report">تقرير حالة النظام</string>
     <string name="card_reader_welcome_dialog_text">تهانينا، أصبحتَ الآن قادرًا على قبول مدفوعات بطاقات السحب والائتمان باستخدام مدفوعات WooCommerce!</string>
     <string name="card_reader_welcome_dialog_header">جمع المدفوعات باستخدام قارئ البطاقة</string>
-    <string name="card_reader_payment_failed_amount_too_small">يجب أن يكون المبلغ 0.50 دولار على الأقل</string>
     <string name="card_reader_payment_payment_failed_ok">موافق</string>
     <string name="settings_whats_new_icon_description">صورة أيقونة الميزة الجديدة</string>
     <string name="settings_switch_store">تبديل المخزن</string>

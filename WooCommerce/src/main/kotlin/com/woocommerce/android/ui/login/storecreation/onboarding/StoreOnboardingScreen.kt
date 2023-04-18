@@ -139,10 +139,14 @@ fun StoreOnboardingCollapsed(
             )
             if (onboardingState.tasks.size > NUMBER_ITEMS_IN_COLLAPSED_MODE || taskToDisplay.size == 1) {
                 WCTextButton(
-                    contentPadding = PaddingValues(0.dp),
+                    contentPadding = PaddingValues(dimensionResource(id = R.dimen.major_100)),
                     onClick = onViewAllClicked
                 ) {
-                    Text(text = stringResource(R.string.store_onboarding_task_view_all, onboardingState.tasks.size))
+                    Text(
+                        text = stringResource(R.string.store_onboarding_task_view_all, onboardingState.tasks.size),
+                        style = MaterialTheme.typography.subtitle1,
+                        fontWeight = FontWeight.Bold,
+                    )
                 }
             }
         }
