@@ -1237,7 +1237,6 @@ Language: fr
     <string name="support_system_status_report">Rapport sur l’état du système</string>
     <string name="card_reader_welcome_dialog_text">Félicitations, vous pouvez désormais accepter les paiements par carte de débit et de crédit avec WooCommerce Payments.</string>
     <string name="card_reader_welcome_dialog_header">Percevez des paiements à l’aide d’un lecteur de carte</string>
-    <string name="card_reader_payment_failed_amount_too_small">Le montant doit s’élever à au moins 0,50 $.</string>
     <string name="card_reader_payment_payment_failed_ok">OK</string>
     <string name="settings_whats_new_icon_description">Image de l’icône Nouvelle fonctionnalité</string>
     <string name="settings_switch_store">Changer de boutique</string>

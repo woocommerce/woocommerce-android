@@ -1237,7 +1237,6 @@ Language: ru
     <string name="support_system_status_report">Данные о состоянии системы</string>
     <string name="card_reader_welcome_dialog_text">Теперь вы можете получать платежи с банковских карт через WooCommerce Payments!</string>
     <string name="card_reader_welcome_dialog_header">Принимайте платежи с помощью устройств чтения карт</string>
-    <string name="card_reader_payment_failed_amount_too_small">Минимальная сумма — 0,50 долл. США</string>
     <string name="card_reader_payment_payment_failed_ok">ОК</string>
     <string name="settings_whats_new_icon_description">Новое изображение значка функции</string>
     <string name="settings_switch_store">Переключиться на другой магазин</string>
