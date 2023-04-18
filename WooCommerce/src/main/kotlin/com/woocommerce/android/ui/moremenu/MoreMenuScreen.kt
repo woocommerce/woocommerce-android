@@ -215,6 +215,7 @@ private fun MoreMenuUserAvatar(avatarUrl: String) {
             start = dimensionResource(id = R.dimen.minor_100)
         )
         .clip(CircleShape)
+        .background(color = colorResource(id = R.color.more_menu_button_icon_background))
 
     bitmapState.value?.let {
         Image(
