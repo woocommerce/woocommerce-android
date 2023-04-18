@@ -56,8 +56,8 @@ private const val PROFILER_OPTIONS_JSON = """{
   "industries": [
     {
       "id": 0,
-      "label": "Fashion, apparel, and accessories",
-      "key": "fashion_apparel_accessories",
+      "label": "Clothing and accessories",
+      "key": "clothing_and_accessories",
     },
     {
       "id": 1,
@@ -66,28 +66,29 @@ private const val PROFILER_OPTIONS_JSON = """{
     },
     {
       "id": 2,
-      "label": "Electronics and computers",
-      "key": "electronic_computers",
-    },
-    {
-      "id": 3,
       "label": "Food and drink",
       "key": "food_drink",
     },
     {
-      "id": 4,
+      "id": 3,
       "label": "Home, furniture, and garden",
       "key": "home_furniture_garden",
     },
     {
-      "id": 5,
-      "label": "CBD and other hemp-derived products",
-      "key": "cbd_other_hemp_derived_products",
-    },
-    {
-      "id": 6,
+      "id": 4,
       "label": "Education and learning",
       "key": "education_and_learning",
+    },
+    {
+      "id": 5,
+      "label": "Electronics and computers",
+      "key": "electronic_computers",
+    },
+
+    {
+      "id": 6,
+      "label": "CBD and other hemp-derived products",
+      "key": "cbd_other_hemp_derived_products",
     },
     {
       "id": 7,
