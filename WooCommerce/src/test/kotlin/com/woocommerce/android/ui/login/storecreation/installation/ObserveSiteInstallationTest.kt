@@ -65,7 +65,7 @@ class ObserveSiteInstallationTest : BaseUnitTest(StandardTestDispatcher()) {
             runCurrent()
 
             // then
-            assertThat(installationStates.first()).isEqualTo(Success)
+            assertThat(installationStates.last()).isEqualTo(Success)
         }
 
     @Test
@@ -95,7 +95,7 @@ class ObserveSiteInstallationTest : BaseUnitTest(StandardTestDispatcher()) {
             }
 
             // then
-            assertThat(installationStates.first()).isEqualTo(
+            assertThat(installationStates.last()).isEqualTo(
                 Failure(
                     StoreCreationErrorType.STORE_NOT_READY
                 )
@@ -123,7 +123,7 @@ class ObserveSiteInstallationTest : BaseUnitTest(StandardTestDispatcher()) {
             runCurrent()
 
             // then
-            assertThat(installationStates.first()).isEqualTo(
+            assertThat(installationStates.last()).isEqualTo(
                 OutOfSync
             )
         }
@@ -147,7 +147,7 @@ class ObserveSiteInstallationTest : BaseUnitTest(StandardTestDispatcher()) {
         runCurrent()
 
         // then
-        assertThat(installationStates.first()).isEqualTo(
+        assertThat(installationStates.last()).isEqualTo(
             Failure(StoreCreationErrorType.STORE_LOADING_FAILED)
         )
     }

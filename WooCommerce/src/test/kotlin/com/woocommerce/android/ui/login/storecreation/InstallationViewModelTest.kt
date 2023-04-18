@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.login.storecreation
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -12,14 +13,17 @@ import com.woocommerce.android.ui.login.storecreation.installation.InstallationT
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState
+import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.StoreCreationLoadingState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.SuccessState
 import com.woocommerce.android.ui.login.storecreation.installation.ObserveSiteInstallation
+import com.woocommerce.android.ui.login.storecreation.installation.StoreCreationLoadingTimer
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
+import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -37,13 +41,19 @@ class InstallationViewModelTest : BaseUnitTest() {
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val selectedSite: SelectedSite = mock()
+    private val storeCreationLoadingTimer: StoreCreationLoadingTimer = mock()
     private val installationTransactionLauncher: InstallationTransactionLauncher = mock()
     private val observeSiteInstallation: ObserveSiteInstallation = mock()
 
     private lateinit var viewModel: InstallationViewModel
 
-    companion object {
-        private const val SITE_ID = 123L
+    private companion object {
+        const val SITE_ID = 123L
+        val INITIAL_LOADING_STATE = StoreCreationLoadingState(
+            progress = 0F,
+            title = string.store_creation_in_progress_title_1,
+            description = string.store_creation_in_progress_description_1
+        )
     }
 
     private fun whenViewModelIsCreated() {
@@ -54,6 +64,7 @@ class InstallationViewModelTest : BaseUnitTest() {
             analyticsTrackerWrapper,
             appPrefsWrapper,
             selectedSite,
+            storeCreationLoadingTimer,
             installationTransactionLauncher,
             observeSiteInstallation
         )
@@ -70,8 +81,13 @@ class InstallationViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Before
+    fun setup() {
+        whenever(storeCreationLoadingTimer.observe()).thenReturn(flowOf(INITIAL_LOADING_STATE))
+    }
+
     @Test
-    fun `when a Woo site is found after installation, a success state is displayed`() =
+    fun `when a Woo site is found after installation, a success state is displayed and loading canceled`() =
         testBlocking {
             whenever(selectedSite.get()).thenReturn(
                 SiteModel().apply {
@@ -90,6 +106,7 @@ class InstallationViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
             advanceUntilIdle()
 
+            verify(storeCreationLoadingTimer).cancelTimer()
             val expectedState = SuccessState(newStore.data.domain!!.slashJoin("wp-admin/"))
             observeState { lastState ->
                 assertEquals(expectedState, lastState)
@@ -121,6 +138,7 @@ class InstallationViewModelTest : BaseUnitTest() {
             observeState { lastState ->
                 assertEquals(expectedState, lastState)
             }
+            verify(storeCreationLoadingTimer).cancelTimer()
             verify(analyticsTrackerWrapper).track(AnalyticsEvent.SITE_CREATION_TIMED_OUT)
         }
 
@@ -148,7 +166,16 @@ class InstallationViewModelTest : BaseUnitTest() {
         observeState { lastState ->
             assertEquals(expectedState, lastState)
         }
+        verify(storeCreationLoadingTimer).cancelTimer()
     }
+
+    @Test
+    fun `when viewmodel is created, loading timer is initiated`() =
+        testBlocking {
+            whenViewModelIsCreated()
+
+            verify(storeCreationLoadingTimer).startTimer()
+        }
 
     @Test
     fun `when a site is during installation, start measuring the transaction time`() =

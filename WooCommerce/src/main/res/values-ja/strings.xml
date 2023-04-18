@@ -1237,7 +1237,6 @@ Language: ja_JP
     <string name="support_system_status_report">システムステータスレポート</string>
     <string name="card_reader_welcome_dialog_text">WooCommerce Payments を使用してデビットカードやクレジットカードでの支払いを受け取ることができるようになりました。</string>
     <string name="card_reader_welcome_dialog_header">カードリーダーで支払いを受け取る</string>
-    <string name="card_reader_payment_failed_amount_too_small">金額は $0.50以上にしてください</string>
     <string name="card_reader_payment_payment_failed_ok">OK</string>
     <string name="settings_whats_new_icon_description">新機能アイコンの画像</string>
     <string name="settings_switch_store">ストアを切り替える</string>

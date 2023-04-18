@@ -28,6 +28,7 @@ class ObserveSiteInstallation @Inject constructor(
         expectedName: String,
     ): Flow<InstallationState> {
         return flow {
+            emit(InstallationState.InProgress)
             delay(INITIAL_STORE_CREATION_DELAY)
 
             repeat(STORE_LOAD_RETRIES_LIMIT) { retryIteration ->
@@ -76,5 +77,6 @@ class ObserveSiteInstallation @Inject constructor(
             InstallationState
 
         object OutOfSync : InstallationState
+        object InProgress : InstallationState
     }
 }
