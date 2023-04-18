@@ -43,12 +43,12 @@ enum class FeatureFlag {
             REST_API_I2,
             GIFT_CARD_READ_ONLY_SUPPORT,
             QUANTITY_RULES_READ_ONLY_SUPPORT,
-            BUNDLED_PRODUCTS_READ_ONLY_SUPPORT -> true
+            BUNDLED_PRODUCTS_READ_ONLY_SUPPORT,
+            ANALYTICS_HUB_FEEDBACK_BANNER -> true
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
-            IPP_TAP_TO_PAY,
-            ANALYTICS_HUB_FEEDBACK_BANNER -> PackageUtils.isDebugBuild()
+            IPP_TAP_TO_PAY -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION,
             STORE_CREATION_PROFILER -> false
