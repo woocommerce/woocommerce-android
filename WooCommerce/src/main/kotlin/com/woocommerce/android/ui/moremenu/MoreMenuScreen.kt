@@ -139,19 +139,19 @@ private fun StoreDetailsHeader(
 ) {
     Row {
         MoreMenuUserAvatar(
-            avatarUrl = userAvatarUrl,
-            modifier = Modifier.align(Alignment.CenterVertically)
+            modifier = Modifier.align(Alignment.CenterVertically),
+            avatarUrl = userAvatarUrl
         )
         Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
         Column {
             Text(
                 text = siteName,
                 fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.h6,
+                style = MaterialTheme.typography.body1,
             )
             Text(
                 text = siteUrl,
-                style = MaterialTheme.typography.body2,
+                style = MaterialTheme.typography.caption,
                 modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_50))
             )
         }
@@ -160,8 +160,8 @@ private fun StoreDetailsHeader(
 
 @Composable
 private fun MoreMenuUserAvatar(
-    avatarUrl: String,
-    modifier: Modifier
+    modifier: Modifier,
+    avatarUrl: String
 ) {
     val bitmapState = remember { mutableStateOf<Bitmap?>(null) }
 
