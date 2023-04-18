@@ -208,7 +208,7 @@
     </declare-styleable>
 
     <declare-styleable name="ScalableImageView">
-        <attr name="scaleType" format="enum">
+        <attr name="scaleTypeImage" format="enum">
             <enum name="center" value="0" />
             <enum name="centerCrop" value="1" />
             <enum name="centerInside" value="2" />

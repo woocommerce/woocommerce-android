@@ -34,6 +34,10 @@
         </action>
 
         <action
+            android:id="@+id/action_orderCreationFragment_to_barcodeScanningFragment"
+            app:destination="@id/barcodeScanningFragment"/>
+
+        <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationCustomerFragment"
             app:destination="@id/orderCreationCustomerFragment" />
         <action
@@ -108,6 +112,11 @@
             android:id="@+id/action_search_filter_fragment"
             app:destination="@id/searchFilterFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/barcodeScanningFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.BarcodeScanningFragment"
+        android:label="BarcodeScanningFragment"
+        tools:layout="@layout/fragment_barcode_scanning" />
     <fragment
         android:id="@+id/searchFilterFragment"
         android:name="com.woocommerce.android.ui.searchfilter.SearchFilterFragment"

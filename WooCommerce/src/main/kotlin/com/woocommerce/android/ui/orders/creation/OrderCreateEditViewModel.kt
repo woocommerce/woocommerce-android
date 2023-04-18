@@ -58,12 +58,14 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorRestriction
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem.Product
 import com.woocommerce.android.ui.products.selector.variationIds
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -95,6 +97,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val createOrderItem: CreateOrderItem,
     private val determineMultipleLinesContext: DetermineMultipleLinesContext,
     private val tracker: AnalyticsTrackerWrapper,
+    private val productRepository: ProductListRepository,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -348,6 +351,48 @@ class OrderCreateEditViewModel @Inject constructor(
                 )
             )
         )
+    }
+
+    fun fetchProductBySKU(sku: String) {
+        val selectedItems = orderDraft.value?.items?.map { item ->
+            if (item.isVariation) {
+                SelectedItem.ProductVariation(item.productId, item.variationId)
+            } else {
+                Product(item.productId)
+            }
+        }.orEmpty()
+        viewModelScope.launch {
+            productRepository.searchProductList(
+                searchQuery = sku,
+                isSkuSearch = true,
+            )?.let { products ->
+                products.firstOrNull()?.let { product ->
+                    if (product.type.equals("variation", ignoreCase = true)) {
+                        onProductsSelected(
+                            selectedItems + SelectedItem.ProductVariation(
+                                productId = product.parentId,
+                                variationId = product.remoteId
+                            )
+                        )
+                    } else {
+                        onProductsSelected(
+                            selectedItems + Product(productId = product.remoteId)
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    fun addScannedProducts(scannedProductItems: Collection<SelectedItem>) {
+        val selectedItems = orderDraft.value?.items?.map { item ->
+            if (item.isVariation) {
+                SelectedItem.ProductVariation(item.productId, item.variationId)
+            } else {
+                Product(item.productId)
+            }
+        }.orEmpty()
+        onProductsSelected(selectedItems + scannedProductItems)
     }
 
     fun onProductClicked(item: Order.Item) {

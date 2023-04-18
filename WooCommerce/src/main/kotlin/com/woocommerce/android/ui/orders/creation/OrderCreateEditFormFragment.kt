@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.creation
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreateEditFormBinding
 import com.woocommerce.android.databinding.LayoutOrderCreationCustomerInfoBinding
@@ -195,7 +197,26 @@ class OrderCreateEditFormFragment :
                 AddButton(
                     text = getString(R.string.order_creation_add_products),
                     onClickListener = {
-                        viewModel.onAddProductClicked()
+//                        viewModel.onAddProductClicked()
+                        findNavController().navigateSafely(
+                            OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToBarcodeScanningFragment()
+                        )
+//                        val scanner = GmsBarcodeScanning.getClient(this@OrderCreateEditFormFragment.requireContext())
+//                        scanner.startScan()
+//                            .addOnSuccessListener { barcode ->
+//                                // Task completed successfully
+//                                barcode.rawValue?.let {
+//                                    viewModel.fetchProductBySKU(it)
+//                                } ?: run {
+//                                    Log.d("ABCD", "barcode contains empty raw value!")
+//                                }
+//                            }
+//                            .addOnCanceledListener {
+//                                // Task canceled
+//                            }
+//                            .addOnFailureListener { _ ->
+//                                // Task failed with an exception
+//                            }
                     }
                 )
             )
@@ -406,6 +427,9 @@ class OrderCreateEditFormFragment :
         ) { viewModel.onOrderStatusChanged(Order.Status.fromValue(it.newStatus)) }
         handleResult<Collection<SelectedItem>>(ProductSelectorFragment.PRODUCT_SELECTOR_RESULT) {
             viewModel.onProductsSelected(it)
+        }
+        handleResult<Collection<SelectedItem>>("barcode") {
+            viewModel.addScannedProducts(it)
         }
     }
 
