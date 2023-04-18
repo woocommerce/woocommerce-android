@@ -114,6 +114,7 @@ class ProductListFragment :
 
         _binding = FragmentProductListBinding.bind(view)
 
+        uiMessageResolver.anchorViewId = binding.addProductButton.id
         view.doOnPreDraw { startPostponedEnterTransition() }
 
         setupObservers(viewModel)
@@ -377,8 +378,8 @@ class ProductListFragment :
             new.sortingTitleResource?.takeIfNotEqualTo(old?.sortingTitleResource) {
                 binding.productsSortFilterCard.setSortingTitle(getString(it))
             }
-            new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) { isVisible ->
-                showAddProductButton(show = isVisible)
+            new.isAddProductButtonEnabled?.takeIfNotEqualTo(old?.isAddProductButtonEnabled) { isEnabled ->
+                enableAddProductButton(enabled = isEnabled)
             }
             new.isBottomNavBarVisible.takeIfNotEqualTo(old?.isBottomNavBarVisible) { isBottomNavBarVisible ->
                 showBottomNavBar(isVisible = isBottomNavBarVisible)
@@ -613,16 +614,10 @@ class ProductListFragment :
         binding.productsSortFilterCard.updateFilterSelection(filterCount)
     }
 
-    private fun showAddProductButton(show: Boolean) {
-        when (show) {
-            true -> {
-                uiMessageResolver.anchorViewId = binding.addProductButton.id
-                binding.addProductButton.show()
-            }
-            else -> {
-                uiMessageResolver.anchorViewId = null
-                binding.addProductButton.hide()
-            }
+    private fun enableAddProductButton(enabled: Boolean) {
+        when (enabled) {
+            true -> binding.addProductButton.isEnabled = true
+            else -> binding.addProductButton.isEnabled = false
         }
     }
 

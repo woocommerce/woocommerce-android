@@ -145,7 +145,7 @@ class ProductListViewModelTest : BaseUnitTest() {
 
             val isAddProductButtonVisible = ArrayList<Boolean>()
             viewModel.viewStateLiveData.observeForever { old, new ->
-                new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) {
+                new.isAddProductButtonEnabled?.takeIfNotEqualTo(old?.isAddProductButtonEnabled) {
                     isAddProductButtonVisible.add(it)
                 }
             }
@@ -166,7 +166,7 @@ class ProductListViewModelTest : BaseUnitTest() {
 
             val isAddProductButtonVisible = ArrayList<Boolean>()
             viewModel.viewStateLiveData.observeForever { old, new ->
-                new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) {
+                new.isAddProductButtonEnabled?.takeIfNotEqualTo(old?.isAddProductButtonEnabled) {
                     isAddProductButtonVisible.add(it)
                 }
             }
@@ -187,7 +187,7 @@ class ProductListViewModelTest : BaseUnitTest() {
 
             val isAddProductButtonVisible = ArrayList<Boolean>()
             viewModel.viewStateLiveData.observeForever { old, new ->
-                new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) {
+                new.isAddProductButtonEnabled?.takeIfNotEqualTo(old?.isAddProductButtonEnabled) {
                     isAddProductButtonVisible.add(it)
                 }
             }
@@ -210,7 +210,7 @@ class ProductListViewModelTest : BaseUnitTest() {
 
             val isAddProductButtonVisible = ArrayList<Boolean>()
             viewModel.viewStateLiveData.observeForever { old, new ->
-                new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) {
+                new.isAddProductButtonEnabled?.takeIfNotEqualTo(old?.isAddProductButtonEnabled) {
                     isAddProductButtonVisible.add(it)
                 }
             }
