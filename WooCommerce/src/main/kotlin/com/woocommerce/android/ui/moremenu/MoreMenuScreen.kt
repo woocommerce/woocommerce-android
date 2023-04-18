@@ -209,11 +209,7 @@ private fun MoreMenuUserAvatar(avatarUrl: String) {
     }
 
     val circledModifier = Modifier
-        .size(dimensionResource(id = R.dimen.major_300))
-        .padding(
-            top = dimensionResource(id = R.dimen.minor_75),
-            start = dimensionResource(id = R.dimen.minor_100)
-        )
+        .size(dimensionResource(id = R.dimen.major_250))
         .clip(CircleShape)
         .background(color = colorResource(id = R.color.more_menu_button_icon_background))
 
