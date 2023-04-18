@@ -143,7 +143,7 @@ class InstallationViewModel @Inject constructor(
                     storeCreationLoadingTimer.cancelTimer()
                 } else {
                     _viewState.let {
-                        if (it.value !is SuccessState || it.value !is ErrorState) {
+                        if (it.value is StoreCreationLoadingState) {
                             _viewState.value = timerState
                         }
                     }
