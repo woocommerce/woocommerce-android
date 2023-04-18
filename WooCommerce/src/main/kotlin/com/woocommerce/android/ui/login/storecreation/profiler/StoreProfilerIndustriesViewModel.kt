@@ -58,8 +58,7 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
             profilerData = (newStore.data.profilerData ?: ProfilerData())
                 .copy(
                     industryLabel = selectedOption?.name,
-                    industryKey = selectedIndustry?.key,
-                    industryGroupKey = selectedIndustry?.tracks
+                    industryKey = selectedIndustry?.key
                 )
         )
         triggerEvent(NavigateToNextStep)

@@ -22,6 +22,5 @@ data class Platform(
 data class Industry(
     val id: String,
     val label: String,
-    val key: String,
-    val tracks: String
+    val key: String
 )
