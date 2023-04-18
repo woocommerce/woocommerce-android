@@ -138,7 +138,7 @@ class SitePlanRestClient @Inject constructor(
     }
 
     private fun SiteCreationData.toAPIBody(): MutableMap<String, Any> {
-        data class Industry(val slug: String, val detail: String)
+        data class Industry(val slug: String)
 
         val body = mutableMapOf<String, Any>()
         val onboardingData = mutableMapOf<String, Any>()
@@ -150,8 +150,7 @@ class SitePlanRestClient @Inject constructor(
 
             woocommerceOnboardingProfile["industry"] = listOf(
                 Industry(
-                    slug = profilerData.industryKey.orEmpty(),
-                    detail = profilerData.industryLabel.orEmpty()
+                    slug = profilerData.industryLabel.orEmpty()
                 )
             )
 
