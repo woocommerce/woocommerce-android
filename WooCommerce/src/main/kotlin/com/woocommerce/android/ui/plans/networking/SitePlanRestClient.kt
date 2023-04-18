@@ -150,7 +150,7 @@ class SitePlanRestClient @Inject constructor(
 
             woocommerceOnboardingProfile["industry"] = listOf(
                 Industry(
-                    slug = profilerData.industryLabel.orEmpty()
+                    slug = profilerData.industryKey.orEmpty()
                 )
             )
 
