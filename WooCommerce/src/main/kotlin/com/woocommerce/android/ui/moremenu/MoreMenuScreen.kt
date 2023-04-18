@@ -114,6 +114,7 @@ private fun MoreMenuHeader(
     Button(
         onClick = onSwitchStore,
         enabled = state.isStoreSwitcherEnabled,
+        contentPadding = PaddingValues(dimensionResource(id = R.dimen.major_75)),
         colors = ButtonDefaults.buttonColors(
             backgroundColor = colorResource(id = R.color.more_menu_button_background)
         ),
@@ -122,8 +123,6 @@ private fun MoreMenuHeader(
     ) {
         Box(Modifier.fillMaxSize()) {
             StoreDetailsHeader(
-                modifier = Modifier
-                    .align(Alignment.CenterStart),
                 userAvatarUrl = state.userAvatarUrl,
                 siteName = state.siteName,
                 siteUrl = state.siteUrl
@@ -134,13 +133,15 @@ private fun MoreMenuHeader(
 
 @Composable
 private fun StoreDetailsHeader(
-    modifier: Modifier,
     userAvatarUrl: String,
     siteName: String,
     siteUrl: String
 ) {
-    Row(modifier = modifier) {
-        MoreMenuUserAvatar(avatarUrl = userAvatarUrl)
+    Row {
+        MoreMenuUserAvatar(
+            avatarUrl = userAvatarUrl,
+            modifier = Modifier.align(Alignment.CenterVertically)
+        )
         Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
         Column {
             Text(
@@ -158,7 +159,10 @@ private fun StoreDetailsHeader(
 }
 
 @Composable
-private fun MoreMenuUserAvatar(avatarUrl: String) {
+private fun MoreMenuUserAvatar(
+    avatarUrl: String,
+    modifier: Modifier
+) {
     val bitmapState = remember { mutableStateOf<Bitmap?>(null) }
 
     if (avatarUrl.isNotEmpty()) {
@@ -178,7 +182,7 @@ private fun MoreMenuUserAvatar(avatarUrl: String) {
             )
     }
 
-    val circledModifier = Modifier
+    val circledModifier = modifier
         .size(dimensionResource(id = R.dimen.major_250))
         .clip(CircleShape)
         .background(color = colorResource(id = R.color.more_menu_button_icon_background))
