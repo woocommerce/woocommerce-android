@@ -44,13 +44,13 @@ class ObserveSiteInstallation @Inject constructor(
                             siteStore.getSiteBySiteId(siteId)
                         }
 
-                        if (site.isJetpackOperational) {
-                            if (site.arePropertiesInSync(expectedName)) {
-                                emit(InstallationState.Success)
-                                return@flow
-                            } else {
-                                emit(InstallationState.OutOfSync)
-                            }
+                        if (site.isDesynced(expectedName)) {
+                            emit(InstallationState.OutOfSync)
+                        }
+
+                        if(site.isReadyToUse) {
+                            emit(InstallationState.Success)
+                            return@flow
                         }
                     }
 
@@ -65,11 +65,11 @@ class ObserveSiteInstallation @Inject constructor(
         }
     }
 
-    private val SiteModel?.isJetpackOperational: Boolean
-        get() = this?.isJetpackInstalled == true && this.isJetpackConnected
+    private val SiteModel?.isReadyToUse: Boolean
+        get() = this?.isJetpackInstalled == true && this.isJetpackConnected && this.hasWooCommerce
 
-    private fun SiteModel?.arePropertiesInSync(expectedName: String): Boolean =
-        this?.isWpComStore == true && this.hasWooCommerce && this.name == expectedName
+    private fun SiteModel?.isDesynced(expectedName: String): Boolean =
+        this?.isJetpackInstalled == true && this.isJetpackConnected && (!this.isWpComStore || !this.hasWooCommerce || this.name != expectedName)
 
     sealed interface InstallationState {
         object Success : InstallationState
