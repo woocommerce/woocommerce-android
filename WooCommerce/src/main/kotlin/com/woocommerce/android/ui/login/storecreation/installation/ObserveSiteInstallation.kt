@@ -48,7 +48,7 @@ class ObserveSiteInstallation @Inject constructor(
                             emit(InstallationState.OutOfSync)
                         }
 
-                        if(site.isReadyToUse) {
+                        if (site.isReadyToUse) {
                             emit(InstallationState.Success)
                             return@flow
                         }
@@ -69,7 +69,8 @@ class ObserveSiteInstallation @Inject constructor(
         get() = this?.isJetpackInstalled == true && this.isJetpackConnected && this.hasWooCommerce
 
     private fun SiteModel?.isDesynced(expectedName: String): Boolean =
-        this?.isJetpackInstalled == true && this.isJetpackConnected && (!this.isWpComStore || !this.hasWooCommerce || this.name != expectedName)
+        this?.isJetpackInstalled == true && this.isJetpackConnected &&
+            (!this.isWpComStore || !this.hasWooCommerce || this.name != expectedName)
 
     sealed interface InstallationState {
         object Success : InstallationState
