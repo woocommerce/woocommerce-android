@@ -2,10 +2,7 @@
 13.3
 -----
 - [*] [Internal] Removed IPP upsell banner from the Payment Method Selection Screen. [https://github.com/woocommerce/woocommerce-android/pull/8815]
-
-13.2
------
-
+- [*] Improves loading experience while users wait for their new store to be ready [https://github.com/woocommerce/woocommerce-android/pull/8799]
 
 13.2
 -----
