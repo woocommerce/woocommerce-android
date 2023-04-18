@@ -35,6 +35,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -137,24 +138,39 @@ private fun StoreDetailsHeader(
     siteName: String,
     siteUrl: String
 ) {
-    Row {
-        MoreMenuUserAvatar(
-            modifier = Modifier.align(Alignment.CenterVertically),
-            avatarUrl = userAvatarUrl
-        )
-        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
-        Column {
-            Text(
-                text = siteName,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.body1,
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row(Modifier.weight(9f)) {
+            MoreMenuUserAvatar(
+                modifier = Modifier.align(Alignment.CenterVertically),
+                avatarUrl = userAvatarUrl
             )
-            Text(
-                text = siteUrl,
-                style = MaterialTheme.typography.caption,
-                modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_50))
-            )
+            Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
+            Column {
+                Text(
+                    text = siteName,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.body1,
+                )
+                Text(
+                    text = siteUrl,
+                    style = MaterialTheme.typography.caption,
+                    modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_50))
+                )
+            }
         }
+        Icon(
+            painter = painterResource(id = R.drawable.ic_arrow_drop_down),
+            contentDescription = null,
+            tint = colorResource(id = R.color.color_on_surface),
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .padding(end = dimensionResource(id = R.dimen.minor_100))
+                .size(dimensionResource(id = R.dimen.major_150))
+                .weight(1f)
+        )
     }
 }
 
