@@ -9,13 +9,13 @@
     <ImageView
         android:id="@+id/image_prologue_bg"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:adjustViewBounds="true"
+        android:layout_marginTop="100dp"
         android:importantForAccessibility="no"
         android:scaleType="fitXY"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image_prologue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:srcCompat="@drawable/img_prologue_bg" />
 
@@ -23,13 +23,12 @@
         android:id="@+id/image_prologue"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/prologue_logo_height"
+        android:layout_marginTop="@dimen/major_300"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/image_minor_40"
         android:importantForAccessibility="no"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/imageView"
         app:srcCompat="@drawable/img_woo_logo" />
 
     <ImageView
@@ -37,12 +36,11 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
-        android:layout_marginTop="@dimen/major_300"
+        android:layout_marginTop="@dimen/major_400"
         android:importantForAccessibility="no"
         android:src="@drawable/img_prologue"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/image_prologue_bg"
         app:layout_constraintTop_toBottomOf="@id/image_prologue"
         app:layout_constraintBottom_toTopOf="@id/prologueIntro"
         app:layout_constraintWidth_percent="0.8"/>
