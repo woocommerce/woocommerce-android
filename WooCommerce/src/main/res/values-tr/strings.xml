@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-04 17:54:04+0000
+Translation-Revision-Date: 2023-04-12 13:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="quantity_rules_info_notice">Ürünün miktar kurallarını web panosunda düzenleyebilirsiniz.</string>
+    <string name="group_of">Grup adedi</string>
+    <string name="max_quantity">Maksimum miktar</string>
+    <string name="min_quantity">Minimum miktar</string>
+    <string name="product_quantity_rules_title">Miktar Kuralları</string>
+    <string name="gift_cards">Hediye Kartları</string>
+    <string name="order_gift_card">Hediye Kartı</string>
+    <string name="free_trial_feature_fast_to_launch">Başlatması hızlı</string>
+    <string name="free_trial_feature_site_security">Site güvenliği</string>
+    <string name="free_trial_feature_auto_updates_backups">Otomatik güncellemeler ve yedeklemeler</string>
+    <string name="free_trial_feature_247_support">7/24 destek</string>
+    <string name="free_trial_feature_email_marketing">E-posta ile pazarlama</string>
+    <string name="free_trial_feature_social_advertising">Sosyal reklam</string>
+    <string name="free_trial_feature_subscription_product_kits">Abonelik ve ürün kitleri</string>
+    <string name="free_trial_feature_multiple_payment_options">Çoklu ödeme seçenekleri</string>
+    <string name="free_trial_feature_ecommerce_reports">E-ticaret raporları</string>
+    <string name="free_trial_feature_shipping_labels">Gönderim etiketleri</string>
+    <string name="free_trial_feature_unlimited_products">Sınırsız ürünler</string>
+    <string name="free_trial_feature_premium_themes">Premium temalar</string>
+    <string name="free_trial_summary_credit_card_message">Kredi kartı gerekmez.</string>
+    <string name="free_trial_summary_try_button">Ücretsiz Deneyin</string>
+    <string name="free_trial_summary_try_it">14 gün boyunca deneyin.</string>
+    <string name="free_trial_summary_advertise">WooCommerce tarafından desteklenen ve WordPress.com\'da barındırılan bir çevrimiçi mağaza oluşturmak ve bu mağazayı büyütmek için ihtiyacınız olan her şeyi sunuyoruz.</string>
+    <string name="free_trial_summary_title">Günler içinde başlatın, yıllar boyunca büyütün</string>
+    <string name="product_selector_products_heading">Ürünler</string>
+    <string name="product_selector_recent_products_heading">Son Satılan</string>
+    <string name="product_selector_popular_products_heading">Popüler</string>
+    <string name="jetpack_install_role_eligibility_learn_more">Roller ve izin hakkında daha fazla bilgi edinin</string>
+    <string name="jetpack_install_role_eligibility_error_message">Görünüşe göre rolünüz Jetpack\'i yüklemenize izin vermiyor. \nLütfen yardım için site yöneticinizle iletişime geçin.</string>
+    <string name="card_reader_tap_to_pay_description">Tap to Pay\'i küçük bir\ntutarla burada test edebilirsiniz.</string>
+    <string name="card_reader_test_tap_to_pay">Tap to Pay\'inizi Test Edin</string>
     <string name="subscription_free_trial">Ücretsiz Deneme</string>
     <string name="subscription_sign_up_fee">Kayıt ücreti</string>
     <string name="subscription_expire">Şundan sonra sona erdir:</string>
@@ -46,7 +77,6 @@ Language: tr
     <string name="card_reader_type_selection_tap_to_pay_description">Temassız ödemeleri doğrudan telefonunuzdan güvenli bir şekilde alın.</string>
     <string name="card_reader_tap_to_pay_beta_features_subheading">Uygulamada Tap to Pay\'i test edin</string>
     <string name="card_reader_tap_to_pay_beta_features_heading">Tap To Pay</string>
-    <string name="card_reader_tap_to_pay_description_not_used">Kart\nödemeleri almak için telefonunuzu kullanın. Şimdi deneyin.</string>
     <string name="card_reader_tap_to_pay_share_feedback">Tap to Pay ile ilgili görüşlerinizi paylaşın</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Uygulama şifresi oluşturma onaylanmadığından oturum açılamıyor.</string>
     <string name="login_site_credentials_fetching_site">Site getiriliyor…</string>
@@ -62,7 +92,6 @@ Language: tr
     <string name="store_onboarding_get_paid_title">Ödeme Ayarları</string>
     <string name="store_onboarding_task_about_your_store_toolbar_title">Mağazanız hakkında</string>
     <string name="store_creation_installation_rendering_preview_label">Önizleme oluşturuluyor…</string>
-    <string name="jetpack_benefits_open_wpadmin">Panoyu aç</string>
     <string name="shipping_label_address_phone_required">Telefon numarası gerekli</string>
     <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s, %4$s satıldı</string>
     <string name="analytics_items">öğe</string>
@@ -148,8 +177,6 @@ Language: tr
     <string name="card_reader_tap_to_pay_explanation_ready">Telefonunuz Tap to Pay için hazır.\nMüşteriniz ödeme yapmak için\nkartını telefonunuza dokundurabilir.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Kart ödemelerini\ntelefonunuzla alın</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
-    <string name="card_reader_tap_to_pay_description_used">Kart ile ödeme almak için telefonunuzu kullanın.</string>
-    <string name="card_reader_tap_to_pay">Tap To Pay</string>
     <string name="card_reader_hub_actions_category_header">EYLEMLER</string>
     <string name="domain_registration_generic_error">Alan adı kaydı sırasında bir hata oluştu</string>
     <string name="domain_registration_state_picker_dialog_title">Eyalet seçin</string>
@@ -1210,7 +1237,6 @@ Language: tr
     <string name="support_system_status_report">Sistem durum raporu</string>
     <string name="card_reader_welcome_dialog_text">Tebrikler, artık WooCommerce Payments ile banka ve kredi kartı ödemelerini kabul edebilirsiniz!</string>
     <string name="card_reader_welcome_dialog_header">Ödeme bir kart okuyucu ile alın</string>
-    <string name="card_reader_payment_failed_amount_too_small">Tutar en az 0,50 ABD doları olmalıdır</string>
     <string name="card_reader_payment_payment_failed_ok">Tamam</string>
     <string name="settings_whats_new_icon_description">Yeni özellik simgesinin görseli</string>
     <string name="settings_switch_store">Mağaza değiştir</string>

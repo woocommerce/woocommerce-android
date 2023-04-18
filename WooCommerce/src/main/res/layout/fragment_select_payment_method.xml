@@ -221,16 +221,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/container" />
 
-        <include
-            android:id="@+id/upsellCardReaderComposeView"
-            layout="@layout/fragment_card_reader_upsell_banner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/major_100"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/learn_more_ipp_payment_methods_tv" />
-
         <ProgressBar
             android:id="@+id/pbLoading"
             style="?android:attr/progressBarStyleLarge"

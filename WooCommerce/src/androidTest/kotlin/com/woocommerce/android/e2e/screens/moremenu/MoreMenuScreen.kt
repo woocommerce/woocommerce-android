@@ -5,6 +5,7 @@ import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import com.woocommerce.android.R
 import com.woocommerce.android.e2e.helpers.util.Screen
 import com.woocommerce.android.e2e.screens.mystore.settings.SettingsScreen
@@ -18,7 +19,9 @@ class MoreMenuScreen : Screen(MORE_MENU_VIEW) {
     fun openReviewsListScreen(composeTestRule: ComposeTestRule): ReviewsListScreen {
         composeTestRule.onNodeWithText(
             getTranslatedString(R.string.more_menu_button_reviews)
-        ).performClick()
+        )
+            .performScrollTo()
+            .performClick()
         return ReviewsListScreen()
     }
 
