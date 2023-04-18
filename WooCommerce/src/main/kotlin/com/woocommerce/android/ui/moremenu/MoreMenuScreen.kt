@@ -105,8 +105,6 @@ fun MoreMenuScreen(
     }
 }
 
-
-
 @Composable
 private fun MoreMenuHeader(
     onSwitchStore: () -> Unit,
