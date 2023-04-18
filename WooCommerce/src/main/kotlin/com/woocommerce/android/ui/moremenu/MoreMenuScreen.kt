@@ -104,37 +104,7 @@ fun MoreMenuScreen(
     }
 }
 
-@ExperimentalFoundationApi
-@Composable
-private fun MoreMenuSection(
-    title: String,
-    items: List<MenuUiButton>
-) {
-    Column(
-        modifier = Modifier.padding(
-            PaddingValues(
-                horizontal = dimensionResource(id = R.dimen.major_100),
-                vertical = dimensionResource(id = R.dimen.major_100)
-            )
-        )
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.subtitle1,
-            color = colorResource(id = R.color.color_on_surface)
-        )
 
-        items.forEach { item ->
-            MoreMenuButton(
-                title = item.title,
-                description = item.description,
-                iconDrawable = item.icon,
-                badgeState = item.badgeState,
-                onClick = item.onClick
-            )
-        }
-    }
-}
 
 @Composable
 private fun MoreMenuHeader(
@@ -225,6 +195,38 @@ private fun MoreMenuUserAvatar(avatarUrl: String) {
         contentDescription = stringResource(id = R.string.more_menu_avatar),
         modifier = circledModifier
     )
+}
+
+@ExperimentalFoundationApi
+@Composable
+private fun MoreMenuSection(
+    title: String,
+    items: List<MenuUiButton>
+) {
+    Column(
+        modifier = Modifier.padding(
+            PaddingValues(
+                horizontal = dimensionResource(id = R.dimen.major_100),
+                vertical = dimensionResource(id = R.dimen.major_100)
+            )
+        )
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.subtitle1,
+            color = colorResource(id = R.color.color_on_surface)
+        )
+
+        items.forEach { item ->
+            MoreMenuButton(
+                title = item.title,
+                description = item.description,
+                iconDrawable = item.icon,
+                badgeState = item.badgeState,
+                onClick = item.onClick
+            )
+        }
+    }
 }
 
 @Composable
