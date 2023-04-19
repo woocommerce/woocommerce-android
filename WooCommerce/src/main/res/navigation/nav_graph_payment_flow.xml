@@ -5,7 +5,7 @@
 
     <fragment
         android:id="@+id/selectPaymentMethodFragment"
-        android:name="com.woocommerce.android.ui.payments.SelectPaymentMethodFragment"
+        android:name="com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodFragment"
         android:label="SelectPaymentMethodFragment">
         <argument
             android:name="cardReaderFlowParam"

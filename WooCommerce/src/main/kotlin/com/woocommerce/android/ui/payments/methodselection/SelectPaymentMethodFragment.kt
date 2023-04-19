@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.payments
+package com.woocommerce.android.ui.payments.methodselection
 
 import android.content.Intent
 import android.os.Bundle
@@ -21,11 +21,10 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.payments.SelectPaymentMethodFragmentDirections
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewState.Loading
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewState.Success
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectDialogFragment
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
+import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewState.Loading
+import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewState.Success
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -195,7 +194,8 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                 }
                 is NavigateToTapToPaySummary -> {
                     findNavController().navigateSafely(
-                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToTapToPaySummaryFragment()
+                        SelectPaymentMethodFragmentDirections
+                            .actionSelectPaymentMethodFragmentToTapToPaySummaryFragment()
                     )
                 }
             }

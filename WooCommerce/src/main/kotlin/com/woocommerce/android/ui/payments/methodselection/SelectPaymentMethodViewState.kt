@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.payments
+package com.woocommerce.android.ui.payments.methodselection
 
 import com.woocommerce.android.model.UiString
 

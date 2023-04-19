@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.payments
+package com.woocommerce.android.ui.payments.methodselection
 
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
