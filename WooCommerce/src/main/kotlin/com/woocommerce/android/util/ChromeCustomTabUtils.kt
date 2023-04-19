@@ -53,7 +53,7 @@ object ChromeCustomTabUtils {
     fun connectAndStartSession(context: Context, preloadUrl: String? = null, otherLikelyUrls: Array<String>? = null) {
         if (!canUseCustomTabs(context)) return
 
-        val connection = object : CustomTabsServiceConnection() {
+        connection = object : CustomTabsServiceConnection() {
             override fun onCustomTabsServiceConnected(name: ComponentName, client: CustomTabsClient) {
                 client.warmup(0)
                 session = client.newSession(null)
@@ -71,8 +71,9 @@ object ChromeCustomTabUtils {
                 session = null
                 connection = null
             }
+        }.also {
+            CustomTabsClient.bindCustomTabsService(context, CUSTOM_TAB_PACKAGE_NAME_STABLE, it)
         }
-        CustomTabsClient.bindCustomTabsService(context, CUSTOM_TAB_PACKAGE_NAME_STABLE, connection)
     }
 
     fun disconnect(context: Context) {
@@ -100,10 +101,10 @@ object ChromeCustomTabUtils {
             }) {}
     }
 
-    fun launchUrl(context: Context, url: String, height: Height = Height.Full) {
+    fun launchUrl(context: Context, url: String, height: Height = Full) {
         try {
             if (canUseCustomTabs(context)) {
-                if (session == null && height is Height.Partial && activityResultLauncher != null) {
+                if (session == null && height is Partial && activityResultLauncher != null) {
                     partialHeightToUse = height
                     activityResultLauncher?.launch(url)
                 } else {
