@@ -37,17 +37,22 @@ private const val PROFILER_OPTIONS_JSON = """{
       "description": "",
       "tracks": "im_already_selling_online",
       "platforms": [
+        { "value": "adobe-commerce", "label": "Adobe Commerce" },
         { "value": "amazon", "label": "Amazon" },
         { "value": "big-cartel", "label": "Big Cartel" },
         { "value": "big-commerce", "label": "Big Commerce" },
         { "value": "ebay", "label": "Ebay" },
+        { "value": "ecwid", "label": "Ecwid" },
         { "value": "etsy", "label": "Etsy" },
         { "value": "facebook-marketplace", "label": "Facebook Marketplace" },
         { "value": "google-shopping", "label": "Google Shopping" },
+        { "value": "magento", "label": "Magento" },
         { "value": "pinterest", "label": "Pinterest" },
         { "value": "shopify", "label": "Shopify" },
         { "value": "square", "label": "Square" },
         { "value": "squarespace", "label": "Squarespace" },
+        { "value": "walmart", "label": "Walmart" },
+        { "value": "wish", "label": "Wish" },
         { "value": "wix", "label": "Wix" },
         { "value": "wordPress", "label": "WordPress" }
       ]
