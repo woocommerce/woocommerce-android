@@ -5,7 +5,7 @@
 
     <fragment
         android:id="@+id/selectPaymentMethodFragment"
-        android:name="com.woocommerce.android.ui.payments.SelectPaymentMethodFragment"
+        android:name="com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodFragment"
         android:label="SelectPaymentMethodFragment">
         <argument
             android:name="cardReaderFlowParam"
@@ -43,6 +43,10 @@
                 android:name="orderId"
                 app:argType="long" />
         </action>
+        <action
+            android:id="@+id/action_selectPaymentMethodFragment_to_tapToPaySummaryFragment"
+            app:popUpTo="@+id/tapToPaySummaryFragment"
+            app:popUpToInclusive="false" />
     </fragment>
 
     <!-- Onboarding flow -->
@@ -312,7 +316,7 @@
         android:name="com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryFragment"
         android:label="TapToPaySummaryFragment">
         <action
-            android:id="@+id/action_tapToPaySummaryFragment_to_simplePaymentFragment"
+            android:id="@+id/action_tapToPaySummaryFragment_to_simplePaymentsFragment"
             app:destination="@+id/simplePaymentsFragment" />
     </fragment>
 
