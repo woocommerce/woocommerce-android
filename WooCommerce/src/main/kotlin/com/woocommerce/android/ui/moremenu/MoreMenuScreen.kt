@@ -162,6 +162,8 @@ private fun StoreDetailsHeader(
                         Text(
                             text = planName.uppercase(),
                             color = colorResource(id = R.color.woo_purple_60),
+                            style = MaterialTheme.typography.caption,
+                            fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(
                                 vertical = dimensionResource(id = R.dimen.minor_25),
                                 horizontal = dimensionResource(id = R.dimen.minor_100)
