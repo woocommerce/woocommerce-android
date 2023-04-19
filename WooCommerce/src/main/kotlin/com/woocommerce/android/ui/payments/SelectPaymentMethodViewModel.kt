@@ -18,13 +18,13 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
-import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.OrderDurationRecorder
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.ViewState.Loading
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.ViewState.Success
+import com.woocommerce.android.ui.payments.SelectPaymentMethodFragmentArgs
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewState.Loading
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewState.Success
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
@@ -34,7 +34,6 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.SIMPLE
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.TRY_TAP_TO_PAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Refund
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
@@ -79,8 +78,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
 
-    private val viewState = MutableLiveData<ViewState>(Loading)
-    val viewStateData: LiveData<ViewState> = viewState
+    private val viewState = MutableLiveData<SelectPaymentMethodViewState>(Loading)
+    val viewStateData: LiveData<SelectPaymentMethodViewState> = viewState
 
     private lateinit var order: Order
     private lateinit var orderTotal: String
@@ -127,7 +126,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode),
         isPaymentCollectableWithExternalCardReader = isPaymentCollectableWithCardReader,
         isPaymentCollectableWithTapToPay = isPaymentCollectableWithCardReader && isPaymentCollectableWithTapToPay,
-        learMoreIpp = LearMoreIpp(
+        learMoreIpp = SelectPaymentMethodViewState.LearMoreIpp(
             label = UiStringRes(
                 R.string.card_reader_connect_learn_more,
                 containsHtml = true
@@ -189,7 +188,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     fun onSharePaymentUrlClicked() {
         trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_LINK)
-        triggerEvent(SharePaymentUrl(selectedSite.get().name, order.paymentUrl))
+        triggerEvent(SelectPaymentMethodEvents(selectedSite.get().name, order.paymentUrl))
     }
 
     fun onSharePaymentUrlCompleted() {
@@ -374,55 +373,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
         SUCCESS,
         FAILED,
     }
-
-    sealed class ViewState {
-        object Loading : ViewState()
-        data class Success(
-            val paymentUrl: String,
-            val orderTotal: String,
-            val isPaymentCollectableWithExternalCardReader: Boolean,
-            val isPaymentCollectableWithTapToPay: Boolean,
-            val learMoreIpp: LearMoreIpp,
-        ) : ViewState()
-    }
-
-    data class SharePaymentUrl(
-        val storeName: String,
-        val paymentUrl: String
-    ) : MultiLiveEvent.Event()
-
-    data class NavigateToCardReaderHubFlow(
-        val cardReaderFlowParam: CardReadersHub
-    ) : MultiLiveEvent.Event()
-
-    data class NavigateToCardReaderPaymentFlow(
-        val cardReaderFlowParam: Payment,
-        val cardReaderType: CardReaderType
-    ) : MultiLiveEvent.Event()
-
-    data class NavigateToCardReaderRefundFlow(
-        val cardReaderFlowParam: Refund,
-        val cardReaderType: CardReaderType
-    ) : MultiLiveEvent.Event()
-
-    data class NavigateBackToHub(
-        val cardReaderFlowParam: CardReadersHub
-    ) : MultiLiveEvent.Event()
-
-    data class NavigateToOrderDetails(
-        val orderId: Long
-    ) : MultiLiveEvent.Event()
-
-    object NavigateToTapToPaySummary : MultiLiveEvent.Event()
-
-    object NavigateBackToOrderList : MultiLiveEvent.Event()
-
-    data class OpenGenericWebView(val url: String) : MultiLiveEvent.Event()
-
-    data class LearMoreIpp(
-        val label: UiString,
-        val onClick: () -> Unit,
-    )
 
     companion object {
         private const val DELAY_MS = 1L

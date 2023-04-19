@@ -21,17 +21,9 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateBackToHub
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateBackToOrderList
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderHubFlow
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderPaymentFlow
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderRefundFlow
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToOrderDetails
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToTapToPaySummary
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.OpenGenericWebView
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.SharePaymentUrl
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.ViewState.Loading
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.ViewState.Success
+import com.woocommerce.android.ui.payments.SelectPaymentMethodFragmentDirections
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewState.Loading
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewState.Success
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectDialogFragment
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -149,7 +141,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                     ).show()
                 }
 
-                is SharePaymentUrl -> {
+                is SelectPaymentMethodEvents -> {
                     sharePaymentUrl(event.storeName, event.paymentUrl)
                 }
 
@@ -185,8 +177,8 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                 }
 
                 is NavigateBackToHub -> {
-                    val action = SelectPaymentMethodFragmentDirections
-                        .actionSelectPaymentMethodFragmentToCardReaderHubFragment(
+                    val action =
+                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToCardReaderHubFragment(
                             event.cardReaderFlowParam
                         )
                     findNavController().navigateSafely(action)
@@ -195,16 +187,15 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
                 is NavigateToOrderDetails -> {
-                    val action = SelectPaymentMethodFragmentDirections
-                        .actionSelectPaymentMethodFragmentToOrderDetailFragment(
+                    val action =
+                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderDetailFragment(
                             orderId = event.orderId
                         )
                     findNavController().navigateSafely(action)
                 }
                 is NavigateToTapToPaySummary -> {
                     findNavController().navigateSafely(
-                        SelectPaymentMethodFragmentDirections
-                            .actionSelectPaymentMethodFragmentToTapToPaySummaryFragment()
+                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToTapToPaySummaryFragment()
                     )
                 }
             }
