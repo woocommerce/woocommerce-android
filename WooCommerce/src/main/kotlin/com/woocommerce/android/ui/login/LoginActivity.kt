@@ -165,6 +165,7 @@ class LoginActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ChromeCustomTabUtils.registerForPartialTabUsage(this)
         onBackPressedDispatcher.addCallback(
             this,
             object : OnBackPressedCallback(true) {
@@ -221,12 +222,6 @@ class LoginActivity :
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-        ChromeCustomTabUtils.connect(this)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        ChromeCustomTabUtils.disconnect(this)
     }
 
     override fun onDestroy() {

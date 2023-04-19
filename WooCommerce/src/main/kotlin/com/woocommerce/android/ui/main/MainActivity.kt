@@ -234,6 +234,8 @@ class MainActivity :
 
         super.onCreate(savedInstanceState)
 
+        ChromeCustomTabUtils.registerForPartialTabUsage(this)
+
         // Verify authenticated session
         if (!presenter.userIsLoggedIn()) {
             showLoginScreen()
@@ -316,13 +318,10 @@ class MainActivity :
 
         checkConnection()
         viewModel.showFeatureAnnouncementIfNeeded()
-
-        ChromeCustomTabUtils.connect(this)
     }
 
     override fun onPause() {
         binding.appBarLayout.removeOnOffsetChangedListener(appBarOffsetListener)
-        ChromeCustomTabUtils.disconnect(this)
         super.onPause()
     }
 
