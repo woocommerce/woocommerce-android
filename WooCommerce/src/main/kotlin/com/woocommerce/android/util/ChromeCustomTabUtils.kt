@@ -52,20 +52,17 @@ object ChromeCustomTabUtils {
 
         val thisConnection = object : CustomTabsServiceConnection() {
             override fun onCustomTabsServiceConnected(name: ComponentName, client: CustomTabsClient) {
-                client.warmup(0)
-                session = client.newSession(null)
+                if (preloadUrl != null) {
+                    client.warmup(0)
+                    session = client.newSession(null)
 
-                val otherLikelyBundles = ArrayList<Bundle>()
-                otherLikelyUrls?.let { urlList ->
-                    for (url in urlList) {
-                        val bundle = Bundle()
-                        bundle.putParcelable(KEY_URL, Uri.parse(url))
-                        otherLikelyBundles.add(bundle)
+                    val otherLikelyBundles = otherLikelyUrls?.map { otherLikelyUrl ->
+                        Bundle().apply { putParcelable(KEY_URL, Uri.parse(otherLikelyUrl)) }
                     }
-                }
 
-                preloadUrl?.let {
-                    session?.mayLaunchUrl(Uri.parse(it), null, otherLikelyBundles)
+                    preloadUrl.let {
+                        session?.mayLaunchUrl(Uri.parse(it), null, otherLikelyBundles)
+                    }
                 }
             }
 
