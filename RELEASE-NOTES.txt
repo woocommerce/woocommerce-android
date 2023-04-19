@@ -3,6 +3,7 @@
 -----
 - [*] [Internal] Removed IPP upsell banner from the Payment Method Selection Screen. [https://github.com/woocommerce/woocommerce-android/pull/8815]
 - [*] Improves loading experience while users wait for their new store to be ready [https://github.com/woocommerce/woocommerce-android/pull/8799]
+- [*] [Internal] Adds partial height chrome tab in a few places. [https://github.com/woocommerce/woocommerce-android/pull/8502]
 
 13.2
 -----
@@ -34,7 +35,6 @@
 
 12.8
 -----
-- [*][Internal] Adds partial height chrome tab in a few places. [https://github.com/woocommerce/woocommerce-android/pull/8502]
 - [*][Internal] Do not show full screen input for the payment amount for simple payments flow. [https://github.com/woocommerce/woocommerce-android/pull/8517]
 - [*][Internal] Fix the wording for the cases when we don't have due date on stripe pending requirements state for IPP [https://github.com/woocommerce/woocommerce-android/pull/8516]
 - [**] Added product multi-selection in order creation flow [https://github.com/woocommerce/woocommerce-android/pull/8557]
