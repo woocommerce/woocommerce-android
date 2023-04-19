@@ -90,6 +90,6 @@ class TapToPaySummaryFragment : BaseFragment() {
         data class AfterPayment(val order: Order) : TestTapToPayFlow()
 
         @Parcelize
-        object Initial : TestTapToPayFlow()
+        object BeforePayment : TestTapToPayFlow()
     }
 }

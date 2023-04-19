@@ -108,7 +108,7 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                 is NavigateToTapTooPaySummaryScreen -> {
                     findNavController().navigate(
                         CardReaderHubFragmentDirections.actionCardReaderHubFragmentToTapToPaySummaryFragment(
-                            TapToPaySummaryFragment.TestTapToPayFlow.Initial
+                            TapToPaySummaryFragment.TestTapToPayFlow.BeforePayment
                         )
                     )
                 }

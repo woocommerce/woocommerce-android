@@ -44,7 +44,7 @@ class TapToPaySummaryViewModel @Inject constructor(
 
     private fun handleFlowParam(flow: TapToPaySummaryFragment.TestTapToPayFlow) =
         when (flow) {
-            TapToPaySummaryFragment.TestTapToPayFlow.Initial -> {
+            TapToPaySummaryFragment.TestTapToPayFlow.BeforePayment -> {
                 // no-op
             }
 
