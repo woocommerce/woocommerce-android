@@ -1237,7 +1237,6 @@ Language: zh_CN
     <string name="support_system_status_report">系统状态报告</string>
     <string name="card_reader_welcome_dialog_text">恭喜，您现在可以使用 WooCommerce Payments 接受借记卡和信用卡付款了！</string>
     <string name="card_reader_welcome_dialog_header">使用读卡器收款</string>
-    <string name="card_reader_payment_failed_amount_too_small">金额不得少于 0.50 美元</string>
     <string name="card_reader_payment_payment_failed_ok">确定</string>
     <string name="settings_whats_new_icon_description">新功能图标图像</string>
     <string name="settings_switch_store">切换商店</string>

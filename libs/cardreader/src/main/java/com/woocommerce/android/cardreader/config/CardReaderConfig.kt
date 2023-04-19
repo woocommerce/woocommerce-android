@@ -4,6 +4,7 @@ import android.os.Parcelable
 import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentMethodType
 import kotlinx.parcelize.Parcelize
+import java.math.BigDecimal
 
 sealed class CardReaderConfig : Parcelable
 
@@ -14,6 +15,7 @@ sealed class CardReaderConfigForSupportedCountry(
     val supportedReaders: List<ReaderType>,
     val paymentMethodTypes: List<PaymentMethodType>,
     val supportedExtensions: List<SupportedExtension>,
+    val minimumAllowedChargeAmount: BigDecimal,
 ) : CardReaderConfig()
 
 fun CardReaderConfigForSupportedCountry.isExtensionSupported(type: SupportedExtensionType) =

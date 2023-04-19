@@ -135,6 +135,7 @@ class UpgradesViewModel @Inject constructor(
 
     private val SitePlan.prettifiedName
         get() = name.removePrefix("WordPress.com ")
+            .removePrefix("Woo Express: ")
 
     sealed interface UpgradesViewState {
 
