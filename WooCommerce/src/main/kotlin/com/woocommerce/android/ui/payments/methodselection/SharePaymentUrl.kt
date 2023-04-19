@@ -31,7 +31,9 @@ data class NavigateToOrderDetails(
     val orderId: Long
 ) : MultiLiveEvent.Event()
 
-object NavigateToTapToPaySummary : MultiLiveEvent.Event()
+data class NavigateToTapToPaySummaryOrderRefunded(
+    val orderId: Long
+) : MultiLiveEvent.Event()
 
 object NavigateBackToOrderList : MultiLiveEvent.Event()
 

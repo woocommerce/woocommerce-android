@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.NavigateToTapTooPaySurveyScreen
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams
+import com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
 import dagger.hilt.android.AndroidEntryPoint
@@ -106,7 +107,9 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                 }
                 is NavigateToTapTooPaySummaryScreen -> {
                     findNavController().navigate(
-                        CardReaderHubFragmentDirections.actionCardReaderHubFragmentToTapToPaySummaryFragment()
+                        CardReaderHubFragmentDirections.actionCardReaderHubFragmentToTapToPaySummaryFragment(
+                            TapToPaySummaryFragment.TestTapToPayFlow.Initial
+                        )
                     )
                 }
                 is NavigateToTapTooPaySurveyScreen -> {

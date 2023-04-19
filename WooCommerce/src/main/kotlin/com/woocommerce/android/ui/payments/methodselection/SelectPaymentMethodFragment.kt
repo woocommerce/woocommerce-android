@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectD
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewState.Loading
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewState.Success
+import com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -192,10 +193,14 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                         )
                     findNavController().navigateSafely(action)
                 }
-                is NavigateToTapToPaySummary -> {
+                is NavigateToTapToPaySummaryOrderRefunded -> {
                     findNavController().navigateSafely(
                         SelectPaymentMethodFragmentDirections
-                            .actionSelectPaymentMethodFragmentToTapToPaySummaryFragment()
+                            .actionSelectPaymentMethodFragmentToTapToPaySummaryFragment(
+                                TapToPaySummaryFragment.TestTapToPayFlow.OrderRefunded(
+                                    orderId = event.orderId
+                                )
+                            )
                     )
                 }
             }

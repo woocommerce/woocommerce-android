@@ -337,7 +337,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
                     triggerEvent(
                         when (autoRefundIfTestTapToPayPayment()) {
                             TPPTestingPaymentRefundResult.SUCCESS -> {
-                                NavigateToTapToPaySummary
+                                NavigateToTapToPaySummaryOrderRefunded(cardReaderPaymentFlowParam.orderId)
                             }
                             TPPTestingPaymentRefundResult.FAILED -> {
                                 NavigateToOrderDetails(cardReaderPaymentFlowParam.orderId)
