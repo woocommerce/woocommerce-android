@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-04 15:54:21+0000
+Translation-Revision-Date: 2023-04-11 09:54:24+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="quantity_rules_info_notice">אפשר לערוך את כללי הכמות של המוצר בלוח הבקרה שבאתר האינטרנט.</string>
+    <string name="group_of">קבוצה של</string>
+    <string name="max_quantity">כמות מקסימלית</string>
+    <string name="min_quantity">כמות מינימלית</string>
+    <string name="product_quantity_rules_title">כללי כמות</string>
+    <string name="gift_cards">שוברי מתנה</string>
+    <string name="order_gift_card">שובר מתנה</string>
+    <string name="free_trial_feature_fast_to_launch">השקה במהירות</string>
+    <string name="free_trial_feature_site_security">אבטחת אתרים</string>
+    <string name="free_trial_feature_auto_updates_backups">עדכונים וגיבויים אוטומטיים</string>
+    <string name="free_trial_feature_247_support">תמיכה מסביב לשעון</string>
+    <string name="free_trial_feature_email_marketing">שיווק באימייל</string>
+    <string name="free_trial_feature_social_advertising">פרסום ברשתות חברתיות</string>
+    <string name="free_trial_feature_subscription_product_kits">ערכות מינויים ומוצרים</string>
+    <string name="free_trial_feature_multiple_payment_options">מספר אפשרויות תשלומים</string>
+    <string name="free_trial_feature_ecommerce_reports">דוחות של מסחר אלקטרוני</string>
+    <string name="free_trial_feature_shipping_labels">תוויות משלוח</string>
+    <string name="free_trial_feature_unlimited_products">מוצרים ללא הגבלה</string>
+    <string name="free_trial_feature_premium_themes">ערכות פרימיום</string>
+    <string name="free_trial_summary_credit_card_message">אין צורך בכרטיס אשראי.</string>
+    <string name="free_trial_summary_try_button">ניסיון בחינם</string>
+    <string name="free_trial_summary_try_it">ניתן לנסות למשך 14 ימים.</string>
+    <string name="free_trial_summary_advertise">אנחנו מציעים כל מה שצריך כדי לבנות ולפתח את החנות המקוונת שלך. השירות מופעל על ידי WooCommerce באחסון של WordPress.com.</string>
+    <string name="free_trial_summary_title">להשיק חנות תוך ימים ספורים ולצמוח במשך השנים</string>
+    <string name="product_selector_products_heading">מוצרים</string>
+    <string name="product_selector_recent_products_heading">הפריט האחרון שנמכר</string>
+    <string name="product_selector_popular_products_heading">פופולריים</string>
+    <string name="jetpack_install_role_eligibility_learn_more">למידע נוסף על תפקידים והרשאות</string>
+    <string name="jetpack_install_role_eligibility_error_message">נראה שתפקיד המשתמש שלך לא מאפשר לך להתקין את Jetpack. \nיש ליצור קשר עם מנהל המערכת לקבלת עזרה.</string>
+    <string name="card_reader_tap_to_pay_description">אפשר לנסות את Tap To Pay באמצעות תשלום של\nסכום קטן כאן.</string>
+    <string name="card_reader_test_tap_to_pay">לבדוק את Tap To Pay</string>
     <string name="subscription_free_trial">תקופת ניסיון בחינם</string>
     <string name="subscription_sign_up_fee">להרשמה בחינם</string>
     <string name="subscription_expire">פקיעת תוקף לאחר</string>
@@ -46,7 +77,6 @@ Language: he_IL
     <string name="card_reader_type_selection_tap_to_pay_description">לקבל תשלומים ללא מגע באופן מאובטח ישירות מהטלפון.</string>
     <string name="card_reader_tap_to_pay_beta_features_subheading">לנסות את Tap To Pay באפליקציה</string>
     <string name="card_reader_tap_to_pay_beta_features_heading">Tap To Pay</string>
-    <string name="card_reader_tap_to_pay_description_not_used">להשתמש בטלפון שלך כדי לקבל תשלום\nבכרטיסי אשראי. כדאי לנסות עכשיו.</string>
     <string name="card_reader_tap_to_pay_share_feedback">לשלוח משוב לגבי השירות של Tap To Pay</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">אין אפשרות להתחבר מאחר שיצירת הסיסמה באפליקציה לא אושרה.</string>
     <string name="login_site_credentials_fetching_site">מביא אתרים…</string>
@@ -62,7 +92,6 @@ Language: he_IL
     <string name="store_onboarding_get_paid_title">הגדרת תשלומים</string>
     <string name="store_onboarding_task_about_your_store_toolbar_title">מידע לגבי החנות שלך</string>
     <string name="store_creation_installation_rendering_preview_label">מעבד תצוגה מקדימה…</string>
-    <string name="jetpack_benefits_open_wpadmin">לפתוח את wp-admin</string>
     <string name="shipping_label_address_phone_required">יש להזין מספר טלפון</string>
     <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s, ⁦%4$s⁩ נמכרו</string>
     <string name="analytics_items">פריטים</string>
@@ -148,8 +177,6 @@ Language: he_IL
     <string name="card_reader_tap_to_pay_explanation_ready">הטלפון שלך מוכן לשימוש באפשרות Tap to Pay.\nהלקוחות שלך יוכלו להצמיד את הכרטיס שלהם\nלטלפון שלך כדי לשלם.</string>
     <string name="card_reader_tap_to_pay_explanation_title">לקבל תשלומים באמצעות כרטיס אשראי\nדרך הטלפון שלך</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
-    <string name="card_reader_tap_to_pay_description_used">להשתמש בטלפון שלך כדי לקבל תשלומים באמצעות כרטיסים.</string>
-    <string name="card_reader_tap_to_pay">Tap To Pay</string>
     <string name="card_reader_hub_actions_category_header">פעולות</string>
     <string name="domain_registration_generic_error">אירעה שגיאה במהלך ההרשמה של הדומיין</string>
     <string name="domain_registration_state_picker_dialog_title">בחירת מדינה</string>
@@ -1210,7 +1237,6 @@ Language: he_IL
     <string name="support_system_status_report">דוח מצב המערכת</string>
     <string name="card_reader_welcome_dialog_text">ברכותינו, כעת באפשרותך לקבל תשלומים בכרטיס אשראי ובכרטיס חיוב עם WooCommerce Payments!</string>
     <string name="card_reader_welcome_dialog_header">לגבות תשלומים באמצעות קורא כרטיסים</string>
-    <string name="card_reader_payment_failed_amount_too_small">הסכום חייב להיות לפחות 0.50 $</string>
     <string name="card_reader_payment_payment_failed_ok">אישור</string>
     <string name="settings_whats_new_icon_description">תמונת הסמל של האפשרות החדשה</string>
     <string name="settings_switch_store">להחליף חנות</string>

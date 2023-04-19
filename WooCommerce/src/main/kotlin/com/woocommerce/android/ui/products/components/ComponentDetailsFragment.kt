@@ -23,8 +23,6 @@ import org.wordpress.android.util.PhotonUtils
 @AndroidEntryPoint
 class ComponentDetailsFragment : BaseFragment(R.layout.fragment_component_details) {
     val viewModel: ComponentDetailsViewModel by viewModels()
-    private var _binding: FragmentComponentDetailsBinding? = null
-    private val binding get() = _binding!!
 
     private val skeletonView = SkeletonView()
     override fun getFragmentTitle() = resources.getString(R.string.product_component_settings)
@@ -33,7 +31,7 @@ class ComponentDetailsFragment : BaseFragment(R.layout.fragment_component_detail
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = FragmentComponentDetailsBinding.bind(view)
+        val binding = FragmentComponentDetailsBinding.bind(view)
 
         binding.componentDetailsRefreshLayout.apply {
             // Set the scrolling view in the custom refresh SwipeRefreshLayout
@@ -63,22 +61,22 @@ class ComponentDetailsFragment : BaseFragment(R.layout.fragment_component_detail
                 details.description,
                 HtmlCompat.FROM_HTML_MODE_COMPACT
             )
-            showComponentImage(details.imageUrl)
+            showComponentImage(details.imageUrl, binding)
         }
 
         viewModel.componentOptions.observe(viewLifecycleOwner) { componentOptions ->
-            showComponentOptionsInfo(componentOptions)
+            showComponentOptionsInfo(componentOptions, binding)
         }
 
         viewModel.componentDetailsViewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.isSkeletonShown.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
+            new.isSkeletonShown.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it, binding) }
             new.isRefreshing.takeIfNotEqualTo(old?.isRefreshing) {
                 binding.componentDetailsRefreshLayout.isRefreshing = it
             }
         }
     }
 
-    private fun showComponentOptionsInfo(componentOptions: ComponentOptions) {
+    private fun showComponentOptionsInfo(componentOptions: ComponentOptions, binding: FragmentComponentDetailsBinding) {
         val noListInfo = componentOptions.options.isEmpty()
         val noDefaultOptionInfo = componentOptions.default == null
         val noComponentOptionInfo = noListInfo && noDefaultOptionInfo
@@ -105,7 +103,7 @@ class ComponentDetailsFragment : BaseFragment(R.layout.fragment_component_detail
         binding.componentOptionsRecycler.isVisible = noListInfo.not()
     }
 
-    private fun showComponentImage(imageUrl: String?) {
+    private fun showComponentImage(imageUrl: String?, binding: FragmentComponentDetailsBinding) {
         when {
             imageUrl.isNullOrEmpty() -> {
                 binding.componentImage.isVisible = false
@@ -120,17 +118,12 @@ class ComponentDetailsFragment : BaseFragment(R.layout.fragment_component_detail
         }
     }
 
-    private fun showSkeleton(show: Boolean) {
+    private fun showSkeleton(show: Boolean, binding: FragmentComponentDetailsBinding) {
         when (show) {
             true -> {
                 skeletonView.show(binding.componentOptionsSection, R.layout.skeleton_component_options, delayed = true)
             }
             false -> skeletonView.hide()
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
     }
 }

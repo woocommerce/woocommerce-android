@@ -1,2 +1,0 @@
-13.0:
-Ótimas notícias para quem está usando a extensão do WooCommerce Subscriptions: adicionamos compatibilidade com o modo somente leitura à extensão do WooCommerce Subscriptions nas telas de dados do pedido e de detalhes do produto. Mais funcionalidades em breve!
