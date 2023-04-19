@@ -91,11 +91,6 @@ private const val PROFILER_OPTIONS_JSON = """{
     },
     {
       "id": 6,
-      "label": "CBD and other hemp-derived products",
-      "key": "cbd_other_hemp_derived_products"
-    },
-    {
-      "id": 7,
       "label": "Other",
       "key": "other"
     }
