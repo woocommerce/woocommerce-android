@@ -85,6 +85,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
     private fun renderLoadingState(binding: FragmentSelectPaymentMethodBinding) {
         binding.container.isVisible = false
         binding.pbLoading.isVisible = true
+        binding.learnMoreIppPaymentMethodsTv.learnMore.isVisible = false
     }
 
     private fun renderSuccessfulState(
@@ -93,6 +94,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
     ) {
         binding.container.isVisible = true
         binding.pbLoading.isVisible = false
+        binding.learnMoreIppPaymentMethodsTv.learnMore.isVisible = true
         requireActivity().title = getString(
             R.string.simple_payments_take_payment_button,
             state.orderTotal
