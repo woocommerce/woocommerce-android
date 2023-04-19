@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products.adapters
+package com.woocommerce.android.ui.products.components
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

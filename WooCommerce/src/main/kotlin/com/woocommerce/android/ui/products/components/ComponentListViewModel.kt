@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.components
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ComponentListViewModel @Inject constructor(savedState: SavedStateHandle) : ScopedViewModel(savedState) {
-    private val navArgs: CompositeProductFragmentArgs by savedState.navArgs()
+    private val navArgs: ComponentListFragmentArgs by savedState.navArgs()
 
     private val _componentList = MutableLiveData<List<Component>>()
     val componentList: LiveData<List<Component>> = _componentList
