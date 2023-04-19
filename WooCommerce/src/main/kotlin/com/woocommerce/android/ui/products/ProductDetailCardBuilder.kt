@@ -37,6 +37,7 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductVa
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.ProductType.BUNDLE
+import com.woocommerce.android.ui.products.ProductType.COMPOSITE
 import com.woocommerce.android.ui.products.ProductType.EXTERNAL
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.OTHER
@@ -87,6 +88,7 @@ class ProductDetailCardBuilder(
             EXTERNAL -> cards.addIfNotEmpty(getExternalProductCard(product))
             SUBSCRIPTION -> cards.addIfNotEmpty(getSubscriptionProductCard(product))
             BUNDLE -> cards.addIfNotEmpty(getBundleProductsCard(product))
+            COMPOSITE -> cards.addIfNotEmpty(getCompositeProductsCard(product))
             else -> cards.addIfNotEmpty(getOtherProductCard(product))
         }
 
@@ -204,6 +206,25 @@ class ProductDetailCardBuilder(
             type = SECONDARY,
             properties = listOf(
                 product.bundleProducts(),
+                product.price(),
+                if (viewModel.isProductUnderCreation) null else product.productReviews(),
+                product.inventory(SIMPLE),
+                product.addons(),
+                product.quantityRules(),
+                product.categories(),
+                product.tags(),
+                product.shortDescription(),
+                product.linkedProducts(),
+                product.productType()
+            ).filterNotEmpty()
+        )
+    }
+
+    private suspend fun getCompositeProductsCard(product: Product): ProductPropertyCard {
+        return ProductPropertyCard(
+            type = SECONDARY,
+            properties = listOf(
+                product.componentProducts(),
                 product.price(),
                 if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.inventory(SIMPLE),
@@ -815,6 +836,28 @@ class ProductDetailCardBuilder(
                 )
             }
         } else null
+    }
+
+    private suspend fun Product.componentProducts(): ProductProperty? {
+        val components = viewModel.getComponents(this.remoteId)
+        return if (components.isNullOrEmpty()) {
+            null
+        } else {
+            val content = StringUtils.getQuantityString(
+                resourceProvider = resources,
+                quantity = components.size,
+                default = string.product_component_multiple_count,
+                one = string.product_component_single_count
+            )
+
+            ComplexProperty(
+                string.product_components,
+                content,
+                drawable.ic_widgets
+            ) {
+                viewModel.onEditProductCardClicked(ProductNavigationTarget.ViewProductComponents(components))
+            }
+        }
     }
 }
 
