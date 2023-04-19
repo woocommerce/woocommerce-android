@@ -124,6 +124,7 @@ private fun MoreMenuHeader(
             StoreDetailsHeader(
                 userAvatarUrl = state.userAvatarUrl,
                 siteName = state.siteName,
+                planName = "free trial",
                 siteUrl = state.siteUrl
             )
         }
@@ -134,6 +135,7 @@ private fun MoreMenuHeader(
 private fun StoreDetailsHeader(
     userAvatarUrl: String,
     siteName: String,
+    planName: String,
     siteUrl: String
 ) {
     Row(
@@ -158,7 +160,7 @@ private fun StoreDetailsHeader(
                         .clip(CircleShape)
                         .background(colorResource(id = R.color.woo_purple_0))) {
                         Text(
-                            text = "FREE TRIAL",
+                            text = planName.uppercase(),
                             color = colorResource(id = R.color.woo_purple_60),
                             modifier = Modifier.padding(
                                 vertical = dimensionResource(id = R.dimen.minor_25),
