@@ -153,6 +153,7 @@ private fun StoreDetailsHeader(
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.body1,
                     )
+                    Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_50)))
                     Box(modifier = Modifier
                         .clip(CircleShape)
                         .background(colorResource(id = R.color.woo_purple_0))) {
