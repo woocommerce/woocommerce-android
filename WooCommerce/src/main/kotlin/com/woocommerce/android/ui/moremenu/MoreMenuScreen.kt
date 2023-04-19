@@ -155,8 +155,10 @@ private fun StoreDetailsHeader(
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.body1,
                     )
-                    Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_50)))
-                    PlanBadge(planName)
+                    if (planName.isNotEmpty()) {
+                        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_50)))
+                        PlanBadge(planName)
+                    }
 
                 }
                 Text(
