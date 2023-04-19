@@ -1,11 +1,7 @@
 package com.woocommerce.android.extensions
 
 import org.apache.commons.text.StringEscapeUtils
-
-/**
- * Checks if a given string is a number (supports positive or negative numbers)
- */
-fun String?.isNumeric() = this?.toIntOrNull()?.let { true } ?: false
+import java.util.Locale
 
 /**
  * Checks if a given string is a Float
@@ -78,12 +74,6 @@ fun String.semverCompareTo(otherVersion: String): Int {
     }
 }
 
-fun String.capitalizeWords(): String {
-    return this.split(" ").joinToString(" ") { word ->
-        word.replaceFirstChar { it.uppercase() }
-    }
-}
-
 /**
  * Returns this string if it's not empty or null otherwise.
  * Syntactic sugar for `string.ifEmpty { null }`.
@@ -91,3 +81,9 @@ fun String.capitalizeWords(): String {
 fun String.orNullIfEmpty(): String? = this.ifEmpty { null }
 
 fun String?.isNotNullOrEmpty() = this.isNullOrEmpty().not()
+
+fun String.toCamelCase(delimiter: String = " "): String {
+    return split(delimiter).joinToString(delimiter) { word ->
+        word.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+    }
+}

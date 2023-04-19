@@ -14,6 +14,7 @@ class AppPrefsTest {
     @Before
     fun setup() {
         AppPrefs.init(InstrumentationRegistry.getInstrumentation().targetContext.applicationContext)
+        AppPrefs.getPreferences().edit().clear().commit()
     }
 
     @Test
@@ -233,127 +234,6 @@ class AppPrefsTest {
                 selfHostedSiteId = 0L
             )
         ).isEqualTo(CARD_READER_ONBOARDING_NOT_COMPLETED)
-    }
-
-    @Test
-    fun whenCardReaderOnboardingCompletedWithWCPayThenCorrectOnboardingStatusFlagIsReturned() {
-        AppPrefs.setCardReaderOnboardingData(
-            localSiteId = 0,
-            remoteSiteId = 0L,
-            selfHostedSiteId = 0L,
-            PersistentOnboardingData(
-                CARD_READER_ONBOARDING_COMPLETED,
-                PluginType.WOOCOMMERCE_PAYMENTS,
-                null,
-            )
-        )
-
-        assertThat(
-            AppPrefs.isCardReaderOnboardingCompleted(
-                localSiteId = 0,
-                remoteSiteId = 0L,
-                selfHostedSiteId = 0L
-            )
-        ).isTrue
-    }
-
-    @Test
-    fun whenCardReaderOnboardingPendingRequirementsWithWCPayThenCorrectOnboardingStatusFlagIsReturned() {
-        AppPrefs.setCardReaderOnboardingData(
-            localSiteId = 0,
-            remoteSiteId = 0L,
-            selfHostedSiteId = 0L,
-            PersistentOnboardingData(
-                CARD_READER_ONBOARDING_PENDING,
-                PluginType.WOOCOMMERCE_PAYMENTS,
-                null,
-            )
-        )
-
-        assertThat(
-            AppPrefs.isCardReaderOnboardingCompleted(
-                localSiteId = 0,
-                remoteSiteId = 0L,
-                selfHostedSiteId = 0L
-            )
-        ).isFalse
-    }
-
-    @Test
-    fun whenCardReaderOnboardingCompletedWithStripeExtThenCorrectOnboardingStatusFlagIsReturned() {
-        AppPrefs.setCardReaderOnboardingData(
-            localSiteId = 0,
-            remoteSiteId = 0L,
-            selfHostedSiteId = 0L,
-            PersistentOnboardingData(
-                CARD_READER_ONBOARDING_PENDING,
-                PluginType.STRIPE_EXTENSION_GATEWAY,
-                null,
-            )
-        )
-
-        assertThat(
-            AppPrefs.isCardReaderOnboardingCompleted(
-                localSiteId = 0,
-                remoteSiteId = 0L,
-                selfHostedSiteId = 0L
-            )
-        ).isFalse
-    }
-
-    @Test
-    fun whenCardReaderOnboardingPendingRequirementsWithStripeExtThenCorrectOnboardingStatusFlagIsReturned() {
-        AppPrefs.setCardReaderOnboardingData(
-            localSiteId = 0,
-            remoteSiteId = 0L,
-            selfHostedSiteId = 0L,
-            PersistentOnboardingData(
-                CARD_READER_ONBOARDING_PENDING,
-                PluginType.STRIPE_EXTENSION_GATEWAY,
-                null,
-            )
-        )
-
-        assertThat(
-            AppPrefs.isCardReaderOnboardingCompleted(
-                localSiteId = 0,
-                remoteSiteId = 0L,
-                selfHostedSiteId = 0L
-            )
-        ).isFalse
-    }
-
-    @Test
-    fun whenCardReaderOnboardingNotCompletedThenCorrectOnboardingStatusFlagIsReturned() {
-        assertThat(
-            AppPrefs.isCardReaderOnboardingCompleted(
-                localSiteId = 1,
-                remoteSiteId = 0L,
-                selfHostedSiteId = 0L
-            )
-        ).isFalse
-    }
-
-    @Test
-    fun whenCardReaderOnboardingNotCompletedThenCorrectOnboardingStatusIsReturned() {
-        AppPrefs.setCardReaderOnboardingData(
-            localSiteId = 0,
-            remoteSiteId = 0L,
-            selfHostedSiteId = 0L,
-            PersistentOnboardingData(
-                CARD_READER_ONBOARDING_NOT_COMPLETED,
-                null,
-                null,
-            )
-        )
-
-        assertThat(
-            AppPrefs.isCardReaderOnboardingCompleted(
-                localSiteId = 0,
-                remoteSiteId = 0L,
-                selfHostedSiteId = 0L
-            )
-        ).isFalse
     }
 
     @Test
@@ -610,5 +490,22 @@ class AppPrefsTest {
                 selfHostedSiteId = 0L,
             )
         ).isFalse
+    }
+
+    @Test
+    fun givenTTPWasUsedAtLeastOnceNeverInvokedThenIsTTPWasUsedAtLeastOnceReturnsFalse() {
+        assertThat(AppPrefs.isTTPWasUsedAtLeastOnce()).isFalse
+    }
+
+    @Test
+    fun givenTTPWasUsedAtLeastOnceInvokedThenIsTTPWasUsedAtLeastOnceReturnsTrue() {
+        AppPrefs.setTTPWasUsedAtLeastOnce()
+
+        assertThat(AppPrefs.isTTPWasUsedAtLeastOnce()).isTrue
+    }
+
+    @Test
+    fun givenIppWasNotUsedWhenGetCardReaderLastSuccessfulPaymentThenTimeReturnedZero() {
+        assertThat(AppPrefs.getCardReaderLastSuccessfulPaymentTime()).isEqualTo(0L)
     }
 }

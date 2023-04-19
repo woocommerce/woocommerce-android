@@ -8,6 +8,7 @@ import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -60,6 +61,7 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.MORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.MY_STORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
+import com.woocommerce.android.ui.main.MainActivityViewModel.BottomBarState
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForAppLink
@@ -73,12 +75,17 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewTapToPay
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewUrlInWebView
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
 import com.woocommerce.android.ui.moremenu.MoreMenuFragmentDirections
 import com.woocommerce.android.ui.mystore.MyStoreFragmentDirections
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.plans.di.StartUpgradeFlowFactory
+import com.woocommerce.android.ui.plans.di.TrialStatusBarFormatterFactory
+import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState.TrialStatusBarState
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
@@ -134,10 +141,11 @@ class MainActivity :
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var crashLogging: CrashLogging
     @Inject lateinit var appWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
+    @Inject lateinit var trialStatusBarFormatterFactory: TrialStatusBarFormatterFactory
+    @Inject lateinit var startUpgradeFlowFactory: StartUpgradeFlowFactory
 
     private val viewModel: MainActivityViewModel by viewModels()
 
-    private var isBottomNavShowing = true
     private var unfilledOrderCount: Int = 0
     private var restoreToolbarHeight = 0
     private var menu: Menu? = null
@@ -275,8 +283,10 @@ class MainActivity :
             checkForAppUpdates()
         }
 
-        viewModel.handleIncomingAppLink(intent?.data)
-        viewModel.handleShortcutAction(intent?.action?.toLowerCase())
+        if (savedInstanceState == null) {
+            viewModel.handleIncomingAppLink(intent?.data)
+            viewModel.handleShortcutAction(intent?.action?.toLowerCase())
+        }
     }
 
     override fun hideProgressDialog() {
@@ -686,6 +696,7 @@ class MainActivity :
     }
     // endregion
 
+    @Suppress("ComplexMethod")
     private fun setupObservers() {
         viewModel.event.observe(this) { event ->
             when (event) {
@@ -697,14 +708,29 @@ class MainActivity :
                 is ViewReviewList -> showReviewList()
                 is RestartActivityForNotification -> restartActivityForNotification(event)
                 is RestartActivityForAppLink -> restartActivityForAppLink(event)
-                is ShowFeatureAnnouncement -> navigateToFeratureAnnouncement(event)
+                is ShowFeatureAnnouncement -> navigateToFeatureAnnouncement(event)
+                is ViewUrlInWebView -> navigateToWebView(event)
                 ViewPayments -> showPayments()
+                ViewTapToPay -> showTapToPaySummary()
                 ShortcutOpenPayments -> shortcutShowPayments()
                 ShortcutOpenOrderCreation -> shortcutOpenOrderCreation()
             }
         }
 
         observeMoreMenuBadgeStateEvent()
+        observeTrialStatus()
+        observeBottomBarState()
+    }
+
+    private fun observeBottomBarState() {
+        viewModel.bottomBarState.observe(this) { bottomBarState ->
+            val show = when (bottomBarState) {
+                BottomBarState.Hidden -> false
+                BottomBarState.Visible -> true
+            }
+
+            WooAnimUtils.animateBottomBar(binding.bottomNav, show, Duration.MEDIUM)
+        }
     }
 
     private fun observeMoreMenuBadgeStateEvent() {
@@ -716,9 +742,32 @@ class MainActivity :
         }
     }
 
-    private fun navigateToFeratureAnnouncement(event: ShowFeatureAnnouncement) {
+    private fun observeTrialStatus() {
+        viewModel.trialStatusBarState.observe(this) { trialStatusBarState ->
+            when (trialStatusBarState) {
+                TrialStatusBarState.Hidden ->
+                    binding.trialBar.visibility = View.GONE
+                is TrialStatusBarState.Visible -> {
+                    binding.trialBar.text = trialStatusBarFormatterFactory.create(
+                        context = this,
+                        startUpgradeFlowFactory = startUpgradeFlowFactory.create(navController)
+                    ).format(trialStatusBarState.daysLeft)
+                    binding.trialBar.movementMethod = LinkMovementMethod.getInstance()
+                    binding.trialBar.visibility = View.VISIBLE
+                }
+            }
+        }
+    }
+
+    private fun navigateToFeatureAnnouncement(event: ShowFeatureAnnouncement) {
         val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)
         navController.navigateSafely(action)
+    }
+
+    private fun navigateToWebView(event: ViewUrlInWebView) {
+        navController.navigate(
+            NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url)
+        )
     }
 
     private fun showOrderDetail(event: ViewOrderDetail) {
@@ -848,12 +897,34 @@ class MainActivity :
         showPayments()
     }
 
-    private fun showPayments() {
+    private fun showPayments(
+        openInHub: CardReaderFlowParam.CardReadersHub.OpenInHub = CardReaderFlowParam.CardReadersHub.OpenInHub.NONE
+    ) {
         showBottomNav()
         binding.bottomNav.currentPosition = MORE
         binding.bottomNav.active(MORE.position)
-        val action = MoreMenuFragmentDirections.actionMoreMenuToPaymentFlow(CardReaderFlowParam.CardReadersHub)
+        val action = MoreMenuFragmentDirections.actionMoreMenuToPaymentFlow(
+            CardReaderFlowParam.CardReadersHub(openInHub)
+        )
         navController.navigateSafely(action)
+    }
+
+    private fun showTapToPaySummary() {
+        /**
+         * set the intent data to null so that when the OS recreates the activity
+         * by redelivering the same intent, it won't redirect to the tap to pay summary screen.
+         *
+         * Example:
+         * 1. Open the Tap to pay summary screen via universal linking
+         * 2. Navigate back from the payments screen and go to the settings screen
+         * 3. Try to switch to any other store.
+         * 6. The OS redelivers the same intent with the intent data set to TTP URI and as a result
+         * the app redirects to the TTP summary screen as soon as the app restarts.
+         *
+         * Setting the intent data to null avoids this bug.
+         */
+        intent.data = null
+        showPayments(CardReaderFlowParam.CardReadersHub.OpenInHub.TAP_TO_PAY_SUMMARY)
     }
 
     override fun showReviewDetailWithSharedTransition(
@@ -932,17 +1003,11 @@ class MainActivity :
     }
 
     override fun hideBottomNav() {
-        if (isBottomNavShowing) {
-            isBottomNavShowing = false
-            WooAnimUtils.animateBottomBar(binding.bottomNav, false, Duration.MEDIUM)
-        }
+        viewModel.hideBottomNav()
     }
 
     override fun showBottomNav() {
-        if (!isBottomNavShowing) {
-            isBottomNavShowing = true
-            WooAnimUtils.animateBottomBar(binding.bottomNav, true, Duration.SHORT)
-        }
+        viewModel.showBottomNav()
     }
 
     /**

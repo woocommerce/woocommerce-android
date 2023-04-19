@@ -38,7 +38,7 @@ import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPicke
 
 @Composable
 fun CountryPickerScreen(viewModel: CountryPickerViewModel) {
-    viewModel.countryPickerState.observeAsState().value?.let { countryPickerContent ->
+    viewModel.countryPickerState.observeAsState().value?.let { viewState ->
         Scaffold(topBar = {
             ToolbarWithHelpButton(
                 onNavigationButtonClick = viewModel::onArrowBackPressed,
@@ -46,7 +46,7 @@ fun CountryPickerScreen(viewModel: CountryPickerViewModel) {
             )
         }) { padding ->
             CountryPickerForm(
-                countryPickerState = countryPickerContent,
+                state = viewState,
                 onContinueClicked = viewModel::onContinueClicked,
                 onCountrySelected = viewModel::onCountrySelected,
                 modifier = Modifier
@@ -59,7 +59,7 @@ fun CountryPickerScreen(viewModel: CountryPickerViewModel) {
 
 @Composable
 private fun CountryPickerForm(
-    countryPickerState: CountryPickerState,
+    state: CountryPickerState,
     onContinueClicked: () -> Unit,
     onCountrySelected: (StoreCreationCountry) -> Unit,
     modifier: Modifier = Modifier,
@@ -76,15 +76,15 @@ private fun CountryPickerForm(
         ) {
             val configuration = LocalConfiguration.current
             if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                CountryPickerHeaderContent(countryPickerState)
+                CountryPickerHeaderContent(state.countries, state.storeName)
             }
             LazyColumn {
                 if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
                     item {
-                        CountryPickerHeaderContent(countryPickerState)
+                        CountryPickerHeaderContent(state.countries, state.storeName)
                     }
                 }
-                itemsIndexed(countryPickerState.countries) { _, country ->
+                itemsIndexed(state.countries) { _, country ->
                     CountryItem(
                         country = country,
                         onCountrySelected = onCountrySelected,
@@ -111,10 +111,13 @@ private fun CountryPickerForm(
 }
 
 @Composable
-private fun CountryPickerHeaderContent(countryPickerState: CountryPickerState) {
+private fun CountryPickerHeaderContent(
+    availableCountries: List<StoreCreationCountry>,
+    storeName: String
+) {
     Column {
         Text(
-            text = countryPickerState.storeName.uppercase(),
+            text = storeName.uppercase(),
             style = MaterialTheme.typography.caption,
             color = colorResource(id = R.color.color_on_surface_medium),
             modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100))
@@ -136,7 +139,7 @@ private fun CountryPickerHeaderContent(countryPickerState: CountryPickerState) {
             modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100))
         )
         CountryItem(
-            country = countryPickerState.countries.first { it.isSelected },
+            country = availableCountries.first { it.isSelected },
             onCountrySelected = {},
             modifier = Modifier
                 .fillMaxWidth()
@@ -208,8 +211,7 @@ private fun CountryItem(
 fun CountryPickerPreview() {
     WooThemeWithBackground {
         CountryPickerForm(
-            countryPickerState = CountryPickerState(
-                storeName = "White Christmas Tree",
+            state = CountryPickerState(
                 countries = listOf(
                     StoreCreationCountry(
                         name = "Canada",
@@ -235,7 +237,8 @@ fun CountryPickerPreview() {
                         emojiFlag = "\uD83C\uDDEE\uD83C\uDDF9",
                         isSelected = false
                     )
-                )
+                ),
+                storeName = "Store name"
             ),
             onContinueClicked = {},
             onCountrySelected = {},

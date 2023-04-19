@@ -36,6 +36,32 @@
                 android:name="jetpackStatus"
                 app:argType="com.woocommerce.android.model.JetpackStatus" />
         </action>
+        <action
+            android:id="@+id/action_jetpackBenefitsDialog_to_jetpackActivationEligibilityErrorFragment"
+            app:destination="@id/jetpackActivationEligibilityErrorFragment" />
     </dialog>
     <include app:graph="@navigation/nav_graph_jetpack_activation" />
+    <fragment
+        android:id="@+id/jetpackActivationEligibilityErrorFragment"
+        android:name="com.woocommerce.android.ui.jetpack.JetpackActivationEligibilityErrorFragment"
+        android:label="JetpackActivationEligibilityErrorFragment">
+        <argument
+            android:name="username"
+            app:argType="string" />
+        <argument
+            android:name="role"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_jetpackActivationEligibilityErrorFragment_to_jetpack_activation"
+            app:destination="@id/nav_graph_jetpack_activation"
+            app:popUpTo="@id/jetpackActivationEligibilityErrorFragment"
+            app:popUpToInclusive="true">
+            <argument
+                android:name="siteUrl"
+                app:argType="string" />
+            <argument
+                android:name="jetpackStatus"
+                app:argType="com.woocommerce.android.model.JetpackStatus" />
+        </action>
+    </fragment>
 </navigation>

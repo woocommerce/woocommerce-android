@@ -50,7 +50,7 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
             AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_PRODUCT_TYPE_SELECTED, properties)
 
             saveUserSelection(productTypeUiItem)
-            triggerEvent(ViewProductAdd)
+            triggerEvent(ViewProductAdd(navArgs.source))
             triggerEvent(ExitWithResult(productTypeUiItem))
         } else {
             triggerEvent(

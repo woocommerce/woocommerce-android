@@ -13,6 +13,7 @@ import com.woocommerce.android.R.style
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,7 +38,7 @@ class JetpackBenefitsDialog : DialogFragment() {
         setStyle(STYLE_NO_TITLE, if (isTabletLandscape()) style.Theme_Woo_Dialog else style.Theme_Woo)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         // Specify transition animations
         dialog?.window?.attributes?.windowAnimations = style.Woo_Animations_Dialog
 
@@ -71,6 +72,20 @@ class JetpackBenefitsDialog : DialogFragment() {
                             siteUrl = event.siteUrl,
                             jetpackStatus = event.jetpackStatus
                         )
+                    )
+                }
+
+                is JetpackBenefitsViewModel.OpenWpAdminJetpackActivation -> {
+                    ChromeCustomTabUtils.launchUrl(requireContext(), event.activationUrl)
+                }
+
+                is JetpackBenefitsViewModel.OpenJetpackEligibilityError -> {
+                    findNavController().navigateSafely(
+                        JetpackBenefitsDialogDirections
+                            .actionJetpackBenefitsDialogToJetpackActivationEligibilityErrorFragment(
+                                username = event.username,
+                                role = event.role
+                            )
                     )
                 }
 

@@ -10,6 +10,10 @@ enum class ProductType(@StringRes val stringResource: Int = 0, val value: String
     GROUPED(R.string.product_type_grouped, CoreProductType.GROUPED.value),
     EXTERNAL(R.string.product_type_external, CoreProductType.EXTERNAL.value),
     VARIABLE(R.string.product_type_variable, CoreProductType.VARIABLE.value),
+    SUBSCRIPTION(R.string.product_type_subscription, "subscription"),
+    VARIABLE_SUBSCRIPTION(R.string.product_type_subscription, "variable-subscription"),
+    BUNDLE(R.string.product_type_bundle, CoreProductType.BUNDLE.value),
+    COMPOSITE(R.string.product_type_composite, "composite"),
     OTHER;
 
     companion object {
@@ -19,6 +23,10 @@ enum class ProductType(@StringRes val stringResource: Int = 0, val value: String
                 "external" -> EXTERNAL
                 "variable" -> VARIABLE
                 "simple" -> SIMPLE
+                "subscription" -> SUBSCRIPTION
+                "variable-subscription" -> VARIABLE_SUBSCRIPTION
+                "bundle" -> BUNDLE
+                "composite" -> COMPOSITE
                 else -> OTHER
             }
         }

@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
 import androidx.preference.PreferenceManager
-import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.valueOf
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE
@@ -28,6 +27,8 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.PRODUCT_SORTING_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.UPDATE_SIMULATED_READER_OPTION
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED
+import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE
+import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_TASKS_COMPLETED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.extensions.packageInfo
@@ -35,13 +36,12 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
+import com.woocommerce.android.ui.prefs.domain.DomainFlowSource
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.PreferenceUtils
 import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.util.ThemeOption.DEFAULT
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
 import java.util.Calendar
 import java.util.Date
 
@@ -105,6 +105,8 @@ object AppPrefs {
         UPDATE_SIMULATED_READER_OPTION,
         ENABLE_SIMULATED_INTERAC,
         CUSTOM_DOMAINS_SOURCE,
+        IS_TAP_TO_PAY_BETA_ENABLED,
+        JETPACK_INSTALLATION_FROM_BANNER,
     }
 
     /**
@@ -135,14 +137,8 @@ object AppPrefs {
         // Play cha-ching sound on new order notifications
         NOTIFS_ORDERS_CHA_CHING_ENABLED,
 
-        // Number of times the "mark all notifications read" icon was tapped
-        NUM_TIMES_MARK_ALL_NOTIFS_READ_SNACK_SHOWN,
-
         // The app update for this version was cancelled by the user
         CANCELLED_APP_VERSION_CODE,
-
-        // Application permissions
-        ASKED_PERMISSION_CAMERA,
 
         // Date of the app installation
         APP_INSTALATION_DATE,
@@ -174,6 +170,18 @@ object AppPrefs {
 
         // Was the IPP feedback survey banner dismissed forever
         IPP_FEEDBACK_SURVEY_BANNER_DISMISSED_FOREVER,
+
+        // Was the Tap To Pay used at least once
+        TTP_WAS_USED_AT_LEAST_ONCE,
+
+        // Whether onboarding tasks have been completed or not for a given site
+        STORE_ONBOARDING_TASKS_COMPLETED,
+
+        // Was store onboarding shown at least once
+        STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE,
+
+        // Time when the last successful payment was made with a card reader
+        CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME,
     }
 
     fun init(context: Context) {
@@ -221,6 +229,10 @@ object AppPrefs {
     var isCouponsEnabled: Boolean
         get() = getBoolean(IS_COUPONS_ENABLED, false)
         set(value) = setBoolean(IS_COUPONS_ENABLED, value)
+
+    var isTapToPayEnabled: Boolean
+        get() = getBoolean(DeletablePrefKey.IS_TAP_TO_PAY_BETA_ENABLED, false)
+        set(value) = setBoolean(DeletablePrefKey.IS_TAP_TO_PAY_BETA_ENABLED, value)
 
     var isSimulatedReaderEnabled: Boolean
         get() = getBoolean(DeletablePrefKey.USE_SIMULATED_READER, false)
@@ -431,14 +443,6 @@ object AppPrefs {
     fun setCardReaderWelcomeDialogShown() =
         setBoolean(UndeletablePrefKey.CARD_READER_WELCOME_SHOWN, true)
 
-    /**
-     * Flag to check products features are enabled
-     */
-    fun isProductsFeatureEnabled() = getBoolean(DeletablePrefKey.IS_PRODUCTS_FEATURE_ENABLED, false)
-
-    fun setIsProductsFeatureEnabled(isProductsFeatureEnabled: Boolean) =
-        setBoolean(DeletablePrefKey.IS_PRODUCTS_FEATURE_ENABLED, isProductsFeatureEnabled)
-
     fun isCrashReportingEnabled(): Boolean {
         // default to False for debug builds
         val default = !BuildConfig.DEBUG
@@ -465,14 +469,6 @@ object AppPrefs {
 
     fun setOrderNotificationsChaChingEnabled(enabled: Boolean) {
         setBoolean(UndeletablePrefKey.NOTIFS_ORDERS_CHA_CHING_ENABLED, enabled)
-    }
-
-    fun getNumTimesMarkAllReadSnackShown(): Int =
-        getInt(UndeletablePrefKey.NUM_TIMES_MARK_ALL_NOTIFS_READ_SNACK_SHOWN, 0)
-
-    fun incNumTimesMarkAllReadSnackShown() {
-        val numTimesShown = getNumTimesMarkAllReadSnackShown() + 1
-        setInt(UndeletablePrefKey.NUM_TIMES_MARK_ALL_NOTIFS_READ_SNACK_SHOWN, numTimesShown)
     }
 
     fun getSelectedShipmentTrackingProviderName(): String =
@@ -503,25 +499,11 @@ object AppPrefs {
         setBoolean(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED, bypassedLogin)
     }
 
-    fun getLoginUserBypassedJetpackRequired() =
-        getBoolean(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED, false)
-
-    fun removeLoginUserBypassedJetpackRequired() {
-        remove(DeletablePrefKey.LOGIN_USER_BYPASSED_JETPACK_REQUIRED)
-    }
-
     fun getDatabaseDowngraded() = getBoolean(DATABASE_DOWNGRADED, false)
 
     fun setDatabaseDowngraded(value: Boolean) {
         setBoolean(DATABASE_DOWNGRADED, value)
     }
-
-    fun setSelectedOrderListTab(selectedOrderListTabPosition: Int) {
-        setInt(DeletablePrefKey.SELECTED_ORDER_LIST_TAB_POSITION, selectedOrderListTabPosition)
-    }
-
-    fun getSelectedOrderListTabPosition() =
-        getInt(DeletablePrefKey.SELECTED_ORDER_LIST_TAB_POSITION, -1)
 
     fun setSelectedProductType(type: ProductType) = setString(DeletablePrefKey.SELECTED_PRODUCT_TYPE, type.value)
 
@@ -531,14 +513,6 @@ object AppPrefs {
         setBoolean(DeletablePrefKey.SELECTED_PRODUCT_IS_VIRTUAL, isVirtual)
 
     fun isSelectedProductVirtual(): Boolean = getBoolean(DeletablePrefKey.SELECTED_PRODUCT_IS_VIRTUAL, false)
-
-    /**
-     * Checks if the user has a saved order list tab position yet. If no position has been saved,
-     * then the value will be the default of -1.
-     *
-     * @return True if the saved position is not the default -1, else false
-     */
-    fun hasSelectedOrderListTabPosition() = getSelectedOrderListTabPosition() > -1
 
     fun getImageOptimizationEnabled() = getBoolean(IMAGE_OPTIMIZE_ENABLED, true)
 
@@ -569,20 +543,6 @@ object AppPrefs {
 
     fun setUnifiedLoginLastSource(source: String) {
         setString(DeletablePrefKey.UNIFIED_LOGIN_LAST_ACTIVE_SOURCE, source)
-    }
-
-    /**
-     * Used during the unified login process to track the last flow the user was in before
-     * closing the app so if the user opens and finishes the flow at a later day the tracks
-     * events will be complete.
-     */
-    fun getUnifiedLoginLastFlow(): String? {
-        val result = getString(DeletablePrefKey.UNIFIED_LOGIN_LAST_ACTIVE_FLOW)
-        return if (result.isNotEmpty()) {
-            result
-        } else {
-            null
-        }
     }
 
     fun setUnifiedLoginLastFlow(flow: String) {
@@ -627,15 +587,6 @@ object AppPrefs {
                 CARD_READER_ONBOARDING_NOT_COMPLETED.name
             )
         )
-    }
-
-    fun isCardReaderOnboardingCompleted(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long): Boolean {
-        val completedStatus = getCardReaderOnboardingStatus(
-            localSiteId,
-            remoteSiteId,
-            selfHostedSiteId
-        )
-        return completedStatus == CARD_READER_ONBOARDING_COMPLETED
     }
 
     fun isCardReaderWelcomeDialogShown() = getBoolean(UndeletablePrefKey.CARD_READER_WELCOME_SHOWN, false)
@@ -905,7 +856,13 @@ object AppPrefs {
         setString(DeletablePrefKey.CUSTOM_DOMAINS_SOURCE, source)
     }
 
-    fun getCustomDomainsSource() = getString(DeletablePrefKey.CUSTOM_DOMAINS_SOURCE, AnalyticsTracker.VALUE_SETTINGS)
+    fun getCustomDomainsSource() = getString(DeletablePrefKey.CUSTOM_DOMAINS_SOURCE, DomainFlowSource.SETTINGS.name)
+
+    fun setJetpackInstallationIsFromBanner(isFromBanner: Boolean) {
+        setBoolean(DeletablePrefKey.JETPACK_INSTALLATION_FROM_BANNER, isFromBanner)
+    }
+
+    fun getJetpackInstallationIsFromBanner() = getBoolean(DeletablePrefKey.JETPACK_INSTALLATION_FROM_BANNER, false)
 
     private fun getActiveStatsGranularityFilterKey(currentSiteId: Int) =
         PrefKeyString("${DeletablePrefKey.ACTIVE_STATS_GRANULARITY}:$currentSiteId")
@@ -930,6 +887,48 @@ object AppPrefs {
 
     fun setIPPFeedbackBannerDismissedForever(dismissedForever: Boolean) {
         setBoolean(UndeletablePrefKey.IPP_FEEDBACK_SURVEY_BANNER_DISMISSED_FOREVER, dismissedForever)
+    }
+
+    fun isTTPWasUsedAtLeastOnce() =
+        getBoolean(UndeletablePrefKey.TTP_WAS_USED_AT_LEAST_ONCE, false)
+
+    fun setTTPWasUsedAtLeastOnce() {
+        setBoolean(UndeletablePrefKey.TTP_WAS_USED_AT_LEAST_ONCE, true)
+    }
+
+    fun markOnboardingTaskCompletedFor(siteId: Int) {
+        setBoolean(
+            key = getStoreOnboardingKeyFor(siteId),
+            value = true
+        )
+    }
+
+    fun areOnboardingTaskCompletedFor(siteId: Int) = getBoolean(
+        key = getStoreOnboardingKeyFor(siteId),
+        default = false
+    )
+
+    private fun getStoreOnboardingKeyFor(siteId: Int) =
+        PrefKeyString("$STORE_ONBOARDING_TASKS_COMPLETED:$siteId")
+
+    fun setStoreOnboardingShown(siteId: Int) {
+        setBoolean(
+            key = PrefKeyString("$STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE:$siteId"),
+            value = true
+        )
+    }
+
+    fun getStoreOnboardingShown(siteId: Int): Boolean =
+        getBoolean(
+            key = PrefKeyString("$STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE:$siteId"),
+            default = false
+        )
+
+    fun getCardReaderLastSuccessfulPaymentTime() =
+        getLong(UndeletablePrefKey.CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME, 0L)
+
+    fun setCardReaderSuccessfulPaymentTime() {
+        setLong(UndeletablePrefKey.CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME, System.currentTimeMillis())
     }
 
     /**
@@ -1036,21 +1035,6 @@ object AppPrefs {
             "${context.packageName}_deletable_preferences",
             Context.MODE_PRIVATE
         )
-    }
-
-    /*
-     * key in shared preferences which stores a boolean telling whether the app has already
-     * asked for the passed permission
-     */
-    fun getPermissionAskedKey(permission: String): PrefKey? {
-        when (permission) {
-            android.Manifest.permission.CAMERA ->
-                return UndeletablePrefKey.ASKED_PERMISSION_CAMERA
-            else -> {
-                WooLog.w(T.UTILS, "No key for requested permission: $permission")
-                return null
-            }
-        }
     }
 
     enum class CardReaderOnboardingStatus {

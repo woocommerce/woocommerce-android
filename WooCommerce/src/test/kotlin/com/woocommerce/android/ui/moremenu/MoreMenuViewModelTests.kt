@@ -87,7 +87,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         prefsChanges.emit(false)
 
         // THEN
-        val paymentsButton = states.last().moreMenuItems.first { it.text == R.string.more_menu_button_payments }
+        val paymentsButton = states.last().generalMenuItems.first { it.title == R.string.more_menu_button_payments }
         assertThat(paymentsButton.icon).isEqualTo(R.drawable.ic_more_menu_payments)
         assertThat(paymentsButton.badgeState).isNull()
     }
@@ -103,10 +103,10 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         val states = viewModel.moreMenuViewState.captureValues()
 
         // THEN
-        val reviewsButton = states.last().moreMenuItems.first { it.text == R.string.more_menu_button_reviews }
+        val reviewsButton = states.last().generalMenuItems.first { it.title == R.string.more_menu_button_reviews }
         assertThat(reviewsButton.icon).isEqualTo(R.drawable.ic_more_menu_reviews)
         assertThat(reviewsButton.badgeState?.textColor).isEqualTo(
-            R.color.color_on_surface_inverted
+            R.color.color_on_primary
         )
         assertThat(reviewsButton.badgeState?.badgeSize).isEqualTo(
             R.dimen.major_150

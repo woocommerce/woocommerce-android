@@ -136,6 +136,14 @@ class AppSettingsActivity :
         }
     }
 
+    override fun onTapToPayOptionChanged(enabled: Boolean) {
+        if (AppPrefs.isTapToPayEnabled != enabled) {
+            isBetaOptionChanged = true
+            AppPrefs.isTapToPayEnabled = enabled
+            setResult(RESULT_CODE_BETA_OPTIONS_CHANGED)
+        }
+    }
+
     override fun finishLogout() {
         notificationMessageHandler.removeAllNotificationsFromSystemsBar()
         statsWidgetUpdaters.updateTodayWidget()

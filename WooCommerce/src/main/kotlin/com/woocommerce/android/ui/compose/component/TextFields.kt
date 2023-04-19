@@ -45,6 +45,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextDirection.Companion.ContentOrLtr
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -200,7 +201,10 @@ fun WCSearchField(
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
-        textStyle = TextStyle(color = colorResource(id = R.color.color_on_surface_medium)),
+        textStyle = TextStyle(
+            color = colorResource(id = R.color.color_on_surface_medium),
+            textDirection = ContentOrLtr
+        ),
         modifier = modifier
             .defaultMinSize(minHeight = dimensionResource(id = R.dimen.major_250))
             .background(
@@ -279,9 +283,9 @@ fun WCPasswordField(
         keyboardActions = keyboardActions,
         trailingIcon = {
             val image = if (isPasswordVisible) {
-                painterResource(id = R.drawable.ic_password_visibility)
+                painterResource(id = org.wordpress.android.login.R.drawable.ic_password_visibility)
             } else {
-                painterResource(id = R.drawable.ic_password_visibility_off)
+                painterResource(id = org.wordpress.android.login.R.drawable.ic_password_visibility_off)
             }
 
             val description = if (isPasswordVisible) stringResource(id = R.string.hide_password_content_description)

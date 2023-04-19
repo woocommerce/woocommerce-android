@@ -13,11 +13,13 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
 import com.woocommerce.android.di.AppCoroutineScope
+import com.woocommerce.android.extensions.lesserThan
+import com.woocommerce.android.extensions.pastTimeDeltaFromNowInDays
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.push.RegisterDevice
 import com.woocommerce.android.push.RegisterDevice.Mode.IF_NEEDED
 import com.woocommerce.android.push.WooNotificationBuilder
-import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.RateLimitedTask
 import com.woocommerce.android.tools.SelectedSite
@@ -27,6 +29,7 @@ import com.woocommerce.android.ui.appwidgets.getWidgetName
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
@@ -61,6 +64,7 @@ import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
+import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -70,6 +74,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     companion object {
         private const val SECONDS_BETWEEN_SITE_UPDATE = 60 * 60 // 1 hour
         private const val UNAUTHORIZED_STATUS_CODE = 401
+        private const val CARD_READER_USAGE_THIRTY_DAYS = 30
     }
 
     @Inject lateinit var crashLogging: CrashLogging
@@ -84,7 +89,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var networkStatus: NetworkStatus
-    @Inject lateinit var zendeskHelper: ZendeskHelper
+    @Inject lateinit var zendeskSettings: ZendeskSettings
     @Inject lateinit var wooNotificationBuilder: WooNotificationBuilder
     @Inject lateinit var userEligibilityFetcher: UserEligibilityFetcher
     @Inject lateinit var uploadEncryptedLogs: UploadEncryptedLogs
@@ -103,6 +108,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var prefs: AppPrefs
 
     @Inject @AppCoroutineScope lateinit var appCoroutineScope: CoroutineScope
+
+    @Inject lateinit var cardReaderOnboardingChecker: CardReaderOnboardingChecker
 
     private var connectionReceiverRegistered = false
 
@@ -158,9 +165,11 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         trackStartupAnalytics()
 
-        zendeskHelper.setupZendesk(
-            application, BuildConfig.ZENDESK_DOMAIN, BuildConfig.ZENDESK_APP_ID,
-            BuildConfig.ZENDESK_OAUTH_CLIENT_ID
+        zendeskSettings.setup(
+            context = application,
+            zendeskUrl = BuildConfig.ZENDESK_DOMAIN,
+            applicationId = BuildConfig.ZENDESK_APP_ID,
+            oauthClientId = BuildConfig.ZENDESK_OAUTH_CLIENT_ID
         )
 
         observeEncryptedLogsUploadResults()
@@ -228,6 +237,15 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                             WooLog.w(T.LOGIN, "Current user is not eligible to access the current site")
                             restartMainActivity()
                         }
+                    }
+
+                    val isIPPUser = Date(
+                        prefs.getCardReaderLastSuccessfulPaymentTime()
+                    ).pastTimeDeltaFromNowInDays lesserThan CARD_READER_USAGE_THIRTY_DAYS
+
+                    if (isIPPUser) {
+                        cardReaderOnboardingChecker.invalidateCache()
+                        cardReaderOnboardingChecker.getOnboardingState()
                     }
                 }
             }

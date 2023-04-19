@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.login.storecreation.plans.BillingPeriod.ECOMME
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanInfo.Feature
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.LoadingState
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.SiteIndependentCurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -60,7 +61,8 @@ class PlansViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle, iapManager) {
     companion object {
         const val NEW_SITE_LANGUAGE_ID = "en"
-        const val NEW_SITE_THEME = "premium/tsubaki"
+        val NEW_SITE_THEME =
+            if (FeatureFlag.FREE_TRIAL_M2.isEnabled()) "pub/twentytwentytwo" else "premium/tsubaki"
         const val CART_URL = "https://wordpress.com/checkout"
         const val WEBVIEW_SUCCESS_TRIGGER_KEYWORD = "https://wordpress.com/checkout/thank-you/"
         const val WEBVIEW_EXIT_TRIGGER_KEYWORD = "https://woocommerce.com/"
@@ -239,14 +241,15 @@ class PlansViewModel @Inject constructor(
         }
 
         return repository.createNewSite(
-            SiteCreationData(
+            siteData = SiteCreationData(
                 siteDesign = NEW_SITE_THEME,
                 domain = newStore.data.domain,
                 title = newStore.data.name,
                 segmentId = null
             ),
-            NEW_SITE_LANGUAGE_ID,
-            TimeZone.getDefault().id
+            languageWordPressId = NEW_SITE_LANGUAGE_ID,
+            timeZoneId = TimeZone.getDefault().id,
+            siteCreationFlow = newStore.data.planPathSlug
         ).recoverIfSiteExists()
     }
 

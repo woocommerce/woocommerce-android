@@ -16,7 +16,6 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,15 +29,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -50,14 +47,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
@@ -67,9 +63,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.woocommerce.android.R
-import com.woocommerce.android.R.color
-import com.woocommerce.android.R.drawable
-import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuViewState
 
 @ExperimentalFoundationApi
@@ -78,8 +71,7 @@ fun MoreMenuScreen(viewModel: MoreMenuViewModel) {
     val moreMenuState by viewModel.moreMenuViewState.observeAsState(initial = (MoreMenuViewState()))
     MoreMenuScreen(
         moreMenuState,
-        viewModel::onSwitchStoreClick,
-        viewModel::onSettingsClick
+        viewModel::onSwitchStoreClick
     )
 }
 
@@ -87,36 +79,27 @@ fun MoreMenuScreen(viewModel: MoreMenuViewModel) {
 @Composable
 fun MoreMenuScreen(
     state: MoreMenuViewState,
-    onSwitchStore: () -> Unit,
-    onSettingsClick: () -> Unit
+    onSwitchStore: () -> Unit
 ) {
-    Column {
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-        MoreMenuHeader(onSwitchStore, state, onSettingsClick)
-        MoreMenuItems(state)
-    }
-}
-
-@ExperimentalFoundationApi
-@Composable
-private fun MoreMenuItems(state: MoreMenuViewState) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(
-            horizontal = dimensionResource(id = R.dimen.major_100),
-            vertical = dimensionResource(id = R.dimen.major_100)
-        ),
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75)),
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75))
+    Column(
+        modifier = Modifier
+            .verticalScroll(rememberScrollState())
+            .fillMaxSize()
     ) {
-        itemsIndexed(
-            state.moreMenuItems.filter { it.isEnabled }
-        ) { _, item ->
-            MoreMenuButton(
-                text = item.text,
-                iconDrawable = item.icon,
-                badgeState = item.badgeState,
-                onClick = item.onClick
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        MoreMenuHeader(onSwitchStore, state)
+
+        if (state.enabledSettingsItems.isNotEmpty()) {
+            MoreMenuSection(
+                title = stringResource(id = R.string.more_menu_settings_section_title),
+                items = state.enabledSettingsItems
+            )
+        }
+
+        if (state.enabledGeneralItems.isNotEmpty()) {
+            MoreMenuSection(
+                title = stringResource(id = R.string.more_menu_general_section_title),
+                items = state.enabledGeneralItems
             )
         }
     }
@@ -125,93 +108,75 @@ private fun MoreMenuItems(state: MoreMenuViewState) {
 @Composable
 private fun MoreMenuHeader(
     onSwitchStore: () -> Unit,
-    state: MoreMenuViewState,
-    onSettingsClick: () -> Unit
+    state: MoreMenuViewState
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(
-                enabled = state.isStoreSwitcherEnabled,
-                onClickLabel = stringResource(id = string.settings_switch_store),
-                role = Role.Button,
-                onClick = onSwitchStore
-            )
-            .padding(
-                top = dimensionResource(id = R.dimen.major_100),
-                bottom = dimensionResource(id = R.dimen.major_100)
-            ),
+    Button(
+        onClick = onSwitchStore,
+        enabled = state.isStoreSwitcherEnabled,
+        contentPadding = PaddingValues(dimensionResource(id = R.dimen.major_75)),
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = colorResource(id = R.color.more_menu_button_background)
+        ),
+        shape = RoundedCornerShape(dimensionResource(id = R.dimen.major_75)),
+        modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
     ) {
-        StoreDetailsHeader(
-            modifier = Modifier
-                .align(Alignment.CenterStart)
-                .padding(
-                    start = dimensionResource(id = R.dimen.minor_100),
-                    end = dimensionResource(id = R.dimen.major_325)
-                ),
-            userAvatarUrl = state.userAvatarUrl,
-            siteName = state.siteName,
-            siteUrl = state.siteUrl,
-            isStoreSwitcherEnabled = state.isStoreSwitcherEnabled
-        )
-        SettingsButton(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(end = dimensionResource(id = R.dimen.minor_100)),
-            onSettingsClick = onSettingsClick
-        )
-    }
-}
-
-@Composable
-private fun SettingsButton(modifier: Modifier, onSettingsClick: () -> Unit) {
-    IconButton(
-        modifier = modifier,
-        onClick = { onSettingsClick() },
-    ) {
-        Icon(
-            painter = painterResource(id = drawable.ic_more_screen_settings),
-            contentDescription = stringResource(id = string.settings),
-            tint = Color.Unspecified
-        )
-    }
-}
-
-@Composable
-private fun StoreDetailsHeader(
-    modifier: Modifier,
-    userAvatarUrl: String,
-    siteName: String,
-    siteUrl: String,
-    isStoreSwitcherEnabled: Boolean
-) {
-    Row(modifier = modifier) {
-        MoreMenuUserAvatar(avatarUrl = userAvatarUrl)
-        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
-        Column {
-            Text(
-                text = siteName,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.h6,
+        Box(Modifier.fillMaxSize()) {
+            StoreDetailsHeader(
+                userAvatarUrl = state.userAvatarUrl,
+                siteName = state.siteName,
+                siteUrl = state.siteUrl
             )
-            Text(
-                text = siteUrl,
-                style = MaterialTheme.typography.body2,
-                modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_50))
-            )
-            if (isStoreSwitcherEnabled) {
-                Text(
-                    text = stringResource(string.settings_switch_store),
-                    color = MaterialTheme.colors.secondary,
-                    style = MaterialTheme.typography.body2,
-                )
-            }
         }
     }
 }
 
 @Composable
-private fun MoreMenuUserAvatar(avatarUrl: String) {
+private fun StoreDetailsHeader(
+    userAvatarUrl: String,
+    siteName: String,
+    siteUrl: String
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row(Modifier.weight(9f)) {
+            MoreMenuUserAvatar(
+                modifier = Modifier.align(Alignment.CenterVertically),
+                avatarUrl = userAvatarUrl
+            )
+            Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
+            Column {
+                Text(
+                    text = siteName,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.body1,
+                )
+                Text(
+                    text = siteUrl,
+                    style = MaterialTheme.typography.caption,
+                    modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_50))
+                )
+            }
+        }
+        Icon(
+            painter = painterResource(id = R.drawable.ic_arrow_drop_down),
+            contentDescription = null,
+            tint = colorResource(id = R.color.color_on_surface),
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .padding(end = dimensionResource(id = R.dimen.minor_100))
+                .size(dimensionResource(id = R.dimen.major_150))
+                .weight(1f)
+        )
+    }
+}
+
+@Composable
+private fun MoreMenuUserAvatar(
+    modifier: Modifier,
+    avatarUrl: String
+) {
     val bitmapState = remember { mutableStateOf<Bitmap?>(null) }
 
     if (avatarUrl.isNotEmpty()) {
@@ -231,71 +196,109 @@ private fun MoreMenuUserAvatar(avatarUrl: String) {
             )
     }
 
-    val circledModifier = Modifier
-        .size(dimensionResource(id = R.dimen.major_300))
-        .padding(
-            top = dimensionResource(id = R.dimen.minor_75),
-            start = dimensionResource(id = R.dimen.minor_100)
-        )
+    val circledModifier = modifier
+        .size(dimensionResource(id = R.dimen.major_250))
         .clip(CircleShape)
+        .background(color = colorResource(id = R.color.more_menu_button_icon_background))
 
     bitmapState.value?.let {
         Image(
             bitmap = it.asImageBitmap(),
-            contentDescription = stringResource(id = string.more_menu_avatar),
+            contentScale = ContentScale.Crop,
+            contentDescription = stringResource(id = R.string.more_menu_avatar),
             modifier = circledModifier
         )
     } ?: Image(
-        painter = painterResource(id = drawable.img_gravatar_placeholder),
-        contentDescription = stringResource(id = string.more_menu_avatar),
+        painter = painterResource(id = R.drawable.img_gravatar_placeholder),
+        contentDescription = stringResource(id = R.string.more_menu_avatar),
         modifier = circledModifier
     )
 }
 
+@ExperimentalFoundationApi
+@Composable
+private fun MoreMenuSection(
+    title: String,
+    items: List<MenuUiButton>
+) {
+    Column(
+        modifier = Modifier.padding(
+            PaddingValues(
+                horizontal = dimensionResource(id = R.dimen.major_100),
+                vertical = dimensionResource(id = R.dimen.major_100)
+            )
+        )
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.subtitle1,
+            color = colorResource(id = R.color.color_on_surface)
+        )
+
+        items.forEach { item ->
+            MoreMenuButton(
+                title = item.title,
+                description = item.description,
+                iconDrawable = item.icon,
+                badgeState = item.badgeState,
+                onClick = item.onClick
+            )
+        }
+    }
+}
+
 @Composable
 private fun MoreMenuButton(
-    @StringRes text: Int,
+    @StringRes title: Int,
+    @StringRes description: Int,
     @DrawableRes iconDrawable: Int,
     badgeState: BadgeState?,
     onClick: () -> Unit,
 ) {
+    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_75)))
     Button(
         onClick = onClick,
         contentPadding = PaddingValues(dimensionResource(id = R.dimen.major_75)),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = colorResource(id = color.more_menu_button_background)
+            backgroundColor = colorResource(id = R.color.more_menu_button_background)
         ),
-        modifier = Modifier.height(dimensionResource(id = R.dimen.more_menu_button_height)),
         shape = RoundedCornerShape(dimensionResource(id = R.dimen.major_75))
     ) {
         Box(Modifier.fillMaxSize()) {
             MoreMenuBadge(badgeState = badgeState)
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
+            Row(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
                 Box(
                     modifier = Modifier
-                        .size(dimensionResource(id = R.dimen.major_350))
+                        .size(dimensionResource(id = R.dimen.major_250))
                         .clip(CircleShape)
-                        .background(colorResource(id = color.more_menu_button_icon_background))
+                        .background(colorResource(id = R.color.more_menu_button_icon_background))
                 ) {
                     Image(
                         painter = painterResource(id = iconDrawable),
-                        contentDescription = stringResource(id = text),
+                        contentDescription = stringResource(id = title),
                         modifier = Modifier
-                            .size(dimensionResource(id = R.dimen.major_200))
+                            .size(dimensionResource(id = R.dimen.major_125))
                             .align(Alignment.Center)
                     )
                 }
-                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text(
-                    text = stringResource(id = text),
-                    fontSize = 13.sp,
-                    textAlign = TextAlign.Center,
-                )
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100))
+                ) {
+                    Text(
+                        text = stringResource(id = title),
+                        textAlign = TextAlign.Center,
+                    )
+                    Text(
+                        text = stringResource(id = description),
+                        style = MaterialTheme.typography.caption,
+                        textAlign = TextAlign.Center,
+                    )
+                }
             }
         }
     }
@@ -314,7 +317,7 @@ fun MoreMenuBadge(badgeState: BadgeState?) {
             }
             AnimatedVisibility(
                 visibleState = visible,
-                enter = BadgeEnterAnimation()
+                enter = createBadgeEnterAnimation()
             ) {
                 val backgroundColor = colorResource(id = badgeState.backgroundColor)
                 Text(
@@ -333,8 +336,7 @@ fun MoreMenuBadge(badgeState: BadgeState?) {
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-@Composable
-private fun BadgeEnterAnimation(): EnterTransition {
+private fun createBadgeEnterAnimation(): EnterTransition {
     val animationSpec = TweenSpec<Float>(durationMillis = 400, delay = 200)
     return scaleIn(animationSpec = animationSpec) + fadeIn(animationSpec = animationSpec)
 }
@@ -348,34 +350,62 @@ private fun BadgeEnterAnimation(): EnterTransition {
 @Composable
 private fun MoreMenuPreview() {
     val state = MoreMenuViewState(
-        moreMenuItems = listOf(
+        generalMenuItems = listOf(
             MenuUiButton(
-                string.more_menu_button_payments, drawable.ic_more_menu_payments,
+                R.string.more_menu_button_payments,
+                R.string.more_menu_button_payments_description,
+                R.drawable.ic_more_menu_payments,
                 BadgeState(
                     badgeSize = R.dimen.major_110,
-                    backgroundColor = color.color_secondary,
-                    textColor = color.color_on_surface_inverted,
+                    backgroundColor = R.color.color_secondary,
+                    textColor = R.color.color_on_primary,
                     textState = TextState("", R.dimen.text_minor_80),
                     animateAppearance = true
                 )
             ),
-            MenuUiButton(string.more_menu_button_wс_admin, drawable.ic_more_menu_wp_admin),
-            MenuUiButton(string.more_menu_button_store, drawable.ic_more_menu_store),
             MenuUiButton(
-                string.more_menu_button_reviews, drawable.ic_more_menu_reviews,
+                R.string.more_menu_button_wс_admin,
+                R.string.more_menu_button_wc_admin_description,
+                R.drawable.ic_more_menu_wp_admin
+            ),
+            MenuUiButton(
+                R.string.more_menu_button_store,
+                R.string.more_menu_button_store_description,
+                R.drawable.ic_more_menu_store
+            ),
+            MenuUiButton(
+                R.string.more_menu_button_reviews,
+                R.string.more_menu_button_reviews_description,
+                R.drawable.ic_more_menu_reviews,
                 BadgeState(
                     badgeSize = R.dimen.major_150,
-                    backgroundColor = color.color_primary,
-                    textColor = color.color_on_surface_inverted,
+                    backgroundColor = R.color.color_primary,
+                    textColor = R.color.color_on_primary,
                     textState = TextState("3", R.dimen.text_minor_80),
                     animateAppearance = false
                 )
             ),
-            MenuUiButton(string.more_menu_button_coupons, drawable.ic_more_menu_coupons),
+            MenuUiButton(
+                R.string.more_menu_button_coupons,
+                R.string.more_menu_button_coupons_description,
+                R.drawable.ic_more_menu_coupons
+            ),
+        ),
+        settingsMenuItems = listOf(
+            MenuUiButton(
+                R.string.more_menu_button_settings,
+                R.string.more_menu_button_settings_description,
+                R.drawable.ic_more_screen_settings
+            ),
+            MenuUiButton(
+                R.string.more_menu_button_upgrades,
+                R.string.more_menu_button_upgrades_description,
+                R.drawable.ic_more_menu_upgrades
+            )
         ),
         siteName = "Example Site",
         siteUrl = "woocommerce.com",
         userAvatarUrl = "" // To force displaying placeholder image
     )
-    MoreMenuScreen(state, {}, {})
+    MoreMenuScreen(state, {})
 }

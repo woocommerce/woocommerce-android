@@ -15,9 +15,11 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -71,6 +73,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
         createOrderItemUseCase = mock {
             onBlocking { invoke(123, null) } doReturn defaultOrderItem
+            onBlocking { invoke(456, null) } doReturn createOrderItem(456)
+            onBlocking { invoke(1, 2) } doReturn createOrderItem(1, 2)
+            ProductSelectorViewModel.SelectedItem.ProductVariation(1, 2)
         }
         parameterRepository = mock {
             on { getParameters("parameters_key", savedState) } doReturn
@@ -110,11 +115,34 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when product selected, send tracks event`() {
-        sut.onProductSelected(123)
+        sut.onProductsSelected(setOf(ProductSelectorViewModel.SelectedItem.Product(123)))
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_PRODUCT_ADD,
-            mapOf(AnalyticsTracker.KEY_FLOW to tracksFlow),
+            mapOf(
+                AnalyticsTracker.KEY_FLOW to tracksFlow,
+                AnalyticsTracker.KEY_PRODUCT_COUNT to 1
+            ),
+        )
+    }
+
+    @Test
+    fun `when multiple products selected, send tracks event with correct property`() {
+        val selectedItems = setOf(
+            ProductSelectorViewModel.SelectedItem.Product(1),
+            ProductSelectorViewModel.SelectedItem.Product(2),
+            ProductSelectorViewModel.SelectedItem.Product(3),
+            ProductSelectorViewModel.SelectedItem.Product(4),
+        )
+        sut.onProductsSelected(selectedItems)
+        assertThat(selectedItems).hasSize(4)
+
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_PRODUCT_ADD,
+            mapOf(
+                AnalyticsTracker.KEY_FLOW to tracksFlow,
+                AnalyticsTracker.KEY_PRODUCT_COUNT to 4
+            ),
         )
     }
 
@@ -316,11 +344,21 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         )
     }
 
-    protected fun createOrderItem(withId: Long = 123) =
-        Order.Item.EMPTY.copy(
-            productId = withId,
-            itemId = (1L..1000000000L).random()
-        )
+    protected fun createOrderItem(withProductId: Long = 123, withVariationId: Long? = null) =
+        if (withVariationId != null) {
+            Order.Item.EMPTY.copy(
+                productId = withProductId,
+                itemId = (1L..1000000000L).random(),
+                variationId = withVariationId,
+                quantity = 1F,
+            )
+        } else {
+            Order.Item.EMPTY.copy(
+                productId = withProductId,
+                itemId = (1L..1000000000L).random(),
+                quantity = 1F,
+            )
+        }
 
     protected val orderStatusList = listOf(
         Order.OrderStatus("first key", "first status"),

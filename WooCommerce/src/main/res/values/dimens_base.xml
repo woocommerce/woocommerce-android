@@ -137,6 +137,7 @@ so that's the baseline as defined in `major_100`.
     <dimen name="prologue_logo_height">36dp</dimen>
     <dimen name="prologue_button_wide">300dp</dimen>
     <dimen name="support_request_message_height">400dp</dimen>
+    <dimen name="free_trial_summary_title_top_padding">140dp</dimen>
 
     <!-- More Menu dimens -->
     <dimen name="more_menu_button_height">190dp</dimen>

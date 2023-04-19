@@ -2,4 +2,5 @@
 <resources>
     <item type="id" name="stats_tab_layout" />
     <item type="id" name="more_menu_compose_view" />
+    <item type="id" name="product_selector_compose_view" />
 </resources>

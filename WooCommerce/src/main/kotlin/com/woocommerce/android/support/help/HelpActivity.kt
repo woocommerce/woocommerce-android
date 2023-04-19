@@ -23,13 +23,13 @@ import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.support.SSRActivity
 import com.woocommerce.android.support.SupportHelper
-import com.woocommerce.android.support.TicketType
 import com.woocommerce.android.support.WooLogViewerActivity
-import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.support.help.HelpViewModel.ContactSupportEvent
 import com.woocommerce.android.support.help.HelpViewModel.ContactSupportEvent.CreateTicket
 import com.woocommerce.android.support.help.HelpViewModel.ContactSupportEvent.ShowLoading
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
+import com.woocommerce.android.support.zendesk.TicketType
+import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
@@ -46,7 +46,7 @@ class HelpActivity : AppCompatActivity() {
     @Inject lateinit var accountRepository: AccountRepository
     @Inject lateinit var siteStore: SiteStore
     @Inject lateinit var supportHelper: SupportHelper
-    @Inject lateinit var zendeskHelper: ZendeskHelper
+    @Inject lateinit var zendeskSettings: ZendeskSettings
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var loginNotificationScheduler: LoginNotificationScheduler
 
@@ -163,11 +163,11 @@ class HelpActivity : AppCompatActivity() {
     ) {
         supportHelper.showSupportIdentityInputDialog(
             context = this,
-            email = zendeskHelper.supportEmail,
-            name = zendeskHelper.supportName
+            email = zendeskSettings.supportEmail,
+            name = zendeskSettings.supportName
         ) { email, name ->
-            zendeskHelper.supportEmail = email
-            zendeskHelper.supportName = name
+            zendeskSettings.supportEmail = email
+            zendeskSettings.supportName = name
             refreshContactInfo()
             AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
             if (createNewTicket) createNewZendeskTicket(ticketType, extraTags)
@@ -176,7 +176,7 @@ class HelpActivity : AppCompatActivity() {
     }
 
     private fun refreshContactInfo() {
-        binding.identityContainer.optionValue = zendeskHelper.supportEmail
+        binding.identityContainer.optionValue = zendeskSettings.supportEmail
             .takeIf { it.isNotNullOrEmpty() }
             ?: getString(R.string.support_contact_email_not_set)
     }

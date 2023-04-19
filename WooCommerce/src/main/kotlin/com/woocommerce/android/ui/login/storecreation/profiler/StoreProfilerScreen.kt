@@ -213,7 +213,7 @@ private fun SearchBar(
             .border(
                 BorderStroke(
                     width = dimensionResource(id = R.dimen.minor_10),
-                    color = colorResource(id = R.color.gray_5)
+                    color = colorResource(id = R.color.woo_gray_5)
                 ),
                 RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
             ),
@@ -292,7 +292,7 @@ fun CategoriesContentPreview() {
                     StoreProfilerOptionUi(
                         name = "Electronics and Software",
                         key = "",
-                        isSelected = false
+                        isSelected = true
                     ),
                     StoreProfilerOptionUi(
                         name = "Construction & Industrial",

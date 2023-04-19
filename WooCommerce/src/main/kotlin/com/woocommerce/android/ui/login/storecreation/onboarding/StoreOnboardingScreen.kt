@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -51,7 +52,12 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.compose.component.WcTag
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.AboutYourStoreTaskRes
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.Companion.NUMBER_ITEMS_IN_COLLAPSED_MODE
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.LaunchStoreTaskRes
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.OnboardingState
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.OnboardingTaskUi
 
 @Composable
@@ -66,7 +72,10 @@ fun StoreOnboardingScreen(viewModel: StoreOnboardingViewModel) {
                     .padding(padding)
                     .background(MaterialTheme.colors.surface)
                     .verticalScroll(rememberScrollState())
-                    .padding(dimensionResource(id = R.dimen.major_100))
+                    .padding(
+                        top = dimensionResource(id = R.dimen.major_100),
+                        bottom = dimensionResource(id = R.dimen.major_100)
+                    )
             ) {
                 OnboardingTaskProgressHeader(
                     titleStringRes = onboardingState.title,
@@ -74,6 +83,7 @@ fun StoreOnboardingScreen(viewModel: StoreOnboardingViewModel) {
                 )
                 OnboardingTaskList(
                     tasks = onboardingState.tasks,
+                    onTaskClicked = viewModel::onTaskClicked,
                     modifier = Modifier
                         .padding(top = dimensionResource(id = R.dimen.major_100))
                         .fillMaxWidth()
@@ -85,9 +95,10 @@ fun StoreOnboardingScreen(viewModel: StoreOnboardingViewModel) {
 
 @Composable
 fun StoreOnboardingCollapsed(
-    onboardingState: StoreOnboardingViewModel.OnboardingState,
+    onboardingState: OnboardingState,
     onViewAllClicked: () -> Unit,
     onShareFeedbackClicked: () -> Unit,
+    onTaskClicked: (OnboardingTaskUi) -> Unit,
     modifier: Modifier = Modifier,
     numberOfItemsToShowInCollapsedMode: Int = NUMBER_ITEMS_IN_COLLAPSED_MODE,
 ) {
@@ -96,9 +107,12 @@ fun StoreOnboardingCollapsed(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colors.surface)
-                .padding(dimensionResource(id = R.dimen.major_100))
         ) {
             Text(
+                modifier = Modifier.padding(
+                    top = dimensionResource(id = R.dimen.major_100),
+                    start = dimensionResource(id = R.dimen.major_100)
+                ),
                 text = stringResource(id = onboardingState.title),
                 style = MaterialTheme.typography.h6,
             )
@@ -106,7 +120,11 @@ fun StoreOnboardingCollapsed(
             OnboardingTaskCollapsedProgressHeader(
                 tasks = onboardingState.tasks,
                 modifier = Modifier
-                    .padding(top = dimensionResource(id = R.dimen.major_100))
+                    .padding(
+                        top = dimensionResource(id = R.dimen.major_100),
+                        start = dimensionResource(id = R.dimen.major_100),
+                        end = dimensionResource(id = R.dimen.major_100)
+                    )
                     .fillMaxWidth(0.5f)
             )
             val taskToDisplay = if (onboardingState.tasks.filter { !it.isCompleted }.size == 1)
@@ -114,17 +132,23 @@ fun StoreOnboardingCollapsed(
             else onboardingState.tasks.take(numberOfItemsToShowInCollapsedMode)
             OnboardingTaskList(
                 tasks = taskToDisplay,
+                onTaskClicked = onTaskClicked,
                 modifier = Modifier
                     .padding(top = dimensionResource(id = R.dimen.major_100))
                     .fillMaxWidth()
             )
-            Text(
-                modifier = Modifier.clickable { onViewAllClicked() },
-                text = stringResource(R.string.store_onboarding_task_view_all, onboardingState.tasks.size),
-                style = MaterialTheme.typography.subtitle1,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colors.primary,
-            )
+            if (onboardingState.tasks.size > NUMBER_ITEMS_IN_COLLAPSED_MODE || taskToDisplay.size == 1) {
+                WCTextButton(
+                    contentPadding = PaddingValues(dimensionResource(id = R.dimen.major_100)),
+                    onClick = onViewAllClicked
+                ) {
+                    Text(
+                        text = stringResource(R.string.store_onboarding_task_view_all, onboardingState.tasks.size),
+                        style = MaterialTheme.typography.subtitle1,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+            }
         }
         Box(
             modifier = Modifier
@@ -168,50 +192,72 @@ fun OverflowMenu(content: @Composable () -> Unit) {
 @Composable
 fun OnboardingTaskList(
     tasks: List<OnboardingTaskUi>,
+    onTaskClicked: (OnboardingTaskUi) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
         tasks.forEachIndexed { index, task ->
-            Row(
-                modifier = modifier.padding(bottom = dimensionResource(id = R.dimen.major_100)),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
-            ) {
-                Image(
-                    modifier = Modifier.fillMaxHeight(),
-                    painter = painterResource(
-                        id = if (task.isCompleted)
-                            R.drawable.ic_onboarding_task_completed
-                        else task.icon
-                    ),
-                    contentDescription = "",
-                    colorFilter =
-                    if (!task.isCompleted)
-                        ColorFilter.tint(color = colorResource(id = R.color.color_icon))
-                    else null
-                )
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = stringResource(id = task.title),
-                        style = MaterialTheme.typography.subtitle1,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        modifier = Modifier.padding(top = dimensionResource(id = R.dimen.minor_75)),
-                        text = stringResource(id = task.description),
-                        style = MaterialTheme.typography.body1,
-                    )
-                }
-                Image(
-                    painter = painterResource(R.drawable.ic_arrow_right),
-                    contentDescription = ""
-                )
-            }
+            TaskItem(task, onTaskClicked)
             if (index < tasks.size - 1)
                 Divider(
                     color = colorResource(id = R.color.divider_color),
                     thickness = dimensionResource(id = R.dimen.minor_10)
                 )
+        }
+    }
+}
+
+@Composable
+private fun TaskItem(
+    task: OnboardingTaskUi,
+    onTaskClicked: (OnboardingTaskUi) -> Unit
+) {
+    Row(
+        modifier = when {
+            !task.isCompleted -> Modifier.clickable { onTaskClicked(task) }
+            else -> Modifier
+        }.padding(dimensionResource(id = R.dimen.major_100)),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
+    ) {
+        Image(
+            modifier = Modifier.fillMaxHeight(),
+            painter = painterResource(
+                id = if (task.isCompleted)
+                    R.drawable.ic_onboarding_task_completed
+                else task.taskUiResources.icon
+            ),
+            contentDescription = "",
+            colorFilter =
+            if (!task.isCompleted)
+                ColorFilter.tint(color = colorResource(id = R.color.color_icon))
+            else null
+        )
+        Column(modifier = Modifier.weight(1f)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = stringResource(id = task.taskUiResources.title),
+                    style = MaterialTheme.typography.subtitle1,
+                    fontWeight = FontWeight.Bold
+                )
+                if (!task.isCompleted && task.taskUiResources is LaunchStoreTaskRes) {
+                    WcTag(
+                        text = stringResource(id = R.string.store_onboarding_launch_store_task_private_tag).uppercase(),
+                        modifier = Modifier.padding(start = dimensionResource(id = R.dimen.minor_100))
+                    )
+                }
+            }
+            Text(
+                modifier = Modifier.padding(top = dimensionResource(id = R.dimen.minor_75)),
+                text = stringResource(id = task.taskUiResources.description),
+                style = MaterialTheme.typography.body1,
+            )
+        }
+        if (!task.isCompleted) {
+            Image(
+                painter = painterResource(R.drawable.ic_arrow_right),
+                contentDescription = ""
+            )
         }
     }
 }
@@ -234,7 +280,6 @@ fun OnboardingTaskCollapsedProgressHeader(
             modifier = Modifier
                 .height(dimensionResource(id = R.dimen.minor_100))
                 .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))),
-            color = MaterialTheme.colors.primary,
             backgroundColor = colorResource(id = R.color.divider_color),
         )
         Text(
@@ -275,7 +320,6 @@ fun OnboardingTaskProgressHeader(
             modifier = Modifier
                 .height(dimensionResource(id = R.dimen.minor_100))
                 .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))),
-            color = MaterialTheme.colors.primary,
             backgroundColor = colorResource(id = R.color.divider_color),
         )
         Text(
@@ -300,31 +344,26 @@ fun OnboardingTaskProgressHeader(
 @Composable
 private fun OnboardingPreview() {
     StoreOnboardingCollapsed(
-        StoreOnboardingViewModel.OnboardingState(
+        OnboardingState(
             show = true,
             title = R.string.store_onboarding_title,
             tasks = listOf(
                 OnboardingTaskUi(
-                    icon = R.drawable.ic_product,
-                    title = R.string.store_onboarding_task_add_product_title,
-                    description = R.string.store_onboarding_task_add_product_description,
+                    taskUiResources = AboutYourStoreTaskRes,
                     isCompleted = false,
                 ),
                 OnboardingTaskUi(
-                    icon = R.drawable.ic_product,
-                    title = R.string.store_onboarding_task_launch_store_title,
-                    description = R.string.store_onboarding_task_launch_store_description,
+                    taskUiResources = AboutYourStoreTaskRes,
                     isCompleted = true,
                 ),
                 OnboardingTaskUi(
-                    icon = R.drawable.ic_product,
-                    title = R.string.store_onboarding_task_change_domain_title,
-                    description = R.string.store_onboarding_task_change_domain_description,
+                    taskUiResources = AboutYourStoreTaskRes,
                     isCompleted = false,
                 )
             )
         ),
         onViewAllClicked = {},
-        onShareFeedbackClicked = {}
+        onShareFeedbackClicked = {},
+        onTaskClicked = {}
     )
 }

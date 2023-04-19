@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.EditIn
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.EditIncludedProducts
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenCouponRestrictions
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow
 
 object EditCouponNavigator {
     fun navigate(fragment: Fragment, target: EditCouponNavigationTarget) {
@@ -30,7 +31,8 @@ object EditCouponNavigator {
             is EditIncludedProducts -> {
                 navController.navigateSafely(
                     EditCouponFragmentDirections.actionEditCouponFragmentToProductSelectorFragment(
-                        target.selectedItems.toTypedArray()
+                        target.selectedItems.toTypedArray(), target.restrictions.toTypedArray(),
+                        ProductSelectorFlow.CouponEdition
                     )
                 )
             }

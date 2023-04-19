@@ -25,12 +25,15 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewTapToPay
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewUrlInWebView
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -138,6 +141,8 @@ class MainActivityViewModelTest : BaseUnitTest() {
             )
         )
     )
+
+    private val resolveAppLink: ResolveAppLink = mock()
 
     @Before
     fun setup() {
@@ -401,6 +406,37 @@ class MainActivityViewModelTest : BaseUnitTest() {
             assertThat(viewModel.moreMenuBadgeState.value).isEqualTo(UnseenReviews(1))
         }
 
+    @Test
+    fun `given tap to pay url, when app opened, then trigger ViewTapToPay event`() {
+        testBlocking {
+            // GIVEN
+            whenever(resolveAppLink.invoke(any())).thenReturn(ResolveAppLink.Action.ViewTapToPay)
+            createViewModel()
+
+            // WHEN
+            viewModel.handleIncomingAppLink(mock())
+
+            // THEN
+            assertThat(viewModel.event.value).isInstanceOf(ViewTapToPay::class.java)
+        }
+    }
+
+    @Test
+    fun `given view url in web view, when app opened, then trigger ViewUrlInWebView event`() {
+        testBlocking {
+            // GIVEN
+            val url = "https://woocommerce.com"
+            whenever(resolveAppLink.invoke(any())).thenReturn(ResolveAppLink.Action.ViewUrlInWebView(url))
+            createViewModel()
+
+            // WHEN
+            viewModel.handleIncomingAppLink(mock())
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(ViewUrlInWebView(url))
+        }
+    }
+
     // region Shortcuts
     @Test
     fun `given payments shortcut, when app opened, then trigger ViewPayments event`() {
@@ -489,8 +525,11 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 buildConfigWrapper,
                 prefs,
                 analyticsTrackerWrapper,
-                mock(),
+                resolveAppLink,
                 unseenReviewsCountHandler,
+                mock {
+                    onBlocking { invoke(any()) } doReturn emptyFlow()
+                }
             )
         )
     }

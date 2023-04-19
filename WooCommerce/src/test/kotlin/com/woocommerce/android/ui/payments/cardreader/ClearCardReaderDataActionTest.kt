@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.payments.cardreader
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
@@ -14,8 +15,9 @@ import org.mockito.kotlin.whenever
 class ClearCardReaderDataActionTest : BaseUnitTest() {
     private val cardReaderManager: CardReaderManager = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
 
-    private val sut = ClearCardReaderDataAction(cardReaderManager, appPrefsWrapper)
+    private val sut = ClearCardReaderDataAction(cardReaderManager, appPrefsWrapper, cardReaderOnboardingChecker)
 
     @Test
     fun `given card reader is initialised, when clearing card reader data, cache is cleared`() =
@@ -58,5 +60,13 @@ class ClearCardReaderDataActionTest : BaseUnitTest() {
             sut.invoke()
 
             verify(appPrefsWrapper).removeLastConnectedCardReaderId()
+        }
+
+    @Test
+    fun `when clear card reader data, then invalidate onboarding cache`() =
+        testBlocking {
+            sut.invoke()
+
+            verify(cardReaderOnboardingChecker).invalidateCache()
         }
 }

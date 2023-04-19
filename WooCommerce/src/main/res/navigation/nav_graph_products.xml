@@ -20,6 +20,10 @@
             android:name="isTrashEnabled"
             android:defaultValue="false"
             app:argType="boolean" />
+        <argument
+            android:name="source"
+            android:defaultValue="PRODUCT_TAB"
+            app:argType="com.woocommerce.android.ui.products.AddProductSource" />
         <action
             android:id="@+id/action_productDetailFragment_to_variationListFragment"
             app:destination="@id/variationListFragment" />
@@ -37,7 +41,7 @@
             app:destination="@id/productReviewsFragment" />
         <action
             android:id="@+id/action_productDetailFragment_to_attributeListFragment"
-            app:destination="@id/attributeListFragment"/>
+            app:destination="@id/attributeListFragment" />
         <action
             android:id="@+id/action_productDetailFragment_to_productTypesBottomSheetFragment"
             app:destination="@id/productTypesBottomSheetFragment">
@@ -84,7 +88,20 @@
         </action>
         <action
             android:id="@+id/action_productDetailFragment_to_productAddonsFragment"
-            app:destination="@id/productAddonsFragment"/>
+            app:destination="@id/productAddonsFragment" />
+        <action
+            android:id="@+id/action_productDetailFragment_to_productSubscriptionFragment"
+            app:destination="@id/productSubscriptionFragment">
+        </action>
+        <action
+            android:id="@+id/action_productDetailFragment_to_productQuantityRulesFragment"
+            app:destination="@id/productQuantityRulesFragment" />
+        <action
+            android:id="@+id/action_productDetailFragment_to_productBundleFragment"
+            app:destination="@id/productBundleFragment" />
+        <action
+            android:id="@+id/action_productDetailFragment_to_compositeProductFragment"
+            app:destination="@id/compositeProductFragment" />
     </fragment>
     <fragment
         android:id="@+id/variationListFragment"
@@ -109,11 +126,15 @@
         </action>
         <action
             android:id="@+id/action_variationListFragment_to_variationsBulkUpdateAttrPickerFragment"
-            app:destination="@id/variationsBulkUpdateAttrPickerFragment" >
+            app:destination="@id/variationsBulkUpdateAttrPickerFragment">
             <argument
                 android:name="variationsToUpdate"
                 app:argType="com.woocommerce.android.model.ProductVariation[]" />
         </action>
+        <argument
+            android:name="isReadOnlyMode"
+            app:argType="boolean"
+            android:defaultValue="false" />
 
     </fragment>
     <dialog
@@ -413,14 +434,16 @@
         <argument
             android:name="currentProductType"
             android:defaultValue="null"
-            app:nullable="true"
             app:argType="string"
-            />
+            app:nullable="true" />
         <argument
             android:name="isCurrentProductVirtual"
             android:defaultValue="false"
-            app:argType="boolean"
-            />
+            app:argType="boolean" />
+        <argument
+            android:name="source"
+            android:defaultValue="PRODUCT_TAB"
+            app:argType="com.woocommerce.android.ui.products.AddProductSource" />
     </dialog>
     <fragment
         android:id="@+id/productReviewsFragment"
@@ -558,6 +581,12 @@
                 app:argType="integer" />
         </action>
         <deepLink app:uri="wcandroid://variationDetail?remoteProductId={remoteProductId}&amp;remoteVariationId={remoteVariationId}" />
+        <action
+            android:id="@+id/action_variationDetailFragment_to_productSubscriptionFragment"
+            app:destination="@id/productSubscriptionFragment" />
+        <action
+            android:id="@+id/action_variationDetailFragment_to_productQuantityRulesFragment"
+            app:destination="@id/productQuantityRulesFragment" />
     </fragment>
     <fragment
         android:id="@+id/productAddonsFragment"
@@ -607,4 +636,52 @@
         android:id="@+id/action_global_addVariationAttributeTermsFragment"
         app:destination="@id/addAttributeTermsFragment" />
     <include app:graph="@navigation/nav_graph_image_gallery" />
+    <fragment
+        android:id="@+id/productSubscriptionFragment"
+        android:name="com.woocommerce.android.ui.products.ProductSubscriptionFragment"
+        android:label="ProductSubscriptionFragment" >
+        <argument
+            android:name="subscription"
+            app:argType="com.woocommerce.android.model.SubscriptionDetails" />
+        <argument
+            android:name="saleDetails"
+            app:argType="com.woocommerce.android.ui.products.SaleDetails"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
+    <fragment
+        android:id="@+id/productQuantityRulesFragment"
+        android:name="com.woocommerce.android.ui.products.ProductQuantityRulesFragment"
+        android:label="ProductQuantityRulesFragment" >
+        <argument
+            android:name="quantityRules"
+            app:argType="com.woocommerce.android.ui.products.models.QuantityRules" />
+    </fragment>
+    <fragment
+        android:id="@+id/productBundleFragment"
+        android:name="com.woocommerce.android.ui.products.ProductBundleFragment"
+        android:label="ProductBundleFragment" >
+        <argument
+            android:name="productId"
+            app:argType="long" />
+    </fragment>
+    <fragment
+        android:id="@+id/compositeProductFragment"
+        android:name="com.woocommerce.android.ui.products.components.ComponentListFragment"
+        android:label="CompositeProductFragment" >
+        <argument
+            android:name="components"
+            app:argType="com.woocommerce.android.model.Component[]" />
+        <action
+            android:id="@+id/action_compositeProductFragment_to_componentDetailsFragment"
+            app:destination="@id/componentDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/componentDetailsFragment"
+        android:name="com.woocommerce.android.ui.products.components.ComponentDetailsFragment"
+        android:label="ComponentDetailsFragment" >
+        <argument
+            android:name="component"
+            app:argType="com.woocommerce.android.model.Component" />
+    </fragment>
 </navigation>

@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.util.EmojiUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,19 +25,17 @@ class CountryPickerViewModel @Inject constructor(
     analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val newStore: NewStore,
     private val localCountriesRepository: LocalCountriesRepository,
-    private val emojiUtils: EmojiUtils,
+    private val emojiUtils: EmojiUtils
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val DEFAULT_LOCATION_CODE = "US"
     }
 
     private val availableCountries = MutableStateFlow(emptyList<StoreCreationCountry>())
-    val countryPickerState = availableCountries.map { countries ->
-        CountryPickerState(
-            storeName = newStore.data.name ?: "",
-            countries = countries
-        )
-    }.asLiveData()
+
+    val countryPickerState = availableCountries
+        .map { CountryPickerState(newStore.data.name.orEmpty(), it) }
+        .asLiveData()
 
     init {
         analyticsTrackerWrapper.track(
@@ -62,7 +61,10 @@ class CountryPickerViewModel @Inject constructor(
                     )
                 }
             }
-            newStore.update(country = availableCountries.value.first { it.isSelected }.toNewStoreCountry())
+            newStore.update(
+                country = availableCountries.value.first { it.isSelected }
+                    .toNewStoreCountry()
+            )
         }
     }
 
@@ -75,7 +77,13 @@ class CountryPickerViewModel @Inject constructor(
     }
 
     fun onContinueClicked() {
-        triggerEvent(NavigateToDomainPickerStep)
+        launch {
+            if (FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
+                triggerEvent(NavigateToSummaryStep)
+            } else {
+                triggerEvent(NavigateToDomainPickerStep)
+            }
+        }
     }
 
     fun onCountrySelected(country: StoreCreationCountry) {
@@ -97,6 +105,7 @@ class CountryPickerViewModel @Inject constructor(
         )
 
     object NavigateToDomainPickerStep : MultiLiveEvent.Event()
+    object NavigateToSummaryStep : MultiLiveEvent.Event()
 
     data class CountryPickerState(
         val storeName: String,

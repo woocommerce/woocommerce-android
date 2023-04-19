@@ -13,6 +13,7 @@ import com.woocommerce.android.extensions.getMediumDate
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.show
+import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailRefundsAdapter
@@ -94,7 +95,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         } else {
             binding.paymentInfoDiscountSection.show()
             binding.paymentInfoDiscountTotal.text = context.getString(
-                R.string.orderdetail_customer_note,
+                R.string.negative_currency,
                 formatCurrencyForDisplay(order.discountTotal)
             )
             binding.paymentInfoDiscountItems.text = context.getString(
@@ -102,6 +103,23 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
                 order.discountCodes
             )
         }
+    }
+
+    fun updateGiftCardSection(
+        giftCardSummaries: List<GiftCardSummary>,
+        formatCurrencyForDisplay: (BigDecimal) -> String
+    ) {
+        binding.paymentInfoGiftCardSection.isVisible = giftCardSummaries.isEmpty().not()
+        val giftCardCodes = giftCardSummaries.joinToString(",\n") { it.code }
+        binding.paymentInfoGiftCardItems.text = context.getString(
+            R.string.orderdetail_discount_items,
+            giftCardCodes
+        )
+        val giftCardTotal = giftCardSummaries.sumOf { summary -> summary.used }
+        binding.paymentInfoGiftCardTotal.text = context.getString(
+            R.string.negative_currency,
+            formatCurrencyForDisplay(giftCardTotal)
+        )
     }
 
     private fun updateFeesSection(

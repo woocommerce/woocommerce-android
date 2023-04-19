@@ -3,12 +3,14 @@ package com.woocommerce.android.ui.payments.cardreader.hub
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.HeaderItem
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.NonToggleableListItem
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.ToggleableListItem
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.GapBetweenSections
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.HeaderItem
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.LearnMoreListItem
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.NonToggleableListItem
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.ToggleableListItem
 
 class CardReaderHubAdapter :
-    ListAdapter<CardReaderHubViewModel.CardReaderHubViewState.ListItem, CardReaderHubViewHolder>(ListItemDiffCallback) {
+    ListAdapter<CardReaderHubViewState.ListItem, CardReaderHubViewHolder>(ListItemDiffCallback) {
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
@@ -20,6 +22,12 @@ class CardReaderHubAdapter :
             }
             is HeaderItem -> {
                 VIEW_TYPE_HEADER
+            }
+            is GapBetweenSections -> {
+                VIEW_TYPE_GAP_BETWEEN_SECTIONS
+            }
+            is LearnMoreListItem -> {
+                VIEW_TYPE_LEARN_MORE
             }
         }
     }
@@ -35,6 +43,12 @@ class CardReaderHubAdapter :
             VIEW_TYPE_HEADER -> {
                 CardReaderHubViewHolder.HeaderViewHolder(parent)
             }
+            VIEW_TYPE_GAP_BETWEEN_SECTIONS -> {
+                CardReaderHubViewHolder.GapBetweenSectionsViewHolder(parent)
+            }
+            VIEW_TYPE_LEARN_MORE -> {
+                CardReaderHubViewHolder.LearnMoreViewHolder(parent)
+            }
             else -> error("Unknown section")
         }
     }
@@ -43,39 +57,32 @@ class CardReaderHubAdapter :
         holder.onBind(getItem(position))
     }
 
-    fun setItems(rows: List<CardReaderHubViewModel.CardReaderHubViewState.ListItem>) {
+    fun setItems(rows: List<CardReaderHubViewState.ListItem>) {
         submitList(rows)
     }
 
     @Suppress("ReturnCount")
-    object ListItemDiffCallback : DiffUtil.ItemCallback<CardReaderHubViewModel.CardReaderHubViewState.ListItem>() {
+    object ListItemDiffCallback : DiffUtil.ItemCallback<CardReaderHubViewState.ListItem>() {
         override fun areItemsTheSame(
-            oldItem: CardReaderHubViewModel.CardReaderHubViewState.ListItem,
-            newItem: CardReaderHubViewModel.CardReaderHubViewState.ListItem
-        ): Boolean {
-            if (oldItem is HeaderItem && newItem is HeaderItem) {
-                return oldItem.label == newItem.label
-            }
-            if (oldItem is ToggleableListItem && newItem is ToggleableListItem) {
-                return oldItem.label == newItem.label
-            }
-            if (oldItem is NonToggleableListItem && newItem is NonToggleableListItem) {
-                return (oldItem.label == newItem.label && oldItem.isEnabled == newItem.isEnabled)
-            }
-            return false
+            oldItem: CardReaderHubViewState.ListItem,
+            newItem: CardReaderHubViewState.ListItem
+        ) = if (oldItem::class.java == newItem::class.java) {
+            oldItem.label == newItem.label
+        } else {
+            false
         }
 
         override fun areContentsTheSame(
-            oldItem: CardReaderHubViewModel.CardReaderHubViewState.ListItem,
-            newItem: CardReaderHubViewModel.CardReaderHubViewState.ListItem
-        ): Boolean {
-            return oldItem == newItem && (oldItem.isEnabled == newItem.isEnabled)
-        }
+            oldItem: CardReaderHubViewState.ListItem,
+            newItem: CardReaderHubViewState.ListItem
+        ) = oldItem == newItem
     }
 
     companion object {
+        const val VIEW_TYPE_HEADER = 0
         const val VIEW_TYPE_TOGGELABLE = 1
         const val VIEW_TYPE_NON_TOGGELABLE = 2
-        const val VIEW_TYPE_HEADER = 0
+        const val VIEW_TYPE_GAP_BETWEEN_SECTIONS = 3
+        const val VIEW_TYPE_LEARN_MORE = 4
     }
 }

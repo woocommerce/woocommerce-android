@@ -23,6 +23,12 @@ class MocksReader {
         return readFileToArray("mocks/mappings/jetpack-blogs/wc/reviews/products_reviews_all.json")
     }
 
+    fun readStatsTopPerformersToArray(): JSONArray {
+        return readFileToArray("mocks/mappings/jetpack-blogs/wc-analytics/reports_leaderboards-custom.json")
+            .getJSONObject(3)
+            .getJSONArray("rows")
+    }
+
     fun readAllProductsToArray(): JSONArray {
         return readFileToArray("mocks/mappings/jetpack-blogs/wc/products/products.json")
     }

@@ -46,7 +46,7 @@ class OrderDetailRepository @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val dispatchers: CoroutineDispatchers,
     private val orderMapper: OrderMapper,
-    private val shippingLabelMapper: ShippingLabelMapper,
+    private val shippingLabelMapper: ShippingLabelMapper
 ) {
     suspend fun fetchOrderById(orderId: Long): Order? {
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
@@ -238,7 +238,9 @@ class OrderDetailRepository @Inject constructor(
         val plugins = listOf(
             WooCommerceStore.WooPlugin.WOO_CORE,
             WooCommerceStore.WooPlugin.WOO_SERVICES,
-            WooCommerceStore.WooPlugin.WOO_SHIPMENT_TRACKING
+            WooCommerceStore.WooPlugin.WOO_SHIPMENT_TRACKING,
+            WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS,
+            WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
         )
 
         val result = HashMap<String, WooPlugin>()
@@ -298,9 +300,9 @@ class OrderDetailRepository @Inject constructor(
         )?.isEligible ?: false
     }
 
-    suspend fun orderHasMetadata(orderId: Long) = orderStore.hasOrderMetadata(orderId, selectedSite.get())
+    suspend fun orderHasMetadata(orderId: Long) = orderStore.hasDisplayableOrderMetadata(orderId, selectedSite.get())
 
-    suspend fun getOrderMetadata(orderId: Long) = orderStore.getOrderMetadata(orderId, selectedSite.get())
+    suspend fun getOrderMetadata(orderId: Long) = orderStore.getDisplayableOrderMetadata(orderId, selectedSite.get())
 
     companion object {
         const val PRODUCT_SUBSCRIPTION_TYPE = "subscription"

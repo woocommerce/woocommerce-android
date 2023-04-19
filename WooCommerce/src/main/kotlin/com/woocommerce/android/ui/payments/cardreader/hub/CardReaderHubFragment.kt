@@ -6,9 +6,9 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isInvisible
+import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.Slide
 import androidx.transition.TransitionManager
@@ -19,7 +19,9 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentCardReaderHubBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.NavigateToTapTooPaySummaryScreen
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.NavigateToTapTooPaySurveyScreen
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -46,12 +48,10 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
 
     private fun initViews(binding: FragmentCardReaderHubBinding) {
         binding.cardReaderHubRv.layoutManager = LinearLayoutManager(requireContext())
-        binding.cardReaderHubRv.addItemDecoration(
-            DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-        )
         binding.cardReaderHubRv.adapter = CardReaderHubAdapter()
     }
 
+    @Suppress("LongMethod")
     private fun observeEvents() {
         viewModel.event.observe(
             viewLifecycleOwner
@@ -83,7 +83,7 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                     findNavController().navigate(
                         CardReaderHubFragmentDirections.actionCardReaderHubFragmentToCardReaderOnboardingFragment(
                             CardReaderOnboardingParams.Failed(
-                                cardReaderFlowParam = CardReaderFlowParam.CardReadersHub,
+                                cardReaderFlowParam = CardReaderFlowParam.CardReadersHub(),
                                 onboardingState = event.onboardingState
                             ),
                             cardReaderType = null
@@ -101,10 +101,19 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                 is CardReaderHubViewModel.CardReaderHubEvents.ShowToastString -> {
                     ToastUtils.showToast(context, event.message)
                 }
+                is CardReaderHubViewModel.CardReaderHubEvents.ShowToast -> {
+                    ToastUtils.showToast(context, getString(event.message))
+                }
                 is NavigateToTapTooPaySummaryScreen -> {
                     findNavController().navigate(
                         CardReaderHubFragmentDirections.actionCardReaderHubFragmentToTapToPaySummaryFragment()
                     )
+                }
+                is NavigateToTapTooPaySurveyScreen -> {
+                    NavGraphMainDirections.actionGlobalFeedbackSurveyFragment(SurveyType.PAYMENTS_HUB_TAP_TO_PAY)
+                        .apply {
+                            findNavController().navigateSafely(this)
+                        }
                 }
                 else -> event.isHandled = false
             }
@@ -113,7 +122,15 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
 
     private fun observeViewState(binding: FragmentCardReaderHubBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { state ->
-            (binding.cardReaderHubRv.adapter as CardReaderHubAdapter).setItems(state.rows)
+            with(binding.cardReaderHubRv) {
+                (adapter as CardReaderHubAdapter).setItems(state.rows)
+                updatePadding(
+                    bottom = resources.getDimensionPixelSize(
+                        if (state.onboardingErrorAction?.text != null) R.dimen.major_400
+                        else R.dimen.major_100
+                    )
+                )
+            }
             binding.cardReaderHubLoading.isInvisible = !state.isLoading
             with(binding.cardReaderHubOnboardingFailedTv) {
                 movementMethod = LinkMovementMethod.getInstance()
@@ -123,10 +140,6 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                     setOnClickListener { onboardingErrorAction.onClick() }
                 }
                 UiHelpers.setTextOrHide(this, onboardingErrorAction?.text)
-            }
-            with(binding.learnMoreIppTv) {
-                learnMore.setOnClickListener { state.learnMoreIppState?.onClick?.invoke() }
-                UiHelpers.setTextOrHide(binding.learnMoreIppTv.learnMore, state.learnMoreIppState?.label)
             }
         }
     }

@@ -19,6 +19,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.transition.MaterialElevationScale
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.FeedbackPrefs.userFeedbackIsDue
 import com.woocommerce.android.NavGraphMainDirections
@@ -40,19 +41,17 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
+import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingCollapsed
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OnJitmCtaClicked
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenAnalytics
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.OrderState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.VisitorStatsViewState
-import com.woocommerce.android.ui.payments.banner.Banner
-import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -79,6 +78,9 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         fun newInstance() = MyStoreFragment()
 
         val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
+
+        private const val JITM_MESSAGE_PATH = "woomobile:my_store:admin_notices"
+        private const val JITM_FRAGMENT_TAG = "jitm_fragment"
     }
 
     private val myStoreViewModel: MyStoreViewModel by viewModels()
@@ -89,6 +91,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var dateUtils: DateUtils
     @Inject lateinit var usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter
+    @Inject lateinit var appPrefsWrapper: AppPrefsWrapper
 
     private var _binding: FragmentMyStoreBinding? = null
     private val binding get() = _binding!!
@@ -128,6 +131,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         lifecycle.addObserver(myStoreViewModel.performanceObserver)
+        lifecycle.addObserver(storeOnboardingViewModel)
         super.onCreate(savedInstanceState)
     }
 
@@ -138,9 +142,11 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
         binding.myStoreRefreshLayout.setOnRefreshListener {
             binding.myStoreRefreshLayout.isRefreshing = false
-            myStoreViewModel.onSwipeToRefresh()
+            myStoreViewModel.onPullToRefresh()
+            storeOnboardingViewModel.onPullToRefresh()
             binding.myStoreStats.clearStatsHeaderValues()
             binding.myStoreStats.clearChartData()
+            refreshJitm()
         }
 
         // Create tabs and add to appbar
@@ -180,23 +186,8 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
         setupStateObservers()
         setupOnboardingView()
-    }
 
-    private fun applyBannerComposeUI(state: BannerState) {
-        if (state is BannerState.DisplayBannerState) {
-            binding.jitmView.apply {
-                binding.jitmView.show()
-                // Dispose of the Composition when the view's LifecycleOwner is destroyed
-                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-                setContent {
-                    WooThemeWithBackground {
-                        Banner(bannerState = state)
-                    }
-                }
-            }
-        } else {
-            binding.jitmView.hide()
-        }
+        initJitm(savedInstanceState)
     }
 
     private fun setupOnboardingView() {
@@ -205,7 +196,8 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                 false -> binding.storeOnboardingView.hide()
                 else -> {
                     binding.storeOnboardingView.apply {
-                        binding.storeOnboardingView.show()
+                        show()
+                        AnalyticsTracker.track(stat = AnalyticsEvent.STORE_ONBOARDING_SHOWN)
                         // Dispose of the Composition when the view's LifecycleOwner is destroyed
                         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                         setContent {
@@ -213,7 +205,8 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                                 StoreOnboardingCollapsed(
                                     onboardingState = state,
                                     onViewAllClicked = storeOnboardingViewModel::viewAllClicked,
-                                    onShareFeedbackClicked = storeOnboardingViewModel::onShareFeedbackClicked
+                                    onShareFeedbackClicked = storeOnboardingViewModel::onShareFeedbackClicked,
+                                    onTaskClicked = storeOnboardingViewModel::onTaskClicked
                                 )
                             }
                         }
@@ -229,6 +222,26 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                     NavGraphMainDirections.actionGlobalFeedbackSurveyFragment(SurveyType.STORE_ONBOARDING).apply {
                         findNavController().navigateSafely(this)
                     }
+                is StoreOnboardingViewModel.NavigateToLaunchStore ->
+                    findNavController().navigateSafely(
+                        directions = MyStoreFragmentDirections.actionMyStoreToLaunchStoreFragment()
+                    )
+                is StoreOnboardingViewModel.NavigateToDomains ->
+                    findNavController().navigateSafely(
+                        directions = MyStoreFragmentDirections.actionMyStoreToNavGraphDomainChange()
+                    )
+                is StoreOnboardingViewModel.NavigateToAddProduct ->
+                    findNavController().navigateSafely(
+                        directions = MyStoreFragmentDirections.actionMyStoreToProductTypesBottomSheet()
+                    )
+                is StoreOnboardingViewModel.NavigateToSetupPayments ->
+                    findNavController().navigateSafely(
+                        directions = MyStoreFragmentDirections.actionMyStoreToGetPaidFragment()
+                    )
+                is StoreOnboardingViewModel.NavigateToAboutYourStore ->
+                    findNavController().navigateSafely(
+                        MyStoreFragmentDirections.actionMyStoreToAboutYourStoreFragment()
+                    )
             }
         }
     }
@@ -290,9 +303,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                 OrderState.AtLeastOne -> showEmptyView(false)
             }
         }
-        myStoreViewModel.bannerState.observe(viewLifecycleOwner) { bannerState ->
-            applyBannerComposeUI(bannerState)
-        }
         myStoreViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is OpenTopPerformer -> findNavController().navigateSafely(
@@ -303,14 +313,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                 )
                 is OpenAnalytics -> {
                     mainNavigationRouter?.showAnalytics(event.analyticsPeriod)
-                }
-                is OnJitmCtaClicked -> {
-                    findNavController().navigate(
-                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                            urlToLoad = event.url,
-                            title = resources.getString(event.titleRes)
-                        )
-                    )
                 }
                 else -> event.isHandled = false
             }
@@ -342,12 +344,14 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
     @Suppress("ForbiddenComment")
     private fun prepareJetpackBenefitsBanner() {
+        appPrefsWrapper.setJetpackInstallationIsFromBanner(false)
         binding.jetpackBenefitsBanner.root.isVisible = false
         binding.jetpackBenefitsBanner.root.setOnClickListener {
             AnalyticsTracker.track(
                 stat = AnalyticsEvent.FEATURE_JETPACK_BENEFITS_BANNER,
                 properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "tapped")
             )
+            appPrefsWrapper.setJetpackInstallationIsFromBanner(true)
             findNavController().navigateSafely(MyStoreFragmentDirections.actionMyStoreToJetpackBenefitsDialog())
         }
         val appBarLayout = appBarLayout ?: return
@@ -395,6 +399,11 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         _tabLayout = null
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onDestroy() {
+        lifecycle.removeObserver(storeOnboardingViewModel)
+        super.onDestroy()
     }
 
     private fun showStats(revenueStatsModel: RevenueStatsUiModel?) {
@@ -448,6 +457,21 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         if (errorSnackbar?.isShownOrQueued == false || NetworkUtils.isNetworkAvailable(context)) {
             errorSnackbar = uiMessageResolver.getSnack(R.string.dashboard_stats_error)
             errorSnackbar?.show()
+        }
+    }
+
+    private fun initJitm(savedInstanceState: Bundle?) {
+        // Show banners only if onboarding list is not displayed
+        if (!binding.storeOnboardingView.isVisible && savedInstanceState == null) {
+            childFragmentManager.beginTransaction()
+                .replace(R.id.jitmFragment, JitmFragment.newInstance(JITM_MESSAGE_PATH), JITM_FRAGMENT_TAG)
+                .commit()
+        }
+    }
+
+    private fun refreshJitm() {
+        childFragmentManager.findFragmentByTag(JITM_FRAGMENT_TAG)?.let {
+            (it as JitmFragment).refreshJitms()
         }
     }
 

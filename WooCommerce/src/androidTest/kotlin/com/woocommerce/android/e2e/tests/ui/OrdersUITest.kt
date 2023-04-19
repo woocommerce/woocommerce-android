@@ -2,6 +2,7 @@
 
 package com.woocommerce.android.e2e.tests.ui
 
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.rule.ActivityTestRule
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.e2e.helpers.InitializationRule
@@ -26,9 +27,12 @@ class OrdersUITest : TestBase() {
     val rule = HiltAndroidRule(this)
 
     @get:Rule(order = 1)
-    val initRule = InitializationRule()
+    val composeTestRule = createComposeRule()
 
     @get:Rule(order = 2)
+    val initRule = InitializationRule()
+
+    @get:Rule(order = 3)
     var activityRule = ActivityTestRule(LoginActivity::class.java)
 
     @Before
@@ -45,7 +49,6 @@ class OrdersUITest : TestBase() {
 
     @Test
     fun e2eCreateOrderTest() {
-        val firstName = "Mira"
         val note = "Customer notes 123~"
         val status = "Processing"
         val ordersJSONArray = MocksReader().readOrderToArray()
@@ -53,15 +56,15 @@ class OrdersUITest : TestBase() {
         for (orderJSON in ordersJSONArray.iterator()) {
             val orderData = mapJSONToOrder(orderJSON)
 
+            // Note: we're not entering customer name due to
+            // https://github.com/woocommerce/woocommerce-android/issues/8724
             OrderListScreen()
                 .createFABTap()
                 .assertNewOrderScreen()
                 .updateOrderStatus(status)
                 .addProductTap()
-                .assertOrderSelectProductScreen()
-                .selectProduct(orderData.productName)
-                .clickAddCustomerDetails()
-                .addCustomerDetails(firstName)
+                .assertProductsSelectorScreen(composeTestRule)
+                .selectProduct(composeTestRule, orderData.productName)
                 .addCustomerNotes(note)
                 .addShipping()
                 .addFee()
@@ -73,7 +76,7 @@ class OrdersUITest : TestBase() {
 
     private fun mapJSONToOrder(orderJSON: JSONObject): OrderData {
         return OrderData(
-            customer = orderJSON.getJSONObject("billing").getString("first_name"),
+            customerName = orderJSON.getJSONObject("billing").getString("first_name"),
             customerNoteRaw = orderJSON.getString("customer_note"),
             feeRaw = orderJSON.getJSONArray("fee_lines").getJSONObject(0).getString("total"),
             id = orderJSON.getInt("id"),

@@ -33,7 +33,7 @@ allprojects {
             jvmTarget = JavaVersion.VERSION_1_8
             allWarningsAsErrors = true
             freeCompilerArgs += [
-                    "-Xopt-in=kotlin.RequiresOptIn",
+                    "-opt-in=kotlin.RequiresOptIn",
                     "-Xjvm-default=all-compatibility",
             ]
         }
@@ -99,7 +99,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = '2.18.0'
+    fluxCVersion = '2.25.0'
     glideVersion = '4.13.2'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
@@ -135,7 +135,7 @@ ext {
 
     // Testing
     jUnitVersion = '4.13.2'
-    jUnitExtVersion = '1.1.3'
+    jUnitExtVersion = '1.1.5'
     androidxTestCoreVersion = '1.4.0'
     assertjVersion = '3.24.1'
     espressoVersion = '3.4.0'

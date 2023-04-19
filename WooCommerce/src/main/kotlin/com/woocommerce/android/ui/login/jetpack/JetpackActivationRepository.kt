@@ -121,10 +121,10 @@ class JetpackActivationRepository @Inject constructor(
         siteStore.getSitesByNameOrUrlMatching(baseUrl).forEach {
             if (it.origin != SiteModel.ORIGIN_WPCOM_REST) {
                 dispatcher.dispatch(SiteActionBuilder.newRemoveSiteAction(it))
+            } else {
+                selectedSite.set(it)
             }
         }
-
-        selectedSite.set(jetpackSite)
     }
 
     @Suppress("ReturnCount", "MagicNumber")
