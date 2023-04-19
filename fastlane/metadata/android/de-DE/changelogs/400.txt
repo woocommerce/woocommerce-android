@@ -1,2 +1,0 @@
-13.0:
-Es gibt tolle Neuigkeiten für Benutzer der WooCommerce Subscriptions-Erweiterung. Wir haben auf den Bildschirmen mit den Bestell- und Produktdetails Support mit Lesezugriff für die WooCommerce Subsciptions-Erweiterung hinzugefügt. Weitere Funktionen sind demnächst verfügbar!

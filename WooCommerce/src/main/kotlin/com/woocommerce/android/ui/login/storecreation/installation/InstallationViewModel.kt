@@ -1,10 +1,12 @@
 package com.woocommerce.android.ui.login.storecreation.installation
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -17,8 +19,7 @@ import com.woocommerce.android.ui.login.storecreation.StoreCreationResult
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Failure
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Success
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.InitialState
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.LoadingState
+import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.StoreCreationLoadingState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.SuccessState
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -42,12 +43,13 @@ class InstallationViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val selectedSite: SelectedSite,
+    private val storeCreationLoadingTimer: StoreCreationLoadingTimer,
     private val installationTransactionLauncher: InstallationTransactionLauncher,
 ) : ScopedViewModel(savedStateHandle) {
-    companion object {
-        private const val STORE_LOAD_RETRIES_LIMIT = 10
-        private const val INITIAL_STORE_CREATION_DELAY = 40000L
-        private const val SITE_CHECK_DEBOUNCE = 5000L
+    private companion object {
+        const val STORE_LOAD_RETRIES_LIMIT = 10
+        const val INITIAL_STORE_CREATION_DELAY = 40000L
+        const val SITE_CHECK_DEBOUNCE = 5000L
     }
 
     private val newStoreUrl
@@ -56,12 +58,18 @@ class InstallationViewModel @Inject constructor(
     private val newStoreWpAdminUrl
         get() = newStoreUrl.slashJoin("wp-admin/")
 
-    private val _viewState = savedState.getStateFlow<ViewState>(this, InitialState)
+    private val _viewState = savedState.getStateFlow<ViewState>(
+        this,
+        StoreCreationLoadingState(
+            progress = 0F,
+            title = string.store_creation_in_progress_title_1,
+            description = string.store_creation_in_progress_description_1
+        )
+    )
+
     val viewState = _viewState
         .onEach {
-            if (it is InitialState) {
-                loadNewStore()
-            } else if (it is SuccessState && FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
+            if (it is SuccessState && FeatureFlag.FREE_TRIAL_M2.isEnabled()) {
                 triggerEvent(NavigateToNewStore)
             }
         }.asLiveData()
@@ -75,6 +83,14 @@ class InstallationViewModel @Inject constructor(
                 AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_INSTALLATION
             )
         )
+        launch {
+            storeCreationLoadingTimer.observe()
+                .collect {
+                    _viewState.value = it
+                }
+        }
+        storeCreationLoadingTimer.startTimer()
+        loadNewStore()
     }
 
     private fun loadNewStore() {
@@ -95,7 +111,6 @@ class InstallationViewModel @Inject constructor(
                         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_PROPERTIES_OUT_OF_SYNC)
                     }
                 }
-
                 _viewState.update { SuccessState(newStoreWpAdminUrl) }
             } else {
                 installationTransactionLauncher.onStoreInstallationFailed()
@@ -113,12 +128,10 @@ class InstallationViewModel @Inject constructor(
                 newStore.clear()
             }
         }
-
         launch {
             installationTransactionLauncher.onStoreInstallationRequested()
-            _viewState.update { LoadingState }
 
-            // it takes a while (~45s) before a store is ready after a purchase, so we need to wait a bit
+            // takes around (~45s) for the atomic site migration, this delay is to avoid unnecessary requests
             delay(INITIAL_STORE_CREATION_DELAY)
 
             // keep fetching the user's sites until the new site is properly configured or the retry limit is reached
@@ -131,13 +144,24 @@ class InstallationViewModel @Inject constructor(
                     if (retries == STORE_LOAD_RETRIES_LIMIT) {
                         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_TIMED_OUT)
                     }
+                    onLoadingFinished()
                     processStoreCreationResult(result)
                     break
                 }
-
                 delay(SITE_CHECK_DEBOUNCE)
             }
         }
+    }
+
+    private fun onLoadingFinished() {
+        _viewState.update {
+            StoreCreationLoadingState(
+                progress = 1F,
+                title = string.store_creation_in_progress_title_5,
+                description = string.store_creation_in_progress_description_5
+            )
+        }
+        storeCreationLoadingTimer.cancelTimer()
     }
 
     fun onUrlLoaded(url: String) {
@@ -168,10 +192,11 @@ class InstallationViewModel @Inject constructor(
 
     sealed interface ViewState : Parcelable {
         @Parcelize
-        object InitialState : ViewState
-
-        @Parcelize
-        object LoadingState : ViewState
+        data class StoreCreationLoadingState(
+            val progress: Float,
+            @StringRes val title: Int,
+            @StringRes val description: Int
+        ) : ViewState
 
         @Parcelize
         data class ErrorState(val errorType: StoreCreationErrorType, val message: String? = null) : ViewState

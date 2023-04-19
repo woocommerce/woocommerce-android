@@ -6,16 +6,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.show
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.jitm.JitmViewModel.Companion.JITM_MESSAGE_PATH_KEY
 import com.woocommerce.android.ui.payments.banner.Banner
-import com.woocommerce.android.ui.payments.banner.BannerState
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -26,8 +27,18 @@ class JitmFragment : Fragment() {
         ComposeView(requireContext())
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        viewModel.jitmState.observe(viewLifecycleOwner) { bannerState ->
-            applyBannerComposeUI(bannerState)
+        view as ComposeView
+        view.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+        viewModel.jitmState.observe(viewLifecycleOwner) { state ->
+            view.setContent {
+                WooThemeWithBackground {
+                    when (state) {
+                        is JitmState.Banner -> Banner(state)
+                        is JitmState.Modal -> JitmModal(state)
+                        JitmState.Hidden -> Spacer(modifier = Modifier.height(0.dp))
+                    }
+                }
+            }
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
@@ -48,22 +59,6 @@ class JitmFragment : Fragment() {
 
     fun refreshJitms() {
         viewModel.fetchJitms()
-    }
-
-    private fun applyBannerComposeUI(state: BannerState) {
-        if (state is BannerState.DisplayBannerState) {
-            (requireView() as ComposeView).apply {
-                show()
-                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-                setContent {
-                    WooThemeWithBackground {
-                        Banner(bannerState = state)
-                    }
-                }
-            }
-        } else {
-            requireView().hide()
-        }
     }
 
     companion object {

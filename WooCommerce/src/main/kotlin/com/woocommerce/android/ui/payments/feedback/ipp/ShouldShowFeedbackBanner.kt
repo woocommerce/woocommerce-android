@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.payments.feedback.ipp
 
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
+import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.Calendar
@@ -13,7 +13,7 @@ class ShouldShowFeedbackBanner @Inject constructor(
     private val prefs: AppPrefsWrapper,
     private val wooCommerceStore: WooCommerceStore,
     private val siteModel: SiteModel,
-    private val cardReaderConfig: CardReaderConfigFactory,
+    private val cardReaderConfig: CardReaderCountryConfigProvider,
 ) {
     operator fun invoke(): Boolean {
         return isStoreInSupportedCountry() &&
@@ -22,7 +22,7 @@ class ShouldShowFeedbackBanner @Inject constructor(
     }
 
     private fun isStoreInSupportedCountry(): Boolean {
-        val config = cardReaderConfig.getCardReaderConfigFor(wooCommerceStore.getSiteSettings(siteModel)?.countryCode)
+        val config = cardReaderConfig.provideCountryConfigFor(wooCommerceStore.getSiteSettings(siteModel)?.countryCode)
         return config is CardReaderConfigForSupportedCountry
     }
     private fun isSurveyCompletedOrDismissedForever(): Boolean =
