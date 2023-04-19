@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.payments.methodselection
 
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -31,8 +32,8 @@ data class NavigateToOrderDetails(
     val orderId: Long
 ) : MultiLiveEvent.Event()
 
-data class NavigateToTapToPaySummaryOrderRefunded(
-    val orderId: Long
+data class NavigateToTapToPaySummary(
+    val order: Order
 ) : MultiLiveEvent.Event()
 
 object NavigateBackToOrderList : MultiLiveEvent.Event()

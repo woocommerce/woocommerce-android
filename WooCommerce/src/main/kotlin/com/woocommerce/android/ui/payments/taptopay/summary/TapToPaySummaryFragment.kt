@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -86,7 +87,7 @@ class TapToPaySummaryFragment : BaseFragment() {
 
     sealed class TestTapToPayFlow : Parcelable {
         @Parcelize
-        data class OrderRefunded(val orderId: Long) : TestTapToPayFlow()
+        data class AfterPayment(val order: Order) : TestTapToPayFlow()
 
         @Parcelize
         object Initial : TestTapToPayFlow()

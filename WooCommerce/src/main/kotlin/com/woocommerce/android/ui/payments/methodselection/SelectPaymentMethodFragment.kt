@@ -193,12 +193,12 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                         )
                     findNavController().navigateSafely(action)
                 }
-                is NavigateToTapToPaySummaryOrderRefunded -> {
+                is NavigateToTapToPaySummary -> {
                     findNavController().navigateSafely(
                         SelectPaymentMethodFragmentDirections
                             .actionSelectPaymentMethodFragmentToTapToPaySummaryFragment(
-                                TapToPaySummaryFragment.TestTapToPayFlow.OrderRefunded(
-                                    orderId = event.orderId
+                                TapToPaySummaryFragment.TestTapToPayFlow.AfterPayment(
+                                    order = event.order
                                 )
                             )
                     )

@@ -41,7 +41,6 @@ import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.N
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
-import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -51,7 +50,6 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
-import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
@@ -72,8 +70,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val wooStore: WooCommerceStore,
     private val isTapToPayAvailable: IsTapToPayAvailable,
     private val appPrefs: AppPrefs = AppPrefs,
-    private val refundStore: WCRefundStore,
-    private val resourceProvider: ResourceProvider,
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
 
@@ -256,21 +252,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
         }
     }
 
-    private suspend fun autoRefundIfTestTapToPayPayment(): TPPTestingPaymentRefundResult {
-        val refundResult = refundStore.createAmountRefund(
-            selectedSite.get(),
-            order.id,
-            order.total,
-            resourceProvider.getString(R.string.tap_to_pay_refund_reason),
-            true,
-        )
-        return if (refundResult.isError) {
-            TPPTestingPaymentRefundResult.FAILED
-        } else {
-            TPPTestingPaymentRefundResult.SUCCESS
-        }
-    }
-
     fun onBackPressed() {
         // Simple payments flow is not canceled if we going back from this fragment
         if (cardReaderPaymentFlowParam.paymentType == ORDER) {
@@ -329,25 +310,13 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     private fun exitFlow() {
-        when (cardReaderPaymentFlowParam.paymentType) {
-            SIMPLE -> triggerEvent(NavigateBackToHub(CardReadersHub()))
-            TRY_TAP_TO_PAY -> {
-                launch {
-                    viewState.value = Loading
-                    triggerEvent(
-                        when (autoRefundIfTestTapToPayPayment()) {
-                            TPPTestingPaymentRefundResult.SUCCESS -> {
-                                NavigateToTapToPaySummaryOrderRefunded(cardReaderPaymentFlowParam.orderId)
-                            }
-                            TPPTestingPaymentRefundResult.FAILED -> {
-                                NavigateToOrderDetails(cardReaderPaymentFlowParam.orderId)
-                            }
-                        }
-                    )
-                }
+        triggerEvent(
+            when (cardReaderPaymentFlowParam.paymentType) {
+                SIMPLE -> NavigateBackToHub(CardReadersHub())
+                TRY_TAP_TO_PAY -> NavigateToTapToPaySummary(order)
+                ORDER -> NavigateBackToOrderList
             }
-            ORDER -> triggerEvent(NavigateBackToOrderList)
-        }
+        )
     }
 
     private fun Payment.toAnalyticsFlowParams() =
@@ -366,11 +335,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 )
             )
         )
-    }
-
-    private enum class TPPTestingPaymentRefundResult {
-        SUCCESS,
-        FAILED,
     }
 
     companion object {

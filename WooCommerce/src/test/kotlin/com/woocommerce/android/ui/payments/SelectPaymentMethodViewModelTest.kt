@@ -28,7 +28,7 @@ import com.woocommerce.android.ui.payments.methodselection.NavigateToCardReaderH
 import com.woocommerce.android.ui.payments.methodselection.NavigateToCardReaderPaymentFlow
 import com.woocommerce.android.ui.payments.methodselection.NavigateToCardReaderRefundFlow
 import com.woocommerce.android.ui.payments.methodselection.NavigateToOrderDetails
-import com.woocommerce.android.ui.payments.methodselection.NavigateToTapToPaySummaryOrderRefunded
+import com.woocommerce.android.ui.payments.methodselection.NavigateToTapToPaySummary
 import com.woocommerce.android.ui.payments.methodselection.OpenGenericWebView
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodFragmentArgs
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewModel
@@ -642,7 +642,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             advanceUntilIdle()
 
             // THEN
-            assertThat(viewModel.event.value).isEqualTo(NavigateToTapToPaySummaryOrderRefunded)
+            assertThat(viewModel.event.value).isEqualTo(NavigateToTapToPaySummary)
         }
 
     @Test

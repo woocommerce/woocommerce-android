@@ -8,15 +8,17 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -24,6 +26,9 @@ import javax.inject.Inject
 class TapToPaySummaryViewModel @Inject constructor(
     private val orderCreateEditRepository: OrderCreateEditRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val refundStore: WCRefundStore,
+    private val resourceProvider: ResourceProvider,
+    private val selectedSite: SelectedSite,
     savedStateHandle: SavedStateHandle,
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: TapToPaySummaryFragmentArgs by savedState.navArgs()
@@ -34,15 +39,25 @@ class TapToPaySummaryViewModel @Inject constructor(
     init {
         analyticsTrackerWrapper.track(AnalyticsEvent.TAP_TO_PAY_SUMMARY_SHOWN)
 
-        when (val flow = navArgs.testTapToPayFlow) {
+        handleFlowParam(navArgs.testTapToPayFlow)
+    }
+
+    private fun handleFlowParam(flow: TapToPaySummaryFragment.TestTapToPayFlow) =
+        when (flow) {
             TapToPaySummaryFragment.TestTapToPayFlow.Initial -> {
                 // no-op
             }
-            is TapToPaySummaryFragment.TestTapToPayFlow.OrderRefunded -> {
-                showSuccessfulRefundNotification(flow.orderId)
+
+            is TapToPaySummaryFragment.TestTapToPayFlow.AfterPayment -> {
+                launch {
+                    _viewState.value = UiState(isProgressVisible = true)
+                    triggerEvent(ShowSnackbar(R.string.card_reader_tap_to_pay_explanation_refunding_payment))
+                    autoRefundTestPayment(flow.order)
+                    _viewState.value = UiState(isProgressVisible = false)
+                }
+                Unit
             }
-        }.exhaustive
-    }
+        }
 
     fun onTryPaymentClicked() {
         analyticsTrackerWrapper.track(AnalyticsEvent.TAP_TO_PAY_SUMMARY_TRY_PAYMENT_TAPPED)
@@ -72,6 +87,23 @@ class TapToPaySummaryViewModel @Inject constructor(
         triggerEvent(Event.Exit)
     }
 
+    private suspend fun autoRefundTestPayment(order: Order) {
+        refundStore.createAmountRefund(
+            selectedSite.get(),
+            order.id,
+            order.total,
+            resourceProvider.getString(R.string.tap_to_pay_refund_reason),
+            true,
+        ).apply {
+            if (!isError) {
+                showSuccessfulRefundNotification(order.id)
+            } else {
+                triggerEvent(ShowSnackbar(R.string.card_reader_tap_to_pay_explanation_refund_failed))
+                triggerEvent(NavigateToOrderDetails(order.id))
+            }
+        }
+    }
+
     private fun showSuccessfulRefundNotification(orderId: Long) {
         triggerEvent(
             ShowSuccessfulRefundNotification(
@@ -96,7 +128,7 @@ class TapToPaySummaryViewModel @Inject constructor(
         @StringRes val message: Int,
         @StringRes val actionLabel: Int,
         val action: () -> Unit
-    ): Event()
+    ) : Event()
 
     companion object {
         private val TEST_ORDER_AMOUNT = BigDecimal.valueOf(0.5)
