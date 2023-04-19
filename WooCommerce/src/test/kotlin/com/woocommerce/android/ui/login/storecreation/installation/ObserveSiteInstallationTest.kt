@@ -45,7 +45,7 @@ class ObserveSiteInstallationTest : BaseUnitTest(StandardTestDispatcher()) {
     }
 
     @Test
-    fun `when jetpack is operational and properties are in sync, emit success`() =
+    fun `given site where site is ready to use and properties are in sync, when observation starts, then emit success`() =
         testBlocking {
             // given
             val installationStates = mutableListOf<InstallationState>()
@@ -69,7 +69,7 @@ class ObserveSiteInstallationTest : BaseUnitTest(StandardTestDispatcher()) {
         }
 
     @Test
-    fun `when jetpack is not operational after defined number of repeats, emit failure`() =
+    fun `given site where site is not ready to use, when defined number of repetition is reached, then emit failure`() =
         testBlocking {
             // given
             val installationStates = mutableListOf<InstallationState>()
@@ -103,7 +103,7 @@ class ObserveSiteInstallationTest : BaseUnitTest(StandardTestDispatcher()) {
         }
 
     @Test
-    fun `when jetpack is operational but properties are out of sync, emit out of sync event`() =
+    fun `given site where site is ready to use but properties are out of sync, when observation starts, then emit out of sync event`() =
         testBlocking {
             // given
             val installationStates = mutableListOf<InstallationState>()
@@ -129,7 +129,7 @@ class ObserveSiteInstallationTest : BaseUnitTest(StandardTestDispatcher()) {
         }
 
     @Test
-    fun `when api returns a failure, return failure as well`() = testBlocking {
+    fun `given api that returns a failure, when observation starts, then return failure`() = testBlocking {
         // given
         val installationStates = mutableListOf<InstallationState>()
         storeCreationRepository.stub {
