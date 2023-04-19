@@ -124,7 +124,7 @@ private fun MoreMenuHeader(
             StoreDetailsHeader(
                 userAvatarUrl = state.userAvatarUrl,
                 siteName = state.siteName,
-                planName = "free trial",
+                planName = state.sitePlan,
                 siteUrl = state.siteUrl
             )
         }
@@ -425,6 +425,7 @@ private fun MoreMenuPreview() {
         ),
         siteName = "Example Site",
         siteUrl = "woocommerce.com",
+        sitePlan = "free trial",
         userAvatarUrl = "" // To force displaying placeholder image
     )
     MoreMenuScreen(state, {})

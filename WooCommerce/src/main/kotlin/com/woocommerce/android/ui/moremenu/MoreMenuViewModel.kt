@@ -210,6 +210,7 @@ class MoreMenuViewModel @Inject constructor(
         val settingsMenuItems: List<MenuUiButton> = emptyList(),
         val siteName: String = "",
         val siteUrl: String = "",
+        val sitePlan: String = "",
         val userAvatarUrl: String = "",
         val isStoreSwitcherEnabled: Boolean = false
     ) {
