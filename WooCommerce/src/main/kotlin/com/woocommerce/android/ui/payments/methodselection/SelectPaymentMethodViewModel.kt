@@ -187,7 +187,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     fun onSharePaymentUrlClicked() {
         trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_LINK)
-        triggerEvent(SelectPaymentMethodEvents(selectedSite.get().name, order.paymentUrl))
+        triggerEvent(SharePaymentUrl(selectedSite.get().name, order.paymentUrl))
     }
 
     fun onSharePaymentUrlCompleted() {

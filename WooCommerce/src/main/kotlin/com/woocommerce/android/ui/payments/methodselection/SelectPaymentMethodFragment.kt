@@ -140,7 +140,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                     ).show()
                 }
 
-                is SelectPaymentMethodEvents -> {
+                is SharePaymentUrl -> {
                     sharePaymentUrl(event.storeName, event.paymentUrl)
                 }
 
