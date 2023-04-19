@@ -156,20 +156,7 @@ private fun StoreDetailsHeader(
                         style = MaterialTheme.typography.body1,
                     )
                     Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_50)))
-                    Box(modifier = Modifier
-                        .clip(CircleShape)
-                        .background(colorResource(id = R.color.woo_purple_0))) {
-                        Text(
-                            text = planName.uppercase(),
-                            color = colorResource(id = R.color.woo_purple_60),
-                            style = MaterialTheme.typography.caption,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(
-                                vertical = dimensionResource(id = R.dimen.minor_25),
-                                horizontal = dimensionResource(id = R.dimen.minor_100)
-                            )
-                        )
-                    }
+                    PlanBadge(planName)
 
                 }
                 Text(
@@ -188,6 +175,26 @@ private fun StoreDetailsHeader(
                 .padding(end = dimensionResource(id = R.dimen.minor_100))
                 .size(dimensionResource(id = R.dimen.major_150))
                 .weight(1f)
+        )
+    }
+}
+
+@Composable
+private fun PlanBadge(planName: String) {
+    Box(
+        modifier = Modifier
+            .clip(CircleShape)
+            .background(colorResource(id = R.color.woo_purple_0))
+    ) {
+        Text(
+            text = planName.uppercase(),
+            color = colorResource(id = R.color.woo_purple_60),
+            style = MaterialTheme.typography.caption,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(
+                vertical = dimensionResource(id = R.dimen.minor_25),
+                horizontal = dimensionResource(id = R.dimen.minor_100)
+            )
         )
     }
 }
