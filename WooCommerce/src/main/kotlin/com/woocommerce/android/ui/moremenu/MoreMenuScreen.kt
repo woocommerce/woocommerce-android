@@ -147,11 +147,26 @@ private fun StoreDetailsHeader(
             )
             Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
             Column {
-                Text(
-                    text = siteName,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.body1,
-                )
+                Row {
+                    Text(
+                        text = siteName,
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.body1,
+                    )
+                    Box(modifier = Modifier
+                        .clip(CircleShape)
+                        .background(colorResource(id = R.color.woo_purple_0))) {
+                        Text(
+                            text = "FREE TRIAL",
+                            color = colorResource(id = R.color.woo_purple_60),
+                            modifier = Modifier.padding(
+                                vertical = dimensionResource(id = R.dimen.minor_25),
+                                horizontal = dimensionResource(id = R.dimen.minor_100)
+                            )
+                        )
+                    }
+
+                }
                 Text(
                     text = siteUrl,
                     style = MaterialTheme.typography.caption,
