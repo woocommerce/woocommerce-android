@@ -16,7 +16,6 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +35,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -54,7 +54,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
@@ -106,6 +105,116 @@ fun MoreMenuScreen(
     }
 }
 
+@Composable
+private fun MoreMenuHeader(
+    onSwitchStore: () -> Unit,
+    state: MoreMenuViewState
+) {
+    Button(
+        onClick = onSwitchStore,
+        enabled = state.isStoreSwitcherEnabled,
+        contentPadding = PaddingValues(dimensionResource(id = R.dimen.major_75)),
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = colorResource(id = R.color.more_menu_button_background)
+        ),
+        shape = RoundedCornerShape(dimensionResource(id = R.dimen.major_75)),
+        modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
+    ) {
+        Box(Modifier.fillMaxSize()) {
+            StoreDetailsHeader(
+                userAvatarUrl = state.userAvatarUrl,
+                siteName = state.siteName,
+                siteUrl = state.siteUrl
+            )
+        }
+    }
+}
+
+@Composable
+private fun StoreDetailsHeader(
+    userAvatarUrl: String,
+    siteName: String,
+    siteUrl: String
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row(Modifier.weight(9f)) {
+            MoreMenuUserAvatar(
+                modifier = Modifier.align(Alignment.CenterVertically),
+                avatarUrl = userAvatarUrl
+            )
+            Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
+            Column {
+                Text(
+                    text = siteName,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.body1,
+                )
+                Text(
+                    text = siteUrl,
+                    style = MaterialTheme.typography.caption,
+                    modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_50))
+                )
+            }
+        }
+        Icon(
+            painter = painterResource(id = R.drawable.ic_arrow_drop_down),
+            contentDescription = null,
+            tint = colorResource(id = R.color.color_on_surface),
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .padding(end = dimensionResource(id = R.dimen.minor_100))
+                .size(dimensionResource(id = R.dimen.major_150))
+                .weight(1f)
+        )
+    }
+}
+
+@Composable
+private fun MoreMenuUserAvatar(
+    modifier: Modifier,
+    avatarUrl: String
+) {
+    val bitmapState = remember { mutableStateOf<Bitmap?>(null) }
+
+    if (avatarUrl.isNotEmpty()) {
+        Glide.with(LocalContext.current)
+            .asBitmap()
+            .load(avatarUrl)
+            .into(
+                object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                        bitmapState.value = resource
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                        // Nothing to do here.
+                    }
+                }
+            )
+    }
+
+    val circledModifier = modifier
+        .size(dimensionResource(id = R.dimen.major_250))
+        .clip(CircleShape)
+        .background(color = colorResource(id = R.color.more_menu_button_icon_background))
+
+    bitmapState.value?.let {
+        Image(
+            bitmap = it.asImageBitmap(),
+            contentScale = ContentScale.Crop,
+            contentDescription = stringResource(id = R.string.more_menu_avatar),
+            modifier = circledModifier
+        )
+    } ?: Image(
+        painter = painterResource(id = R.drawable.img_gravatar_placeholder),
+        contentDescription = stringResource(id = R.string.more_menu_avatar),
+        modifier = circledModifier
+    )
+}
+
 @ExperimentalFoundationApi
 @Composable
 private fun MoreMenuSection(
@@ -136,116 +245,6 @@ private fun MoreMenuSection(
             )
         }
     }
-}
-
-@Composable
-private fun MoreMenuHeader(
-    onSwitchStore: () -> Unit,
-    state: MoreMenuViewState
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(
-                enabled = state.isStoreSwitcherEnabled,
-                onClickLabel = stringResource(id = R.string.settings_switch_store),
-                role = Role.Button,
-                onClick = onSwitchStore
-            )
-            .padding(
-                top = dimensionResource(id = R.dimen.major_100),
-                bottom = dimensionResource(id = R.dimen.major_100)
-            ),
-    ) {
-        StoreDetailsHeader(
-            modifier = Modifier
-                .align(Alignment.CenterStart)
-                .padding(
-                    start = dimensionResource(id = R.dimen.minor_100),
-                    end = dimensionResource(id = R.dimen.major_325)
-                ),
-            userAvatarUrl = state.userAvatarUrl,
-            siteName = state.siteName,
-            siteUrl = state.siteUrl,
-            isStoreSwitcherEnabled = state.isStoreSwitcherEnabled
-        )
-    }
-}
-
-@Composable
-private fun StoreDetailsHeader(
-    modifier: Modifier,
-    userAvatarUrl: String,
-    siteName: String,
-    siteUrl: String,
-    isStoreSwitcherEnabled: Boolean
-) {
-    Row(modifier = modifier) {
-        MoreMenuUserAvatar(avatarUrl = userAvatarUrl)
-        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
-        Column {
-            Text(
-                text = siteName,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.h6,
-            )
-            Text(
-                text = siteUrl,
-                style = MaterialTheme.typography.body2,
-                modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_50))
-            )
-            if (isStoreSwitcherEnabled) {
-                Text(
-                    text = stringResource(R.string.settings_switch_store),
-                    color = MaterialTheme.colors.primary,
-                    style = MaterialTheme.typography.body2,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun MoreMenuUserAvatar(avatarUrl: String) {
-    val bitmapState = remember { mutableStateOf<Bitmap?>(null) }
-
-    if (avatarUrl.isNotEmpty()) {
-        Glide.with(LocalContext.current)
-            .asBitmap()
-            .load(avatarUrl)
-            .into(
-                object : CustomTarget<Bitmap>() {
-                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                        bitmapState.value = resource
-                    }
-
-                    override fun onLoadCleared(placeholder: Drawable?) {
-                        // Nothing to do here.
-                    }
-                }
-            )
-    }
-
-    val circledModifier = Modifier
-        .size(dimensionResource(id = R.dimen.major_300))
-        .padding(
-            top = dimensionResource(id = R.dimen.minor_75),
-            start = dimensionResource(id = R.dimen.minor_100)
-        )
-        .clip(CircleShape)
-
-    bitmapState.value?.let {
-        Image(
-            bitmap = it.asImageBitmap(),
-            contentScale = ContentScale.Crop,
-            contentDescription = stringResource(id = R.string.more_menu_avatar),
-            modifier = circledModifier
-        )
-    } ?: Image(
-        painter = painterResource(id = R.drawable.img_gravatar_placeholder),
-        contentDescription = stringResource(id = R.string.more_menu_avatar),
-        modifier = circledModifier
-    )
 }
 
 @Composable

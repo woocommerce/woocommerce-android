@@ -53,7 +53,7 @@ class TapToPaySummaryFragment : BaseFragment() {
                 is StartTryPaymentFlow -> {
                     findNavController().navigate(
                         TapToPaySummaryFragmentDirections
-                            .actionTapToPaySummaryFragmentToSimplePaymentFragment(
+                            .actionTapToPaySummaryFragmentToSimplePaymentsFragment(
                                 event.order,
                                 PaymentType.TRY_TAP_TO_PAY,
                             )

@@ -109,6 +109,7 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
                 tracker,
                 mock(),
                 mock(),
+                mock(),
                 mock()
             )
         )
