@@ -62,7 +62,7 @@ private const val PROFILER_OPTIONS_JSON = """{
     {
       "id": 0,
       "label": "Clothing and accessories",
-      "key": "clothing_and_accessories"
+      "key": "clothing_accessories"
     },
     {
       "id": 1,
@@ -82,7 +82,7 @@ private const val PROFILER_OPTIONS_JSON = """{
     {
       "id": 4,
       "label": "Education and learning",
-      "key": "education_and_learning"
+      "key": "education_learning"
     },
     {
       "id": 5,
