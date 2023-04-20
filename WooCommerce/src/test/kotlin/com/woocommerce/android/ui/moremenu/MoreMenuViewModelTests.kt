@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -59,6 +60,10 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         )
     }
 
+    private val resourceProvider: ResourceProvider = mock {
+        on { getString(R.string.subscription_free_trial) } doReturn "Free Trial"
+    }
+
     private val appPrefsWrapper: AppPrefsWrapper = mock()
 
     private lateinit var viewModel: MoreMenuViewModel
@@ -71,6 +76,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             selectedSite = selectedSite,
             moreMenuRepository = moreMenuRepository,
             planRepository = planRepository,
+            resourceProvider = resourceProvider,
             unseenReviewsCountHandler = unseenReviewsCountHandler,
             appPrefsWrapper = appPrefsWrapper
         )
