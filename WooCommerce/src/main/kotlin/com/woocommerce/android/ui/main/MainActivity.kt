@@ -134,6 +134,8 @@ class MainActivity :
         const val FIELD_OPENED_FROM_WIDGET = "opened-from-push-widget"
         const val FIELD_WIDGET_NAME = "widget-name"
 
+        const val NOTIFICATIONS_PERMISSION_BAR_DISPLAY_DELAY = 2000L
+
         interface BackPressListener {
             fun onRequestAllowBackPress(): Boolean
         }
@@ -739,7 +741,6 @@ class MainActivity :
         observeBottomBarState()
     }
 
-
     private fun observeNotificationsPermissionBarVisibility() {
         viewModel.isNotificationsPermissionCardVisible.observe(this) { isVisible ->
             if (isVisible) {
@@ -755,7 +756,7 @@ class MainActivity :
                     {
                         animateBottomBar(binding.notificationsPermissionBar, show = true)
                     },
-                    2_000
+                    NOTIFICATIONS_PERMISSION_BAR_DISPLAY_DELAY
                 )
             } else {
                 animateBottomBar(binding.notificationsPermissionBar, show = false)

@@ -26,9 +26,11 @@ import com.woocommerce.android.ui.main.MainActivityViewModel
 
 @Composable
 fun NotificationsPermissionCard(viewModel: MainActivityViewModel = viewModel()) {
-    Column(modifier = Modifier
-        .background(colorResource(id = R.color.white))
-        .fillMaxWidth()) {
+    Column(
+        modifier = Modifier
+            .background(colorResource(id = R.color.white))
+            .fillMaxWidth()
+    ) {
         Divider(
             color = colorResource(id = color.divider_color),
             thickness = dimensionResource(id = dimen.minor_10)
@@ -38,9 +40,11 @@ fun NotificationsPermissionCard(viewModel: MainActivityViewModel = viewModel()) 
                 .fillMaxWidth()
                 .padding(dimensionResource(id = dimen.major_100))
         ) {
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = dimensionResource(id = dimen.minor_100))) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = dimensionResource(id = dimen.minor_100))
+            ) {
                 Image(
                     modifier = Modifier.padding(end = dimensionResource(id = dimen.minor_100)),
                     painter = painterResource(drawable.ic_megaphone),
