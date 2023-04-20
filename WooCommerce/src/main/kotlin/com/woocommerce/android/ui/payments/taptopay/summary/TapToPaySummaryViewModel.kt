@@ -63,7 +63,10 @@ class TapToPaySummaryViewModel @Inject constructor(
         analyticsTrackerWrapper.track(AnalyticsEvent.TAP_TO_PAY_SUMMARY_TRY_PAYMENT_TAPPED)
         launch {
             _viewState.value = UiState(isProgressVisible = true)
-            val result = orderCreateEditRepository.createSimplePaymentOrder(TEST_ORDER_AMOUNT)
+            val result = orderCreateEditRepository.createSimplePaymentOrder(
+                TEST_ORDER_AMOUNT,
+                customerNote = resourceProvider.getString(R.string.card_reader_tap_to_pay_test_payment_note)
+            )
             result.fold(
                 onSuccess = {
                     triggerEvent(StartTryPaymentFlow(it))

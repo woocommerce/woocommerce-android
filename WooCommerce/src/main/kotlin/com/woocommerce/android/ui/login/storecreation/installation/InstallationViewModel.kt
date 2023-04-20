@@ -13,21 +13,19 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
-import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STORE_LOADING_FAILED
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository
-import com.woocommerce.android.ui.login.storecreation.StoreCreationResult
-import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Failure
-import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Success
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.StoreCreationLoadingState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.SuccessState
+import com.woocommerce.android.ui.login.storecreation.installation.ObserveSiteInstallation.InstallationState
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -45,12 +43,8 @@ class InstallationViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val storeCreationLoadingTimer: StoreCreationLoadingTimer,
     private val installationTransactionLauncher: InstallationTransactionLauncher,
+    private val observeSiteInstallation: ObserveSiteInstallation,
 ) : ScopedViewModel(savedStateHandle) {
-    private companion object {
-        const val STORE_LOAD_RETRIES_LIMIT = 10
-        const val INITIAL_STORE_CREATION_DELAY = 40000L
-        const val SITE_CHECK_DEBOUNCE = 5000L
-    }
 
     private val newStoreUrl
         get() = selectedSite.get().url
@@ -76,6 +70,8 @@ class InstallationViewModel @Inject constructor(
 
     val performanceObserver: LifecycleObserver = installationTransactionLauncher
 
+    private var hasReportedDesync = false
+
     init {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.SITE_CREATION_STEP,
@@ -83,19 +79,12 @@ class InstallationViewModel @Inject constructor(
                 AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_INSTALLATION
             )
         )
-        launch {
-            storeCreationLoadingTimer.observe()
-                .collect {
-                    _viewState.value = it
-                }
-        }
-        storeCreationLoadingTimer.startTimer()
         loadNewStore()
     }
 
-    private fun loadNewStore() {
-        suspend fun processStoreCreationResult(result: StoreCreationResult<Unit>) {
-            if (result is Success) {
+    private suspend fun processStoreInstallationState(result: InstallationState) {
+        when (result) {
+            is InstallationState.Success -> {
                 repository.selectSite(newStore.data.siteId!!)
 
                 val properties = mapOf(
@@ -106,62 +95,59 @@ class InstallationViewModel @Inject constructor(
                 )
                 installationTransactionLauncher.onStoreInstalled(properties)
 
-                selectedSite.get().let {
-                    if (!it.isWpComStore && !it.hasWooCommerce && it.name != newStore.data.name) {
-                        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_PROPERTIES_OUT_OF_SYNC)
-                    }
-                }
                 _viewState.update { SuccessState(newStoreWpAdminUrl) }
-            } else {
-                installationTransactionLauncher.onStoreInstallationFailed()
-                analyticsTrackerWrapper.track(
-                    AnalyticsEvent.SITE_CREATION_FAILED,
-                    mapOf(
-                        AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getStoreCreationSource(),
-                        AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE,
-                        AnalyticsTracker.KEY_IS_FREE_TRIAL to FeatureFlag.FREE_TRIAL_M2.isEnabled()
-                    )
-                )
+            }
 
-                val error = result as Failure
-                _viewState.update { ErrorState(error.type, error.message) }
+            is InstallationState.Failure -> {
+                installationTransactionLauncher.onStoreInstallationFailed()
+                if (result.type == StoreCreationErrorType.STORE_NOT_READY) {
+                    analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_TIMED_OUT)
+                } else {
+                    analyticsTrackerWrapper.track(
+                        AnalyticsEvent.SITE_CREATION_FAILED,
+                        mapOf(
+                            AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getStoreCreationSource(),
+                            AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE,
+                            AnalyticsTracker.KEY_IS_FREE_TRIAL to FeatureFlag.FREE_TRIAL_M2.isEnabled()
+                        )
+                    )
+                }
+
+                _viewState.update { ErrorState(result.type, result.message) }
                 newStore.clear()
             }
-        }
-        launch {
-            installationTransactionLauncher.onStoreInstallationRequested()
 
-            // takes around (~45s) for the atomic site migration, this delay is to avoid unnecessary requests
-            delay(INITIAL_STORE_CREATION_DELAY)
-
-            // keep fetching the user's sites until the new site is properly configured or the retry limit is reached
-            for (retries in 1..STORE_LOAD_RETRIES_LIMIT) {
-                val result = repository.fetchSiteAfterCreation(newStore.data.siteId!!)
-                if (result is Success || // Woo store is ready
-                    (result as Failure).type == STORE_LOADING_FAILED || // permanent error
-                    retries == STORE_LOAD_RETRIES_LIMIT // site found but is not ready & retry limit reached
-                ) {
-                    if (retries == STORE_LOAD_RETRIES_LIMIT) {
-                        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_TIMED_OUT)
-                    }
-                    onLoadingFinished()
-                    processStoreCreationResult(result)
-                    break
+            is InstallationState.OutOfSync -> {
+                if (!hasReportedDesync) {
+                    analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_PROPERTIES_OUT_OF_SYNC)
+                    hasReportedDesync = true
                 }
-                delay(SITE_CHECK_DEBOUNCE)
             }
+
+            InstallationState.InProgress -> Unit
         }
     }
 
-    private fun onLoadingFinished() {
-        _viewState.update {
-            StoreCreationLoadingState(
-                progress = 1F,
-                title = string.store_creation_in_progress_title_5,
-                description = string.store_creation_in_progress_description_5
-            )
+    private fun loadNewStore() {
+        launch {
+            combine(
+                observeSiteInstallation.invoke(
+                    newStore.data.siteId!!,
+                    newStore.data.name.orEmpty()
+                ),
+                storeCreationLoadingTimer.observe()
+            ) { installationState, timerState ->
+                processStoreInstallationState(installationState)
+
+                when (installationState) {
+                    is InstallationState.Success,
+                    is InstallationState.Failure -> storeCreationLoadingTimer.cancelTimer()
+                    else -> _viewState.value = timerState
+                }
+            }.collect()
         }
-        storeCreationLoadingTimer.cancelTimer()
+        storeCreationLoadingTimer.startTimer()
+        installationTransactionLauncher.onStoreInstallationRequested()
     }
 
     fun onUrlLoaded(url: String) {
@@ -199,7 +185,8 @@ class InstallationViewModel @Inject constructor(
         ) : ViewState
 
         @Parcelize
-        data class ErrorState(val errorType: StoreCreationErrorType, val message: String? = null) : ViewState
+        data class ErrorState(val errorType: StoreCreationErrorType, val message: String? = null) :
+            ViewState
 
         @Parcelize
         data class SuccessState(val url: String) : ViewState

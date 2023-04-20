@@ -48,7 +48,12 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
     @Test
     fun `give order creation error, when onTryPaymentClicked, then show snackbar`() = testBlocking {
         // GIVEN
-        whenever(orderCreateEditRepository.createSimplePaymentOrder(BigDecimal.valueOf(0.5))).thenReturn(
+        whenever(
+            orderCreateEditRepository.createSimplePaymentOrder(
+                BigDecimal.valueOf(0.5),
+                customerNote = "Test payment"
+            )
+        ).thenReturn(
             Result.failure(Exception())
         )
         val viewModel = initViewModel()
@@ -67,7 +72,12 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             val order = mock<Order>()
-            whenever(orderCreateEditRepository.createSimplePaymentOrder(BigDecimal.valueOf(0.5))).thenReturn(
+            whenever(
+                orderCreateEditRepository.createSimplePaymentOrder(
+                    BigDecimal.valueOf(0.5),
+                    customerNote = "Test payment"
+                )
+            ).thenReturn(
                 Result.success(order)
             )
             val viewModel = initViewModel()
@@ -82,7 +92,12 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
     @Test
     fun `when onTryPaymentClicked, then progress is shown and then hidden`() = testBlocking {
         // GIVEN
-        whenever(orderCreateEditRepository.createSimplePaymentOrder(BigDecimal.valueOf(0.5))).thenReturn(
+        whenever(
+            orderCreateEditRepository.createSimplePaymentOrder(
+                BigDecimal.valueOf(0.5),
+                customerNote = "Test payment"
+            )
+        ).thenReturn(
             Result.failure(Exception())
         )
         val viewModel = initViewModel()
@@ -101,7 +116,12 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
     @Test
     fun `when onTryPaymentClicked, then ttp try payment tracked`() = testBlocking {
         // GIVEN
-        whenever(orderCreateEditRepository.createSimplePaymentOrder(BigDecimal.valueOf(0.5))).thenReturn(
+        whenever(
+            orderCreateEditRepository.createSimplePaymentOrder(
+                BigDecimal.valueOf(0.5),
+                customerNote = "Test payment"
+            )
+        ).thenReturn(
             Result.failure(Exception())
         )
         val viewModel = initViewModel()
@@ -118,7 +138,12 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
     @Test
     fun `given error creating order, when onTryPaymentClicked, then card reader failed tracked`() = testBlocking {
         // GIVEN
-        whenever(orderCreateEditRepository.createSimplePaymentOrder(BigDecimal.valueOf(0.5))).thenReturn(
+        whenever(
+            orderCreateEditRepository.createSimplePaymentOrder(
+                BigDecimal.valueOf(0.5),
+                customerNote = "Test payment"
+            )
+        ).thenReturn(
             Result.failure(Exception())
         )
         val viewModel = initViewModel()
