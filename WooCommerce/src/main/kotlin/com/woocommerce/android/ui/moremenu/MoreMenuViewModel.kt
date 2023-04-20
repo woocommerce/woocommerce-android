@@ -21,6 +21,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
+import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -212,9 +213,20 @@ class MoreMenuViewModel @Inject constructor(
 
     private fun loadSitePlanName() = flow {
         planRepository.fetchCurrentPlanDetails(selectedSite.get())
-            ?.let { emit(it.name) }
+            ?.let { emit(it.formattedPlanName) }
             ?: emit("")
     }
+
+    private val SitePlan.formattedPlanName: String
+        get() {
+            return if (type == SitePlan.Type.FREE_TRIAL) {
+                "Free Trial"
+            } else {
+                name.removePrefix("WordPress.com")
+                    .removePrefix("Woo Express:")
+                    .trimIndent()
+            }
+        }
 
     data class MoreMenuViewState(
         val generalMenuItems: List<MenuUiButton> = emptyList(),
