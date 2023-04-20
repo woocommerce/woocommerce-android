@@ -28,7 +28,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel
 fun NotificationsPermissionCard(viewModel: MainActivityViewModel = viewModel()) {
     Column(
         modifier = Modifier
-            .background(colorResource(id = R.color.white))
+            .background(colorResource(id = color.color_surface))
             .fillMaxWidth()
     ) {
         Divider(
