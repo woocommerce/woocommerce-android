@@ -27,7 +27,7 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
 
     private var industries: List<Industry> = emptyList()
     override val hasSearchableContent: Boolean
-        get() = true
+        get() = false
 
     init {
         analyticsTracker.track(
