@@ -91,6 +91,7 @@ import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
+import com.woocommerce.android.util.WooAnimUtils.animateBottomBar
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.DisabledAppBarLayoutBehavior
 import dagger.hilt.android.AndroidEntryPoint
@@ -742,14 +743,14 @@ class MainActivity :
         viewModel.trialStatusBarState.observe(this) { trialStatusBarState ->
             when (trialStatusBarState) {
                 TrialStatusBarState.Hidden ->
-                    binding.trialBar.visibility = View.GONE
+                    animateBottomBar(binding.trialBar, show = false)
                 is TrialStatusBarState.Visible -> {
                     binding.trialBar.text = trialStatusBarFormatterFactory.create(
                         context = this,
                         startUpgradeFlowFactory = startUpgradeFlowFactory.create(navController)
                     ).format(trialStatusBarState.daysLeft)
                     binding.trialBar.movementMethod = LinkMovementMethod.getInstance()
-                    binding.trialBar.visibility = View.VISIBLE
+                    animateBottomBar(binding.trialBar, show = true)
                 }
             }
         }
