@@ -130,7 +130,7 @@ private fun MoreMenuHeader(
                 siteName = state.siteName,
                 planName = state.sitePlan,
                 siteUrl = state.siteUrl,
-                modifier = Modifier.weight(9f)
+                modifier = Modifier.weight(1f)
             )
 
             if (state.isStoreSwitcherEnabled) {
@@ -140,9 +140,7 @@ private fun MoreMenuHeader(
                     tint = colorResource(id = R.color.color_on_surface),
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
-                        .padding(end = dimensionResource(id = R.dimen.minor_100))
                         .size(dimensionResource(id = R.dimen.major_150))
-                        .weight(1f)
                 )
             }
         }
@@ -172,7 +170,6 @@ private fun StoreDetailsHeader(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
-                        .align(Alignment.CenterVertically)
                         .weight(1f)
                 )
                 if (planName.isNotEmpty()) {
