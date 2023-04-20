@@ -38,6 +38,7 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -111,13 +112,21 @@ private fun MoreMenuHeader(
     onSwitchStore: () -> Unit,
     state: MoreMenuViewState
 ) {
+    val headerBackgroundColors = colorResource(
+        id = R.color.more_menu_button_background
+    ).let { backgroundColor ->
+        ButtonDefaults.buttonColors(
+            backgroundColor = backgroundColor,
+            disabledBackgroundColor = backgroundColor,
+            disabledContentColor = contentColorFor(backgroundColor)
+        )
+    }
+
     Button(
         onClick = onSwitchStore,
         enabled = state.isStoreSwitcherEnabled,
         contentPadding = PaddingValues(dimensionResource(id = R.dimen.major_75)),
-        colors = ButtonDefaults.buttonColors(
-            backgroundColor = colorResource(id = R.color.more_menu_button_background)
-        ),
+        colors = headerBackgroundColors,
         shape = RoundedCornerShape(dimensionResource(id = R.dimen.major_75)),
         modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
     ) {
