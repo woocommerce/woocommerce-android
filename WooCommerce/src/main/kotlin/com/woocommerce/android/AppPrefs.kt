@@ -954,7 +954,6 @@ object AppPrefs {
             key = PrefKeyString("$STORE_PHONE_NUMBER:$siteId"),
         )
 
-
     /**
      * Remove all user and site-related preferences.
      */
