@@ -226,12 +226,22 @@ class MainActivityViewModel @Inject constructor(
         _bottomBarState.value = BottomBarState.Visible
     }
 
+    fun onNotificationsPermissionBarDismissButtonTapped() {
+        AppPrefs.setWasNotificationsPermissionBarDismissed(true)
+        _isNotificationPermissionCardVisible.update { false }
+    }
+
+    fun onNotificationsPermissionBarAllowButtonTapped() {
+        triggerEvent(RequestNotificationsPermission)
+    }
+
     object ViewOrderList : Event()
     object ViewReviewList : Event()
     object ViewMyStoreStats : Event()
     object ViewZendeskTickets : Event()
     object ViewPayments : Event()
     object ViewTapToPay : Event()
+    object RequestNotificationsPermission : Event()
     data class ViewUrlInWebView(val url: String) : Event()
     object ShortcutOpenPayments : Event()
     object ShortcutOpenOrderCreation : Event()

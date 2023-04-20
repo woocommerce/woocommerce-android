@@ -67,13 +67,11 @@
         </FrameLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    <com.woocommerce.android.ui.message.NotificationsPermissionBarView
+    <androidx.compose.ui.platform.ComposeView
         android:id="@+id/notifications_permission_bar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        android:layout_margin="@dimen/major_75"
-        app:cardCornerRadius="@dimen/minor_100"
         app:layout_constraintBottom_toTopOf="@+id/trial_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

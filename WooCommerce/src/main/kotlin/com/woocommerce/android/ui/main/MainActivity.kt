@@ -2,6 +2,7 @@
 
 package com.woocommerce.android.ui.main
 
+import NotificationsPermissionCard
 import android.animation.ValueAnimator
 import android.app.Activity
 import android.app.ProgressDialog
@@ -10,17 +11,21 @@ import android.net.Uri
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
+import android.os.Handler
 import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
+import androidx.core.os.HandlerCompat.postDelayed
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
@@ -57,6 +62,7 @@ import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.MORE
@@ -66,6 +72,7 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
 import com.woocommerce.android.ui.main.MainActivityViewModel.BottomBarState
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
+import com.woocommerce.android.ui.main.MainActivityViewModel.RequestNotificationsPermission
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForAppLink
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenOrderCreation
@@ -80,6 +87,8 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewTapToPay
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewUrlInWebView
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
+import com.woocommerce.android.ui.message.NotificationsPermissionBarView
+import com.woocommerce.android.ui.message.NotificationsPermissionBarView.Companion
 import com.woocommerce.android.ui.moremenu.MoreMenuFragmentDirections
 import com.woocommerce.android.ui.mystore.MyStoreFragmentDirections
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
@@ -91,9 +100,10 @@ import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState.Trial
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
+import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
-import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.util.WooAnimUtils.animateBottomBar
+import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.DisabledAppBarLayoutBehavior
 import dagger.hilt.android.AndroidEntryPoint
@@ -223,6 +233,12 @@ class MainActivity :
             } else {
                 hideBottomNav()
             }
+        }
+    }
+
+    private val launcher = this.registerForActivityResult(RequestPermission()) { isGranted: Boolean ->
+        if (isGranted) {
+            viewModel.checkForNotificationsPermission(hasNotificationsPermission = true)
         }
     }
 
@@ -713,6 +729,7 @@ class MainActivity :
                 is RestartActivityForAppLink -> restartActivityForAppLink(event)
                 is ShowFeatureAnnouncement -> navigateToFeatureAnnouncement(event)
                 is ViewUrlInWebView -> navigateToWebView(event)
+                is RequestNotificationsPermission -> requestNotificationsPermission()
                 ViewPayments -> showPayments()
                 ViewTapToPay -> showTapToPaySummary()
                 ShortcutOpenPayments -> shortcutShowPayments()
@@ -729,7 +746,24 @@ class MainActivity :
 
     private fun observeNotificationsPermissionBarVisibility() {
         viewModel.isNotificationsPermissionCardVisible.observe(this) { isVisible ->
-            binding.notificationsPermissionBar.isVisible = isVisible
+            if (isVisible) {
+                binding.notificationsPermissionBar.apply {
+                    setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                    setContent {
+                        WooThemeWithBackground {
+                            NotificationsPermissionCard()
+                        }
+                    }
+                }
+                Handler().postDelayed(
+                    {
+                        animateBottomBar(binding.notificationsPermissionBar, show = true)
+                    },
+                    2_000
+                )
+            } else {
+                animateBottomBar(binding.notificationsPermissionBar, show = false)
+            }
         }
     }
 
@@ -767,6 +801,12 @@ class MainActivity :
                     animateBottomBar(binding.trialBar, show = true)
                 }
             }
+        }
+    }
+
+    private fun requestNotificationsPermission() {
+        if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
+            WooPermissionUtils.requestNotificationsPermission(launcher)
         }
     }
 
