@@ -162,7 +162,9 @@ private fun StoreDetailsHeader(
         )
         Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
         Column {
-            Row {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50))
+            ) {
                 Text(
                     text = siteName,
                     fontWeight = FontWeight.Bold,
@@ -170,10 +172,10 @@ private fun StoreDetailsHeader(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
-                        .weight(1f)
+                        .align(Alignment.CenterVertically)
+                        .weight(1f, false)
                 )
                 if (planName.isNotEmpty()) {
-                    Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_50)))
                     PlanBadge(planName)
                 }
             }
