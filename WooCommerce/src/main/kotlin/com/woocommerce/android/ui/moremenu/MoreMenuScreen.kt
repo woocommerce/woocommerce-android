@@ -121,68 +121,71 @@ private fun MoreMenuHeader(
         shape = RoundedCornerShape(dimensionResource(id = R.dimen.major_75)),
         modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
     ) {
-        Box(Modifier.fillMaxSize()) {
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             StoreDetailsHeader(
                 userAvatarUrl = state.userAvatarUrl,
                 siteName = state.siteName,
                 planName = state.sitePlan,
-                siteUrl = state.siteUrl
+                siteUrl = state.siteUrl,
+                modifier = Modifier.weight(9f)
             )
+
+            if (state.isStoreSwitcherEnabled) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_arrow_drop_down),
+                    contentDescription = null,
+                    tint = colorResource(id = R.color.color_on_surface),
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .padding(end = dimensionResource(id = R.dimen.minor_100))
+                        .size(dimensionResource(id = R.dimen.major_150))
+                        .weight(1f)
+                )
+            }
         }
     }
 }
 
 @Composable
 private fun StoreDetailsHeader(
+    modifier: Modifier,
     userAvatarUrl: String,
     siteName: String,
     planName: String,
     siteUrl: String
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Row(Modifier.weight(9f)) {
-            MoreMenuUserAvatar(
-                modifier = Modifier.align(Alignment.CenterVertically),
-                avatarUrl = userAvatarUrl
-            )
-            Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
-            Column {
-                Row {
-                    Text(
-                        text = siteName,
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.body1,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .align(Alignment.CenterVertically)
-                            .weight(1f)
-                    )
-                    if (planName.isNotEmpty()) {
-                        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_50)))
-                        PlanBadge(planName)
-                    }
-                }
-                Text(
-                    text = siteUrl,
-                    style = MaterialTheme.typography.caption,
-                    modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_50))
-                )
-            }
-        }
-        Icon(
-            painter = painterResource(id = R.drawable.ic_arrow_drop_down),
-            contentDescription = null,
-            tint = colorResource(id = R.color.color_on_surface),
-            modifier = Modifier
-                .align(Alignment.CenterVertically)
-                .padding(end = dimensionResource(id = R.dimen.minor_100))
-                .size(dimensionResource(id = R.dimen.major_150))
-                .weight(1f)
+    Row(modifier) {
+        MoreMenuUserAvatar(
+            modifier = Modifier.align(Alignment.CenterVertically),
+            avatarUrl = userAvatarUrl
         )
+        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
+        Column {
+            Row {
+                Text(
+                    text = siteName,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.body1,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .weight(1f)
+                )
+                if (planName.isNotEmpty()) {
+                    Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_50)))
+                    PlanBadge(planName)
+                }
+            }
+            Text(
+                text = siteUrl,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_50))
+            )
+        }
     }
 }
 
@@ -440,7 +443,8 @@ private fun MoreMenuPreview() {
         siteName = "Example Site",
         siteUrl = "woocommerce.com",
         sitePlan = "free trial",
-        userAvatarUrl = "" // To force displaying placeholder image
+        userAvatarUrl = "", // To force displaying placeholder image
+        isStoreSwitcherEnabled = true
     )
     MoreMenuScreen(state, {})
 }
