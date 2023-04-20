@@ -10,7 +10,6 @@ import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.PLA
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_ADDRESS_ALREADY_EXISTS
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_CREATION_FAILED
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STORE_LOADING_FAILED
-import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STORE_NOT_READY
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Failure
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Success
 import com.woocommerce.android.ui.login.storecreation.plans.BillingPeriod
@@ -84,19 +83,18 @@ class StoreCreationRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchSiteAfterCreation(siteId: Long): StoreCreationResult<Unit> {
+    suspend fun fetchSite(siteId: Long): StoreCreationResult<Unit> {
         val result = withContext(Dispatchers.Default) {
             val site = SiteModel().apply {
                 this.siteId = siteId
                 this.origin = SiteModel.ORIGIN_WPCOM_REST
                 this.setIsWPCom(true)
             }
+
             siteStore.fetchSite(site)
         }
-
         return when {
             result.isError -> Failure(STORE_LOADING_FAILED, result.error?.message)
-            siteStore.getSiteBySiteId(siteId)?.isJetpackConnected != true -> Failure(STORE_NOT_READY)
             else -> Success(Unit)
         }
     }

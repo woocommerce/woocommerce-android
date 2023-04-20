@@ -25,6 +25,7 @@ enum class FeatureFlag {
     GIFT_CARD_READ_ONLY_SUPPORT,
     QUANTITY_RULES_READ_ONLY_SUPPORT,
     BUNDLED_PRODUCTS_READ_ONLY_SUPPORT,
+    COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT,
     STORE_CREATION_PROFILER;
 
     fun isEnabled(context: Context? = null): Boolean {
@@ -51,7 +52,8 @@ enum class FeatureFlag {
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             IPP_TAP_TO_PAY,
-            STORE_CREATION_PROFILER -> PackageUtils.isDebugBuild()
+            STORE_CREATION_PROFILER,
+            COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
         }

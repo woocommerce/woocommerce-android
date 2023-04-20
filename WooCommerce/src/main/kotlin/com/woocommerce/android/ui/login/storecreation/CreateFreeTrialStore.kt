@@ -27,8 +27,8 @@ class CreateFreeTrialStore @Inject constructor(
     suspend operator fun invoke(
         storeDomain: String?,
         storeName: String?,
-        profilerData: NewStore.ProfilerData? = null,
-        countryCode: String? = null
+        profilerData: NewStore.ProfilerData?,
+        countryCode: String?
     ) = flow {
         emit(Loading)
 

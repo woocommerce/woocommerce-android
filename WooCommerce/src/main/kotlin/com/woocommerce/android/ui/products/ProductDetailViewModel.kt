@@ -30,6 +30,7 @@ import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadFailure
 import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadProgress
 import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadSuccess
+import com.woocommerce.android.model.Component
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductAttributeTerm
@@ -128,7 +129,8 @@ class ProductDetailViewModel @Inject constructor(
     private val tracker: AnalyticsTrackerWrapper,
     private val selectedSite: SelectedSite,
     private val getProductQuantityRules: GetProductQuantityRules,
-    private val getBundledProductsCount: GetBundledProductsCount
+    private val getBundledProductsCount: GetBundledProductsCount,
+    private val getComponentProducts: GetComponentProducts
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -2203,6 +2205,11 @@ class ProductDetailViewModel @Inject constructor(
     suspend fun getBundledProductsSize(remoteId: Long): Int {
         if (FeatureFlag.BUNDLED_PRODUCTS_READ_ONLY_SUPPORT.isEnabled().not()) return 0
         return getBundledProductsCount(remoteId)
+    }
+
+    suspend fun getComponents(remoteId: Long): List<Component>? {
+        if (FeatureFlag.COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT.isEnabled().not()) return null
+        return getComponentProducts(remoteId)
     }
 
     /**

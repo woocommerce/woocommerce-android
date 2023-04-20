@@ -121,7 +121,7 @@ class CardReaderPaymentViewModel
     private val refundAmount: BigDecimal
         get() = when (val param = arguments.paymentOrRefund) {
             is CardReaderFlowParam.PaymentOrRefund.Refund -> param.refundAmount
-            else -> throw IllegalStateException("Accessing refund account on $param flow")
+            else -> throw IllegalStateException("Accessing refund amount on $param flow")
         }
 
     // The app shouldn't store the state as payment flow gets canceled when the vm dies
