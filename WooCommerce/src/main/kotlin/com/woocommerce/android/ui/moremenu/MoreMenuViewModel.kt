@@ -213,8 +213,8 @@ class MoreMenuViewModel @Inject constructor(
 
     private fun loadSitePlanName() = flow {
         planRepository.fetchCurrentPlanDetails(selectedSite.get())
-            ?.let { emit(it.formattedPlanName) }
-            ?: emit("")
+            ?.formattedPlanName.orEmpty()
+            .let { emit(it) }
     }
 
     private val SitePlan.formattedPlanName: String
