@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.plans.domain
 
+import com.woocommerce.android.R
+import com.woocommerce.android.viewmodel.ResourceProvider
 import java.time.ZonedDateTime
 
 data class SitePlan(
@@ -7,16 +9,15 @@ data class SitePlan(
     val expirationDate: ZonedDateTime,
     val type: Type,
 ) {
-    val formattedPlanName: String
-        get() {
-            return if (type == Type.FREE_TRIAL) {
-                "Free Trial"
-            } else {
-                name.removePrefix("WordPress.com")
-                    .removePrefix("Woo Express:")
-                    .trimIndent()
-            }
+    fun generateFormattedPlanName(resourceProvider: ResourceProvider): String {
+        return if (type == Type.FREE_TRIAL) {
+            resourceProvider.getString(R.string.subscription_free_trial)
+        } else {
+            name.removePrefix(WP_PREFIX)
+                .removePrefix(WOO_EXPRESS_PREFIX)
+                .trimIndent()
         }
+    }
 
     enum class Type {
         FREE_TRIAL, OTHER
@@ -24,5 +25,7 @@ data class SitePlan(
 
     companion object {
         val EMPTY = SitePlan("", ZonedDateTime.now(), Type.OTHER)
+        const val WP_PREFIX = "WordPress.com"
+        const val WOO_EXPRESS_PREFIX = "Woo Express:"
     }
 }

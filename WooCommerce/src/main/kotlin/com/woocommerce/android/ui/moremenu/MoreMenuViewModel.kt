@@ -21,8 +21,10 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
+import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
@@ -40,6 +42,7 @@ class MoreMenuViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val moreMenuRepository: MoreMenuRepository,
     private val planRepository: SitePlanRepository,
+    private val resourceProvider: ResourceProvider,
     private val appPrefsWrapper: AppPrefsWrapper,
     unseenReviewsCountHandler: UnseenReviewsCountHandler
 ) : ScopedViewModel(savedState) {
@@ -215,6 +218,9 @@ class MoreMenuViewModel @Inject constructor(
             ?.formattedPlanName.orEmpty()
             .let { emit(it) }
     }
+
+    private val SitePlan.formattedPlanName
+        get() = generateFormattedPlanName(resourceProvider)
 
     data class MoreMenuViewState(
         val generalMenuItems: List<MenuUiButton> = emptyList(),

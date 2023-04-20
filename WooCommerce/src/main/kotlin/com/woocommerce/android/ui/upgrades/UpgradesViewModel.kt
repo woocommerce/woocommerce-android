@@ -49,6 +49,9 @@ class UpgradesViewModel @Inject constructor(
     private val _upgradesState = MutableLiveData<UpgradesViewState>()
     val upgradesState: LiveData<UpgradesViewState> = _upgradesState
 
+    private val SitePlan.formattedPlanName
+        get() = generateFormattedPlanName(resourceProvider)
+
     init {
         loadSubscriptionState()
     }
