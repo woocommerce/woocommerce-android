@@ -67,6 +67,15 @@
         </FrameLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/notifications_permission_bar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/trial_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <TextView
         android:id="@+id/trial_bar"
         style="@style/Woo.TextView.Subtitle1.OnPrimary.Icon"

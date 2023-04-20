@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.main
 
 import android.net.Uri
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefs
@@ -16,6 +18,8 @@ import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType.Jetpack
+import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
 import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState
@@ -28,6 +32,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Inject
@@ -44,7 +49,7 @@ class MainActivityViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val resolveAppLink: ResolveAppLink,
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
-    private val determineTrialStatusBarState: DetermineTrialStatusBarState,
+    determineTrialStatusBarState: DetermineTrialStatusBarState,
 ) : ScopedViewModel(savedState) {
     init {
         launch {
@@ -60,6 +65,9 @@ class MainActivityViewModel @Inject constructor(
 
     private val _bottomBarState: MutableStateFlow<BottomBarState> = MutableStateFlow(BottomBarState.Visible)
     val bottomBarState = _bottomBarState.asLiveData()
+
+    private val _isNotificationPermissionCardVisible = MutableStateFlow(false)
+    val isNotificationsPermissionCardVisible = _isNotificationPermissionCardVisible.asLiveData()
 
     val trialStatusBarState = determineTrialStatusBarState(_bottomBarState).asLiveData()
 
@@ -202,6 +210,14 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
+    fun checkForNotificationsPermission(hasNotificationsPermission: Boolean) {
+        val shouldShowNotificationsPermissionBar = VERSION.SDK_INT >= VERSION_CODES.TIRAMISU &&
+            !hasNotificationsPermission && !AppPrefs.getWasNotificationsPermissionBarDismissed() &&
+            selectedSite.get().connectionType == Jetpack
+
+        _isNotificationPermissionCardVisible.update { shouldShowNotificationsPermissionBar }
+    }
+
     fun hideBottomNav() {
         _bottomBarState.value = BottomBarState.Hidden
     }
@@ -210,12 +226,22 @@ class MainActivityViewModel @Inject constructor(
         _bottomBarState.value = BottomBarState.Visible
     }
 
+    fun onNotificationsPermissionBarDismissButtonTapped() {
+        AppPrefs.setWasNotificationsPermissionBarDismissed(true)
+        _isNotificationPermissionCardVisible.update { false }
+    }
+
+    fun onNotificationsPermissionBarAllowButtonTapped() {
+        triggerEvent(RequestNotificationsPermission)
+    }
+
     object ViewOrderList : Event()
     object ViewReviewList : Event()
     object ViewMyStoreStats : Event()
     object ViewZendeskTickets : Event()
     object ViewPayments : Event()
     object ViewTapToPay : Event()
+    object RequestNotificationsPermission : Event()
     data class ViewUrlInWebView(val url: String) : Event()
     object ShortcutOpenPayments : Event()
     object ShortcutOpenOrderCreation : Event()

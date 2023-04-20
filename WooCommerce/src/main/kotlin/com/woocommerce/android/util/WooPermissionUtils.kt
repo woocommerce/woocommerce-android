@@ -3,13 +3,16 @@ package com.woocommerce.android.util
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.Manifest.permission.BLUETOOTH_CONNECT
 import android.Manifest.permission.BLUETOOTH_SCAN
+import android.Manifest.permission.POST_NOTIFICATIONS
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build.VERSION_CODES
 import android.provider.Settings
 import androidx.activity.result.ActivityResultLauncher
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
@@ -48,6 +51,21 @@ object WooPermissionUtils {
 
     fun requestScanAndConnectBluetoothPermission(launcher: ActivityResultLauncher<Array<String>>) {
         launcher.launch(arrayOf(BLUETOOTH_SCAN, BLUETOOTH_CONNECT))
+    }
+
+    @RequiresApi(VERSION_CODES.TIRAMISU)
+    fun hasNotificationsPermission(context: Context) = context.checkIfPermissionGiven(POST_NOTIFICATIONS)
+
+    @RequiresApi(VERSION_CODES.TIRAMISU)
+    fun requestNotificationsPermission(launcher: ActivityResultLauncher<String>) {
+        launcher.launch(POST_NOTIFICATIONS)
+    }
+
+    @RequiresApi(VERSION_CODES.TIRAMISU)
+    fun shouldShowNotificationsRationale(activity: Activity): Boolean {
+        if (hasFineLocationPermission(activity)) return false
+
+        return ActivityCompat.shouldShowRequestPermissionRationale(activity, POST_NOTIFICATIONS)
     }
 
     private fun Context.checkIfPermissionGiven(permission: String) =
