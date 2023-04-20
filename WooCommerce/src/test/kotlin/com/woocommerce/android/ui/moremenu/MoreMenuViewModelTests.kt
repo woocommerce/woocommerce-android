@@ -53,7 +53,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
     private val planRepository: SitePlanRepository = mock {
         onBlocking { fetchCurrentPlanDetails(any()) } doReturn SitePlan(
-            name = "Test Plan",
+            name = "",
             expirationDate = ZonedDateTime.now(),
             type = SitePlan.Type.FREE_TRIAL
         )
@@ -191,12 +191,40 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     @Test
     fun `given site plan is free trial, then free trial name is configured`() = testBlocking {
         // GIVEN
-        setup()
+        setup {
+            whenever(planRepository.fetchCurrentPlanDetails(any())).thenReturn(
+                SitePlan(
+                    name = "Test Plan",
+                    expirationDate = ZonedDateTime.now(),
+                    type = SitePlan.Type.FREE_TRIAL
+                )
+            )
+        }
 
         // WHEN
         val states = viewModel.moreMenuViewState.captureValues()
 
         // THEN
         assertThat(states.last().sitePlan).isEqualTo("Free Trial")
+    }
+
+    @Test
+    fun `given site plan is not free trial, then SitePlan name is used`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(planRepository.fetchCurrentPlanDetails(any())).thenReturn(
+                SitePlan(
+                    name = "Test Plan",
+                    expirationDate = ZonedDateTime.now(),
+                    type = SitePlan.Type.OTHER
+                )
+            )
+        }
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+
+        // THEN
+        assertThat(states.last().sitePlan).isEqualTo("Test Plan")
     }
 }
