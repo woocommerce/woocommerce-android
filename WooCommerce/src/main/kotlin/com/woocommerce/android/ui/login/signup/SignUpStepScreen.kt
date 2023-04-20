@@ -13,13 +13,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -30,7 +30,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -39,8 +38,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.text.HtmlCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.compose.utils.toAnnotatedString
-import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
-import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -51,14 +48,19 @@ import com.woocommerce.android.ui.login.signup.SignUpViewModel.ErrorType
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.SignUpState
 
 @Composable
-fun SignUpScreen(viewModel: SignUpViewModel) {
+fun SignUpStepScreen(viewModel: SignUpViewModel) {
     val state by viewModel.viewState.observeAsState(SignUpState())
 
     BackHandler(onBack = viewModel::onBackPressed)
     Scaffold(topBar = {
         Toolbar(
             title = stringResource(id = R.string.signup_get_started_button),
-            onNavigationButtonClick = viewModel::onBackPressed
+            onNavigationButtonClick = viewModel::onBackPressed,
+            actions = {
+                TextButton(onClick = viewModel::onLoginClicked) {
+                    Text(text = stringResource(id = R.string.log_in))
+                }
+            }
         )
     }) { padding ->
         when {
@@ -70,7 +72,6 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
             else -> SignUpForm(
                 termsOfServiceClicked = viewModel::onTermsOfServiceClicked,
                 onPrimaryButtonClicked = viewModel::onGetStartedCLicked,
-                onLoginClicked = viewModel::onLoginClicked,
                 signUpState = state,
                 modifier = Modifier.padding(padding)
             )
@@ -82,7 +83,6 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
 private fun SignUpForm(
     termsOfServiceClicked: () -> Unit,
     onPrimaryButtonClicked: (String, String) -> Unit,
-    onLoginClicked: () -> Unit,
     signUpState: SignUpState,
     modifier: Modifier = Modifier,
 ) {
@@ -153,19 +153,6 @@ private fun TermsOfServiceText(modifier: Modifier = Modifier) {
         style = MaterialTheme.typography.caption,
         modifier = modifier,
     )
-}
-
-@Composable
-private fun LoginToExistingAccountText(onLoginClicked: () -> Unit) {
-    val text = annotatedStringRes(stringResId = R.string.signup_already_registered)
-    ClickableText(
-        text = text,
-        style = MaterialTheme.typography.body1.copy(color = colorResource(id = R.color.color_on_surface_medium)),
-    ) {
-        text.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
-            .firstOrNull()
-            ?.let { onLoginClicked() }
-    }
 }
 
 @ExperimentalFoundationApi
