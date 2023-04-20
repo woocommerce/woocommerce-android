@@ -209,7 +209,8 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
                     newStore.data.domain,
                     newStore.data.name,
                     newStore.data.profilerData,
-                    newStore.data.country?.code)
+                    newStore.data.country?.code
+                )
             } doAnswer {
                 flow {
                     emit(StoreCreationState.Loading)
