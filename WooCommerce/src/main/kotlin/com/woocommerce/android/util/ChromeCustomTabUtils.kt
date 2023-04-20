@@ -47,8 +47,7 @@ object ChromeCustomTabUtils {
     private var session: CustomTabsSession? = null
     private var connection: CustomTabsServiceConnection? = null
     private var canUseCustomTabs: Boolean? = null
-    private var activityResultLauncher: ActivityResultLauncher<String>? = null
-    private var partialHeightToUse: Partial? = null
+    private var activityResultLauncher: ActivityResultLauncher<PartialTabParams>? = null
 
     fun connectAndStartSession(context: Context, preloadUrl: String? = null, otherLikelyUrls: Array<String>? = null) {
         if (!canUseCustomTabs(context)) return
@@ -91,10 +90,10 @@ object ChromeCustomTabUtils {
 
     fun registerForPartialTabUsage(activity: FragmentActivity) {
         activityResultLauncher = activity.registerForActivityResult(
-            object : ActivityResultContract<String, Int>() {
-                override fun createIntent(context: Context, input: String) =
-                    createIntent(context, partialHeightToUse!!).intent.apply {
-                        data = Uri.parse(input)
+            object : ActivityResultContract<PartialTabParams, Int>() {
+                override fun createIntent(context: Context, input: PartialTabParams) =
+                    createIntent(context, input.height).intent.apply {
+                        data = Uri.parse(input.url)
                     }
 
                 override fun parseResult(resultCode: Int, intent: Intent?) = resultCode
@@ -105,8 +104,7 @@ object ChromeCustomTabUtils {
         try {
             if (canUseCustomTabs(context)) {
                 if (session == null && height is Partial && activityResultLauncher != null) {
-                    partialHeightToUse = height
-                    activityResultLauncher?.launch(url)
+                    activityResultLauncher?.launch(PartialTabParams(url, height))
                 } else {
                     createIntent(context, height, session).launchUrl(context, Uri.parse(url))
                 }
@@ -183,4 +181,6 @@ object ChromeCustomTabUtils {
             is Partial.Third -> context.physicalScreenHeightInPx / 3
             is Partial.ThreeQuarters -> context.physicalScreenHeightInPx * 3 / 4
         }
+
+    private data class PartialTabParams(val url: String, val height: Partial)
 }
