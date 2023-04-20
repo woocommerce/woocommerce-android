@@ -407,6 +407,13 @@ class ProductNavigator @Inject constructor() {
                 ).let { fragment.findNavController().navigateSafely(it) }
             }
 
+            is ProductNavigationTarget.ViewProductComponents -> {
+                val action = ProductDetailFragmentDirections.actionProductDetailFragmentToCompositeProductFragment(
+                    target.components.toTypedArray()
+                )
+                fragment.findNavController().navigateSafely(action)
+            }
+
             is ExitProduct -> fragment.findNavController().navigateUp()
         }
     }

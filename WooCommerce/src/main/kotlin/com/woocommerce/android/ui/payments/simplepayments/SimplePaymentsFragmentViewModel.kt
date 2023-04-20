@@ -71,13 +71,15 @@ class SimplePaymentsFragmentViewModel @Inject constructor(
                 chargeTaxes = true,
                 orderSubtotal = feeLineTotal,
                 orderTaxes = order.taxLines,
-                orderTotal = order.total
+                orderTotal = order.total,
+                customerNote = order.customerNote,
             )
         } else {
             viewState.copy(
                 chargeTaxes = false,
                 orderSubtotal = feeLineTotal,
-                orderTotal = feeLineTotal
+                orderTotal = feeLineTotal,
+                customerNote = order.customerNote,
             )
         }
     }
