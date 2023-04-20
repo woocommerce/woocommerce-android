@@ -165,7 +165,6 @@ private fun StoreDetailsHeader(
                         Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_50)))
                         PlanBadge(planName)
                     }
-
                 }
                 Text(
                     text = siteUrl,

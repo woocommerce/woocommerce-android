@@ -28,11 +28,11 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flow
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import java.net.URL
 import javax.inject.Inject
-import kotlinx.coroutines.flow.flow
 
 @HiltViewModel
 class MoreMenuViewModel @Inject constructor(
