@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.signup
 
+import android.util.Patterns
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -59,10 +60,22 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun onEmailContinueClicked(email: String) {
-        _viewState.value = _viewState.value?.copy(
-            stepType = SignUpStepType.PASSWORD,
-            email = email.trim()
-        )
+        val trimmedEmail = email.trim()
+        if (isValidEmail(trimmedEmail)) {
+            _viewState.value = _viewState.value?.copy(
+                stepType = SignUpStepType.PASSWORD,
+                email = trimmedEmail
+            )
+        } else {
+            _viewState.value = _viewState.value?.copy(
+                isLoading = false,
+                error = SignUpErrorUi(
+                    type = EMAIL,
+                    stringId = R.string.signup_email_invalid_input
+                )
+            )
+        }
+
     }
 
     fun onPasswordContinueClicked(inputPassword: String) {
@@ -110,6 +123,12 @@ class SignUpViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun isValidEmail(email: String): Boolean {
+        val emailRegExPattern = Patterns.EMAIL_ADDRESS
+        val matcher = emailRegExPattern.matcher(email)
+        return matcher.find()
     }
 
     private fun SignUpError.toSignUpErrorUi() =
