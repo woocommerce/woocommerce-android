@@ -10,4 +10,8 @@ data class SitePlan(
     enum class Type {
         FREE_TRIAL, OTHER
     }
+
+    companion object {
+        val EMPTY = SitePlan("", ZonedDateTime.now(), Type.OTHER)
+    }
 }
