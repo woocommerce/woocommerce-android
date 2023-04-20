@@ -385,9 +385,17 @@ class LoginActivity :
         }
     }
 
-    private fun showEmailPasswordScreen(email: String?, verifyEmail: Boolean) {
+    private fun showEmailPasswordScreen(
+        email: String?,
+        verifyEmail: Boolean,
+        password: String? = null
+    ) {
         val wooLoginEmailPasswordFragment = WooLoginEmailPasswordFragment
-            .newInstance(email, verifyMagicLinkEmail = verifyEmail)
+            .newInstance(
+                emailAddress = email,
+                password = password,
+                verifyMagicLinkEmail = verifyEmail
+            )
         changeFragment(wooLoginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
     }
 
@@ -896,6 +904,14 @@ class LoginActivity :
 
     override fun onLoginClicked() {
         startLoginViaWPCom()
+    }
+
+    override fun onEmailAlreadyExist(email: String, password: String) {
+        showEmailPasswordScreen(
+            email = email,
+            password = password,
+            verifyEmail = false
+        )
     }
 
     private fun processLoginHelpNotification(loginHelpNotification: String) {

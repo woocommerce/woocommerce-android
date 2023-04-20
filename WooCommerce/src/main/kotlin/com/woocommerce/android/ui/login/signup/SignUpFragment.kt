@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.OnAccountCreated
+import com.woocommerce.android.ui.login.signup.SignUpViewModel.OnEmailAlreadyExistError
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.OnLoginClicked
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.OnTermsOfServiceClicked
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -40,6 +41,7 @@ class SignUpFragment : BaseFragment() {
     interface Listener {
         fun onAccountCreated(nextStep: NextStep)
         fun onLoginClicked()
+        fun onEmailAlreadyExist(email: String, password: String)
     }
 
     @Inject internal lateinit var urlUtils: UrlUtils
@@ -98,6 +100,7 @@ class SignUpFragment : BaseFragment() {
                 is OnLoginClicked -> signUpListener?.onLoginClicked()
                 is OnTermsOfServiceClicked -> openTermsOfServiceUrl()
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is OnEmailAlreadyExistError -> signUpListener?.onEmailAlreadyExist(event.email, event.password)
                 is Exit -> parentFragmentManager.popBackStack()
             }
         }

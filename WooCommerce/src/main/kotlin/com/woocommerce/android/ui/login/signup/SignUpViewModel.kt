@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep
 import com.woocommerce.android.ui.login.signup.SignUpRepository.AccountCreationError
 import com.woocommerce.android.ui.login.signup.SignUpRepository.AccountCreationSuccess
 import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError
+import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError.EMAIL_EXIST
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.ErrorType.EMAIL
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.ErrorType.PASSWORD
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.ErrorType.UNKNOWN
@@ -75,6 +76,14 @@ class SignUpViewModel @Inject constructor(
                     if (error.type == UNKNOWN) {
                         triggerEvent(ShowSnackbar(error.stringId))
                     }
+                    if (result.error == EMAIL_EXIST) {
+                        triggerEvent(
+                            OnEmailAlreadyExistError(
+                                email = trimmedEmail,
+                                password = password
+                            )
+                        )
+                    }
                 }
                 AccountCreationSuccess -> {
                     AnalyticsTracker.track(stat = AnalyticsEvent.SIGNUP_SUCCESS)
@@ -134,4 +143,9 @@ class SignUpViewModel @Inject constructor(
     object OnTermsOfServiceClicked : MultiLiveEvent.Event()
     object OnAccountCreated : MultiLiveEvent.Event()
     object OnLoginClicked : MultiLiveEvent.Event()
+    data class OnEmailAlreadyExistError(
+        val email: String,
+        val password: String
+    ) : MultiLiveEvent.Event()
+
 }
