@@ -227,4 +227,18 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         // THEN
         assertThat(states.last().sitePlan).isEqualTo("Test Plan")
     }
+
+    @Test
+    fun `given site plan is null, then SitePlan name is empty`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(planRepository.fetchCurrentPlanDetails(any())).thenReturn(null)
+        }
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+
+        // THEN
+        assertThat(states.last().sitePlan).isEqualTo("")
+    }
 }
