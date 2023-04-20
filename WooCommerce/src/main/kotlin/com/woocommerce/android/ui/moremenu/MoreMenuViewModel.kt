@@ -21,11 +21,9 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
-import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
@@ -33,6 +31,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import java.net.URL
 import javax.inject.Inject
+import kotlinx.coroutines.flow.flow
 
 @HiltViewModel
 class MoreMenuViewModel @Inject constructor(
@@ -44,15 +43,13 @@ class MoreMenuViewModel @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     unseenReviewsCountHandler: UnseenReviewsCountHandler
 ) : ScopedViewModel(savedState) {
-    private val sitePlan = savedState.getStateFlow(this, SitePlan.EMPTY)
-
     val moreMenuViewState =
         combine(
             unseenReviewsCountHandler.observeUnseenCount(),
             selectedSite.observe().filterNotNull(),
             moreMenuRepository.observeCouponBetaSwitch(),
-            sitePlan
-        ) { count, selectedSite, isCouponsEnabled, sitePlan ->
+            loadSitePlanName()
+        ) { count, selectedSite, isCouponsEnabled, sitePlanName ->
             MoreMenuViewState(
                 generalMenuItems = generateGeneralMenuButtons(
                     unseenReviewsCount = count,
@@ -61,6 +58,7 @@ class MoreMenuViewModel @Inject constructor(
                 settingsMenuItems = generateSettingsMenuButtons(),
                 siteName = selectedSite.getSelectedSiteName(),
                 siteUrl = selectedSite.getSelectedSiteAbsoluteUrl(),
+                sitePlan = sitePlanName,
                 userAvatarUrl = accountStore.account.avatarUrl,
                 isStoreSwitcherEnabled = selectedSite.connectionType != SiteConnectionType.ApplicationPasswords
             )
@@ -211,6 +209,12 @@ class MoreMenuViewModel @Inject constructor(
         ?.generalMenuItems
         ?.find { it.title == R.string.more_menu_button_payments }
         ?.badgeState != null
+
+    private fun loadSitePlanName() = flow {
+        planRepository.fetchCurrentPlanDetails(selectedSite.get())
+            ?.let { emit(it.name) }
+            ?: emit("")
+    }
 
     data class MoreMenuViewState(
         val generalMenuItems: List<MenuUiButton> = emptyList(),
