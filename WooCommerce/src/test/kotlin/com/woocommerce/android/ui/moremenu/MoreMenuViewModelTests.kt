@@ -6,8 +6,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
+import com.woocommerce.android.ui.plans.domain.SitePlan
+import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import java.time.ZonedDateTime
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +18,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -46,6 +50,14 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         }
     }
 
+    private val planRepository: SitePlanRepository = mock {
+        onBlocking { fetchCurrentPlanDetails(any()) } doReturn SitePlan(
+            name = "Test Plan",
+            expirationDate = ZonedDateTime.now(),
+            type = SitePlan.Type.FREE_TRIAL
+        )
+    }
+
     private val appPrefsWrapper: AppPrefsWrapper = mock()
 
     private lateinit var viewModel: MoreMenuViewModel
@@ -57,6 +69,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             accountStore = accountStore,
             selectedSite = selectedSite,
             moreMenuRepository = moreMenuRepository,
+            planRepository = planRepository,
             unseenReviewsCountHandler = unseenReviewsCountHandler,
             appPrefsWrapper = appPrefsWrapper
         )
