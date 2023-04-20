@@ -229,6 +229,46 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     }
 
     @Test
+    fun `given site plan is WPcom, then SitePlan name is formatted`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(planRepository.fetchCurrentPlanDetails(any())).thenReturn(
+                SitePlan(
+                    name = "WordPress.com Test Plan",
+                    expirationDate = ZonedDateTime.now(),
+                    type = SitePlan.Type.OTHER
+                )
+            )
+        }
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+
+        // THEN
+        assertThat(states.last().sitePlan).isEqualTo("Test Plan")
+    }
+
+    @Test
+    fun `given site plan is paid Woo Express, then SitePlan name is formatted`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(planRepository.fetchCurrentPlanDetails(any())).thenReturn(
+                SitePlan(
+                    name = "Woo Express: Test Plan",
+                    expirationDate = ZonedDateTime.now(),
+                    type = SitePlan.Type.OTHER
+                )
+            )
+        }
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+
+        // THEN
+        assertThat(states.last().sitePlan).isEqualTo("Test Plan")
+    }
+
+    @Test
     fun `given site plan is null, then SitePlan name is empty`() = testBlocking {
         // GIVEN
         setup {
