@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -91,6 +92,7 @@ class CreateShippingLabelViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
     private val getLocations: GetLocations,
+    private val appPrefs: AppPrefsWrapper
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val STATE_KEY = KEY_STATE
@@ -414,7 +416,7 @@ class CreateShippingLabelViewModel @Inject constructor(
             company = site.get().name,
             firstName = accountStore.account.firstName,
             lastName = accountStore.account.lastName,
-            phone = "",
+            phone = appPrefs.getStorePhoneNumber(site.getSelectedSiteId()),
             email = "",
             country = country,
             state = state,
