@@ -383,10 +383,11 @@
     -->
     <string name="signup_get_started_button">Get Started</string>
     <string name="signup_get_started_label">Get started in minutes</string>
-    <string name="signup_already_registered">First, let’s create your account. Already registered? &lt;a href=\'login\'&gt;&lt;u&gt;Log in&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="signup_create_password_label">Create your password</string>
+    <string name="signup_get_started_create_account_label">First, let’s create your account. </string>
     <string name="signup_email_address_hint">Your email address</string>
     <string name="signup_password_hint">Choose a password</string>
-    <string name="signup_terms_of_service">By continuing, you agree to our &lt;u&gt;Terms of Service.&lt;/u&gt;</string>
+    <string name="signup_terms_of_service">By continuing, you agree to our &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Terms of Service.&lt;/u&gt;&lt;/a&gt;</string>
     <string name="signup_creating_account_loading_message">Creating new account</string>
     <string name="signup_email_exist_input">An account with this email already exists.</string>
     <string name="signup_email_invalid_input">Please enter a valid email address.</string>

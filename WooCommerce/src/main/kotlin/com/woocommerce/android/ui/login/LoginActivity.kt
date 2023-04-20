@@ -185,6 +185,7 @@ class LoginActivity :
                 val email = intent.extras!!.getString(EMAIL_PARAMETER)
                 gotWpcomEmail(email, verifyEmail = true, null)
             }
+
             hasJetpackConnectedIntent() -> {
                 AnalyticsTracker.track(
                     stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_COMPLETED,
@@ -192,9 +193,11 @@ class LoginActivity :
                 )
                 startLoginViaWPCom()
             }
+
             !loginHelpNotification.isNullOrBlank() -> {
                 processLoginHelpNotification(loginHelpNotification)
             }
+
             savedInstanceState == null -> {
                 loginAnalyticsListener.trackLoginAccessed()
                 showPrologue()

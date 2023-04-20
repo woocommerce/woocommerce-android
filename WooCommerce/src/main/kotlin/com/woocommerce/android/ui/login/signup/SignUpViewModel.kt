@@ -4,10 +4,10 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.SIGNUP_ERROR
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep
@@ -15,6 +15,11 @@ import com.woocommerce.android.ui.login.signup.SignUpRepository.AccountCreationE
 import com.woocommerce.android.ui.login.signup.SignUpRepository.AccountCreationSuccess
 import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError
 import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError.EMAIL_EXIST
+import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError.EMAIL_INVALID
+import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError.PASSWORD_INVALID
+import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError.PASSWORD_TOO_SHORT
+import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError.UNKNOWN_ERROR
+import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError.USERNAME_INVALID
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.ErrorType.EMAIL
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.ErrorType.PASSWORD
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.ErrorType.UNKNOWN
@@ -34,11 +39,14 @@ class SignUpViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     lateinit var nextStep: NextStep
 
-    private val _viewState = MutableLiveData<SignUpState>()
+    private val _viewState = MutableLiveData(SignUpState(stepType = SignUpStepType.EMAIL))
     val viewState: LiveData<SignUpState> = _viewState
 
     fun onBackPressed() {
-        triggerEvent(MultiLiveEvent.Event.Exit)
+        when (_viewState.value?.stepType!!) {
+            SignUpStepType.EMAIL -> triggerEvent(MultiLiveEvent.Event.Exit)
+            SignUpStepType.PASSWORD -> _viewState.value = _viewState.value?.copy(stepType = SignUpStepType.EMAIL)
+        }
     }
 
     fun onTermsOfServiceClicked() {
@@ -50,7 +58,14 @@ class SignUpViewModel @Inject constructor(
         triggerEvent(OnLoginClicked)
     }
 
-    fun onGetStartedCLicked(email: String, password: String) {
+    fun onEmailContinueClicked(email: String) {
+        _viewState.value = _viewState.value?.copy(
+            stepType = SignUpStepType.PASSWORD,
+            email = email.trim()
+        )
+    }
+
+    fun onPasswordContinueClicked(inputPassword: String) {
         AnalyticsTracker.track(stat = AnalyticsEvent.SIGNUP_SUBMITTED)
 
         if (!networkStatus.isConnected()) {
@@ -58,40 +73,40 @@ class SignUpViewModel @Inject constructor(
             return
         }
 
-        val trimmedEmail = email.trim()
-        _viewState.value = SignUpState(email = trimmedEmail, password = password)
-        viewModelScope.launch {
-            _viewState.value = _viewState.value?.copy(isLoading = true)
-            when (val result = signUpRepository.createAccount(trimmedEmail, password)) {
-                is AccountCreationError -> {
-                    AnalyticsTracker.track(
-                        stat = AnalyticsEvent.SIGNUP_ERROR,
-                        properties = mapOf(AnalyticsTracker.KEY_ERROR_TYPE to result.error.name)
-                    )
-                    val error = result.error.toSignUpErrorUi()
-                    _viewState.value = _viewState.value?.copy(
-                        isLoading = false,
-                        error = error
-                    )
-                    if (error.type == UNKNOWN) {
-                        triggerEvent(ShowSnackbar(error.stringId))
-                    }
-                    if (result.error == EMAIL_EXIST) {
-                        triggerEvent(
-                            OnEmailAlreadyExistError(
-                                email = trimmedEmail,
-                                password = password
-                            )
+        _viewState.value = _viewState.value?.copy(
+            password = inputPassword,
+            isLoading = true
+        )
+
+        _viewState.value?.let { state ->
+            val email = state.email!!
+            val password = state.password!!
+
+            launch {
+                when (val result = signUpRepository.createAccount(email, password)) {
+                    is AccountCreationError -> {
+                        AnalyticsTracker.track(
+                            stat = SIGNUP_ERROR,
+                            properties = mapOf(AnalyticsTracker.KEY_ERROR_TYPE to result.error.name)
                         )
+                        val error = result.error.toSignUpErrorUi()
+                        _viewState.value = _viewState.value?.copy(
+                            isLoading = false,
+                            error = error
+                        )
+                        if (error.type == UNKNOWN) {
+                            triggerEvent(ShowSnackbar(error.stringId))
+                        }
                     }
-                }
-                AccountCreationSuccess -> {
-                    AnalyticsTracker.track(stat = AnalyticsEvent.SIGNUP_SUCCESS)
-                    _viewState.value = _viewState.value?.copy(isLoading = false)
-                    if (nextStep == NextStep.STORE_CREATION) {
-                        appPrefs.markAsNewSignUp(true)
+
+                    AccountCreationSuccess -> {
+                        AnalyticsTracker.track(stat = AnalyticsEvent.SIGNUP_SUCCESS)
+                        _viewState.value = _viewState.value?.copy(isLoading = false)
+                        if (nextStep == NextStep.STORE_CREATION) {
+                            appPrefs.markAsNewSignUp(true)
+                        }
+                        triggerEvent(OnAccountCreated)
                     }
-                    triggerEvent(OnAccountCreated)
                 }
             }
         }
@@ -99,30 +114,35 @@ class SignUpViewModel @Inject constructor(
 
     private fun SignUpError.toSignUpErrorUi() =
         when (this) {
-            SignUpError.EMAIL_EXIST -> SignUpErrorUi(
+            EMAIL_EXIST -> SignUpErrorUi(
                 type = EMAIL,
                 stringId = R.string.signup_email_exist_input
             )
-            SignUpError.EMAIL_INVALID -> SignUpErrorUi(
+
+            EMAIL_INVALID -> SignUpErrorUi(
                 type = EMAIL,
                 stringId = R.string.signup_email_invalid_input
             )
-            SignUpError.PASSWORD_INVALID -> SignUpErrorUi(
+
+            PASSWORD_INVALID -> SignUpErrorUi(
                 type = PASSWORD,
                 stringId = R.string.signup_password_not_secure_enough
             )
-            SignUpError.PASSWORD_TOO_SHORT -> SignUpErrorUi(
+
+            PASSWORD_TOO_SHORT -> SignUpErrorUi(
                 type = PASSWORD,
                 stringId = R.string.signup_password_too_short
             )
-            SignUpError.UNKNOWN_ERROR,
-            SignUpError.USERNAME_INVALID -> SignUpErrorUi(
+
+            UNKNOWN_ERROR,
+            USERNAME_INVALID -> SignUpErrorUi(
                 type = UNKNOWN,
                 stringId = R.string.signup_api_generic_error
             )
         }
 
     data class SignUpState(
+        val stepType: SignUpStepType,
         val email: String? = null,
         val password: String? = null,
         val isLoading: Boolean = false,
@@ -133,6 +153,11 @@ class SignUpViewModel @Inject constructor(
         val type: ErrorType,
         @StringRes val stringId: Int
     )
+
+    enum class SignUpStepType {
+        EMAIL,
+        PASSWORD,
+    }
 
     enum class ErrorType {
         EMAIL,
@@ -147,5 +172,4 @@ class SignUpViewModel @Inject constructor(
         val email: String,
         val password: String
     ) : MultiLiveEvent.Event()
-
 }
