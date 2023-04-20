@@ -32,14 +32,13 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
     private val order: Order = mock {
         on { id }.thenReturn(1L)
     }
-    private val site: SiteModel = mock {
-        on { name }.thenReturn("siteName")
-    }
+    private val site: SiteModel = mock()
     private val orderCreateEditRepository: OrderCreateEditRepository = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val refundStore: WCRefundStore = mock()
     private val resourceProvider: ResourceProvider = mock {
         on { getString(R.string.tap_to_pay_refund_reason) }.thenReturn("Test Tap To Pay payment auto refund")
+        on { getString(R.string.card_reader_tap_to_pay_test_payment_note) }.thenReturn("Test payment")
     }
     private val selectedSite: SelectedSite = mock {
         on { get() }.thenReturn(site)
