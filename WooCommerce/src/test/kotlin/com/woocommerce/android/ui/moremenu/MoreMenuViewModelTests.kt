@@ -39,6 +39,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     )
     private val selectedSite: SelectedSite = mock {
         on { observe() } doReturn selectedSiteFlow
+        on { get() } doReturn selectedSiteFlow.value
     }
     private val moreMenuRepository: MoreMenuRepository = mock {
         onBlocking { isInboxEnabled() } doReturn true
@@ -186,4 +187,16 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             // THEN
             assertThat(states.last().isStoreSwitcherEnabled).isEqualTo(true)
         }
+
+    @Test
+    fun `given site plan is free trial, then free trial name is configured`() = testBlocking {
+        // GIVEN
+        setup()
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+
+        // THEN
+        assertThat(states.last().sitePlan).isEqualTo("Free Trial")
+    }
 }
