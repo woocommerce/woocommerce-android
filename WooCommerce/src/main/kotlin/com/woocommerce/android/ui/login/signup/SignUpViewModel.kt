@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.login.signup
 
-import android.util.Patterns
 import androidx.annotation.StringRes
+import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError.USER
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.ErrorType.EMAIL
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.ErrorType.PASSWORD
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.ErrorType.UNKNOWN
+import com.woocommerce.android.util.StringUtils.isValidEmail
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -38,6 +39,10 @@ class SignUpViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val appPrefs: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
+    private companion object {
+        const val PASSWORD_MIN_LENGTH = 7
+    }
+
     lateinit var nextStep: NextStep
 
     private val _viewState = MutableLiveData(SignUpState(stepType = SignUpStepType.EMAIL))
@@ -64,7 +69,8 @@ class SignUpViewModel @Inject constructor(
         if (isValidEmail(trimmedEmail)) {
             _viewState.value = _viewState.value?.copy(
                 stepType = SignUpStepType.PASSWORD,
-                email = trimmedEmail
+                email = trimmedEmail,
+                error = null
             )
         } else {
             _viewState.value = _viewState.value?.copy(
@@ -80,6 +86,11 @@ class SignUpViewModel @Inject constructor(
 
     fun onPasswordContinueClicked(inputPassword: String) {
         AnalyticsTracker.track(stat = AnalyticsEvent.SIGNUP_SUBMITTED)
+
+        validatePassword(inputPassword)?.let { error ->
+            _viewState.value = _viewState.value?.copy(error = error.toSignUpErrorUi())
+            return
+        }
 
         if (!networkStatus.isConnected()) {
             triggerEvent(ShowSnackbar(org.wordpress.android.mediapicker.source.wordpress.R.string.no_network_message))
@@ -125,12 +136,6 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    private fun isValidEmail(email: String): Boolean {
-        val emailRegExPattern = Patterns.EMAIL_ADDRESS
-        val matcher = emailRegExPattern.matcher(email)
-        return matcher.find()
-    }
-
     private fun SignUpError.toSignUpErrorUi() =
         when (this) {
             EMAIL_EXIST -> SignUpErrorUi(
@@ -159,6 +164,12 @@ class SignUpViewModel @Inject constructor(
                 stringId = R.string.signup_api_generic_error
             )
         }
+
+    private fun validatePassword(password: String): SignUpError? = when {
+        password.length < PASSWORD_MIN_LENGTH -> PASSWORD_TOO_SHORT
+        password.isDigitsOnly() -> PASSWORD_INVALID
+        else -> null
+    }
 
     data class SignUpState(
         val stepType: SignUpStepType,
