@@ -47,12 +47,12 @@ enum class FeatureFlag {
             QUANTITY_RULES_READ_ONLY_SUPPORT,
             BUNDLED_PRODUCTS_READ_ONLY_SUPPORT,
             IPP_UK,
-            ANALYTICS_HUB_FEEDBACK_BANNER -> true
+            ANALYTICS_HUB_FEEDBACK_BANNER,
+            STORE_CREATION_PROFILER -> true
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             IPP_TAP_TO_PAY,
-            STORE_CREATION_PROFILER,
             COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
