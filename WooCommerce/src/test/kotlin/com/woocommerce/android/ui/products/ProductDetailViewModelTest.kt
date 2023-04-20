@@ -251,6 +251,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 tracker,
                 selectedSite,
                 mock(),
+                mock(),
                 mock()
             )
         )

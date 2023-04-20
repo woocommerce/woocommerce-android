@@ -1177,6 +1177,7 @@
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Something went wrong. Please try again later.</string>
     <string name="card_reader_tap_to_pay_beta_features_heading">Tap To Pay</string>
     <string name="card_reader_tap_to_pay_beta_features_subheading">Test out Tap To Pay in the app</string>
+    <string name="card_reader_tap_to_pay_test_payment_note">Tap To Pay Test Payment</string>
 
     <!--
             Card Reader Type Selection
@@ -1185,6 +1186,7 @@
     <string name="card_reader_type_selection_tap_to_pay_description">Securely accept contactless payments directly from your phone.</string>
     <string name="card_reader_type_selection_bluetooth_reader">Card Reader</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">Card reader accepts tap, chip, and swipe payments with debit and credit cards.</string>
+    <string name="tap_to_pay_refund_reason">Test Tap To Pay payment auto refund</string>
 
     <!--
             Card Reader Interac refund
@@ -2192,6 +2194,7 @@
     <string name="product_type_downloadable">Downloadable</string>
     <string name="product_type_subscription">Subscription</string>
     <string name="product_type_bundle">Bundle</string>
+    <string name="product_type_composite">Composite product</string>
 
     <!-- Product type bottom sheets -->
     <string name="product_type_list_header">Select a product type</string>
@@ -3341,7 +3344,6 @@
     <string name="product_bundle_multiple_count">%d products</string>
     <string name="bundled_products_info_notice">You can edit bundled products in the web dashboard.</string>
 
-
     <!--
     More Menu
     -->
@@ -3377,4 +3379,16 @@
     <string name="more_menu_button_settings">Settings</string>
     <string name="more_menu_button_settings_description">Update your preferences</string>
 
+    <!--
+    Composite products
+    -->
+    <string name="product_components">Components</string>
+    <string name="product_component_settings">Component settings</string>
+    <string name="product_component_single_count">1 component</string>
+    <string name="product_component_multiple_count">%d components</string>
+    <string name="component_products_info_notice">You can edit components in the web dashboard.</string>
+    <string name="component_options">Component options</string>
+    <string name="component_default_option">Default option</string>
+    <string name="component_type_products">Products</string>
+    <string name="component_type_categories">Categories</string>
 </resources>
