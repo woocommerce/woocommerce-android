@@ -17,7 +17,6 @@ interface MainContract {
         fun updateStatsWidgets()
         fun onPlanUpgraded()
         fun onPlanUpgradeDismissed()
-        fun checkForNotificationsPermission()
     }
 
     interface View : BaseView<Presenter> {
@@ -34,8 +33,5 @@ interface MainContract {
         fun showProgressDialog(@StringRes stringId: Int)
         fun showUserEligibilityErrorScreen()
         fun updateStatsWidgets()
-        fun setNotificationBarVisibility(isVisible: Boolean)
-
-        val hasNotificationsPermission: Boolean
     }
 }
