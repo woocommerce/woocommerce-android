@@ -40,7 +40,7 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
         sut.onTryForFreeButtonPressed()
 
         // Then
-        verify(createStore).invoke(expectedDomain, expectedTitle)
+        verify(createStore).invoke(expectedDomain, expectedTitle, null, null)
     }
 
     @Test
@@ -205,7 +205,11 @@ internal class StoreCreationSummaryViewModelTest : BaseUnitTest() {
 
         createStore = mock {
             onBlocking {
-                invoke(newStore.data.domain, newStore.data.name)
+                invoke(
+                    newStore.data.domain,
+                    newStore.data.name,
+                    newStore.data.profilerData,
+                    newStore.data.country?.code)
             } doAnswer {
                 flow {
                     emit(StoreCreationState.Loading)
