@@ -52,10 +52,10 @@ enum class FeatureFlag {
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             IPP_TAP_TO_PAY,
+            STORE_CREATION_PROFILER,
             COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT -> PackageUtils.isDebugBuild()
 
-            IAP_FOR_STORE_CREATION,
-            STORE_CREATION_PROFILER -> false
+            IAP_FOR_STORE_CREATION -> false
         }
     }
 }
