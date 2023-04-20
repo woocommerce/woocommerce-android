@@ -7,7 +7,6 @@ import android.widget.TextView
 import androidx.annotation.LayoutRes
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.showKeyboardWithDelay
-import com.woocommerce.android.ui.login.qrcode.QrCodeLoginListener
 import org.wordpress.android.login.LoginEmailFragment
 import org.wordpress.android.login.widgets.WPLoginInputRow
 
@@ -17,7 +16,6 @@ class WooLoginEmailFragment : LoginEmailFragment() {
     }
 
     private lateinit var wooLoginEmailListener: Listener
-    private lateinit var qrCodeLoginListener: QrCodeLoginListener
 
     @LayoutRes
     override fun getContentLayout(): Int = R.layout.fragment_login_email_screen
@@ -27,10 +25,6 @@ class WooLoginEmailFragment : LoginEmailFragment() {
         val whatIsWordPressText = rootView.findViewById<Button>(R.id.login_what_is_wordpress)
         whatIsWordPressText.setOnClickListener {
             wooLoginEmailListener.onWhatIsWordPressLinkClicked()
-        }
-
-        rootView.findViewById<Button>(R.id.button_login_qr_code).setOnClickListener {
-            qrCodeLoginListener.onScanQrCodeClicked(TAG)
         }
     }
 
@@ -47,7 +41,6 @@ class WooLoginEmailFragment : LoginEmailFragment() {
         super.onAttach(context)
         if (activity is Listener) {
             wooLoginEmailListener = activity as Listener
-            qrCodeLoginListener = activity as QrCodeLoginListener
         }
     }
 }
