@@ -11,6 +11,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -21,6 +22,7 @@ import javax.inject.Inject
 class TapToPaySummaryViewModel @Inject constructor(
     private val orderCreateEditRepository: OrderCreateEditRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val resourceProvider: ResourceProvider,
     savedStateHandle: SavedStateHandle,
 ) : ScopedViewModel(savedStateHandle) {
     private val _viewState = MutableLiveData(UiState())
@@ -34,7 +36,10 @@ class TapToPaySummaryViewModel @Inject constructor(
         analyticsTrackerWrapper.track(AnalyticsEvent.TAP_TO_PAY_SUMMARY_TRY_PAYMENT_TAPPED)
         launch {
             _viewState.value = UiState(isProgressVisible = true)
-            val result = orderCreateEditRepository.createSimplePaymentOrder(TEST_ORDER_AMOUNT)
+            val result = orderCreateEditRepository.createSimplePaymentOrder(
+                TEST_ORDER_AMOUNT,
+                customerNote = resourceProvider.getString(R.string.card_reader_tap_to_pay_test_payment_note)
+            )
             result.fold(
                 onSuccess = {
                     triggerEvent(StartTryPaymentFlow(it))

@@ -67,7 +67,10 @@ class OrderCreateEditRepository @Inject constructor(
         }
     }
 
-    suspend fun createSimplePaymentOrder(currentPrice: BigDecimal): Result<Order> {
+    suspend fun createSimplePaymentOrder(
+        currentPrice: BigDecimal,
+        customerNote: String? = null,
+    ): Result<Order> {
         val status = if (isAutoDraftSupported()) {
             WCOrderStatusModel(statusKey = AUTO_DRAFT)
         } else {
@@ -78,7 +81,8 @@ class OrderCreateEditRepository @Inject constructor(
             site = selectedSite.get(),
             amount = currentPrice.toString(),
             isTaxable = true,
-            status = status
+            status = status,
+            customerNote = customerNote
         )
 
         return when {

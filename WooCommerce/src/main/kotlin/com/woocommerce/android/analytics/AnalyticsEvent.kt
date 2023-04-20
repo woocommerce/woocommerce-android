@@ -812,5 +812,8 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     PRODUCT_VARIATION_VIEW_QUANTITY_RULES_TAPPED,
 
     // Bundled products
-    PRODUCT_DETAIL_VIEW_BUNDLED_PRODUCTS_TAPPED
+    PRODUCT_DETAIL_VIEW_BUNDLED_PRODUCTS_TAPPED,
+
+    // Composite Products
+    PRODUCT_DETAILS_VIEW_COMPONENTS_TAPPED
 }
