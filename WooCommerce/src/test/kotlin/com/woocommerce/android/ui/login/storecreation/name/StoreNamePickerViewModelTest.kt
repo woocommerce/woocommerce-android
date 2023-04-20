@@ -6,7 +6,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin
-import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.NavigateToSummary
+import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.NavigateToStoreProfiler
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -38,7 +38,7 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when onContinueClicked happens, then free trial Summary event is triggered`() {
+    fun `when onContinueClicked happens, then Store Profiler event is triggered`() {
         // Given
         var latestEvent: MultiLiveEvent.Event? = null
         sut.event.observeForever { latestEvent = it }
@@ -48,7 +48,7 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
         sut.onContinueClicked()
 
         // Then
-        assertThat(latestEvent).isEqualTo(NavigateToSummary)
+        assertThat(latestEvent).isEqualTo(NavigateToStoreProfiler)
     }
 
     @Test

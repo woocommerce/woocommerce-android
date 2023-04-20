@@ -1,2 +1,0 @@
-13.0:
-WooCommerce Subscriptions 拡張機能をお使いの皆さまに良いお知らせです。 注文詳細画面と商品情報画面に、WooCommerce Subsciptions 拡張機能の読み取り専用のサポートを追加しました。 その他の機能も近日中に公開予定です !

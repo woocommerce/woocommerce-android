@@ -10,6 +10,7 @@ import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -24,17 +25,26 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
 
     private val orderCreateEditRepository: OrderCreateEditRepository = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val resourceProvider: ResourceProvider = mock {
+        on { getString(R.string.card_reader_tap_to_pay_test_payment_note) }.thenReturn("Test payment")
+    }
 
     private val viewModel = TapToPaySummaryViewModel(
         orderCreateEditRepository,
         analyticsTrackerWrapper,
+        resourceProvider,
         savedStateHandle
     )
 
     @Test
     fun `give order creation error, when onTryPaymentClicked, then show snackbar`() = testBlocking {
         // GIVEN
-        whenever(orderCreateEditRepository.createSimplePaymentOrder(BigDecimal.valueOf(0.5))).thenReturn(
+        whenever(
+            orderCreateEditRepository.createSimplePaymentOrder(
+                BigDecimal.valueOf(0.5),
+                customerNote = "Test payment"
+            )
+        ).thenReturn(
             Result.failure(Exception())
         )
 
@@ -52,7 +62,12 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             val order = mock<Order>()
-            whenever(orderCreateEditRepository.createSimplePaymentOrder(BigDecimal.valueOf(0.5))).thenReturn(
+            whenever(
+                orderCreateEditRepository.createSimplePaymentOrder(
+                    BigDecimal.valueOf(0.5),
+                    customerNote = "Test payment"
+                )
+            ).thenReturn(
                 Result.success(order)
             )
 
@@ -66,7 +81,12 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
     @Test
     fun `when onTryPaymentClicked, then progress is shown and then hidden`() = testBlocking {
         // GIVEN
-        whenever(orderCreateEditRepository.createSimplePaymentOrder(BigDecimal.valueOf(0.5))).thenReturn(
+        whenever(
+            orderCreateEditRepository.createSimplePaymentOrder(
+                BigDecimal.valueOf(0.5),
+                customerNote = "Test payment"
+            )
+        ).thenReturn(
             Result.failure(Exception())
         )
 
@@ -84,7 +104,12 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
     @Test
     fun `when onTryPaymentClicked, then ttp try payment tracked`() = testBlocking {
         // GIVEN
-        whenever(orderCreateEditRepository.createSimplePaymentOrder(BigDecimal.valueOf(0.5))).thenReturn(
+        whenever(
+            orderCreateEditRepository.createSimplePaymentOrder(
+                BigDecimal.valueOf(0.5),
+                customerNote = "Test payment"
+            )
+        ).thenReturn(
             Result.failure(Exception())
         )
 
@@ -100,7 +125,12 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
     @Test
     fun `given error creating order, when onTryPaymentClicked, then card reader failed tracked`() = testBlocking {
         // GIVEN
-        whenever(orderCreateEditRepository.createSimplePaymentOrder(BigDecimal.valueOf(0.5))).thenReturn(
+        whenever(
+            orderCreateEditRepository.createSimplePaymentOrder(
+                BigDecimal.valueOf(0.5),
+                customerNote = "Test payment"
+            )
+        ).thenReturn(
             Result.failure(Exception())
         )
 

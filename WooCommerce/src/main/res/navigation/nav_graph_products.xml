@@ -99,6 +99,9 @@
         <action
             android:id="@+id/action_productDetailFragment_to_productBundleFragment"
             app:destination="@id/productBundleFragment" />
+        <action
+            android:id="@+id/action_productDetailFragment_to_compositeProductFragment"
+            app:destination="@id/compositeProductFragment" />
     </fragment>
     <fragment
         android:id="@+id/variationListFragment"
@@ -661,5 +664,24 @@
         <argument
             android:name="productId"
             app:argType="long" />
+    </fragment>
+    <fragment
+        android:id="@+id/compositeProductFragment"
+        android:name="com.woocommerce.android.ui.products.components.ComponentListFragment"
+        android:label="CompositeProductFragment" >
+        <argument
+            android:name="components"
+            app:argType="com.woocommerce.android.model.Component[]" />
+        <action
+            android:id="@+id/action_compositeProductFragment_to_componentDetailsFragment"
+            app:destination="@id/componentDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/componentDetailsFragment"
+        android:name="com.woocommerce.android.ui.products.components.ComponentDetailsFragment"
+        android:label="ComponentDetailsFragment" >
+        <argument
+            android:name="component"
+            app:argType="com.woocommerce.android.model.Component" />
     </fragment>
 </navigation>

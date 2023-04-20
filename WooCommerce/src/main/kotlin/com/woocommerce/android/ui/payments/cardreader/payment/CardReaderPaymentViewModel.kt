@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
@@ -49,6 +50,7 @@ import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
@@ -110,6 +112,7 @@ class CardReaderPaymentViewModel
     private val cardReaderPaymentOrderHelper: CardReaderPaymentOrderHelper,
     private val cardReaderPaymentReceiptHelper: CardReaderPaymentReceiptHelper,
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
+    private val cardReaderConfigProvider: CardReaderCountryConfigProvider,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogFragmentArgs by savedState.navArgs()
 
@@ -118,7 +121,7 @@ class CardReaderPaymentViewModel
     private val refundAmount: BigDecimal
         get() = when (val param = arguments.paymentOrRefund) {
             is CardReaderFlowParam.PaymentOrRefund.Refund -> param.refundAmount
-            else -> throw IllegalStateException("Accessing refund account on $param flow")
+            else -> throw IllegalStateException("Accessing refund amount on $param flow")
         }
 
     // The app shouldn't store the state as payment flow gets canceled when the vm dies
@@ -287,7 +290,7 @@ class CardReaderPaymentViewModel
         }
     }
 
-    private fun onPaymentStatusChanged(
+    private suspend fun onPaymentStatusChanged(
         orderId: Long,
         billingEmail: String,
         paymentStatus: CardPaymentStatus,
@@ -465,13 +468,24 @@ class CardReaderPaymentViewModel
         }
     }
 
-    private fun emitFailedPaymentState(orderId: Long, billingEmail: String, error: PaymentFailed, amountLabel: String) {
+    private suspend fun emitFailedPaymentState(
+        orderId: Long,
+        billingEmail: String,
+        error: PaymentFailed,
+        amountLabel: String
+    ) {
         WooLog.e(WooLog.T.CARD_READER, error.errorMessage)
         cardReaderOnboardingChecker.invalidateCache()
         val onRetryClicked = error.paymentDataForRetry?.let {
             { retry(orderId, billingEmail, it, amountLabel) }
         } ?: { initPaymentFlow(isRetry = true) }
-        val errorType = errorMapper.mapPaymentErrorToUiError(error.type)
+        val config = cardReaderConfigProvider.provideCountryConfigFor(getStoreCountryCode())
+
+        require(config is CardReaderConfigForSupportedCountry) {
+            "State mismatch: received unsupported country config"
+        }
+
+        val errorType = errorMapper.mapPaymentErrorToUiError(error.type, config)
         if (errorType is PaymentFlowError.NonRetryableError) {
             viewState.postValue(
                 cardReaderPaymentReaderTypeStateProvider.provideFailedPaymentState(

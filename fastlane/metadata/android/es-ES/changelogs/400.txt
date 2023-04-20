@@ -1,2 +1,0 @@
-13.0:
-Buenas noticias para los usuarios de la extensión WooCommerce Subscriptions. Hemos añadido soporte de solo lectura para la extensión WooCommerce Subscriptions en las pantallas de detalles del pedido y detalles del producto. En breve incluiremos más funciones.
