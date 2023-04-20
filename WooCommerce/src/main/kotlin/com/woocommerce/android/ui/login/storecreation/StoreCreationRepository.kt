@@ -179,7 +179,7 @@ class StoreCreationRepository @Inject constructor(
                 val site = siteStore.getSiteBySiteId(createSiteResult.data)
                 val domain = Uri.parse(site?.url.orEmpty()).host.orEmpty()
                 newStore.update(domain = domain)
-                sitePlanRestClient.addEcommercePlanTrial(createSiteResult.data)
+                sitePlanRestClient.addEcommercePlanTrial(createSiteResult.data, siteData)
                     .let { addTrialResult ->
                         return when (addTrialResult) {
                             is WPComGsonRequestBuilder.Response.Success -> {
@@ -262,6 +262,8 @@ class StoreCreationRepository @Inject constructor(
         val segmentId: Long?,
         val siteDesign: String?,
         val domain: String?,
-        val title: String?
+        val title: String?,
+        val profilerData: NewStore.ProfilerData? = null,
+        val countryCode: String? = null,
     ) : Parcelable
 }
