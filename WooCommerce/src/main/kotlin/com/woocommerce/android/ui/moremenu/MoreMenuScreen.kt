@@ -159,7 +159,7 @@ private fun StoreDetailsHeader(
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
                             .align(Alignment.CenterVertically)
-                            .weight(1f)
+                            .weight(1f, false)
                     )
                     if (planName.isNotEmpty()) {
                         Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_50)))
