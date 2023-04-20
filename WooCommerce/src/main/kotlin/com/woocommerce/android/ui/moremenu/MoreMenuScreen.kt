@@ -191,11 +191,11 @@ private fun PlanBadge(planName: String) {
     Box(
         modifier = Modifier
             .clip(CircleShape)
-            .background(colorResource(id = R.color.woo_purple_0))
+            .background(colorResource(id = R.color.free_trial_component_background))
     ) {
         Text(
             text = planName.uppercase(),
-            color = colorResource(id = R.color.woo_purple_60),
+            color = colorResource(id = R.color.free_trial_component_text),
             style = MaterialTheme.typography.caption,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(
