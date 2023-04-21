@@ -13,6 +13,7 @@ import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.signup.SignUpViewModel.OnAccountCreated
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.OnLoginWithEmail
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.OnTermsOfServiceClicked
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -96,6 +97,7 @@ class SignUpFragment : BaseFragment() {
                 is OnLoginWithEmail -> signUpEmailFragment?.onLoginWithEmail(event.email)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is OnTermsOfServiceClicked -> openTermsOfServiceUrl()
+                is OnAccountCreated -> signUpEmailFragment?.onAccountCreated(nextStep)
                 is Exit -> parentFragmentManager.popBackStack()
             }
         }
