@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.compose.component
 
 import android.annotation.SuppressLint
 import android.view.ViewGroup
+import android.webkit.CookieManager
 import android.webkit.WebChromeClient
+import android.webkit.WebStorage
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.compose.BackHandler
@@ -50,6 +52,7 @@ fun WCWebView(
     isDomStorageEnabled: Boolean = true,
     isReadOnly: Boolean = false,
     initialScale: Int = 0,
+    clearCache: Boolean = false,
     progressIndicator: WebViewProgressIndicator = Linear()
 ) {
     var webView by remember { mutableStateOf<WebView?>(null) }
@@ -121,6 +124,18 @@ fun WCWebView(
                     this.settings.javaScriptEnabled = isJavaScriptEnabled
                     this.settings.domStorageEnabled = isDomStorageEnabled
                     this.settings.userAgentString = userAgent.userAgent
+                    if (clearCache) {
+                        WebStorage.getInstance().deleteAllData()
+
+                        // Clear all the cookies
+                        CookieManager.getInstance().removeAllCookies(null)
+                        CookieManager.getInstance().flush()
+
+                        this.clearCache(true)
+                        this.clearFormData()
+                        this.clearHistory()
+                        this.clearSslPreferences()
+                    }
                 }.also { webView = it }
             },
             modifier = Modifier
