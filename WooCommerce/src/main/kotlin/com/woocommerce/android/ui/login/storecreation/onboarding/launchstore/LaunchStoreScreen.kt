@@ -270,7 +270,7 @@ fun EcommerceTrialBanner(
 ) {
     Row(
         modifier = modifier
-            .background(color = colorResource(id = R.color.free_trial_banner_background))
+            .background(color = colorResource(id = R.color.free_trial_component_background))
             .clickable { onBannerClicked() }
             .padding(dimensionResource(id = R.dimen.major_100)),
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),

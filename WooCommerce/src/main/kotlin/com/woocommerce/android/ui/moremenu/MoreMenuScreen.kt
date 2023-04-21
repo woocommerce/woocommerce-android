@@ -56,6 +56,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
@@ -124,6 +125,7 @@ private fun MoreMenuHeader(
             StoreDetailsHeader(
                 userAvatarUrl = state.userAvatarUrl,
                 siteName = state.siteName,
+                planName = state.sitePlan,
                 siteUrl = state.siteUrl
             )
         }
@@ -134,6 +136,7 @@ private fun MoreMenuHeader(
 private fun StoreDetailsHeader(
     userAvatarUrl: String,
     siteName: String,
+    planName: String,
     siteUrl: String
 ) {
     Row(
@@ -147,11 +150,23 @@ private fun StoreDetailsHeader(
             )
             Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
             Column {
-                Text(
-                    text = siteName,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.body1,
-                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50))
+                ) {
+                    Text(
+                        text = siteName,
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.body1,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .weight(1f, false)
+                    )
+                    if (planName.isNotEmpty()) {
+                        PlanBadge(planName)
+                    }
+                }
                 Text(
                     text = siteUrl,
                     style = MaterialTheme.typography.caption,
@@ -168,6 +183,26 @@ private fun StoreDetailsHeader(
                 .padding(end = dimensionResource(id = R.dimen.minor_100))
                 .size(dimensionResource(id = R.dimen.major_150))
                 .weight(1f)
+        )
+    }
+}
+
+@Composable
+private fun PlanBadge(planName: String) {
+    Box(
+        modifier = Modifier
+            .clip(CircleShape)
+            .background(colorResource(id = R.color.free_trial_component_background))
+    ) {
+        Text(
+            text = planName.uppercase(),
+            color = colorResource(id = R.color.free_trial_component_text),
+            style = MaterialTheme.typography.caption,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(
+                vertical = dimensionResource(id = R.dimen.minor_25),
+                horizontal = dimensionResource(id = R.dimen.minor_100)
+            )
         )
     }
 }
@@ -405,6 +440,7 @@ private fun MoreMenuPreview() {
         ),
         siteName = "Example Site",
         siteUrl = "woocommerce.com",
+        sitePlan = "free trial",
         userAvatarUrl = "" // To force displaying placeholder image
     )
     MoreMenuScreen(state, {})
