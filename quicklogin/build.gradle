@@ -47,6 +47,8 @@ repositories {
 }
 
 android {
+    namespace "com.woocommerce.android.quicklogin"
+
     compileSdkVersion gradle.ext.compileSdkVersion
 
     defaultConfig {
