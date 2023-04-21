@@ -39,7 +39,7 @@ class SignUpFragment : BaseFragment() {
 
     interface Listener {
         fun onLoginClicked()
-        fun onEmailAlreadyExist(email: String, password: String)
+        fun onSignUpEmailAlreadyExist(email: String)
         fun onAccountCreated(nextStep: NextStep)
     }
 
@@ -95,7 +95,7 @@ class SignUpFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is OnEmailAlreadyExistError -> signUpEmailFragment?.onEmailAlreadyExist(event.email, event.password)
+                is OnEmailAlreadyExistError -> signUpEmailFragment?.onSignUpEmailAlreadyExist(event.email)
                 is OnLoginClicked -> signUpEmailFragment?.onLoginClicked()
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is OnTermsOfServiceClicked -> openTermsOfServiceUrl()

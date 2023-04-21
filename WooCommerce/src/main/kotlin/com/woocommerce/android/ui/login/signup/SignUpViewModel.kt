@@ -67,11 +67,22 @@ class SignUpViewModel @Inject constructor(
     fun onEmailContinueClicked(email: String) {
         val trimmedEmail = email.trim()
         if (isValidEmail(trimmedEmail)) {
-            _viewState.value = _viewState.value?.copy(
-                stepType = SignUpStepType.PASSWORD,
-                email = trimmedEmail,
-                error = null
-            )
+            launch {
+                _viewState.value = _viewState.value?.copy(error = null, isLoading = true)
+                when (val result = signUpRepository.createAccount(email, "")) {
+                    is AccountCreationError -> {
+                        if (result.error == EMAIL_EXIST) {
+                            triggerEvent(OnEmailAlreadyExistError(trimmedEmail))
+                        }
+                    }
+
+                    else -> _viewState.value = _viewState.value?.copy(
+                        stepType = SignUpStepType.PASSWORD,
+                        error = null
+                    )
+                }
+                _viewState.value = _viewState.value?.copy(isLoading = false)
+            }
         } else {
             _viewState.value = _viewState.value?.copy(
                 isLoading = false,
@@ -198,8 +209,5 @@ class SignUpViewModel @Inject constructor(
     object OnTermsOfServiceClicked : MultiLiveEvent.Event()
     object OnAccountCreated : MultiLiveEvent.Event()
     object OnLoginClicked : MultiLiveEvent.Event()
-    data class OnEmailAlreadyExistError(
-        val email: String,
-        val password: String
-    ) : MultiLiveEvent.Event()
+    data class OnEmailAlreadyExistError(val email: String) : MultiLiveEvent.Event()
 }

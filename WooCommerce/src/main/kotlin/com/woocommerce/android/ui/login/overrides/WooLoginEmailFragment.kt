@@ -1,16 +1,28 @@
 package com.woocommerce.android.ui.login.overrides
 
 import android.content.Context
+import android.os.Bundle
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.annotation.LayoutRes
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.showKeyboardWithDelay
 import org.wordpress.android.login.LoginEmailFragment
-import org.wordpress.android.login.widgets.WPLoginInputRow
 
 class WooLoginEmailFragment : LoginEmailFragment() {
+    companion object {
+        private const val ARG_PREFILLED_EMAIL = "prefilled_email"
+        fun newInstance(prefilledEmail: String? = null): LoginEmailFragment {
+            val fragment = WooLoginEmailFragment()
+            val args = Bundle()
+            args.putString(ARG_PREFILLED_EMAIL, prefilledEmail)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
     interface Listener {
         fun onWhatIsWordPressLinkClicked()
     }
@@ -26,6 +38,10 @@ class WooLoginEmailFragment : LoginEmailFragment() {
         whatIsWordPressText.setOnClickListener {
             wooLoginEmailListener.onWhatIsWordPressLinkClicked()
         }
+        val prefilledEmail = requireArguments().getString(ARG_PREFILLED_EMAIL)
+        if (prefilledEmail.isNotNullOrEmpty()) {
+            mEmailInput?.editText?.setText(prefilledEmail)
+        }
     }
 
     override fun setupLabel(label: TextView) {
@@ -34,7 +50,7 @@ class WooLoginEmailFragment : LoginEmailFragment() {
 
     override fun onResume() {
         super.onResume()
-        requireView().findViewById<WPLoginInputRow>(R.id.login_email_row).editText.showKeyboardWithDelay(0)
+        mEmailInput?.editText?.showKeyboardWithDelay(0)
     }
 
     override fun onAttach(context: Context) {

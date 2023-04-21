@@ -797,7 +797,7 @@ class LoginActivity :
         } else {
             val loginEmailFragment = getLoginEmailFragment(
                 siteCredsLayout = false
-            ) ?: WooLoginEmailFragment()
+            ) ?: WooLoginEmailFragment.newInstance()
             changeFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
         }
     }
@@ -909,11 +909,11 @@ class LoginActivity :
         startLoginViaWPCom()
     }
 
-    override fun onEmailAlreadyExist(email: String, password: String) {
-        showEmailPasswordScreen(
-            email = email,
-            password = password,
-            verifyEmail = false
+    override fun onSignUpEmailAlreadyExist(email: String) {
+        changeFragment(
+            fragment = WooLoginEmailFragment.newInstance(email) as Fragment,
+            shouldAddToBackStack = true,
+            LoginEmailFragment.TAG
         )
     }
 
