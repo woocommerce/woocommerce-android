@@ -26,11 +26,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Modifier.Companion
@@ -42,9 +39,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
-import com.woocommerce.android.R.color
-import com.woocommerce.android.R.dimen
-import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.ProgressDialog
@@ -78,9 +72,10 @@ fun SignUpStepScreen(viewModel: SignUpViewModel) {
                 exit = slideOutHorizontally(animationSpec = tween()) { fullWidth -> -fullWidth },
             ) {
                 SignUpEmailForm(
+                    state = state,
                     termsOfServiceClicked = viewModel::onTermsOfServiceClicked,
                     onPrimaryButtonClicked = viewModel::onEmailContinueClicked,
-                    signUpState = state,
+                    onEmailInputChanged = viewModel::onEmailInputChanged,
                     modifier = Modifier.padding(padding)
                 )
             }
@@ -90,9 +85,10 @@ fun SignUpStepScreen(viewModel: SignUpViewModel) {
                 exit = slideOutHorizontally(animationSpec = tween()) { fullWidth -> fullWidth },
             ) {
                 SignUpPasswordForm(
+                    state = state,
                     termsOfServiceClicked = viewModel::onTermsOfServiceClicked,
                     onPrimaryButtonClicked = viewModel::onPasswordContinueClicked,
-                    signUpState = state,
+                    onPasswordInputChanged = viewModel::onPasswordInputChanged,
                     modifier = Modifier.padding(padding)
                 )
             }
@@ -102,14 +98,13 @@ fun SignUpStepScreen(viewModel: SignUpViewModel) {
 
 @Composable
 private fun SignUpEmailForm(
+    state: SignUpState,
     termsOfServiceClicked: () -> Unit,
-    onPrimaryButtonClicked: (String) -> Unit,
-    signUpState: SignUpState,
+    onPrimaryButtonClicked: () -> Unit,
+    onEmailInputChanged: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val focusRequester = remember { FocusRequester() }
-    var email by remember { mutableStateOf(signUpState.email ?: "") }
-
     Column(
         modifier = modifier
             .background(MaterialTheme.colors.surface)
@@ -132,21 +127,21 @@ private fun SignUpEmailForm(
                     .copy(color = colorResource(id = R.color.color_on_surface_medium)),
             )
 
-            val isEmailError = signUpState.error?.type == ErrorType.EMAIL
+            val isEmailError = state.error?.type == ErrorType.EMAIL
             WCOutlinedTextField(
                 modifier = Modifier
                     .focusRequester(focusRequester)
                     .padding(top = dimensionResource(id = R.dimen.minor_100)),
-                value = email,
-                onValueChange = { email = it },
+                value = state.email,
+                onValueChange = { onEmailInputChanged(it) },
                 label = stringResource(id = R.string.signup_email_address_hint),
                 isError = isEmailError,
-                helperText = if (isEmailError) signUpState.error?.stringId?.let { stringResource(id = it) } else null,
+                helperText = if (isEmailError) state.error?.stringId?.let { stringResource(id = it) } else null,
                 singleLine = true,
-                keyboardActions = KeyboardActions(onDone = { onPrimaryButtonClicked(email) })
+                keyboardActions = KeyboardActions(onDone = { onPrimaryButtonClicked() })
             )
         }
-        SignUpFooter(termsOfServiceClicked, onPrimaryButtonClicked, email, signUpState.isLoading)
+        SignUpFooter(termsOfServiceClicked, onPrimaryButtonClicked, state.email, state.isLoading)
     }
     // Request focus on email field when entering screen
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
@@ -155,13 +150,12 @@ private fun SignUpEmailForm(
 @Composable
 private fun SignUpPasswordForm(
     termsOfServiceClicked: () -> Unit,
-    onPrimaryButtonClicked: (String) -> Unit,
-    signUpState: SignUpState,
+    onPrimaryButtonClicked: () -> Unit,
+    onPasswordInputChanged: (String) -> Unit,
+    state: SignUpState,
     modifier: Modifier = Modifier,
 ) {
     val focusRequester = remember { FocusRequester() }
-    var password by remember { mutableStateOf(signUpState.password ?: "") }
-
     Column(
         modifier = modifier
             .background(MaterialTheme.colors.surface)
@@ -184,29 +178,29 @@ private fun SignUpPasswordForm(
                     .copy(color = colorResource(id = R.color.color_on_surface_medium)),
             )
 
-            val isPasswordError = signUpState.error?.type == ErrorType.PASSWORD
+            val isPasswordError = state.error?.type == ErrorType.PASSWORD
             WCPasswordField(
                 modifier = Modifier
                     .focusRequester(focusRequester)
                     .padding(top = dimensionResource(id = R.dimen.minor_100)),
-                value = password,
-                onValueChange = { password = it },
+                value = state.password,
+                onValueChange = { onPasswordInputChanged(it) },
                 label = stringResource(id = R.string.signup_password_hint),
                 isError = isPasswordError,
-                helperText = if (isPasswordError) signUpState.error?.stringId
+                helperText = if (isPasswordError) state.error?.stringId
                     ?.let { stringResource(id = it) } else null,
-                keyboardActions = KeyboardActions(onDone = { onPrimaryButtonClicked(password) })
+                keyboardActions = KeyboardActions(onDone = { onPrimaryButtonClicked() })
             )
         }
-        SignUpFooter(termsOfServiceClicked, onPrimaryButtonClicked, password)
+        SignUpFooter(termsOfServiceClicked, onPrimaryButtonClicked, state.password)
     }
     // Request focus on email field when entering screen
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
-    if (signUpState.isLoading) {
+    if (state.isLoading) {
         ProgressDialog(
             title = "",
-            subtitle = stringResource(id = string.signup_creating_account_loading_message)
+            subtitle = stringResource(id = R.string.signup_creating_account_loading_message)
         )
     }
 }
@@ -214,7 +208,7 @@ private fun SignUpPasswordForm(
 @Composable
 private fun ColumnScope.SignUpFooter(
     termsOfServiceClicked: () -> Unit,
-    onPrimaryButtonClicked: (String) -> Unit,
+    onPrimaryButtonClicked: () -> Unit,
     textInput: String,
     isLoading: Boolean = false
 ) {
@@ -226,13 +220,13 @@ private fun ColumnScope.SignUpFooter(
     )
     WCColoredButton(
         modifier = Modifier.fillMaxWidth(),
-        onClick = { onPrimaryButtonClicked(textInput) },
+        onClick = { onPrimaryButtonClicked() },
         enabled = textInput.isNotBlank()
     ) {
         if (isLoading) {
             CircularProgressIndicator(
-                modifier = Modifier.size(size = dimensionResource(id = dimen.major_150)),
-                color = colorResource(id = color.color_on_primary_surface),
+                modifier = Modifier.size(size = dimensionResource(id = R.dimen.major_150)),
+                color = colorResource(id = R.color.color_on_primary_surface),
             )
         } else {
             Text(text = stringResource(id = R.string.continue_button))
@@ -269,13 +263,15 @@ fun SignUpFormPreview() {
         SignUpEmailForm(
             termsOfServiceClicked = {},
             onPrimaryButtonClicked = {},
-            signUpState = SignUpState(SignUpStepType.EMAIL)
+            onEmailInputChanged = {},
+            state = SignUpState(SignUpStepType.EMAIL),
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_350)))
-        SignUpEmailForm(
+        SignUpPasswordForm(
             termsOfServiceClicked = {},
             onPrimaryButtonClicked = {},
-            signUpState = SignUpState(SignUpStepType.PASSWORD)
+            onPasswordInputChanged = {},
+            state = SignUpState(SignUpStepType.PASSWORD),
         )
     }
 }

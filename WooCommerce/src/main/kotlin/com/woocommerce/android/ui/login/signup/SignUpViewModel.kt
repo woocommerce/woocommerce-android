@@ -64,13 +64,28 @@ class SignUpViewModel @Inject constructor(
         triggerEvent(OnLoginWithEmail(_viewState.value?.email))
     }
 
-    fun onEmailContinueClicked(email: String) {
-        val trimmedEmail = email.trim()
+    fun onEmailInputChanged(email: String) {
+        _viewState.value = _viewState.value?.copy(
+            email = email,
+            error = null
+        )
+    }
+
+    fun onPasswordInputChanged(password: String) {
+        _viewState.value = _viewState.value?.copy(
+            password = password,
+            error = null
+        )
+    }
+
+    fun onEmailContinueClicked() {
+        val trimmedEmail = _viewState.value!!.email.trim()
         _viewState.value = _viewState.value?.copy(email = trimmedEmail)
         if (isValidEmail(trimmedEmail)) {
             launch {
                 _viewState.value = _viewState.value?.copy(error = null, isLoading = true)
-                val result = signUpRepository.createAccount(email, "")
+                // Trigger account creation with empty password to check if the email already exists.
+                val result = signUpRepository.createAccount(trimmedEmail, "")
                 if (result is AccountCreationError && result.error == EMAIL_EXIST) {
                     triggerEvent(OnLoginWithEmail(trimmedEmail))
                 } else _viewState.value = _viewState.value?.copy(
@@ -90,28 +105,22 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun onPasswordContinueClicked(inputPassword: String) {
+    fun onPasswordContinueClicked() {
         AnalyticsTracker.track(stat = AnalyticsEvent.SIGNUP_SUBMITTED)
 
-        validatePassword(inputPassword)?.let { error ->
-            _viewState.value = _viewState.value?.copy(error = error.toSignUpErrorUi())
-            return
-        }
-
-        if (!networkStatus.isConnected()) {
-            triggerEvent(ShowSnackbar(org.wordpress.android.mediapicker.source.wordpress.R.string.no_network_message))
-            return
-        }
-
-        _viewState.value = _viewState.value?.copy(
-            password = inputPassword,
-            isLoading = true
-        )
-
         _viewState.value?.let { state ->
-            val email = state.email!!
-            val password = state.password!!
+            val email = state.email
+            val password = state.password
 
+            validatePassword(password)?.let { error ->
+                _viewState.value = _viewState.value?.copy(error = error.toSignUpErrorUi())
+                return
+            }
+            if (!networkStatus.isConnected()) {
+                triggerEvent(ShowSnackbar(R.string.offline_error))
+                return
+            }
+            _viewState.value = _viewState.value?.copy(isLoading = true)
             launch {
                 when (val result = signUpRepository.createAccount(email, password)) {
                     is AccountCreationError -> {
@@ -179,8 +188,8 @@ class SignUpViewModel @Inject constructor(
 
     data class SignUpState(
         val stepType: SignUpStepType,
-        val email: String? = null,
-        val password: String? = null,
+        val email: String = "",
+        val password: String = "",
         val isLoading: Boolean = false,
         val error: SignUpErrorUi? = null,
     )
