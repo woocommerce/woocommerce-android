@@ -112,6 +112,15 @@ private fun MoreMenuHeader(
     onSwitchStore: () -> Unit,
     state: MoreMenuViewState
 ) {
+    /**
+     * Since the header is also a button that opens the store switch, it can be disabled
+     * through the [MoreMenuViewState.isStoreSwitcherEnabled] flag.
+     *
+     * But since it's also a header with store information,
+     * we want to just hide the drop down arrow to reflect the disabled appearance.
+     *
+     * This custom color scheme ensures that.
+     */
     val headerBackgroundColors = colorResource(
         id = R.color.more_menu_button_background
     ).let { backgroundColor ->
