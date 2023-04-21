@@ -9,8 +9,11 @@ import com.woocommerce.android.ui.plans.domain.FreeTrialExpiryDateResult.Error
 import com.woocommerce.android.ui.plans.domain.FreeTrialExpiryDateResult.ExpiryAt
 import com.woocommerce.android.ui.plans.domain.FreeTrialExpiryDateResult.NotTrial
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onEach
+import java.time.Duration
 import javax.inject.Inject
 
 class DetermineTrialStatusBarState @Inject constructor(
@@ -20,11 +23,19 @@ class DetermineTrialStatusBarState @Inject constructor(
     private val observeConnectionStatus: ConnectivityObserver
 ) {
 
+    private companion object {
+        val internetConnectionDiscoveryDelay: Duration = Duration.ofSeconds(1)
+    }
+
     operator fun invoke(bottomBarStateFlow: Flow<BottomBarState>): Flow<TrialStatusBarState> =
         combine(
             selectedSite.observe(),
             bottomBarStateFlow,
-            observeConnectionStatus.observe()
+            observeConnectionStatus.observe().onEach {
+                if (it == ConnectivityObserver.Status.CONNECTED) {
+                    delay(internetConnectionDiscoveryDelay.toMillis())
+                }
+            }
         ) { selectedSite, bottomBarState, connectionState ->
 
             when {

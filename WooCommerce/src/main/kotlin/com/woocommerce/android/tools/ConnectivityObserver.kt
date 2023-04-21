@@ -18,12 +18,12 @@ class ConnectivityObserver @Inject constructor(@ApplicationContext context: Cont
 
     fun observe(): Flow<Status> = state
 
-    suspend fun update(hasInternetConnection: Boolean) {
-        state.emit(mapToStatus(hasInternetConnection))
+    suspend fun update(isConnected: Boolean) {
+        state.emit(mapToStatus(isConnected))
     }
 
-    private fun mapToStatus(hasInternetConnection: Boolean): Status {
-        return if (hasInternetConnection) CONNECTED else DISCONNECTED
+    private fun mapToStatus(isConnected: Boolean): Status {
+        return if (isConnected) CONNECTED else DISCONNECTED
     }
 
     enum class Status {
