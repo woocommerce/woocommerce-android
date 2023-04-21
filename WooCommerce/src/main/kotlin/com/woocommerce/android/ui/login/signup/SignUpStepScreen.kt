@@ -2,6 +2,10 @@ package com.woocommerce.android.ui.login.signup
 
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -68,15 +72,24 @@ fun SignUpStepScreen(viewModel: SignUpViewModel) {
                 }
             )
         }) { padding ->
-            when (state.stepType) {
-                SignUpStepType.EMAIL -> SignUpEmailForm(
+            AnimatedVisibility(
+                visible = state.stepType == SignUpStepType.EMAIL,
+                enter = slideInHorizontally(animationSpec = tween()) { fullWidth -> -fullWidth },
+                exit = slideOutHorizontally(animationSpec = tween()) { fullWidth -> -fullWidth },
+            ) {
+                SignUpEmailForm(
                     termsOfServiceClicked = viewModel::onTermsOfServiceClicked,
                     onPrimaryButtonClicked = viewModel::onEmailContinueClicked,
                     signUpState = state,
                     modifier = Modifier.padding(padding)
                 )
-
-                SignUpStepType.PASSWORD -> SignUpPasswordForm(
+            }
+            AnimatedVisibility(
+                visible = state.stepType == SignUpStepType.PASSWORD,
+                enter = slideInHorizontally(animationSpec = tween()) { fullWidth -> fullWidth },
+                exit = slideOutHorizontally(animationSpec = tween()) { fullWidth -> fullWidth },
+            ) {
+                SignUpPasswordForm(
                     termsOfServiceClicked = viewModel::onTermsOfServiceClicked,
                     onPrimaryButtonClicked = viewModel::onPasswordContinueClicked,
                     signUpState = state,
