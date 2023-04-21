@@ -35,6 +35,8 @@ class StoreCreationSummaryViewModel @Inject constructor(
             createStore(
                 storeDomain = newStore.data.domain,
                 storeName = newStore.data.name,
+                profilerData = newStore.data.profilerData,
+                countryCode = newStore.data.country?.code
             ).collect { creationState ->
                 _isLoading.update { creationState is Loading }
                 when (creationState) {

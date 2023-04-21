@@ -107,6 +107,7 @@
     <string name="close">Close</string>
     <string name="button_update_instructions">Update instructions</string>
     <string name="dismiss">Dismiss</string>
+    <string name="allow">Allow</string>
     <string name="no_thanks">No thanks</string>
     <string name="apply">Apply</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>
@@ -1176,6 +1177,7 @@
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Something went wrong. Please try again later.</string>
     <string name="card_reader_tap_to_pay_beta_features_heading">Tap To Pay</string>
     <string name="card_reader_tap_to_pay_beta_features_subheading">Test out Tap To Pay in the app</string>
+    <string name="card_reader_tap_to_pay_test_payment_note">Tap To Pay Test Payment</string>
 
     <!--
             Card Reader Type Selection
@@ -1843,6 +1845,7 @@
     <string name="image_source_device_chooser">Choose from device</string>
     <string name="image_source_device_camera">Take a photo</string>
     <string name="image_source_wp_media_library">WordPress media library</string>
+    <string name="photo_picker_title">Device Media Library</string>
     <string name="wpmedia_picker_title">WordPress media library</string>
     <string name="product_images_image_limit_warning">Only one photo can be displayed per product variation</string>
     <string name="product_images_drag_and_drop_description">Drag and drop to re-order photos</string>
@@ -2253,6 +2256,8 @@
     <string name="permissions_denied_message">It looks like you turned off permissions required for this feature.&lt;br/&gt;&lt;br/&gt;To change this, edit your permissions and make sure &lt;strong&gt;%s&lt;/strong&gt; is enabled.</string>
     <string name="permission_camera">Camera</string>
     <string name="button_edit_permissions">Edit permissions</string>
+    <string name="notifications_permission_title">Notifications</string>
+    <string name="notifications_permission_description">We need your permission to send you push notifications for new orders, reviews, etc. delivered to your device.</string>
 
     <!-- Jetpack Connection Package -->
     <string name="jetpack_benefits_bottom_banner_title">Get the full experience with Jetpack</string>

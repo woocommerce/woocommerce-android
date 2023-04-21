@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.login.storecreation
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -47,11 +49,12 @@ class NewStore @Inject constructor() {
         val code: String,
     )
 
+    @Parcelize
     data class ProfilerData(
         val industryLabel: String? = null,
         val industryKey: String? = null,
         val industryGroupKey: String? = null,
         val userCommerceJourneyKey: String? = null,
         val eCommercePlatformKeys: List<String> = emptyList(),
-    )
+    ) : Parcelable
 }

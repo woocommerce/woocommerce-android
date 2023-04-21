@@ -107,6 +107,7 @@ object AppPrefs {
         CUSTOM_DOMAINS_SOURCE,
         IS_TAP_TO_PAY_BETA_ENABLED,
         JETPACK_INSTALLATION_FROM_BANNER,
+        NOTIFICATIONS_PERMISSION_BAR,
     }
 
     /**
@@ -863,6 +864,12 @@ object AppPrefs {
     }
 
     fun getJetpackInstallationIsFromBanner() = getBoolean(DeletablePrefKey.JETPACK_INSTALLATION_FROM_BANNER, false)
+
+    fun setWasNotificationsPermissionBarDismissed(source: Boolean) {
+        setBoolean(DeletablePrefKey.NOTIFICATIONS_PERMISSION_BAR, source)
+    }
+
+    fun getWasNotificationsPermissionBarDismissed() = getBoolean(DeletablePrefKey.NOTIFICATIONS_PERMISSION_BAR, false)
 
     private fun getActiveStatsGranularityFilterKey(currentSiteId: Int) =
         PrefKeyString("${DeletablePrefKey.ACTIVE_STATS_GRANULARITY}:$currentSiteId")
