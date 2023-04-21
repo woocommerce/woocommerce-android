@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,6 +39,7 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -111,84 +113,113 @@ private fun MoreMenuHeader(
     onSwitchStore: () -> Unit,
     state: MoreMenuViewState
 ) {
-    Button(
+    HeaderButton(
         onClick = onSwitchStore,
-        enabled = state.isStoreSwitcherEnabled,
-        contentPadding = PaddingValues(dimensionResource(id = R.dimen.major_75)),
-        colors = ButtonDefaults.buttonColors(
-            backgroundColor = colorResource(id = R.color.more_menu_button_background)
-        ),
-        shape = RoundedCornerShape(dimensionResource(id = R.dimen.major_75)),
-        modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
+        enabled = state.isStoreSwitcherEnabled
     ) {
-        Box(Modifier.fillMaxSize()) {
-            StoreDetailsHeader(
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            HeaderContent(
                 userAvatarUrl = state.userAvatarUrl,
                 siteName = state.siteName,
                 planName = state.sitePlan,
                 siteUrl = state.siteUrl
             )
+
+            if (state.isStoreSwitcherEnabled) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_arrow_drop_down),
+                    contentDescription = null,
+                    tint = colorResource(id = R.color.color_on_surface),
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .size(dimensionResource(id = R.dimen.major_150))
+                )
+            }
         }
     }
 }
 
+/**
+ * Since the header is also a button that opens the store switch, it can be disabled
+ * through the [MoreMenuViewState.isStoreSwitcherEnabled] flag.
+ *
+ * But since it's also a header with store information,
+ * we want to just hide the drop down arrow to reflect the disabled appearance.
+ *
+ * This custom color scheme ensures that.
+ */
 @Composable
-private fun StoreDetailsHeader(
+private fun HeaderButton(
+    onClick: () -> Unit,
+    enabled: Boolean,
+    content: @Composable RowScope.() -> Unit
+) {
+    val headerBackgroundColors = colorResource(
+        id = R.color.more_menu_button_background
+    ).let { backgroundColor ->
+        ButtonDefaults.buttonColors(
+            backgroundColor = backgroundColor,
+            disabledBackgroundColor = backgroundColor,
+            disabledContentColor = contentColorFor(backgroundColor)
+        )
+    }
+
+    Button(
+        onClick = onClick,
+        enabled = enabled,
+        contentPadding = PaddingValues(dimensionResource(id = R.dimen.major_75)),
+        colors = headerBackgroundColors,
+        shape = RoundedCornerShape(dimensionResource(id = R.dimen.major_75)),
+        modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+        content = content
+    )
+}
+
+@Composable
+private fun HeaderContent(
     userAvatarUrl: String,
     siteName: String,
     planName: String,
     siteUrl: String
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Row(Modifier.weight(9f)) {
-            MoreMenuUserAvatar(
-                modifier = Modifier.align(Alignment.CenterVertically),
-                avatarUrl = userAvatarUrl
-            )
-            Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
-            Column {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50))
-                ) {
-                    Text(
-                        text = siteName,
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.body1,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .align(Alignment.CenterVertically)
-                            .weight(1f, false)
-                    )
-                    if (planName.isNotEmpty()) {
-                        PlanBadge(planName)
-                    }
-                }
-                Text(
-                    text = siteUrl,
-                    style = MaterialTheme.typography.caption,
-                    modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_50))
-                )
-            }
-        }
-        Icon(
-            painter = painterResource(id = R.drawable.ic_arrow_drop_down),
-            contentDescription = null,
-            tint = colorResource(id = R.color.color_on_surface),
-            modifier = Modifier
-                .align(Alignment.CenterVertically)
-                .padding(end = dimensionResource(id = R.dimen.minor_100))
-                .size(dimensionResource(id = R.dimen.major_150))
-                .weight(1f)
+    Row {
+        HeaderAvatar(
+            modifier = Modifier.align(Alignment.CenterVertically),
+            avatarUrl = userAvatarUrl
         )
+        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
+        Column {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50))
+            ) {
+                Text(
+                    text = siteName,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.body1,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .weight(1f, false)
+                )
+                if (planName.isNotEmpty()) {
+                    StorePlanBadge(planName)
+                }
+            }
+            Text(
+                text = siteUrl,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_50))
+            )
+        }
     }
 }
 
 @Composable
-private fun PlanBadge(planName: String) {
+private fun StorePlanBadge(planName: String) {
     Box(
         modifier = Modifier
             .clip(CircleShape)
@@ -208,7 +239,7 @@ private fun PlanBadge(planName: String) {
 }
 
 @Composable
-private fun MoreMenuUserAvatar(
+private fun HeaderAvatar(
     modifier: Modifier,
     avatarUrl: String
 ) {
@@ -441,7 +472,8 @@ private fun MoreMenuPreview() {
         siteName = "Example Site",
         siteUrl = "woocommerce.com",
         sitePlan = "free trial",
-        userAvatarUrl = "" // To force displaying placeholder image
+        userAvatarUrl = "", // To force displaying placeholder image
+        isStoreSwitcherEnabled = true
     )
     MoreMenuScreen(state, {})
 }
