@@ -54,6 +54,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
     private val planRepository: SitePlanRepository = mock {
         onBlocking { fetchCurrentPlanDetails(any()) } doReturn SitePlan(
+            subscriptionId = "",
             name = "",
             expirationDate = ZonedDateTime.now(),
             type = SitePlan.Type.FREE_TRIAL
@@ -200,6 +201,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         setup {
             whenever(planRepository.fetchCurrentPlanDetails(any())).thenReturn(
                 SitePlan(
+                    subscriptionId = "123",
                     name = "Test Plan",
                     expirationDate = ZonedDateTime.now(),
                     type = SitePlan.Type.FREE_TRIAL
@@ -220,6 +222,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         setup {
             whenever(planRepository.fetchCurrentPlanDetails(any())).thenReturn(
                 SitePlan(
+                    subscriptionId = "123",
                     name = "Test Plan",
                     expirationDate = ZonedDateTime.now(),
                     type = SitePlan.Type.OTHER
@@ -240,6 +243,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         setup {
             whenever(planRepository.fetchCurrentPlanDetails(any())).thenReturn(
                 SitePlan(
+                    subscriptionId = "123",
                     name = "WordPress.com Test Plan",
                     expirationDate = ZonedDateTime.now(),
                     type = SitePlan.Type.OTHER
@@ -260,6 +264,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         setup {
             whenever(planRepository.fetchCurrentPlanDetails(any())).thenReturn(
                 SitePlan(
+                    subscriptionId = "123",
                     name = "Woo Express: Test Plan",
                     expirationDate = ZonedDateTime.now(),
                     type = SitePlan.Type.OTHER

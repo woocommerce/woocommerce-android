@@ -8,6 +8,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
@@ -16,6 +17,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment
 import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.Companion.PLAN_UPGRADE_SUCCEED
 import com.woocommerce.android.ui.plans.di.StartUpgradeFlowFactory
+import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesEvent.OpenPlanDetails
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesEvent.OpenSubscribeNow
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesEvent.OpenSupportRequestForm
 import dagger.hilt.android.AndroidEntryPoint
@@ -56,6 +58,13 @@ class UpgradesFragment : BaseFragment() {
                     )
                 }
                 is OpenSupportRequestForm -> startSupportRequestFormActivity(event)
+                is OpenPlanDetails -> {
+                    findNavController().navigate(
+                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                            urlToLoad = event.planDetailsUrl
+                        )
+                    )
+                }
             }
         }
         handleNotice(PLAN_UPGRADE_SUCCEED) {

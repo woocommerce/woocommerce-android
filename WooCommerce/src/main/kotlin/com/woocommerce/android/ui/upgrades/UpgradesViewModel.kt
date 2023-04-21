@@ -61,6 +61,24 @@ class UpgradesViewModel @Inject constructor(
         triggerEvent(OpenSubscribeNow)
     }
 
+    fun onViewPlanClicked() {
+        val currentState = upgradesState.value
+
+        if (currentState is PlanEnded) {
+            triggerEvent(
+                UpgradesEvent.OpenPlanDetails(
+                    buildString {
+                        append("https://wordpress.com/purchases/subscriptions")
+                        append("/")
+                        append(selectedSite.get().siteId)
+                        append("/")
+                        append(currentState.subscriptionId)
+                    }
+                )
+            )
+        }
+    }
+
     fun onReportSubscriptionIssueClicked() {
         tracks.track(AnalyticsEvent.UPGRADES_REPORT_SUBSCRIPTION_ISSUE_TAPPED, tracksProperties)
 
@@ -96,7 +114,13 @@ class UpgradesViewModel @Inject constructor(
     private fun createOtherPlansViewStateFrom(sitePlan: SitePlan) =
         sitePlan.mapAsViewState(
             isExpired = {
-                PlanEnded(name = resourceProvider.getString(R.string.upgrades_plan_ended_name, formattedPlanName))
+                PlanEnded(
+                    subscriptionId = sitePlan.subscriptionId.orEmpty(),
+                    name = resourceProvider.getString(
+                        R.string.upgrades_plan_ended_name,
+                        formattedPlanName
+                    )
+                )
             },
             isNotExpired = {
                 NonUpgradeable(
@@ -158,7 +182,8 @@ class UpgradesViewModel @Inject constructor(
         ) : HasPlan
 
         data class PlanEnded(
-            override val name: String
+            override val name: String,
+            val subscriptionId: String,
         ) : HasPlan
 
         data class NonUpgradeable(
@@ -173,9 +198,12 @@ class UpgradesViewModel @Inject constructor(
             val origin: HelpOrigin,
             val extraTags: List<String>
         ) : UpgradesEvent()
+
+        data class OpenPlanDetails(val planDetailsUrl: String) : UpgradesEvent()
     }
 
     companion object {
-        private val tracksProperties = mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_UPGRADES_SCREEN)
+        private val tracksProperties =
+            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_UPGRADES_SCREEN)
     }
 }

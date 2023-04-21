@@ -5,6 +5,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import java.time.ZonedDateTime
 
 data class SitePlan(
+    val subscriptionId: String?,
     val name: String,
     val expirationDate: ZonedDateTime,
     val type: Type,
@@ -24,7 +25,7 @@ data class SitePlan(
     }
 
     companion object {
-        val EMPTY = SitePlan("", ZonedDateTime.now(), Type.OTHER)
+        val EMPTY = SitePlan("", "", ZonedDateTime.now(), Type.OTHER)
         const val WP_PREFIX = "WordPress.com"
         const val WOO_EXPRESS_PREFIX = "Woo Express:"
     }

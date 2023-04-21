@@ -58,6 +58,7 @@ class SitePlanRestClient @Inject constructor(
                                     null
                                 } else {
                                     SitePlan(
+                                        subscriptionId = sitePlanDto.id,
                                         name = sitePlanDto.name,
                                         expirationDate = parseDateOrNull(sitePlanDto.expirationDate),
                                         type = determineSitePlanType(id)
@@ -92,6 +93,7 @@ class SitePlanRestClient @Inject constructor(
                                     null
                                 } else {
                                     SitePlan(
+                                        subscriptionId = sitePlanDto.id,
                                         name = sitePlanDto.name,
                                         expirationDate = parseDateOrNull(sitePlanDto.expirationDate),
                                         type = determineSitePlanType(id)
@@ -169,6 +171,7 @@ class SitePlanRestClient @Inject constructor(
     }
 
     data class SitePlanDto(
+        @SerializedName("id") val id: String?,
         @SerializedName("product_name") val name: String,
         @SerializedName("expiry") val expirationDate: String?,
         @SerializedName("current_plan") val currentPlan: Boolean?,

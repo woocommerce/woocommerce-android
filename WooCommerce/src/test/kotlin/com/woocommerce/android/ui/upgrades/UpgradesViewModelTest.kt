@@ -180,6 +180,7 @@ class UpgradesViewModelTest : BaseUnitTest() {
             assertThat(viewModelState).isNotNull
             assertThat(viewModelState).isEqualTo(
                 PlanEnded(
+                    subscriptionId = "123",
                     name = "$TEST_SITE_NAME ended",
                 )
             )
@@ -275,6 +276,7 @@ class UpgradesViewModelTest : BaseUnitTest() {
         remainingTrialPeriod: Period = Period.ofDays(10)
     ) {
         val sitePlan = SitePlan(
+            subscriptionId = "123",
             name = "WordPress.com $TEST_SITE_NAME",
             expirationDate = SITE_PLAN_EXPIRATION_DATE,
             type = type

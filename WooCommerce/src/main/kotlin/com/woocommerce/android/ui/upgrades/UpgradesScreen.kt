@@ -43,6 +43,7 @@ fun UpgradesScreen(viewModel: UpgradesViewModel) {
         state = upgradesState,
         onUpgradeNowClicked = viewModel::onSubscribeNowClicked,
         onReportSubscriptionIssueClicked = viewModel::onReportSubscriptionIssueClicked,
+        onViewPlanClicked = viewModel::onViewPlanClicked,
     )
 }
 
@@ -50,6 +51,7 @@ fun UpgradesScreen(viewModel: UpgradesViewModel) {
 fun UpgradesScreen(
     state: UpgradesViewState,
     onUpgradeNowClicked: () -> Unit,
+    onViewPlanClicked: () -> Unit,
     onReportSubscriptionIssueClicked: () -> Unit
 ) {
     Scaffold { paddingValues ->
@@ -85,7 +87,15 @@ fun UpgradesScreen(
                             Text(stringResource(R.string.upgrades_upgrade_now))
                         }
                     }
-
+                    if (state is PlanEnded) {
+                        Divider()
+                        WCOutlinedButton(
+                            onClick = onViewPlanClicked,
+                            modifier = Modifier.padding(vertical = 8.dp),
+                        ) {
+                            Text(stringResource(R.string.upgrades_view_plan))
+                        }
+                    }
                     if (state is Loading) {
                         SkeletonView(width = 132.dp, height = 24.dp)
                     } else if (state is Error) {
@@ -159,7 +169,7 @@ private fun TrialInProgress() {
         UpgradesScreen(
             state =
             TrialInProgress("Free Trial", Period.ofDays(14), "6 days"),
-            {}, {}
+            {}, {}, {}
         )
     }
 }
@@ -171,7 +181,7 @@ private fun TrialInProgress() {
 private fun TrialEnded() {
     WooThemeWithBackground {
         UpgradesScreen(
-            state = TrialEnded("Trial ended"), {}, {}
+            state = TrialEnded("Trial ended"), {}, {}, {}
         )
     }
 }
@@ -185,7 +195,7 @@ private fun NonUpgradeable() {
         UpgradesScreen(
             state =
             NonUpgradeable("eCommerce", "March 2, 2023"),
-            {}, {}
+            {}, {}, {}
         )
     }
 }
@@ -196,7 +206,7 @@ private fun NonUpgradeable() {
 @Composable
 private fun PlanEnded() {
     WooThemeWithBackground {
-        UpgradesScreen(state = PlanEnded("eCommerce ended"), {}, {})
+        UpgradesScreen(state = PlanEnded("eCommerce ended", "123"), {}, {}, {})
     }
 }
 
@@ -206,7 +216,7 @@ private fun PlanEnded() {
 @Composable
 private fun Loading() {
     WooThemeWithBackground {
-        UpgradesScreen(state = Loading, {}, {})
+        UpgradesScreen(state = Loading, {}, {}, {})
     }
 }
 
@@ -216,6 +226,6 @@ private fun Loading() {
 @Composable
 private fun Error() {
     WooThemeWithBackground {
-        UpgradesScreen(state = Error, {}, {})
+        UpgradesScreen(state = Error, {}, {}, {})
     }
 }
