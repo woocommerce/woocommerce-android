@@ -270,6 +270,32 @@ class UpgradesViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `given current plan has ended, when user taps on view plan, navigate them to plan details`() = testBlocking {
+        // given
+        resourceProvider = mock {
+            on { getString(any(), any()) } doReturn ""
+        }
+        val siteModel = SiteModel().apply { siteId = 456 }
+        createSut(
+            siteModel,
+            type = SitePlan.Type.OTHER,
+            remainingTrialPeriod = Period.ZERO
+        )
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        sut.event.observeForever {
+            events.add(it)
+        }
+
+        // when
+        sut.onViewPlanClicked()
+
+        // then
+        assertThat(events).containsExactly(
+            UpgradesEvent.OpenPlanDetails("https://wordpress.com/purchases/subscriptions/456/123")
+        )
+    }
+
     private fun createSut(
         siteModel: SiteModel = SiteModel(),
         type: SitePlan.Type = SitePlan.Type.FREE_TRIAL,
