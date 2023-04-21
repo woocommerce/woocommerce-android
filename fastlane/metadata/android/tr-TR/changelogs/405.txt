@@ -1,0 +1,2 @@
+13.2:
+Bu sürüm, uygulamanın siparişler ve ürünler bölümlerinde bazı hata düzeltmelerini, görsel geliştirmeleri ve erişilebilirlik geliştirmelerini içerir. Geri bildirimlerinizi göndermeye devam etmeniz bundan sonra ne üzerinde çalışacağımızı anlamamıza yardımcı oluyor.
