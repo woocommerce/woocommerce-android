@@ -1,1 +1,6 @@
-This release includes some bug fixes, visual & accessibility enhancements to the orders and products sections of the app. Keep your feedback rolling in; it helps us figure out what to work on next.
+- [*] [Internal] Removed IPP upsell banner from the Payment Method Selection Screen. [https://github.com/woocommerce/woocommerce-android/pull/8815]
+- [*] Improves loading experience while users wait for their new store to be ready [https://github.com/woocommerce/woocommerce-android/pull/8799]
+- [*] [Internal] Profiler during new site free trial creation is now added [https://github.com/woocommerce/woocommerce-android/pull/8832]
+- [*] Products: Adds read-only support for the Composite Products extension in the Products details. [https://github.com/woocommerce/woocommerce-android/pull/8818]
+- [***] Extend support of in-person card reader payments to the UK [https://github.com/woocommerce/woocommerce-android/pull/8662]
+
