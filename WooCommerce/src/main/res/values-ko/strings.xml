@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-11 13:54:04+0000
+Translation-Revision-Date: 2023-04-18 13:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="more_menu_button_settings_description">이메일 기본 설정 업데이트</string>
+    <string name="more_menu_button_settings">설정</string>
+    <string name="more_menu_button_upgrades_description">요금제 관리</string>
+    <string name="more_menu_button_reviews_description">스토어에 대한 리뷰 캡처</string>
+    <string name="more_menu_button_coupons_description">특별 행사로 매출 증대</string>
+    <string name="more_menu_button_store_description">스토어 보기</string>
+    <string name="more_menu_button_inbox_description">최신 상태로 유지</string>
+    <string name="more_menu_button_payments_description">모바일 결제에 참여</string>
+    <string name="more_menu_button_wc_admin_description">관리자에서 자세히 관리</string>
+    <string name="more_menu_general_section_title">일반</string>
+    <string name="more_menu_settings_section_title">설정</string>
+    <string name="bundled_products_info_notice">번들 구매 상품을 웹 알림판에서 편집하실 수 있습니다.</string>
+    <string name="product_bundle_multiple_count">%d개 상품</string>
+    <string name="product_bundle_single_count">1개 상품</string>
+    <string name="product_bundle">번들 구매 상품</string>
+    <string name="empty_group_of">묶음 아님</string>
+    <string name="empty_max_quantity">최대 없음</string>
+    <string name="empty_min_quantity">최소 없음</string>
+    <string name="free_trial_summary_store_creation_error_dialog_action">알겠습니다!</string>
+    <string name="free_trial_summary_store_creation_error_message">죄송합니다. 지금은 스토어를 생성할 수 없습니다. 나중에 다시 시도하세요.</string>
+    <string name="free_trial_summary_store_creation_error_title">문제가 발생했습니다.</string>
+    <string name="product_type_bundle">번들</string>
     <string name="quantity_rules_info_notice">웹 알림판에서 상품의 수량 규칙을 편집할 수 있습니다.</string>
     <string name="group_of">그룹</string>
     <string name="max_quantity">최대 수량</string>

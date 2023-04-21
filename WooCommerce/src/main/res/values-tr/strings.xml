@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-12 13:54:04+0000
+Translation-Revision-Date: 2023-04-18 15:54:20+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="more_menu_button_settings_description">Tercihlerinizi güncelleyin</string>
+    <string name="more_menu_button_settings">Ayarlar</string>
+    <string name="more_menu_button_upgrades_description">Paketlerinizi yönetin</string>
+    <string name="more_menu_button_reviews_description">Mağazanız için yorumlar alın</string>
+    <string name="more_menu_button_coupons_description">Özel tekliflerle satışları artırın</string>
+    <string name="more_menu_button_store_description">Mağazanızı görüntüleme</string>
+    <string name="more_menu_button_inbox_description">Güncel kalın</string>
+    <string name="more_menu_button_payments_description">Mobil ödemelere katılın</string>
+    <string name="more_menu_button_wc_admin_description">Yöneticide daha fazlasını yönetin</string>
+    <string name="more_menu_general_section_title">Genel</string>
+    <string name="more_menu_settings_section_title">Ayarlar</string>
+    <string name="bundled_products_info_notice">Paketli ürünleri web panosunda düzenleyebilirsiniz.</string>
+    <string name="product_bundle_multiple_count">%d ürünler</string>
+    <string name="product_bundle_single_count">1 ürün</string>
+    <string name="product_bundle">Paketli ürünler</string>
+    <string name="empty_group_of">Gruplandırılmamış</string>
+    <string name="empty_max_quantity">Azami harcama yok</string>
+    <string name="empty_min_quantity">Asgari tutar yok</string>
+    <string name="free_trial_summary_store_creation_error_dialog_action">Anladım!</string>
+    <string name="free_trial_summary_store_creation_error_message">Üzgünüz, şu anda mağazanızı oluşturamıyoruz, lütfen daha sonra tekrar deneyin.</string>
+    <string name="free_trial_summary_store_creation_error_title">Bir sorun oluştu</string>
+    <string name="product_type_bundle">Paket</string>
     <string name="quantity_rules_info_notice">Ürünün miktar kurallarını web panosunda düzenleyebilirsiniz.</string>
     <string name="group_of">Grup adedi</string>
     <string name="max_quantity">Maksimum miktar</string>

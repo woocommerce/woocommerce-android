@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-10 15:54:16+0000
+Translation-Revision-Date: 2023-04-18 15:54:21+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="more_menu_button_settings_description">تحديث تفضيلاتك</string>
+    <string name="more_menu_button_settings">الإعدادات</string>
+    <string name="more_menu_button_upgrades_description">إدارة خططي</string>
+    <string name="more_menu_button_reviews_description">الحصول على مراجعات لمتجرك</string>
+    <string name="more_menu_button_coupons_description">زيادة المبيعات من خلال العروض الخاصة</string>
+    <string name="more_menu_button_store_description">عرض متجرك</string>
+    <string name="more_menu_button_inbox_description">البقاء على اطلاع</string>
+    <string name="more_menu_button_payments_description">الانضمام إلى المدفوعات عبر الهاتف المحمول</string>
+    <string name="more_menu_button_wc_admin_description">إدارة المزيد على المسؤول</string>
+    <string name="more_menu_general_section_title">عام</string>
+    <string name="more_menu_settings_section_title">الإعدادات</string>
+    <string name="bundled_products_info_notice">يمكنك تحرير المنتجات المجمعة في لوحة معلومات الويب.</string>
+    <string name="product_bundle_multiple_count">%d المنتجات</string>
+    <string name="product_bundle_single_count">منتج واحد</string>
+    <string name="product_bundle">المنتجات المجمعة</string>
+    <string name="empty_group_of">غير مجمعة</string>
+    <string name="empty_max_quantity">بلا حد أقصى</string>
+    <string name="empty_min_quantity">بلا حد أدنى</string>
+    <string name="free_trial_summary_store_creation_error_dialog_action">فهمت!</string>
+    <string name="free_trial_summary_store_creation_error_message">عذرًا، يتعذر علينا إنشاء متجرك على الفور، ترجى المحاولة مجددًا لاحقًا.</string>
+    <string name="free_trial_summary_store_creation_error_title">حدث خطأ</string>
+    <string name="product_type_bundle">حزمة</string>
     <string name="quantity_rules_info_notice">يمكنك تحرير قواعد كميات المنتجات في لوحة تحكم الويب.</string>
     <string name="group_of">مجموعة</string>
     <string name="max_quantity">الحد الأقصى للكمية</string>

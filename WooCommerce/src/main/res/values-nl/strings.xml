@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-11 16:54:04+0000
+Translation-Revision-Date: 2023-04-20 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="more_menu_button_settings_description">Werk je voorkeuren bij</string>
+    <string name="more_menu_button_settings">Instellingen</string>
+    <string name="more_menu_button_upgrades_description">Beheer je abonnementen</string>
+    <string name="more_menu_button_reviews_description">Krijg beoordelingen voor je winkel</string>
+    <string name="more_menu_button_coupons_description">Geef je verkopen een boost met speciale aanbiedingen</string>
+    <string name="more_menu_button_store_description">Bekijk je winkel</string>
+    <string name="more_menu_button_inbox_description">Blijf up-to-date</string>
+    <string name="more_menu_button_payments_description">Start ook met mobiele betalingen</string>
+    <string name="more_menu_button_wc_admin_description">Beheer meer bij beheer</string>
+    <string name="more_menu_general_section_title">Algemeen</string>
+    <string name="more_menu_settings_section_title">Instellingen</string>
+    <string name="bundled_products_info_notice">Je kunt gebundelde producten bewerken in het online dashboard.</string>
+    <string name="product_bundle_multiple_count">%d producten</string>
+    <string name="product_bundle_single_count">1 product</string>
+    <string name="product_bundle">Gebundelde producten</string>
+    <string name="empty_group_of">Niet gegroepeerd</string>
+    <string name="empty_max_quantity">Geen maximum</string>
+    <string name="empty_min_quantity">Geen minimum</string>
+    <string name="free_trial_summary_store_creation_error_dialog_action">Begrepen!</string>
+    <string name="free_trial_summary_store_creation_error_message">Helaas, we kunnen je winkel nu niet aanmaken. Probeer het later opnieuw.</string>
+    <string name="free_trial_summary_store_creation_error_title">Er is iets fout gegaan</string>
+    <string name="product_type_bundle">Bundel</string>
     <string name="quantity_rules_info_notice">Je kunt gebundelde producten bewerken in de nieuwe online dashboard.</string>
     <string name="group_of">Aantal stuks</string>
     <string name="max_quantity">Maximaal aantal</string>

@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-11 13:54:04+0000
+Translation-Revision-Date: 2023-04-18 15:54:21+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="more_menu_button_settings_description">Mettre à jour mes préférences</string>
+    <string name="more_menu_button_settings">Réglages</string>
+    <string name="more_menu_button_upgrades_description">Gérer vos plans</string>
+    <string name="more_menu_button_reviews_description">Capturer des avis pour votre boutique</string>
+    <string name="more_menu_button_coupons_description">Accélérez les ventes grâce à des offres spéciales</string>
+    <string name="more_menu_button_store_description">Voir votre boutique</string>
+    <string name="more_menu_button_inbox_description">Restez à jour</string>
+    <string name="more_menu_button_payments_description">Associez les paiements sur mobile</string>
+    <string name="more_menu_button_wc_admin_description">Gérez plus de paramètres d’administration</string>
+    <string name="more_menu_general_section_title">Général</string>
+    <string name="more_menu_settings_section_title">Réglages</string>
+    <string name="bundled_products_info_notice">Vous pouvez modifier des formules de produits dans le tableau de bord Web.</string>
+    <string name="product_bundle_multiple_count">%d produits</string>
+    <string name="product_bundle_single_count">1 produit</string>
+    <string name="product_bundle">Formules de produits</string>
+    <string name="empty_group_of">Non groupé</string>
+    <string name="empty_max_quantity">Aucun maximum</string>
+    <string name="empty_min_quantity">Aucun minimum</string>
+    <string name="free_trial_summary_store_creation_error_dialog_action">Compris !</string>
+    <string name="free_trial_summary_store_creation_error_message">Désolé, nous ne pouvons pas créer votre boutique maintenant. Veuillez réessayer ultérieurement.</string>
+    <string name="free_trial_summary_store_creation_error_title">Un problème est survenu</string>
+    <string name="product_type_bundle">Formule</string>
     <string name="quantity_rules_info_notice">Vous pouvez modifier les règles de quantité des produits dans le tableau de bord Web.</string>
     <string name="group_of">Groupe de</string>
     <string name="max_quantity">Quantité maximale</string>
