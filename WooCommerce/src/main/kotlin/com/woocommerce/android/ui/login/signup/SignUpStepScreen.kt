@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -36,6 +38,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.R.color
+import com.woocommerce.android.R.dimen
+import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.ProgressDialog
@@ -63,21 +68,15 @@ fun SignUpStepScreen(viewModel: SignUpViewModel) {
                 }
             )
         }) { padding ->
-            when {
-                state.isLoading ->
-                    ProgressDialog(
-                        title = "",
-                        subtitle = stringResource(id = R.string.signup_creating_account_loading_message)
-                    )
-
-                state.stepType == SignUpStepType.EMAIL -> SignUpEmailForm(
+            when (state.stepType) {
+                SignUpStepType.EMAIL -> SignUpEmailForm(
                     termsOfServiceClicked = viewModel::onTermsOfServiceClicked,
                     onPrimaryButtonClicked = viewModel::onEmailContinueClicked,
                     signUpState = state,
                     modifier = Modifier.padding(padding)
                 )
 
-                state.stepType == SignUpStepType.PASSWORD -> SignUpPasswordForm(
+                SignUpStepType.PASSWORD -> SignUpPasswordForm(
                     termsOfServiceClicked = viewModel::onTermsOfServiceClicked,
                     onPrimaryButtonClicked = viewModel::onPasswordContinueClicked,
                     signUpState = state,
@@ -134,7 +133,7 @@ private fun SignUpEmailForm(
                 keyboardActions = KeyboardActions(onDone = { onPrimaryButtonClicked(email) })
             )
         }
-        SignUpFooter(termsOfServiceClicked, onPrimaryButtonClicked, email)
+        SignUpFooter(termsOfServiceClicked, onPrimaryButtonClicked, email, signUpState.isLoading)
     }
     // Request focus on email field when entering screen
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
@@ -190,13 +189,21 @@ private fun SignUpPasswordForm(
     }
     // Request focus on email field when entering screen
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
+
+    if (signUpState.isLoading) {
+        ProgressDialog(
+            title = "",
+            subtitle = stringResource(id = string.signup_creating_account_loading_message)
+        )
+    }
 }
 
 @Composable
 private fun ColumnScope.SignUpFooter(
     termsOfServiceClicked: () -> Unit,
     onPrimaryButtonClicked: (String) -> Unit,
-    email: String
+    textInput: String,
+    isLoading: Boolean = false
 ) {
     TermsOfServiceText(
         onTermsOfServiceClicked = termsOfServiceClicked,
@@ -206,10 +213,17 @@ private fun ColumnScope.SignUpFooter(
     )
     WCColoredButton(
         modifier = Modifier.fillMaxWidth(),
-        onClick = { onPrimaryButtonClicked(email) },
-        enabled = email.isNotBlank()
+        onClick = { onPrimaryButtonClicked(textInput) },
+        enabled = textInput.isNotBlank()
     ) {
-        Text(text = stringResource(id = R.string.continue_button))
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(size = dimensionResource(id = dimen.major_150)),
+                color = colorResource(id = color.color_on_primary_surface),
+            )
+        } else {
+            Text(text = stringResource(id = R.string.continue_button))
+        }
     }
 }
 
