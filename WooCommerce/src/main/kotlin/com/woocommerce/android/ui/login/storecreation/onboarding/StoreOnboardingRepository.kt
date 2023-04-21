@@ -38,6 +38,7 @@ class StoreOnboardingRepository @Inject constructor(
         return when {
             result.isError ->
                 WooLog.i(WooLog.T.ONBOARDING, "Error fetching onboarding tasks: ${result.error}")
+
             else -> {
                 WooLog.d(WooLog.T.ONBOARDING, "Success fetching onboarding tasks")
                 val mobileSupportedTasks = result.model?.map { it.toOnboardingTask() }
@@ -57,6 +58,10 @@ class StoreOnboardingRepository @Inject constructor(
                                 )
                             )
                         }
+                    }
+                    ?.map {
+                        if (shouldMarkLaunchStoreAsCompleted(it)) it.copy(isComplete = true)
+                        else it
                     }
                     ?.sortedBy { it.type.order }
                     ?: emptyList()
@@ -80,6 +85,9 @@ class StoreOnboardingRepository @Inject constructor(
         }
     }
 
+    private fun shouldMarkLaunchStoreAsCompleted(task: OnboardingTask) =
+        task.type == LAUNCH_YOUR_STORE && selectedSite.get().isVisible && !selectedSite.get().isFreeTrial
+
     fun isOnboardingCompleted(): Boolean =
         appPrefsWrapper.isOnboardingCompleted(selectedSite.getSelectedSiteId())
 
@@ -98,6 +106,7 @@ class StoreOnboardingRepository @Inject constructor(
                     }
                 )
             }
+
             else -> {
                 WooLog.d(WooLog.T.ONBOARDING, "Site launched successfully")
                 Success

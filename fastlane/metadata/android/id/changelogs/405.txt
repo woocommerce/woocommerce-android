@@ -1,0 +1,2 @@
+13.2:
+Rilis ini termasuk perbaikan beberapa bug, peningkatan visual & aksesibilitas di bagian pesanan dan produk dalam aplikasi. Tetap berikan feedback Anda agar kami mengetahui apa yang harus diupayakan selanjutnya.
