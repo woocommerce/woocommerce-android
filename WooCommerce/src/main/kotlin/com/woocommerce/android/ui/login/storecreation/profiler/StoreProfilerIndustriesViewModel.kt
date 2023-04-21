@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class StoreProfilerIndustriesViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    analyticsTracker: AnalyticsTrackerWrapper,
+    private val analyticsTracker: AnalyticsTrackerWrapper,
     private val newStore: NewStore,
     private val storeProfilerRepository: StoreProfilerRepository,
     private val resourceProvider: ResourceProvider,
@@ -47,7 +47,6 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
 
     override fun getProfilerStepDescription(): String =
         resourceProvider.getString(R.string.store_creation_store_profiler_industries_description)
-
     override fun getProfilerStepTitle(): String =
         resourceProvider.getString(R.string.store_creation_store_profiler_industries_title)
 
@@ -62,6 +61,17 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
                 )
         )
         triggerEvent(NavigateToNextStep)
+    }
+
+    override fun onSkipPressed() {
+        super.onSkipPressed()
+
+        analyticsTracker.track(
+            AnalyticsEvent.SITE_CREATION_PROFILER_QUESTION_SKIPPED,
+            mapOf(
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_PROFILER_INDUSTRIES
+            )
+        )
     }
 
     private fun Industry.toStoreProfilerOptionUi() = StoreProfilerOptionUi(
