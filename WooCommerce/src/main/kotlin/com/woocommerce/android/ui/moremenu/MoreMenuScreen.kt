@@ -142,7 +142,6 @@ private fun MoreMenuHeader(
     }
 }
 
-
 /**
  * Since the header is also a button that opens the store switch, it can be disabled
  * through the [MoreMenuViewState.isStoreSwitcherEnabled] flag.
