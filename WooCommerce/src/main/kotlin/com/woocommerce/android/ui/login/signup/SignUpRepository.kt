@@ -9,7 +9,6 @@ import com.woocommerce.android.util.dispatchAndAwait
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.model.AccountModel
-import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
@@ -18,7 +17,6 @@ import javax.inject.Inject
 
 class SignUpRepository @Inject constructor(
     private val signUpStore: SignUpStore,
-    private val accountStore: AccountStore,
     private val dispatcher: Dispatcher,
 ) {
     private companion object {
