@@ -66,21 +66,17 @@ class SignUpViewModel @Inject constructor(
 
     fun onEmailContinueClicked(email: String) {
         val trimmedEmail = email.trim()
+        _viewState.value = _viewState.value?.copy(email = trimmedEmail)
         if (isValidEmail(trimmedEmail)) {
             launch {
                 _viewState.value = _viewState.value?.copy(error = null, isLoading = true)
-                when (val result = signUpRepository.createAccount(email, "")) {
-                    is AccountCreationError -> {
-                        if (result.error == EMAIL_EXIST) {
-                            triggerEvent(OnEmailAlreadyExistError(trimmedEmail))
-                        }
-                    }
-
-                    else -> _viewState.value = _viewState.value?.copy(
-                        stepType = SignUpStepType.PASSWORD,
-                        error = null
-                    )
-                }
+                val result = signUpRepository.createAccount(email, "")
+                if (result is AccountCreationError && result.error == EMAIL_EXIST) {
+                    triggerEvent(OnEmailAlreadyExistError(trimmedEmail))
+                } else _viewState.value = _viewState.value?.copy(
+                    stepType = SignUpStepType.PASSWORD,
+                    error = null
+                )
                 _viewState.value = _viewState.value?.copy(isLoading = false)
             }
         } else {
@@ -92,7 +88,6 @@ class SignUpViewModel @Inject constructor(
                 )
             )
         }
-
     }
 
     fun onPasswordContinueClicked(inputPassword: String) {
