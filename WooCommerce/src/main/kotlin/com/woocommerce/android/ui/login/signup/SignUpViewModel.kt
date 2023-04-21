@@ -61,7 +61,7 @@ class SignUpViewModel @Inject constructor(
 
     fun onLoginClicked() {
         AnalyticsTracker.track(stat = AnalyticsEvent.SIGNUP_LOGIN_BUTTON_TAPPED)
-        triggerEvent(OnLoginClicked)
+        triggerEvent(OnLoginWithEmail(_viewState.value?.email))
     }
 
     fun onEmailContinueClicked(email: String) {
@@ -72,7 +72,7 @@ class SignUpViewModel @Inject constructor(
                 _viewState.value = _viewState.value?.copy(error = null, isLoading = true)
                 val result = signUpRepository.createAccount(email, "")
                 if (result is AccountCreationError && result.error == EMAIL_EXIST) {
-                    triggerEvent(OnEmailAlreadyExistError(trimmedEmail))
+                    triggerEvent(OnLoginWithEmail(trimmedEmail))
                 } else _viewState.value = _viewState.value?.copy(
                     stepType = SignUpStepType.PASSWORD,
                     error = null
@@ -203,6 +203,5 @@ class SignUpViewModel @Inject constructor(
 
     object OnTermsOfServiceClicked : MultiLiveEvent.Event()
     object OnAccountCreated : MultiLiveEvent.Event()
-    object OnLoginClicked : MultiLiveEvent.Event()
-    data class OnEmailAlreadyExistError(val email: String) : MultiLiveEvent.Event()
+    data class OnLoginWithEmail(val email: String?) : MultiLiveEvent.Event()
 }

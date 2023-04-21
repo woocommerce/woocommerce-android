@@ -905,11 +905,8 @@ class LoginActivity :
         showMainActivityAndFinish()
     }
 
-    override fun onLoginClicked() {
-        startLoginViaWPCom()
-    }
-
-    override fun onSignUpEmailAlreadyExist(email: String) {
+    override fun onLoginWithEmail(email: String?) {
+        unifiedLoginTracker.setFlow(Flow.WORDPRESS_COM.value)
         changeFragment(
             fragment = WooLoginEmailFragment.newInstance(email) as Fragment,
             shouldAddToBackStack = true,

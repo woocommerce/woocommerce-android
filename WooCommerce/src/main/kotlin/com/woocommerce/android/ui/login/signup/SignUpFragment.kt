@@ -13,8 +13,7 @@ import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.signup.SignUpViewModel.OnEmailAlreadyExistError
-import com.woocommerce.android.ui.login.signup.SignUpViewModel.OnLoginClicked
+import com.woocommerce.android.ui.login.signup.SignUpViewModel.OnLoginWithEmail
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.OnTermsOfServiceClicked
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -38,8 +37,7 @@ class SignUpFragment : BaseFragment() {
     }
 
     interface Listener {
-        fun onLoginClicked()
-        fun onSignUpEmailAlreadyExist(email: String)
+        fun onLoginWithEmail(email: String?)
         fun onAccountCreated(nextStep: NextStep)
     }
 
@@ -95,8 +93,7 @@ class SignUpFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is OnEmailAlreadyExistError -> signUpEmailFragment?.onSignUpEmailAlreadyExist(event.email)
-                is OnLoginClicked -> signUpEmailFragment?.onLoginClicked()
+                is OnLoginWithEmail -> signUpEmailFragment?.onLoginWithEmail(event.email)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is OnTermsOfServiceClicked -> openTermsOfServiceUrl()
                 is Exit -> parentFragmentManager.popBackStack()
