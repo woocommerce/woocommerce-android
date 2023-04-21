@@ -19,6 +19,7 @@ class WPComWebViewViewModel @Inject constructor(
     val userAgent: UserAgent
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: WPComWebViewFragmentArgs by savedStateHandle.navArgs()
+    private var isExiting = false
 
     val viewState = navArgs.let {
         ViewState(
@@ -37,7 +38,8 @@ class WPComWebViewViewModel @Inject constructor(
             STARTS_WITH -> url.startsWith(this, ignoreCase = true)
         }
 
-        if (navArgs.urlsToTriggerExit?.any { it.matchesUrl(url) } == true) {
+        if (navArgs.urlsToTriggerExit?.any { it.matchesUrl(url) } == true && !isExiting) {
+            isExiting = true
             triggerEvent(ExitWithResult(Unit))
         }
     }
