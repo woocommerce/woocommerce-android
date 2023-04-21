@@ -49,6 +49,9 @@ class UpgradesViewModel @Inject constructor(
     private val _upgradesState = MutableLiveData<UpgradesViewState>()
     val upgradesState: LiveData<UpgradesViewState> = _upgradesState
 
+    private val SitePlan.formattedPlanName
+        get() = generateFormattedPlanName(resourceProvider)
+
     init {
         loadSubscriptionState()
     }
@@ -93,11 +96,11 @@ class UpgradesViewModel @Inject constructor(
     private fun createOtherPlansViewStateFrom(sitePlan: SitePlan) =
         sitePlan.mapAsViewState(
             isExpired = {
-                PlanEnded(name = resourceProvider.getString(R.string.upgrades_plan_ended_name, prettifiedName))
+                PlanEnded(name = resourceProvider.getString(R.string.upgrades_plan_ended_name, formattedPlanName))
             },
             isNotExpired = {
                 NonUpgradeable(
-                    name = prettifiedName,
+                    name = formattedPlanName,
                     currentPlanEndDate = expirationDate.toLocalDate().formatStyleFull()
                 )
             }
@@ -110,7 +113,7 @@ class UpgradesViewModel @Inject constructor(
             },
             isNotExpired = { remainingPeriod ->
                 TrialInProgress(
-                    name = prettifiedName,
+                    name = formattedPlanName,
                     freeTrialDuration = FREE_TRIAL_PERIOD,
                     daysLeftInFreeTrial = StringUtils.getQuantityString(
                         resourceProvider = resourceProvider,
@@ -132,10 +135,6 @@ class UpgradesViewModel @Inject constructor(
             else -> isNotExpired(daysUntilExpiration)
         }
     }
-
-    private val SitePlan.prettifiedName
-        get() = name.removePrefix("WordPress.com ")
-            .removePrefix("Woo Express: ")
 
     sealed interface UpgradesViewState {
 

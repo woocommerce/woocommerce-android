@@ -3,6 +3,8 @@
 -----
 - [*] [Internal] Removed IPP upsell banner from the Payment Method Selection Screen. [https://github.com/woocommerce/woocommerce-android/pull/8815]
 - [*] Improves loading experience while users wait for their new store to be ready [https://github.com/woocommerce/woocommerce-android/pull/8799]
+- [*] [Internal] Profiler during new site free trial creation is now added [https://github.com/woocommerce/woocommerce-android/pull/8832]
+- [*] Products: Adds read-only support for the Composite Products extension in the Products details. [https://github.com/woocommerce/woocommerce-android/pull/8818]
 
 13.2
 -----

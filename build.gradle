@@ -116,7 +116,7 @@ ext {
     materialVersion = '1.6.1'
     hiltJetpackVersion = '1.0.0'
     wordPressUtilsVersion = '2.6.0'
-    mediapickerVersion = '0.1.1'
+    mediapickerVersion = '0.1.2'
     wordPressLoginVersion = '1.1.0'
     aboutAutomatticVersion = '0.0.6'
     workManagerVersion = '2.7.1'
