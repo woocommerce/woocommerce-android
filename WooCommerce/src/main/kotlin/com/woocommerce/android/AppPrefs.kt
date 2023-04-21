@@ -29,6 +29,7 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.UPDATE_SIMULATED_READER
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_TASKS_COMPLETED
+import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_PHONE_NUMBER
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.extensions.packageInfo
@@ -183,6 +184,9 @@ object AppPrefs {
 
         // Time when the last successful payment was made with a card reader
         CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME,
+
+        // A phone number associated with the store (used in shipping labels)
+        STORE_PHONE_NUMBER,
     }
 
     fun init(context: Context) {
@@ -937,6 +941,18 @@ object AppPrefs {
     fun setCardReaderSuccessfulPaymentTime() {
         setLong(UndeletablePrefKey.CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME, System.currentTimeMillis())
     }
+
+    fun setStorePhoneNumber(siteId: Int, phoneNumber: String) {
+        setString(
+            key = PrefKeyString("$STORE_PHONE_NUMBER:$siteId"),
+            value = phoneNumber
+        )
+    }
+
+    fun getStorePhoneNumber(siteId: Int): String =
+        getString(
+            key = PrefKeyString("$STORE_PHONE_NUMBER:$siteId"),
+        )
 
     /**
      * Remove all user and site-related preferences.
