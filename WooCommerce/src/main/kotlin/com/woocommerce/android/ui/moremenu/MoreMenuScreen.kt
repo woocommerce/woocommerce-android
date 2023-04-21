@@ -121,7 +121,7 @@ private fun MoreMenuHeader(
             modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            StoreDetailsHeader(
+            HeaderContent(
                 userAvatarUrl = state.userAvatarUrl,
                 siteName = state.siteName,
                 planName = state.sitePlan,
@@ -180,14 +180,14 @@ private fun HeaderButton(
 }
 
 @Composable
-private fun StoreDetailsHeader(
+private fun HeaderContent(
     userAvatarUrl: String,
     siteName: String,
     planName: String,
     siteUrl: String
 ) {
     Row {
-        MoreMenuUserAvatar(
+        HeaderAvatar(
             modifier = Modifier.align(Alignment.CenterVertically),
             avatarUrl = userAvatarUrl
         )
@@ -207,7 +207,7 @@ private fun StoreDetailsHeader(
                         .weight(1f, false)
                 )
                 if (planName.isNotEmpty()) {
-                    PlanBadge(planName)
+                    StorePlanBadge(planName)
                 }
             }
             Text(
@@ -220,7 +220,7 @@ private fun StoreDetailsHeader(
 }
 
 @Composable
-private fun PlanBadge(planName: String) {
+private fun StorePlanBadge(planName: String) {
     Box(
         modifier = Modifier
             .clip(CircleShape)
@@ -240,7 +240,7 @@ private fun PlanBadge(planName: String) {
 }
 
 @Composable
-private fun MoreMenuUserAvatar(
+private fun HeaderAvatar(
     modifier: Modifier,
     avatarUrl: String
 ) {
