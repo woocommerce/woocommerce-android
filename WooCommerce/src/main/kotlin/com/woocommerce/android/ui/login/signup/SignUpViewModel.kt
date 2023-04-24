@@ -109,9 +109,7 @@ class SignUpViewModel @Inject constructor(
     fun onPasswordContinueClicked() {
         analyticsTrackerWrapper.track(stat = AnalyticsEvent.SIGNUP_SUBMITTED)
 
-        _viewState.value?.let { state ->
-            val email = state.email
-            val password = state.password
+        _viewState.value?.let { (_, email, password) ->
 
             signUpCredentialsValidator.validatePassword(password)?.let { error ->
                 _viewState.value = _viewState.value?.copy(error = error.toSignUpErrorUi())
