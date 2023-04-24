@@ -11,7 +11,7 @@ import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STO
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STORE_NOT_READY
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationTransactionLauncher
 import com.woocommerce.android.ui.login.storecreation.installation.ObserveSiteInstallation
-import com.woocommerce.android.ui.login.storecreation.installation.StoreCreationLoadingTimer
+import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationLoadingTimer
 import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel
 import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState
 import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.ErrorState
@@ -41,7 +41,7 @@ class StoreInstallationViewModelTest : BaseUnitTest() {
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val selectedSite: SelectedSite = mock()
-    private val storeCreationLoadingTimer: StoreCreationLoadingTimer = mock()
+    private val storeInstallationLoadingTimer: StoreInstallationLoadingTimer = mock()
     private val installationTransactionLauncher: InstallationTransactionLauncher = mock()
     private val observeSiteInstallation: ObserveSiteInstallation = mock()
 
@@ -64,7 +64,7 @@ class StoreInstallationViewModelTest : BaseUnitTest() {
             analyticsTrackerWrapper,
             appPrefsWrapper,
             selectedSite,
-            storeCreationLoadingTimer,
+            storeInstallationLoadingTimer,
             installationTransactionLauncher,
             observeSiteInstallation
         )
@@ -83,7 +83,7 @@ class StoreInstallationViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        whenever(storeCreationLoadingTimer.observe()).thenReturn(flowOf(INITIAL_LOADING_STATE))
+        whenever(storeInstallationLoadingTimer.observe()).thenReturn(flowOf(INITIAL_LOADING_STATE))
     }
 
     @Test
@@ -106,7 +106,7 @@ class StoreInstallationViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
             advanceUntilIdle()
 
-            verify(storeCreationLoadingTimer).resetTimer()
+            verify(storeInstallationLoadingTimer).resetTimer()
             val expectedState = SuccessState(newStore.data.domain!!.slashJoin("wp-admin/"))
             observeState { lastState ->
                 assertEquals(expectedState, lastState)
@@ -138,7 +138,7 @@ class StoreInstallationViewModelTest : BaseUnitTest() {
             observeState { lastState ->
                 assertEquals(expectedState, lastState)
             }
-            verify(storeCreationLoadingTimer).resetTimer()
+            verify(storeInstallationLoadingTimer).resetTimer()
             verify(analyticsTrackerWrapper).track(AnalyticsEvent.SITE_CREATION_TIMED_OUT)
         }
 
@@ -166,7 +166,7 @@ class StoreInstallationViewModelTest : BaseUnitTest() {
         observeState { lastState ->
             assertEquals(expectedState, lastState)
         }
-        verify(storeCreationLoadingTimer).resetTimer()
+        verify(storeInstallationLoadingTimer).resetTimer()
     }
 
     @Test
@@ -174,7 +174,7 @@ class StoreInstallationViewModelTest : BaseUnitTest() {
         testBlocking {
             whenViewModelIsCreated()
 
-            verify(storeCreationLoadingTimer).startTimer()
+            verify(storeInstallationLoadingTimer).startTimer()
         }
 
     @Test

@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
-class StoreCreationLoadingTimer @Inject constructor() {
+class StoreInstallationLoadingTimer @Inject constructor() {
     private companion object {
         private const val LOADING_TOTAL_TIME = 60000L
         const val DELAY_BETWEEN_PROGRESS_UPDATES = 200L

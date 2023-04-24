@@ -42,7 +42,7 @@ class StoreInstallationViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val selectedSite: SelectedSite,
-    private val storeCreationLoadingTimer: StoreCreationLoadingTimer,
+    private val storeInstallationLoadingTimer: StoreInstallationLoadingTimer,
     private val installationTransactionLauncher: InstallationTransactionLauncher,
     private val observeSiteInstallation: ObserveSiteInstallation,
 ) : ScopedViewModel(savedStateHandle) {
@@ -135,7 +135,7 @@ class StoreInstallationViewModel @Inject constructor(
                     newStore.data.siteId!!,
                     newStore.data.name.orEmpty()
                 ),
-                storeCreationLoadingTimer.observe()
+                storeInstallationLoadingTimer.observe()
             ) { installationState, timerState ->
                 processStoreInstallationState(installationState)
 
@@ -143,14 +143,14 @@ class StoreInstallationViewModel @Inject constructor(
                     is InstallationState.Success,
                     is InstallationState.Failure -> {
                         this.cancel()
-                        storeCreationLoadingTimer.resetTimer()
+                        storeInstallationLoadingTimer.resetTimer()
                     }
 
                     else -> _viewState.value = timerState
                 }
             }.collect()
         }
-        storeCreationLoadingTimer.startTimer()
+        storeInstallationLoadingTimer.startTimer()
         installationTransactionLauncher.onStoreInstallationRequested()
     }
 
