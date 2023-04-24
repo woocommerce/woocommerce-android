@@ -14,10 +14,10 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.StoreCreationLoadingState
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.SuccessState
 import com.woocommerce.android.ui.login.storecreation.installation.ObserveSiteInstallation.InstallationState
+import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.ErrorState
+import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.StoreCreationLoadingState
+import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.SuccessState
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -34,7 +34,7 @@ import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import javax.inject.Inject
 
 @HiltViewModel
-class InstallationViewModel @Inject constructor(
+class StoreInstallationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repository: StoreCreationRepository,
     private val newStore: NewStore,

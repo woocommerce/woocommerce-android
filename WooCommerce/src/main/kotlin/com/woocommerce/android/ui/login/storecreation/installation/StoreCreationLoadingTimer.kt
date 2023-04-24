@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.login.storecreation.installation
 
 import android.os.CountDownTimer
 import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.StoreCreationLoadingState
+import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.StoreCreationLoadingState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject

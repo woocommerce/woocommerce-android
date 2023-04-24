@@ -10,13 +10,13 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STORE_LOADING_FAILED
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STORE_NOT_READY
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationTransactionLauncher
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.StoreCreationLoadingState
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.SuccessState
 import com.woocommerce.android.ui.login.storecreation.installation.ObserveSiteInstallation
 import com.woocommerce.android.ui.login.storecreation.installation.StoreCreationLoadingTimer
+import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel
+import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState
+import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.ErrorState
+import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.StoreCreationLoadingState
+import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.SuccessState
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -35,7 +35,7 @@ import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
-class InstallationViewModelTest : BaseUnitTest() {
+class StoreInstallationViewModelTest : BaseUnitTest() {
     private val savedState = SavedStateHandle()
     private val repository: StoreCreationRepository = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
@@ -45,7 +45,7 @@ class InstallationViewModelTest : BaseUnitTest() {
     private val installationTransactionLauncher: InstallationTransactionLauncher = mock()
     private val observeSiteInstallation: ObserveSiteInstallation = mock()
 
-    private lateinit var viewModel: InstallationViewModel
+    private lateinit var viewModel: StoreInstallationViewModel
 
     private companion object {
         const val SITE_ID = 123L
@@ -57,7 +57,7 @@ class InstallationViewModelTest : BaseUnitTest() {
     }
 
     private fun whenViewModelIsCreated() {
-        viewModel = InstallationViewModel(
+        viewModel = StoreInstallationViewModel(
             savedState,
             repository,
             newStore,

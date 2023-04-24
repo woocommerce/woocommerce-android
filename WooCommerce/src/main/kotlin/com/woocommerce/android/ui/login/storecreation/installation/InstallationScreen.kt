@@ -42,14 +42,14 @@ import com.woocommerce.android.ui.compose.component.WebViewProgressIndicator.Cir
 import com.woocommerce.android.ui.compose.drawShadow
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorScreen
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.StoreCreationLoadingState
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.SuccessState
+import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.ErrorState
+import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.StoreCreationLoadingState
+import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.SuccessState
 import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable
 fun InstallationScreen(
-    viewModel: InstallationViewModel,
+    viewModel: StoreInstallationViewModel,
     userAgent: UserAgent,
     authenticator: WPComWebViewAuthenticator
 ) {
