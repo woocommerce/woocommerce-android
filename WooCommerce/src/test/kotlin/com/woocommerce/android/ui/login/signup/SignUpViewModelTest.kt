@@ -70,7 +70,7 @@ internal class SignUpViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
     @Test
     fun `when email with white spaces is entered, then email is trimmed`() {
         testBlocking {
-            //When
+            // When
             viewModel.onEmailInputChanged(VALID_EMAIL_WITH_WHITE_SPACES)
 
             assertThat(viewModel.viewState.value).isEqualTo(
@@ -85,15 +85,15 @@ internal class SignUpViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
     @Test
     fun `given a valid email, when continue is clicked, then trigger account creation to verify if email exist`() {
         testBlocking {
-            //Given
+            // Given
             viewModel.onEmailInputChanged(VALID_EMAIL)
             whenever(signUpCredentialsValidator.isEmailValid(VALID_EMAIL)).thenReturn(true)
 
-            //When
+            // When
             viewModel.onEmailContinueClicked()
             advanceUntilIdle()
 
-            //Then
+            // Then
             verify(signUpRepository).createAccount(VALID_EMAIL, "")
         }
     }
@@ -101,17 +101,17 @@ internal class SignUpViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
     @Test
     fun `given email is not an existing wordpress account, when continue is clicked, then navigate to password step`() {
         testBlocking {
-            //Given
+            // Given
             viewModel.onEmailInputChanged(VALID_EMAIL)
             whenever(signUpCredentialsValidator.isEmailValid(VALID_EMAIL)).thenReturn(true)
             whenever(signUpRepository.createAccount(VALID_EMAIL, ""))
                 .thenReturn(ACCOUNT_CREATION_ERROR_PASSWORD_INVALID)
 
-            //When
+            // When
             viewModel.onEmailContinueClicked()
             advanceUntilIdle()
 
-            //Then
+            // Then
             assertThat(viewModel.viewState.value).isEqualTo(
                 SignUpState(
                     stepType = SignUpViewModel.SignUpStepType.PASSWORD,
@@ -127,17 +127,17 @@ internal class SignUpViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
     @Test
     fun `given email already exist, when continue is clicked, then navigate to log in with wordpress email screen`() {
         testBlocking {
-            //Given
+            // Given
             viewModel.onEmailInputChanged(VALID_EMAIL)
             whenever(signUpCredentialsValidator.isEmailValid(VALID_EMAIL)).thenReturn(true)
             whenever(signUpRepository.createAccount(VALID_EMAIL, ""))
                 .thenReturn(ACCOUNT_CREATION_EMAIL_EXIST_ERROR)
 
-            //When
+            // When
             viewModel.onEmailContinueClicked()
             advanceUntilIdle()
 
-            //Then
+            // Then
             assertThat(viewModel.event.value).isEqualTo(OnLoginWithEmail(VALID_EMAIL))
             assertThat(viewModel.viewState.value).isEqualTo(
                 SignUpState(
@@ -154,16 +154,16 @@ internal class SignUpViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
     @Test
     fun `given a valid email and password, when continue is clicked, then trigger account creation and track`() {
         testBlocking {
-            //Given
+            // Given
             viewModel.onEmailInputChanged(VALID_EMAIL)
             viewModel.onPasswordInputChanged(VALID_PASSWORD)
             whenever(signUpCredentialsValidator.validatePassword(VALID_PASSWORD)).thenReturn(null)
 
-            //When
+            // When
             viewModel.onPasswordContinueClicked()
             advanceUntilIdle()
 
-            //Then
+            // Then
             verify(analyticsTrackerWrapper).track(AnalyticsEvent.SIGNUP_SUBMITTED)
             verify(signUpRepository).createAccount(VALID_EMAIL, VALID_PASSWORD)
         }
@@ -172,20 +172,20 @@ internal class SignUpViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
     @Test
     fun `given valid credentials, when failing to create account, then display error and track error`() {
         testBlocking {
-            //Given
+            // Given
             whenever(signUpCredentialsValidator.isEmailValid(VALID_EMAIL)).thenReturn(true)
             whenever(signUpCredentialsValidator.validatePassword(VALID_PASSWORD)).thenReturn(null)
             whenever(signUpRepository.createAccount(VALID_EMAIL, VALID_PASSWORD))
                 .thenReturn(ACCOUNT_CREATION_ERROR_UNKNOWN)
 
-            //When
+            // When
             viewModel.onEmailInputChanged(VALID_EMAIL)
             viewModel.onEmailContinueClicked()
             viewModel.onPasswordInputChanged(VALID_PASSWORD)
             viewModel.onPasswordContinueClicked()
             advanceUntilIdle()
 
-            //Then
+            // Then
             assertThat(viewModel.viewState.value).isEqualTo(
                 SignUpState(
                     stepType = SignUpViewModel.SignUpStepType.PASSWORD,
@@ -208,20 +208,20 @@ internal class SignUpViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
     @Test
     fun `given valid credentials, when account created, then trigger account created event and track success`() {
         testBlocking {
-            //Given
+            // Given
             whenever(signUpCredentialsValidator.isEmailValid(VALID_EMAIL)).thenReturn(true)
             whenever(signUpCredentialsValidator.validatePassword(VALID_PASSWORD)).thenReturn(null)
             whenever(signUpRepository.createAccount(VALID_EMAIL, VALID_PASSWORD)).thenReturn(AccountCreationSuccess)
             viewModel.nextStep = NextStep.STORE_CREATION
 
-            //When
+            // When
             viewModel.onEmailInputChanged(VALID_EMAIL)
             viewModel.onEmailContinueClicked()
             viewModel.onPasswordInputChanged(VALID_PASSWORD)
             viewModel.onPasswordContinueClicked()
             advanceUntilIdle()
 
-            //Then
+            // Then
             assertThat(viewModel.event.value).isEqualTo(OnAccountCreated)
             verify(analyticsTrackerWrapper).track(stat = AnalyticsEvent.SIGNUP_SUCCESS)
             verify(appPrefs).markAsNewSignUp(true)
