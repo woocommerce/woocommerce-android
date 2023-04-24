@@ -41,7 +41,7 @@ class StoreInstallationFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    InstallationScreen(viewModel, userAgent, authenticator)
+                    StoreInstallationScreen(viewModel, userAgent, authenticator)
                 }
             }
         }

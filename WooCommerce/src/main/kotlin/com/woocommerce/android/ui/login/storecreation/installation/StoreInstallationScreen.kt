@@ -48,7 +48,7 @@ import com.woocommerce.android.ui.login.storecreation.installation.StoreInstalla
 import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable
-fun InstallationScreen(
+fun StoreInstallationScreen(
     viewModel: StoreInstallationViewModel,
     userAgent: UserAgent,
     authenticator: WPComWebViewAuthenticator
