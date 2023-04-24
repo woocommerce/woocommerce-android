@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.login.signup.SignUpViewModel.OnLoginClicked
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.OnTermsOfServiceClicked
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.ChromeCustomTabUtils.Height.Partial.ThreeQuarters
 import com.woocommerce.android.util.UrlUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -104,7 +105,7 @@ class SignUpFragment : BaseFragment() {
     }
 
     private fun openTermsOfServiceUrl() {
-        ChromeCustomTabUtils.launchUrl(requireContext(), urlUtils.tosUrlWithLocale)
+        ChromeCustomTabUtils.launchUrl(requireContext(), urlUtils.tosUrlWithLocale, ThreeQuarters)
     }
 
     enum class NextStep {
