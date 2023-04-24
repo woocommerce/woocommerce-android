@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-11 13:54:03+0000
+Translation-Revision-Date: 2023-04-18 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="more_menu_button_settings_description">Einstellungen ändern</string>
+    <string name="more_menu_button_settings">Einstellungen</string>
+    <string name="more_menu_button_upgrades_description">Deine Tarife verwalten</string>
+    <string name="more_menu_button_reviews_description">Sammle Bewertungen für deinen Shop</string>
+    <string name="more_menu_button_coupons_description">Steigere deine Umsätze mit speziellen Angeboten</string>
+    <string name="more_menu_button_store_description">Deinen Shop ansehen</string>
+    <string name="more_menu_button_inbox_description">Bleibe auf dem Laufenden</string>
+    <string name="more_menu_button_payments_description">Nutze mobile Zahlungen</string>
+    <string name="more_menu_button_wc_admin_description">Verwalte mehr als Admin</string>
+    <string name="more_menu_general_section_title">Allgemeines</string>
+    <string name="more_menu_settings_section_title">Einstellungen</string>
+    <string name="bundled_products_info_notice">Du kannst gebündelte Produkte im Web-Dashboard bearbeiten.</string>
+    <string name="product_bundle_multiple_count">%d Produkte</string>
+    <string name="product_bundle_single_count">1 Produkt</string>
+    <string name="product_bundle">Gebündelte Produkte</string>
+    <string name="empty_group_of">Nicht gruppiert</string>
+    <string name="empty_max_quantity">Kein Maximalbetrag</string>
+    <string name="empty_min_quantity">Kein Mindestbetrag</string>
+    <string name="free_trial_summary_store_creation_error_dialog_action">Alles klar!</string>
+    <string name="free_trial_summary_store_creation_error_message">Leider können wir deinen Shop gerade nicht erstellen. Bitte versuche es später erneut.</string>
+    <string name="free_trial_summary_store_creation_error_title">Es ist ein Fehler aufgetreten</string>
+    <string name="product_type_bundle">Paket</string>
     <string name="quantity_rules_info_notice">Du kannst Produktmengenregeln im Web-Dashboard bearbeiten.</string>
     <string name="group_of">Gruppe von</string>
     <string name="max_quantity">Höchstmenge</string>

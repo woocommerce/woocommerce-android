@@ -125,7 +125,8 @@ private fun MoreMenuHeader(
                 userAvatarUrl = state.userAvatarUrl,
                 siteName = state.siteName,
                 planName = state.sitePlan,
-                siteUrl = state.siteUrl
+                siteUrl = state.siteUrl,
+                modifier = Modifier.weight(1f, false)
             )
 
             if (state.isStoreSwitcherEnabled) {
@@ -180,12 +181,13 @@ private fun HeaderButton(
 
 @Composable
 private fun HeaderContent(
+    modifier: Modifier,
     userAvatarUrl: String,
     siteName: String,
     planName: String,
     siteUrl: String
 ) {
-    Row {
+    Row(modifier) {
         HeaderAvatar(
             modifier = Modifier.align(Alignment.CenterVertically),
             avatarUrl = userAvatarUrl

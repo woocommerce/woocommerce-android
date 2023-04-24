@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-11 19:54:04+0000
+Translation-Revision-Date: 2023-04-18 15:54:21+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="more_menu_button_settings_description">Modifica le tue preferenze</string>
+    <string name="more_menu_button_settings">Impostazioni</string>
+    <string name="more_menu_button_upgrades_description">Gestisci i tuoi piani</string>
+    <string name="more_menu_button_reviews_description">Acquisisci recensioni per il tuo negozio</string>
+    <string name="more_menu_button_coupons_description">Incrementa le vendite con offerte speciali</string>
+    <string name="more_menu_button_store_description">Visualizza il tuo negozio</string>
+    <string name="more_menu_button_inbox_description">Rimani aggiornato</string>
+    <string name="more_menu_button_payments_description">Unisciti ai pagamenti mobili</string>
+    <string name="more_menu_button_wc_admin_description">Gestisci di più in Admin</string>
+    <string name="more_menu_general_section_title">Generale</string>
+    <string name="more_menu_settings_section_title">Impostazioni</string>
+    <string name="bundled_products_info_notice">Puoi modificare i prodotti in pacchetto nella bacheca web.</string>
+    <string name="product_bundle_multiple_count">%d prodotti</string>
+    <string name="product_bundle_single_count">1 prodotto</string>
+    <string name="product_bundle">Prodotti in pacchetto</string>
+    <string name="empty_group_of">Non raggruppati</string>
+    <string name="empty_max_quantity">Nessun limite</string>
+    <string name="empty_min_quantity">Nessun minimo</string>
+    <string name="free_trial_summary_store_creation_error_dialog_action">OK!</string>
+    <string name="free_trial_summary_store_creation_error_message">Spiacenti, non siamo in grado di creare il tuo negozio ora, riprova più tardi.</string>
+    <string name="free_trial_summary_store_creation_error_title">Si è verificato un problema</string>
+    <string name="product_type_bundle">Pacchetto</string>
     <string name="quantity_rules_info_notice">Puoi modificare le regole della quantità dei prodotti nella bacheca web.</string>
     <string name="group_of">Gruppi di</string>
     <string name="max_quantity">Quantità massima</string>

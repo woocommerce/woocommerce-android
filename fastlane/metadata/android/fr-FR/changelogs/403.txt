@@ -1,2 +1,0 @@
-13.1 :
-Nous nous sommes penchés sur les paiements en personne et les commandes, notamment sur l’option vous permettant de sélectionner vos produits les plus populaires lors de la création d’une commande.
