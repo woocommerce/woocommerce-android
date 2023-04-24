@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.login.signup
 
 import androidx.annotation.StringRes
-import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -10,6 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.SIGNUP_ERROR
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep
 import com.woocommerce.android.ui.login.signup.SignUpRepository.AccountCreationError
@@ -24,7 +24,6 @@ import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError.USER
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.ErrorType.EMAIL
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.ErrorType.PASSWORD
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.ErrorType.UNKNOWN
-import com.woocommerce.android.util.StringUtils.isValidEmail
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -37,12 +36,10 @@ class SignUpViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val signUpRepository: SignUpRepository,
     private val networkStatus: NetworkStatus,
-    private val appPrefs: AppPrefsWrapper
+    private val appPrefs: AppPrefsWrapper,
+    private val signUpCredentialsValidator: SignUpCredentialsValidator,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
-    private companion object {
-        const val PASSWORD_MIN_LENGTH = 7
-    }
-
     lateinit var nextStep: NextStep
 
     private val _viewState = MutableLiveData(SignUpState(stepType = SignUpStepType.EMAIL))
@@ -60,13 +57,13 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun onLoginClicked() {
-        AnalyticsTracker.track(stat = AnalyticsEvent.SIGNUP_LOGIN_BUTTON_TAPPED)
+        analyticsTrackerWrapper.track(stat = AnalyticsEvent.SIGNUP_LOGIN_BUTTON_TAPPED)
         triggerEvent(OnLoginWithEmail(_viewState.value?.email))
     }
 
     fun onEmailInputChanged(email: String) {
         _viewState.value = _viewState.value?.copy(
-            email = email,
+            email = email.trim(),
             error = null
         )
     }
@@ -79,24 +76,28 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun onEmailContinueClicked() {
-        val trimmedEmail = _viewState.value!!.email.trim()
-        _viewState.value = _viewState.value?.copy(email = trimmedEmail)
-        if (isValidEmail(trimmedEmail)) {
+        val email = _viewState.value!!.email
+        if (signUpCredentialsValidator.isEmailValid(email)) {
+            if (!networkStatus.isConnected()) {
+                triggerEvent(ShowSnackbar(R.string.offline_error))
+                return
+            }
             launch {
                 _viewState.value = _viewState.value?.copy(error = null, isLoading = true)
                 // Trigger account creation with empty password to check if the email already exists.
-                val result = signUpRepository.createAccount(trimmedEmail, "")
+                val result = signUpRepository.createAccount(email, "")
                 if (result is AccountCreationError && result.error == EMAIL_EXIST) {
-                    triggerEvent(OnLoginWithEmail(trimmedEmail))
-                } else _viewState.value = _viewState.value?.copy(
-                    stepType = SignUpStepType.PASSWORD,
-                    error = null
-                )
+                    triggerEvent(OnLoginWithEmail(email))
+                } else {
+                    _viewState.value = _viewState.value?.copy(
+                        stepType = SignUpStepType.PASSWORD,
+                        error = null
+                    )
+                }
                 _viewState.value = _viewState.value?.copy(isLoading = false)
             }
         } else {
             _viewState.value = _viewState.value?.copy(
-                isLoading = false,
                 error = SignUpErrorUi(
                     type = EMAIL,
                     stringId = R.string.signup_email_invalid_input
@@ -106,13 +107,13 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun onPasswordContinueClicked() {
-        AnalyticsTracker.track(stat = AnalyticsEvent.SIGNUP_SUBMITTED)
+        analyticsTrackerWrapper.track(stat = AnalyticsEvent.SIGNUP_SUBMITTED)
 
         _viewState.value?.let { state ->
             val email = state.email
             val password = state.password
 
-            validatePassword(password)?.let { error ->
+            signUpCredentialsValidator.validatePassword(password)?.let { error ->
                 _viewState.value = _viewState.value?.copy(error = error.toSignUpErrorUi())
                 return
             }
@@ -124,7 +125,7 @@ class SignUpViewModel @Inject constructor(
             launch {
                 when (val result = signUpRepository.createAccount(email, password)) {
                     is AccountCreationError -> {
-                        AnalyticsTracker.track(
+                        analyticsTrackerWrapper.track(
                             stat = SIGNUP_ERROR,
                             properties = mapOf(AnalyticsTracker.KEY_ERROR_TYPE to result.error.name)
                         )
@@ -139,7 +140,7 @@ class SignUpViewModel @Inject constructor(
                     }
 
                     AccountCreationSuccess -> {
-                        AnalyticsTracker.track(stat = AnalyticsEvent.SIGNUP_SUCCESS)
+                        analyticsTrackerWrapper.track(stat = AnalyticsEvent.SIGNUP_SUCCESS)
                         _viewState.value = _viewState.value?.copy(isLoading = false)
                         if (nextStep == NextStep.STORE_CREATION) {
                             appPrefs.markAsNewSignUp(true)
@@ -179,12 +180,6 @@ class SignUpViewModel @Inject constructor(
                 stringId = R.string.signup_api_generic_error
             )
         }
-
-    private fun validatePassword(password: String): SignUpError? = when {
-        password.length < PASSWORD_MIN_LENGTH -> PASSWORD_TOO_SHORT
-        password.isDigitsOnly() -> PASSWORD_INVALID
-        else -> null
-    }
 
     data class SignUpState(
         val stepType: SignUpStepType,
