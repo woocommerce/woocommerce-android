@@ -118,7 +118,7 @@
 
     <fragment
         android:id="@+id/installationFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.installation.InstallationFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationFragment"
         android:label="InstallationFragment" />
 
     <fragment

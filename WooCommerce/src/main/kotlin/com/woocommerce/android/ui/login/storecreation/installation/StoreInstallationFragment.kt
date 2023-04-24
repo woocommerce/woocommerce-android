@@ -22,7 +22,7 @@ import org.wordpress.android.fluxc.network.UserAgent
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class InstallationFragment : BaseFragment() {
+class StoreInstallationFragment : BaseFragment() {
     private val viewModel: StoreInstallationViewModel by viewModels()
 
     @Inject lateinit var userAgent: UserAgent
