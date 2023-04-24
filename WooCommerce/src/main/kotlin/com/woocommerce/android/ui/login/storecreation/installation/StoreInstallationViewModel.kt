@@ -115,7 +115,6 @@ class StoreInstallationViewModel @Inject constructor(
                 }
 
                 _viewState.update { ErrorState(result.type, result.message) }
-                newStore.clear()
             }
 
             is InstallationState.OutOfSync -> {
