@@ -24,6 +24,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
@@ -141,7 +142,10 @@ class StoreInstallationViewModel @Inject constructor(
 
                 when (installationState) {
                     is InstallationState.Success,
-                    is InstallationState.Failure -> storeCreationLoadingTimer.resetTimer()
+                    is InstallationState.Failure -> {
+                        this.cancel()
+                        storeCreationLoadingTimer.resetTimer()
+                    }
 
                     else -> _viewState.value = timerState
                 }
