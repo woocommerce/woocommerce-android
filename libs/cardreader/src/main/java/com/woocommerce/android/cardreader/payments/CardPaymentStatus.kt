@@ -18,7 +18,7 @@ sealed class CardPaymentStatus {
     sealed class CardPaymentStatusErrorType {
         object CardReadTimeOut : CardPaymentStatusErrorType()
         object NoNetwork : CardPaymentStatusErrorType()
-        object Server : CardPaymentStatusErrorType()
+        data class Server(val errorMessage: String) : CardPaymentStatusErrorType()
         object Generic : CardPaymentStatusErrorType()
         object Canceled : CardPaymentStatusErrorType()
 
@@ -134,6 +134,13 @@ sealed class CardPaymentStatus {
             object NfcDisabled : BuiltInReader()
             object DeviceIsNotSupported : BuiltInReader()
             object InvalidAppSetup : BuiltInReader()
+        }
+
+        override fun toString(): String = when (this) {
+            is Server -> toString()
+            else -> this.javaClass.run {
+                name.removePrefix("${`package`?.name ?: ""}.")
+            }
         }
     }
 

@@ -127,12 +127,13 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
     @Test
     fun `when SERVER_ERROR capture payment exception thrown, then SERVER_ERROR type returned`() {
         val result = mapper.mapCapturePaymentError(
-            mock(), CapturePaymentResponse.Error.ServerError(
+            mock(),
+            CapturePaymentResponse.Error.ServerError(
                 "error message"
             )
         )
 
-        assertThat(result.type).isEqualTo(Server)
+        assertThat(result.type).isEqualTo(Server("error message"))
         assertThat(result.errorMessage).isEqualTo("Capturing payment failed: ServerError(errorMsg=error message)")
     }
 

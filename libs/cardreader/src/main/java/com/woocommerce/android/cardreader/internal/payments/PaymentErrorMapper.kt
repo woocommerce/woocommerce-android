@@ -126,7 +126,7 @@ internal class PaymentErrorMapper {
         val message = "Capturing payment failed: $capturePaymentResponse"
         val type = when (capturePaymentResponse) {
             is NetworkError -> NoNetwork
-            is ServerError -> CardPaymentStatusErrorType.Server
+            is ServerError -> CardPaymentStatusErrorType.Server(capturePaymentResponse.message)
             else -> Generic
         }
         return PaymentFailed(type, paymentData, message)
