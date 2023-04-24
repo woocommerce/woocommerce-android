@@ -901,7 +901,7 @@ class LoginActivity :
         loginNotificationScheduler.scheduleNotification(notificationType)
     }
 
-    override fun onAccountCreated(nextStep: SignUpFragment.NextStep) {
+    override fun onAccountCreated() {
         showMainActivityAndFinish()
     }
 

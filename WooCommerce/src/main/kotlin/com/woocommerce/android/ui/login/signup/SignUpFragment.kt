@@ -39,15 +39,13 @@ class SignUpFragment : BaseFragment() {
 
     interface Listener {
         fun onLoginWithEmail(email: String?)
-        fun onAccountCreated(nextStep: NextStep)
+        fun onAccountCreated()
     }
 
     @Inject internal lateinit var urlUtils: UrlUtils
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     private val viewModel: SignUpViewModel by viewModels()
     private var signUpEmailFragment: Listener? = null
-
-    private lateinit var nextStep: NextStep
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -64,9 +62,8 @@ class SignUpFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        nextStep = requireArguments().serializable(NEXT_STEP_KEY) ?: error("Screen requires passing a NextStep")
-        viewModel.nextStep = nextStep
+        viewModel.nextStep =
+            requireArguments().serializable(NEXT_STEP_KEY) ?: error("Screen requires passing a NextStep")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -97,7 +94,7 @@ class SignUpFragment : BaseFragment() {
                 is OnLoginWithEmail -> signUpEmailFragment?.onLoginWithEmail(event.email)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is OnTermsOfServiceClicked -> openTermsOfServiceUrl()
-                is OnAccountCreated -> signUpEmailFragment?.onAccountCreated(nextStep)
+                is OnAccountCreated -> signUpEmailFragment?.onAccountCreated()
                 is Exit -> parentFragmentManager.popBackStack()
             }
         }
