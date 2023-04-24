@@ -106,7 +106,7 @@ class StoreInstallationViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
             advanceUntilIdle()
 
-            verify(storeCreationLoadingTimer).cancelTimer()
+            verify(storeCreationLoadingTimer).resetTimer()
             val expectedState = SuccessState(newStore.data.domain!!.slashJoin("wp-admin/"))
             observeState { lastState ->
                 assertEquals(expectedState, lastState)
@@ -138,7 +138,7 @@ class StoreInstallationViewModelTest : BaseUnitTest() {
             observeState { lastState ->
                 assertEquals(expectedState, lastState)
             }
-            verify(storeCreationLoadingTimer).cancelTimer()
+            verify(storeCreationLoadingTimer).resetTimer()
             verify(analyticsTrackerWrapper).track(AnalyticsEvent.SITE_CREATION_TIMED_OUT)
         }
 
@@ -166,7 +166,7 @@ class StoreInstallationViewModelTest : BaseUnitTest() {
         observeState { lastState ->
             assertEquals(expectedState, lastState)
         }
-        verify(storeCreationLoadingTimer).cancelTimer()
+        verify(storeCreationLoadingTimer).resetTimer()
     }
 
     @Test

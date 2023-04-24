@@ -141,7 +141,8 @@ class StoreInstallationViewModel @Inject constructor(
 
                 when (installationState) {
                     is InstallationState.Success,
-                    is InstallationState.Failure -> storeCreationLoadingTimer.cancelTimer()
+                    is InstallationState.Failure -> storeCreationLoadingTimer.resetTimer()
+
                     else -> _viewState.value = timerState
                 }
             }.collect()

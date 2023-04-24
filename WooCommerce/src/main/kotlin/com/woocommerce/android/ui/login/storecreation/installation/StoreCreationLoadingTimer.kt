@@ -22,7 +22,21 @@ class StoreCreationLoadingTimer @Inject constructor() {
         )
     )
 
-    private val timer = object : CountDownTimer(
+    private var storeLoadingCountDownTimer = buildTimer()
+
+    fun observe(): Flow<StoreCreationLoadingState> = loadingState
+
+    fun startTimer() {
+        storeLoadingCountDownTimer.start()
+    }
+
+    fun resetTimer() {
+        storeLoadingCountDownTimer.cancel()
+        storeLoadingCountDownTimer = buildTimer()
+        progress = 0F
+    }
+
+    private fun buildTimer() = object : CountDownTimer(
         LOADING_TOTAL_TIME,
         DELAY_BETWEEN_PROGRESS_UPDATES
     ) {
@@ -76,15 +90,5 @@ class StoreCreationLoadingTimer @Inject constructor() {
         }
 
         override fun onFinish() = Unit
-    }
-
-    fun observe(): Flow<StoreCreationLoadingState> = loadingState
-
-    fun startTimer() {
-        timer.start()
-    }
-
-    fun cancelTimer() {
-        timer.cancel()
     }
 }
