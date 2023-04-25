@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxNoteActionEvent.OpenUrlEvent
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.ChromeCustomTabUtils.Height.Partial.ThreeQuarters
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -69,7 +70,7 @@ class InboxFragment : BaseFragment(), MenuProvider {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is OpenUrlEvent -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                is OpenUrlEvent -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url, ThreeQuarters)
                 is Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 else -> event.isHandled = false
             }

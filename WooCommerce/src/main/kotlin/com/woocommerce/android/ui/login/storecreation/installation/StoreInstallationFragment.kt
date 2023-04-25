@@ -11,8 +11,8 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.NavigateToNewStore
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.OpenStore
+import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.NavigateToNewStore
+import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.OpenStore
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -22,8 +22,8 @@ import org.wordpress.android.fluxc.network.UserAgent
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class InstallationFragment : BaseFragment() {
-    private val viewModel: InstallationViewModel by viewModels()
+class StoreInstallationFragment : BaseFragment() {
+    private val viewModel: StoreInstallationViewModel by viewModels()
 
     @Inject lateinit var userAgent: UserAgent
     @Inject lateinit var authenticator: WPComWebViewAuthenticator
@@ -41,7 +41,7 @@ class InstallationFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    InstallationScreen(viewModel, userAgent, authenticator)
+                    StoreInstallationScreen(viewModel, userAgent, authenticator)
                 }
             }
         }

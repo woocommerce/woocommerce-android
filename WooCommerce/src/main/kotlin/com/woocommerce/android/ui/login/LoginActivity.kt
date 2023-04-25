@@ -65,6 +65,7 @@ import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFrag
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.ChromeCustomTabUtils.Height.Partial.ThreeQuarters
 import com.woocommerce.android.util.UrlUtils
 import com.woocommerce.android.util.WooLog
 import dagger.android.AndroidInjector
@@ -164,6 +165,7 @@ class LoginActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ChromeCustomTabUtils.registerForPartialTabUsage(this)
         onBackPressedDispatcher.addCallback(
             this,
             object : OnBackPressedCallback(true) {
@@ -725,7 +727,7 @@ class LoginActivity :
     }
 
     override fun onTermsOfServiceClicked() {
-        ChromeCustomTabUtils.launchUrl(this, urlUtils.tosUrlWithLocale)
+        ChromeCustomTabUtils.launchUrl(this, urlUtils.tosUrlWithLocale, ThreeQuarters)
     }
 
     //  -- END: LoginListener implementation methods

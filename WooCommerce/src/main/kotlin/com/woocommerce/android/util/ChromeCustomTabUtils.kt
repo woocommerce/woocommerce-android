@@ -6,17 +6,24 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.browser.customtabs.CustomTabsIntent.Builder
 import androidx.browser.customtabs.CustomTabsService.ACTION_CUSTOM_TABS_CONNECTION
 import androidx.browser.customtabs.CustomTabsService.KEY_URL
 import androidx.browser.customtabs.CustomTabsServiceConnection
 import androidx.browser.customtabs.CustomTabsSession
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.intentActivities
+import com.woocommerce.android.extensions.physicalScreenHeightInPx
 import com.woocommerce.android.extensions.service
+import com.woocommerce.android.util.ChromeCustomTabUtils.Height.Full
+import com.woocommerce.android.util.ChromeCustomTabUtils.Height.Partial
 import org.wordpress.android.util.ToastUtils
 
 /**
@@ -40,27 +47,21 @@ object ChromeCustomTabUtils {
     private var session: CustomTabsSession? = null
     private var connection: CustomTabsServiceConnection? = null
     private var canUseCustomTabs: Boolean? = null
+    private var activityResultLauncher: ActivityResultLauncher<PartialTabParams>? = null
 
-    fun connect(context: Context, preloadUrl: String? = null, otherLikelyUrls: Array<String>? = null): Boolean {
-        if (!canUseCustomTabs(context)) {
-            return false
-        }
+    fun connectAndStartSession(context: Context, preloadUrl: String? = null, otherLikelyUrls: Array<String>? = null) {
+        if (!canUseCustomTabs(context)) return
 
-        val thisConnection = object : CustomTabsServiceConnection() {
+        connection = object : CustomTabsServiceConnection() {
             override fun onCustomTabsServiceConnected(name: ComponentName, client: CustomTabsClient) {
                 client.warmup(0)
                 session = client.newSession(null)
 
-                val otherLikelyBundles = ArrayList<Bundle>()
-                otherLikelyUrls?.let { urlList ->
-                    for (url in urlList) {
-                        val bundle = Bundle()
-                        bundle.putParcelable(KEY_URL, Uri.parse(url))
-                        otherLikelyBundles.add(bundle)
-                    }
+                val otherLikelyBundles = otherLikelyUrls?.map { otherLikelyUrl ->
+                    Bundle().apply { putParcelable(KEY_URL, Uri.parse(otherLikelyUrl)) }
                 }
 
-                preloadUrl?.let {
+                preloadUrl.let {
                     session?.mayLaunchUrl(Uri.parse(it), null, otherLikelyBundles)
                 }
             }
@@ -69,11 +70,9 @@ object ChromeCustomTabUtils {
                 session = null
                 connection = null
             }
+        }.also {
+            CustomTabsClient.bindCustomTabsService(context, CUSTOM_TAB_PACKAGE_NAME_STABLE, it)
         }
-        CustomTabsClient.bindCustomTabsService(context, CUSTOM_TAB_PACKAGE_NAME_STABLE, thisConnection)
-        connection = thisConnection
-
-        return true
     }
 
     fun disconnect(context: Context) {
@@ -89,16 +88,28 @@ object ChromeCustomTabUtils {
         connection = null
     }
 
-    fun launchUrl(context: Context, url: String) {
+    fun registerForPartialTabUsage(activity: FragmentActivity) {
+        activityResultLauncher = activity.registerForActivityResult(
+            object : ActivityResultContract<PartialTabParams, Int>() {
+                override fun createIntent(context: Context, input: PartialTabParams) =
+                    createIntent(context, input.height).intent.apply {
+                        data = Uri.parse(input.url)
+                    }
+
+                override fun parseResult(resultCode: Int, intent: Intent?) = resultCode
+            }) {}
+    }
+
+    fun launchUrl(context: Context, url: String, height: Height = Full) {
         try {
-            if (connection == null) {
-                if (canUseCustomTabs(context)) {
-                    createIntent(context).launchUrl(context, Uri.parse(url))
+            if (canUseCustomTabs(context)) {
+                if (session == null && height is Partial && activityResultLauncher != null) {
+                    activityResultLauncher?.launch(PartialTabParams(url, height))
                 } else {
-                    ActivityUtils.openUrlExternal(context, url)
+                    createIntent(context, height, session).launchUrl(context, Uri.parse(url))
                 }
             } else {
-                createIntent(context, session).launchUrl(context, Uri.parse(url))
+                ActivityUtils.openUrlExternal(context, url)
             }
         } catch (e: ActivityNotFoundException) {
             ToastUtils.showToast(context, context.getString(R.string.error_cant_open_url), ToastUtils.Duration.LONG)
@@ -106,14 +117,19 @@ object ChromeCustomTabUtils {
         }
     }
 
-    private fun createIntent(context: Context, tabSession: CustomTabsSession? = null): CustomTabsIntent {
+    private fun createIntent(
+        context: Context,
+        height: Height,
+        tabSession: CustomTabsSession? = null
+    ): CustomTabsIntent {
         val defaultColorSchemeParams = CustomTabColorSchemeParams.Builder()
             .setToolbarColor(ContextCompat.getColor(context, R.color.color_toolbar))
             .build()
-        val intent = CustomTabsIntent.Builder(tabSession)
+        val intent = Builder(tabSession)
             .setDefaultColorSchemeParams(defaultColorSchemeParams)
             .setShareState(CustomTabsIntent.SHARE_STATE_ON)
             .setShowTitle(true)
+            .setTabHeight(height, context)
             .build()
         intent.intent.putExtra(Intent.EXTRA_REFERRER, Uri.parse("android-app://" + context.packageName))
         return intent
@@ -142,4 +158,29 @@ object ChromeCustomTabUtils {
         canUseCustomTabs = false
         return false
     }
+
+    private fun Builder.setTabHeight(height: Height, context: Context) =
+        when (height) {
+            Full -> this
+            is Partial -> setInitialActivityHeightPx(height.toPx(context))
+        }
+
+    sealed class Height {
+        object Full : Height()
+        sealed class Partial : Height() {
+            object Half : Partial()
+            object Third : Partial()
+            object ThreeQuarters : Partial()
+        }
+    }
+
+    @Suppress("MagicNumber")
+    private fun Partial.toPx(context: Context) =
+        when (this) {
+            is Partial.Half -> context.physicalScreenHeightInPx / 2
+            is Partial.Third -> context.physicalScreenHeightInPx / 3
+            is Partial.ThreeQuarters -> context.physicalScreenHeightInPx * 3 / 4
+        }
+
+    private data class PartialTabParams(val url: String, val height: Partial)
 }
