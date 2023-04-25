@@ -92,6 +92,7 @@ private const val ARTIFICIAL_RETRY_DELAY = 500L
 private const val CANADA_FEE_FLAT_IN_CENTS = 15L
 
 @HiltViewModel
+@Suppress("LargeClass")
 class CardReaderPaymentViewModel
 @Inject constructor(
     savedState: SavedStateHandle,
@@ -446,34 +447,40 @@ class CardReaderPaymentViewModel
         cardReaderOnboardingChecker.invalidateCache()
         val onRetryClicked = { retryInteracRefund() }
         val errorType = interacRefundErrorMapper.mapRefundErrorToUiError(error.type)
-        viewState.postValue(
-            when (errorType) {
-                is InteracRefundFlowError.ContactSupportError ->
-                    FailedRefundState(
-                        errorType,
-                        amountLabel,
-                        primaryLabel = R.string.support_contact,
-                        onPrimaryActionClicked = { onContactSupportClicked() },
-                        secondaryLabel = R.string.cancel,
-                        onSecondaryActionClicked = { onBackPressed() }
-                    )
-                is InteracRefundFlowError.NonRetryableError ->
-                    FailedRefundState(
-                        errorType,
-                        amountLabel,
-                        R.string.card_reader_interac_refund_refund_failed_ok,
-                        onPrimaryActionClicked = { onBackPressed() }
-                    )
-                else ->
-                    FailedRefundState(
-                        errorType,
-                        amountLabel,
-                        onPrimaryActionClicked = onRetryClicked,
-                        secondaryLabel = R.string.cancel,
-                        onSecondaryActionClicked = { onBackPressed() }
-                    )
-            }
-        )
+        viewState.postValue(buildInteracRefundFailedState(errorType, amountLabel, onRetryClicked))
+    }
+
+    private fun buildInteracRefundFailedState(
+        errorType: InteracRefundFlowError,
+        amountLabel: String?,
+        onRetryClicked: () -> Unit
+    ) = when (errorType) {
+        is InteracRefundFlowError.ContactSupportError ->
+            FailedRefundState(
+                errorType,
+                amountLabel,
+                primaryLabel = R.string.support_contact,
+                onPrimaryActionClicked = { onContactSupportClicked() },
+                secondaryLabel = R.string.cancel,
+                onSecondaryActionClicked = { onBackPressed() }
+            )
+
+        is InteracRefundFlowError.NonRetryableError ->
+            FailedRefundState(
+                errorType,
+                amountLabel,
+                R.string.card_reader_interac_refund_refund_failed_ok,
+                onPrimaryActionClicked = { onBackPressed() }
+            )
+
+        else ->
+            FailedRefundState(
+                errorType,
+                amountLabel,
+                onPrimaryActionClicked = onRetryClicked,
+                secondaryLabel = R.string.cancel,
+                onSecondaryActionClicked = { onBackPressed() }
+            )
     }
 
     private suspend fun emitFailedPaymentState(
@@ -494,38 +501,41 @@ class CardReaderPaymentViewModel
         }
 
         val errorType = errorMapper.mapPaymentErrorToUiError(error.type, config)
-        viewState.postValue(
-            when (errorType) {
-                is PaymentFlowError.ContactSupportError ->
-                    cardReaderPaymentReaderTypeStateProvider.provideFailedPaymentState(
-                        cardReaderType = arguments.cardReaderType,
-                        errorType = errorType,
-                        amountLabel = amountLabel,
-                        primaryLabel = R.string.support_contact,
-                        onPrimaryActionClicked = { onContactSupportClicked() },
-                        secondaryLabel = R.string.cancel,
-                        onSecondaryActionClicked = { onBackPressed() }
-                    )
-                is PaymentFlowError.NonRetryableError ->
-                    cardReaderPaymentReaderTypeStateProvider.provideFailedPaymentState(
-                        cardReaderType = arguments.cardReaderType,
-                        errorType = errorType,
-                        amountLabel = amountLabel,
-                        primaryLabel = R.string.card_reader_payment_payment_failed_ok,
-                        onPrimaryActionClicked = { onBackPressed() }
-                    )
-                else ->
-                    cardReaderPaymentReaderTypeStateProvider.provideFailedPaymentState(
-                        cardReaderType = arguments.cardReaderType,
-                        errorType = errorType,
-                        amountLabel = amountLabel,
-                        onPrimaryActionClicked = onRetryClicked,
-                        secondaryLabel = R.string.cancel,
-                        onSecondaryActionClicked = { onBackPressed() }
-                    )
-            }
-        )
+        viewState.postValue(buildFailedPaymentState(errorType, amountLabel, onRetryClicked))
     }
+
+    private fun buildFailedPaymentState(errorType: PaymentFlowError, amountLabel: String, onRetryClicked: () -> Unit) =
+        when (errorType) {
+            is PaymentFlowError.ContactSupportError ->
+                cardReaderPaymentReaderTypeStateProvider.provideFailedPaymentState(
+                    cardReaderType = arguments.cardReaderType,
+                    errorType = errorType,
+                    amountLabel = amountLabel,
+                    primaryLabel = R.string.support_contact,
+                    onPrimaryActionClicked = { onContactSupportClicked() },
+                    secondaryLabel = R.string.cancel,
+                    onSecondaryActionClicked = { onBackPressed() }
+                )
+
+            is PaymentFlowError.NonRetryableError ->
+                cardReaderPaymentReaderTypeStateProvider.provideFailedPaymentState(
+                    cardReaderType = arguments.cardReaderType,
+                    errorType = errorType,
+                    amountLabel = amountLabel,
+                    primaryLabel = R.string.card_reader_payment_payment_failed_ok,
+                    onPrimaryActionClicked = { onBackPressed() }
+                )
+
+            else ->
+                cardReaderPaymentReaderTypeStateProvider.provideFailedPaymentState(
+                    cardReaderType = arguments.cardReaderType,
+                    errorType = errorType,
+                    amountLabel = amountLabel,
+                    onPrimaryActionClicked = onRetryClicked,
+                    secondaryLabel = R.string.cancel,
+                    onSecondaryActionClicked = { onBackPressed() }
+                )
+        }
 
     private fun showPaymentSuccessfulState() {
         launch {

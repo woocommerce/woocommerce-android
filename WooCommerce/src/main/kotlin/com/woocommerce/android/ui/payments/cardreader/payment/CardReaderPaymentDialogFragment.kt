@@ -94,13 +94,7 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
                     requireView(), event.message, BaseTransientBottomBar.LENGTH_LONG
                 ).show()
                 is PlayChaChing -> playChaChing()
-                is ContactSupport -> {
-                    SupportRequestFormActivity.createIntent(
-                        context = requireContext(),
-                        origin = HelpOrigin.CARD_READER_PAYMENT_ERROR,
-                        extraTags = ArrayList()
-                    ).let { activity?.startActivity(it) }
-                }
+                is ContactSupport -> openSupportRequestScreen()
                 else -> event.isHandled = false
             }
         }
@@ -140,6 +134,14 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
                 }
             }
         }
+    }
+
+    private fun openSupportRequestScreen() {
+        SupportRequestFormActivity.createIntent(
+            context = requireContext(),
+            origin = HelpOrigin.CARD_READER_PAYMENT_ERROR,
+            extraTags = ArrayList()
+        ).let { activity?.startActivity(it) }
     }
 
     private fun announceForAccessibility(binding: CardReaderPaymentDialogBinding, viewState: ViewState) {
