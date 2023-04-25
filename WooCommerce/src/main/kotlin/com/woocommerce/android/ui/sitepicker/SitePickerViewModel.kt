@@ -201,7 +201,12 @@ class SitePickerViewModel @Inject constructor(
         }
 
         if (filteredSites.isEmpty()) {
-            loginSiteAddress?.let { showAccountMismatchScreen(it) } ?: loadNoStoreView()
+            if (loginSiteAddress != null) {
+                showAccountMismatchScreen(loginSiteAddress!!)
+            } else {
+                if (navArgs.openedFromLogin) startStoreCreationFlow()
+                loadNoStoreView()
+            }
             return
         }
 
@@ -261,13 +266,16 @@ class SitePickerViewModel @Inject constructor(
                 // The url doesn't match any sites for this account.
                 showAccountMismatchScreen(url)
             }
+
             site.isSimpleWPComSite -> {
                 loadSimpleWPComView(site)
             }
+
             !site.hasWooCommerce -> {
                 // Show not woo store message view.
                 loadWooNotFoundView(site)
             }
+
             else -> {
                 // We have a pre-validation woo store. Attempt to just
                 // login with this store directly.
@@ -498,6 +506,7 @@ class SitePickerViewModel @Inject constructor(
                                 }
                             )
                         }
+
                         else -> {
                             sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
                             triggerEvent(SitePickerEvent.ShowWooUpgradeDialogEvent)
@@ -519,6 +528,7 @@ class SitePickerViewModel @Inject constructor(
                 )
                 getJetpackTimeoutDialogEvent()
             }
+
             else -> ShowSnackbar(
                 message = string.login_verifying_site_error,
                 args = arrayOf(it.site.getSiteName())
@@ -571,11 +581,13 @@ class SitePickerViewModel @Inject constructor(
                     )
                     fetchSite(site, retries = retries + 1)
                 }
+
                 !updatedSite.hasWooCommerce -> {
                     // Force a retry if the woocommerce_is_active is not updated yet
                     WooLog.d(WooLog.T.SITE_PICKER, "Fetched site has woocommerce_is_active false, retry")
                     fetchSite(site, retries = retries + 1)
                 }
+
                 else -> {
                     WooLog.d(WooLog.T.SITE_PICKER, "Site fetched successfully")
                     result
