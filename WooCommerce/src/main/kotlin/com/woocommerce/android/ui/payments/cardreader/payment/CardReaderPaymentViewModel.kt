@@ -463,8 +463,10 @@ class CardReaderPaymentViewModel
                     FailedRefundState(
                         errorType,
                         amountLabel,
-                        R.string.support_contact,
-                        onPrimaryActionClicked = { onContactSupportClicked() }
+                        primaryLabel = R.string.support_contact,
+                        onPrimaryActionClicked = { onContactSupportClicked() },
+                        secondaryLabel = R.string.cancel,
+                        onSecondaryActionClicked = { onBackPressed() }
                     )
 
                 is InteracRefundFlowError.NonRetryableError ->
@@ -513,7 +515,9 @@ class CardReaderPaymentViewModel
                         errorType = errorType,
                         amountLabel = amountLabel,
                         primaryLabel = R.string.support_contact,
-                        onPrimaryActionClicked = { onContactSupportClicked() }
+                        onPrimaryActionClicked = { onContactSupportClicked() },
+                        secondaryLabel = R.string.cancel,
+                        onSecondaryActionClicked = { onBackPressed() }
                     )
 
                 is PaymentFlowError.NonRetryableError ->
@@ -709,7 +713,8 @@ class CardReaderPaymentViewModel
     }
 
     private fun onContactSupportClicked() {
-
+        onCancelPaymentFlow()
+        triggerEvent(ContactSupport)
     }
 
     private fun onCancelPaymentFlow() {
