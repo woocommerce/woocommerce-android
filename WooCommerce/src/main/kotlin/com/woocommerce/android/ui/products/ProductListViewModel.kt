@@ -208,7 +208,7 @@ class ProductListViewModel @Inject constructor(
         viewState = viewState.copy(
             isSearchActive = true,
             displaySortAndFilterCard = false,
-            isAddProductButtonEnabled = false
+            isAddProductButtonVisible = false
         )
     }
 
@@ -220,7 +220,7 @@ class ProductListViewModel @Inject constructor(
                 isSearchActive = false,
                 isEmptyViewVisible = false,
                 displaySortAndFilterCard = true,
-                isAddProductButtonEnabled = true
+                isAddProductButtonVisible = true
             )
             loadProducts()
         }
@@ -265,7 +265,7 @@ class ProductListViewModel @Inject constructor(
         viewState = viewState.copy(
             isEmptyViewVisible = products.isEmpty() && viewState.isSkeletonShown != true,
             /* if there are no products, hide Add Product button and use the empty view's button instead. */
-            isAddProductButtonEnabled = products.isNotEmpty() && !isSelecting(),
+            isAddProductButtonVisible = products.isNotEmpty() && !isSelecting(),
             displaySortAndFilterCard = products.isNotEmpty() || productFilterOptions.isNotEmpty()
         )
     }
@@ -300,7 +300,7 @@ class ProductListViewModel @Inject constructor(
                         isSkeletonShown = !loadMore,
                         isEmptyViewVisible = false,
                         displaySortAndFilterCard = false,
-                        isAddProductButtonEnabled = false,
+                        isAddProductButtonVisible = false,
                     )
                     fetchProductList(
                         viewState.query,
@@ -335,7 +335,7 @@ class ProductListViewModel @Inject constructor(
                         isEmptyViewVisible = false,
                         isRefreshing = isRefreshing,
                         displaySortAndFilterCard = !showSkeleton,
-                        isAddProductButtonEnabled = false
+                        isAddProductButtonVisible = false
                     )
                     fetchProductList(loadMore = loadMore, scrollToTop = scrollToTop)
                 }
@@ -377,7 +377,7 @@ class ProductListViewModel @Inject constructor(
             isRefreshing = false,
             canLoadMore = productRepository.canLoadMoreProducts,
             isEmptyViewVisible = shouldShowEmptyView,
-            isAddProductButtonEnabled = shouldShowAddProductButton,
+            isAddProductButtonVisible = shouldShowAddProductButton,
             displaySortAndFilterCard = !isSearching() &&
                 (productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true)
         )
@@ -420,7 +420,7 @@ class ProductListViewModel @Inject constructor(
     fun enterSelectionMode(count: Int) {
         viewState = viewState.copy(
             productListState = ProductListState.Selecting,
-            isAddProductButtonEnabled = false,
+            isAddProductButtonVisible = false,
             selectionCount = count
         )
     }
@@ -428,7 +428,7 @@ class ProductListViewModel @Inject constructor(
     fun exitSelectionMode() {
         viewState = viewState.copy(
             productListState = ProductListState.Browsing,
-            isAddProductButtonEnabled = true,
+            isAddProductButtonVisible = true,
             selectionCount = null
         )
     }
@@ -652,7 +652,7 @@ class ProductListViewModel @Inject constructor(
         val isEmptyViewVisible: Boolean? = null,
         val sortingTitleResource: Int? = null,
         val displaySortAndFilterCard: Boolean? = null,
-        val isAddProductButtonEnabled: Boolean? = null,
+        val isAddProductButtonVisible: Boolean? = null,
         val productListState: ProductListState? = null,
         val selectionCount: Int? = null
     ) : Parcelable {
