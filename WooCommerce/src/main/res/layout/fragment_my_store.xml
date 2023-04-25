@@ -5,6 +5,7 @@
     android:id="@+id/dashboardStats_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/empty_state_bg_color"
     tools:context="com.woocommerce.android.ui.mystore.MyStoreFragment">
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -42,8 +43,7 @@
                         android:id="@+id/store_onboarding_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/major_100"
-                        android:layout_marginBottom="@dimen/major_100"
+                        android:layout_marginBottom="@dimen/minor_100"
                         android:transitionName="@string/store_onboarding_collapsed_transition_name"
                         android:visibility="gone" />
 

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login.storecreation.summary
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Failed
@@ -27,6 +28,26 @@ class StoreCreationSummaryViewModel @Inject constructor(
     private val _isLoading = savedStateHandle.getStateFlow(scope = this, initialValue = false)
     val isLoading = _isLoading.asLiveData()
 
+    init {
+        tracker.track(
+            AnalyticsEvent.SITE_CREATION_STEP,
+            mapOf(
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_SUMMARY
+            )
+        )
+
+        val newStoreProfilerData = newStore.data.profilerData
+        tracker.track(
+            stat = AnalyticsEvent.SITE_CREATION_PROFILER_DATA,
+            properties = mapOf(
+                AnalyticsTracker.KEY_INDUSTRY_SLUG to newStoreProfilerData?.industryKey,
+                AnalyticsTracker.KEY_USER_COMMERCE_JOURNEY to newStoreProfilerData?.userCommerceJourneyKey,
+                AnalyticsTracker.KEY_ECOMMERCE_PLATFORMS to newStoreProfilerData?.eCommercePlatformKeys?.joinToString(),
+                AnalyticsTracker.KEY_COUNTRY_CODE to newStore.data.country?.code,
+            )
+        )
+    }
+
     fun onCancelPressed() { triggerEvent(OnCancelPressed) }
 
     fun onTryForFreeButtonPressed() {
@@ -35,6 +56,8 @@ class StoreCreationSummaryViewModel @Inject constructor(
             createStore(
                 storeDomain = newStore.data.domain,
                 storeName = newStore.data.name,
+                profilerData = newStore.data.profilerData,
+                countryCode = newStore.data.country?.code
             ).collect { creationState ->
                 _isLoading.update { creationState is Loading }
                 when (creationState) {

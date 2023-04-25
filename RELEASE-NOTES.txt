@@ -1,11 +1,14 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+13.4
+- [*] [Internal] Adds partial height chrome tab in a few places. [https://github.com/woocommerce/woocommerce-android/pull/8502]
+
 13.3
 -----
 - [*] [Internal] Removed IPP upsell banner from the Payment Method Selection Screen. [https://github.com/woocommerce/woocommerce-android/pull/8815]
-
-13.2
------
-
+- [*] Improves loading experience while users wait for their new store to be ready [https://github.com/woocommerce/woocommerce-android/pull/8799]
+- [*] [Internal] Profiler during new site free trial creation is now added [https://github.com/woocommerce/woocommerce-android/pull/8832]
+- [*] Products: Adds read-only support for the Composite Products extension in the Products details. [https://github.com/woocommerce/woocommerce-android/pull/8818]
+- [***] Extend support of in-person card reader payments to the UK [https://github.com/woocommerce/woocommerce-android/pull/8662]
 
 13.2
 -----

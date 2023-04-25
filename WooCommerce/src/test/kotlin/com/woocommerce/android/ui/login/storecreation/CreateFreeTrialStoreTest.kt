@@ -42,7 +42,7 @@ internal class CreateFreeTrialStoreTest : BaseUnitTest() {
         createSut(siteDomain, siteTitle, expectedCreationResult)
 
         // When
-        val job = sut(siteDomain, siteTitle)
+        val job = sut(siteDomain, siteTitle, null, null)
             .onEach { lastCreationState = it }
             .launchIn(this)
 
@@ -79,7 +79,7 @@ internal class CreateFreeTrialStoreTest : BaseUnitTest() {
         createSut(siteDomain, siteTitle, expectedCreationResult)
 
         // When
-        val job = sut(siteDomain, siteTitle)
+        val job = sut(siteDomain, siteTitle, null, null)
             .onEach { lastCreationState = it }
             .launchIn(this)
 
@@ -119,7 +119,7 @@ internal class CreateFreeTrialStoreTest : BaseUnitTest() {
         )
 
         // When
-        val job = sut(siteDomain, siteTitle)
+        val job = sut(siteDomain, siteTitle, null, null)
             .onEach { lastCreationState = it }
             .launchIn(this)
 

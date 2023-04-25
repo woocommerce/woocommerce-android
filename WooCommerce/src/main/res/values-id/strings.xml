@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-11 13:54:03+0000
+Translation-Revision-Date: 2023-04-18 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="more_menu_button_settings_description">Perbarui preferensi Anda</string>
+    <string name="more_menu_button_settings">Pengaturan</string>
+    <string name="more_menu_button_upgrades_description">Kelola paket Anda</string>
+    <string name="more_menu_button_reviews_description">Dapatkan ulasan untuk toko Anda</string>
+    <string name="more_menu_button_coupons_description">Tingkatkan penjualan dengan penawaran khusus</string>
+    <string name="more_menu_button_store_description">Lihat toko Anda</string>
+    <string name="more_menu_button_inbox_description">Pantau selalu</string>
+    <string name="more_menu_button_payments_description">Aktifkan pembayaran dengan perangkat seluler</string>
+    <string name="more_menu_button_wc_admin_description">Kelola lebih lanjut di admin</string>
+    <string name="more_menu_general_section_title">Umum</string>
+    <string name="more_menu_settings_section_title">Pengaturan</string>
+    <string name="bundled_products_info_notice">Anda dapat menyunting produk bundel di dasbor web.</string>
+    <string name="product_bundle_multiple_count">%d produk</string>
+    <string name="product_bundle_single_count">1 produk</string>
+    <string name="product_bundle">Produk bundel</string>
+    <string name="empty_group_of">Tanpa kelompok</string>
+    <string name="empty_max_quantity">Tanpa maksimum</string>
+    <string name="empty_min_quantity">Tanpa minimum</string>
+    <string name="free_trial_summary_store_creation_error_dialog_action">Paham</string>
+    <string name="free_trial_summary_store_creation_error_message">Maaf, kami tidak dapat membuat toko Anda saat ini, coba lagi nanti.</string>
+    <string name="free_trial_summary_store_creation_error_title">Terjadi kesalahan</string>
+    <string name="product_type_bundle">Paket</string>
     <string name="quantity_rules_info_notice">Anda dapat menyunting aturan jumlah produk di dasbor web.</string>
     <string name="group_of">Kelipatan</string>
     <string name="max_quantity">Jumlah maksimal</string>
@@ -1237,7 +1259,6 @@ Language: id
     <string name="support_system_status_report">Laporan status sistem</string>
     <string name="card_reader_welcome_dialog_text">Selamat, Anda sekarang dapat menerima pembayaran kartu debit dan kredit menggunakan WooCommerce Payments!</string>
     <string name="card_reader_welcome_dialog_header">Kumpulkan pembayaran dengan pembaca kartu</string>
-    <string name="card_reader_payment_failed_amount_too_small">Jumlah minimal $0,50</string>
     <string name="card_reader_payment_payment_failed_ok">Oke</string>
     <string name="settings_whats_new_icon_description">Gambar ikon fitur baru</string>
     <string name="settings_switch_store">Beralih toko</string>

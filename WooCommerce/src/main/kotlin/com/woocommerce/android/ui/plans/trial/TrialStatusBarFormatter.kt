@@ -39,7 +39,7 @@ class TrialStatusBarFormatter @AssistedInject constructor(
             .append(statusMessage)
             .append(" ")
             .inSpans(
-                WooClickableSpan(customLinkColor = context.getColor(R.color.free_trial_banner_link_text)) {
+                WooClickableSpan(customLinkColor = context.getColor(R.color.free_trial_component_text)) {
                     analyticsTrackerWrapper.track(FREE_TRIAL_UPGRADE_NOW_TAPPED, mapOf(KEY_SOURCE to VALUE_BANNER))
                     startUpgradeFlow.invoke(PlanUpgradeStartFragment.PlanUpgradeStartSource.BANNER)
                 },

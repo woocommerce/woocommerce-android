@@ -777,6 +777,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     SITE_CREATION_IAP_PURCHASE_SUCCESS(siteless = true),
     SITE_CREATION_IAP_PURCHASE_ERROR(siteless = true),
     SITE_CREATION_PROFILER_DATA(siteless = true),
+    SITE_CREATION_PROFILER_QUESTION_SKIPPED(siteless = true),
     SITE_CREATION_TRY_FOR_FREE_TAPPED(siteless = true),
     SITE_CREATION_TIMED_OUT(siteless = true),
     SITE_CREATION_PROPERTIES_OUT_OF_SYNC(siteless = true),
@@ -812,5 +813,8 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     PRODUCT_VARIATION_VIEW_QUANTITY_RULES_TAPPED,
 
     // Bundled products
-    PRODUCT_DETAIL_VIEW_BUNDLED_PRODUCTS_TAPPED
+    PRODUCT_DETAIL_VIEW_BUNDLED_PRODUCTS_TAPPED,
+
+    // Composite Products
+    PRODUCT_DETAILS_VIEW_COMPONENTS_TAPPED
 }

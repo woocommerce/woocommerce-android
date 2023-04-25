@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-11 16:54:03+0000
+Translation-Revision-Date: 2023-04-18 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="more_menu_button_settings_description">Actualiza tus preferencias</string>
+    <string name="more_menu_button_settings">Ajustes</string>
+    <string name="more_menu_button_upgrades_description">Gestionar tus planes</string>
+    <string name="more_menu_button_reviews_description">Conseguir reseñas para tu tienda</string>
+    <string name="more_menu_button_coupons_description">Aumentar las ventas con ofertas especiales</string>
+    <string name="more_menu_button_store_description">Ver tu tienda</string>
+    <string name="more_menu_button_inbox_description">Mantengase actualizado</string>
+    <string name="more_menu_button_payments_description">Únete a los pagos a través de móvil</string>
+    <string name="more_menu_button_wc_admin_description">Gestionar más en la administración</string>
+    <string name="more_menu_general_section_title">General</string>
+    <string name="more_menu_settings_section_title">Ajustes</string>
+    <string name="bundled_products_info_notice">Puedes editar productos agrupados en el escritorio del sitio web.</string>
+    <string name="product_bundle_multiple_count">%d productos</string>
+    <string name="product_bundle_single_count">1 producto</string>
+    <string name="product_bundle">Productos agrupados</string>
+    <string name="empty_group_of">Sin agrupación</string>
+    <string name="empty_max_quantity">No hay máximo</string>
+    <string name="empty_min_quantity">Sin mínimo</string>
+    <string name="free_trial_summary_store_creation_error_dialog_action">¡Lo tengo!</string>
+    <string name="free_trial_summary_store_creation_error_message">Lo siento, ahora mismo no podemos crear tu tienda, inténtalo más tarde.</string>
+    <string name="free_trial_summary_store_creation_error_title">Se ha producido un error.</string>
+    <string name="product_type_bundle">Paquete</string>
     <string name="quantity_rules_info_notice">Puedes editar las reglas de cantidad de productos en el Escritorio del sitio web.</string>
     <string name="group_of">Grupo de</string>
     <string name="max_quantity">Cantidad máxima</string>
@@ -1237,7 +1259,6 @@ Language: es
     <string name="support_system_status_report">Informe de estado del sistema</string>
     <string name="card_reader_welcome_dialog_text">¡Enhorabuena! Ya puedes aceptar pagos con tarjetas de débito y crédito con WooCommerce Payments.</string>
     <string name="card_reader_welcome_dialog_header">Recibe pagos con un lector de tarjetas</string>
-    <string name="card_reader_payment_failed_amount_too_small">El importe debe ser como mínimo de 0,50 USD.</string>
     <string name="card_reader_payment_payment_failed_ok">Aceptar</string>
     <string name="settings_whats_new_icon_description">Imagen del icono de la nueva función</string>
     <string name="settings_switch_store">Cambiar de tienda</string>

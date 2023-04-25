@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import com.woocommerce.android.model.Component
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.model.SubscriptionDetails
@@ -138,4 +139,6 @@ sealed class ProductNavigationTarget : Event() {
     data class ViewProductQuantityRules(val quantityRules: QuantityRules) : ProductNavigationTarget()
 
     data class ViewBundleProducts(val productId: Long) : ProductNavigationTarget()
+
+    data class ViewProductComponents(val components: List<Component>) : ProductNavigationTarget()
 }

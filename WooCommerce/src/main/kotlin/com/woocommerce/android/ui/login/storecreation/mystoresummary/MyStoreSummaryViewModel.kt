@@ -46,8 +46,7 @@ class MyStoreSummaryViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.SITE_CREATION_PROFILER_DATA,
             properties = mapOf(
-                AnalyticsTracker.KEY_INDUSTRY_GROUP to newStoreProfilerData?.industryGroupKey,
-                AnalyticsTracker.KEY_INDUSTRY to newStoreProfilerData?.industryKey,
+                AnalyticsTracker.KEY_INDUSTRY_SLUG to newStoreProfilerData?.industryKey,
                 AnalyticsTracker.KEY_USER_COMMERCE_JOURNEY to newStoreProfilerData?.userCommerceJourneyKey,
                 AnalyticsTracker.KEY_ECOMMERCE_PLATFORMS to newStoreProfilerData?.eCommercePlatformKeys?.joinToString(),
                 AnalyticsTracker.KEY_COUNTRY_CODE to newStore.data.country?.code,

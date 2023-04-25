@@ -165,8 +165,8 @@
     <!--
     Free Trial
     -->
-    <color name="free_trial_banner_background">@color/woo_purple_90</color>
-    <color name="free_trial_banner_link_text">@color/woo_purple_40</color>
+    <color name="free_trial_component_background">@color/woo_purple_90</color>
+    <color name="free_trial_component_text">@color/woo_purple_40</color>
     <color name="free_trial_banner_content">@color/color_on_surface</color>
 
 </resources>

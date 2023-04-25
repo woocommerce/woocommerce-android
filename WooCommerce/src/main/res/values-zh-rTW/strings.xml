@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-11 13:54:03+0000
+Translation-Revision-Date: 2023-04-19 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="more_menu_button_settings_description">更新你的偏好設定</string>
+    <string name="more_menu_button_settings">設定</string>
+    <string name="more_menu_button_upgrades_description">管理你的方案</string>
+    <string name="more_menu_button_reviews_description">擷取你的商店評論</string>
+    <string name="more_menu_button_coupons_description">透過特價提高銷售額</string>
+    <string name="more_menu_button_store_description">檢視你的商店</string>
+    <string name="more_menu_button_inbox_description">掌握最新資訊</string>
+    <string name="more_menu_button_payments_description">加入行動付款</string>
+    <string name="more_menu_button_wc_admin_description">在管理員上管理更多功能</string>
+    <string name="more_menu_general_section_title">一般</string>
+    <string name="more_menu_settings_section_title">設定</string>
+    <string name="bundled_products_info_notice">你可以在網頁儀表板中編輯搭售產品。</string>
+    <string name="product_bundle_multiple_count">%d 件商品</string>
+    <string name="product_bundle_single_count">1 件商品</string>
+    <string name="product_bundle">搭售產品</string>
+    <string name="empty_group_of">未分組</string>
+    <string name="empty_max_quantity">無最高限制</string>
+    <string name="empty_min_quantity">無最低消費</string>
+    <string name="free_trial_summary_store_creation_error_dialog_action">瞭解！</string>
+    <string name="free_trial_summary_store_creation_error_message">抱歉，我們目前無法建立你的商店，請稍後重試。</string>
+    <string name="free_trial_summary_store_creation_error_title">發生錯誤</string>
+    <string name="product_type_bundle">搭售方案</string>
     <string name="quantity_rules_info_notice">你可以在網頁儀表板中編輯產品的數量規則。</string>
     <string name="group_of">數量單位</string>
     <string name="max_quantity">數量上限</string>
@@ -1237,7 +1259,6 @@ Language: zh_TW
     <string name="support_system_status_report">系統狀態報告</string>
     <string name="card_reader_welcome_dialog_text">恭喜，你現在可以使用 WooCommerce Payments 接受簽帳金融卡和信用卡付款了！</string>
     <string name="card_reader_welcome_dialog_header">使用讀卡器收款</string>
-    <string name="card_reader_payment_failed_amount_too_small">金額必須至少為 $0.50</string>
     <string name="card_reader_payment_payment_failed_ok">確定</string>
     <string name="settings_whats_new_icon_description">新功能圖示圖片</string>
     <string name="settings_switch_store">切換商店</string>

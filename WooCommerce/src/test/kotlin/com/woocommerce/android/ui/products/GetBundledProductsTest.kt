@@ -37,7 +37,7 @@ class GetBundledProductsTest : BaseUnitTest() {
     }
 
     @Test
-    fun `should process bundled products successfuly`() = testBlocking {
+    fun `should process bundled products successfully`() = testBlocking {
         // given
         val remoteProductId = 5L
         whenever(productStore.observeBundledProducts(any(), eq(remoteProductId))).doReturn(flowOf(bundledProducts))
