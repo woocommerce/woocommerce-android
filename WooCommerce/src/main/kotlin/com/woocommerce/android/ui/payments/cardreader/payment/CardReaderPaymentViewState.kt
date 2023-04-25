@@ -355,12 +355,10 @@ sealed class InteracRefundFlowError(val message: UiString) {
     object FetchingOrderFailed : InteracRefundFlowError(UiStringRes(R.string.order_error_fetch_generic))
     object NoNetwork :
         InteracRefundFlowError(UiStringRes(R.string.card_reader_payment_failed_no_network_state))
-
     object Server : InteracRefundFlowError(UiStringRes(R.string.card_reader_payment_failed_server_error_state))
     object Generic : InteracRefundFlowError(
         UiStringRes(R.string.card_reader_interac_refund_refund_failed_unexpected_error_state)
     )
-
     object NonRetryableGeneric :
         InteracRefundFlowError(UiStringRes(R.string.card_reader_interac_refund_refund_failed_unexpected_error_state)),
         NonRetryableError

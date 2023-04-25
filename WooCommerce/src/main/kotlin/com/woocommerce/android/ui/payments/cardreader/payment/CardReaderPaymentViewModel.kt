@@ -140,7 +140,6 @@ class CardReaderPaymentViewModel
                 is CardReaderFlowParam.PaymentOrRefund.Payment -> {
                     if (paymentFlowJob == null) initPaymentFlow(isRetry = false)
                 }
-
                 is CardReaderFlowParam.PaymentOrRefund.Refund -> {
                     if (refundFlowJob == null) initRefundFlow(isRetry = false)
                 }
@@ -168,10 +167,8 @@ class CardReaderPaymentViewModel
                 is BluetoothCardReaderMessages.CardReaderDisplayMessage -> {
                     handleAdditionalInfo(message.message)
                 }
-
                 is BluetoothCardReaderMessages.CardReaderInputMessage -> { /* no-op*/
                 }
-
                 is BluetoothCardReaderMessages.CardReaderNoMessage -> { /* no-op*/
                 }
             }.exhaustive
@@ -309,7 +306,6 @@ class CardReaderPaymentViewModel
                     ::onCancelPaymentFlow
                 )
             )
-
             ProcessingPayment -> viewState.postValue(
                 cardReaderPaymentReaderTypeStateProvider.provideProcessingPaymentState(
                     arguments.cardReaderType,
@@ -317,7 +313,6 @@ class CardReaderPaymentViewModel
                     ::onCancelPaymentFlow
                 )
             )
-
             is ProcessingPaymentCompleted -> {
                 cardReaderTrackingInfoKeeper.setPaymentMethodType(paymentStatus.paymentMethodType.stringRepresentation)
                 when (paymentStatus.paymentMethodType) {
@@ -326,23 +321,19 @@ class CardReaderPaymentViewModel
                     else -> {}
                 }
             }
-
             CapturingPayment -> viewState.postValue(
                 cardReaderPaymentReaderTypeStateProvider.provideCapturingPaymentState(
                     arguments.cardReaderType,
                     amountLabel,
                 )
             )
-
             is PaymentCompleted -> {
                 tracker.trackPaymentSucceeded()
                 onPaymentCompleted(paymentStatus, orderId)
             }
-
             WaitingForInput -> {
                 // noop
             }
-
             is PaymentFailed -> {
                 paymentDataForRetry = paymentStatus.paymentDataForRetry
                 tracker.trackPaymentFailed(paymentStatus.errorMessage, paymentStatus.type)
@@ -403,13 +394,11 @@ class CardReaderPaymentViewModel
                     onSecondaryActionClicked = ::onCancelPaymentFlow
                 )
             )
-
             ProcessingInteracRefund -> viewState.postValue(ProcessingRefundState(amountLabel))
             is InteracRefundSuccess -> {
                 viewState.postValue(RefundSuccessfulState(amountLabel))
                 triggerEvent(InteracRefundSuccessful)
             }
-
             is InteracRefundFailure -> {
                 tracker.trackInteracPaymentFailed(
                     orderId,
@@ -468,7 +457,6 @@ class CardReaderPaymentViewModel
                         secondaryLabel = R.string.cancel,
                         onSecondaryActionClicked = { onBackPressed() }
                     )
-
                 is InteracRefundFlowError.NonRetryableError ->
                     FailedRefundState(
                         errorType,
@@ -476,7 +464,6 @@ class CardReaderPaymentViewModel
                         R.string.card_reader_interac_refund_refund_failed_ok,
                         onPrimaryActionClicked = { onBackPressed() }
                     )
-
                 else ->
                     FailedRefundState(
                         errorType,
@@ -519,7 +506,6 @@ class CardReaderPaymentViewModel
                         secondaryLabel = R.string.cancel,
                         onSecondaryActionClicked = { onBackPressed() }
                     )
-
                 is PaymentFlowError.NonRetryableError ->
                     cardReaderPaymentReaderTypeStateProvider.provideFailedPaymentState(
                         cardReaderType = arguments.cardReaderType,
@@ -528,7 +514,6 @@ class CardReaderPaymentViewModel
                         primaryLabel = R.string.card_reader_payment_payment_failed_ok,
                         onPrimaryActionClicked = { onBackPressed() }
                     )
-
                 else ->
                     cardReaderPaymentReaderTypeStateProvider.provideFailedPaymentState(
                         cardReaderType = arguments.cardReaderType,
@@ -597,17 +582,14 @@ class CardReaderPaymentViewModel
                     hintLabel = type.toHintLabel(true)
                 )
             }
-
             is ExternalReaderCollectPaymentState ->
                 viewState.value = state.copy(
                     hintLabel = type.toHintLabel(false)
                 )
-
             is BuiltInReaderCollectPaymentState ->
                 viewState.value = state.copy(
                     hintLabel = type.toHintLabel(false)
                 )
-
             else -> WooLog.e(
                 WooLog.T.CARD_READER, "Got SDK message when cardReaderPaymentViewModel is in ${viewState.value}"
             )
@@ -624,11 +606,9 @@ class CardReaderPaymentViewModel
                 } else {
                     R.string.card_reader_payment_collect_payment_hint
                 }
-
             REMOVE_CARD -> R.string.card_reader_payment_remove_card_prompt
             MULTIPLE_CONTACTLESS_CARDS_DETECTED ->
                 R.string.card_reader_payment_multiple_contactless_cards_detected_prompt
-
             TRY_ANOTHER_READ_METHOD -> R.string.card_reader_payment_try_another_read_method_prompt
             TRY_ANOTHER_CARD -> R.string.card_reader_payment_try_another_card_prompt
             CHECK_MOBILE_DEVICE -> R.string.card_reader_payment_check_mobile_device_prompt
@@ -749,11 +729,9 @@ class CardReaderPaymentViewModel
             is PaymentFlow -> {
                 tracker.trackPaymentCancelled(state.nameForTracking)
             }
-
             is InteracRefundFlow -> {
                 tracker.trackInteracRefundCancelled(state.nameForTracking)
             }
-
             else -> WooLog.e(WooLog.T.CARD_READER, "Invalid state received")
         }
     }
