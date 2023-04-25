@@ -402,6 +402,31 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `given no published products in cache, when view model created, then should fetch products`() = testBlocking {
+        // given
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            restrictions = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+        ).initSavedStateHandle()
+        val popularOrdersList = generatePopularOrders()
+        val ordersList = generateTestOrders()
+        val totalOrders = ordersList + popularOrdersList
+        whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+        whenever(listHandler.productsFlow).thenReturn(flowOf(emptyList()))
+
+        createViewModel(navArgs)
+
+        val argCaptor = argumentCaptor<Boolean>()
+        verify(listHandler).loadFromCacheAndFetch(
+            searchQuery = any(),
+            forceRefresh = argCaptor.capture(),
+            filters = any(),
+        )
+        assertThat(argCaptor.firstValue).isTrue()
+    }
+
     // region Sort by popularity and recently sold products
 
     @Test

@@ -46,6 +46,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
@@ -129,7 +130,11 @@ class ProductSelectorViewModel @Inject constructor(
             filterState = filterState,
             searchQuery = searchQuery
         )
-    }.asLiveData()
+    }
+        .onEmpty {
+            fetchProducts(forceRefresh = true)
+        }
+        .asLiveData()
 
     init {
         monitorSearchQuery()
