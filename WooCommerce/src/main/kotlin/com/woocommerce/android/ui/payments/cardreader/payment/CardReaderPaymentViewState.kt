@@ -304,11 +304,11 @@ sealed class PaymentFlowError(val message: UiString) {
     object Canceled : PaymentFlowError(UiStringRes(R.string.card_reader_payment_failed_canceled))
     data class AmountTooSmall(val errorMessage: UiString) : Declined(errorMessage), NonRetryableError
 
-    object Unknown : Declined(UiStringRes(R.string.card_reader_payment_failed_unknown))
+    object Unknown : Declined(UiStringRes(R.string.card_reader_payment_failed_unknown)), ContactSupportError
     sealed class Declined(message: UiString) : PaymentFlowError(message) {
         object Temporary : Declined(UiStringRes(R.string.card_reader_payment_failed_temporary))
         object Fraud : Declined(UiStringRes(R.string.card_reader_payment_failed_fraud)), NonRetryableError
-        object Generic : Declined(UiStringRes(R.string.card_reader_payment_failed_generic))
+        object Generic : Declined(UiStringRes(R.string.card_reader_payment_failed_generic)), ContactSupportError
         object InvalidAccount :
             Declined(UiStringRes(R.string.card_reader_payment_failed_invalid_account)),
             NonRetryableError
@@ -338,33 +338,39 @@ sealed class PaymentFlowError(val message: UiString) {
     sealed class BuiltInReader(@StringRes message: Int) : PaymentFlowError(UiStringRes(message)) {
         object NfcDisabled : BuiltInReader(R.string.card_reader_payment_failed_nfc_disabled)
         object DeviceIsNotSupported :
-            BuiltInReader(R.string.card_reader_payment_failed_device_is_not_supported), NonRetryableError
+            BuiltInReader(R.string.card_reader_payment_failed_device_is_not_supported),
+            ContactSupportError
 
         object InvalidAppSetup :
-            BuiltInReader(R.string.card_reader_payment_failed_app_setup_is_invalid), NonRetryableError
+            BuiltInReader(R.string.card_reader_payment_failed_app_setup_is_invalid),
+            ContactSupportError
     }
 
     interface NonRetryableError
+
+    interface ContactSupportError
 }
 
 sealed class InteracRefundFlowError(val message: UiString) {
     object FetchingOrderFailed : InteracRefundFlowError(UiStringRes(R.string.order_error_fetch_generic))
     object NoNetwork :
         InteracRefundFlowError(UiStringRes(R.string.card_reader_payment_failed_no_network_state))
+
     object Server : InteracRefundFlowError(UiStringRes(R.string.card_reader_payment_failed_server_error_state))
     object Generic : InteracRefundFlowError(
         UiStringRes(R.string.card_reader_interac_refund_refund_failed_unexpected_error_state)
     )
+
     object NonRetryableGeneric :
         InteracRefundFlowError(UiStringRes(R.string.card_reader_interac_refund_refund_failed_unexpected_error_state)),
         NonRetryableError
 
     object Cancelled : InteracRefundFlowError(UiStringRes(R.string.card_reader_interac_refund_refund_failed_cancelled))
-    object Unknown : Declined(R.string.card_reader_interac_refund_refund_failed_header)
+    object Unknown : Declined(R.string.card_reader_interac_refund_refund_failed_header), ContactSupportError
     sealed class Declined(@StringRes message: Int) : InteracRefundFlowError(UiStringRes(message)) {
         object Temporary : Declined(R.string.card_reader_payment_failed_temporary)
         object Fraud : Declined(R.string.card_reader_interac_refund_refund_failed_fraud), NonRetryableError
-        object Generic : Declined(R.string.card_reader_interac_refund_refund_failed_generic)
+        object Generic : Declined(R.string.card_reader_interac_refund_refund_failed_generic), ContactSupportError
         object InvalidAccount : Declined(R.string.card_reader_payment_failed_invalid_account), NonRetryableError
         object CardNotSupported : Declined(R.string.card_reader_interac_refund_refund_failed_card_not_supported)
         object CurrencyNotSupported :
@@ -388,4 +394,6 @@ sealed class InteracRefundFlowError(val message: UiString) {
     }
 
     interface NonRetryableError
+
+    interface ContactSupportError
 }
