@@ -135,16 +135,15 @@ class SitePickerViewModel @Inject constructor(
             if (sitesInDb.isNotEmpty()) {
                 displaySites(sitesInDb)
             }
-            fetchSitesFromApi(sitesInDb.isEmpty() || !loginSiteAddress.isNullOrEmpty())
+            fetchSitesFromApi(showSkeleton = sitesInDb.isEmpty() || !loginSiteAddress.isNullOrEmpty())
         }
     }
 
-    private suspend fun fetchSitesFromApi(showSkeleton: Boolean, delayTime: Long = 0) {
+    private suspend fun fetchSitesFromApi(showSkeleton: Boolean) {
         sitePickerViewState = sitePickerViewState.copy(
             isSkeletonViewVisible = showSkeleton
         )
 
-        delay(delayTime)
         val startTime = System.currentTimeMillis()
         val result = repository.fetchWooCommerceSites()
         val duration = System.currentTimeMillis() - startTime
