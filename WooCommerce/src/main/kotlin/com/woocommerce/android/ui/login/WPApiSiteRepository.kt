@@ -98,8 +98,9 @@ class WPApiSiteRepository @Inject constructor(
 
                 else -> {
                     WooLog.d(WooLog.T.LOGIN, "Site $url fetch succeeded")
-                    val site = getSiteByUrl(url)!!
-                    Result.success(site)
+                    getSiteByUrl(url)?.let { site ->
+                        Result.success(site)
+                    } ?: Result.failure(IllegalArgumentException("Site not found: $url"))
                 }
             }
         }
