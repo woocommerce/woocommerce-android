@@ -27,7 +27,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class SignUpFragment : BaseFragment() {
     companion object {
-        const val TAG = "SignUpEmailFragment"
+        const val TAG = "SignUpFragment"
         private const val NEXT_STEP_KEY = "next-step"
 
         fun newInstance(nextStep: NextStep): SignUpFragment = SignUpFragment().apply {
