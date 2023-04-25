@@ -1019,6 +1019,7 @@ class MainActivity :
         if (launchedFromNotification) {
             binding.bottomNav.currentPosition = ORDERS
             binding.bottomNav.active(ORDERS.position)
+            navController.popBackStack(R.id.orders, false)
         }
 
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)
