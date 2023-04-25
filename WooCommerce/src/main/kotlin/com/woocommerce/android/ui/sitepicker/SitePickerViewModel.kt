@@ -248,7 +248,14 @@ class SitePickerViewModel @Inject constructor(
             isNoStoresViewVisible = false,
             currentSitePickerState = SitePickerState.StoreListState
         )
-        loginSiteAddress?.let { processLoginSiteAddress(it) }
+        loginSiteAddress?.let {
+            processLoginSiteAddress(it)
+            return
+        }
+        if (navArgs.openedFromLogin && wooSites.size == 1) {
+            onSiteSelected(wooSites.first())
+            onContinueButtonClick(true)
+        }
     }
 
     /**
