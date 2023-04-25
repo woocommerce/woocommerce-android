@@ -14,7 +14,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.OnAccountCreated
-import com.woocommerce.android.ui.login.signup.SignUpViewModel.OnLoginClicked
+import com.woocommerce.android.ui.login.signup.SignUpViewModel.OnLoginWithEmail
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.OnTermsOfServiceClicked
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -39,16 +39,14 @@ class SignUpFragment : BaseFragment() {
     }
 
     interface Listener {
-        fun onAccountCreated(nextStep: NextStep)
-        fun onLoginClicked()
+        fun onLoginWithEmail(email: String?)
+        fun onAccountCreated()
     }
 
     @Inject internal lateinit var urlUtils: UrlUtils
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     private val viewModel: SignUpViewModel by viewModels()
-    private var signUpListener: Listener? = null
-
-    private lateinit var nextStep: NextStep
+    private var signUpEmailFragment: Listener? = null
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -60,14 +58,13 @@ class SignUpFragment : BaseFragment() {
         require(activity is Listener) {
             "Parent activity has to implement ${Listener::class.java.name}"
         }
-        signUpListener = activity
+        signUpEmailFragment = activity
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        nextStep = requireArguments().serializable(NEXT_STEP_KEY) ?: error("Screen requires passing a NextStep")
-        viewModel.nextStep = nextStep
+        viewModel.nextStep =
+            requireArguments().serializable(NEXT_STEP_KEY) ?: error("Screen requires passing a NextStep")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -75,7 +72,7 @@ class SignUpFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    SignUpScreen(viewModel)
+                    SignUpStepScreen(viewModel)
                 }
             }
         }
@@ -89,16 +86,16 @@ class SignUpFragment : BaseFragment() {
     override fun onDetach() {
         super.onDetach()
 
-        signUpListener = null
+        signUpEmailFragment = null
     }
 
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is OnAccountCreated -> signUpListener?.onAccountCreated(nextStep)
-                is OnLoginClicked -> signUpListener?.onLoginClicked()
-                is OnTermsOfServiceClicked -> openTermsOfServiceUrl()
+                is OnLoginWithEmail -> signUpEmailFragment?.onLoginWithEmail(event.email)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is OnTermsOfServiceClicked -> openTermsOfServiceUrl()
+                is OnAccountCreated -> signUpEmailFragment?.onAccountCreated()
                 is Exit -> parentFragmentManager.popBackStack()
             }
         }

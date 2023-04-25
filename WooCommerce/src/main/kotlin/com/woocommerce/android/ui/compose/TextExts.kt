@@ -45,7 +45,7 @@ fun annotatedStringRes(@StringRes stringResId: Int, vararg args: Any): Annotated
                 }
                 is URLSpan -> {
                     addStyle(
-                        style = TextStyle.Default.copy(color = MaterialTheme.colors.secondary).toSpanStyle(),
+                        style = TextStyle.Default.copy(color = MaterialTheme.colors.primary).toSpanStyle(),
                         start = startIndex,
                         end = endIndex
                     )

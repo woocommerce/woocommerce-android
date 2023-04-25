@@ -187,6 +187,7 @@ class LoginActivity :
                 val email = intent.extras!!.getString(EMAIL_PARAMETER)
                 gotWpcomEmail(email, verifyEmail = true, null)
             }
+
             hasJetpackConnectedIntent() -> {
                 AnalyticsTracker.track(
                     stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_COMPLETED,
@@ -194,9 +195,11 @@ class LoginActivity :
                 )
                 startLoginViaWPCom()
             }
+
             !loginHelpNotification.isNullOrBlank() -> {
                 processLoginHelpNotification(loginHelpNotification)
             }
+
             savedInstanceState == null -> {
                 loginAnalyticsListener.trackLoginAccessed()
                 showPrologue()
@@ -387,9 +390,17 @@ class LoginActivity :
         }
     }
 
-    private fun showEmailPasswordScreen(email: String?, verifyEmail: Boolean) {
+    private fun showEmailPasswordScreen(
+        email: String?,
+        verifyEmail: Boolean,
+        password: String? = null
+    ) {
         val wooLoginEmailPasswordFragment = WooLoginEmailPasswordFragment
-            .newInstance(email, verifyMagicLinkEmail = verifyEmail)
+            .newInstance(
+                emailAddress = email,
+                password = password,
+                verifyMagicLinkEmail = verifyEmail
+            )
         changeFragment(wooLoginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
     }
 
@@ -788,7 +799,7 @@ class LoginActivity :
         } else {
             val loginEmailFragment = getLoginEmailFragment(
                 siteCredsLayout = false
-            ) ?: WooLoginEmailFragment()
+            ) ?: WooLoginEmailFragment.newInstance()
             changeFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
         }
     }
@@ -892,12 +903,17 @@ class LoginActivity :
         loginNotificationScheduler.scheduleNotification(notificationType)
     }
 
-    override fun onAccountCreated(nextStep: SignUpFragment.NextStep) {
+    override fun onAccountCreated() {
         showMainActivityAndFinish()
     }
 
-    override fun onLoginClicked() {
-        startLoginViaWPCom()
+    override fun onLoginWithEmail(email: String?) {
+        unifiedLoginTracker.setFlow(Flow.WORDPRESS_COM.value)
+        changeFragment(
+            fragment = WooLoginEmailFragment.newInstance(email) as Fragment,
+            shouldAddToBackStack = true,
+            LoginEmailFragment.TAG
+        )
     }
 
     private fun processLoginHelpNotification(loginHelpNotification: String) {
