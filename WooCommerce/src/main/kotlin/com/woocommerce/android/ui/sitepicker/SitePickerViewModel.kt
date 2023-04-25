@@ -96,7 +96,7 @@ class SitePickerViewModel @Inject constructor(
         updateSiteViewDetails()
         loadAndDisplayUserInfo()
         loadAndDisplaySites()
-        if (appPrefsWrapper.getIsNewSignUp()) startStoreCreationWebFlow()
+        if (appPrefsWrapper.getIsNewSignUp()) startStoreCreationFlow()
         if (selectedSiteId.value == null && selectedSite.exists()) {
             selectedSiteId.value = selectedSite.getSelectedSiteId()
         }
@@ -623,7 +623,7 @@ class SitePickerViewModel @Inject constructor(
         fetchSitesFromApi(showSkeleton = true)
     }
 
-    private fun startStoreCreationWebFlow() {
+    private fun startStoreCreationFlow() {
         appPrefsWrapper.markAsNewSignUp(false)
         triggerEvent(NavigateToStoreCreationEvent)
     }
