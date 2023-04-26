@@ -55,6 +55,11 @@ class BarcodeScanningViewModel @Inject constructor(
                             currentScannedProduct = product
                         )
                     }
+                } ?: run {
+                    _viewState.value = ViewState(
+                        scannedProductItems = scannedProductItems,
+                        currentScannedProduct = null
+                    )
                 }
             }
         }

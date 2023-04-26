@@ -87,6 +87,10 @@ class BarcodeScanningFragment : BaseFragment(R.layout.fragment_barcode_scanning)
             launcher.launch(Manifest.permission.CAMERA)
         }
 
+        val isAddToCartBtnEnabled: MutableState<Boolean> = remember {
+            mutableStateOf(false)
+        }
+
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
@@ -132,8 +136,13 @@ class BarcodeScanningFragment : BaseFragment(R.layout.fragment_barcode_scanning)
                     },
                     modifier = Modifier.weight(1f)
                 )
+                (viewModel.viewState.value as ViewState).currentScannedProduct?.name?.let {
+                    isAddToCartBtnEnabled.value = true
+                } ?: run {
+                    isAddToCartBtnEnabled.value = false
+                }
                 Text(
-                    text = (viewModel.viewState.value as ViewState).currentScannedProduct?.name ?: "",
+                    text = (viewModel.viewState.value as ViewState).currentScannedProduct?.name ?: "invalid SKU",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
@@ -147,14 +156,15 @@ class BarcodeScanningFragment : BaseFragment(R.layout.fragment_barcode_scanning)
                     Button(
                         onClick = {
                             viewModel.addToCartClick()
-                        }
+                        },
+                        enabled = isAddToCartBtnEnabled.value
                     ) {
                         Text(
                             text = "Add to cart",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier
-                                .padding(8.dp)
+                                .padding(8.dp),
                         )
                     }
 

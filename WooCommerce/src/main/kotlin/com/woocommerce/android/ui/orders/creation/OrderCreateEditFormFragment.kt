@@ -198,25 +198,25 @@ class OrderCreateEditFormFragment :
                     text = getString(R.string.order_creation_add_products),
                     onClickListener = {
 //                        viewModel.onAddProductClicked()
-                        findNavController().navigateSafely(
-                            OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToBarcodeScanningFragment()
-                        )
-//                        val scanner = GmsBarcodeScanning.getClient(this@OrderCreateEditFormFragment.requireContext())
-//                        scanner.startScan()
-//                            .addOnSuccessListener { barcode ->
-//                                // Task completed successfully
-//                                barcode.rawValue?.let {
-//                                    viewModel.fetchProductBySKU(it)
-//                                } ?: run {
-//                                    Log.d("ABCD", "barcode contains empty raw value!")
-//                                }
-//                            }
-//                            .addOnCanceledListener {
-//                                // Task canceled
-//                            }
-//                            .addOnFailureListener { _ ->
-//                                // Task failed with an exception
-//                            }
+//                        findNavController().navigateSafely(
+//                            OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToBarcodeScanningFragment()
+//                        )
+                        val scanner = GmsBarcodeScanning.getClient(this@OrderCreateEditFormFragment.requireContext())
+                        scanner.startScan()
+                            .addOnSuccessListener { barcode ->
+                                // Task completed successfully
+                                barcode.rawValue?.let {
+                                    viewModel.fetchProductBySKU(it)
+                                } ?: run {
+                                    Log.d("ABCD", "barcode contains empty raw value!")
+                                }
+                            }
+                            .addOnCanceledListener {
+                                // Task canceled
+                            }
+                            .addOnFailureListener { _ ->
+                                // Task failed with an exception
+                            }
                     }
                 )
             )
