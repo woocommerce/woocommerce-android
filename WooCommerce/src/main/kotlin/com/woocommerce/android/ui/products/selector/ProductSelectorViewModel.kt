@@ -159,7 +159,7 @@ class ProductSelectorViewModel @Inject constructor(
         productsList: List<Product>,
         selectedIds: List<SelectedItem>
     ): List<ProductListItem> {
-        if (searchQuery.value.isNotNullOrEmpty() || !filterState.value.filterOptions.isNullOrEmpty()) {
+        if (searchQuery.value.isNotNullOrEmpty() || filterState.value.filterOptions.isNotEmpty()) {
             return emptyList()
         }
         return productsList.map { it.toUiModel(selectedIds) }
@@ -335,7 +335,7 @@ class ProductSelectorViewModel @Inject constructor(
         triggerEvent(ExitWithResult(selectedItems.value))
     }
 
-    private fun isFilterActive() = !filterState.value.filterOptions.isNullOrEmpty()
+    private fun isFilterActive() = filterState.value.filterOptions.isNotEmpty()
 
     fun onSearchQueryChanged(query: String) {
         searchQuery.value = query
