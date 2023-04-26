@@ -569,27 +569,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given user is logging in, when refresh button is clicked, refresh the screen`() =
-        testBlocking {
-            givenTheScreenIsFromLogin(true)
-            whenSitesAreFetched()
-            whenViewModelIsCreated()
-
-            val isProgressShown = ArrayList<Boolean>()
-            viewModel.sitePickerViewStateData.observeForever { old, new ->
-                new.isProgressDiaLogVisible.takeIfNotEqualTo(old?.isProgressDiaLogVisible) { isProgressShown.add(it) }
-            }
-
-            viewModel.onRefreshButtonClick()
-
-            verify(analyticsTrackerWrapper, times(1)).track(
-                AnalyticsEvent.SITE_PICKER_NOT_CONNECTED_JETPACK_REFRESH_APP_LINK_TAPPED
-            )
-            verify(repository, atLeastOnce()).fetchWooCommerceSites()
-            assertThat(isProgressShown).containsExactly(false, true, false)
-        }
-
-    @Test
     fun `given user is logging in, when new to woo clicked, then open browser with the docs`() = testBlocking {
         givenTheScreenIsFromLogin(true)
         whenViewModelIsCreated()

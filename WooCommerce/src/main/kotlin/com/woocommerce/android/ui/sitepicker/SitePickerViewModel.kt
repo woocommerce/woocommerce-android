@@ -435,15 +435,6 @@ class SitePickerViewModel @Inject constructor(
         triggerEvent(SitePickerEvent.NavigateToEmailHelpDialogEvent)
     }
 
-    fun onRefreshButtonClick() {
-        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_NOT_CONNECTED_JETPACK_REFRESH_APP_LINK_TAPPED)
-        launch {
-            sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = true)
-            fetchSitesFromApi(showSkeleton = false)
-            sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
-        }
-    }
-
     fun onNewToWooClick() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_NEW_TO_WOO_TAPPED)
         triggerEvent(SitePickerEvent.NavigateToNewToWooEvent)
