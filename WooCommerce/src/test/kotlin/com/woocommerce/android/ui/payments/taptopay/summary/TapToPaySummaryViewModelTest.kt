@@ -205,6 +205,33 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given try ttp payment flow and autorefund success, when vm created, then UIState loading true and then false`() =
+        testBlocking {
+            // GIVEN
+            whenever(
+                refundStore.createAmountRefund(
+                    selectedSite.get(),
+                    order.id,
+                    order.total,
+                    "Test Tap To Pay payment auto refund",
+                    true,
+                )
+            ).thenAnswer {
+                WooResult(mock<WCRefundModel>())
+            }
+
+            // WHEN
+            val viewModel = initViewModel(TapToPaySummaryFragment.TestTapToPayFlow.AfterPayment(order))
+            val states = viewModel.viewState.captureValues()
+            viewModel.handleFlowParam(TapToPaySummaryFragment.TestTapToPayFlow.AfterPayment(order))
+
+            // THEN
+            assertThat(states[0].isProgressVisible).isFalse()
+            assertThat(states[1].isProgressVisible).isTrue()
+            assertThat(states[2].isProgressVisible).isFalse()
+        }
+
+    @Test
     fun `given try ttp payment flow and autorefund success, when snack bar action clicked, then NavigateToOrderDetails event emitted`() =
         testBlocking {
             // GIVEN

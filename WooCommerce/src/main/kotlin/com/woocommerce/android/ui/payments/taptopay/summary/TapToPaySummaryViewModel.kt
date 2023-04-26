@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.payments.taptopay.summary
 
 import androidx.annotation.StringRes
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -42,7 +43,8 @@ class TapToPaySummaryViewModel @Inject constructor(
         handleFlowParam(navArgs.testTapToPayFlow)
     }
 
-    private fun handleFlowParam(flow: TapToPaySummaryFragment.TestTapToPayFlow) =
+    @VisibleForTesting
+    internal fun handleFlowParam(flow: TapToPaySummaryFragment.TestTapToPayFlow) =
         when (flow) {
             TapToPaySummaryFragment.TestTapToPayFlow.BeforePayment -> {
                 // no-op
