@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToHelpFragmentEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToMainActivityEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToNewToWooEvent
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToStoreCreationEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.ShowWooUpgradeDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.NoStoreState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.StoreListState
@@ -60,7 +61,7 @@ import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
 
 @ExperimentalCoroutinesApi
 class SitePickerViewModelTest : BaseUnitTest() {
-    private val expectedSiteList = SitePickerTestUtils.generateStores()
+    private val defaultExpectedSiteList = SitePickerTestUtils.generateStores()
 
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
@@ -71,7 +72,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val userEligibilityFetcher: UserEligibilityFetcher = mock()
     private val repository: SitePickerRepository = mock {
-        onBlocking { getSites() } doReturn expectedSiteList.toMutableList()
+        onBlocking { getSites() } doReturn defaultExpectedSiteList.toMutableList()
     }
     private val accountRepository: AccountRepository = mock()
     private val unifiedLoginTracker: UnifiedLoginTracker = mock()
@@ -111,12 +112,18 @@ class SitePickerViewModelTest : BaseUnitTest() {
         whenever(userEligibilityFetcher.fetchUserInfo()).thenReturn(Result.success(SitePickerTestUtils.userModel))
     }
 
-    private suspend fun whenSitesAreFetched(returnsError: Boolean = false, returnsEmpty: Boolean = false) {
+    private suspend fun whenSitesAreFetched(
+        returnsError: Boolean = false,
+        returnsEmpty: Boolean = false,
+        sitesFromDb: List<SiteModel> = defaultExpectedSiteList,
+        sitesFromApi: List<SiteModel> = defaultExpectedSiteList
+    ) {
         when {
             returnsEmpty -> {
                 whenever(repository.fetchWooCommerceSites()).thenReturn(WooResult(mutableListOf()))
                 whenever(repository.getSites()).thenReturn(mutableListOf())
             }
+
             returnsError -> {
                 whenever(repository.fetchWooCommerceSites()).thenReturn(
                     WooResult(
@@ -129,8 +136,10 @@ class SitePickerViewModelTest : BaseUnitTest() {
                 )
                 whenever(repository.getSites()).thenReturn(mutableListOf())
             }
+
             else -> {
-                whenever(repository.fetchWooCommerceSites()).thenReturn(WooResult(expectedSiteList))
+                whenever(repository.getSites()).thenReturn(sitesFromDb)
+                whenever(repository.fetchWooCommerceSites()).thenReturn(WooResult(sitesFromApi))
             }
         }
     }
@@ -139,7 +148,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         userInfo = SitePickerTestUtils.userInfo,
         primaryBtnText = resourceProvider.getString(R.string.continue_button),
         secondaryBtnText = resourceProvider.getString(R.string.login_try_another_account),
-        hasConnectedStores = expectedSiteList.isNotEmpty()
+        hasConnectedStores = defaultExpectedSiteList.isNotEmpty()
     )
 
     @Before
@@ -210,7 +219,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
                 return this
             }
 
-            val expectedSites = expectedSiteList.mapIndexed { index, siteModel ->
+            val expectedSites = defaultExpectedSiteList.mapIndexed { index, siteModel ->
                 if (index < 2) siteModel.apply { hasWooCommerce = false } else siteModel
             }
             whenever(repository.fetchWooCommerceSites()).thenReturn(WooResult(expectedSites))
@@ -297,7 +306,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given that user is logging in from site address, auto login should be initiated`() = testBlocking {
-        givenThatUserLoggedInFromEnteringSiteAddress(expectedSiteList[1])
+        givenThatUserLoggedInFromEnteringSiteAddress(defaultExpectedSiteList[1])
         givenThatSiteVerificationIsCompleted()
         whenSitesAreFetched()
         whenViewModelIsCreated()
@@ -311,6 +320,42 @@ class SitePickerViewModelTest : BaseUnitTest() {
         assertThat(sites?.get(1)?.isSelected).isTrue
         assertThat(sites?.get(1)?.site?.url).isEqualTo(SitePickerTestUtils.loginSiteAddress)
     }
+
+    @Test
+    fun `given login with wp email, when only a single woo store is available, then site should be auto selected`() =
+        testBlocking {
+            givenTheScreenIsFromLogin(calledFromLogin = true)
+            givenThatSiteVerificationIsCompleted()
+            val siteList = listOf(defaultExpectedSiteList.first())
+            whenSitesAreFetched(sitesFromDb = siteList, sitesFromApi = siteList)
+
+            whenViewModelIsCreated()
+
+            var items: List<SitesListItem>? = null
+            viewModel.sites.observeForever { items = it }
+            val event = viewModel.event.captureValues().last()
+
+            val sites = items?.filterIsInstance<WooSiteUiModel>()
+            assertThat(sites?.first()?.isSelected).isTrue
+            assertThat(event).isEqualTo(NavigateToMainActivityEvent)
+            verify(repository, times(2)).verifySiteWooAPIVersion(sites?.first()?.site!!)
+        }
+
+    @Test
+    fun `given login with wp email, when no stores are available, then trigger store creation flow`() =
+        testBlocking {
+            givenTheScreenIsFromLogin(calledFromLogin = true)
+            givenThatSiteVerificationIsCompleted()
+            whenSitesAreFetched(sitesFromDb = emptyList(), sitesFromApi = emptyList())
+
+            whenViewModelIsCreated()
+            val sitePickerState = viewModel.sitePickerViewStateData.liveData.captureValues().last()
+            val event = viewModel.event.captureValues().last()
+
+            assertThat(event).isEqualTo(NavigateToStoreCreationEvent)
+            assertThat(sitePickerState.currentSitePickerState).isEqualTo(NoStoreState)
+            verify(appPrefsWrapper).markAsNewSignUp(false)
+        }
 
     @Test
     fun `given the site address entered during login does not match the user account, account error is displayed`() =
@@ -346,7 +391,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
     fun `given that the site address entered during login does not have Woo, no woo error screen is displayed`() =
         testBlocking {
             givenThatUserLoggedInFromEnteringSiteAddress(
-                expectedSiteList[1].apply {
+                defaultExpectedSiteList[1].apply {
                     hasWooCommerce = false
                     setIsJetpackConnected(true)
                 }
@@ -397,7 +442,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
             if (it is NavigateToMainActivityEvent) view = it
         }
 
-        val selectedSiteModel = expectedSiteList[1]
+        val selectedSiteModel = defaultExpectedSiteList[1]
 
         viewModel.onSiteSelected(selectedSiteModel)
         viewModel.onContinueButtonClick()
@@ -430,7 +475,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
                 if (it is ShowWooUpgradeDialogEvent) view = it
             }
 
-            val selectedSiteModel = expectedSiteList[1]
+            val selectedSiteModel = defaultExpectedSiteList[1]
 
             viewModel.onSiteSelected(selectedSiteModel)
             viewModel.onContinueButtonClick()
@@ -447,7 +492,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
     @Test
     fun `given list of sites is shown, when a non-woo site is tapped, then show the Woo not found error`() =
         testBlocking {
-            val expectedSites = expectedSiteList.mapIndexed { index, siteModel ->
+            val expectedSites = defaultExpectedSiteList.mapIndexed { index, siteModel ->
                 if (index == 0) siteModel.apply {
                     hasWooCommerce = false
                     url = SitePickerTestUtils.loginSiteAddress
@@ -580,7 +625,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given user is logging in, when view connected sites is clicked, site list is displayed`() = testBlocking {
-        val expectedSite = expectedSiteList[1].apply { hasWooCommerce = false }
+        val expectedSite = defaultExpectedSiteList[1].apply { hasWooCommerce = false }
         givenThatUserLoggedInFromEnteringSiteAddress(expectedSite)
         givenTheScreenIsFromLogin(true)
         whenSitesAreFetched()
@@ -601,7 +646,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when install woo is tapped, then open a webview to trigger installation`() = testBlocking {
-        val expectedSite = expectedSiteList[1].apply { hasWooCommerce = false }
+        val expectedSite = defaultExpectedSiteList[1].apply { hasWooCommerce = false }
         givenThatUserLoggedInFromEnteringSiteAddress(expectedSite)
         givenTheScreenIsFromLogin(true)
 
@@ -615,7 +660,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when woo installation completes, then continue login`() = testBlocking {
-        val expectedSite = expectedSiteList[1].apply { hasWooCommerce = false }
+        val expectedSite = defaultExpectedSiteList[1].apply { hasWooCommerce = false }
         givenThatUserLoggedInFromEnteringSiteAddress(expectedSite)
         givenTheScreenIsFromLogin(true)
         whenSitesAreFetched()
@@ -632,7 +677,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given woo installation finishes, when fetching site fails, then retry`() = testBlocking {
-        val expectedSite = expectedSiteList[1].apply { hasWooCommerce = false }
+        val expectedSite = defaultExpectedSiteList[1].apply { hasWooCommerce = false }
         givenThatUserLoggedInFromEnteringSiteAddress(expectedSite)
         givenTheScreenIsFromLogin(true)
         whenSitesAreFetched()
@@ -649,7 +694,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given woo installation finishes, when fetched site doesn't have woo, then retry`() = testBlocking {
-        val expectedSite = expectedSiteList[1].apply { hasWooCommerce = false }
+        val expectedSite = defaultExpectedSiteList[1].apply { hasWooCommerce = false }
         givenThatUserLoggedInFromEnteringSiteAddress(expectedSite)
         givenTheScreenIsFromLogin(true)
         whenSitesAreFetched()
@@ -683,7 +728,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
                 if (it is ShowDialog) view = it
             }
 
-            val selectedSiteModel = expectedSiteList[1]
+            val selectedSiteModel = defaultExpectedSiteList[1]
 
             viewModel.onSiteSelected(selectedSiteModel)
             viewModel.onContinueButtonClick()
@@ -698,7 +743,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         testBlocking {
             givenTheScreenIsFromLogin(true)
             givenThatUserLoggedInFromEnteringSiteAddress(
-                expectedSiteList[1].apply {
+                defaultExpectedSiteList[1].apply {
                     setIsWPCom(true)
                 }
             )

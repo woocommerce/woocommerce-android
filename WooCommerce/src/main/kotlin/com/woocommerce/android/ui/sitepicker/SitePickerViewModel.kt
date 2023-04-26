@@ -254,7 +254,7 @@ class SitePickerViewModel @Inject constructor(
         }
         if (navArgs.openedFromLogin && wooSites.size == 1) {
             onSiteSelected(wooSites.first())
-            onContinueButtonClick(true)
+            onContinueButtonClick(isAutoLogin = true)
         }
     }
 
@@ -642,7 +642,7 @@ class SitePickerViewModel @Inject constructor(
     }
 
     private fun startStoreCreationFlow() {
-        appPrefsWrapper.markAsNewSignUp(false)
+        appPrefsWrapper.markAsNewSignUp(newSignUp = false)
         triggerEvent(NavigateToStoreCreationEvent)
     }
 
