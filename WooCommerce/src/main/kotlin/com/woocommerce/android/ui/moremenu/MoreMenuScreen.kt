@@ -380,6 +380,7 @@ fun MoreMenuBadge(badgeState: BadgeState?) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Spacer(modifier = Modifier.weight(1f))
+            @Suppress("RememberReturnType")
             val visible = remember {
                 MutableTransitionState(badgeState.animateAppearance.not()).apply { targetState = true }
             }
