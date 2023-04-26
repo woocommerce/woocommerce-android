@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import kotlinx.coroutines.delay
 
 @Composable
 fun StoreNamePickerScreen(viewModel: StoreNamePickerViewModel) {
@@ -121,7 +122,11 @@ private fun NamePickerForm(
         }
     }
     // Request focus on store name field when entering screen
-    LaunchedEffect(Unit) { focusRequester.requestFocus() }
+    LaunchedEffect(Unit) {
+        @Suppress("MagicNumber")
+        delay(timeMillis = 800)
+        focusRequester.requestFocus()
+    }
 }
 
 @ExperimentalFoundationApi
