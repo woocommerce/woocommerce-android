@@ -95,8 +95,8 @@ class SitePickerViewModel @Inject constructor(
         }
         updateSiteViewDetails()
         loadAndDisplayUserInfo()
-        loadAndDisplaySites()
-        if (appPrefsWrapper.getIsNewSignUp()) startStoreCreationFlow()
+        if (appPrefsWrapper.getIsNewSignUp()) onEmptyStoresList()
+        else loadAndDisplaySites()
         if (selectedSiteId.value == null && selectedSite.exists()) {
             selectedSiteId.value = selectedSite.getSelectedSiteId()
         }
@@ -133,7 +133,7 @@ class SitePickerViewModel @Inject constructor(
         launch {
             val sitesInDb = getSitesFromDb()
             if (sitesInDb.isNotEmpty()) {
-                displaySites(sitesInDb)
+                onSitesLoaded(sitesInDb)
             }
             fetchSitesFromApi(showSkeleton = sitesInDb.isEmpty() || !loginSiteAddress.isNullOrEmpty())
         }
@@ -148,9 +148,6 @@ class SitePickerViewModel @Inject constructor(
         val result = repository.fetchWooCommerceSites()
         val duration = System.currentTimeMillis() - startTime
 
-        sitePickerViewState = sitePickerViewState.copy(
-            isSkeletonViewVisible = false, isProgressDiaLogVisible = false
-        )
         when {
             result.isError -> triggerEvent(ShowSnackbar(string.site_picker_error))
             result.model != null -> {
@@ -160,9 +157,13 @@ class SitePickerViewModel @Inject constructor(
                         properties = mapOf(AnalyticsTracker.KEY_FETCH_SITES_DURATION to duration)
                     )
                 }
-                displaySites(repository.getSites())
+                onSitesLoaded(repository.getSites())
             }
         }
+        sitePickerViewState = sitePickerViewState.copy(
+            isSkeletonViewVisible = false,
+            isProgressDiaLogVisible = false
+        )
     }
 
     private suspend fun getSitesFromDb(): List<SiteModel> {
@@ -195,17 +196,16 @@ class SitePickerViewModel @Inject constructor(
         )
     }
 
-    private fun displaySites(sites: List<SiteModel>) {
+    private fun onSitesLoaded(sites: List<SiteModel>) {
         val filteredSites = sites.filter {
             FeatureFlag.JETPACK_CP.isEnabled() || !it.isJetpackCPConnected
         }
 
         if (filteredSites.isEmpty()) {
-            if (loginSiteAddress != null) {
-                showAccountMismatchScreen(loginSiteAddress!!)
-            } else {
-                if (navArgs.openedFromLogin) startStoreCreationFlow()
-                loadNoStoreView()
+            when {
+                loginSiteAddress != null -> showAccountMismatchScreen(loginSiteAddress!!)
+                navArgs.openedFromLogin -> onEmptyStoresList()
+                else -> loadNoStoreView()
             }
             return
         }
@@ -255,6 +255,16 @@ class SitePickerViewModel @Inject constructor(
         if (navArgs.openedFromLogin && wooSites.size == 1) {
             onSiteSelected(wooSites.first())
             onContinueButtonClick(isAutoLogin = true)
+        }
+    }
+
+    private fun onEmptyStoresList() {
+        startStoreCreationFlow()
+        launch {
+            // Delay to avoid flickering between empty stores screen and store creation flow transition
+            @Suppress("MagicNumber")
+            delay(200)
+            loadNoStoreView()
         }
     }
 
@@ -619,13 +629,13 @@ class SitePickerViewModel @Inject constructor(
             result.fold(
                 onSuccess = {
                     // Continue login
-                    displaySites(repository.getSites())
+                    onSitesLoaded(repository.getSites())
                 },
                 onFailure = {
                     triggerEvent(ShowSnackbar(string.site_picker_error))
                     // This would lead to the [WooNotFoundState] again
                     // The chance of getting this state is small, because of the retry mechanism above
-                    displaySites(repository.getSites())
+                    onSitesLoaded(repository.getSites())
                 }
             )
         }

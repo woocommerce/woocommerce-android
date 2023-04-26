@@ -273,6 +273,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
             )
             whenSitesAreFetched(returnsEmpty = true)
             whenViewModelIsCreated()
+            advanceUntilIdle()
 
             var sitePickerData: SitePickerViewModel.SitePickerViewState? = null
             viewModel.sitePickerViewStateData.observeForever { _, new -> sitePickerData = new }
@@ -347,10 +348,12 @@ class SitePickerViewModelTest : BaseUnitTest() {
             givenTheScreenIsFromLogin(calledFromLogin = true)
             givenThatSiteVerificationIsCompleted()
             whenSitesAreFetched(sitesFromDb = emptyList(), sitesFromApi = emptyList())
+            whenever(appPrefsWrapper.getIsNewSignUp()).thenReturn(false)
 
             whenViewModelIsCreated()
-            val sitePickerState = viewModel.sitePickerViewStateData.liveData.captureValues().last()
+            advanceUntilIdle()
             val event = viewModel.event.captureValues().last()
+            val sitePickerState = viewModel.sitePickerViewStateData.liveData.captureValues().last()
 
             assertThat(event).isEqualTo(NavigateToStoreCreationEvent)
             assertThat(sitePickerState.currentSitePickerState).isEqualTo(NoStoreState)
