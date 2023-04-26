@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorRestriction
 import com.woocommerce.android.ui.products.selector.ProductSourceForTracking
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
@@ -128,7 +129,8 @@ sealed class ProductNavigationTarget : Event() {
         val productType: String?,
         val productStatus: String?,
         val productCategory: String?,
-        val productCategoryName: String?
+        val productCategoryName: String?,
+        val restrictions: List<ProductSelectorRestriction>
     ) : ProductNavigationTarget()
 
     data class ViewProductSubscription(

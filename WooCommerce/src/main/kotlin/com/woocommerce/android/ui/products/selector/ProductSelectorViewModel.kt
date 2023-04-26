@@ -277,7 +277,8 @@ class ProductSelectorViewModel @Inject constructor(
                 filterState.value.filterOptions[ProductFilterOption.TYPE],
                 filterState.value.filterOptions[ProductFilterOption.STATUS],
                 filterState.value.filterOptions[ProductFilterOption.CATEGORY],
-                filterState.value.productCategoryName
+                filterState.value.productCategoryName,
+                productsRestrictions.toList()
             )
         )
     }
