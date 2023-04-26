@@ -437,8 +437,11 @@ class SitePickerViewModel @Inject constructor(
 
     fun onRefreshButtonClick() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_NOT_CONNECTED_JETPACK_REFRESH_APP_LINK_TAPPED)
-        sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = true)
-        launch { fetchSitesFromApi(showSkeleton = false) }
+        launch {
+            sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = true)
+            fetchSitesFromApi(showSkeleton = false)
+            sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
+        }
     }
 
     fun onNewToWooClick() {
