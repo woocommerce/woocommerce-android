@@ -140,9 +140,7 @@ class SitePickerViewModel @Inject constructor(
     }
 
     private suspend fun fetchSitesFromApi(showSkeleton: Boolean) {
-        sitePickerViewState = sitePickerViewState.copy(
-            isSkeletonViewVisible = showSkeleton
-        )
+        sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = showSkeleton)
 
         val startTime = System.currentTimeMillis()
         val result = repository.fetchWooCommerceSites()
@@ -160,10 +158,7 @@ class SitePickerViewModel @Inject constructor(
                 onSitesLoaded(repository.getSites())
             }
         }
-        sitePickerViewState = sitePickerViewState.copy(
-            isSkeletonViewVisible = false,
-            isProgressDiaLogVisible = false
-        )
+        sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = false)
     }
 
     private suspend fun getSitesFromDb(): List<SiteModel> {
