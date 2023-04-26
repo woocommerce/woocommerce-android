@@ -284,17 +284,18 @@ class ProductFilterListViewModel @Inject constructor(
                 )
             )
         }
-        filterListItems.add(FilterListItemUiModel(
-            TYPE,
-            resourceProvider.getString(string.product_type),
-            addDefaultFilterOption(
-                ProductType.values().filterNot { it == OTHER }.map {
-                    FilterListOptionItemUiModel(
-                        resourceProvider.getString(it.stringResource),
-                        filterOptionItemValue = it.value,
-                        isSelected = productFilterOptions[TYPE] == it.value
-                    )
-                }.toMutableList(),
+        filterListItems.add(
+            FilterListItemUiModel(
+                TYPE,
+                resourceProvider.getString(string.product_type),
+                addDefaultFilterOption(
+                    ProductType.values().filterNot { it == OTHER }.map {
+                        FilterListOptionItemUiModel(
+                            resourceProvider.getString(it.stringResource),
+                            filterOptionItemValue = it.value,
+                            isSelected = productFilterOptions[TYPE] == it.value
+                        )
+                    }.toMutableList(),
                     productFilterOptions[TYPE].isNullOrEmpty()
                 )
             )
@@ -411,7 +412,8 @@ class ProductFilterListViewModel @Inject constructor(
         var margin: Int = DEFAULT_FILTER_OPTION_MARGIN
     ) : Parcelable {
         companion object {
-            @DimenRes const val DEFAULT_FILTER_OPTION_MARGIN = 0
+            @DimenRes
+            const val DEFAULT_FILTER_OPTION_MARGIN = 0
         }
     }
 }
