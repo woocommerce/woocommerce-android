@@ -3242,4 +3242,11 @@
     <string name="component_default_option">Default option</string>
     <string name="component_type_products">Products</string>
     <string name="component_type_categories">Categories</string>
+
+    <!--
+    Eu-Bound Shipping notice banner
+    -->
+    <string name="shipping_notice_banner_content">From now on, shipping to countries that follow European Union (EU) customs rules, you must provide a clear and specific description of every item. Otherwise, shipments may be delayed or interrupted at customs.</string>
+    <string name="shipping_notice_learn_more">Learn More</string>
+    <string name="shipping_notice_dismiss">Dismiss</string>
 </resources>
