@@ -23,7 +23,6 @@ import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboarding
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.PAYMENTS
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.WC_PAYMENTS
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,6 +35,7 @@ class StoreOnboardingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val onboardingRepository: StoreOnboardingRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val shouldShowOnboarding: ShouldShowOnboarding
 ) : ScopedViewModel(savedStateHandle), DefaultLifecycleObserver {
     companion object {
         const val NUMBER_ITEMS_IN_COLLAPSED_MODE = 3
@@ -49,7 +49,7 @@ class StoreOnboardingViewModel @Inject constructor(
             onboardingRepository.observeOnboardingTasks()
                 .collectLatest { tasks ->
                     _viewState.value = OnboardingState(
-                        show = tasks.any { !it.isComplete } && FeatureFlag.STORE_CREATION_ONBOARDING.isEnabled(),
+                        show = shouldShowOnboarding(tasks),
                         title = R.string.store_onboarding_title,
                         tasks = tasks.map { mapToOnboardingTaskState(it) },
                     )
@@ -86,6 +86,7 @@ class StoreOnboardingViewModel @Inject constructor(
     }
 
     fun onHideOnboardingClicked() {
+        _viewState.value = _viewState.value?.copy(show = false)
 
     }
 
@@ -117,7 +118,7 @@ class StoreOnboardingViewModel @Inject constructor(
     }
 
     private fun refreshOnboardingList() {
-        if (!onboardingRepository.isOnboardingCompleted()) {
+        if (!shouldShowOnboarding.isOnboardingMarkedAsCompleted()) {
             launch {
                 onboardingRepository.fetchOnboardingTasks()
             }
