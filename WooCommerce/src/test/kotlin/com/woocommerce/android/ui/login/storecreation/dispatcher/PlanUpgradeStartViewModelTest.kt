@@ -23,7 +23,7 @@ class PlanUpgradeStartViewModelTest : BaseUnitTest() {
     private lateinit var sut: PlanUpgradeStartViewModel
 
     private val sitePlanRepository: SitePlanRepository = mock()
-    val selectedSiteModel = SiteModel().apply {
+    private val selectedSiteModel = SiteModel().apply {
         siteId = 456L
     }
     private val selectedSite: SelectedSite = mock {
@@ -66,7 +66,7 @@ class PlanUpgradeStartViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given that selected site is free trial, when initialize, then exit the screen`() {
+    fun `given that selected site is free trial, when initialize, then do not exit the screen`() {
         // Given
         sitePlanRepository.stub {
             onBlocking { fetchCurrentPlanDetails(selectedSiteModel) } doReturn sitePlan.copy(
@@ -79,5 +79,19 @@ class PlanUpgradeStartViewModelTest : BaseUnitTest() {
 
         // Then
         assertThat(sut.event.captureValues()).isEmpty()
+    }
+
+    @Test
+    fun `given that selected site fails getting the site's plan, when initialize, then exit the screen`() {
+        // Given
+        sitePlanRepository.stub {
+            onBlocking { fetchCurrentPlanDetails(selectedSiteModel) } doReturn null
+        }
+
+        // When
+        initialize()
+
+        // Then
+        assertThat(sut.event.captureValues()).containsExactly(MultiLiveEvent.Event.Exit)
     }
 }
