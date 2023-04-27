@@ -29,7 +29,6 @@
         android:layout_marginTop="@dimen/major_100"
         android:layout_marginEnd="@dimen/major_100"
         app:layout_constraintBottom_toTopOf="@id/cardReaderHubListItemDescriptionTv"
-        app:layout_constraintEnd_toStartOf="@id/cardReaderHubBadgeIcon"
         app:layout_constraintStart_toEndOf="@id/cardReaderMenuIcon"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
@@ -57,8 +56,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/minor_10"
         android:padding="@dimen/minor_100"
-        app:layout_constraintBottom_toBottomOf="@id/cardReaderHubListItemLabelTv"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/cardReaderHubListItemLabelTv"
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@drawable/ic_badge_new" />
 
