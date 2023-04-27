@@ -86,8 +86,20 @@ class StoreOnboardingViewModel @Inject constructor(
     }
 
     fun onHideOnboardingClicked() {
-        _viewState.value = _viewState.value?.copy(show = false)
-        shouldShowOnboarding.updateOnboardingVisibilitySetting(show = false)
+        triggerEvent(
+            MultiLiveEvent.Event.ShowDialog(
+                titleId = R.string.store_onboarding_dialog_title,
+                messageId = R.string.store_onboarding_dialog_description,
+                positiveButtonId = R.string.remove,
+                positiveBtnAction = { dialog, _ ->
+                    _viewState.value = _viewState.value?.copy(show = false)
+                    shouldShowOnboarding.updateOnboardingVisibilitySetting(show = false)
+                    dialog.dismiss()
+                },
+                negativeBtnAction = { dialog, _ -> dialog.dismiss() },
+                negativeButtonId = R.string.cancel,
+            )
+        )
     }
 
     fun onTaskClicked(task: OnboardingTaskUi) {

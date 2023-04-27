@@ -57,6 +57,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
@@ -235,14 +236,18 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                     findNavController().navigateSafely(
                         directions = MyStoreFragmentDirections.actionMyStoreToProductTypesBottomSheet()
                     )
+
                 is StoreOnboardingViewModel.NavigateToSetupPayments ->
                     findNavController().navigateSafely(
                         directions = MyStoreFragmentDirections.actionMyStoreToGetPaidFragment()
                     )
+
                 is StoreOnboardingViewModel.NavigateToAboutYourStore ->
                     findNavController().navigateSafely(
                         MyStoreFragmentDirections.actionMyStoreToAboutYourStoreFragment()
                     )
+
+                is ShowDialog -> event.showDialog()
             }
         }
     }
