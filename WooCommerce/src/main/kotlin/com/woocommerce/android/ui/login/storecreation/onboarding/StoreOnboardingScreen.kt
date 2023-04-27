@@ -30,7 +30,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.Icons.Outlined
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -52,6 +52,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.R.dimen
+import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.component.WcTag
@@ -157,47 +159,55 @@ fun StoreOnboardingCollapsed(
                 .align(Alignment.TopEnd)
                 .padding(top = dimensionResource(id = R.dimen.minor_100))
         ) {
-            OverflowMenu {
-                DropdownMenuItem(
-                    modifier = Modifier
-                        .height(dimensionResource(id = R.dimen.major_175)),
-                    onClick = { onShareFeedbackClicked() }
-                ) {
-                    Text(stringResource(id = R.string.store_onboarding_menu_share_feedback))
-                }
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
-                DropdownMenuItem(
-                    modifier = Modifier
-                        .height(dimensionResource(id = R.dimen.major_175)),
-                    onClick = { onHideOnboardingClicked() }
-                ) {
-                    Text(stringResource(id = R.string.store_onboarding_menu_hide_store_setup))
-                }
-            }
+            OnboardingMoreMenu(onShareFeedbackClicked, onHideOnboardingClicked)
         }
     }
 }
 
 @Composable
-fun OverflowMenu(content: @Composable () -> Unit) {
+private fun OnboardingMoreMenu(
+    onShareFeedbackClicked: () -> Unit,
+    onHideOnboardingClicked: () -> Unit
+) {
     var showMenu by remember { mutableStateOf(false) }
     IconButton(onClick = { showMenu = !showMenu }) {
         Icon(
-            imageVector = Icons.Outlined.MoreVert,
-            contentDescription = stringResource(R.string.more_menu),
+            imageVector = Outlined.MoreVert,
+            contentDescription = stringResource(string.more_menu),
         )
     }
     DropdownMenu(
         offset = DpOffset(
-            x = dimensionResource(id = R.dimen.major_100),
+            x = dimensionResource(id = dimen.major_100),
             y = 0.dp
         ),
         expanded = showMenu,
         onDismissRequest = { showMenu = false }
     ) {
-        content()
+        DropdownMenuItem(
+            modifier = Modifier
+                .height(dimensionResource(id = dimen.major_175)),
+            onClick = {
+                showMenu = false
+                onShareFeedbackClicked()
+            }
+        ) {
+            Text(stringResource(id = string.store_onboarding_menu_share_feedback))
+        }
+        Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_100)))
+        DropdownMenuItem(
+            modifier = Modifier
+                .height(dimensionResource(id = dimen.major_175)),
+            onClick = {
+                showMenu = false
+                onHideOnboardingClicked()
+            }
+        ) {
+            Text(stringResource(id = string.store_onboarding_menu_hide_store_setup))
+        }
     }
 }
+
 
 @Composable
 fun OnboardingTaskList(
