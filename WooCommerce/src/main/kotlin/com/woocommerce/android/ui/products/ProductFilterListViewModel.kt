@@ -266,7 +266,7 @@ class ProductFilterListViewModel @Inject constructor(
                 )
             )
         )
-        if (arguments.restrictions?.contains(OnlyPublishedProducts) == false) {
+        if (arguments.restrictions?.contains(OnlyPublishedProducts) != true) {
             filterListItems.add(
                 FilterListItemUiModel(
                     STATUS,
