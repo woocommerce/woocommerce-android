@@ -191,6 +191,7 @@ class CardReaderHubViewModel @Inject constructor(
                     index = 5,
                     onClick = ::onTapToPayClicked,
                     shortDivider = shouldShowTTPFeedbackRequest,
+                    iconBadge = R.drawable.ic_badge_new,
                 )
             )
             if (shouldShowTTPFeedbackRequest) {
