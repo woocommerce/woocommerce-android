@@ -30,12 +30,12 @@
         android:textColor="@color/material_on_surface_emphasis_high_type"
         android:textSize="@dimen/text_minor_130"
         app:layout_constraintLeft_toRightOf="@+id/icon"
-        app:layout_constraintRight_toLeftOf="@+id/dismiss_button"
+        app:layout_constraintRight_toLeftOf="@+id/close_button"
         app:layout_constraintTop_toTopOf="@+id/icon"
         tools:text="@string/feedback_banner_ipp_title_beginner" />
 
     <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/dismiss_button"
+        android:id="@+id/close_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/major_75"
@@ -56,10 +56,10 @@
         android:textColor="@color/material_on_surface_emphasis_high_type"
         android:textSize="@dimen/text_minor_125"
         app:layout_constraintLeft_toRightOf="@+id/icon"
-        app:layout_constraintRight_toLeftOf="@+id/dismiss_button"
+        app:layout_constraintRight_toLeftOf="@+id/close_button"
         app:layout_constraintTop_toBottomOf="@+id/title"
         tools:ignore="RtlHardcoded"
-        tools:text="@string/feedback_banner_ipp_message_beginner" />
+        tools:text="@string/shipping_notice_banner_content" />
 
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/divider"
@@ -67,13 +67,31 @@
         android:layout_width="match_parent"
         app:layout_constraintTop_toBottomOf="@+id/message" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/cta_button"
-        style="@style/Woo.Card.Button"
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/minor_00"
-        android:text="@string/feedback_banner_ipp_cta_button"
-        app:layout_constraintTop_toBottomOf="@+id/divider" />
+        android:orientation="horizontal"
+        android:layout_marginHorizontal="@dimen/major_100"
+        app:layout_constraintTop_toBottomOf="@+id/divider">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/learn_more_button"
+            style="@style/Woo.Card.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginTop="@dimen/minor_00"
+            android:text="@string/shipping_notice_learn_more" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/dismiss_button"
+            style="@style/Woo.Card.Button"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/minor_00"
+            android:text="@string/shipping_notice_dismiss" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
