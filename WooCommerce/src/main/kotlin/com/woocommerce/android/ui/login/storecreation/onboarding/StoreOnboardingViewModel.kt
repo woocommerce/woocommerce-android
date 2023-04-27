@@ -69,6 +69,7 @@ class StoreOnboardingViewModel @Inject constructor(
             CUSTOMIZE_DOMAIN -> OnboardingTaskUi(CustomizeDomainTaskRes, isCompleted = task.isComplete)
             WC_PAYMENTS,
             PAYMENTS -> OnboardingTaskUi(SetupPaymentsTaskRes, isCompleted = task.isComplete)
+
             MOBILE_UNSUPPORTED -> error("Unknown task type is not allowed in UI layer")
         }
 
@@ -82,6 +83,10 @@ class StoreOnboardingViewModel @Inject constructor(
 
     fun onShareFeedbackClicked() {
         triggerEvent(NavigateToSurvey)
+    }
+
+    fun onHideOnboardingClicked() {
+
     }
 
     fun onTaskClicked(task: OnboardingTaskUi) {

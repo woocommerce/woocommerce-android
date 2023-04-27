@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -100,6 +101,7 @@ fun StoreOnboardingCollapsed(
     onShareFeedbackClicked: () -> Unit,
     onTaskClicked: (OnboardingTaskUi) -> Unit,
     modifier: Modifier = Modifier,
+    onHideOnboardingClicked: () -> Unit,
     numberOfItemsToShowInCollapsedMode: Int = NUMBER_ITEMS_IN_COLLAPSED_MODE,
 ) {
     Box(modifier = modifier.fillMaxWidth()) {
@@ -162,6 +164,14 @@ fun StoreOnboardingCollapsed(
                     onClick = { onShareFeedbackClicked() }
                 ) {
                     Text(stringResource(id = R.string.store_onboarding_menu_share_feedback))
+                }
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+                DropdownMenuItem(
+                    modifier = Modifier
+                        .height(dimensionResource(id = R.dimen.major_175)),
+                    onClick = { onHideOnboardingClicked() }
+                ) {
+                    Text(stringResource(id = R.string.store_onboarding_menu_hide_store_setup))
                 }
             }
         }
@@ -364,6 +374,7 @@ private fun OnboardingPreview() {
         ),
         onViewAllClicked = {},
         onShareFeedbackClicked = {},
+        onHideOnboardingClicked = {},
         onTaskClicked = {}
     )
 }

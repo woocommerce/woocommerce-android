@@ -206,7 +206,8 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                                     onboardingState = state,
                                     onViewAllClicked = storeOnboardingViewModel::viewAllClicked,
                                     onShareFeedbackClicked = storeOnboardingViewModel::onShareFeedbackClicked,
-                                    onTaskClicked = storeOnboardingViewModel::onTaskClicked
+                                    onTaskClicked = storeOnboardingViewModel::onTaskClicked,
+                                    onHideOnboardingClicked = storeOnboardingViewModel::onHideOnboardingClicked
                                 )
                             }
                         }
