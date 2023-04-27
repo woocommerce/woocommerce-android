@@ -310,7 +310,6 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                 isVisible = true
                 setDismissClickListener { collapse() }
             }
-
         }
 
 
