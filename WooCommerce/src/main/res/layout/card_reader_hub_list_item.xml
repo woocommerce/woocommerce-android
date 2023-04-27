@@ -45,7 +45,7 @@
         android:layout_marginBottom="@dimen/major_100"
         android:textColor="@color/color_surface_variant"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/cardReaderHubListItemLabelTv"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/cardReaderHubListItemLabelTv"
         app:layout_constraintTop_toBottomOf="@id/cardReaderHubListItemLabelTv"
         tools:text="Use your phone to accept card payments" />
