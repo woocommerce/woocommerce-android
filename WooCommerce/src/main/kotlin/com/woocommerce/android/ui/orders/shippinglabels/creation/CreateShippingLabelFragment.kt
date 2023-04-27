@@ -13,6 +13,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCreateShippingLabelBinding
 import com.woocommerce.android.databinding.ViewShippingLabelOrderPackagePriceBinding
 import com.woocommerce.android.databinding.ViewShippingLabelOrderSummaryBinding
+import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.isNotEqualTo
@@ -304,7 +305,14 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
     }
 
     private fun initializeViews(binding: FragmentCreateShippingLabelBinding) {
-        binding.shippingNoticeBanner.isVisible = FeatureFlag.EU_SHIPPING_NOTIFICATION.isEnabled()
+        if (FeatureFlag.EU_SHIPPING_NOTIFICATION.isEnabled()) {
+            with(binding.shippingNoticeBanner) {
+                isVisible = true
+                setDismissClickListener { collapse() }
+            }
+
+        }
+
 
         binding.originStep.continueButtonClickListener = {
             viewModel.onContinueButtonTapped(
