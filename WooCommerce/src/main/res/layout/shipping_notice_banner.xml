@@ -14,50 +14,27 @@
         android:id="@+id/icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/major_125"
-        android:paddingLeft="@dimen/minor_00"
-        android:paddingRight="@dimen/major_125"
-        android:src="@drawable/ic_feedback_banner_logo"
-        app:tint="@color/color_on_surface"
+        android:layout_marginTop="@dimen/major_125"
+        android:paddingHorizontal="@dimen/minor_100"
+        android:paddingTop="@dimen/minor_25"
+        android:src="@drawable/ic_tintable_info_outline_24dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/color_secondary"
         tools:ignore="RtlHardcoded" />
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/title"
-        android:layout_width="@dimen/minor_00"
-        android:layout_height="wrap_content"
-        android:textColor="@color/material_on_surface_emphasis_high_type"
-        android:textSize="@dimen/text_minor_130"
-        app:layout_constraintLeft_toRightOf="@+id/icon"
-        app:layout_constraintRight_toLeftOf="@+id/close_button"
-        app:layout_constraintTop_toTopOf="@+id/icon"
-        tools:text="@string/feedback_banner_ipp_title_beginner" />
-
-    <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/close_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/major_75"
-        android:background="?selectableItemBackgroundBorderless"
-        android:padding="@dimen/minor_100"
-        android:src="@drawable/ic_feedback_banner_dismiss"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/message"
         android:layout_width="@dimen/minor_00"
         android:layout_height="wrap_content"
         android:paddingLeft="@dimen/minor_00"
-        android:paddingTop="@dimen/minor_100"
         android:paddingRight="@dimen/major_125"
         android:paddingBottom="@dimen/major_100"
         android:textColor="@color/material_on_surface_emphasis_high_type"
         android:textSize="@dimen/text_minor_125"
-        app:layout_constraintLeft_toRightOf="@+id/icon"
-        app:layout_constraintRight_toLeftOf="@+id/close_button"
-        app:layout_constraintTop_toBottomOf="@+id/title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/icon"
+        app:layout_constraintTop_toTopOf="@id/icon"
         tools:ignore="RtlHardcoded"
         tools:text="@string/shipping_notice_banner_content" />
 
@@ -70,8 +47,8 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_marginHorizontal="@dimen/major_100"
+        android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@+id/divider">
 
         <com.google.android.material.button.MaterialButton
@@ -79,18 +56,20 @@
             style="@style/Woo.Card.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginTop="@dimen/minor_00"
-            android:text="@string/shipping_notice_learn_more" />
+            android:layout_weight="1"
+            android:text="@string/shipping_notice_learn_more"
+            android:textColor="@color/color_secondary" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/dismiss_button"
             style="@style/Woo.Card.Button"
-            android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/minor_00"
-            android:text="@string/shipping_notice_dismiss" />
+            android:layout_weight="1"
+            android:text="@string/shipping_notice_dismiss"
+            android:textColor="@color/color_secondary" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
