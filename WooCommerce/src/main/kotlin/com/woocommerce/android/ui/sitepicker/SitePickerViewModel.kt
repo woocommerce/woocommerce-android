@@ -95,8 +95,8 @@ class SitePickerViewModel @Inject constructor(
         }
         updateSiteViewDetails()
         loadAndDisplayUserInfo()
-        loadAndDisplaySites()
-        if (appPrefsWrapper.getIsNewSignUp()) startStoreCreationWebFlow()
+        if (appPrefsWrapper.getIsNewSignUp()) onEmptyStoresList()
+        else loadAndDisplaySites()
         if (selectedSiteId.value == null && selectedSite.exists()) {
             selectedSiteId.value = selectedSite.getSelectedSiteId()
         }
@@ -133,25 +133,19 @@ class SitePickerViewModel @Inject constructor(
         launch {
             val sitesInDb = getSitesFromDb()
             if (sitesInDb.isNotEmpty()) {
-                displaySites(sitesInDb)
+                onSitesLoaded(sitesInDb)
             }
-            fetchSitesFromApi(sitesInDb.isEmpty() || !loginSiteAddress.isNullOrEmpty())
+            fetchSitesFromApi(showSkeleton = sitesInDb.isEmpty() || !loginSiteAddress.isNullOrEmpty())
         }
     }
 
-    private suspend fun fetchSitesFromApi(showSkeleton: Boolean, delayTime: Long = 0) {
-        sitePickerViewState = sitePickerViewState.copy(
-            isSkeletonViewVisible = showSkeleton
-        )
+    private suspend fun fetchSitesFromApi(showSkeleton: Boolean) {
+        sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = showSkeleton)
 
-        delay(delayTime)
         val startTime = System.currentTimeMillis()
         val result = repository.fetchWooCommerceSites()
         val duration = System.currentTimeMillis() - startTime
 
-        sitePickerViewState = sitePickerViewState.copy(
-            isSkeletonViewVisible = false, isProgressDiaLogVisible = false
-        )
         when {
             result.isError -> triggerEvent(ShowSnackbar(string.site_picker_error))
             result.model != null -> {
@@ -161,9 +155,10 @@ class SitePickerViewModel @Inject constructor(
                         properties = mapOf(AnalyticsTracker.KEY_FETCH_SITES_DURATION to duration)
                     )
                 }
-                displaySites(repository.getSites())
+                onSitesLoaded(repository.getSites())
             }
         }
+        sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = false)
     }
 
     private suspend fun getSitesFromDb(): List<SiteModel> {
@@ -196,13 +191,17 @@ class SitePickerViewModel @Inject constructor(
         )
     }
 
-    private fun displaySites(sites: List<SiteModel>) {
+    private fun onSitesLoaded(sites: List<SiteModel>) {
         val filteredSites = sites.filter {
             FeatureFlag.JETPACK_CP.isEnabled() || !it.isJetpackCPConnected
         }
 
         if (filteredSites.isEmpty()) {
-            loginSiteAddress?.let { showAccountMismatchScreen(it) } ?: loadNoStoreView()
+            when {
+                loginSiteAddress != null -> showAccountMismatchScreen(loginSiteAddress!!)
+                navArgs.openedFromLogin -> onEmptyStoresList()
+                else -> loadNoStoreView()
+            }
             return
         }
 
@@ -244,7 +243,24 @@ class SitePickerViewModel @Inject constructor(
             isNoStoresViewVisible = false,
             currentSitePickerState = SitePickerState.StoreListState
         )
-        loginSiteAddress?.let { processLoginSiteAddress(it) }
+        loginSiteAddress?.let {
+            processLoginSiteAddress(it)
+            return
+        }
+        if (navArgs.openedFromLogin && wooSites.size == 1) {
+            onSiteSelected(wooSites.first())
+            onContinueButtonClick(isAutoLogin = true)
+        }
+    }
+
+    private fun onEmptyStoresList() {
+        startStoreCreationFlow()
+        launch {
+            // Delay to avoid flickering between empty stores screen and store creation flow transition
+            @Suppress("MagicNumber")
+            delay(200)
+            loadNoStoreView()
+        }
     }
 
     /**
@@ -262,13 +278,16 @@ class SitePickerViewModel @Inject constructor(
                 // The url doesn't match any sites for this account.
                 showAccountMismatchScreen(url)
             }
+
             site.isSimpleWPComSite -> {
                 loadSimpleWPComView(site)
             }
+
             !site.hasWooCommerce -> {
                 // Show not woo store message view.
                 loadWooNotFoundView(site)
             }
+
             else -> {
                 // We have a pre-validation woo store. Attempt to just
                 // login with this store directly.
@@ -416,12 +435,6 @@ class SitePickerViewModel @Inject constructor(
         triggerEvent(SitePickerEvent.NavigateToEmailHelpDialogEvent)
     }
 
-    fun onRefreshButtonClick() {
-        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_NOT_CONNECTED_JETPACK_REFRESH_APP_LINK_TAPPED)
-        sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = true)
-        launch { fetchSitesFromApi(showSkeleton = false) }
-    }
-
     fun onNewToWooClick() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_NEW_TO_WOO_TAPPED)
         triggerEvent(SitePickerEvent.NavigateToNewToWooEvent)
@@ -499,6 +512,7 @@ class SitePickerViewModel @Inject constructor(
                                 }
                             )
                         }
+
                         else -> {
                             sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
                             triggerEvent(SitePickerEvent.ShowWooUpgradeDialogEvent)
@@ -520,6 +534,7 @@ class SitePickerViewModel @Inject constructor(
                 )
                 getJetpackTimeoutDialogEvent()
             }
+
             else -> ShowSnackbar(
                 message = string.login_verifying_site_error,
                 args = arrayOf(it.site.getSiteName())
@@ -572,11 +587,13 @@ class SitePickerViewModel @Inject constructor(
                     )
                     fetchSite(site, retries = retries + 1)
                 }
+
                 !updatedSite.hasWooCommerce -> {
                     // Force a retry if the woocommerce_is_active is not updated yet
                     WooLog.d(WooLog.T.SITE_PICKER, "Fetched site has woocommerce_is_active false, retry")
                     fetchSite(site, retries = retries + 1)
                 }
+
                 else -> {
                     WooLog.d(WooLog.T.SITE_PICKER, "Site fetched successfully")
                     result
@@ -601,13 +618,13 @@ class SitePickerViewModel @Inject constructor(
             result.fold(
                 onSuccess = {
                     // Continue login
-                    displaySites(repository.getSites())
+                    onSitesLoaded(repository.getSites())
                 },
                 onFailure = {
                     triggerEvent(ShowSnackbar(string.site_picker_error))
                     // This would lead to the [WooNotFoundState] again
                     // The chance of getting this state is small, because of the retry mechanism above
-                    displaySites(repository.getSites())
+                    onSitesLoaded(repository.getSites())
                 }
             )
         }
@@ -623,8 +640,8 @@ class SitePickerViewModel @Inject constructor(
         fetchSitesFromApi(showSkeleton = true)
     }
 
-    private fun startStoreCreationWebFlow() {
-        appPrefsWrapper.markAsNewSignUp(false)
+    private fun startStoreCreationFlow() {
+        appPrefsWrapper.markAsNewSignUp(newSignUp = false)
         triggerEvent(NavigateToStoreCreationEvent)
     }
 
