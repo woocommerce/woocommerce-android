@@ -87,7 +87,7 @@ class StoreOnboardingViewModel @Inject constructor(
 
     fun onHideOnboardingClicked() {
         _viewState.value = _viewState.value?.copy(show = false)
-
+        shouldShowOnboarding.updateOnboardingVisibilitySetting(show = false)
     }
 
     fun onTaskClicked(task: OnboardingTaskUi) {

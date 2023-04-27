@@ -27,7 +27,10 @@ class ShouldShowOnboarding @Inject constructor(
             true
         } else false
 
-        return if (!areAllTaskCompleted && FeatureFlag.STORE_CREATION_ONBOARDING.isEnabled()) {
+        return if (!areAllTaskCompleted
+            && appPrefsWrapper.getOnboardingSettingVisibility(siteId)
+            && FeatureFlag.STORE_CREATION_ONBOARDING.isEnabled()
+        ) {
             appPrefsWrapper.setStoreOnboardingShown(siteId)
             true
         } else false
@@ -35,4 +38,8 @@ class ShouldShowOnboarding @Inject constructor(
 
     fun isOnboardingMarkedAsCompleted(): Boolean =
         appPrefsWrapper.isOnboardingCompleted(selectedSite.getSelectedSiteId())
+
+    fun updateOnboardingVisibilitySetting(show: Boolean) {
+        appPrefsWrapper.setOnboardingSettingVisibility(selectedSite.getSelectedSiteId(), show)
+    }
 }
