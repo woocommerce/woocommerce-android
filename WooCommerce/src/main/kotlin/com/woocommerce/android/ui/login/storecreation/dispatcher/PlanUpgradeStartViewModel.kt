@@ -46,9 +46,7 @@ class PlanUpgradeStartViewModel @Inject constructor(
 
     init {
         launch {
-            val currentPlan = sitePlanRepository.fetchCurrentPlanDetails(selectedSite.get()).let {
-                it?.copy(type = SitePlan.Type.OTHER)
-            }
+            val currentPlan = sitePlanRepository.fetchCurrentPlanDetails(selectedSite.get())
 
             if (currentPlan?.type != SitePlan.Type.FREE_TRIAL) {
                 triggerEvent(MultiLiveEvent.Event.Exit)
