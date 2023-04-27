@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-11 13:54:03+0000
+Translation-Revision-Date: 2023-04-18 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="more_menu_button_settings_description">Uppdatera dina preferenser</string>
+    <string name="more_menu_button_settings">Inställningar</string>
+    <string name="more_menu_button_upgrades_description">Hantera dina paket</string>
+    <string name="more_menu_button_reviews_description">Ta emot produktrecensioner för din butik</string>
+    <string name="more_menu_button_coupons_description">Öka försäljningen med specialerbjudanden</string>
+    <string name="more_menu_button_store_description">Visa din butik</string>
+    <string name="more_menu_button_inbox_description">Håll dig uppdaterad</string>
+    <string name="more_menu_button_payments_description">Skaffa mobila betalningsmöjligheter</string>
+    <string name="more_menu_button_wc_admin_description">Hantera mer på admin</string>
+    <string name="more_menu_general_section_title">Allmänt</string>
+    <string name="more_menu_settings_section_title">Inställningar</string>
+    <string name="bundled_products_info_notice">Du kan redigera paketprodukter i webbadminpanelen.</string>
+    <string name="product_bundle_multiple_count">%d produkter</string>
+    <string name="product_bundle_single_count">1 produkt</string>
+    <string name="product_bundle">Paketprodukter</string>
+    <string name="empty_group_of">Ej grupperade</string>
+    <string name="empty_max_quantity">Inget maximum</string>
+    <string name="empty_min_quantity">Inget minimum</string>
+    <string name="free_trial_summary_store_creation_error_dialog_action">Jag fattar!</string>
+    <string name="free_trial_summary_store_creation_error_message">Vi kan inte skapa din butik just nu, försök igen senare.</string>
+    <string name="free_trial_summary_store_creation_error_title">Något gick fel</string>
+    <string name="product_type_bundle">Paket</string>
     <string name="quantity_rules_info_notice">Du kan redigera produktkvantitetsregler i webbadminpanelen.</string>
     <string name="group_of">Grupp om</string>
     <string name="max_quantity">Största kvantitet</string>

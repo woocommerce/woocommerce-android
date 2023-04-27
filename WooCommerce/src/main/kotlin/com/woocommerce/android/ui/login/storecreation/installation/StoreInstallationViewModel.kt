@@ -14,16 +14,17 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.StoreCreationLoadingState
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.SuccessState
 import com.woocommerce.android.ui.login.storecreation.installation.ObserveSiteInstallation.InstallationState
+import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.ErrorState
+import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.StoreCreationLoadingState
+import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.SuccessState
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
@@ -34,14 +35,14 @@ import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import javax.inject.Inject
 
 @HiltViewModel
-class InstallationViewModel @Inject constructor(
+class StoreInstallationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repository: StoreCreationRepository,
     private val newStore: NewStore,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val selectedSite: SelectedSite,
-    private val storeCreationLoadingTimer: StoreCreationLoadingTimer,
+    private val storeInstallationLoadingTimer: StoreInstallationLoadingTimer,
     private val installationTransactionLauncher: InstallationTransactionLauncher,
     private val observeSiteInstallation: ObserveSiteInstallation,
 ) : ScopedViewModel(savedStateHandle) {
@@ -114,7 +115,6 @@ class InstallationViewModel @Inject constructor(
                 }
 
                 _viewState.update { ErrorState(result.type, result.message) }
-                newStore.clear()
             }
 
             is InstallationState.OutOfSync -> {
@@ -135,18 +135,22 @@ class InstallationViewModel @Inject constructor(
                     newStore.data.siteId!!,
                     newStore.data.name.orEmpty()
                 ),
-                storeCreationLoadingTimer.observe()
+                storeInstallationLoadingTimer.observe()
             ) { installationState, timerState ->
                 processStoreInstallationState(installationState)
 
                 when (installationState) {
                     is InstallationState.Success,
-                    is InstallationState.Failure -> storeCreationLoadingTimer.cancelTimer()
+                    is InstallationState.Failure -> {
+                        this.cancel()
+                        storeInstallationLoadingTimer.resetTimer()
+                    }
+
                     else -> _viewState.value = timerState
                 }
             }.collect()
         }
-        storeCreationLoadingTimer.startTimer()
+        storeInstallationLoadingTimer.startTimer()
         installationTransactionLauncher.onStoreInstallationRequested()
     }
 

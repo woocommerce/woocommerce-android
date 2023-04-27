@@ -18,7 +18,6 @@ import javax.inject.Inject
 class SignUpRepository @Inject constructor(
     private val signUpStore: SignUpStore,
     private val dispatcher: Dispatcher,
-    private val signUpCredentialsValidator: SignUpCredentialsValidator
 ) {
     private companion object {
         const val EMAIL_EXIST_API_ERROR = "email_exists"
@@ -29,11 +28,6 @@ class SignUpRepository @Inject constructor(
     }
 
     suspend fun createAccount(email: String, password: String): AccountCreationResult {
-        val invalidCredentialsError = signUpCredentialsValidator.validateCredentials(email, password)
-        if (invalidCredentialsError != null) {
-            return AccountCreationError(invalidCredentialsError)
-        }
-
         WooLog.d(WooLog.T.LOGIN, "Fetching suggestions for username")
         val userNameSuggestionsResult = signUpStore.fetchUserNameSuggestions(
             email.lowercase().replace(BLACKLISTED_WORDING_ON_USERNAME, "")

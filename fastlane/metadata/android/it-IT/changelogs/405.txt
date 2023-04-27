@@ -1,0 +1,2 @@
+13.2:
+Questa versione include alcune correzioni di bug, miglioramenti visivi e di accessibilità alle sezioni dedicate a ordini e prodotti dell'app. Continua a ricevere feedback; ci aiuta a capire su cosa dobbiamo ancora lavorare.
