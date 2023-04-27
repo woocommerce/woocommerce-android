@@ -27,8 +27,8 @@
         android:id="@+id/message"
         android:layout_width="@dimen/minor_00"
         android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/minor_00"
-        android:paddingRight="@dimen/major_125"
+        android:paddingStart="@dimen/minor_00"
+        android:paddingEnd="@dimen/major_75"
         android:paddingBottom="@dimen/major_100"
         android:text="@string/shipping_notice_banner_content"
         android:textColor="@color/material_on_surface_emphasis_high_type"
@@ -38,36 +38,29 @@
         app:layout_constraintTop_toTopOf="@id/icon"
         tools:ignore="RtlHardcoded" />
 
-    <com.google.android.material.divider.MaterialDivider
-        android:id="@+id/divider"
-        style="@style/Woo.Divider"
-        android:layout_width="match_parent"
-        app:layout_constraintTop_toBottomOf="@+id/message" />
-
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/major_100"
+        android:gravity="end"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/divider">
+        app:layout_constraintTop_toBottomOf="@+id/message">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/learn_more_button"
-            style="@style/Woo.Card.Button"
+            style="@style/Woo.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/minor_00"
-            android:layout_weight="1"
             android:text="@string/shipping_notice_learn_more"
             android:textColor="@color/color_secondary" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/dismiss_button"
-            style="@style/Woo.Card.Button"
+            style="@style/Woo.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/minor_00"
-            android:layout_weight="1"
+            android:layout_marginEnd="@dimen/major_75"
             android:text="@string/shipping_notice_dismiss"
             android:textColor="@color/color_secondary" />
 
