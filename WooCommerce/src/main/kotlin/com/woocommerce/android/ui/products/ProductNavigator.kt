@@ -381,7 +381,8 @@ class ProductNavigator @Inject constructor() {
                         target.productType,
                         target.productStatus,
                         target.productCategory,
-                        target.productCategoryName
+                        target.productCategoryName,
+                        target.restrictions.toTypedArray(),
                     )
                 )
             }

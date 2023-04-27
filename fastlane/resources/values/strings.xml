@@ -107,6 +107,7 @@
     <string name="close">Close</string>
     <string name="button_update_instructions">Update instructions</string>
     <string name="dismiss">Dismiss</string>
+    <string name="allow">Allow</string>
     <string name="no_thanks">No thanks</string>
     <string name="apply">Apply</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>
@@ -1176,6 +1177,7 @@
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Something went wrong. Please try again later.</string>
     <string name="card_reader_tap_to_pay_beta_features_heading">Tap To Pay</string>
     <string name="card_reader_tap_to_pay_beta_features_subheading">Test out Tap To Pay in the app</string>
+    <string name="card_reader_tap_to_pay_test_payment_note">Tap To Pay Test Payment</string>
 
     <!--
             Card Reader Type Selection
@@ -1184,6 +1186,7 @@
     <string name="card_reader_type_selection_tap_to_pay_description">Securely accept contactless payments directly from your phone.</string>
     <string name="card_reader_type_selection_bluetooth_reader">Card Reader</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">Card reader accepts tap, chip, and swipe payments with debit and credit cards.</string>
+    <string name="tap_to_pay_refund_reason">Test Tap To Pay payment auto refund</string>
 
     <!--
             Card Reader Interac refund
@@ -1243,7 +1246,7 @@
     <string name="card_reader_payment_failed_server_error_state">No connection to server</string>
     <string name="card_reader_payment_failed_collecting_payment_timed_out_state">Card declined</string>
     <string name="card_reader_payment_failed_unexpected_error_state">Sorry, this payment couldn\’t be processed</string>
-    <string name="card_reader_payment_failed_amount_too_small">Amount must be at least $0.50</string>
+    <string name="card_reader_payment_failed_amount_too_small">Amount must be at least %1$s</string>
     <string name="card_reader_payment_failed_temporary">Trying again may succeed</string>
     <string name="card_reader_payment_failed_fraud">Try another means of payment</string>
     <string name="card_reader_payment_failed_generic">Payment was declined for an unspecified reason</string>
@@ -1842,6 +1845,7 @@
     <string name="image_source_device_chooser">Choose from device</string>
     <string name="image_source_device_camera">Take a photo</string>
     <string name="image_source_wp_media_library">WordPress media library</string>
+    <string name="photo_picker_title">Device Media Library</string>
     <string name="wpmedia_picker_title">WordPress media library</string>
     <string name="product_images_image_limit_warning">Only one photo can be displayed per product variation</string>
     <string name="product_images_drag_and_drop_description">Drag and drop to re-order photos</string>
@@ -2190,6 +2194,7 @@
     <string name="product_type_downloadable">Downloadable</string>
     <string name="product_type_subscription">Subscription</string>
     <string name="product_type_bundle">Bundle</string>
+    <string name="product_type_composite">Composite product</string>
 
     <!-- Product type bottom sheets -->
     <string name="product_type_list_header">Select a product type</string>
@@ -2251,6 +2256,8 @@
     <string name="permissions_denied_message">It looks like you turned off permissions required for this feature.&lt;br/&gt;&lt;br/&gt;To change this, edit your permissions and make sure &lt;strong&gt;%s&lt;/strong&gt; is enabled.</string>
     <string name="permission_camera">Camera</string>
     <string name="button_edit_permissions">Edit permissions</string>
+    <string name="notifications_permission_title">Notifications</string>
+    <string name="notifications_permission_description">We need your permission to send you push notifications for new orders, reviews, etc. delivered to your device.</string>
 
     <!-- Jetpack Connection Package -->
     <string name="jetpack_benefits_bottom_banner_title">Get the full experience with Jetpack</string>
@@ -2918,6 +2925,18 @@
     <string name="store_creation_exit_dialog_title">Do you want to leave?</string>
     <string name="store_creation_exit_dialog_message">You will lose all your store information.</string>
     <string name="store_creation_confirm_and_leave">Confirm and leave</string>
+    <string name="store_creation_in_progress_title_1">Woo! We are creating your store</string>
+    <string name="store_creation_in_progress_title_2">Building the foundations</string>
+    <string name="store_creation_in_progress_title_3">Organizing the stock room</string>
+    <string name="store_creation_in_progress_title_4">Applying the finishing touches</string>
+    <string name="store_creation_in_progress_title_5">Turning on the lights</string>
+    <string name="store_creation_in_progress_title_6">Opening the doors</string>
+    <string name="store_creation_in_progress_description_1">&lt;b&gt;#FunWooFact:&lt;/b&gt; Did you know that Woo powers almost 4 million stores worldwide? You’re in good company.</string>
+    <string name="store_creation_in_progress_description_2">&lt;b&gt;#FunWooFact:&lt;/b&gt; Did you know that Woo was founded by two South Africans and a Norwegian? Here are three alternative ways to say “store” in those countries – Winkel, ivenkile, and butikk.</string>
+    <string name="store_creation_in_progress_description_3">&lt;b&gt;#FunWooFact:&lt;/b&gt; Are you Team Cat or Team Dog? The Woo team is split 50/50!</string>
+    <string name="store_creation_in_progress_description_4">&lt;b&gt;#FunWooFact:&lt;/b&gt; There are more than 150 WooCommerce meetups held all over the world! A great way to meet fellow store owners.</string>
+    <string name="store_creation_in_progress_description_5">&lt;b&gt;#FunWooFact:&lt;/b&gt; The Woo team is made up of over 350 talented individuals, distributed across 30+ countries.</string>
+    <string name="store_creation_in_progress_description_6">&lt;b&gt;#FunWooFact:&lt;/b&gt; Our favorite color is purple. 💜</string>
 
     <string name="store_creation_domain_picker_title">Choose a domain</string>
     <string name="store_creation_domain_picker_subtitle">This is where people will find you on the Internet. Don\'t worry, you can change it later.</string>
@@ -2978,164 +2997,14 @@
 
     <!-- Store profiler industries. To be removed when API is available to fetch these items localized
      TODO Github issue https://github.com/woocommerce/woocommerce-android/issues/8218  -->
-    <string name="store_creation_profiler_industry_boat_sales">Boat Sales</string>
-    <string name="store_creation_profiler_industry_car_washes">Car Washes</string>
-    <string name="store_creation_profiler_industry_fuel_dispensers">Fuel Dispensers</string>
-    <string name="store_creation_profiler_industry_towing_services">Towing Services</string>
-    <string name="store_creation_profiler_industry_truck_stop">Truck Stop</string>
-    <string name="store_creation_profiler_industry_a_c_and_heating_contractors">A C And Heating Contractors</string>
-    <string name="store_creation_profiler_industry_carpentry_contractors">Carpentry Contractors</string>
-    <string name="store_creation_profiler_industry_electrical_contractors">Electrical Contractors</string>
-    <string name="store_creation_profiler_industry_general_contractors">General Contractors</string>
-    <string name="store_creation_profiler_industry_other_building_services">Other Building Services</string>
-    <string name="store_creation_profiler_industry_special_trade_contractors">Special Trade Contractors</string>
-    <string name="store_creation_profiler_industry_telecom_equipment">Telecom Equipment</string>
-    <string name="store_creation_profiler_industry_telecom_services">Telecom Services</string>
-    <string name="store_creation_profiler_industry_apps">Apps</string>
-    <string name="store_creation_profiler_industry_blogs_and_written_content">Blogs And Written Content</string>
-    <string name="store_creation_profiler_industry_books">Books</string>
-    <string name="store_creation_profiler_industry_games">Games</string>
-    <string name="store_creation_profiler_industry_music_or_other_media">Music Or Other Media</string>
-    <string name="store_creation_profiler_industry_other_digital_goods">Other Digital Goods</string>
-    <string name="store_creation_profiler_industry_software_as_a_service">Software As A Service</string>
-    <string name="store_creation_profiler_industry_business_and_secretarial_schools">Business And Secretarial Schools</string>
-    <string name="store_creation_profiler_industry_child_care_services">Child Care Services</string>
-    <string name="store_creation_profiler_industry_colleges_or_universities">Colleges Or Universities</string>
-    <string name="store_creation_profiler_industry_elementary_or_secondary_schools">Elementary Or Secondary Schools</string>
-    <string name="store_creation_profiler_industry_other_educational_services">Educational Services</string>
-    <string name="store_creation_profiler_industry_vocational_schools_and_trade_schools">Vocational Schools And Trade Schools</string>
-    <string name="store_creation_profiler_industry_amusement_parks_carnivals_or_circuses">Amusement Parks, Carnivals, Or Circuses</string>
-    <string name="store_creation_profiler_industry_betting_or_fantasy_sports">Betting Or Fantasy Sports</string>
-    <string name="store_creation_profiler_industry_event_ticketing">Event Ticketing</string>
-    <string name="store_creation_profiler_industry_fortune_tellers">Fortune Tellers</string>
-    <string name="store_creation_profiler_industry_lotteries">Lotteries</string>
-    <string name="store_creation_profiler_industry_movie_theaters">Movie Theaters</string>
-    <string name="store_creation_profiler_industry_musicians_bands_or_orchestras">Musicians, Bands, Or Orchestras</string>
-    <string name="store_creation_profiler_industry_online_gambling">Online Gambling</string>
-    <string name="store_creation_profiler_industry_other_entertainment_and_recreation">Other Entertainment And Recreation</string>
-    <string name="store_creation_profiler_industry_recreational_camps">Recreational Camps</string>
-    <string name="store_creation_profiler_industry_sports_forecasting_or_prediction_services">Sports Forecasting Or Prediction Services</string>
-    <string name="store_creation_profiler_industry_tourist_attractions">Tourist Attractions</string>
-    <string name="store_creation_profiler_industry_check_cashing">Check Cashing</string>
-    <string name="store_creation_profiler_industry_collections_agencies">Collections Agencies</string>
-    <string name="store_creation_profiler_industry_cryptocurrencies">Cryptocurrencies</string>
-    <string name="store_creation_profiler_industry_currency_exchanges">Currency Exchanges</string>
-    <string name="store_creation_profiler_industry_digital_wallets">Digital Wallets</string>
-    <string name="store_creation_profiler_industry_financial_information_and_research">Financial Information And Research</string>
-    <string name="store_creation_profiler_industry_insurance">Insurance</string>
-    <string name="store_creation_profiler_industry_investment_services">Investment Services</string>
-    <string name="store_creation_profiler_industry_loans_or_lending">Loans Or Lending</string>
-    <string name="store_creation_profiler_industry_money_orders">Money Orders</string>
-    <string name="store_creation_profiler_industry_money_services_or_transmission">Money Services Or Transmission</string>
-    <string name="store_creation_profiler_industry_other_financial_institutions">Other Financial Institutions</string>
-    <string name="store_creation_profiler_industry_personal_fundraising_or_crowdfunding">Personal Fundraising Or Crowdfunding</string>
-    <string name="store_creation_profiler_industry_security_brokers_or_dealers">Security Brokers Or Dealers</string>
-    <string name="store_creation_profiler_industry_virtual_currencies">Virtual Currencies</string>
-    <string name="store_creation_profiler_industry_wire_transfers">Wire Transfers</string>
-    <string name="store_creation_profiler_industry_bars_and_nightclubs">Bars And Nightclubs</string>
-    <string name="store_creation_profiler_industry_caterers">Caterers</string>
-    <string name="store_creation_profiler_industry_fast_food_restaurants">Fast Food Restaurants</string>
-    <string name="store_creation_profiler_industry_grocery_stores">Grocery Stores</string>
-    <string name="store_creation_profiler_industry_other_food_and_dining">Other Food And Dining</string>
-    <string name="store_creation_profiler_industry_restaurants_and_nightlife">Restaurants And Nightlife</string>
-    <string name="store_creation_profiler_industry_assisted_living">Assisted Living</string>
-    <string name="store_creation_profiler_industry_chiropractors">Chiropractors</string>
-    <string name="store_creation_profiler_industry_dentists_and_orthodontists">Dentists And Orthodontists</string>
-    <string name="store_creation_profiler_industry_doctors_and_physicians">Doctors And Physicians</string>
-    <string name="store_creation_profiler_industry_health_and_wellness_coaching">Health And Wellness Coaching</string>
-    <string name="store_creation_profiler_industry_hospitals">Hospitals</string>
-    <string name="store_creation_profiler_industry_medical_devices">Medical Devices</string>
-    <string name="store_creation_profiler_industry_medical_laboratories">Medical Laboratories</string>
-    <string name="store_creation_profiler_industry_medical_organizations">Medical Organizations</string>
-    <string name="store_creation_profiler_industry_mental_health_services">Mental Health Services</string>
-    <string name="store_creation_profiler_industry_nursing_or_personal_care_facilities">Nursing Or Personal Care Facilities</string>
-    <string name="store_creation_profiler_industry_opticians_and_eyeglasses">Opticians And Eyeglasses</string>
-    <string name="store_creation_profiler_industry_optometrists_and_ophthalmologists">Optometrists and Ophthalmologists</string>
-    <string name="store_creation_profiler_industry_osteopaths">Osteopaths</string>
-    <string name="store_creation_profiler_industry_other_medical_services">Other Medical Services</string>
-    <string name="store_creation_profiler_industry_podiatrists_and_chiropodists">Podiatrists and Chiropodists</string>
-    <string name="store_creation_profiler_industry_telemedicine_and_telehealth">Telemedicine And Telehealth</string>
-    <string name="store_creation_profiler_industry_veterinary_services">Veterinary Services</string>
-    <string name="store_creation_profiler_industry_charities_or_social_service_organizations">Charities Or Social Service Organizations</string>
-    <string name="store_creation_profiler_industry_civic_fraternal_or_social_associations">Civic, Fraternal, Or Social Associations</string>
-    <string name="store_creation_profiler_industry_country_clubs">Country Clubs</string>
-    <string name="store_creation_profiler_industry_other_membership_organizations">Other Membership Organizations</string>
-    <string name="store_creation_profiler_industry_political_organizations">Political Organizations</string>
-    <string name="store_creation_profiler_industry_religious_organizations">Religious Organizations</string>
-    <string name="store_creation_profiler_industry_counseling_services">Counseling Services</string>
-    <string name="store_creation_profiler_industry_dating_services">Dating Services</string>
-    <string name="store_creation_profiler_industry_funeral_services">Funeral Services</string>
-    <string name="store_creation_profiler_industry_health_and_beauty_spas">Health And Beauty Spas</string>
-    <string name="store_creation_profiler_industry_landscaping_services">Landscaping Services</string>
-    <string name="store_creation_profiler_industry_laundry_or_cleaning_services">Laundry Or Cleaning Services</string>
-    <string name="store_creation_profiler_industry_massage_parlors">Massage Parlors</string>
-    <string name="store_creation_profiler_industry_other_personal_services">Other Personal Services</string>
-    <string name="store_creation_profiler_industry_photography_studios">Photography Studios</string>
-    <string name="store_creation_profiler_industry_salons_or_barbers">Salons Or Barbers</string>
-    <string name="store_creation_profiler_industry_accounting_auditing_or_tax_prep">Accounting, Auditing, Or Tax Prep</string>
-    <string name="store_creation_profiler_industry_attorneys_and_lawyers">Attorneys And Lawyers</string>
-    <string name="store_creation_profiler_industry_auto_services">Auto Services</string>
-    <string name="store_creation_profiler_industry_bail_bonds">Bail Bonds</string>
-    <string name="store_creation_profiler_industry_bankruptcy_services">Bankruptcy Services</string>
-    <string name="store_creation_profiler_industry_car_rentals">Car Rentals</string>
-    <string name="store_creation_profiler_industry_car_sales">Car Sales</string>
-    <string name="store_creation_profiler_industry_computer_repair">Computer Repair</string>
-    <string name="store_creation_profiler_industry_consulting">Consulting</string>
-    <string name="store_creation_profiler_industry_credit_counseling_or_credit_repair">Credit Counseling Or Credit Repair</string>
-    <string name="store_creation_profiler_industry_debt_reduction_services">Debt Reduction Services</string>
-    <string name="store_creation_profiler_industry_digital_marketing">Digital Marketing</string>
-    <string name="store_creation_profiler_industry_employment_agencies">Employment Agencies</string>
-    <string name="store_creation_profiler_industry_government_services">Government Services</string>
-    <string name="store_creation_profiler_industry_lead_generation">Lead Generation</string>
-    <string name="store_creation_profiler_industry_mortgage_consulting_services">Mortgage Consulting Services</string>
-    <string name="store_creation_profiler_industry_other_business_services">Other Business Services</string>
-    <string name="store_creation_profiler_industry_other_marketing_services">Other Marketing Services</string>
-    <string name="store_creation_profiler_industry_printing_and_publishing">Printing and Publishing</string>
-    <string name="store_creation_profiler_industry_protective_or_security_services">Protective Or Security Services</string>
-    <string name="store_creation_profiler_industry_telemarketing">Telemarketing</string>
-    <string name="store_creation_profiler_industry_testing_laboratories">Testing Laboratories</string>
-    <string name="store_creation_profiler_industry_utilities">Utilities</string>
-    <string name="store_creation_profiler_industry_warranty_services">Warranty Services</string>
-    <string name="store_creation_profiler_industry_accessories_for_tobacco_and_marijuana">Accessories For Tobacco And Marijuana</string>
-    <string name="store_creation_profiler_industry_adult_content_or_services">Adult Content Or Services</string>
-    <string name="store_creation_profiler_industry_alcohol">Alcohol</string>
-    <string name="store_creation_profiler_industry_marijuana_dispensaries">Marijuana Dispensaries</string>
-    <string name="store_creation_profiler_industry_marijuana_related_products">Marijuana-related Products</string>
-    <string name="store_creation_profiler_industry_pharmacies_or_pharmaceuticals">Pharmacies Or Pharmaceuticals</string>
-    <string name="store_creation_profiler_industry_supplements_or_nutraceuticals">Supplements Or Nutraceuticals</string>
-    <string name="store_creation_profiler_industry_tobacco_or_cigars">Tobacco Or Cigars</string>
-    <string name="store_creation_profiler_industry_vapes_e_cigarettes_e_juice_or_related_products">Vapes, E-cigarettes, E-juice Or Related Products</string>
-    <string name="store_creation_profiler_industry_weapons_or_munitions">Weapons Or Munitions</string>
-    <string name="store_creation_profiler_industry_accessories">Accessories</string>
-    <string name="store_creation_profiler_industry_antiques">Antiques</string>
-    <string name="store_creation_profiler_industry_auto_parts_and_accessories">Auto Parts And Accessories</string>
-    <string name="store_creation_profiler_industry_beauty_products">Beauty Products</string>
-    <string name="store_creation_profiler_industry_clothing_and_accessories">Clothing And Accessories</string>
-    <string name="store_creation_profiler_industry_convenience_stores">Convenience Stores</string>
-    <string name="store_creation_profiler_industry_designer_products">Designer Products</string>
-    <string name="store_creation_profiler_industry_flowers">Flowers</string>
-    <string name="store_creation_profiler_industry_hardware_stores">Hardware Stores</string>
-    <string name="store_creation_profiler_industry_home_electronics">Home Electronics</string>
-    <string name="store_creation_profiler_industry_home_goods_and_furniture">Home Goods And Furniture</string>
-    <string name="store_creation_profiler_industry_other_merchandise">Other Merchandise</string>
-    <string name="store_creation_profiler_industry_shoes">Shoes</string>
-    <string name="store_creation_profiler_industry_software">Software</string>
-    <string name="store_creation_profiler_industry_airlines_and_air_carriers">Airlines And Air Carriers</string>
-    <string name="store_creation_profiler_industry_commuter_transportation">Commuter Transportation</string>
-    <string name="store_creation_profiler_industry_courier_services">Courier Services</string>
-    <string name="store_creation_profiler_industry_cruise_lines">Cruise Lines</string>
-    <string name="store_creation_profiler_industry_freight_forwarders">Freight Forwarders</string>
-    <string name="store_creation_profiler_industry_other_transportation_services">Other Transportation Services</string>
-    <string name="store_creation_profiler_industry_parking_lots">Parking Lots</string>
-    <string name="store_creation_profiler_industry_ridesharing">Ridesharing</string>
-    <string name="store_creation_profiler_industry_shipping_or_forwarding">Shipping Or Forwarding</string>
-    <string name="store_creation_profiler_industry_taxis_and_limos">Taxis And Limos</string>
-    <string name="store_creation_profiler_industry_travel_agencies">Travel Agencies</string>
-    <string name="store_creation_profiler_industry_hotels_inns_or_motels">Hotels, Inns, Or Motels</string>
-    <string name="store_creation_profiler_industry_other_travel_leisure">Other Travel And Lodging</string>
-    <string name="store_creation_profiler_industry_property_rentals">Property Rentals</string>
-    <string name="store_creation_profiler_industry_timeshares">Timeshares</string>
-    <string name="store_creation_profiler_industry_trailer_parks_and_campgrounds">Trailer Parks and Campgrounds</string>
+    <string name="store_creation_profiler_industry_clothing_accessories">Clothing and accessories</string>
+    <string name="store_creation_profiler_industry_health_beauty">Health and beauty</string>
+    <string name="store_creation_profiler_industry_food_drink">Food and drink</string>
+    <string name="store_creation_profiler_industry_home_furniture_garden">Home, furniture, and garden</string>
+    <string name="store_creation_profiler_industry_education_learning">Education and learning</string>
+    <string name="store_creation_profiler_industry_electronic_computers">Electronics and computers</string>
+    <string name="store_creation_profiler_industry_other">Other</string>
+
     <string name="store_creation_profiler_merchant_journey_starting_business">I\'m just starting my business</string>
     <string name="store_creation_profiler_merchant_journey_selling_not_online">I\'m already selling, but not online</string>
     <string name="store_creation_profiler_merchant_journey_selling_online">I\'m already selling online</string>
@@ -3325,7 +3194,6 @@
     <string name="product_bundle_multiple_count">%d products</string>
     <string name="bundled_products_info_notice">You can edit bundled products in the web dashboard.</string>
 
-
     <!--
     More Menu
     -->
@@ -3361,4 +3229,16 @@
     <string name="more_menu_button_settings">Settings</string>
     <string name="more_menu_button_settings_description">Update your preferences</string>
 
+    <!--
+    Composite products
+    -->
+    <string name="product_components">Components</string>
+    <string name="product_component_settings">Component settings</string>
+    <string name="product_component_single_count">1 component</string>
+    <string name="product_component_multiple_count">%d components</string>
+    <string name="component_products_info_notice">You can edit components in the web dashboard.</string>
+    <string name="component_options">Component options</string>
+    <string name="component_default_option">Default option</string>
+    <string name="component_type_products">Products</string>
+    <string name="component_type_categories">Categories</string>
 </resources>

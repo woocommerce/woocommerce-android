@@ -97,6 +97,7 @@ import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState.Trial
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.util.WooAnimUtils.animateBottomBar
 import com.woocommerce.android.util.WooPermissionUtils
@@ -249,6 +250,8 @@ class MainActivity :
         installSplashScreen()
 
         super.onCreate(savedInstanceState)
+
+        ChromeCustomTabUtils.registerForPartialTabUsage(this)
 
         // Verify authenticated session
         if (!presenter.userIsLoggedIn()) {
@@ -1016,6 +1019,7 @@ class MainActivity :
         if (launchedFromNotification) {
             binding.bottomNav.currentPosition = ORDERS
             binding.bottomNav.active(ORDERS.position)
+            navController.popBackStack(R.id.orders, false)
         }
 
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)

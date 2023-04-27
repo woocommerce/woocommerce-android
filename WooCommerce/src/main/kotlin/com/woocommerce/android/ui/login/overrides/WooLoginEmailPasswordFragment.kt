@@ -8,12 +8,14 @@ import androidx.annotation.LayoutRes
 import androidx.core.view.isVisible
 import com.bumptech.glide.Registry.MissingComponentException
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import dagger.android.support.AndroidSupportInjection
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.login.LoginEmailPasswordFragment
 import org.wordpress.android.login.LoginListener
 import org.wordpress.android.login.LoginWpcomService
+import org.wordpress.android.login.widgets.WPLoginInputRow
 
 class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
     companion object {
@@ -86,6 +88,11 @@ class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
             setOnClickListener {
                 loginListener?.useMagicLinkInstead(email, false)
             }
+        }
+
+        val prefilledPassword = requireArguments().getString(ARG_PASSWORD)
+        if (prefilledPassword.isNotNullOrEmpty()) {
+            rootView.findViewById<WPLoginInputRow>(R.id.login_password_row)
         }
     }
 

@@ -27,8 +27,6 @@ import com.woocommerce.android.ui.payments.methodselection.NavigateBackToOrderLi
 import com.woocommerce.android.ui.payments.methodselection.NavigateToCardReaderHubFlow
 import com.woocommerce.android.ui.payments.methodselection.NavigateToCardReaderPaymentFlow
 import com.woocommerce.android.ui.payments.methodselection.NavigateToCardReaderRefundFlow
-import com.woocommerce.android.ui.payments.methodselection.NavigateToOrderDetails
-import com.woocommerce.android.ui.payments.methodselection.NavigateToTapToPaySummary
 import com.woocommerce.android.ui.payments.methodselection.OpenGenericWebView
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodFragmentArgs
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewModel
@@ -39,7 +37,6 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
-import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -55,15 +52,9 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.refunds.WCRefundModel
-import org.wordpress.android.fluxc.network.BaseRequest
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
-import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 
@@ -77,7 +68,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         on { name }.thenReturn("siteName")
     }
     private val order: Order = mock {
-        on { id }.thenReturn(1L)
         on { paymentUrl }.thenReturn(PAYMENT_URL)
         on { total }.thenReturn(BigDecimal(1L))
     }
@@ -111,10 +101,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     }
     private val isTapToPayAvailable: IsTapToPayAvailable = mock()
     private val appPrefs: AppPrefs = mock()
-    private val refundStore: WCRefundStore = mock()
-    private val resourceProvider: ResourceProvider = mock {
-        on { getString(R.string.tap_to_pay_refund_reason) }.thenReturn("Test Tap To Pay payment auto refund")
-    }
 
     @Test
     fun `given hub flow, when view model init, then navigate to hub flow emitted`() = testBlocking {
@@ -622,58 +608,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given try ttp payment flow and autorefund success, when on reader payment complete, then exit to ttp summary`() =
-        testBlocking {
-            // GIVEN
-            whenever(orderEntity.status).thenReturn(CoreOrderStatus.COMPLETED.value)
-            whenever(
-                refundStore.createAmountRefund(
-                    selectedSite.get(),
-                    order.id,
-                    order.total,
-                    "Test Tap To Pay payment auto refund",
-                    true,
-                )
-            ).thenReturn(WooResult(mock<WCRefundModel>()))
-            val viewModel = initViewModel(Payment(1L, TRY_TAP_TO_PAY))
-
-            // WHEN
-            viewModel.onCardReaderPaymentCompleted()
-            advanceUntilIdle()
-
-            // THEN
-            assertThat(viewModel.event.value).isEqualTo(NavigateToTapToPaySummary)
-        }
-
-    @Test
-    fun `given try ttp payment flow and autorefund fails, when on reader payment complete, then exit to order details`() =
-        testBlocking {
-            // GIVEN
-            whenever(orderEntity.status).thenReturn(CoreOrderStatus.COMPLETED.value)
-            whenever(
-                refundStore.createAmountRefund(
-                    selectedSite.get(),
-                    order.id,
-                    order.total,
-                    "Test Tap To Pay payment auto refund",
-                    true,
-                )
-            ).thenReturn(
-                WooResult(
-                    WooError(WooErrorType.API_ERROR, BaseRequest.GenericErrorType.NETWORK_ERROR)
-                )
-            )
-            val viewModel = initViewModel(Payment(1L, TRY_TAP_TO_PAY))
-
-            // WHEN
-            viewModel.onCardReaderPaymentCompleted()
-            advanceUntilIdle()
-
-            // THEN
-            assertThat(viewModel.event.value).isEqualTo(NavigateToOrderDetails(1))
-        }
-
-    @Test
     fun `given order payment flow, when on share link clicked, then coll tracked with order flow`() =
         testBlocking {
             // GIVEN
@@ -992,8 +926,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             wooStore,
             isTapToPayAvailable,
             appPrefs,
-            refundStore,
-            resourceProvider,
         )
     }
 }

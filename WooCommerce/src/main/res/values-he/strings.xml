@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-11 09:54:24+0000
+Translation-Revision-Date: 2023-04-20 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="more_menu_button_settings_description">לעדכן את ההעדפות שלך</string>
+    <string name="more_menu_button_settings">הגדרות</string>
+    <string name="more_menu_button_upgrades_description">ניהול התוכניות שלך</string>
+    <string name="more_menu_button_reviews_description">לאסוף ביקורות לחנות שלך</string>
+    <string name="more_menu_button_coupons_description">לשפר את שיעור המכירה עם מבצעים מיוחדים</string>
+    <string name="more_menu_button_store_description">הצגת החנות שלך</string>
+    <string name="more_menu_button_inbox_description">להישאר בעניינים</string>
+    <string name="more_menu_button_payments_description">להצטרף לתשלומים מהנייד</string>
+    <string name="more_menu_button_wc_admin_description">לנהל אפשרויות נוספות באזור הניהול</string>
+    <string name="more_menu_general_section_title">כללי</string>
+    <string name="more_menu_settings_section_title">הגדרות</string>
+    <string name="bundled_products_info_notice">ניתן לערוך מוצרים בחבילות דרך לוח הבקרה באינטרנט.</string>
+    <string name="product_bundle_multiple_count">%d מוצרים</string>
+    <string name="product_bundle_single_count">מוצר אחד</string>
+    <string name="product_bundle">מוצרים בחבילות</string>
+    <string name="empty_group_of">לא בקבוצה</string>
+    <string name="empty_max_quantity">ללא מקסימום</string>
+    <string name="empty_min_quantity">ללא מינימום</string>
+    <string name="free_trial_summary_store_creation_error_dialog_action">הבנתי!</string>
+    <string name="free_trial_summary_store_creation_error_message">מצטערים, אין לנו אפשרות ליצור את החנות שלך כרגע. יש לנסות שוב מאוחר יותר.</string>
+    <string name="free_trial_summary_store_creation_error_title">משהו השתבש</string>
+    <string name="product_type_bundle">חבילה</string>
     <string name="quantity_rules_info_notice">אפשר לערוך את כללי הכמות של המוצר בלוח הבקרה שבאתר האינטרנט.</string>
     <string name="group_of">קבוצה של</string>
     <string name="max_quantity">כמות מקסימלית</string>

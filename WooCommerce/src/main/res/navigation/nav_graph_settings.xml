@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_settings"
     app:startDestination="@id/mainSettingsFragment">
-
     <fragment
         android:id="@+id/mainSettingsFragment"
         android:name="com.woocommerce.android.ui.prefs.MainSettingsFragment"
@@ -128,6 +127,10 @@
             android:name="urlComparisonMode"
             android:defaultValue="PARTIAL"
             app:argType="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel$UrlComparisonMode" />
+        <argument
+            android:name="clearCache"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </fragment>
     <action
         android:id="@+id/action_global_WPComWebViewFragment"

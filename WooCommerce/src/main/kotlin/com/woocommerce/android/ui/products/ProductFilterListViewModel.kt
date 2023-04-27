@@ -12,6 +12,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductStockStatus.Companion.fromString
 import com.woocommerce.android.ui.products.ProductType.OTHER
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorRestriction.OnlyPublishedProducts
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -248,7 +249,8 @@ class ProductFilterListViewModel @Inject constructor(
     }
 
     private fun buildFilterListItemUiModel(): List<FilterListItemUiModel> {
-        val filterListItems = mutableListOf(
+        val filterListItems = mutableListOf<FilterListItemUiModel>()
+        filterListItems.add(
             FilterListItemUiModel(
                 STOCK_STATUS,
                 resourceProvider.getString(string.product_stock_status),
@@ -262,21 +264,27 @@ class ProductFilterListViewModel @Inject constructor(
                     }.toMutableList(),
                     productFilterOptions[STOCK_STATUS].isNullOrEmpty()
                 )
-            ),
-            FilterListItemUiModel(
-                STATUS,
-                resourceProvider.getString(string.product_status),
-                addDefaultFilterOption(
-                    ProductStatus.values().map {
-                        FilterListOptionItemUiModel(
-                            resourceProvider.getString(it.stringResource),
-                            filterOptionItemValue = it.value,
-                            isSelected = productFilterOptions[STATUS] == it.value
-                        )
-                    }.toMutableList(),
-                    productFilterOptions[STATUS].isNullOrEmpty()
+            )
+        )
+        if (arguments.restrictions?.contains(OnlyPublishedProducts) == false) {
+            filterListItems.add(
+                FilterListItemUiModel(
+                    STATUS,
+                    resourceProvider.getString(string.product_status),
+                    addDefaultFilterOption(
+                        ProductStatus.values().map {
+                            FilterListOptionItemUiModel(
+                                resourceProvider.getString(it.stringResource),
+                                filterOptionItemValue = it.value,
+                                isSelected = productFilterOptions[STATUS] == it.value
+                            )
+                        }.toMutableList(),
+                        productFilterOptions[STATUS].isNullOrEmpty()
+                    )
                 )
-            ),
+            )
+        }
+        filterListItems.add(
             FilterListItemUiModel(
                 TYPE,
                 resourceProvider.getString(string.product_type),
@@ -404,7 +412,8 @@ class ProductFilterListViewModel @Inject constructor(
         var margin: Int = DEFAULT_FILTER_OPTION_MARGIN
     ) : Parcelable {
         companion object {
-            @DimenRes const val DEFAULT_FILTER_OPTION_MARGIN = 0
+            @DimenRes
+            const val DEFAULT_FILTER_OPTION_MARGIN = 0
         }
     }
 }

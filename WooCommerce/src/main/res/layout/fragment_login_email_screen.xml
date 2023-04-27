@@ -105,16 +105,6 @@
                 android:layout_height="wrap_content" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/button_login_qr_code"
-                style="@style/Widget.LoginFlow.Button.Secondary"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginEnd="@dimen/major_100"
-                android:text="@string/login_with_qr_code"
-                android:textAllCaps="false" />
-
-            <com.google.android.material.button.MaterialButton
                 android:id="@+id/continue_with_google"
                 style="@style/Widget.LoginFlow.Button.Secondary"
                 android:layout_width="match_parent"

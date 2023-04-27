@@ -1,23 +1,33 @@
 package com.woocommerce.android.ui.login.overrides
 
 import android.content.Context
+import android.os.Bundle
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.annotation.LayoutRes
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.showKeyboardWithDelay
-import com.woocommerce.android.ui.login.qrcode.QrCodeLoginListener
 import org.wordpress.android.login.LoginEmailFragment
-import org.wordpress.android.login.widgets.WPLoginInputRow
 
 class WooLoginEmailFragment : LoginEmailFragment() {
+    companion object {
+        private const val ARG_PREFILLED_EMAIL = "prefilled_email"
+        fun newInstance(prefilledEmail: String? = null): LoginEmailFragment {
+            val fragment = WooLoginEmailFragment()
+            val args = Bundle()
+            args.putString(ARG_PREFILLED_EMAIL, prefilledEmail)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
     interface Listener {
         fun onWhatIsWordPressLinkClicked()
     }
 
     private lateinit var wooLoginEmailListener: Listener
-    private lateinit var qrCodeLoginListener: QrCodeLoginListener
 
     @LayoutRes
     override fun getContentLayout(): Int = R.layout.fragment_login_email_screen
@@ -28,9 +38,9 @@ class WooLoginEmailFragment : LoginEmailFragment() {
         whatIsWordPressText.setOnClickListener {
             wooLoginEmailListener.onWhatIsWordPressLinkClicked()
         }
-
-        rootView.findViewById<Button>(R.id.button_login_qr_code).setOnClickListener {
-            qrCodeLoginListener.onScanQrCodeClicked(TAG)
+        val prefilledEmail = requireArguments().getString(ARG_PREFILLED_EMAIL)
+        if (prefilledEmail.isNotNullOrEmpty()) {
+            mEmailInput?.editText?.setText(prefilledEmail)
         }
     }
 
@@ -40,14 +50,13 @@ class WooLoginEmailFragment : LoginEmailFragment() {
 
     override fun onResume() {
         super.onResume()
-        requireView().findViewById<WPLoginInputRow>(R.id.login_email_row).editText.showKeyboardWithDelay(0)
+        mEmailInput?.editText?.showKeyboardWithDelay(0)
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (activity is Listener) {
             wooLoginEmailListener = activity as Listener
-            qrCodeLoginListener = activity as QrCodeLoginListener
         }
     }
 }

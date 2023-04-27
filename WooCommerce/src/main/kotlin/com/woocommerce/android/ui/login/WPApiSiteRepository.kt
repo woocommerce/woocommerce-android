@@ -97,9 +97,14 @@ class WPApiSiteRepository @Inject constructor(
                 }
 
                 else -> {
-                    WooLog.d(WooLog.T.LOGIN, "Site $url fetch succeeded")
-                    val site = getSiteByUrl(url)!!
-                    Result.success(site)
+                    val site = getSiteByUrl(url)
+                    if (site != null) {
+                        WooLog.d(WooLog.T.LOGIN, "Site $url fetch succeeded")
+                        Result.success(site)
+                    } else {
+                        WooLog.e(WooLog.T.LOGIN, "Site fetched but not found in DB: $url")
+                        Result.failure(IllegalArgumentException("Site fetched but not found in DB: $url"))
+                    }
                 }
             }
         }

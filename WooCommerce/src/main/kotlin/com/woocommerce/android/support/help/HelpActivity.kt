@@ -128,7 +128,7 @@ class HelpActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        ChromeCustomTabUtils.connect(this, AppUrls.APP_HELP_CENTER)
+        ChromeCustomTabUtils.connectAndStartSession(this, AppUrls.APP_HELP_CENTER)
     }
 
     override fun onStop() {

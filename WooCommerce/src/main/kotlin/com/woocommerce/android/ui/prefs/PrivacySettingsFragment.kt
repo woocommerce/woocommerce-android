@@ -83,7 +83,7 @@ class PrivacySettingsFragment : Fragment(R.layout.fragment_settings_privacy), Pr
 
     override fun onStart() {
         super.onStart()
-        ChromeCustomTabUtils.connect(
+        ChromeCustomTabUtils.connectAndStartSession(
             activity as Context,
             AppUrls.AUTOMATTIC_PRIVACY_POLICY,
             arrayOf(AppUrls.AUTOMATTIC_COOKIE_POLICY)
