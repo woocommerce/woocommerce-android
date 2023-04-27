@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.storecreation.dispatcher
 
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
@@ -39,7 +40,7 @@ class PlanUpgradeStartViewModelTest : BaseUnitTest() {
         sut = PlanUpgradeStartViewModel(
             savedStateHandle = PlanUpgradeStartFragmentArgs(
                 source = PlanUpgradeStartFragment.PlanUpgradeStartSource.BANNER
-            ).toSavedStateHandle(),
+            ).initSavedStateHandle(),
             wpComWebViewAuthenticator = mock(),
             userAgent = mock(),
             selectedSite = selectedSite,
