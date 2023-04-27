@@ -16,11 +16,11 @@ class ShippingNoticeCard @JvmOverloads constructor(
         LayoutInflater.from(context), this, true
     )
 
-    var onLearnMoreClicked: (View) -> Unit = {}
-    var onDismissClicked: (View) -> Unit = {}
+    fun setLearnMoreClickListener(action: (View) -> Unit) {
+        binding.learnMoreButton.setOnClickListener(action)
+    }
 
-    init {
-        binding.dismissButton.setOnClickListener(onDismissClicked)
-        binding.learnMoreButton.setOnClickListener(onLearnMoreClicked)
+    fun setDismissClickListener(action: (View) -> Unit) {
+        binding.dismissButton.setOnClickListener(action)
     }
 }
