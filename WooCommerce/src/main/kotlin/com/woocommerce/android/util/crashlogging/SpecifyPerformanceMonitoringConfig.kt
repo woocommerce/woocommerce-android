@@ -11,22 +11,16 @@ class SpecifyPerformanceMonitoringConfig @Inject constructor(
 ) {
 
     private companion object {
-        const val RELEASE_PERFORMANCE_MONITORING_SAMPLE_RATE = 0.1
-        const val DEBUG_PERFORMANCE_MONITORING_SAMPLE_RATE = 1.0
+        const val PERFORMANCE_MONITORING_SAMPLE_RATE = 0.01
     }
 
     operator fun invoke(): PerformanceMonitoringConfig {
-        val sampleRate = if (buildConfig.debug) {
-            DEBUG_PERFORMANCE_MONITORING_SAMPLE_RATE
-        } else {
-            RELEASE_PERFORMANCE_MONITORING_SAMPLE_RATE
-        }
         val userEnabled = analyticsWrapper.sendUsageStats
 
-        return if (!userEnabled) {
+        return if (!userEnabled || buildConfig.debug) {
             PerformanceMonitoringConfig.Disabled
         } else {
-            PerformanceMonitoringConfig.Enabled(sampleRate)
+            PerformanceMonitoringConfig.Enabled(PERFORMANCE_MONITORING_SAMPLE_RATE)
         }
     }
 }
