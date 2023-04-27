@@ -21,6 +21,6 @@ class ShippingNoticeCard @JvmOverloads constructor(
 
     init {
         binding.dismissButton.setOnClickListener(onDismissClicked)
-        binding.ctaButton.setOnClickListener(onLearnMoreClicked)
+        binding.learnMoreButton.setOnClickListener(onLearnMoreClicked)
     }
 }
