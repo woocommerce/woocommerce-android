@@ -14,10 +14,8 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitAttributesAdded
 import com.woocommerce.android.ui.products.variations.GenerateVariationBottomSheetFragment
-import com.woocommerce.android.ui.products.variations.GenerateVariationBottomSheetFragment.Companion
 import com.woocommerce.android.ui.products.variations.GenerateVariationBottomSheetFragment.Companion.KEY_ADD_NEW_VARIATION
 import com.woocommerce.android.ui.products.variations.GenerateVariationBottomSheetFragment.Companion.KEY_GENERATE_ALL_VARIATIONS
-import com.woocommerce.android.ui.products.variations.VariationListViewModel
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationConfirmation
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationsError
