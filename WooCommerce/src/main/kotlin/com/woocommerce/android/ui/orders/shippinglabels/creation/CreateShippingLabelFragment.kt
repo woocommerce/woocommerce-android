@@ -9,11 +9,11 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCreateShippingLabelBinding
 import com.woocommerce.android.databinding.ViewShippingLabelOrderPackagePriceBinding
 import com.woocommerce.android.databinding.ViewShippingLabelOrderSummaryBinding
-import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.isNotEqualTo
@@ -310,8 +310,7 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
     private fun initializeViews(binding: FragmentCreateShippingLabelBinding) {
         if (FeatureFlag.EU_SHIPPING_NOTIFICATION.isEnabled()) {
             with(binding.shippingNoticeBanner) {
-                isVisible = true
-                setDismissClickListener { collapse() }
+                isVisible = AppPrefs.isEUShippingNoticeDismissed.not()
                 setLearnMoreClickListener(viewModel::onShippingNoticeLearnMoreClicked)
             }
         }
