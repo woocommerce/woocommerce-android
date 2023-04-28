@@ -208,7 +208,6 @@ private fun OnboardingMoreMenu(
     }
 }
 
-
 @Composable
 fun OnboardingTaskList(
     tasks: List<OnboardingTaskUi>,

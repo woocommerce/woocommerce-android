@@ -27,9 +27,9 @@ class ShouldShowOnboarding @Inject constructor(
             true
         } else false
 
-        return if (!areAllTaskCompleted
-            && isOnboardingListSettingVisible()
-            && FeatureFlag.STORE_CREATION_ONBOARDING.isEnabled()
+        return if (!areAllTaskCompleted &&
+            isOnboardingListSettingVisible() &&
+            FeatureFlag.STORE_CREATION_ONBOARDING.isEnabled()
         ) {
             appPrefsWrapper.setStoreOnboardingShown(siteId)
             true
