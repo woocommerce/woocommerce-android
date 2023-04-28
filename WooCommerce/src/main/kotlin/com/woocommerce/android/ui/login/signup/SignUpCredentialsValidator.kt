@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 class SignUpCredentialsValidator @Inject constructor() {
     private companion object {
-        const val PASSWORD_MIN_LENGTH = 7
+        const val PASSWORD_MIN_LENGTH = 6
     }
 
     fun isEmailValid(email: String): Boolean = StringUtils.isValidEmail(email)
