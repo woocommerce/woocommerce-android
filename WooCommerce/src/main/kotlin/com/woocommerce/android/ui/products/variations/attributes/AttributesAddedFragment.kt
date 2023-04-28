@@ -8,11 +8,16 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentAttributesAddedBinding
+import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitAttributesAdded
-import com.woocommerce.android.ui.products.variations.GenerateVariationPickerDialog
+import com.woocommerce.android.ui.products.variations.GenerateVariationBottomSheetFragment
+import com.woocommerce.android.ui.products.variations.GenerateVariationBottomSheetFragment.Companion
+import com.woocommerce.android.ui.products.variations.GenerateVariationBottomSheetFragment.Companion.KEY_ADD_NEW_VARIATION
+import com.woocommerce.android.ui.products.variations.GenerateVariationBottomSheetFragment.Companion.KEY_GENERATE_ALL_VARIATIONS
+import com.woocommerce.android.ui.products.variations.VariationListViewModel
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationConfirmation
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationsError
@@ -28,15 +33,14 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AttributesAddedFragment :
-    BaseProductFragment(R.layout.fragment_attributes_added),
-    GenerateVariationPickerDialog.GenerateVariationPickerDialogListener {
+    BaseProductFragment(R.layout.fragment_attributes_added) {
     companion object {
         const val TAG: String = "AttributesAddedFragment"
     }
 
     private var progressDialog: CustomProgressDialog? = null
 
-    private var generateVariationPickerDialog: GenerateVariationPickerDialog? = null
+    private var generateVariationPickerDialog: GenerateVariationBottomSheetFragment? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -45,6 +49,7 @@ class AttributesAddedFragment :
             generateVariationButton.setOnClickListener { showAddVariationSelectDialog() }
         }
         setupObservers()
+        setupResultHandlers()
     }
 
     override fun getFragmentTitle() = getString(R.string.product_variations)
@@ -118,19 +123,18 @@ class AttributesAddedFragment :
         progressDialog = null
     }
 
-    private fun showAddVariationSelectDialog() {
-        val dialog = generateVariationPickerDialog ?: GenerateVariationPickerDialog(requireContext()).apply {
-            listener = this@AttributesAddedFragment
+    private fun setupResultHandlers() {
+        handleDialogNotice(KEY_ADD_NEW_VARIATION, R.id.attributesAddedFragment) {
+            viewModel.onGenerateVariationClicked()
         }
-        dialog.show()
+        handleDialogNotice(KEY_GENERATE_ALL_VARIATIONS, R.id.attributesAddedFragment) {
+            viewModel.onAddAllVariationsClicked()
+        }
     }
 
-    override fun onGenerateAllVariations() {
-        viewModel.onAddAllVariationsClicked()
-    }
-
-    override fun onGenerateNewVariation() {
-        viewModel.onGenerateVariationClicked()
+    private fun showAddVariationSelectDialog() {
+        AttributesAddedFragmentDirections.actionAttributesAddedFragmentToGenerateVariationBottomSheetFragment()
+            .run { findNavController().navigateSafely(this) }
     }
 
     private fun handleGenerateVariationError(event: ShowGenerateVariationsError) {
