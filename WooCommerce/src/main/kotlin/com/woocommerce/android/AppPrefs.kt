@@ -27,7 +27,9 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.PRODUCT_SORTING_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.UPDATE_SIMULATED_READER_OPTION
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED
+import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_TASKS_COMPLETED
+import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_PHONE_NUMBER
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.extensions.packageInfo
@@ -106,6 +108,7 @@ object AppPrefs {
         CUSTOM_DOMAINS_SOURCE,
         IS_TAP_TO_PAY_BETA_ENABLED,
         JETPACK_INSTALLATION_FROM_BANNER,
+        NOTIFICATIONS_PERMISSION_BAR,
     }
 
     /**
@@ -176,8 +179,14 @@ object AppPrefs {
         // Whether onboarding tasks have been completed or not for a given site
         STORE_ONBOARDING_TASKS_COMPLETED,
 
+        // Was store onboarding shown at least once
+        STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE,
+
         // Time when the last successful payment was made with a card reader
         CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME,
+
+        // A phone number associated with the store (used in shipping labels)
+        STORE_PHONE_NUMBER,
     }
 
     fun init(context: Context) {
@@ -860,6 +869,12 @@ object AppPrefs {
 
     fun getJetpackInstallationIsFromBanner() = getBoolean(DeletablePrefKey.JETPACK_INSTALLATION_FROM_BANNER, false)
 
+    fun setWasNotificationsPermissionBarDismissed(source: Boolean) {
+        setBoolean(DeletablePrefKey.NOTIFICATIONS_PERMISSION_BAR, source)
+    }
+
+    fun getWasNotificationsPermissionBarDismissed() = getBoolean(DeletablePrefKey.NOTIFICATIONS_PERMISSION_BAR, false)
+
     private fun getActiveStatsGranularityFilterKey(currentSiteId: Int) =
         PrefKeyString("${DeletablePrefKey.ACTIVE_STATS_GRANULARITY}:$currentSiteId")
 
@@ -904,6 +919,22 @@ object AppPrefs {
         default = false
     )
 
+    private fun getStoreOnboardingKeyFor(siteId: Int) =
+        PrefKeyString("$STORE_ONBOARDING_TASKS_COMPLETED:$siteId")
+
+    fun setStoreOnboardingShown(siteId: Int) {
+        setBoolean(
+            key = PrefKeyString("$STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE:$siteId"),
+            value = true
+        )
+    }
+
+    fun getStoreOnboardingShown(siteId: Int): Boolean =
+        getBoolean(
+            key = PrefKeyString("$STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE:$siteId"),
+            default = false
+        )
+
     fun getCardReaderLastSuccessfulPaymentTime() =
         getLong(UndeletablePrefKey.CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME, 0L)
 
@@ -911,8 +942,17 @@ object AppPrefs {
         setLong(UndeletablePrefKey.CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME, System.currentTimeMillis())
     }
 
-    private fun getStoreOnboardingKeyFor(siteId: Int) =
-        PrefKeyString("$STORE_ONBOARDING_TASKS_COMPLETED:$siteId")
+    fun setStorePhoneNumber(siteId: Int, phoneNumber: String) {
+        setString(
+            key = PrefKeyString("$STORE_PHONE_NUMBER:$siteId"),
+            value = phoneNumber
+        )
+    }
+
+    fun getStorePhoneNumber(siteId: Int): String =
+        getString(
+            key = PrefKeyString("$STORE_PHONE_NUMBER:$siteId"),
+        )
 
     /**
      * Remove all user and site-related preferences.

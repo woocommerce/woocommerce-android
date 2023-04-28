@@ -11,16 +11,16 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
-msgctxt "release_note_131"
+msgctxt "release_note_133"
 msgid ""
-"13.1:\n"
-"More love for In-Person Payments and orders this time around, including the option to select your most popular products when creating an order.\n"
+"13.3:\n"
+"UK, say hello to in-person payments! We are thrilled to announce that in-person payments are now available to UK merchants currently using WooCommerce Payments. This release also includeds read only support for merchants using Composite Products. Thank you all again for your amazing feedback. Keep it coming!\n"
 msgstr ""
 
-msgctxt "release_note_130"
+msgctxt "release_note_132"
 msgid ""
-"13.0:\n"
-"Great news for folks that are using WooCommerce Subscriptions extension. We have added read only support for the WooCommerce Subsciptions extension in the order detail and product detail screens. More features coming soon!\n"
+"13.2:\n"
+"This release includes some bug fixes, visual & accessibility enhancements to the orders and products sections of the app. Keep your feedback rolling in; it helps us figure out what to work on next.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

@@ -1,11 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-04 15:54:30+0000
+Translation-Revision-Date: 2023-04-18 19:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="more_menu_button_settings_description">Atualize suas preferências</string>
+    <string name="more_menu_button_settings">Configurações</string>
+    <string name="more_menu_button_upgrades_description">Gerenciar seus planos</string>
+    <string name="more_menu_button_reviews_description">Reúna avaliações para a sua loja</string>
+    <string name="more_menu_button_coupons_description">Aumente as vendas com ofertas especiais</string>
+    <string name="more_menu_button_store_description">Visualize sua loja</string>
+    <string name="more_menu_button_inbox_description">Mantenha-se atualizado</string>
+    <string name="more_menu_button_payments_description">Habilite os pagamentos por dispositivo móvel</string>
+    <string name="more_menu_button_wc_admin_description">Gerencie mais no administrador</string>
+    <string name="more_menu_general_section_title">Geral</string>
+    <string name="more_menu_settings_section_title">Configurações</string>
+    <string name="bundled_products_info_notice">Você pode editar produtos agrupados no painel da Web.</string>
+    <string name="product_bundle_multiple_count">%d produtos</string>
+    <string name="product_bundle_single_count">1 produto</string>
+    <string name="product_bundle">Produtos agrupados</string>
+    <string name="empty_group_of">Não agrupados</string>
+    <string name="empty_max_quantity">Sem máximo</string>
+    <string name="empty_min_quantity">Sem mínimo</string>
+    <string name="free_trial_summary_store_creation_error_dialog_action">Entendi!</string>
+    <string name="free_trial_summary_store_creation_error_message">Não foi possível criar sua loja agora, tente novamente mais tarde.</string>
+    <string name="free_trial_summary_store_creation_error_title">Ocorreu um erro</string>
+    <string name="product_type_bundle">Pacote</string>
+    <string name="quantity_rules_info_notice">Você pode editar as regras de quantidade do produto no painel da versão web.</string>
+    <string name="group_of">Grupo de</string>
+    <string name="max_quantity">Quantidade máxima</string>
+    <string name="min_quantity">Quantidade mínima</string>
+    <string name="product_quantity_rules_title">Regras de quantidade</string>
+    <string name="gift_cards">Vales-presentes</string>
+    <string name="order_gift_card">Vale-presente</string>
+    <string name="free_trial_feature_fast_to_launch">Lançamento rápido</string>
+    <string name="free_trial_feature_site_security">Segurança do site</string>
+    <string name="free_trial_feature_auto_updates_backups">Backups e atualizações automáticas</string>
+    <string name="free_trial_feature_247_support">Suporte 24 horas por dia</string>
+    <string name="free_trial_feature_email_marketing">Marketing por e-mail</string>
+    <string name="free_trial_feature_social_advertising">Publicidade social</string>
+    <string name="free_trial_feature_subscription_product_kits">Kits de produtos e assinaturas</string>
+    <string name="free_trial_feature_multiple_payment_options">Várias opções de pagamento</string>
+    <string name="free_trial_feature_ecommerce_reports">Relatórios de comércio eletrônico</string>
+    <string name="free_trial_feature_shipping_labels">Etiquetas de envio</string>
+    <string name="free_trial_feature_unlimited_products">Produtos ilimitados</string>
+    <string name="free_trial_feature_premium_themes">Temas premium</string>
+    <string name="free_trial_summary_credit_card_message">Não é necessário ter cartão de crédito.</string>
+    <string name="free_trial_summary_try_button">Experimente gratuitamente</string>
+    <string name="free_trial_summary_try_it">Experimente por 14 dias.</string>
+    <string name="free_trial_summary_advertise">Oferecemos tudo que você precisa para criar sua loja online e faze-la crescer, desenvolvida pelo WooCommerce e hospedada no WordPress.com.</string>
+    <string name="free_trial_summary_title">Lance sua loja em poucos dias e cresça por bastante tempo</string>
+    <string name="product_selector_products_heading">Produtos</string>
+    <string name="product_selector_recent_products_heading">Última venda</string>
+    <string name="product_selector_popular_products_heading">Populares</string>
+    <string name="jetpack_install_role_eligibility_learn_more">Saiba mais sobre funções e permissão</string>
+    <string name="jetpack_install_role_eligibility_error_message">Parece que sua função não permite instalar o Jetpack. \nFale com o administrador para obter ajuda.</string>
+    <string name="card_reader_tap_to_pay_description">Você pode tesar o Tap To Pay com um pequeno\nvalor aqui.</string>
+    <string name="card_reader_test_tap_to_pay">Testar o seu Tap To Pay</string>
     <string name="subscription_free_trial">Teste gratuito</string>
     <string name="subscription_sign_up_fee">Taxa de inscrição</string>
     <string name="subscription_expire">Expirar após</string>
@@ -46,7 +99,6 @@ Language: pt_BR
     <string name="card_reader_type_selection_tap_to_pay_description">Aceite pagamentos feitos por aproximação com segurança e diretamente do seu celular.</string>
     <string name="card_reader_tap_to_pay_beta_features_subheading">Teste o Tap to Pay no app</string>
     <string name="card_reader_tap_to_pay_beta_features_heading">Tap to Pay</string>
-    <string name="card_reader_tap_to_pay_description_not_used">Use seu celular para aceitar pagamentos\ncom cartão. Experimente agora.</string>
     <string name="card_reader_tap_to_pay_share_feedback">Compartilhe seu feedback sobre o Tap to Pay</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Não foi possível fazer login porque a criação da senha do aplicativo não foi aprovada.</string>
     <string name="login_site_credentials_fetching_site">Buscando site…</string>
@@ -62,7 +114,6 @@ Language: pt_BR
     <string name="store_onboarding_get_paid_title">Configurações de pagamentos</string>
     <string name="store_onboarding_task_about_your_store_toolbar_title">Sobre sua loja</string>
     <string name="store_creation_installation_rendering_preview_label">Processando visualização…</string>
-    <string name="jetpack_benefits_open_wpadmin">Abrir wp-admin</string>
     <string name="shipping_label_address_phone_required">Um número de telefone é necessário</string>
     <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s, %4$s vendidos</string>
     <string name="analytics_items">itens</string>
@@ -148,8 +199,6 @@ Language: pt_BR
     <string name="card_reader_tap_to_pay_explanation_ready">Seu telefone está pronto para usar o Toque para pagar.\nSeu cliente pode tocar no cartão dele\nno seu telefone para pagar.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Receba pagamentos com cartão\nusando seu telefone</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Toque para pagar</string>
-    <string name="card_reader_tap_to_pay_description_used">Use seu celular para aceitar pagamentos com cartão.</string>
-    <string name="card_reader_tap_to_pay">Toque para pagar</string>
     <string name="card_reader_hub_actions_category_header">AÇÕES</string>
     <string name="domain_registration_generic_error">Ocorreu um erro durante o registro de domínio</string>
     <string name="domain_registration_state_picker_dialog_title">Selecionar o estado</string>
@@ -1210,7 +1259,6 @@ Language: pt_BR
     <string name="support_system_status_report">Relatório de status do sistema</string>
     <string name="card_reader_welcome_dialog_text">Parabéns! Agora você pode aceitar pagamentos com cartão de débito e crédito usando o WooCommerce Payments.</string>
     <string name="card_reader_welcome_dialog_header">Receber pagamentos com um leitor de cartão</string>
-    <string name="card_reader_payment_failed_amount_too_small">O valor deve ser no mínimo US$ 0,50</string>
     <string name="card_reader_payment_payment_failed_ok">OK</string>
     <string name="settings_whats_new_icon_description">Imagem do ícone de nova funcionalidade</string>
     <string name="settings_switch_store">Alterar loja</string>

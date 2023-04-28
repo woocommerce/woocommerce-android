@@ -20,13 +20,14 @@ object ProductTestUtils {
         isPurchasable: Boolean = true,
         customStatus: String? = null,
         variationIds: String = if (isVariable) "[123]" else "[]",
+        productType: String? = null,
     ): Product {
         return WCProductModel(2).apply {
             dateCreated = "2018-01-05T05:14:30Z"
             localSiteId = 1
             remoteProductId = productId
             status = customStatus ?: "publish"
-            type = if (isVariable) "variable" else "simple"
+            type = productType ?: if (isVariable) "variable" else "simple"
             stockStatus = "instock"
             price = "20.00"
             salePrice = "10.00"

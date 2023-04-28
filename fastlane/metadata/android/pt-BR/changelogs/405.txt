@@ -1,0 +1,2 @@
+13.2:
+Esta versão inclui algumas correções de bugs, melhorias visuais e de acessibilidade nas seções de pedidos e produtos do aplicativo. Continue dando feedback, ele nos ajuda a saber no que trabalhar em seguida.

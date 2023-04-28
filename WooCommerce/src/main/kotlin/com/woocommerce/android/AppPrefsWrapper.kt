@@ -326,4 +326,14 @@ class AppPrefsWrapper @Inject constructor() {
     }
 
     fun isOnboardingCompleted(siteId: Int): Boolean = AppPrefs.areOnboardingTaskCompletedFor(siteId)
+
+    fun setStoreOnboardingShown(siteId: Int) {
+        AppPrefs.setStoreOnboardingShown(siteId)
+    }
+
+    fun getStoreOnboardingShown(siteId: Int): Boolean = AppPrefs.getStoreOnboardingShown(siteId)
+
+    fun setStorePhoneNumber(siteId: Int, phoneNumber: String) = AppPrefs.setStorePhoneNumber(siteId, phoneNumber)
+
+    fun getStorePhoneNumber(siteId: Int): String = AppPrefs.getStorePhoneNumber(siteId)
 }

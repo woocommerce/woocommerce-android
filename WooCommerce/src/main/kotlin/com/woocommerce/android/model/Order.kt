@@ -1,6 +1,7 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Order.OrderStatus
@@ -123,8 +124,10 @@ data class Order(
         val attributesDescription
             get() = attributesList.filter {
                 it.value.isNotEmpty() && it.key.isNotEmpty()
-            }.joinToString {
-                it.value.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+            }.joinToString { attribute ->
+                attribute.value
+                    .fastStripHtml()
+                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             }
 
         companion object {

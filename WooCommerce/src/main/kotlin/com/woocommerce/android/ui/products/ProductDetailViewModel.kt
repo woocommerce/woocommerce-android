@@ -30,6 +30,7 @@ import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadFailure
 import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadProgress
 import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadSuccess
+import com.woocommerce.android.model.Component
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductAttributeTerm
@@ -88,6 +89,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
@@ -126,7 +128,9 @@ class ProductDetailViewModel @Inject constructor(
     private val duplicateProduct: DuplicateProduct,
     private val tracker: AnalyticsTrackerWrapper,
     private val selectedSite: SelectedSite,
-    private val getProductQuantityRules: GetProductQuantityRules
+    private val getProductQuantityRules: GetProductQuantityRules,
+    private val getBundledProductsCount: GetBundledProductsCount,
+    private val getComponentProducts: GetComponentProducts
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -2196,6 +2200,16 @@ class ProductDetailViewModel @Inject constructor(
     suspend fun getQuantityRules(productRemoteID: Long): QuantityRules? {
         if (FeatureFlag.QUANTITY_RULES_READ_ONLY_SUPPORT.isEnabled().not()) return null
         return getProductQuantityRules(productRemoteID)
+    }
+
+    suspend fun getBundledProductsSize(remoteId: Long): Int {
+        if (FeatureFlag.BUNDLED_PRODUCTS_READ_ONLY_SUPPORT.isEnabled().not()) return 0
+        return getBundledProductsCount(remoteId)
+    }
+
+    suspend fun getComponents(remoteId: Long): List<Component>? {
+        if (FeatureFlag.COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT.isEnabled().not()) return null
+        return getComponentProducts(remoteId)
     }
 
     /**

@@ -290,6 +290,7 @@ private fun PreviewProductCategorySelector() {
         )
     }
 
+    @Suppress("RememberReturnType")
     val categories = remember {
         (1L..10L).map {
             generateCategory(it, childrenDepth = it.coerceAtMost(4).toInt())

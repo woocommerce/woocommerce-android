@@ -490,7 +490,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `when capturing payment fails, then error emitted`() = testBlocking {
         whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
-            .thenReturn(CapturePaymentResponse.Error.GenericError)
+            .thenReturn(CapturePaymentResponse.Error.GenericError(""))
 
         val result = manager
             .acceptPayment(createPaymentInfo()).toList()
@@ -501,7 +501,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `when capturing payment fails, then mapCapturePaymentError invoked`() = testBlocking {
         whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
-            .thenReturn(CapturePaymentResponse.Error.GenericError)
+            .thenReturn(CapturePaymentResponse.Error.GenericError(""))
 
         manager
             .acceptPayment(createPaymentInfo()).toList()

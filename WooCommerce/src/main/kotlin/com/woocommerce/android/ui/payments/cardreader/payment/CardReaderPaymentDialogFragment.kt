@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.payments.refunds.RefundSummaryFragment.Compani
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.PrintHtmlHelper
 import com.woocommerce.android.util.UiHelpers
+import com.woocommerce.android.util.UiHelpers.getTextOfUiString
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -145,7 +146,7 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
                 }
             } else {
                 viewState.paymentStateLabel?.let {
-                    paymentStateLabel.announceForAccessibility(getString(it))
+                    paymentStateLabel.announceForAccessibility(getTextOfUiString(requireContext(), it))
                 }
             }
             viewState.hintLabel?.let {

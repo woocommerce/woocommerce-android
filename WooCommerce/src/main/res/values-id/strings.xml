@@ -1,11 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-04 11:54:04+0000
+Translation-Revision-Date: 2023-04-18 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="more_menu_button_settings_description">Perbarui preferensi Anda</string>
+    <string name="more_menu_button_settings">Pengaturan</string>
+    <string name="more_menu_button_upgrades_description">Kelola paket Anda</string>
+    <string name="more_menu_button_reviews_description">Dapatkan ulasan untuk toko Anda</string>
+    <string name="more_menu_button_coupons_description">Tingkatkan penjualan dengan penawaran khusus</string>
+    <string name="more_menu_button_store_description">Lihat toko Anda</string>
+    <string name="more_menu_button_inbox_description">Pantau selalu</string>
+    <string name="more_menu_button_payments_description">Aktifkan pembayaran dengan perangkat seluler</string>
+    <string name="more_menu_button_wc_admin_description">Kelola lebih lanjut di admin</string>
+    <string name="more_menu_general_section_title">Umum</string>
+    <string name="more_menu_settings_section_title">Pengaturan</string>
+    <string name="bundled_products_info_notice">Anda dapat menyunting produk bundel di dasbor web.</string>
+    <string name="product_bundle_multiple_count">%d produk</string>
+    <string name="product_bundle_single_count">1 produk</string>
+    <string name="product_bundle">Produk bundel</string>
+    <string name="empty_group_of">Tanpa kelompok</string>
+    <string name="empty_max_quantity">Tanpa maksimum</string>
+    <string name="empty_min_quantity">Tanpa minimum</string>
+    <string name="free_trial_summary_store_creation_error_dialog_action">Paham</string>
+    <string name="free_trial_summary_store_creation_error_message">Maaf, kami tidak dapat membuat toko Anda saat ini, coba lagi nanti.</string>
+    <string name="free_trial_summary_store_creation_error_title">Terjadi kesalahan</string>
+    <string name="product_type_bundle">Paket</string>
+    <string name="quantity_rules_info_notice">Anda dapat menyunting aturan jumlah produk di dasbor web.</string>
+    <string name="group_of">Kelipatan</string>
+    <string name="max_quantity">Jumlah maksimal</string>
+    <string name="min_quantity">Jumlah minimal</string>
+    <string name="product_quantity_rules_title">Aturan Jumlah</string>
+    <string name="gift_cards">Kartu Hadiah</string>
+    <string name="order_gift_card">Kartu Hadiah</string>
+    <string name="free_trial_feature_fast_to_launch">Segera meluncur</string>
+    <string name="free_trial_feature_site_security">Keamanan situs</string>
+    <string name="free_trial_feature_auto_updates_backups">Pembaruan &amp; pencadangan otomatis</string>
+    <string name="free_trial_feature_247_support">Bantuan setiap saat</string>
+    <string name="free_trial_feature_email_marketing">Pemasaran melalui email</string>
+    <string name="free_trial_feature_social_advertising">Iklan sosial</string>
+    <string name="free_trial_feature_subscription_product_kits">Paket langganan &amp; produk</string>
+    <string name="free_trial_feature_multiple_payment_options">Beberapa pilihan pembayaran</string>
+    <string name="free_trial_feature_ecommerce_reports">Laporan eCommerce</string>
+    <string name="free_trial_feature_shipping_labels">Label pengiriman</string>
+    <string name="free_trial_feature_unlimited_products">Produk tanpa batas</string>
+    <string name="free_trial_feature_premium_themes">Tema premium</string>
+    <string name="free_trial_summary_credit_card_message">Tidak perlu kartu kredit.</string>
+    <string name="free_trial_summary_try_button">Coba Gratis</string>
+    <string name="free_trial_summary_try_it">Coba gratis selama 14 hari.</string>
+    <string name="free_trial_summary_advertise">Kami menawarkan semua yang Anda perlukan untuk membangun dan mengembangkan toko online, didukung oleh WooCommerce dan di-hosting di WordPress.com.</string>
+    <string name="free_trial_summary_title">Luncurkan dalam waktu cepat, kembangkan untuk tahun-tahun berikutnya</string>
+    <string name="product_selector_products_heading">Produk</string>
+    <string name="product_selector_recent_products_heading">Produk yang Terakhir Terjual</string>
+    <string name="product_selector_popular_products_heading">Populer</string>
+    <string name="jetpack_install_role_eligibility_learn_more">Pelajari lebih lanjut tentang peran dan izin</string>
+    <string name="jetpack_install_role_eligibility_error_message">Sepertinya peran pengguna Anda tidak mengizinkan Anda menginstal Jetpack. \nHubungi administrator Anda untuk mendapatkan bantuan.</string>
+    <string name="card_reader_tap_to_pay_description">Anda bisa mencoba fitur Ketuk untuk Bayar dengan membayar\nsedikit di sini.</string>
+    <string name="card_reader_test_tap_to_pay">Coba fitur Ketuk untuk Bayar Anda</string>
     <string name="subscription_free_trial">Percobaan gratis</string>
     <string name="subscription_sign_up_fee">Biaya pendaftaran</string>
     <string name="subscription_expire">Kedaluwarsa setelah</string>
@@ -46,7 +99,6 @@ Language: id
     <string name="card_reader_type_selection_tap_to_pay_description">Terima pembayaran nirsentuh dengan aman langsung dari ponsel Anda. </string>
     <string name="card_reader_tap_to_pay_beta_features_subheading">Coba Ketuk untuk Bayar di aplikasi</string>
     <string name="card_reader_tap_to_pay_beta_features_heading">Ketuk untuk Bayar</string>
-    <string name="card_reader_tap_to_pay_description_not_used">Gunakan ponsel Anda untuk menerima pembayaran dengan\nkartu. Coba sekarang.</string>
     <string name="card_reader_tap_to_pay_share_feedback">Berikan umpan balik tentang Ketuk untuk Bayar</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Tidak dapat login karena pembuatan kata sandi aplikasi tidak disetujui.</string>
     <string name="login_site_credentials_fetching_site">Mengambil situs…</string>
@@ -62,7 +114,6 @@ Language: id
     <string name="store_onboarding_get_paid_title">Pengaturan Pembayaran</string>
     <string name="store_onboarding_task_about_your_store_toolbar_title">Tentang toko Anda</string>
     <string name="store_creation_installation_rendering_preview_label">Merender pratinjau…</string>
-    <string name="jetpack_benefits_open_wpadmin">Buka wp-admin</string>
     <string name="shipping_label_address_phone_required">Nomor telepon diperlukan</string>
     <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s, %4$s terjual</string>
     <string name="analytics_items">objek</string>
@@ -148,8 +199,6 @@ Language: id
     <string name="card_reader_tap_to_pay_explanation_ready">Ketuk untuk Membayar sudah tersedia di ponsel Anda.\nPelanggan dapat menempelkan kartunya\nke ponsel Anda untuk membayar.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Terima pembayaran dengan kartu\nmenggunakan ponsel Anda</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Ketuk Untuk Membayar</string>
-    <string name="card_reader_tap_to_pay_description_used">Gunakan ponsel Anda untuk menerima pembayaran dengan kartu.</string>
-    <string name="card_reader_tap_to_pay">Ketuk Untuk Membayar</string>
     <string name="card_reader_hub_actions_category_header">TINDAKAN</string>
     <string name="domain_registration_generic_error">Terjadi error saat registrasi domain</string>
     <string name="domain_registration_state_picker_dialog_title">Pilih Provinsi</string>
@@ -1210,7 +1259,6 @@ Language: id
     <string name="support_system_status_report">Laporan status sistem</string>
     <string name="card_reader_welcome_dialog_text">Selamat, Anda sekarang dapat menerima pembayaran kartu debit dan kredit menggunakan WooCommerce Payments!</string>
     <string name="card_reader_welcome_dialog_header">Kumpulkan pembayaran dengan pembaca kartu</string>
-    <string name="card_reader_payment_failed_amount_too_small">Jumlah minimal $0,50</string>
     <string name="card_reader_payment_payment_failed_ok">Oke</string>
     <string name="settings_whats_new_icon_description">Gambar ikon fitur baru</string>
     <string name="settings_switch_store">Beralih toko</string>

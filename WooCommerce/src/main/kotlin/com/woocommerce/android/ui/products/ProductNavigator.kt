@@ -381,7 +381,8 @@ class ProductNavigator @Inject constructor() {
                         target.productType,
                         target.productStatus,
                         target.productCategory,
-                        target.productCategoryName
+                        target.productCategoryName,
+                        target.restrictions.toTypedArray(),
                     )
                 )
             }
@@ -397,6 +398,19 @@ class ProductNavigator @Inject constructor() {
             is ProductNavigationTarget.ViewProductQuantityRules -> {
                 val action = ProductDetailFragmentDirections.actionProductDetailFragmentToProductQuantityRulesFragment(
                     target.quantityRules
+                )
+                fragment.findNavController().navigateSafely(action)
+            }
+
+            is ProductNavigationTarget.ViewBundleProducts -> {
+                ProductDetailFragmentDirections.actionProductDetailFragmentToProductBundleFragment(
+                    target.productId
+                ).let { fragment.findNavController().navigateSafely(it) }
+            }
+
+            is ProductNavigationTarget.ViewProductComponents -> {
+                val action = ProductDetailFragmentDirections.actionProductDetailFragmentToCompositeProductFragment(
+                    target.components.toTypedArray()
                 )
                 fragment.findNavController().navigateSafely(action)
             }

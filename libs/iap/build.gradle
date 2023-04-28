@@ -4,6 +4,8 @@ plugins {
 }
 
 android {
+    namespace "com.woocommerce.android.iap"
+
     compileSdkVersion gradle.ext.compileSdkVersion
 
     defaultConfig {

@@ -1,11 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-05 09:54:05+0000
+Translation-Revision-Date: 2023-04-19 12:54:33+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="more_menu_button_settings_description">設定を更新</string>
+    <string name="more_menu_button_settings">設定</string>
+    <string name="more_menu_button_upgrades_description">プランを管理</string>
+    <string name="more_menu_button_reviews_description">ストアに対するレビューを取得する</string>
+    <string name="more_menu_button_coupons_description">特別オファーで売上を伸ばす</string>
+    <string name="more_menu_button_store_description">ストアを表示</string>
+    <string name="more_menu_button_inbox_description">最新の状態に保つ</string>
+    <string name="more_menu_button_payments_description">モバイル決済を利用する</string>
+    <string name="more_menu_button_wc_admin_description">管理画面でさらに管理する</string>
+    <string name="more_menu_general_section_title">一般</string>
+    <string name="more_menu_settings_section_title">設定</string>
+    <string name="bundled_products_info_notice">ウェブダッシュボードでパッケージ同梱商品を編集できます。</string>
+    <string name="product_bundle_multiple_count">%d個の商品</string>
+    <string name="product_bundle_single_count">1個の商品</string>
+    <string name="product_bundle">パッケージ同梱商品</string>
+    <string name="empty_group_of">未グループ化</string>
+    <string name="empty_max_quantity">上限無し</string>
+    <string name="empty_min_quantity">最小限度額なし</string>
+    <string name="free_trial_summary_store_creation_error_dialog_action">了解 !</string>
+    <string name="free_trial_summary_store_creation_error_message">現在ストアを作成できません。後でもう一度お試しください。</string>
+    <string name="free_trial_summary_store_creation_error_title">エラーが発生しました</string>
+    <string name="product_type_bundle">パッケージ</string>
+    <string name="quantity_rules_info_notice">ウェブダッシュボードで商品の数量ルールを編集できます。</string>
+    <string name="group_of">一組の数量</string>
+    <string name="max_quantity">最高数量</string>
+    <string name="min_quantity">最低数量</string>
+    <string name="product_quantity_rules_title">数量ルール</string>
+    <string name="gift_cards">ギフトカード</string>
+    <string name="order_gift_card">ギフトカード</string>
+    <string name="free_trial_feature_fast_to_launch">公開までが速い</string>
+    <string name="free_trial_feature_site_security">サイトセキュリティ</string>
+    <string name="free_trial_feature_auto_updates_backups">自動的に更新とバックアップを実行</string>
+    <string name="free_trial_feature_247_support">24時間体制のサポート</string>
+    <string name="free_trial_feature_email_marketing">メールマーケティング</string>
+    <string name="free_trial_feature_social_advertising">ソーシャル広告</string>
+    <string name="free_trial_feature_subscription_product_kits">定期購入商品キット</string>
+    <string name="free_trial_feature_multiple_payment_options">複数の支払いオプション</string>
+    <string name="free_trial_feature_ecommerce_reports">eコマースレポート</string>
+    <string name="free_trial_feature_shipping_labels">配送ラベル</string>
+    <string name="free_trial_feature_unlimited_products">無制限の製品</string>
+    <string name="free_trial_feature_premium_themes">プレミアムテーマ</string>
+    <string name="free_trial_summary_credit_card_message">クレジットカードは不要です。</string>
+    <string name="free_trial_summary_try_button">無料でお試し</string>
+    <string name="free_trial_summary_try_it">14日間お試しください。</string>
+    <string name="free_trial_summary_advertise">WooCommerce を使用し WordPress.com でホスティングされるオンラインストアの構築と拡大に必要なすべてを提供します。</string>
+    <string name="free_trial_summary_title">数日で公開、長期的に成長</string>
+    <string name="product_selector_products_heading">商品</string>
+    <string name="product_selector_recent_products_heading">最近売れた商品</string>
+    <string name="product_selector_popular_products_heading">人気</string>
+    <string name="jetpack_install_role_eligibility_learn_more">権限グループと権限の詳細</string>
+    <string name="jetpack_install_role_eligibility_error_message">権限グループでは Jetpack のインストールが許可されていないようです。 \nサポートをご希望の場合は管理者にお問い合わせください。</string>
+    <string name="card_reader_tap_to_pay_description">こちらで Tap To Pay を少額で\nテストできます。</string>
+    <string name="card_reader_test_tap_to_pay">Tap To Pay をテスト</string>
     <string name="subscription_free_trial">無料お試し</string>
     <string name="subscription_sign_up_fee">登録手数料</string>
     <string name="subscription_expire">期限切れ後</string>
@@ -46,7 +99,6 @@ Language: ja_JP
     <string name="card_reader_type_selection_tap_to_pay_description">お使いのスマートフォンから非接触型決済を安全に直接受け付けることができます。</string>
     <string name="card_reader_tap_to_pay_beta_features_subheading">アプリで Tap To Pay を試す</string>
     <string name="card_reader_tap_to_pay_beta_features_heading">Tap To Pay</string>
-    <string name="card_reader_tap_to_pay_description_not_used">スマートフォンを使用してカード支払いを\n受け付けることができます。 今すぐお試しください。</string>
     <string name="card_reader_tap_to_pay_share_feedback">Tap to Pay についてのフィードバックを共有する</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">アプリケーションパスワードの作成が承認されていないため、ログインできません。</string>
     <string name="login_site_credentials_fetching_site">サイトを取得中…</string>
@@ -62,7 +114,6 @@ Language: ja_JP
     <string name="store_onboarding_get_paid_title">決済設定</string>
     <string name="store_onboarding_task_about_your_store_toolbar_title">ストアについて</string>
     <string name="store_creation_installation_rendering_preview_label">プレビューをレンダリング中…</string>
-    <string name="jetpack_benefits_open_wpadmin">WP 管理画面を開く</string>
     <string name="shipping_label_address_phone_required">電話番号は必須項目です</string>
     <string name="analytics_list_item_products_sold">%1$s、%2$s、%3$s、%4$sが販売済み</string>
     <string name="analytics_items">項目</string>
@@ -148,8 +199,6 @@ Language: ja_JP
     <string name="card_reader_tap_to_pay_explanation_ready">お使いのスマートフォンでは今すぐ Tap to Pay を使用できます。\nお客様はスマートフォンで\nカードをタップして支払うことができます。</string>
     <string name="card_reader_tap_to_pay_explanation_title">スマートフォンでカードでの\n支払いを受け取る</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
-    <string name="card_reader_tap_to_pay_description_used">スマートフォンを使用してカード支払いを受け取ることができます。</string>
-    <string name="card_reader_tap_to_pay">Tap To Pay</string>
     <string name="card_reader_hub_actions_category_header">アクション</string>
     <string name="domain_registration_generic_error">ドメイン登録中にエラーが発生しました</string>
     <string name="domain_registration_state_picker_dialog_title">都道府県を選択</string>
@@ -1210,7 +1259,6 @@ Language: ja_JP
     <string name="support_system_status_report">システムステータスレポート</string>
     <string name="card_reader_welcome_dialog_text">WooCommerce Payments を使用してデビットカードやクレジットカードでの支払いを受け取ることができるようになりました。</string>
     <string name="card_reader_welcome_dialog_header">カードリーダーで支払いを受け取る</string>
-    <string name="card_reader_payment_failed_amount_too_small">金額は $0.50以上にしてください</string>
     <string name="card_reader_payment_payment_failed_ok">OK</string>
     <string name="settings_whats_new_icon_description">新機能アイコンの画像</string>
     <string name="settings_switch_store">ストアを切り替える</string>

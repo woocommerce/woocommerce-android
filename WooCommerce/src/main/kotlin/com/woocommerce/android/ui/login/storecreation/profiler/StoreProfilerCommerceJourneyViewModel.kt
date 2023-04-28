@@ -15,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class StoreProfilerCommerceJourneyViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    analyticsTracker: AnalyticsTrackerWrapper,
+    private val analyticsTracker: AnalyticsTrackerWrapper,
     private val newStore: NewStore,
     private val storeProfilerRepository: StoreProfilerRepository,
     private val resourceProvider: ResourceProvider,
@@ -65,6 +65,17 @@ class StoreProfilerCommerceJourneyViewModel @Inject constructor(
             true -> triggerEvent(NavigateToEcommercePlatformsStep)
             false -> triggerEvent(NavigateToNextStep)
         }
+    }
+
+    override fun onSkipPressed() {
+        super.onSkipPressed()
+
+        analyticsTracker.track(
+            AnalyticsEvent.SITE_CREATION_PROFILER_QUESTION_SKIPPED,
+            mapOf(
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_PROFILER_COMMERCE_JOURNEY
+            )
+        )
     }
 
     private fun AboutMerchant.toStoreProfilerOptionUi() = StoreProfilerOptionUi(

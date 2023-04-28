@@ -1,11 +1,16 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R.string
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.*
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.DialPhoneNumber
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.OpenMapWithAddress
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowCountrySelector
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowStateSelector
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.ShowSuggestedAddress
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressViewModel.Field
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressViewModel.ViewState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator.AddressType.DESTINATION
@@ -24,6 +29,7 @@ import org.mockito.invocation.InvocationOnMock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyVararg
 import org.mockito.kotlin.atLeastOnce
+import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -38,6 +44,9 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
     private val resourceProvider = mock<ResourceProvider>()
     private val dataStore = mock<WCDataStore>()
     private val site = mock<SelectedSite>()
+    private val appPrefs = mock<AppPrefsWrapper>()
+
+    private val siteId = 123
 
     private val address = CreateShippingLabelTestUtils.generateAddress()
     private val adjustedAddress = address.copy(
@@ -101,8 +110,13 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
         val resourceProviderAnswer = { i: InvocationOnMock -> i.arguments[0].toString() }
         whenever(resourceProvider.getString(any())).thenAnswer(resourceProviderAnswer)
         whenever(resourceProvider.getString(any(), anyVararg())).thenAnswer(resourceProviderAnswer)
+        whenever(site.getSelectedSiteId()).thenReturn(siteId)
 
         createViewModel()
+
+        clearInvocations(
+            appPrefs
+        )
     }
 
     private fun createViewModel() {
@@ -111,7 +125,8 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
             addressValidator,
             resourceProvider,
             dataStore,
-            site
+            site,
+            appPrefs
         )
     }
 
@@ -241,6 +256,7 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
         viewModel.onDoneButtonClicked()
 
         verify(addressValidator, atLeastOnce()).validateAddress(any(), any(), any())
+        verify(appPrefs).setStorePhoneNumber(siteId, address.phone)
 
         assertThat(event).isEqualTo(ExitWithResult(adjustedAddress))
     }

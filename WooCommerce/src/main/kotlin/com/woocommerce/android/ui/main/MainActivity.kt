@@ -2,21 +2,27 @@
 
 package com.woocommerce.android.ui.main
 
+import NotificationsPermissionCard
 import android.animation.ValueAnimator
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
 import android.os.Bundle
+import android.os.Handler
 import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -55,6 +61,7 @@ import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.MORE
@@ -64,6 +71,7 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
 import com.woocommerce.android.ui.main.MainActivityViewModel.BottomBarState
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
+import com.woocommerce.android.ui.main.MainActivityViewModel.RequestNotificationsPermission
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForAppLink
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenOrderCreation
@@ -89,8 +97,10 @@ import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState.Trial
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
-import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
+import com.woocommerce.android.util.WooAnimUtils.animateBottomBar
+import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.DisabledAppBarLayoutBehavior
 import dagger.hilt.android.AndroidEntryPoint
@@ -124,6 +134,8 @@ class MainActivity :
         // widget-related constants
         const val FIELD_OPENED_FROM_WIDGET = "opened-from-push-widget"
         const val FIELD_WIDGET_NAME = "widget-name"
+
+        const val NOTIFICATIONS_PERMISSION_BAR_DISPLAY_DELAY = 2000L
 
         interface BackPressListener {
             fun onRequestAllowBackPress(): Boolean
@@ -223,6 +235,12 @@ class MainActivity :
         }
     }
 
+    private val launcher = this.registerForActivityResult(RequestPermission()) { isGranted: Boolean ->
+        if (isGranted) {
+            viewModel.checkForNotificationsPermission(hasNotificationsPermission = true)
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         this.menu = menu
         return super.onCreateOptionsMenu(menu)
@@ -232,6 +250,8 @@ class MainActivity :
         installSplashScreen()
 
         super.onCreate(savedInstanceState)
+
+        ChromeCustomTabUtils.registerForPartialTabUsage(this)
 
         // Verify authenticated session
         if (!presenter.userIsLoggedIn()) {
@@ -311,6 +331,10 @@ class MainActivity :
 
         if (selectedSite.exists()) {
             updateOrderBadge(false)
+
+            if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
+                viewModel.checkForNotificationsPermission(WooPermissionUtils.hasNotificationsPermission(this))
+            }
         }
 
         checkConnection()
@@ -706,6 +730,7 @@ class MainActivity :
                 is RestartActivityForAppLink -> restartActivityForAppLink(event)
                 is ShowFeatureAnnouncement -> navigateToFeatureAnnouncement(event)
                 is ViewUrlInWebView -> navigateToWebView(event)
+                is RequestNotificationsPermission -> requestNotificationsPermission()
                 ViewPayments -> showPayments()
                 ViewTapToPay -> showTapToPaySummary()
                 ShortcutOpenPayments -> shortcutShowPayments()
@@ -713,9 +738,33 @@ class MainActivity :
             }
         }
 
+        observeNotificationsPermissionBarVisibility()
         observeMoreMenuBadgeStateEvent()
         observeTrialStatus()
         observeBottomBarState()
+    }
+
+    private fun observeNotificationsPermissionBarVisibility() {
+        viewModel.isNotificationsPermissionCardVisible.observe(this) { isVisible ->
+            if (isVisible) {
+                binding.notificationsPermissionBar.apply {
+                    setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                    setContent {
+                        WooThemeWithBackground {
+                            NotificationsPermissionCard()
+                        }
+                    }
+                }
+                Handler().postDelayed(
+                    {
+                        animateBottomBar(binding.notificationsPermissionBar, show = true)
+                    },
+                    NOTIFICATIONS_PERMISSION_BAR_DISPLAY_DELAY
+                )
+            } else {
+                animateBottomBar(binding.notificationsPermissionBar, show = false)
+            }
+        }
     }
 
     private fun observeBottomBarState() {
@@ -725,7 +774,7 @@ class MainActivity :
                 BottomBarState.Visible -> true
             }
 
-            WooAnimUtils.animateBottomBar(binding.bottomNav, show, Duration.MEDIUM)
+            animateBottomBar(binding.bottomNav, show, Duration.MEDIUM)
         }
     }
 
@@ -742,16 +791,22 @@ class MainActivity :
         viewModel.trialStatusBarState.observe(this) { trialStatusBarState ->
             when (trialStatusBarState) {
                 TrialStatusBarState.Hidden ->
-                    binding.trialBar.visibility = View.GONE
+                    animateBottomBar(binding.trialBar, show = false)
                 is TrialStatusBarState.Visible -> {
                     binding.trialBar.text = trialStatusBarFormatterFactory.create(
                         context = this,
                         startUpgradeFlowFactory = startUpgradeFlowFactory.create(navController)
                     ).format(trialStatusBarState.daysLeft)
                     binding.trialBar.movementMethod = LinkMovementMethod.getInstance()
-                    binding.trialBar.visibility = View.VISIBLE
+                    animateBottomBar(binding.trialBar, show = true)
                 }
             }
+        }
+    }
+
+    private fun requestNotificationsPermission() {
+        if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
+            WooPermissionUtils.requestNotificationsPermission(launcher)
         }
     }
 
@@ -964,6 +1019,7 @@ class MainActivity :
         if (launchedFromNotification) {
             binding.bottomNav.currentPosition = ORDERS
             binding.bottomNav.active(ORDERS.position)
+            navController.popBackStack(R.id.orders, false)
         }
 
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)

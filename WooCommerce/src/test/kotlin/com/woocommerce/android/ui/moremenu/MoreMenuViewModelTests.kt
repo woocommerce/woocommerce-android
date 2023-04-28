@@ -6,8 +6,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
+import com.woocommerce.android.ui.plans.domain.SitePlan
+import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,12 +18,14 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
+import java.time.ZonedDateTime
 
 @ExperimentalCoroutinesApi
 class MoreMenuViewModelTests : BaseUnitTest() {
@@ -35,6 +40,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     )
     private val selectedSite: SelectedSite = mock {
         on { observe() } doReturn selectedSiteFlow
+        on { get() } doReturn selectedSiteFlow.value
     }
     private val moreMenuRepository: MoreMenuRepository = mock {
         onBlocking { isInboxEnabled() } doReturn true
@@ -44,6 +50,18 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         on { account } doReturn AccountModel().apply {
             avatarUrl = "avatar"
         }
+    }
+
+    private val planRepository: SitePlanRepository = mock {
+        onBlocking { fetchCurrentPlanDetails(any()) } doReturn SitePlan(
+            name = "",
+            expirationDate = ZonedDateTime.now(),
+            type = SitePlan.Type.FREE_TRIAL
+        )
+    }
+
+    private val resourceProvider: ResourceProvider = mock {
+        on { getString(R.string.subscription_free_trial) } doReturn "Free Trial"
     }
 
     private val appPrefsWrapper: AppPrefsWrapper = mock()
@@ -57,6 +75,8 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             accountStore = accountStore,
             selectedSite = selectedSite,
             moreMenuRepository = moreMenuRepository,
+            planRepository = planRepository,
+            resourceProvider = resourceProvider,
             unseenReviewsCountHandler = unseenReviewsCountHandler,
             appPrefsWrapper = appPrefsWrapper
         )
@@ -87,7 +107,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         prefsChanges.emit(false)
 
         // THEN
-        val paymentsButton = states.last().moreMenuItems.first { it.text == R.string.more_menu_button_payments }
+        val paymentsButton = states.last().generalMenuItems.first { it.title == R.string.more_menu_button_payments }
         assertThat(paymentsButton.icon).isEqualTo(R.drawable.ic_more_menu_payments)
         assertThat(paymentsButton.badgeState).isNull()
     }
@@ -103,7 +123,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         val states = viewModel.moreMenuViewState.captureValues()
 
         // THEN
-        val reviewsButton = states.last().moreMenuItems.first { it.text == R.string.more_menu_button_reviews }
+        val reviewsButton = states.last().generalMenuItems.first { it.title == R.string.more_menu_button_reviews }
         assertThat(reviewsButton.icon).isEqualTo(R.drawable.ic_more_menu_reviews)
         assertThat(reviewsButton.badgeState?.textColor).isEqualTo(
             R.color.color_on_primary
@@ -173,4 +193,98 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             // THEN
             assertThat(states.last().isStoreSwitcherEnabled).isEqualTo(true)
         }
+
+    @Test
+    fun `given site plan is free trial, then free trial name is configured`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(planRepository.fetchCurrentPlanDetails(any())).thenReturn(
+                SitePlan(
+                    name = "Test Plan",
+                    expirationDate = ZonedDateTime.now(),
+                    type = SitePlan.Type.FREE_TRIAL
+                )
+            )
+        }
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+
+        // THEN
+        assertThat(states.last().sitePlan).isEqualTo("Free Trial")
+    }
+
+    @Test
+    fun `given site plan is not free trial, then SitePlan name is used`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(planRepository.fetchCurrentPlanDetails(any())).thenReturn(
+                SitePlan(
+                    name = "Test Plan",
+                    expirationDate = ZonedDateTime.now(),
+                    type = SitePlan.Type.OTHER
+                )
+            )
+        }
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+
+        // THEN
+        assertThat(states.last().sitePlan).isEqualTo("Test Plan")
+    }
+
+    @Test
+    fun `given site plan is WPcom, then SitePlan name is formatted`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(planRepository.fetchCurrentPlanDetails(any())).thenReturn(
+                SitePlan(
+                    name = "WordPress.com Test Plan",
+                    expirationDate = ZonedDateTime.now(),
+                    type = SitePlan.Type.OTHER
+                )
+            )
+        }
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+
+        // THEN
+        assertThat(states.last().sitePlan).isEqualTo("Test Plan")
+    }
+
+    @Test
+    fun `given site plan is paid Woo Express, then SitePlan name is formatted`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(planRepository.fetchCurrentPlanDetails(any())).thenReturn(
+                SitePlan(
+                    name = "Woo Express: Test Plan",
+                    expirationDate = ZonedDateTime.now(),
+                    type = SitePlan.Type.OTHER
+                )
+            )
+        }
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+
+        // THEN
+        assertThat(states.last().sitePlan).isEqualTo("Test Plan")
+    }
+
+    @Test
+    fun `given site plan is null, then SitePlan name is empty`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(planRepository.fetchCurrentPlanDetails(any())).thenReturn(null)
+        }
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+
+        // THEN
+        assertThat(states.last().sitePlan).isEqualTo("")
+    }
 }

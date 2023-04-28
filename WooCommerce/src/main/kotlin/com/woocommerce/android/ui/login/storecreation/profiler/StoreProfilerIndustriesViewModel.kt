@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class StoreProfilerIndustriesViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    analyticsTracker: AnalyticsTrackerWrapper,
+    private val analyticsTracker: AnalyticsTrackerWrapper,
     private val newStore: NewStore,
     private val storeProfilerRepository: StoreProfilerRepository,
     private val resourceProvider: ResourceProvider,
@@ -27,7 +27,7 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
 
     private var industries: List<Industry> = emptyList()
     override val hasSearchableContent: Boolean
-        get() = true
+        get() = false
 
     init {
         analyticsTracker.track(
@@ -47,7 +47,6 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
 
     override fun getProfilerStepDescription(): String =
         resourceProvider.getString(R.string.store_creation_store_profiler_industries_description)
-
     override fun getProfilerStepTitle(): String =
         resourceProvider.getString(R.string.store_creation_store_profiler_industries_title)
 
@@ -58,11 +57,21 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
             profilerData = (newStore.data.profilerData ?: ProfilerData())
                 .copy(
                     industryLabel = selectedOption?.name,
-                    industryKey = selectedIndustry?.key,
-                    industryGroupKey = selectedIndustry?.tracks
+                    industryKey = selectedIndustry?.key
                 )
         )
         triggerEvent(NavigateToNextStep)
+    }
+
+    override fun onSkipPressed() {
+        super.onSkipPressed()
+
+        analyticsTracker.track(
+            AnalyticsEvent.SITE_CREATION_PROFILER_QUESTION_SKIPPED,
+            mapOf(
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_PROFILER_INDUSTRIES
+            )
+        )
     }
 
     private fun Industry.toStoreProfilerOptionUi() = StoreProfilerOptionUi(
