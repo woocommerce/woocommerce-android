@@ -70,7 +70,6 @@ class JitmViewModel @Inject constructor(
                 model.featureClass
             )
 
-//            _jitmState.value = when (model.template) {
             _jitmState.value = when ("modal") {
                 JITM_TEMPLATE_MODAL -> JitmState.Modal(
                     onPrimaryActionClicked = { onJitmCtaClicked(model) },
@@ -78,8 +77,7 @@ class JitmViewModel @Inject constructor(
                     title = UiString.UiStringText(model.content.message),
                     description = UiString.UiStringText("Did you know that you can take payments using your phone?"),
                     primaryActionLabel = UiString.UiStringText("Try Tap To Pay"),
-//                    backgroundImageUrl = model.assets?.get(JITM_ASSETS_BACKGROUND_IMAGE_KEY),
-                    backgroundImageUrl = "https://i.ibb.co/GvkKQ8G/Frame-333.png"
+                    backgroundImageUrl = model.assets?.get(JITM_ASSETS_BACKGROUND_IMAGE_KEY),
                 )
                 else -> JitmState.Banner(
                     onPrimaryActionClicked = { onJitmCtaClicked(model) },
