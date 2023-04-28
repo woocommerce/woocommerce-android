@@ -15,6 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PAYMEN
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCTS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STORE_DETAILS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ui.login.storecreation.onboarding.ShouldShowOnboarding.Source.ONBOARDING_LIST
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTask
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.ABOUT_YOUR_STORE
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.ADD_FIRST_PRODUCT
@@ -93,7 +94,10 @@ class StoreOnboardingViewModel @Inject constructor(
                 positiveButtonId = R.string.remove,
                 positiveBtnAction = { dialog, _ ->
                     _viewState.value = _viewState.value?.copy(show = false)
-                    shouldShowOnboarding.updateOnboardingVisibilitySetting(show = false)
+                    shouldShowOnboarding.updateOnboardingVisibilitySetting(
+                        show = false,
+                        source = ONBOARDING_LIST
+                    )
                     dialog.dismiss()
                 },
                 negativeBtnAction = { dialog, _ -> dialog.dismiss() },
