@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout xmlns:tools="http://schemas.android.com/tools"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorSurface"
@@ -55,6 +56,18 @@
                 app:optionTitle="@string/settings_install_jetpack"
                 tools:visibility="visible" />
 
+            <!--
+                Store onboarding list visibility
+            -->
+            <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
+                android:id="@+id/option_store_onboarding_list_visibility"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:toggleOptionDesc="@string/store_onboarding_setting_description"
+                app:toggleOptionTitle="@string/store_onboarding_setting_title" />
+
+            <View style="@style/Woo.Divider" />
+
         </LinearLayout>
 
         <View style="@style/Woo.Divider" />
@@ -95,7 +108,6 @@
                 app:toggleOptionDesc="@string/settings_notifs_reviews_detail"
                 app:toggleOptionTitle="@string/settings_notifs_reviews" />
 
-            <View style="@style/Woo.Divider" />
         </LinearLayout>
 
         <!--
@@ -129,17 +141,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:optionTitle="@string/settings_app_theme_title"
-            app:optionValue="@string/settings_app_theme_option_default" />
+            app:optionValue="@string/settings_app_theme_option_default">
+
+            <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
+                android:id="@+id/option_image_optimization"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:toggleOptionDesc="@string/settings_image_optimization_message"
+                app:toggleOptionTitle="@string/settings_image_optimization_title" />
+        </com.woocommerce.android.ui.prefs.WCSettingsOptionValueView>
 
         <!--
             Image Optimization
         -->
-        <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
-            android:id="@+id/option_image_optimization"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:toggleOptionDesc="@string/settings_image_optimization_message"
-            app:toggleOptionTitle="@string/settings_image_optimization_title" />
 
         <!--
             Privacy
