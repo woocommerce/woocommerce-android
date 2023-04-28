@@ -210,7 +210,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         }
 
         lifecycleScope.launch {
-            binding.domainGroup.isVisible = presenter.isDomainOptionVisible
+            binding.optionDomain.isVisible = presenter.isDomainOptionVisible
             binding.optionDomain.setOnClickListener {
                 AnalyticsTracker.track(SETTINGS_DOMAINS_TAPPED)
                 showDomainDashboard()

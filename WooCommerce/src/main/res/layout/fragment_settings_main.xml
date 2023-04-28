@@ -39,7 +39,7 @@
             <View style="@style/Woo.Divider" />
             <!--
                     Store Settings
-                -->
+            -->
             <com.woocommerce.android.ui.prefs.WCSettingsCategoryHeaderView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -57,6 +57,15 @@
                 tools:visibility="visible" />
 
             <!--
+                Domain configuration
+            -->
+            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                android:id="@+id/option_domain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:optionTitle="@string/domain" />
+
+            <!--
                 Store onboarding list visibility
             -->
             <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
@@ -69,8 +78,6 @@
             <View style="@style/Woo.Divider" />
 
         </LinearLayout>
-
-        <View style="@style/Woo.Divider" />
 
         <!--
             Notifications (pre- API 26)
@@ -108,6 +115,7 @@
                 app:toggleOptionDesc="@string/settings_notifs_reviews_detail"
                 app:toggleOptionTitle="@string/settings_notifs_reviews" />
 
+            <View style="@style/Woo.Divider" />
         </LinearLayout>
 
         <!--
@@ -141,19 +149,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:optionTitle="@string/settings_app_theme_title"
-            app:optionValue="@string/settings_app_theme_option_default">
-
-            <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
-                android:id="@+id/option_image_optimization"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:toggleOptionDesc="@string/settings_image_optimization_message"
-                app:toggleOptionTitle="@string/settings_image_optimization_title" />
-        </com.woocommerce.android.ui.prefs.WCSettingsOptionValueView>
+            app:optionValue="@string/settings_app_theme_option_default" />
 
         <!--
             Image Optimization
         -->
+        <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
+            android:id="@+id/option_image_optimization"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:toggleOptionDesc="@string/settings_image_optimization_message"
+            app:toggleOptionTitle="@string/settings_image_optimization_title" />
 
         <!--
             Privacy
@@ -186,31 +192,6 @@
             app:optionTitle="@string/send_feedback" />
 
         <View style="@style/Woo.Divider" />
-
-        <!--
-            Store settings
-        -->
-        <LinearLayout
-            android:id="@+id/domain_group"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <com.woocommerce.android.ui.prefs.WCSettingsCategoryHeaderView
-                android:id="@+id/category_store_settings"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/settings_store" />
-
-            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-                android:id="@+id/option_domain"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:optionTitle="@string/domain" />
-
-            <View android:id="@+id/domain_divider" style="@style/Woo.Divider" />
-
-        </LinearLayout>
 
         <!--
             About
