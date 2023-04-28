@@ -221,6 +221,9 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         presenter.setupJetpackInstallOption()
         presenter.setupApplicationPasswordsSettings()
         presenter.setupOnboardingListVisibilitySetting()
+
+        binding.storeSettingsContainer.isVisible = binding.optionInstallJetpack.isVisible ||
+            binding.optionDomain.isVisible || binding.optionStoreOnboardingListVisibility.isVisible
     }
 
     private fun showDomainDashboard() {
