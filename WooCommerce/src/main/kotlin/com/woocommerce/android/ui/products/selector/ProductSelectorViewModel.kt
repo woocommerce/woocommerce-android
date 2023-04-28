@@ -96,7 +96,10 @@ class ProductSelectorViewModel @Inject constructor(
         products.filter { product ->
             productsRestrictions.map { restriction -> restriction(product) }.fold(true) { acc, result -> acc && result }
         }
+    }.onEmpty {
+        fetchProducts(forceRefresh = true)
     }
+
     private val popularProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
     private val recentProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
 
@@ -130,11 +133,7 @@ class ProductSelectorViewModel @Inject constructor(
             filterState = filterState,
             searchQuery = searchQuery
         )
-    }
-        .onEmpty {
-            fetchProducts(forceRefresh = true)
-        }
-        .asLiveData()
+    }.asLiveData()
 
     init {
         monitorSearchQuery()
