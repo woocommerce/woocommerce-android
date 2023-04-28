@@ -215,7 +215,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
             viewModel.onConnectToReaderResultReceived(connected)
         }
 
-        handleDialogNotice<String>(
+        handleDialogNotice(
             key = CardReaderPaymentDialogFragment.KEY_CARD_PAYMENT_RESULT,
             entryId = R.id.selectPaymentMethodFragment
         ) {
