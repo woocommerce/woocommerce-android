@@ -24,6 +24,26 @@ import org.mockito.kotlin.whenever
 @ExperimentalCoroutinesApi
 class StoreOnboardingViewModelTest : BaseUnitTest() {
     private companion object {
+        val ONBOARDING_TASK_INCOMPLETED_LIST = listOf(
+            OnboardingTask(
+                type = OnboardingTaskType.ABOUT_YOUR_STORE,
+                isComplete = false,
+                isVisible = true,
+                isVisited = false
+            ),
+            OnboardingTask(
+                type = OnboardingTaskType.ADD_FIRST_PRODUCT,
+                isComplete = false,
+                isVisible = true,
+                isVisited = false
+            ),
+            OnboardingTask(
+                type = OnboardingTaskType.CUSTOMIZE_DOMAIN,
+                isComplete = false,
+                isVisible = true,
+                isVisited = false
+            )
+        )
         val ONBOARDING_TASK_COMPLETED_LIST = listOf(
             OnboardingTask(
                 type = OnboardingTaskType.ABOUT_YOUR_STORE,
@@ -65,6 +85,17 @@ class StoreOnboardingViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
 
             Assertions.assertThat(viewModel.viewState.value?.show).isFalse
+        }
+
+    @Test
+    fun `given a list of incomplete tasks , when view model is created, onboarding is shown`() =
+        testBlocking {
+            onboardingTasksCacheFlow.tryEmit(ONBOARDING_TASK_INCOMPLETED_LIST)
+            whenever(shouldShowOnboarding(ONBOARDING_TASK_INCOMPLETED_LIST)).thenReturn(true)
+
+            whenViewModelIsCreated()
+
+            Assertions.assertThat(viewModel.viewState.value?.show).isTrue
         }
 
     @Test
