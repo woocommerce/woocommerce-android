@@ -38,6 +38,11 @@ class JetpackBenefitsViewModel @Inject constructor(
     private val wpComAccessToken: AccessToken
 ) : ScopedViewModel(savedStateHandle) {
 
+    companion object {
+        const val ERROR_CODE_FORBIDDEN = 403
+        const val ERROR_CODE_NOT_FOUND = 404
+    }
+
     private val _viewState = MutableStateFlow(
         ViewState(
             isUsingJetpackCP = selectedSite.connectionType == SiteConnectionType.JetpackConnectionPackage,
@@ -74,78 +79,65 @@ class JetpackBenefitsViewModel @Inject constructor(
         }
     }
 
-    @Suppress("LongMethod")
     private fun handleJetpackStatusResult(
         result: Result<Pair<JetpackStatus, JetpackStatusFetchResponse>>
     ) {
-        result.fold(
-            onSuccess = {
-                when (it.second) {
-                    JetpackStatusFetchResponse.SUCCESS -> {
-                        triggerEvent(
-                            StartJetpackActivationForApplicationPasswords(
-                                siteUrl = selectedSite.get().url,
-                                jetpackStatus = it.first
-                            )
-                        )
+        fun startJetpackActivation(jetpackStatus: JetpackStatus) {
+            triggerEvent(
+                StartJetpackActivationForApplicationPasswords(selectedSite.get().url, jetpackStatus)
+            )
+        }
 
-                        logSuccess(it)
-                    }
-                    JetpackStatusFetchResponse.FORBIDDEN -> {
-                        launch {
-                            userEligibilityFetcher.fetchUserInfo().fold(
-                                onSuccess = { user ->
-                                    triggerEvent(
-                                        OpenJetpackEligibilityError(
-                                            user.username,
-                                            user.roles.first().value
-                                        )
+        fun showGenericError() = triggerEvent(ShowSnackbar(string.error_generic))
+
+        fun logError(statusCode: Int, reason: String) = logError("HTTP Code $statusCode: $reason")
+
+        fun handleUserEligibility(statusCode: Int, jetpackStatus: JetpackStatus? = null) {
+            launch {
+                userEligibilityFetcher.fetchUserInfo().fold(
+                    onSuccess = { user ->
+                        val hasInstallCapability = user.roles.contains(UserRole.Administrator)
+
+                        when {
+                            hasInstallCapability && statusCode == ERROR_CODE_NOT_FOUND && jetpackStatus != null -> {
+                                startJetpackActivation(jetpackStatus)
+                            }
+                            else -> {
+                                triggerEvent(
+                                    OpenJetpackEligibilityError(
+                                        user.username,
+                                        user.roles.first().value
                                     )
-                                    logError("${user.roles.first().value}: User not authorized to install Jetpack")
-                                },
-                                onFailure = {
-                                    triggerEvent(ShowSnackbar(string.error_generic))
-                                    logError("HTTP 403")
-                                }
-                            )
-                        }
-                    }
-                    JetpackStatusFetchResponse.NOT_FOUND -> {
-                        launch {
-                            userEligibilityFetcher.fetchUserInfo().fold(
-                                onSuccess = { user ->
-                                    val hasInstallCapability = user.roles.contains(UserRole.Administrator)
-                                    if (hasInstallCapability) {
-                                        triggerEvent(
-                                            StartJetpackActivationForApplicationPasswords(
-                                                siteUrl = selectedSite.get().url,
-                                                jetpackStatus = it.first
-                                            )
-                                        )
+                                )
 
-                                        logSuccess(it)
-                                    } else {
-                                        triggerEvent(
-                                            OpenJetpackEligibilityError(
-                                                user.username,
-                                                user.roles.first().value
-                                            )
-                                        )
-
-                                        logError("${user.roles.first().value}: User not authorized to install Jetpack")
-                                    }
-                                },
-                                onFailure = {
-                                    triggerEvent(ShowSnackbar(string.error_generic))
-                                    logError("HTTP 404")
-                                }
-                            )
+                                logError(
+                                    statusCode,
+                                    "${user.roles.first().value}: User not authorized to install Jetpack"
+                                )
+                            }
                         }
+                    },
+                    onFailure = {
+                        showGenericError()
+                        logError(statusCode, it.message.orEmpty())
                     }
+                )
+            }
+        }
+
+        result.fold(
+            onSuccess = { (jetpackStatus, fetchResponse) ->
+                when (fetchResponse) {
+                    JetpackStatusFetchResponse.SUCCESS -> {
+                        startJetpackActivation(jetpackStatus)
+                        logSuccess(Pair(jetpackStatus, fetchResponse))
+                    }
+                    JetpackStatusFetchResponse.FORBIDDEN -> handleUserEligibility(ERROR_CODE_FORBIDDEN)
+                    JetpackStatusFetchResponse.NOT_FOUND -> handleUserEligibility(ERROR_CODE_NOT_FOUND, jetpackStatus)
                 }
             },
             onFailure = {
-                triggerEvent(ShowSnackbar(string.error_generic))
+                showGenericError()
                 logError(it.message)
             }
         )
