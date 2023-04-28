@@ -109,6 +109,7 @@ object AppPrefs {
         IS_TAP_TO_PAY_BETA_ENABLED,
         JETPACK_INSTALLATION_FROM_BANNER,
         NOTIFICATIONS_PERMISSION_BAR,
+        IS_EU_SHIPPING_NOTICE_DISMISSED,
     }
 
     /**
@@ -250,6 +251,10 @@ object AppPrefs {
     var updateReaderOptionSelected: String
         get() = getString(UPDATE_SIMULATED_READER_OPTION, UpdateOptions.RANDOM.toString())
         set(option) = setString(UPDATE_SIMULATED_READER_OPTION, option)
+
+    var isEUShippingNoticeDismissed: Boolean
+        get() = getBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, false)
+        set(value) = setBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, value)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 
