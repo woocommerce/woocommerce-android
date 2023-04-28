@@ -38,6 +38,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.FlowStep.PACKAGING
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.FlowStep.PAYMENT
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.FlowStep.SHIPPING_ADDRESS
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.OpenShippingInstructions
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.OrderSummaryState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.StepUiState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.Failed
@@ -56,6 +57,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustoms
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_ACCEPTED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_TO_BE_EDITED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SUGGESTED_ADDRESS_DISCARDED
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PriceUtils
@@ -271,6 +273,7 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                         )
                     findNavController().navigateSafely(action)
                 }
+                is OpenShippingInstructions -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 is ShowDialog -> event.showDialog()
                 is Exit -> findNavController().navigateUp()
                 else -> event.isHandled = false
@@ -309,6 +312,7 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
             with(binding.shippingNoticeBanner) {
                 isVisible = true
                 setDismissClickListener { collapse() }
+                setLearnMoreClickListener { viewModel.onShippingNoticeLearnMoreClicked() }
             }
         }
 
