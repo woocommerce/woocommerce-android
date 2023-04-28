@@ -2,6 +2,7 @@
 13.4
 - [*] [Internal] Adds partial height chrome tab in a few places. [https://github.com/woocommerce/woocommerce-android/pull/8502]
 - [*] [Internal] Better payments error tracking [https://github.com/woocommerce/woocommerce-android/pull/8875]
+- [**] Allow users to show or hide onboarding list [https://github.com/woocommerce/woocommerce-android/pull/8907]
 
 13.3
 -----
