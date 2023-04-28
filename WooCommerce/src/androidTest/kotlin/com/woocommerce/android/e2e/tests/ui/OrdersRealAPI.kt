@@ -99,7 +99,7 @@ class OrdersRealAPI : TestBase() {
             .tapShowOrders()
             .assertOrderCard(order41)
             .assertOrdersCount(1)
-            // Check that "Clear" button works
+            // Check if "Clear" button works
             .tapFilters()
             .clearFilters()
             .tapShowOrders()
