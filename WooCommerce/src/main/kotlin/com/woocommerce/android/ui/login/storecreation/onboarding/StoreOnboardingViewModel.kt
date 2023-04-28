@@ -42,7 +42,13 @@ class StoreOnboardingViewModel @Inject constructor(
         const val NUMBER_ITEMS_IN_COLLAPSED_MODE = 3
     }
 
-    private val _viewState = MutableLiveData<OnboardingState>()
+    private val _viewState = MutableLiveData(
+        OnboardingState(
+            show = false,
+            title = R.string.store_onboarding_title,
+            tasks = emptyList(),
+        )
+    )
     val viewState = _viewState
 
     init {
