@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -116,6 +117,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -755,6 +757,10 @@ class CreateShippingLabelViewModel @Inject constructor(
         }
     }
 
+    fun onShippingNoticeLearnMoreClicked() {
+        triggerEvent(OpenShippingInstructions(AppUrls.EU_SHIPPING_CUSTOMS_REQUIREMENTS))
+    }
+
     override fun onCleared() {
         super.onCleared()
         shippingLabelRepository.clearCache()
@@ -840,4 +846,6 @@ class CreateShippingLabelViewModel @Inject constructor(
     enum class FlowStep {
         ORIGIN_ADDRESS, SHIPPING_ADDRESS, PACKAGING, CUSTOMS, CARRIER, PAYMENT
     }
+
+    data class OpenShippingInstructions(val url: String) : MultiLiveEvent.Event()
 }
