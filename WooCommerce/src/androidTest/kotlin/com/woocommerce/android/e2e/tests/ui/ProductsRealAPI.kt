@@ -124,7 +124,7 @@ class ProductsRealAPI : TestBase() {
             .assertProductCard(productSalad)
             .assertProductsCount(1)
             // Search for non-existing product
-            .enterSearchTerm("Unexisting Product")
+            .enterAbsentSearchTerm("Unexisting Product")
             .assertProductsCount(0)
             // Leave search and make sure all products are listed
             .leaveSearchMode()
@@ -160,20 +160,20 @@ class ProductsRealAPI : TestBase() {
             // Filter by "Product type" = "Simple"
             .tapFilters()
             .filterByPropertyAndValue("Product type", "Simple")
-            .tapShowProducts()
+            .tapShowProducts(true)
             .assertProductCard(productSalad)
             .assertProductsCount(1)
             // Check that "Clear" button works
             .tapFilters()
             .clearFilters()
-            .tapShowProducts()
+            .tapShowProducts(true)
             .assertProductCard(productSalad)
             .assertProductCard(productCappuccino)
             .assertProductsCount(2)
             // Filter by "Stock status" = "Out of Stock" and expect to see zero products
             .tapFilters()
             .filterByPropertyAndValue("Stock status", "Out of stock")
-            .tapShowProducts()
+            .tapShowProducts(false)
             .assertProductsCount(0)
     }
 

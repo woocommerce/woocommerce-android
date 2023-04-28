@@ -61,7 +61,18 @@ class ProductListScreen : Screen {
 
     fun enterSearchTerm(term: String): ProductListScreen {
         typeTextInto(androidx.appcompat.R.id.search_src_text, term)
+        // Sleep to let the previous results disappear
         Thread.sleep(2000)
+        waitForAtLeastOneElementToBeDisplayed(R.id.productInfoContainer)
+        return this
+    }
+
+    fun enterAbsentSearchTerm(term: String): ProductListScreen {
+        typeTextInto(androidx.appcompat.R.id.search_src_text, term)
+        // Sleep to let the previous results disappear
+        Thread.sleep(2000)
+        // If we don't expect for results, we wait for "no results" situation
+        waitForElementToBeDisplayed(R.id.empty_view_title)
         return this
     }
 

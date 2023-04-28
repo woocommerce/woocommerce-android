@@ -39,7 +39,7 @@ class FilterScreen : Screen {
         return this
     }
 
-    fun tapShowProducts(): ProductListScreen {
+    fun tapShowProducts(expectResults: Boolean): ProductListScreen {
         val showProductButton = Espresso.onView(
             Matchers.allOf(
                 Matchers.anyOf(
@@ -51,17 +51,35 @@ class FilterScreen : Screen {
         )
 
         clickOn(showProductButton)
+        // Sleep to let the previous results disappear
+        Thread.sleep(2000)
+
+        if (expectResults) {
+            waitForAtLeastOneElementToBeDisplayed(R.id.productInfoContainer)
+        } else {
+            waitForElementToBeDisplayedWithoutFailure(R.id.empty_view_title)
+        }
+
         return ProductListScreen()
     }
 
-    fun tapShowOrders(): OrderListScreen {
+    fun tapShowOrders(expectResults: Boolean): OrderListScreen {
         clickOn(R.id.showOrdersButton)
+        // Sleep to let the previous results disappear
+        Thread.sleep(2000)
+
+        if (expectResults) {
+            waitForElementToBeDisplayed(R.id.orderListHeader)
+        } else {
+            waitForElementToBeDisplayedWithoutFailure(R.id.empty_view_title)
+        }
+
         return OrderListScreen()
     }
 
     fun leaveFilterScreenToProducts(): ProductListScreen {
         if (isElementDisplayed(R.id.filterList) || isElementDisplayed(R.id.filterOptionList)) {
-            tapShowProducts()
+            tapShowProducts(false)
         }
 
         return ProductListScreen()
@@ -69,7 +87,7 @@ class FilterScreen : Screen {
 
     fun leaveFilterScreenToOrders(): OrderListScreen {
         if (isElementDisplayed(R.id.filterList)) {
-            tapShowOrders()
+            tapShowOrders(false)
         }
 
         return OrderListScreen()
