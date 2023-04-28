@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import com.google.android.material.card.MaterialCardView
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.databinding.ShippingNoticeBannerBinding
 
 class ShippingNoticeCard @JvmOverloads constructor(
@@ -16,8 +17,10 @@ class ShippingNoticeCard @JvmOverloads constructor(
         LayoutInflater.from(context), this, true
     )
 
-    fun setLearnMoreClickListener(action: (View) -> Unit) {
-        binding.learnMoreButton.setOnClickListener(action)
+    fun setLearnMoreClickListener(action: (url: String) -> Unit) {
+        binding.learnMoreButton.setOnClickListener {
+            action(AppUrls.EU_SHIPPING_CUSTOMS_REQUIREMENTS)
+        }
     }
 
     fun setDismissClickListener(action: (View) -> Unit) {
