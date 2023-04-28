@@ -535,7 +535,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel = createViewModel()
 
         // then
-        assertFalse(viewModel.viewState.isSimplePaymentsWIPNoticeCardVisible)
+        assertFalse(viewModel.viewState.isSimplePaymentsAndOrderCreationFeedbackVisible)
     }
 
     @Test
@@ -560,7 +560,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel = createViewModel()
 
         // then
-        assertTrue(viewModel.viewState.isSimplePaymentsWIPNoticeCardVisible)
+        assertTrue(viewModel.viewState.isSimplePaymentsAndOrderCreationFeedbackVisible)
     }
 
     @Test
@@ -642,7 +642,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel.onIPPFeedbackBannerCTAClicked()
 
         // then
-        assertTrue(viewModel.viewState.isSimplePaymentsWIPNoticeCardVisible)
+        assertTrue(viewModel.viewState.isSimplePaymentsAndOrderCreationFeedbackVisible)
     }
 
     @Test
@@ -676,7 +676,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel.onIPPFeedbackBannerDismissedForever()
 
         // then
-        assertTrue(viewModel.viewState.isSimplePaymentsWIPNoticeCardVisible)
+        assertTrue(viewModel.viewState.isSimplePaymentsAndOrderCreationFeedbackVisible)
     }
 
     @Test
@@ -710,7 +710,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel.onIPPFeedbackBannerDismissedShowLater()
 
         // then
-        assertTrue(viewModel.viewState.isSimplePaymentsWIPNoticeCardVisible)
+        assertTrue(viewModel.viewState.isSimplePaymentsAndOrderCreationFeedbackVisible)
     }
 
     @Test
@@ -848,7 +848,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             viewModel = createViewModel()
 
             // then
-            assertTrue(viewModel.viewState.isSimplePaymentsWIPNoticeCardVisible)
+            assertTrue(viewModel.viewState.isSimplePaymentsAndOrderCreationFeedbackVisible)
         }
 
     @Test

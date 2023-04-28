@@ -40,10 +40,17 @@
             app:layout_constraintTop_toBottomOf="@+id/order_filters_card"/>
 
         <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/jitmFragment"
+            android:id="@+id/jitmOrdersFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@+id/order_filters_card"/>
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/orders_list_top_barrier"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="ippFeedbackBanner, jitmOrdersFragment" />
 
         <com.woocommerce.android.ui.orders.list.OrderListView
             android:id="@+id/order_list_view"
@@ -52,7 +59,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ippFeedbackBanner"
+            app:layout_constraintTop_toBottomOf="@+id/orders_list_top_barrier"
             tools:visibility="gone" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton

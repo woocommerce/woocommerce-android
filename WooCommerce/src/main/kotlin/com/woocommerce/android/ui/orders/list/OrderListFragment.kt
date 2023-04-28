@@ -26,7 +26,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.AppUrls
-import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -121,10 +120,6 @@ class OrderListFragment :
     private val emptyView
         get() = binding.orderListView.emptyView
 
-    private val feedbackState
-        get() = FeedbackPrefs.getFeatureFeedbackSettings(SIMPLE_PAYMENTS_AND_ORDER_CREATION)?.feedbackState
-            ?: FeedbackState.UNANSWERED
-
     override fun onCreate(savedInstanceState: Bundle?) {
         lifecycle.addObserver(viewModel.performanceObserver)
         super.onCreate(savedInstanceState)
@@ -139,12 +134,6 @@ class OrderListFragment :
         enterTransition = fadeThroughTransition
         exitTransition = fadeThroughTransition
         reenterTransition = fadeThroughTransition
-    }
-
-    private fun initJitm() {
-        childFragmentManager.beginTransaction()
-            .replace(R.id.jitmFragment, JitmFragment.newInstance(JITM_MESSAGE_PATH), JITM_FRAGMENT_TAG)
-            .commit()
     }
 
     override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
@@ -218,7 +207,6 @@ class OrderListFragment :
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-        initJitm()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -391,9 +379,14 @@ class OrderListFragment :
                 binding.orderFiltersCard.updateFilterSelection(filterCount)
             }
             new.ippFeedbackBannerState.takeIfNotEqualTo(old?.ippFeedbackBannerState) { bannerState ->
-                renderIPPBanner(bannerState)
+                renderIPPFeedbackRequestBanner(bannerState)
             }
-            new.isSimplePaymentsWIPNoticeCardVisible.takeIfNotEqualTo(old?.isSimplePaymentsWIPNoticeCardVisible) {
+            new.jitmEnabled.takeIfNotEqualTo(old?.jitmEnabled) { jitmEnabled ->
+                initJitm(jitmEnabled)
+            }
+            new.isSimplePaymentsAndOrderCreationFeedbackVisible.takeIfNotEqualTo(
+                old?.isSimplePaymentsAndOrderCreationFeedbackVisible
+            ) {
                 displaySimplePaymentsWIPCard(it)
             }
         }
@@ -411,7 +404,7 @@ class OrderListFragment :
         )
     }
 
-    private fun renderIPPBanner(bannerState: OrderListViewModel.IPPSurveyFeedbackBannerState) {
+    private fun renderIPPFeedbackRequestBanner(bannerState: OrderListViewModel.IPPSurveyFeedbackBannerState) {
         val isVisible =
             bannerState is OrderListViewModel.IPPSurveyFeedbackBannerState.Visible && !DisplayUtils.isLandscape(context)
 
@@ -427,6 +420,18 @@ class OrderListFragment :
             }
             binding.ippFeedbackBanner.onCTAClickListener = {
                 viewModel.onIPPFeedbackBannerCTAClicked()
+            }
+        }
+    }
+
+    private fun initJitm(jitmEnabled: Boolean) {
+        if (jitmEnabled) {
+            childFragmentManager.beginTransaction()
+                .replace(R.id.jitmOrdersFragment, JitmFragment.newInstance(JITM_MESSAGE_PATH), JITM_FRAGMENT_TAG)
+                .commit()
+        } else {
+            childFragmentManager.findFragmentByTag(JITM_FRAGMENT_TAG)?.let {
+                childFragmentManager.beginTransaction().remove(it).commit()
             }
         }
     }
@@ -613,7 +618,7 @@ class OrderListFragment :
     }
 
     private fun displaySimplePaymentsWIPCard(show: Boolean) {
-        if (!show || feedbackState == FeedbackState.DISMISSED) {
+        if (!show) {
             binding.simplePaymentsWIPcard.isVisible = false
             return
         }
