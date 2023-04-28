@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation.banner
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
@@ -30,9 +29,5 @@ class ShippingNoticeCard @JvmOverloads constructor(
         binding.learnMoreButton.setOnClickListener {
             action(AppUrls.EU_SHIPPING_CUSTOMS_REQUIREMENTS)
         }
-    }
-
-    fun setDismissClickListener(action: (View) -> Unit) {
-        binding.dismissButton.setOnClickListener(action)
     }
 }
