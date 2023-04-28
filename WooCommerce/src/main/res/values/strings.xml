@@ -3035,6 +3035,9 @@
     <string name="store_onboarding_full_screen_transition_name">Onboarding full screen</string>
     <string name="store_onboarding_collapsed_transition_name">Onboarding collapsed list</string>
     <string name="store_onboarding_menu_share_feedback">Share feedback</string>
+    <string name="store_onboarding_menu_hide_store_setup">Hide store setup list</string>
+    <string name="store_onboarding_dialog_title">Hide store setup list</string>
+    <string name="store_onboarding_dialog_description">You can restore it back when you need it from Menu > Settings > Store</string>
     <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">To launch your store, you need to upgrade to our plan. &lt;u&gt;Upgrade&lt;/u&gt;</string>
     <string name="store_onboarding_launch_store_button">Publish my store</string>
     <string name="store_onboarding_launch_store_share_url_button">Share URL</string>
@@ -3050,6 +3053,8 @@
     <string name="store_onboarding_launch_store_ok">OK</string>
     <string name="store_onboarding_get_paid_title">Payments Setup</string>
     <string name="store_onboarding_get_paid_loading_label">Loading…</string>
+    <string name="store_onboarding_setting_title">Store Setup List</string>
+    <string name="store_onboarding_setting_description">Show or hide store setup list</string>
 
     <!--
     Support Request

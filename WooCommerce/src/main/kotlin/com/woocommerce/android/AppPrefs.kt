@@ -27,6 +27,7 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.PRODUCT_SORTING_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.UPDATE_SIMULATED_READER_OPTION
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED
+import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_SETTING_VISIBILITY
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_TASKS_COMPLETED
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_PHONE_NUMBER
@@ -181,6 +182,9 @@ object AppPrefs {
 
         // Was store onboarding shown at least once
         STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE,
+
+        // User preference in regards to show store onboarding or not
+        STORE_ONBOARDING_SETTING_VISIBILITY,
 
         // Time when the last successful payment was made with a card reader
         CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME,
@@ -934,6 +938,19 @@ object AppPrefs {
             key = PrefKeyString("$STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE:$siteId"),
             default = false
         )
+
+    fun getOnboardingSettingVisibility(siteId: Int): Boolean =
+        getBoolean(
+            key = PrefKeyString("$STORE_ONBOARDING_SETTING_VISIBILITY:$siteId"),
+            default = true
+        )
+
+    fun setOnboardingSettingVisibility(siteId: Int, visible: Boolean) {
+        setBoolean(
+            key = PrefKeyString("$STORE_ONBOARDING_SETTING_VISIBILITY:$siteId"),
+            value = visible
+        )
+    }
 
     fun getCardReaderLastSuccessfulPaymentTime() =
         getLong(UndeletablePrefKey.CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME, 0L)

@@ -15,6 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PAYMEN
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCTS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STORE_DETAILS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ui.login.storecreation.onboarding.ShouldShowOnboarding.Source.ONBOARDING_LIST
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTask
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.ABOUT_YOUR_STORE
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.ADD_FIRST_PRODUCT
@@ -23,7 +24,6 @@ import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboarding
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.PAYMENTS
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.WC_PAYMENTS
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,12 +36,19 @@ class StoreOnboardingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val onboardingRepository: StoreOnboardingRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val shouldShowOnboarding: ShouldShowOnboarding
 ) : ScopedViewModel(savedStateHandle), DefaultLifecycleObserver {
     companion object {
         const val NUMBER_ITEMS_IN_COLLAPSED_MODE = 3
     }
 
-    private val _viewState = MutableLiveData<OnboardingState>()
+    private val _viewState = MutableLiveData(
+        OnboardingState(
+            show = false,
+            title = R.string.store_onboarding_title,
+            tasks = emptyList(),
+        )
+    )
     val viewState = _viewState
 
     init {
@@ -49,7 +56,7 @@ class StoreOnboardingViewModel @Inject constructor(
             onboardingRepository.observeOnboardingTasks()
                 .collectLatest { tasks ->
                     _viewState.value = OnboardingState(
-                        show = tasks.any { !it.isComplete } && FeatureFlag.STORE_CREATION_ONBOARDING.isEnabled(),
+                        show = shouldShowOnboarding(tasks),
                         title = R.string.store_onboarding_title,
                         tasks = tasks.map { mapToOnboardingTaskState(it) },
                     )
@@ -69,6 +76,7 @@ class StoreOnboardingViewModel @Inject constructor(
             CUSTOMIZE_DOMAIN -> OnboardingTaskUi(CustomizeDomainTaskRes, isCompleted = task.isComplete)
             WC_PAYMENTS,
             PAYMENTS -> OnboardingTaskUi(SetupPaymentsTaskRes, isCompleted = task.isComplete)
+
             MOBILE_UNSUPPORTED -> error("Unknown task type is not allowed in UI layer")
         }
 
@@ -82,6 +90,26 @@ class StoreOnboardingViewModel @Inject constructor(
 
     fun onShareFeedbackClicked() {
         triggerEvent(NavigateToSurvey)
+    }
+
+    fun onHideOnboardingClicked() {
+        triggerEvent(
+            MultiLiveEvent.Event.ShowDialog(
+                titleId = R.string.store_onboarding_dialog_title,
+                messageId = R.string.store_onboarding_dialog_description,
+                positiveButtonId = R.string.remove,
+                positiveBtnAction = { dialog, _ ->
+                    _viewState.value = _viewState.value?.copy(show = false)
+                    shouldShowOnboarding.updateOnboardingVisibilitySetting(
+                        show = false,
+                        source = ONBOARDING_LIST
+                    )
+                    dialog.dismiss()
+                },
+                negativeBtnAction = { dialog, _ -> dialog.dismiss() },
+                negativeButtonId = R.string.cancel,
+            )
+        )
     }
 
     fun onTaskClicked(task: OnboardingTaskUi) {
@@ -112,7 +140,7 @@ class StoreOnboardingViewModel @Inject constructor(
     }
 
     private fun refreshOnboardingList() {
-        if (!onboardingRepository.isOnboardingCompleted()) {
+        if (!shouldShowOnboarding.isOnboardingMarkedAsCompleted()) {
             launch {
                 onboardingRepository.fetchOnboardingTasks()
             }
