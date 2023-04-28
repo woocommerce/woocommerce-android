@@ -4,7 +4,6 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -757,8 +756,8 @@ class CreateShippingLabelViewModel @Inject constructor(
         }
     }
 
-    fun onShippingNoticeLearnMoreClicked() {
-        triggerEvent(OpenShippingInstructions(AppUrls.EU_SHIPPING_CUSTOMS_REQUIREMENTS))
+    fun onShippingNoticeLearnMoreClicked(learnMoreUrl: String) {
+        triggerEvent(OpenShippingInstructions(learnMoreUrl))
     }
 
     override fun onCleared() {

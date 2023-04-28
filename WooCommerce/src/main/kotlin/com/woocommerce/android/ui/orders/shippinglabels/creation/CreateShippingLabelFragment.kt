@@ -312,7 +312,7 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
             with(binding.shippingNoticeBanner) {
                 isVisible = true
                 setDismissClickListener { collapse() }
-                setLearnMoreClickListener { viewModel.onShippingNoticeLearnMoreClicked() }
+                setLearnMoreClickListener(viewModel::onShippingNoticeLearnMoreClicked)
             }
         }
 
