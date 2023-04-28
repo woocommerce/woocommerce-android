@@ -690,6 +690,21 @@ class OrderListViewModel @Inject constructor(
         )
     }
 
+    fun onDismissOrderCreationSimplePaymentsFeedback() {
+        analyticsTracker.track(
+            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
+            )
+        )
+        FeatureFeedbackSettings(
+            FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION,
+            FeatureFeedbackSettings.FeedbackState.DISMISSED
+        ).registerItself()
+        refreshOrdersBannerVisibility()
+    }
+
     sealed class OrderListEvent : Event() {
         data class ShowErrorSnack(@StringRes val messageRes: Int) : OrderListEvent()
         object ShowOrderFilters : OrderListEvent()

@@ -628,7 +628,7 @@ class OrderListFragment :
             getString(R.string.orderlist_simple_payments_wip_title),
             getString(R.string.orderlist_simple_payments_wip_message_enabled),
             onGiveFeedbackClick = { onGiveFeedbackClicked() },
-            onDismissClick = { onDismissWIPCardClicked() },
+            onDismissClick = { viewModel.onDismissOrderCreationSimplePaymentsFeedback() },
             showFeedbackButton = true
         )
     }
@@ -641,29 +641,13 @@ class OrderListFragment :
                 AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
             )
         )
-        registerFeedbackSetting(FeedbackState.GIVEN)
+        FeatureFeedbackSettings(
+            SIMPLE_PAYMENTS_AND_ORDER_CREATION,
+            FeedbackState.GIVEN
+        ).registerItself()
         NavGraphMainDirections
             .actionGlobalFeedbackSurveyFragment(SurveyType.ORDER_CREATION)
             .apply { findNavController().navigateSafely(this) }
-    }
-
-    private fun onDismissWIPCardClicked() {
-        AnalyticsTracker.track(
-            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
-            mapOf(
-                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FEEDBACK,
-                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
-            )
-        )
-        registerFeedbackSetting(FeedbackState.DISMISSED)
-        displaySimplePaymentsWIPCard(false)
-    }
-
-    private fun registerFeedbackSetting(state: FeedbackState) {
-        FeatureFeedbackSettings(
-            SIMPLE_PAYMENTS_AND_ORDER_CREATION,
-            state
-        ).registerItself()
     }
 
     override fun onSwiped(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
