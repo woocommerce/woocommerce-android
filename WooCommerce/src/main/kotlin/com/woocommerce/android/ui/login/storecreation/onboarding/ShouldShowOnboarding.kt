@@ -28,7 +28,7 @@ class ShouldShowOnboarding @Inject constructor(
         } else false
 
         return if (!areAllTaskCompleted
-            && appPrefsWrapper.getOnboardingSettingVisibility(siteId)
+            && isOnboardingListSettingVisible()
             && FeatureFlag.STORE_CREATION_ONBOARDING.isEnabled()
         ) {
             appPrefsWrapper.setStoreOnboardingShown(siteId)
@@ -42,4 +42,7 @@ class ShouldShowOnboarding @Inject constructor(
     fun updateOnboardingVisibilitySetting(show: Boolean) {
         appPrefsWrapper.setOnboardingSettingVisibility(selectedSite.getSelectedSiteId(), show)
     }
+
+    fun isOnboardingListSettingVisible() =
+        appPrefsWrapper.getOnboardingSettingVisibility(selectedSite.getSelectedSiteId())
 }

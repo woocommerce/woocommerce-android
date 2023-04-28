@@ -220,6 +220,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         presenter.setupAnnouncementOption()
         presenter.setupJetpackInstallOption()
         presenter.setupApplicationPasswordsSettings()
+        presenter.setupOnboardingListVisibilitySetting()
     }
 
     private fun showDomainDashboard() {
@@ -255,16 +256,12 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
     override fun handleJetpackInstallOption(supportsJetpackInstallation: Boolean) {
         if (supportsJetpackInstallation) {
-            binding.storeSettingsContainer.visibility = View.VISIBLE
             binding.optionInstallJetpack.visibility = View.VISIBLE
             binding.optionInstallJetpack.setOnClickListener {
                 findNavController().navigateSafely(
                     MainSettingsFragmentDirections.actionMainSettingsFragmentToNavGraphJetpackInstall()
                 )
             }
-        } else {
-            // Hide the whole container because jetpack is the only option there
-            binding.storeSettingsContainer.visibility = View.GONE
         }
     }
 
@@ -290,6 +287,14 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
     override fun handleApplicationPasswordsSettings() {
         binding.optionNotifications.hide()
+    }
+
+    override fun handleStoreSetupListSetting(enabled: Boolean, onToggleChange: (Boolean) -> Unit) {
+        binding.optionStoreOnboardingListVisibility.show()
+        binding.optionStoreOnboardingListVisibility.isChecked = enabled
+        binding.optionStoreOnboardingListVisibility.setOnCheckedChangeListener { _, isChecked ->
+            onToggleChange(isChecked)
+        }
     }
 
     private fun updateStoreSettings() {

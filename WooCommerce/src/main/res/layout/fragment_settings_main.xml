@@ -73,7 +73,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:toggleOptionDesc="@string/store_onboarding_setting_description"
-                app:toggleOptionTitle="@string/store_onboarding_setting_title" />
+                app:toggleOptionTitle="@string/store_onboarding_setting_title"
+                android:visibility="gone" />
 
             <View style="@style/Woo.Divider" />
 

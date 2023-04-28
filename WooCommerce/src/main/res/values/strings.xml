@@ -3054,7 +3054,7 @@
     <string name="store_onboarding_get_paid_title">Payments Setup</string>
     <string name="store_onboarding_get_paid_loading_label">Loading…</string>
     <string name="store_onboarding_setting_title">Store Setup List</string>
-    <string name="store_onboarding_setting_description">Hide or show store setup list</string>
+    <string name="store_onboarding_setting_description">Show or hide store setup list</string>
 
     <!--
     Support Request
