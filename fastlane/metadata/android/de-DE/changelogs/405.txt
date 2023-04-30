@@ -1,2 +1,0 @@
-13.2:
-Diese Version enthält Fehlerkorrekturen, visuelle Verbesserungen und Verbesserungen an der Zugänglichkeit der Bestell- und Produktabschnitte in der App. Sende uns weiterhin Feedback! So finden wir heraus, was wir als Nächstes optimieren können.
