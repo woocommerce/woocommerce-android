@@ -384,10 +384,11 @@
     -->
     <string name="signup_get_started_button">Get Started</string>
     <string name="signup_get_started_label">Get started in minutes</string>
-    <string name="signup_already_registered">First, let’s create your account. Already registered? &lt;a href=\'login\'&gt;&lt;u&gt;Log in&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="signup_create_password_label">Create your password</string>
+    <string name="signup_get_started_create_account_label">First, let’s create your account. </string>
     <string name="signup_email_address_hint">Your email address</string>
     <string name="signup_password_hint">Choose a password</string>
-    <string name="signup_terms_of_service">By continuing, you agree to our &lt;u&gt;Terms of Service.&lt;/u&gt;</string>
+    <string name="signup_terms_of_service">By continuing, you agree to our &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Terms of Service.&lt;/u&gt;&lt;/a&gt;</string>
     <string name="signup_creating_account_loading_message">Creating new account</string>
     <string name="signup_email_exist_input">An account with this email already exists.</string>
     <string name="signup_email_invalid_input">Please enter a valid email address.</string>
@@ -1171,13 +1172,17 @@
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
     <string name="card_reader_tap_to_pay_explanation_title">Collect card payments\nwith your phone</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Your phone is ready for Tap to Pay.\nYour customer can tap their card\non your phone to pay.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Try a payment using your card and\nrefund it when you’re done.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Try a payment using your card and\nit will be refunded when you’re done.</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find"> You can find Tap to Pay on Android in\nMenu &gt; Payments, or Collect Payment and\nchoose Tap to Pay.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Try a payment</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Something went wrong. Please try again later.</string>
+    <string name="card_reader_tap_to_pay_explanation_refunding_payment">Refunding test payment…</string>
+    <string name="card_reader_tap_to_pay_explanation_refund_failed">The refund failed. Try to refund manually</string>
     <string name="card_reader_tap_to_pay_beta_features_heading">Tap To Pay</string>
     <string name="card_reader_tap_to_pay_beta_features_subheading">Test out Tap To Pay in the app</string>
     <string name="card_reader_tap_to_pay_test_payment_note">Tap To Pay Test Payment</string>
+    <string name="card_reader_tap_to_pay_successful_refund_message">Test Tap To Pay payment was successfully refunded</string>
+    <string name="card_reader_tap_to_pay_successful_refund_action_label">View Order</string>
 
     <!--
             Card Reader Type Selection
@@ -3030,6 +3035,9 @@
     <string name="store_onboarding_full_screen_transition_name">Onboarding full screen</string>
     <string name="store_onboarding_collapsed_transition_name">Onboarding collapsed list</string>
     <string name="store_onboarding_menu_share_feedback">Share feedback</string>
+    <string name="store_onboarding_menu_hide_store_setup">Hide store setup list</string>
+    <string name="store_onboarding_dialog_title">Hide store setup list</string>
+    <string name="store_onboarding_dialog_description">You can restore it back when you need it from Menu &gt; Settings &gt; Store</string>
     <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">To launch your store, you need to upgrade to our plan. &lt;u&gt;Upgrade&lt;/u&gt;</string>
     <string name="store_onboarding_launch_store_button">Publish my store</string>
     <string name="store_onboarding_launch_store_share_url_button">Share URL</string>
@@ -3045,6 +3053,8 @@
     <string name="store_onboarding_launch_store_ok">OK</string>
     <string name="store_onboarding_get_paid_title">Payments Setup</string>
     <string name="store_onboarding_get_paid_loading_label">Loading…</string>
+    <string name="store_onboarding_setting_title">Store Setup List</string>
+    <string name="store_onboarding_setting_description">Show or hide store setup list</string>
 
     <!--
     Support Request
