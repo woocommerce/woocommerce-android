@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_CAMPAIGN_NAME
@@ -91,6 +92,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val shouldShowFeedbackBanner: ShouldShowFeedbackBanner = mock()
     private val getIPPFeedbackBannerData: GetIPPFeedbackBannerData = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
+    private val appPrefs = mock<AppPrefs>()
 
     @Before
     fun setup() = testBlocking {
@@ -139,6 +141,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         markFeedbackBannerAsDismissedForever = mock(),
         markFeedbackBannerAsCompleted = mock(),
         analyticsTracker = analyticsTracker,
+        appPrefs = appPrefs,
     )
 
     @Test
