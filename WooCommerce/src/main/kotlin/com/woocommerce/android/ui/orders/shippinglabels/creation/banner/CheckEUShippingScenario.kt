@@ -5,9 +5,9 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StateMachineData
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Transition
 import com.woocommerce.android.util.FeatureFlag
-import javax.inject.Inject
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
 
 class CheckEUShippingScenario @Inject constructor() {
     operator fun invoke(shippingStateTransitions: StateFlow<Transition>) = flow {
