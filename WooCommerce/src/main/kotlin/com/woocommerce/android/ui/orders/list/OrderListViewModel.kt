@@ -364,22 +364,24 @@ class OrderListViewModel @Inject constructor(
 
     private fun displayIPPFeedbackOrOrdersBannerOrJitm() {
         viewModelScope.launch {
-            if (shouldShowFeedbackBanner()) {
-                val bannerData = getIPPFeedbackBannerData()
-                if (bannerData != null) {
-                    viewState = viewState.copy(
-                        ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(bannerData)
-                    )
-                    trackIPPBannerEvent(AnalyticsEvent.IPP_FEEDBACK_BANNER_SHOWN)
+            when {
+                shouldShowFeedbackBanner() -> {
+                    val bannerData = getIPPFeedbackBannerData()
+                    if (bannerData != null) {
+                        viewState = viewState.copy(
+                            ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(bannerData)
+                        )
+                        trackIPPBannerEvent(AnalyticsEvent.IPP_FEEDBACK_BANNER_SHOWN)
+                    }
                 }
-            } else if (isSimplePaymentsAndOrderCreationFeedbackVisible) {
-                refreshOrdersBannerVisibility()
-            } else {
-                viewState = viewState.copy(
-                    ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden,
-                    jitmEnabled = appPrefs.isTapToPayEnabled
-                )
+                !isSimplePaymentsAndOrderCreationFeedbackVisible -> {
+                    viewState = viewState.copy(
+                        ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden,
+                        jitmEnabled = appPrefs.isTapToPayEnabled
+                    )
+                }
             }
+            refreshOrdersBannerVisibility()
         }
     }
 
