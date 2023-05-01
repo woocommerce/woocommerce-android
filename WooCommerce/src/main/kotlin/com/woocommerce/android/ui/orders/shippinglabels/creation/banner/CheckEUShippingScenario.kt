@@ -5,13 +5,10 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.WaitingForInput
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StateMachineData
 import com.woocommerce.android.util.FeatureFlag
-import javax.inject.Inject
 import kotlinx.coroutines.flow.flow
 
-class CheckEUShippingScenario @Inject constructor(
-    private val stateMachine: ShippingLabelsStateMachine
-) {
-    operator fun invoke() = flow {
+class CheckEUShippingScenario {
+    operator fun invoke(stateMachine: ShippingLabelsStateMachine) = flow {
         if (FeatureFlag.EU_SHIPPING_NOTIFICATION.isEnabled().not()) emit(false)
 
         stateMachine.transitions.collect {
@@ -22,8 +19,6 @@ class CheckEUShippingScenario @Inject constructor(
             }
         }
     }
-
-    operator fun invoke(data: StateMachineData) = data.isEUShippingConditionMet()
 
     private fun StateMachineData.isEUShippingConditionMet(): Boolean {
         val originCountry = stepsState.originAddressStep.data.country

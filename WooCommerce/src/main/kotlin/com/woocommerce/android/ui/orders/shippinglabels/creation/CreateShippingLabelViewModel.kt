@@ -153,8 +153,7 @@ class CreateShippingLabelViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
     private val getLocations: GetLocations,
-    private val appPrefs: AppPrefsWrapper,
-    private val checkEUShippingScenario: CheckEUShippingScenario
+    private val appPrefs: AppPrefsWrapper
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val STATE_KEY = KEY_STATE
@@ -170,7 +169,7 @@ class CreateShippingLabelViewModel @Inject constructor(
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
-    val isEUShippingScenario = checkEUShippingScenario().asLiveData()
+    val isEUShippingScenario = CheckEUShippingScenario().invoke(stateMachine).asLiveData()
 
     init {
         initializeStateMachine()
