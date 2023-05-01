@@ -288,6 +288,7 @@ class OrderListFragment :
 
         viewModel.isFetchingFirstPage.observe(viewLifecycleOwner) {
             binding.orderRefreshLayout.isRefreshing = it == true
+            refreshJitm()
         }
 
         viewModel.isLoadingMore.observe(viewLifecycleOwner) {
@@ -433,6 +434,12 @@ class OrderListFragment :
             childFragmentManager.findFragmentByTag(JITM_FRAGMENT_TAG)?.let {
                 childFragmentManager.beginTransaction().remove(it).commit()
             }
+        }
+    }
+
+    private fun refreshJitm() {
+        childFragmentManager.findFragmentByTag(JITM_FRAGMENT_TAG)?.let {
+            (it as JitmFragment).refreshJitms()
         }
     }
 
