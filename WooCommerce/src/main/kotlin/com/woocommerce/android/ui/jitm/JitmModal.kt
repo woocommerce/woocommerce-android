@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
+import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
@@ -60,6 +61,7 @@ fun JitmModal(state: JitmState.Modal) {
                             .data(state.backgroundImageUrl)
                             .fallback(R.drawable.img_woo_generic_error)
                             .error(R.drawable.img_woo_generic_error)
+                            .decoderFactory(SvgDecoder.Factory())
                             .build(),
                         contentDescription = null,
                         contentScale = ContentScale.Crop,

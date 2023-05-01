@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
@@ -135,6 +136,7 @@ private fun BackgroundImage(bannerState: JitmState.Banner) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(icon.url)
+                    .decoderFactory(SvgDecoder.Factory())
                     .build(),
                 contentDescription = null,
                 modifier = Modifier.width(154.dp)
@@ -170,6 +172,7 @@ private fun BadgeIcon(bannerState: JitmState.Banner) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(icon.url)
+                    .decoderFactory(SvgDecoder.Factory())
                     .build(),
                 contentDescription = null,
                 modifier = Modifier.height(26.dp)
