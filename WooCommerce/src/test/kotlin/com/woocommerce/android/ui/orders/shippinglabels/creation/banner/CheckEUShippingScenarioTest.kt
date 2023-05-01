@@ -4,6 +4,8 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.WaitingForInput
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StateMachineData
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.CarrierStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.CustomsStep
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.OriginAddressStep
@@ -28,34 +30,38 @@ internal class CheckEUShippingScenarioTest: BaseUnitTest() {
     }
 
     @Test
-    fun `when origin country is US and destination country is EU then emit true`() = testBlocking {
+    fun `when origin country is US and destination country is AT then emit true`() = testBlocking {
         // Given
-        val originCountry = "US"
-        val destinationCountry = "AT"
-        val state = ShippingLabelsStateMachine.State.WaitingForInput(
-            data = ShippingLabelsStateMachine.StateMachineData(
-                order = Order.EMPTY,
-                stepsState = emptyStepState.copy(
-                    originAddressStep = OriginAddressStep(
-                        StepStatus.READY,
-                        Address.EMPTY.copy(country = Location.EMPTY.copy(code = originCountry))
-                    ),
-                    shippingAddressStep = ShippingAddressStep(
-                        StepStatus.READY,
-                        Address.EMPTY.copy(country = Location.EMPTY.copy(code = destinationCountry))
-                    )
-                )
-            )
+        val transitions = generateExpectedTransitions(
+            originCountry = "US",
+            destinationCountry = "AT"
         )
 
         // When
-        val result = sut.invoke(
-            flowOf(ShippingLabelsStateMachine.Transition(state, null))
-        ).single()
+        val result = sut.invoke(transitions).single()
 
         // Then
         assert(result)
     }
+
+    private fun generateExpectedTransitions(
+        originCountry: String,
+        destinationCountry: String
+    ) = WaitingForInput(
+        data = StateMachineData(
+            order = Order.EMPTY,
+            stepsState = emptyStepState.copy(
+                originAddressStep = OriginAddressStep(
+                    StepStatus.READY,
+                    Address.EMPTY.copy(country = Location.EMPTY.copy(code = originCountry))
+                ),
+                shippingAddressStep = ShippingAddressStep(
+                    StepStatus.READY,
+                    Address.EMPTY.copy(country = Location.EMPTY.copy(code = destinationCountry))
+                )
+            )
+        )
+    ).let { flowOf(ShippingLabelsStateMachine.Transition(it, null)) }
 
     private val emptyStepState = ShippingLabelsStateMachine.StepsState(
         originAddressStep = OriginAddressStep(StepStatus.NOT_READY, Address.EMPTY),
