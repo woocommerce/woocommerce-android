@@ -83,13 +83,6 @@ class ShippingCustomsFragment :
             }
         }
 
-        if (viewModel.isEUShippingScenario) {
-            with(binding.shippingNoticeBanner) {
-                isVisible = AppPrefs.isEUShippingNoticeDismissed.not()
-                setLearnMoreClickListener(viewModel::onShippingNoticeLearnMoreClicked)
-            }
-        }
-
         setupObservers(binding)
     }
 
@@ -110,6 +103,16 @@ class ShippingCustomsFragment :
                 binding.packagesList.isVisible = !show
             }
         }
+
+        viewModel.isEUShippingScenario.observe(viewLifecycleOwner) {
+            if (it) return@observe
+
+            with(binding.shippingNoticeBanner) {
+                isVisible = AppPrefs.isEUShippingNoticeDismissed.not()
+                setLearnMoreClickListener(viewModel::onShippingNoticeLearnMoreClicked)
+            }
+        }
+
         viewModel.event.observe(
             viewLifecycleOwner
         ) { event ->

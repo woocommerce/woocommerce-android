@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.model.ContentsType
@@ -71,8 +72,7 @@ class ShippingCustomsViewModel @Inject constructor(
     val countries: List<Location>
         get() = dataStore.getCountries().map { it.toAppModel() }
 
-    val isEUShippingScenario
-        get() = checkEUShippingScenario()
+    val isEUShippingScenario = checkEUShippingScenario().asLiveData()
 
     init {
         loadData()
