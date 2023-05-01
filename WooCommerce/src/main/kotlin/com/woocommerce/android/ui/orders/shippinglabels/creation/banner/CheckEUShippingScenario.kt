@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation.banner
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.WaitingForInput
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StateMachineData
 import com.woocommerce.android.util.FeatureFlag
 import javax.inject.Inject
 import kotlinx.coroutines.flow.flow
@@ -15,16 +16,18 @@ class CheckEUShippingScenario @Inject constructor(
 
         stateMachine.transitions.collect {
             when (it.state) {
-                is WaitingForInput -> emit(it.state.isEUShippingConditionMet())
+                is WaitingForInput -> emit(it.state.data.isEUShippingConditionMet())
                 else -> emit(false)
 
             }
         }
     }
 
-    private fun WaitingForInput.isEUShippingConditionMet(): Boolean {
-        val originCountry = data.stepsState.originAddressStep.data.country
-        val destinationCountry = data.stepsState.shippingAddressStep.data.country
+    operator fun invoke(data: StateMachineData) = data.isEUShippingConditionMet()
+
+    private fun StateMachineData.isEUShippingConditionMet(): Boolean {
+        val originCountry = stepsState.originAddressStep.data.country
+        val destinationCountry = stepsState.shippingAddressStep.data.country
 
         return originCountry.code == US_COUNTRY_CODE &&
             destinationCountry.isEUCountryFollowingNewCustomRules()
