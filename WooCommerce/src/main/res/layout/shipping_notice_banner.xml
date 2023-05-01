@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.divider.MaterialDivider
+        style="@style/Woo.Divider"
+        android:layout_width="match_parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_125"
+        android:paddingHorizontal="@dimen/minor_100"
+        android:paddingTop="@dimen/minor_25"
+        android:src="@drawable/ic_tintable_info_outline_24dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/color_secondary"
+        tools:ignore="RtlHardcoded" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/message"
+        android:layout_width="@dimen/minor_00"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/minor_00"
+        android:paddingEnd="@dimen/major_75"
+        android:paddingBottom="@dimen/major_100"
+        android:text="@string/shipping_notice_banner_content"
+        android:textColor="@color/material_on_surface_emphasis_high_type"
+        android:textSize="@dimen/text_minor_125"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/icon"
+        app:layout_constraintTop_toTopOf="@id/icon"
+        tools:ignore="RtlHardcoded" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/message">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/learn_more_button"
+            style="@style/Woo.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/minor_00"
+            android:text="@string/shipping_notice_learn_more"
+            android:textColor="@color/color_secondary" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/dismiss_button"
+            style="@style/Woo.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/minor_00"
+            android:layout_marginEnd="@dimen/major_75"
+            android:text="@string/shipping_notice_dismiss"
+            android:textColor="@color/color_secondary" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
