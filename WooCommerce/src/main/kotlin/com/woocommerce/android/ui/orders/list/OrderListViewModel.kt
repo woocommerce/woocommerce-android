@@ -105,13 +105,14 @@ class OrderListViewModel @Inject constructor(
     private val markFeedbackBannerAsCompleted: MarkIPPFeedbackSurveyAsCompleted,
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val appPrefs: AppPrefs,
+    private val feedbackPrefs: FeedbackPrefs,
 ) : ScopedViewModel(savedState), LifecycleOwner {
     private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
     }
 
     private val simplePaymentsAndOrderCreationFeedbackState
-        get() = FeedbackPrefs.getFeatureFeedbackSettings(
+        get() = feedbackPrefs.getFeatureFeedbackSettings(
             FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION
         )?.feedbackState ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
