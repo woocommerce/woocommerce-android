@@ -110,6 +110,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.NOT_READY
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.READY
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepsState
+import com.woocommerce.android.ui.orders.shippinglabels.creation.banner.CheckEUShippingScenario
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
@@ -151,7 +152,8 @@ class CreateShippingLabelViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
     private val getLocations: GetLocations,
-    private val appPrefs: AppPrefsWrapper
+    private val appPrefs: AppPrefsWrapper,
+    private val checkEUShippingScenario: CheckEUShippingScenario
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val STATE_KEY = KEY_STATE
@@ -166,6 +168,9 @@ class CreateShippingLabelViewModel @Inject constructor(
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
+
+    val isEUShippingScenario
+        get() = checkEUShippingScenario()
 
     init {
         initializeStateMachine()

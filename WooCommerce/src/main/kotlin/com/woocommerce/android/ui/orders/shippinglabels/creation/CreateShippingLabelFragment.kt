@@ -313,7 +313,7 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
     }
 
     private fun initializeViews(binding: FragmentCreateShippingLabelBinding) {
-        if (FeatureFlag.EU_SHIPPING_NOTIFICATION.isEnabled()) {
+        if (viewModel.isEUShippingScenario) {
             with(binding.shippingNoticeBanner) {
                 isVisible = AppPrefs.isEUShippingNoticeDismissed.not()
                 setLearnMoreClickListener(viewModel::onShippingNoticeLearnMoreClicked)
