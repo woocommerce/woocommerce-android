@@ -15,7 +15,6 @@ class CheckEUShippingScenario {
             when (it.state) {
                 is WaitingForInput -> emit(it.state.data.isEUShippingConditionMet())
                 else -> emit(false)
-
             }
         }
     }
@@ -33,9 +32,8 @@ class CheckEUShippingScenario {
             countryIsoCode.first == code || countryIsoCode.second == code
         }
 
-
     companion object {
-        val US_COUNTRY_CODE = "US"
+        const val US_COUNTRY_CODE = "US"
         val EU_COUNTRIES_FOLLOWING_CUSTOMS_RULES = listOf(
             Pair("AT", "AUT"),
             Pair("BE", "BEL"),
