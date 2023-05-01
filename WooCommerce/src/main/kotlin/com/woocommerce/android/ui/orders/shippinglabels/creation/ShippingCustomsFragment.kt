@@ -83,6 +83,13 @@ class ShippingCustomsFragment :
             }
         }
 
+        if (viewModel.isEUShippingScenario) {
+            with(binding.shippingNoticeBanner) {
+                isVisible = AppPrefs.isEUShippingNoticeDismissed.not()
+                setLearnMoreClickListener(viewModel::onShippingNoticeLearnMoreClicked)
+            }
+        }
+
         setupObservers(binding)
     }
 
@@ -101,15 +108,6 @@ class ShippingCustomsFragment :
             new.isProgressViewShown.takeIfNotEqualTo(old?.isProgressViewShown) { show ->
                 binding.progressView.isVisible = show
                 binding.packagesList.isVisible = !show
-            }
-        }
-
-        viewModel.isEUShippingScenario.observe(viewLifecycleOwner) {
-            if (it.not()) return@observe
-
-            with(binding.shippingNoticeBanner) {
-                isVisible = AppPrefs.isEUShippingNoticeDismissed.not()
-                setLearnMoreClickListener(viewModel::onShippingNoticeLearnMoreClicked)
             }
         }
 

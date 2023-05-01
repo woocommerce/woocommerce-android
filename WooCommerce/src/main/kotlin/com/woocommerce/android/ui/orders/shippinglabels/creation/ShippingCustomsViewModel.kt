@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.model.ContentsType
@@ -13,7 +12,6 @@ import com.woocommerce.android.model.RestrictionType
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsViewModel.LineValidationState
-import com.woocommerce.android.ui.orders.shippinglabels.creation.banner.CheckEUShippingScenario
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -50,8 +48,7 @@ class ShippingCustomsViewModel @Inject constructor(
     private val selectedSide: SelectedSite,
     parameterRepository: ParameterRepository,
     private val dataStore: WCDataStore,
-    private val resourceProvider: ResourceProvider,
-    private val checkEUShippingScenario: CheckEUShippingScenario
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedStateHandle), ShippingCustomsFormListener {
     companion object {
         private const val KEY_PARAMETERS = "key_parameters"
@@ -72,7 +69,8 @@ class ShippingCustomsViewModel @Inject constructor(
     val countries: List<Location>
         get() = dataStore.getCountries().map { it.toAppModel() }
 
-    val isEUShippingScenario = checkEUShippingScenario().asLiveData()
+    val isEUShippingScenario
+        get() = args.isEUShippingScenario
 
     init {
         loadData()
