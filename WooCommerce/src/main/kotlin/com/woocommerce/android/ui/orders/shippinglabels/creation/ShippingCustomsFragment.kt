@@ -12,12 +12,14 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentShippingCustomsBinding
+import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -77,6 +79,13 @@ class ShippingCustomsFragment :
             itemAnimator = DefaultItemAnimator().apply {
                 // Disable change animations to avoid duplicating viewholders
                 supportsChangeAnimations = false
+            }
+        }
+
+        if (FeatureFlag.EU_SHIPPING_NOTIFICATION.isEnabled()) {
+            with(binding.shippingNoticeBanner) {
+                isVisible = true
+                setDismissClickListener { collapse() }
             }
         }
 
