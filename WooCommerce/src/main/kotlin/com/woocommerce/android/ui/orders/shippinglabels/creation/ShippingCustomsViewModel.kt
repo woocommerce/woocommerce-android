@@ -12,6 +12,7 @@ import com.woocommerce.android.model.RestrictionType
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsViewModel.LineValidationState
+import com.woocommerce.android.ui.orders.shippinglabels.creation.banner.CheckEUShippingScenario
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -48,7 +49,8 @@ class ShippingCustomsViewModel @Inject constructor(
     private val selectedSide: SelectedSite,
     parameterRepository: ParameterRepository,
     private val dataStore: WCDataStore,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val checkEUShippingScenario: CheckEUShippingScenario
 ) : ScopedViewModel(savedStateHandle), ShippingCustomsFormListener {
     companion object {
         private const val KEY_PARAMETERS = "key_parameters"
@@ -68,6 +70,9 @@ class ShippingCustomsViewModel @Inject constructor(
 
     val countries: List<Location>
         get() = dataStore.getCountries().map { it.toAppModel() }
+
+    val isEUShippingScenario
+        get() = checkEUShippingScenario()
 
     init {
         loadData()
