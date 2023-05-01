@@ -635,7 +635,13 @@ class OrderListFragment :
             getString(R.string.orderlist_simple_payments_wip_title),
             getString(R.string.orderlist_simple_payments_wip_message_enabled),
             onGiveFeedbackClick = { onGiveFeedbackClicked() },
-            onDismissClick = { viewModel.onDismissOrderCreationSimplePaymentsFeedback() },
+            onDismissClick = {
+                FeatureFeedbackSettings(
+                    FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION,
+                    FeedbackState.DISMISSED
+                ).registerItself()
+                viewModel.onDismissOrderCreationSimplePaymentsFeedback()
+            },
             showFeedbackButton = true
         )
     }

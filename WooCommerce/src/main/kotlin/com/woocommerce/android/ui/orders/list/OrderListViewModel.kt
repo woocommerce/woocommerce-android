@@ -698,10 +698,6 @@ class OrderListViewModel @Inject constructor(
                 AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
             )
         )
-        FeatureFeedbackSettings(
-            FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION,
-            FeatureFeedbackSettings.FeedbackState.DISMISSED
-        ).registerItself()
         refreshOrdersBannerVisibility()
     }
 
