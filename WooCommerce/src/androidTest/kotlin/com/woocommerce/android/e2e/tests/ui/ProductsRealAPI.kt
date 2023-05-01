@@ -170,20 +170,20 @@ class ProductsRealAPI : TestBase() {
             // Filter by "Product type" = "Simple"
             .tapFilters()
             .filterByPropertyAndValue("Product type", "Simple")
-            .tapShowProducts(true)
+            .showProducts(true)
             .assertProductCard(productSalad)
             .assertProductsCount(1)
             // Check that "Clear" button works
             .tapFilters()
             .clearFilters()
-            .tapShowProducts(true)
+            .showProducts(true)
             .assertProductCard(productSalad)
             .assertProductCard(productCappuccino)
             .assertProductsCount(2)
             // Filter by "Stock status" = "Out of Stock" and expect to see zero products
             .tapFilters()
             .filterByPropertyAndValue("Stock status", "Out of stock")
-            .tapShowProducts(false)
+            .showProducts(false)
             .assertProductsCount(0)
     }
 

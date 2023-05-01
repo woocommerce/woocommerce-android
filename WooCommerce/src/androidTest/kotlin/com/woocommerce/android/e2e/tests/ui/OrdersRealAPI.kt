@@ -96,13 +96,13 @@ class OrdersRealAPI : TestBase() {
             // Filter by "Order Status" = "Completed"
             .tapFilters()
             .filterByPropertyAndValue("Order Status", "Completed")
-            .tapShowOrders(true)
+            .showOrders(true)
             .assertOrderCard(order41)
             .assertOrdersCount(1)
             // Check that "Clear" button works
             .tapFilters()
             .clearFilters()
-            .tapShowOrders(true)
+            .showOrders(true)
             .assertOrderCard(order40)
             .assertOrderCard(order41)
             .assertOrdersCount(2)
