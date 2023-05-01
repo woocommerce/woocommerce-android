@@ -206,7 +206,7 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
         }
 
         viewModel.isEUShippingScenario.observe(viewLifecycleOwner) {
-            if (it) return@observe
+            if (it.not()) return@observe
 
             with(binding.shippingNoticeBanner) {
                 isVisible = AppPrefs.isEUShippingNoticeDismissed.not()
