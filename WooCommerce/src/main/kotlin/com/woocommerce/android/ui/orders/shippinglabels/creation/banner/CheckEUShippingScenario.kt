@@ -25,6 +25,42 @@ class CheckEUShippingScenario @Inject constructor(
         val originCountry = data.stepsState.originAddressStep.data.country
         val destinationCountry = data.stepsState.shippingAddressStep.data.country
 
-        return originCountry.code == "US" && destinationCountry.code == "UK"
+        return originCountry.code == US_COUNTRY_CODE && destinationCountry.code == "UK"
+    }
+
+
+    companion object {
+        val US_COUNTRY_CODE = "US"
+        val EU_COUNTRIES_FOLLOWING_CUSTOMS_RULES = listOf(
+            Pair("AT", "AUT"),
+            Pair("BE", "BEL"),
+            Pair("BG", "BGR"),
+            Pair("HR", "HRV"),
+            Pair("CY", "CYP"),
+            Pair("CZ", "CZE"),
+            Pair("DK", "DNK"),
+            Pair("EE", "EST"),
+            Pair("FI", "FIN"),
+            Pair("FR", "FRA"),
+            Pair("DE", "DEU"),
+            Pair("GR", "GRC"),
+            Pair("HU", "HUN"),
+            Pair("IE", "IRL"),
+            Pair("IT", "ITA"),
+            Pair("LV", "LVA"),
+            Pair("LT", "LTU"),
+            Pair("LU", "LUX"),
+            Pair("MT", "MLT"),
+            Pair("NL", "NLD"),
+            Pair("NO", "NOR"),
+            Pair("PL", "POL"),
+            Pair("PT", "PRT"),
+            Pair("RO", "ROU"),
+            Pair("SK", "SVK"),
+            Pair("SI", "SVN"),
+            Pair("ES", "ESP"),
+            Pair("SE", "SWE"),
+            Pair("CH", "CHE")
+        )
     }
 }
