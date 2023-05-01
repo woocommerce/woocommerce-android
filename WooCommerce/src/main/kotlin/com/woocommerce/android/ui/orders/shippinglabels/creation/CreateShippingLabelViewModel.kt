@@ -143,6 +143,7 @@ import kotlin.system.measureTimeMillis
 class CreateShippingLabelViewModel @Inject constructor(
     savedState: SavedStateHandle,
     parameterRepository: ParameterRepository,
+    checkEUShippingScenario: CheckEUShippingScenario,
     private val orderDetailRepository: OrderDetailRepository,
     private val shippingLabelRepository: ShippingLabelRepository,
     private val stateMachine: ShippingLabelsStateMachine,
@@ -169,7 +170,9 @@ class CreateShippingLabelViewModel @Inject constructor(
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
-    val isEUShippingScenario = CheckEUShippingScenario().invoke(stateMachine).asLiveData()
+    val isEUShippingScenario = checkEUShippingScenario(
+        stateMachine.transitions
+    ).asLiveData()
 
     init {
         initializeStateMachine()

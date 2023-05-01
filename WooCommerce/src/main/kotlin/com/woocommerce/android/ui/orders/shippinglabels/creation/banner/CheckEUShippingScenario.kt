@@ -1,17 +1,19 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation.banner
 
 import com.woocommerce.android.model.Location
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.WaitingForInput
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StateMachineData
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Transition
 import com.woocommerce.android.util.FeatureFlag
+import javax.inject.Inject
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 
-class CheckEUShippingScenario {
-    operator fun invoke(stateMachine: ShippingLabelsStateMachine) = flow {
+class CheckEUShippingScenario @Inject constructor() {
+    operator fun invoke(shippingStateTransitions: StateFlow<Transition>) = flow {
         if (FeatureFlag.EU_SHIPPING_NOTIFICATION.isEnabled().not()) emit(false)
 
-        stateMachine.transitions.collect {
+        shippingStateTransitions.collect {
             when (it.state) {
                 is WaitingForInput -> emit(it.state.data.isEUShippingConditionMet())
                 else -> emit(false)
