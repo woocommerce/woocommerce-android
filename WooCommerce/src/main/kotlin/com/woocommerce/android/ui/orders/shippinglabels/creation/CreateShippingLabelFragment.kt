@@ -282,7 +282,8 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                             originCountryCode = event.originCountryCode,
                             destinationCountryCode = event.destinationCountryCode,
                             shippingPackages = event.shippingPackages.toTypedArray(),
-                            customsPackages = event.customsPackages.toTypedArray()
+                            customsPackages = event.customsPackages.toTypedArray(),
+                            isEUShippingScenario = event.isEUShippingScenario
                         )
                     findNavController().navigateSafely(action)
                 }

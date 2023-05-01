@@ -367,7 +367,8 @@ class CreateShippingLabelViewModel @Inject constructor(
                 originCountryCode = originCountryCode,
                 destinationCountryCode = destinationCountryCode,
                 shippingPackages = shippingPackages,
-                customsPackages = customsPackages
+                customsPackages = customsPackages,
+                isEUShippingScenario = isEUShippingScenario.value ?: false
             )
         )
     }
