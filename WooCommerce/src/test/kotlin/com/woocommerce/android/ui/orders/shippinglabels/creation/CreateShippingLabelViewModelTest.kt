@@ -197,6 +197,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             CreateShippingLabelViewModel(
                 savedState,
                 parameterRepository,
+                mock(),
                 orderDetailRepository,
                 shippingLabelRepository,
                 stateMachine,

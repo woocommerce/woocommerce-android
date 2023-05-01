@@ -58,7 +58,8 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
         shippingPackages = emptyArray(),
         originCountryCode = "US",
         destinationCountryCode = "CA",
-        customsPackages = arrayOf(CreateShippingLabelTestUtils.generateCustomsPackage())
+        customsPackages = arrayOf(CreateShippingLabelTestUtils.generateCustomsPackage()),
+        isEUShippingScenario = false
     )
 
     fun setup(navArgs: ShippingCustomsFragmentArgs = defaultNavArgs) {
@@ -91,7 +92,8 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
                 shippingPackages = arrayOf(shippingPackage),
                 originCountryCode = originCountryCode,
                 destinationCountryCode = "CA",
-                customsPackages = emptyArray()
+                customsPackages = emptyArray(),
+                isEUShippingScenario = false
             )
         )
 
@@ -115,7 +117,8 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
                 shippingPackages = emptyArray(),
                 originCountryCode = "US",
                 destinationCountryCode = "CA",
-                customsPackages = arrayOf(customsPackage)
+                customsPackages = arrayOf(customsPackage),
+                isEUShippingScenario = false
             )
         )
 
@@ -134,7 +137,8 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
                 shippingPackages = emptyArray(),
                 originCountryCode = "US",
                 destinationCountryCode = "CA",
-                customsPackages = arrayOf(customsPackage)
+                customsPackages = arrayOf(customsPackage),
+                isEUShippingScenario = false
             )
         )
 
