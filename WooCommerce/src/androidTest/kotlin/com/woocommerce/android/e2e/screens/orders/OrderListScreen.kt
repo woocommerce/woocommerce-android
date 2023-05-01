@@ -35,8 +35,6 @@ class OrderListScreen : Screen {
 
     fun enterSearchTerm(term: String): OrderListScreen {
         typeTextInto(androidx.appcompat.R.id.search_src_text, term)
-        // Sleep to let the previous results disappear
-        Thread.sleep(2000)
         // If we expect for results, we wait for the list header
         waitForElementToBeDisplayed(R.id.orderListHeader)
         return this
@@ -44,8 +42,6 @@ class OrderListScreen : Screen {
 
     fun enterAbsentSearchTerm(term: String): OrderListScreen {
         typeTextInto(androidx.appcompat.R.id.search_src_text, term)
-        // Sleep to let the previous results disappear
-        Thread.sleep(2000)
         // If we don't expect for results, we wait for "no results" situation
         waitForElementToBeDisplayed(R.id.empty_view_title)
         return this

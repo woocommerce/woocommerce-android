@@ -51,8 +51,6 @@ class FilterScreen : Screen {
         )
 
         clickOn(showProductButton)
-        // Sleep to let the previous results disappear
-        Thread.sleep(2000)
 
         if (expectResults) {
             waitForAtLeastOneElementToBeDisplayed(R.id.productInfoContainer)
@@ -65,8 +63,6 @@ class FilterScreen : Screen {
 
     fun tapShowOrders(expectResults: Boolean): OrderListScreen {
         clickOn(R.id.showOrdersButton)
-        // Sleep to let the previous results disappear
-        Thread.sleep(2000)
 
         if (expectResults) {
             waitForElementToBeDisplayed(R.id.orderListHeader)

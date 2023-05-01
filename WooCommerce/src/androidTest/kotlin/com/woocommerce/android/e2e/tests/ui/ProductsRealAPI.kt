@@ -119,11 +119,15 @@ class ProductsRealAPI : TestBase() {
             .enterSearchTerm(productCappuccino.name)
             .assertProductCard(productCappuccino)
             .assertProductsCount(1)
+            .leaveSearchMode()
             // Search for 'productSalad'
+            .openSearchPane()
             .enterSearchTerm(productSalad.name)
             .assertProductCard(productSalad)
             .assertProductsCount(1)
+            .leaveSearchMode()
             // Search for non-existing product
+            .openSearchPane()
             .enterAbsentSearchTerm("Unexisting Product")
             .assertProductsCount(0)
             // Leave search and make sure all products are listed
@@ -136,18 +140,24 @@ class ProductsRealAPI : TestBase() {
     @Test
     fun e2eRealApiProductsSearchBySKU() {
         ProductListScreen()
+            // Search for a simple product SKU
             .openSearchPane()
             .tapSearchSKU()
-            // Search for a simple product SKU
             .enterSearchTerm(productSalad.sku)
             .assertProductCard(productSalad)
             .assertProductsCount(1)
+            .leaveSearchMode()
             // Search for variations sharing a part of SKU
+            .openSearchPane()
+            .tapSearchSKU()
             .enterSearchTerm(productCappuccino.sku + "-ALM")
             .assertProductCard(productCappuccinoAlmondMedium)
             .assertProductCard(productCappuccinoAlmondLarge)
             .assertProductsCount(2)
+            .leaveSearchMode()
             // Search for exact variation SKU
+            .openSearchPane()
+            .tapSearchSKU()
             .enterSearchTerm(productCappuccinoAlmondLarge.sku)
             .assertProductCard(productCappuccinoAlmondLarge)
             .assertProductsCount(1)

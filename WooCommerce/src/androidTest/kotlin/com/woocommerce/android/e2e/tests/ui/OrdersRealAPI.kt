@@ -120,7 +120,9 @@ class OrdersRealAPI : TestBase() {
             .enterSearchTerm(order40.customerName)
             .assertOrderCard(order40)
             .assertOrdersCount(1)
+            .leaveSearchMode()
             // Search for non-existing order
+            .openSearchPane()
             .enterAbsentSearchTerm("Absent Order")
             .assertSearchResultsAbsent("Absent Order")
             // Leave search and make sure all orders are listed
