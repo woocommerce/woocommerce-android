@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation.banner
 
+import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.WaitingForInput
 import com.woocommerce.android.util.FeatureFlag
@@ -25,8 +26,14 @@ class CheckEUShippingScenario @Inject constructor(
         val originCountry = data.stepsState.originAddressStep.data.country
         val destinationCountry = data.stepsState.shippingAddressStep.data.country
 
-        return originCountry.code == US_COUNTRY_CODE && destinationCountry.code == "UK"
+        return originCountry.code == US_COUNTRY_CODE &&
+            destinationCountry.isEUCountryFollowingNewCustomRules()
     }
+
+    private fun Location.isEUCountryFollowingNewCustomRules() =
+        EU_COUNTRIES_FOLLOWING_CUSTOMS_RULES.any { countryIsoCode ->
+            countryIsoCode.first == code || countryIsoCode.second == code
+        }
 
 
     companion object {
