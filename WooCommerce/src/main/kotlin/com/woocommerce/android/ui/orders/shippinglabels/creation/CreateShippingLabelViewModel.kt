@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -169,8 +170,7 @@ class CreateShippingLabelViewModel @Inject constructor(
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
-    val isEUShippingScenario
-        get() = checkEUShippingScenario()
+    val isEUShippingScenario = checkEUShippingScenario().asLiveData()
 
     init {
         initializeStateMachine()
