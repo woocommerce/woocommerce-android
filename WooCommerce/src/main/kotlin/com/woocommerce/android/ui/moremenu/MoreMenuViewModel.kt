@@ -21,6 +21,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
+import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable
+import com.woocommerce.android.ui.payments.taptopay.isAvailable
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -45,6 +47,7 @@ class MoreMenuViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     private val appPrefsWrapper: AppPrefsWrapper,
+    private val isTapToPayAvailableChecker: IsTapToPayAvailable,
     unseenReviewsCountHandler: UnseenReviewsCountHandler
 ) : ScopedViewModel(savedState) {
     val moreMenuViewState =
@@ -138,7 +141,7 @@ class MoreMenuViewModel @Inject constructor(
     )
 
     private fun buildPaymentsBadgeState(paymentsFeatureWasClicked: Boolean) =
-        if (!paymentsFeatureWasClicked) BadgeState(
+        if (!paymentsFeatureWasClicked && isTapToPayAvailableChecker().isAvailable) BadgeState(
             badgeSize = R.dimen.major_110,
             backgroundColor = R.color.color_secondary,
             textColor = R.color.color_surface,

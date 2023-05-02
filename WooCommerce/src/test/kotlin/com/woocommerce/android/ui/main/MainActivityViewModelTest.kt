@@ -15,7 +15,6 @@ import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.push.WooNotificationType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
-import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenOrderCreation
@@ -29,7 +28,6 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewTapToPay
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewUrlInWebView
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
-import com.woocommerce.android.ui.moremenu.MoreMenuNewFeature.Payments
 import com.woocommerce.android.ui.moremenu.MoreMenuNewFeatureHandler
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
