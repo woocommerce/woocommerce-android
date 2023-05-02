@@ -170,7 +170,7 @@ class CreateShippingLabelViewModel @Inject constructor(
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
-    val isEUShippingScenario = checkEUShippingScenario(
+    val shouldDisplayShippingNotice = checkEUShippingScenario(
         stateMachine.transitions
     ).asLiveData()
 
@@ -370,7 +370,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                 destinationCountryCode = destinationCountryCode,
                 shippingPackages = shippingPackages,
                 customsPackages = customsPackages,
-                isEUShippingScenario = isEUShippingScenario.value ?: false
+                isEUShippingScenario = shouldDisplayShippingNotice.value ?: false
             )
         )
     }
