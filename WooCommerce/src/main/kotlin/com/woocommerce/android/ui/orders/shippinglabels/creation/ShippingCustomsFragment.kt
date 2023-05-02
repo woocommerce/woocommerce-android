@@ -110,6 +110,12 @@ class ShippingCustomsFragment :
                 binding.progressView.isVisible = show
                 binding.packagesList.isVisible = !show
             }
+            new.isShippingNoticeVisible.takeIfNotEqualTo(old?.isShippingNoticeVisible) { show ->
+                with(binding.shippingNoticeBanner) {
+                    isVisible = show
+                    setLearnMoreClickListener(viewModel::onShippingNoticeLearnMoreClicked)
+                }
+            }
         }
 
         viewModel.event.observe(

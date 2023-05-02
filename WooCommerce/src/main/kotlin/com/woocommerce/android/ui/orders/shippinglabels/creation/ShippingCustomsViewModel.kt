@@ -87,6 +87,7 @@ class ShippingCustomsViewModel @Inject constructor(
             }
             viewState = viewState.copy(
                 isProgressViewShown = false,
+                isShippingNoticeVisible = args.isEUShippingScenario,
                 customsPackages = packagesUiStates
             )
         }
