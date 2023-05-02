@@ -257,7 +257,7 @@ object AppPrefs {
         set(option) = setString(UPDATE_SIMULATED_READER_OPTION, option)
 
     var isEUShippingNoticeDismissed: Boolean
-        get() = getBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, false)
+        get() = false // getBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, value)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
