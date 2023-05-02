@@ -33,11 +33,31 @@ internal class CheckEUShippingScenarioTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when origin country is NOT US, then emit true`() = testBlocking {
+    fun `when origin country is NOT US, then emit false`() = testBlocking {
         // Given
         val transitions = generateExpectedTransitions(
             originCountryCode = "DE",
             destinationCountryCodePair = Pair("AT", "AUT")
+        )
+        val results = mutableListOf<Boolean>()
+
+        // When
+        sut.invoke(transitions)
+            .onEach { results.add(it) }
+            .launchIn(this)
+
+        // Then
+        assertThat(results).hasSize(2)
+        assertThat(results[0]).isFalse
+        assertThat(results[1]).isFalse
+    }
+
+    @Test
+    fun `when origin country is US and destination country is not in EU new custom rules, then emit false`() = testBlocking {
+        // Given
+        val transitions = generateExpectedTransitions(
+            originCountryCode = "DE",
+            destinationCountryCodePair = Pair("BR", "BRA")
         )
         val results = mutableListOf<Boolean>()
 
