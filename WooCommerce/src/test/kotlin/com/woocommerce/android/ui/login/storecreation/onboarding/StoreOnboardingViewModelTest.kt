@@ -91,7 +91,7 @@ class StoreOnboardingViewModelTest : BaseUnitTest() {
     fun `given a list of incomplete tasks , when view model is created, onboarding is shown`() =
         testBlocking {
             onboardingTasksCacheFlow.tryEmit(ONBOARDING_TASK_INCOMPLETED_LIST)
-            whenever(shouldShowOnboarding(ONBOARDING_TASK_INCOMPLETED_LIST)).thenReturn(true)
+            whenever(shouldShowOnboarding.showForTasks(ONBOARDING_TASK_INCOMPLETED_LIST)).thenReturn(true)
 
             whenViewModelIsCreated()
 
