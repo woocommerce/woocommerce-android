@@ -16,7 +16,9 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.single
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 
@@ -33,35 +35,46 @@ internal class CheckEUShippingScenarioTest: BaseUnitTest() {
     fun `when origin country is US and destination country is AT then emit true`() = testBlocking {
         // Given
         val transitions = generateExpectedTransitions(
-            originCountry = "US",
-            destinationCountry = "AT"
+            originCountryCode = "US",
+            destinationCountryCodePair = Pair("AT", "AUT")
         )
+        val results = mutableListOf<Boolean>()
 
         // When
-        val result = sut.invoke(transitions).single()
+        sut.invoke(transitions)
+            .onEach { results.add(it) }
+            .launchIn(this)
 
         // Then
-        assert(result)
+        assertThat(results).hasSize(2)
     }
 
     private fun generateExpectedTransitions(
-        originCountry: String,
-        destinationCountry: String
+        originCountryCode: String,
+        destinationCountryCodePair: Pair<String, String>
+    ) = flowOf(
+        generateTransitionState(originCountryCode, destinationCountryCodePair.first),
+        generateTransitionState(originCountryCode, destinationCountryCodePair.second)
+    )
+
+    private fun generateTransitionState(
+        originCountryCode: String,
+        destinationCountryCode: String
     ) = WaitingForInput(
-        data = StateMachineData(
-            order = Order.EMPTY,
-            stepsState = emptyStepState.copy(
-                originAddressStep = OriginAddressStep(
-                    StepStatus.READY,
-                    Address.EMPTY.copy(country = Location.EMPTY.copy(code = originCountry))
-                ),
-                shippingAddressStep = ShippingAddressStep(
-                    StepStatus.READY,
-                    Address.EMPTY.copy(country = Location.EMPTY.copy(code = destinationCountry))
+            data = StateMachineData(
+                order = Order.EMPTY,
+                stepsState = emptyStepState.copy(
+                    originAddressStep = OriginAddressStep(
+                        StepStatus.READY,
+                        Address.EMPTY.copy(country = Location.EMPTY.copy(code = originCountryCode))
+                    ),
+                    shippingAddressStep = ShippingAddressStep(
+                        StepStatus.READY,
+                        Address.EMPTY.copy(country = Location.EMPTY.copy(code = destinationCountryCode))
+                    )
                 )
             )
-        )
-    ).let { flowOf(ShippingLabelsStateMachine.Transition(it, null)) }
+        ).let { ShippingLabelsStateMachine.Transition(it, null) }
 
     private val emptyStepState = ShippingLabelsStateMachine.StepsState(
         originAddressStep = OriginAddressStep(StepStatus.NOT_READY, Address.EMPTY),
@@ -71,37 +84,4 @@ internal class CheckEUShippingScenarioTest: BaseUnitTest() {
         carrierStep = CarrierStep(StepStatus.NOT_READY, emptyList()),
         paymentsStep = PaymentsStep(StepStatus.NOT_READY, null)
     )
-
-    private val expectedIncludedCountries = listOf(
-        Pair("AT", "AUT"),
-        Pair("BE", "BEL"),
-        Pair("BG", "BGR"),
-        Pair("HR", "HRV"),
-        Pair("CY", "CYP"),
-        Pair("CZ", "CZE"),
-        Pair("DK", "DNK"),
-        Pair("EE", "EST"),
-        Pair("FI", "FIN"),
-        Pair("FR", "FRA"),
-        Pair("DE", "DEU"),
-        Pair("GR", "GRC"),
-        Pair("HU", "HUN"),
-        Pair("IE", "IRL"),
-        Pair("IT", "ITA"),
-        Pair("LV", "LVA"),
-        Pair("LT", "LTU"),
-        Pair("LU", "LUX"),
-        Pair("MT", "MLT"),
-        Pair("NL", "NLD"),
-        Pair("NO", "NOR"),
-        Pair("PL", "POL"),
-        Pair("PT", "PRT"),
-        Pair("RO", "ROU"),
-        Pair("SK", "SVK"),
-        Pair("SI", "SVN"),
-        Pair("ES", "ESP"),
-        Pair("SE", "SWE"),
-        Pair("CH", "CHE")
-    )
-
 }
