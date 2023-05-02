@@ -18,16 +18,18 @@ class ShippingNoticeCard @JvmOverloads constructor(
         LayoutInflater.from(context), this, true
     )
 
+    var onDismissClicked: () -> Unit = {}
+    var onLearnMoreClicked: (url: String) -> Unit = {}
+
     init {
         binding.dismissButton.setOnClickListener {
+            onDismissClicked()
             AppPrefs.isEUShippingNoticeDismissed = true
             collapse()
         }
-    }
 
-    fun setLearnMoreClickListener(action: (url: String) -> Unit) {
         binding.learnMoreButton.setOnClickListener {
-            action(AppUrls.EU_SHIPPING_CUSTOMS_REQUIREMENTS)
+            onLearnMoreClicked(AppUrls.EU_SHIPPING_CUSTOMS_REQUIREMENTS)
         }
     }
 }
