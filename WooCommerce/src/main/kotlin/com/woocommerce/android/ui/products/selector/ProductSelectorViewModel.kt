@@ -92,9 +92,7 @@ class ProductSelectorViewModel @Inject constructor(
     private val filterState = savedState.getStateFlow(viewModelScope, FilterState())
     private val productsRestrictions = navArgs.restrictions
     private val products = listHandler.productsFlow.map { products ->
-        products.filter { product ->
-            productsRestrictions.map { restriction -> restriction(product) }.fold(true) { acc, result -> acc && result }
-        }
+        products.filter { product -> isProductRestricted(product = product) }
     }
     private val popularProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
     private val recentProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
@@ -162,12 +160,13 @@ class ProductSelectorViewModel @Inject constructor(
         if (searchQuery.value.isNotNullOrEmpty() || filterState.value.filterOptions.isNotEmpty()) {
             return emptyList()
         }
-        return productsList
-            .filter { product ->
-                productsRestrictions.map { restriction -> restriction(product) }
-                    .fold(true) { acc, result -> acc && result }
-            }
+        return productsList.filter { product -> isProductRestricted(product = product) }
             .map { it.toUiModel(selectedIds) }
+    }
+
+    private fun isProductRestricted(product: Product): Boolean {
+        return productsRestrictions.map { restriction -> restriction(product) }
+            .fold(true) { acc, result -> acc && result }
     }
 
     private suspend fun loadRecentProducts() {
@@ -520,6 +519,7 @@ class ProductSelectorViewModel @Inject constructor(
                 return product.status == ProductStatus.PUBLISH
             }
         }
+
         @Parcelize
         object NoVariableProductsWithNoVariations : ProductSelectorRestriction() {
             override fun invoke(product: Product): Boolean {
@@ -540,6 +540,7 @@ val Collection<ProductSelectorViewModel.SelectedItem>.variationIds: List<Long>
         return filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductOrVariation>().map { it.id } +
             filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductVariation>().map { it.variationId }
     }
+
 enum class ProductSourceForTracking {
     POPULAR,
     LAST_SOLD,
