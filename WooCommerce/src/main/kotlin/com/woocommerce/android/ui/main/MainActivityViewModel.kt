@@ -23,9 +23,9 @@ import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
-import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState
 import com.woocommerce.android.ui.moremenu.MoreMenuNewFeature
 import com.woocommerce.android.ui.moremenu.MoreMenuNewFeatureHandler
+import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.WooLog
@@ -33,9 +33,8 @@ import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.SiteStore
