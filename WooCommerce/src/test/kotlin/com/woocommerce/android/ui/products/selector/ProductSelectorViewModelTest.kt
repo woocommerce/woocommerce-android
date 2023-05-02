@@ -405,6 +405,37 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     // region Sort by popularity and recently sold products
 
     @Test
+    fun `given published products restriction, when view model created, should not show draft products in the popular section`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined,
+            ).initSavedStateHandle()
+            val popularOrdersList = generatePopularOrders()
+            val ordersList = generateTestOrders()
+            val totalOrders = ordersList + popularOrdersList
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+            whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(
+                listOf(
+                    DRAFT_PRODUCT,
+                    DRAFT_PRODUCT,
+                    VALID_PRODUCT
+                )
+            )
+
+            val sut = createViewModel(navArgs)
+
+            var viewState: ProductSelectorViewModel.ViewState? = null
+            sut.viewState.observeForever { state ->
+                viewState = state
+            }
+            assertThat(viewState?.popularProducts).isNotEmpty
+            assertThat(viewState?.popularProducts?.filter { it.id == DRAFT_PRODUCT.remoteId }).isEmpty()
+        }
+    }
+
+    @Test
     fun `given popular products, when view model created, then verify popular products are sorted in descending order`() {
         testBlocking {
             val navArgs = ProductSelectorFragmentArgs(
