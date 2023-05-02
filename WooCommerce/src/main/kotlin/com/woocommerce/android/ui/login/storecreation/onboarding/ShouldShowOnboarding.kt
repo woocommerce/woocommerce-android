@@ -28,7 +28,7 @@ class ShouldShowOnboarding @Inject constructor(
 ) {
     private var pendingTasks: List<OnboardingTask> = emptyList()
 
-    operator fun invoke(tasks: List<OnboardingTask>): Boolean {
+    fun showForTasks(tasks: List<OnboardingTask>): Boolean {
         if (tasks.isEmpty()) return false
 
         pendingTasks = tasks.filter { !it.isComplete }
