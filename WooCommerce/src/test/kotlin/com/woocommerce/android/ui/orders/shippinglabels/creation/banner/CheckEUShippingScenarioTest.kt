@@ -4,6 +4,7 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.Idle
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State.WaitingForInput
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StateMachineData
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.CarrierStep
@@ -70,6 +71,21 @@ internal class CheckEUShippingScenarioTest : BaseUnitTest() {
         assertThat(results).hasSize(2)
         assertThat(results[0]).isFalse
         assertThat(results[1]).isFalse
+    }
+
+    @Test
+    fun `when transition state is not WaitingForInput, then emit false`() = testBlocking {
+        // Given
+        val results = mutableListOf<Boolean>()
+
+        // When
+        sut.invoke(flowOf(ShippingLabelsStateMachine.Transition(Idle, null)))
+            .onEach { results.add(it) }
+            .launchIn(this)
+
+        // Then
+        assertThat(results).hasSize(1)
+        assertThat(results[0]).isFalse
     }
 
     @Test
