@@ -18,6 +18,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.test.TestScope
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -52,11 +53,45 @@ internal class CheckEUShippingScenarioTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when origin country is US and destination country is AT then emit true`() = testBlocking {
+    fun `when origin country is US and destination country is every EU country following customs rules then emit true`() = testBlocking {
+        assertCheckSucceedsFor(Pair("AT", "AUT"))
+        assertCheckSucceedsFor(Pair("BE", "BEL"))
+        assertCheckSucceedsFor(Pair("BG", "BGR"))
+        assertCheckSucceedsFor(Pair("HR", "HRV"))
+        assertCheckSucceedsFor(Pair("CY", "CYP"))
+        assertCheckSucceedsFor(Pair("CZ", "CZE"))
+        assertCheckSucceedsFor(Pair("DK", "DNK"))
+        assertCheckSucceedsFor(Pair("EE", "EST"))
+        assertCheckSucceedsFor(Pair("FI", "FIN"))
+        assertCheckSucceedsFor(Pair("FR", "FRA"))
+        assertCheckSucceedsFor(Pair("DE", "DEU"))
+        assertCheckSucceedsFor(Pair("GR", "GRC"))
+        assertCheckSucceedsFor(Pair("HU", "HUN"))
+        assertCheckSucceedsFor(Pair("IE", "IRL"))
+        assertCheckSucceedsFor(Pair("IT", "ITA"))
+        assertCheckSucceedsFor(Pair("LV", "LVA"))
+        assertCheckSucceedsFor(Pair("LT", "LTU"))
+        assertCheckSucceedsFor(Pair("LU", "LUX"))
+        assertCheckSucceedsFor(Pair("MT", "MLT"))
+        assertCheckSucceedsFor(Pair("NL", "NLD"))
+        assertCheckSucceedsFor(Pair("NO", "NOR"))
+        assertCheckSucceedsFor(Pair("PL", "POL"))
+        assertCheckSucceedsFor(Pair("PT", "PRT"))
+        assertCheckSucceedsFor(Pair("RO", "ROU"))
+        assertCheckSucceedsFor(Pair("SK", "SVK"))
+        assertCheckSucceedsFor(Pair("SI", "SVN"))
+        assertCheckSucceedsFor(Pair("ES", "ESP"))
+        assertCheckSucceedsFor(Pair("SE", "SWE"))
+        assertCheckSucceedsFor(Pair("CH", "CHE"))
+    }
+
+    private fun TestScope.assertCheckSucceedsFor(
+        countryCodes: Pair<String, String>
+    ) {
         // Given
         val transitions = generateExpectedTransitions(
             originCountryCode = "US",
-            destinationCountryCodePair = Pair("AT", "AUT")
+            destinationCountryCodePair = countryCodes
         )
         val results = mutableListOf<Boolean>()
 
