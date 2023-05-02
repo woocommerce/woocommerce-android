@@ -207,6 +207,10 @@ class ShippingCustomsViewModel @Inject constructor(
         updateLine(packagePosition, linePosition, newLine)
     }
 
+    override fun onShippingNoticeClicked() {
+        viewState = viewState.copy(isShippingNoticeVisible = true)
+    }
+
     private fun updateLine(packagePosition: Int, linePosition: Int, line: CustomsLine) {
         val customsPackage = viewState.customsPackages[packagePosition]
         val customsLines = customsPackage.data.lines.toMutableList()
@@ -328,7 +332,8 @@ class ShippingCustomsViewModel @Inject constructor(
     @Parcelize
     data class ViewState(
         val customsPackages: List<CustomsPackageUiState> = emptyList(),
-        val isProgressViewShown: Boolean = false
+        val isProgressViewShown: Boolean = false,
+        val isShippingNoticeVisible: Boolean = false
     ) : Parcelable {
         @IgnoredOnParcel
         val canSubmitForm: Boolean

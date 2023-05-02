@@ -35,8 +35,8 @@ class ShippingCustomsAdapter(
     private val weightUnit: String,
     private val currencyUnit: String,
     private val countries: Array<Location>,
-    private val listener: ShippingCustomsFormListener,
-    private val isShippingNoticeActive: Boolean = false
+    private val isShippingNoticeActive: Boolean,
+    private val listener: ShippingCustomsFormListener
 ) : RecyclerView.Adapter<PackageCustomsViewHolder>() {
     init {
         setHasStableIds(true)
@@ -55,14 +55,11 @@ class ShippingCustomsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PackageCustomsViewHolder {
         val binding = ShippingCustomsListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return PackageCustomsViewHolder(binding)
+        return PackageCustomsViewHolder(binding, isShippingNoticeActive)
     }
 
     override fun onBindViewHolder(holder: PackageCustomsViewHolder, position: Int) {
-        holder.bind(
-            uiState = customsPackages[position],
-            shouldDisplayShippingNotice = isShippingNoticeActive && position == 0
-        )
+        holder.bind(customsPackages[position])
     }
 
     override fun getItemId(position: Int): Long {
@@ -70,13 +67,17 @@ class ShippingCustomsAdapter(
     }
 
     @Suppress("MagicNumber")
-    inner class PackageCustomsViewHolder(val binding: ShippingCustomsListItemBinding) : ViewHolder(binding.root) {
+    inner class PackageCustomsViewHolder(
+        val binding: ShippingCustomsListItemBinding,
+        isShippingNoticeActive: Boolean
+    ) : ViewHolder(binding.root) {
         private val linesAdapter: ShippingCustomsLineAdapter by lazy {
             ShippingCustomsLineAdapter(
                 weightUnit = weightUnit,
                 currencyUnit = currencyUnit,
                 countries = countries,
-                listener = listener
+                listener = listener,
+                isShippingNoticeActive = isShippingNoticeActive
             )
         }
         private val context
@@ -144,7 +145,7 @@ class ShippingCustomsAdapter(
         }
 
         @SuppressLint("SetTextI18n")
-        fun bind(uiState: CustomsPackageUiState, shouldDisplayShippingNotice: Boolean) {
+        fun bind(uiState: CustomsPackageUiState) {
             val (customsPackage, validationState) = uiState
             binding.packageId.text = customsPackage.labelPackage.getTitle(context)
             binding.packageName.text = "- ${customsPackage.labelPackage.selectedPackage!!.title}"
@@ -205,6 +206,7 @@ class ShippingCustomsLineAdapter(
     private val weightUnit: String,
     private val currencyUnit: String,
     private val countries: Array<Location>,
+    private val isShippingNoticeActive: Boolean,
     private val listener: ShippingCustomsFormListener
 ) : RecyclerView.Adapter<CustomsLineViewHolder>() {
     init {
@@ -232,7 +234,10 @@ class ShippingCustomsLineAdapter(
     }
 
     override fun onBindViewHolder(holder: CustomsLineViewHolder, position: Int) {
-        holder.bind(customsLines[position])
+        holder.bind(
+            uiState = customsLines[position],
+            shouldDisplayShippingNotice = isShippingNoticeActive && position == 0
+        )
     }
 
     @Suppress("MagicNumber")
@@ -296,7 +301,7 @@ class ShippingCustomsLineAdapter(
                 }
         }
 
-        fun bind(uiState: CustomsLineUiState) {
+        fun bind(uiState: CustomsLineUiState, shouldDisplayShippingNotice: Boolean) {
             val (customsLine, validationState) = uiState
             binding.lineTitle.text = context.getString(
                 R.string.shipping_label_customs_line_item,
@@ -318,6 +323,9 @@ class ShippingCustomsLineAdapter(
             binding.countrySpinner.setText(customsLine.originCountry.name)
 
             binding.errorView.isVisible = !validationState.isValid
+
+            binding.shippingNoticeIcon.isVisible = shouldDisplayShippingNotice
+            binding.shippingNoticeIcon.setOnClickListener { listener.onShippingNoticeClicked() }
         }
     }
 
@@ -352,4 +360,5 @@ interface ShippingCustomsFormListener {
     fun onWeightChanged(packagePosition: Int, linePosition: Int, weight: String)
     fun onItemValueChanged(packagePosition: Int, linePosition: Int, itemValue: String)
     fun onOriginCountryChanged(packagePosition: Int, linePosition: Int, country: Location)
+    fun onShippingNoticeClicked()
 }

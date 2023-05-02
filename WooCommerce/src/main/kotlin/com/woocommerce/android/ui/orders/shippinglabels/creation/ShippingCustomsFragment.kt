@@ -46,6 +46,7 @@ class ShippingCustomsFragment :
             weightUnit = viewModel.weightUnit,
             currencyUnit = viewModel.currencyUnit,
             countries = viewModel.countries.toTypedArray(),
+            isShippingNoticeActive = viewModel.isEUShippingScenario,
             listener = viewModel
         )
     }
