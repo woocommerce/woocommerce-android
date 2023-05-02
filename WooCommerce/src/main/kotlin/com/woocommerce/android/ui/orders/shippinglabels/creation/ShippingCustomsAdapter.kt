@@ -35,7 +35,8 @@ class ShippingCustomsAdapter(
     private val weightUnit: String,
     private val currencyUnit: String,
     private val countries: Array<Location>,
-    private val listener: ShippingCustomsFormListener
+    private val listener: ShippingCustomsFormListener,
+    private val isShippingNoticeActive: Boolean = false
 ) : RecyclerView.Adapter<PackageCustomsViewHolder>() {
     init {
         setHasStableIds(true)
@@ -58,7 +59,10 @@ class ShippingCustomsAdapter(
     }
 
     override fun onBindViewHolder(holder: PackageCustomsViewHolder, position: Int) {
-        holder.bind(customsPackages[position])
+        holder.bind(
+            uiState = customsPackages[position],
+            shouldDisplayShippingNotice = isShippingNoticeActive && position == 0
+        )
     }
 
     override fun getItemId(position: Int): Long {
@@ -140,7 +144,7 @@ class ShippingCustomsAdapter(
         }
 
         @SuppressLint("SetTextI18n")
-        fun bind(uiState: CustomsPackageUiState) {
+        fun bind(uiState: CustomsPackageUiState, shouldDisplayShippingNotice: Boolean) {
             val (customsPackage, validationState) = uiState
             binding.packageId.text = customsPackage.labelPackage.getTitle(context)
             binding.packageName.text = "- ${customsPackage.labelPackage.selectedPackage!!.title}"
