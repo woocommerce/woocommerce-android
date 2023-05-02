@@ -48,6 +48,8 @@ class AutoSyncPriceModifier @Inject constructor(val createUpdateOrderUseCase: Cr
                     this.total isEqualTo newLine.total
             }
 
+        // TODO: compare coupon lines as well
+
         return hasSameItems &&
             hasSameShippingLines &&
             hasSameFeeLines &&

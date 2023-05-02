@@ -47,6 +47,8 @@ class AutoSyncOrder @Inject constructor(val createUpdateOrderUseCase: CreateUpda
             old.customerNote == new.customerNote &&
             old.shippingPhone == new.shippingPhone
 
+        // TODO: compare coupon lines as well
+
         return hasSameItems &&
             hasSameShippingLines &&
             hasSameFeeLines &&

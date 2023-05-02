@@ -49,6 +49,7 @@ import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCoupon
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomerNote
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditFee
@@ -387,6 +388,10 @@ class OrderCreateEditViewModel @Inject constructor(
         triggerEvent(EditFee(orderSubtotal, currentFeeValue))
     }
 
+    fun onCouponButtonClicked() {
+        triggerEvent(EditCoupon(_orderDraft.value.couponLines.firstOrNull()?.code))
+    }
+
     fun onShippingButtonClicked() {
         triggerEvent(EditShipping(currentDraft.shippingLines.firstOrNull { it.methodId != null }))
     }
@@ -617,6 +622,17 @@ class OrderCreateEditViewModel @Inject constructor(
                     }
                 }
             )
+        }
+    }
+
+    fun onCouponEntered(couponCode: String?) {
+        _orderDraft.update { draft ->
+            val couponLines = if (couponCode.isNullOrEmpty()) {
+                emptyList()
+            } else {
+                listOf(Order.CouponLine(code = couponCode))
+            }
+            draft.copy(couponLines = couponLines)
         }
     }
 

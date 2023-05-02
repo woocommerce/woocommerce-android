@@ -25,6 +25,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import javax.inject.Inject
+import org.wordpress.android.fluxc.model.order.CouponLine as WCCouponLine
 import org.wordpress.android.fluxc.model.order.FeeLine as WCFeeLine
 import org.wordpress.android.fluxc.model.order.ShippingLine as WCShippingLine
 
@@ -120,7 +121,8 @@ class OrderCreateEditRepository @Inject constructor(
             billingAddress = order.billingAddress.takeIf { it != Address.EMPTY }?.toBillingAddressModel(),
             customerNote = order.customerNote,
             shippingLines = order.shippingLines.map { it.toDataModel() },
-            feeLines = order.feesLines.map { it.toDataModel() }
+            feeLines = order.feesLines.map { it.toDataModel() },
+            couponLines = order.couponLines.map { it.toDataModel() },
         )
 
         val result = if (order.id == 0L) {
@@ -192,6 +194,9 @@ class OrderCreateEditRepository @Inject constructor(
         it.name = name
         it.total = total.toPlainString()
     }
+
+    private fun Order.CouponLine.toDataModel() =
+        WCCouponLine(id = id, code = code, discount = discount, discountTax = null)
 
     companion object {
         const val AUTO_DRAFT_SUPPORTED_VERSION = "6.3.0"
