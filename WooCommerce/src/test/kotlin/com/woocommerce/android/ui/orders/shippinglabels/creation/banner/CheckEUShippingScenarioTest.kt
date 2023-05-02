@@ -53,35 +53,147 @@ internal class CheckEUShippingScenarioTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when origin country is US and destination country is every EU country following customs rules then emit true`() = testBlocking {
+    fun `when origin country is US and destination country is AT-AUT then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("AT", "AUT"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is BE-BEL then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("BE", "BEL"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is BG-BGR then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("BG", "BGR"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is HR-HRV then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("HR", "HRV"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is CY-CYP then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("CY", "CYP"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is CZ-CZE then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("CZ", "CZE"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is DK-DNK then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("DK", "DNK"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is EE-EST then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("EE", "EST"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is FI-FIN then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("FI", "FIN"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is FR-FRA then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("FR", "FRA"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is DE-DEU then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("DE", "DEU"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is GR-GRC then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("GR", "GRC"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is HU-HUN then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("HU", "HUN"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is IE-IRL then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("IE", "IRL"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is IT-ITA then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("IT", "ITA"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is LV-LVA then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("LV", "LVA"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is LT-LTU then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("LT", "LTU"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is LU-LUX then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("LU", "LUX"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is MT-MLT then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("MT", "MLT"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is NL-NLD then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("NL", "NLD"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is NO-NOR then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("NO", "NOR"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is PL-POL then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("PL", "POL"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is PT-PRT then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("PT", "PRT"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is RO-ROU then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("RO", "ROU"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is SK-SVK then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("SK", "SVK"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is SI-SVN then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("SI", "SVN"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is ES-ESP then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("ES", "ESP"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is SE-SWE then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("SE", "SWE"))
+    }
+
+    @Test
+    fun `when origin country is US and destination country is CH-CHE then emit true`() = testBlocking {
         assertCheckSucceedsFor(Pair("CH", "CHE"))
     }
 
