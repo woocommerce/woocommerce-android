@@ -8,6 +8,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.databinding.ShippingNoticeBannerBinding
 import com.woocommerce.android.extensions.collapse
+import com.woocommerce.android.extensions.expand
 
 class ShippingNoticeCard @JvmOverloads constructor(
     context: Context,
@@ -20,6 +21,13 @@ class ShippingNoticeCard @JvmOverloads constructor(
 
     var onDismissClicked: () -> Unit = {}
     var onLearnMoreClicked: (url: String) -> Unit = {}
+    var isVisible: Boolean = visibility == VISIBLE
+        set(show) {
+            if (show != isVisible) {
+                field = show
+                if (show) expand() else collapse()
+            }
+        }
 
     init {
         binding.dismissButton.setOnClickListener {
