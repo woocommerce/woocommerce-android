@@ -87,7 +87,7 @@ class ShippingCustomsViewModel @Inject constructor(
             }
             viewState = viewState.copy(
                 isProgressViewShown = false,
-                isShippingNoticeVisible = args.isEUShippingScenario,
+                isShippingNoticeVisible = isEUShippingScenario,
                 customsPackages = packagesUiStates
             )
         }
@@ -141,6 +141,10 @@ class ShippingCustomsViewModel @Inject constructor(
 
     fun onShippingNoticeLearnMoreClicked(learnMoreUrl: String) {
         triggerEvent(OpenShippingInstructions(learnMoreUrl))
+    }
+
+    fun onShippingNoticeDismissClicked() {
+        viewState = viewState.copy(isShippingNoticeVisible = false)
     }
 
     override fun onPackageExpandedChanged(position: Int, isExpanded: Boolean) {
