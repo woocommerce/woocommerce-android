@@ -50,6 +50,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -95,7 +96,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
         }
     )
     private val checkEUShippingScenario: CheckEUShippingScenario = mock {
-        on { invoke(any()) } doReturn flow { emit(false) }
+        on { invoke(any()) } doReturn flowOf(false)
     }
 
     private val data = StateMachineData(
