@@ -24,9 +24,12 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import zendesk.support.CreateRequest
 import zendesk.support.Request
 import zendesk.support.RequestProvider
@@ -38,6 +41,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
     private lateinit var requestProvider: RequestProvider
     private lateinit var envDataSource: ZendeskEnvironmentDataSource
     private lateinit var siteStore: SiteStore
+    private val wooStore: WooCommerceStore = mock()
 
     @Before
     fun setup() {
@@ -383,6 +387,9 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             }
             val expectedTags = arrayOf("application_password_authenticated")
             val captor = argumentCaptor<CreateRequest>()
+            wooStore.stub {
+                onBlocking { fetchSSR(selectedSite) } doReturn WooResult()
+            }
 
             // When
             val job = launch {
@@ -540,7 +547,9 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             zendeskSettings = zendeskSettings,
             envDataSource = envDataSource,
             siteStore = siteStore,
-            dispatchers = coroutinesTestRule.testDispatchers
+            dispatchers = coroutinesTestRule.testDispatchers,
+            mock(),
+            wooStore,
         )
     }
 

@@ -2,6 +2,7 @@ package com.woocommerce.android.support.zendesk
 
 import android.content.Context
 import android.os.Parcelable
+import com.woocommerce.android.extensions.formatResult
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.zendesk.RequestConstants.requestCreationIdentityNotSetErrorMessage
 import com.woocommerce.android.support.zendesk.RequestConstants.requestCreationTimeoutErrorMessage
@@ -11,6 +12,8 @@ import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationT
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLogWrapper
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
 import kotlinx.coroutines.channels.awaitClose
@@ -21,15 +24,19 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import zendesk.support.CreateRequest
 import zendesk.support.CustomField
 import zendesk.support.Request
+import javax.inject.Inject
 
-class ZendeskTicketRepository(
+class ZendeskTicketRepository @Inject constructor(
     private val zendeskSettings: ZendeskSettings,
     private val envDataSource: ZendeskEnvironmentDataSource,
     private val siteStore: SiteStore,
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchers: CoroutineDispatchers,
+    private val wooLogWrapper: WooLogWrapper,
+    private val wooStore: WooCommerceStore,
 ) {
     /**
      * This function creates a new customer Support Request through the Zendesk API Providers.
@@ -52,6 +59,8 @@ class ZendeskTicketRepository(
 
         val tags = (ticketType.tags + extraTags)
 
+        val ssr: String? = selectedSite?.let { fetchSSR(it) }
+
         val requestCallback = object : ZendeskCallback<Request>() {
             override fun onSuccess(result: Request?) {
                 trySend(Result.success(result))
@@ -70,7 +79,13 @@ class ZendeskTicketRepository(
             this.description = description
             this.tags = buildZendeskTags(selectedSite, siteStore.sites, origin, tags)
                 .filter { ticketType.excludedTags.contains(it).not() }
-            this.customFields = buildZendeskCustomFields(context, ticketType, siteStore.sites, selectedSite)
+            this.customFields = buildZendeskCustomFields(
+                context,
+                ticketType,
+                siteStore.sites,
+                selectedSite,
+                ssr
+            )
         }.let { request -> zendeskSettings.requestProvider?.createRequest(request, requestCallback) }
 
         // Sets a timeout since the callback might not be called from Zendesk API
@@ -83,6 +98,17 @@ class ZendeskTicketRepository(
         awaitClose()
     }.flowOn(dispatchers.io)
 
+    private suspend fun fetchSSR(selectedSite: SiteModel): String? {
+        wooLogWrapper.i(WooLog.T.SUPPORT, "Fetching SSR")
+        val result = wooStore.fetchSSR(selectedSite)
+        if (result.isError) {
+            wooLogWrapper.e(WooLog.T.SUPPORT, "Error fetching SSR")
+        } else {
+            wooLogWrapper.i(WooLog.T.SUPPORT, "SSR fetched successfully")
+        }
+        return result.model?.formatResult()
+    }
+
     /**
      * This is a helper function which builds a list of `CustomField`s which will be used during ticket creation. They
      * will be used to fill the custom fields we have setup in Zendesk UI for Happiness Engineers.
@@ -92,7 +118,7 @@ class ZendeskTicketRepository(
         ticketType: TicketType,
         allSites: List<SiteModel>?,
         selectedSite: SiteModel?,
-        ssr: String? = null
+        ssr: String?
     ): List<CustomField> {
         return listOf(
             CustomField(TicketCustomField.appVersion, envDataSource.generateVersionName(context)),
