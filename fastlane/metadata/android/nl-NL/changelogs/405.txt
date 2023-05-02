@@ -1,2 +1,0 @@
-13.2:
-Deze release bevat een aantal bugfixes en visuele en toegankelijkheidsverbeteringen aan de bestel- en productgedeelten van de app. Blijf maar komen met jullie feedback, dat helpt ons kiezen waar we aan moeten werken.

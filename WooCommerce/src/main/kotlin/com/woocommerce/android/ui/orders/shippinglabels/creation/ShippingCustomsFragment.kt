@@ -10,6 +10,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentShippingCustomsBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
@@ -18,6 +19,9 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsViewModel.OpenShippingInstructions
+import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -80,6 +84,13 @@ class ShippingCustomsFragment :
             }
         }
 
+        if (FeatureFlag.EU_SHIPPING_NOTIFICATION.isEnabled()) {
+            with(binding.shippingNoticeBanner) {
+                isVisible = AppPrefs.isEUShippingNoticeDismissed.not()
+                setLearnMoreClickListener(viewModel::onShippingNoticeLearnMoreClicked)
+            }
+        }
+
         setupObservers(binding)
     }
 
@@ -104,6 +115,7 @@ class ShippingCustomsFragment :
             viewLifecycleOwner
         ) { event ->
             when (event) {
+                is OpenShippingInstructions -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 is ExitWithResult<*> -> navigateBackWithResult(EDIT_CUSTOMS_RESULT, event.data)
                 is Exit -> navigateBackWithNotice(EDIT_CUSTOMS_CLOSED)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)

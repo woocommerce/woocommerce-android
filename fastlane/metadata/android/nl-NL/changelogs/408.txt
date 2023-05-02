@@ -1,0 +1,2 @@
+13.3:
+VK, zeg hallo tegen fysieke betalingen! We zijn blij te kunnen vertellen dat fysieke betalingen nu beschikbaar zijn voor verkopers in het VK die nu WooCommerce Payments gebruiken. Deze release bevat ook alleen-lezen ondersteuning voor verkopers die samengestelde producten gebruiken. Wederom bedankt voor jullie geweldige feedback. Blijf zo doorgaan!
