@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.Flow
 interface RemoteConfigRepository {
     val fetchStatus: Flow<RemoteConfigFetchStatus>
     fun fetchRemoteConfig()
-    fun getPerformanceMonitoringSampleRate(): Double
 }
 
 enum class RemoteConfigFetchStatus {
