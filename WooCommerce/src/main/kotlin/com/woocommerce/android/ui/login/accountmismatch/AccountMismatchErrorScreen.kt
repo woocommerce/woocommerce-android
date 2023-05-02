@@ -130,7 +130,7 @@ fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
 @Composable
 private fun SiteCredentialsScreen(
     viewState: ViewState.SiteCredentialsViewState,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
@@ -406,6 +406,26 @@ private fun AccountMismatchPreview() {
                 inlineButtonAction = {},
                 showJetpackTermsConsent = true,
                 showNavigationIcon = true,
+                onBackPressed = {}
+            )
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun SiteCredentialsScreenPreview() {
+    WooThemeWithBackground {
+        SiteCredentialsScreen(
+            viewState = ViewState.SiteCredentialsViewState(
+                siteUrl = "woocommerce.com",
+                username = "username",
+                password = "password",
+                errorMessage = null,
+                onUsernameChanged = {},
+                onPasswordChanged = {},
+                onContinueClick = {},
+                onLoginWithAnotherAccountClick = {},
                 onBackPressed = {}
             )
         )
