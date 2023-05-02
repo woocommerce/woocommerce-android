@@ -12,7 +12,7 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
-class IsTapToPayAvailableTest {
+class TapToPayAvailabilityStatusTest {
     private val systemVersionUtilsWrapper = mock<SystemVersionUtilsWrapper> {
         on { isAtLeastP() }.thenReturn(true)
     }
@@ -32,14 +32,14 @@ class IsTapToPayAvailableTest {
         whenever(systemVersionUtilsWrapper.isAtLeastP()).thenReturn(true)
         whenever(appPrefs.isTapToPayEnabled).thenReturn(true)
 
-        val result = IsTapToPayAvailable(
+        val result = TapToPayAvailabilityStatus(
             appPrefs,
             deviceFeatures,
             systemVersionUtilsWrapper,
             cardReaderCountryConfigProvider
         ).invoke("US")
 
-        assertThat(result).isEqualTo(IsTapToPayAvailable.Result.NotAvailable.NfcNotAvailable)
+        assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable)
     }
 
     @Test
@@ -51,14 +51,14 @@ class IsTapToPayAvailableTest {
         whenever(systemVersionUtilsWrapper.isAtLeastP()).thenReturn(true)
         whenever(appPrefs.isTapToPayEnabled).thenReturn(true)
 
-        val result = IsTapToPayAvailable(
+        val result = TapToPayAvailabilityStatus(
             appPrefs,
             deviceFeatures,
             systemVersionUtilsWrapper,
             cardReaderCountryConfigProvider
         ).invoke("US")
 
-        assertThat(result).isEqualTo(IsTapToPayAvailable.Result.NotAvailable.GooglePlayServicesNotAvailable)
+        assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.NotAvailable.GooglePlayServicesNotAvailable)
     }
 
     @Test
@@ -70,14 +70,14 @@ class IsTapToPayAvailableTest {
         whenever(systemVersionUtilsWrapper.isAtLeastP()).thenReturn(false)
         whenever(appPrefs.isTapToPayEnabled).thenReturn(true)
 
-        val result = IsTapToPayAvailable(
+        val result = TapToPayAvailabilityStatus(
             appPrefs,
             context,
             systemVersionUtilsWrapper,
             cardReaderCountryConfigProvider
         ).invoke("US")
 
-        assertThat(result).isEqualTo(IsTapToPayAvailable.Result.NotAvailable.SystemVersionNotSupported)
+        assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.NotAvailable.SystemVersionNotSupported)
     }
 
     @Test
@@ -89,14 +89,14 @@ class IsTapToPayAvailableTest {
         whenever(systemVersionUtilsWrapper.isAtLeastP()).thenReturn(true)
         whenever(appPrefs.isTapToPayEnabled).thenReturn(true)
 
-        val result = IsTapToPayAvailable(
+        val result = TapToPayAvailabilityStatus(
             appPrefs,
             context,
             systemVersionUtilsWrapper,
             cardReaderCountryConfigProvider
         ).invoke("CA")
 
-        assertThat(result).isEqualTo(IsTapToPayAvailable.Result.NotAvailable.CountryNotSupported)
+        assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.NotAvailable.CountryNotSupported)
     }
 
     @Test
@@ -108,14 +108,14 @@ class IsTapToPayAvailableTest {
         whenever(systemVersionUtilsWrapper.isAtLeastP()).thenReturn(true)
         whenever(appPrefs.isTapToPayEnabled).thenReturn(false)
 
-        val result = IsTapToPayAvailable(
+        val result = TapToPayAvailabilityStatus(
             appPrefs,
             context,
             systemVersionUtilsWrapper,
             cardReaderCountryConfigProvider
         ).invoke("US")
 
-        assertThat(result).isEqualTo(IsTapToPayAvailable.Result.NotAvailable.TapToPayDisabled)
+        assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.NotAvailable.TapToPayDisabled)
     }
 
     @Test
@@ -127,13 +127,13 @@ class IsTapToPayAvailableTest {
         whenever(systemVersionUtilsWrapper.isAtLeastP()).thenReturn(true)
         whenever(appPrefs.isTapToPayEnabled).thenReturn(true)
 
-        val result = IsTapToPayAvailable(
+        val result = TapToPayAvailabilityStatus(
             appPrefs,
             context,
             systemVersionUtilsWrapper,
             cardReaderCountryConfigProvider
         ).invoke("US")
 
-        assertThat(result).isEqualTo(IsTapToPayAvailable.Result.Available)
+        assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.Available)
     }
 }

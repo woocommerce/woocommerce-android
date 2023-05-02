@@ -11,7 +11,7 @@ import com.woocommerce.android.util.SystemVersionUtilsWrapper
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
-class IsTapToPayAvailable @Inject constructor(
+class TapToPayAvailabilityStatus @Inject constructor(
     private val appPrefs: AppPrefs = AppPrefs,
     private val selectedSite: SelectedSite,
     private val deviceFeatures: DeviceFeatures,
@@ -49,4 +49,4 @@ class IsTapToPayAvailable @Inject constructor(
     }
 }
 
-val IsTapToPayAvailable.Result.isAvailable get() = this is IsTapToPayAvailable.Result.Available
+val TapToPayAvailabilityStatus.Result.isAvailable get() = this is TapToPayAvailabilityStatus.Result.Available
