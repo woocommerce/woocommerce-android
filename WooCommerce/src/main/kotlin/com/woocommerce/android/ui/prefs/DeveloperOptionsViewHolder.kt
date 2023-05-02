@@ -9,6 +9,7 @@ import com.woocommerce.android.databinding.DeveloperOptionsListItemBinding
 import com.woocommerce.android.databinding.DeveloperOptionsTogglableItemBinding
 import com.woocommerce.android.databinding.DeveloperOptionsUpdateReaderItemBinding
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem
+import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.SpinnerListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.util.UiHelpers
@@ -20,7 +21,13 @@ abstract class DeveloperOptionsViewHolder(val parent: ViewGroup, @LayoutRes layo
     class RowViewHolder(parent: ViewGroup) : DeveloperOptionsViewHolder(parent, R.layout.developer_options_list_item) {
         var binding: DeveloperOptionsListItemBinding = DeveloperOptionsListItemBinding.bind(itemView)
         override fun onBind(uiState: ListItem) {
-            TODO("Not yet implemented")
+            uiState as NonToggleableListItem
+            binding.developerOptionsListItemLabel.text = UiHelpers.getTextOfUiString(
+                itemView.context,
+                uiState.label
+            )
+            binding.developerOptionsMenuIcon.setImageResource(uiState.icon)
+            binding.root.setOnClickListener { uiState.onClick.invoke() }
         }
     }
 

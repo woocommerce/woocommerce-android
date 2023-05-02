@@ -139,6 +139,14 @@
     <fragment
         android:id="@+id/developerOptionsFragment"
         android:name="com.woocommerce.android.ui.prefs.DeveloperOptionsFragment"
-        android:label="DeveloperOptionsFragment" />
+        android:label="DeveloperOptionsFragment">
+        <action
+            android:id="@+id/action_developerOptionsFragment_to_ApiFaker"
+            app:destination="@id/apiFakerHostFragment" />
+    </fragment>
     <include app:graph="@navigation/nav_graph_domain_change" />
+    <fragment
+        android:id="@+id/apiFakerHostFragment"
+        android:name="com.woocommerce.android.apifaker.ApiFakerHostFragment"
+        android:label="ApiFakerHostFragment" />
 </navigation>

@@ -283,6 +283,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-code-scanner:16.0.0-beta3'
 
     // Debug dependencies
+    debugImplementation project(":libs:apifaker")
     debugImplementation "com.facebook.flipper:flipper:$flipperVersion"
     debugImplementation "com.facebook.soloader:soloader:0.10.4"
     debugImplementation("com.facebook.flipper:flipper-network-plugin:$flipperVersion") {

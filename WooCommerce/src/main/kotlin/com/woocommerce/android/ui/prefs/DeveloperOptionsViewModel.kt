@@ -28,25 +28,29 @@ class DeveloperOptionsViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     private val _viewState = MutableLiveData(
         DeveloperOptionsViewState(
-            rows = if (developerOptionsRepository.isSimulatedCardReaderEnabled()) {
-                getListItemsForSimulatedReader()
-            } else {
-                getListItemsForHardwareReader()
-            }
+            rows = prepareItems()
         )
     )
 
     val viewState: LiveData<DeveloperOptionsViewState> = _viewState
 
-    private fun getListItemsForHardwareReader(): List<ListItem> = mutableListOf<ListItem>(
-        ToggleableListItem(
-            icon = drawable.img_card_reader_connecting,
-            label = UiStringRes(string.enable_card_reader),
-            key = UiStringRes(string.simulated_reader_key),
-            isEnabled = true,
-            isChecked = developerOptionsRepository.isSimulatedCardReaderEnabled(),
-            onToggled = ::onSimulatedReaderToggled
-        ),
+    private fun prepareItems(): List<ListItem> = createItemsForCardReader() + createApiFakerItem()
+
+    private fun createItemsForCardReader(): List<ListItem> = buildList {
+        add(createSimulatedReaderToggle())
+        if (developerOptionsRepository.isSimulatedCardReaderEnabled()) {
+            add(createReaderUpdateFrequencyItem())
+            add(createEnableInteractItem())
+        }
+    }
+
+    private fun createSimulatedReaderToggle() = ToggleableListItem(
+        icon = drawable.img_card_reader_connecting,
+        label = UiStringRes(string.enable_card_reader),
+        key = UiStringRes(string.simulated_reader_key),
+        isEnabled = true,
+        isChecked = developerOptionsRepository.isSimulatedCardReaderEnabled(),
+        onToggled = ::onSimulatedReaderToggled
     )
 
     private fun createReaderUpdateFrequencyItem() =
@@ -69,18 +73,25 @@ class DeveloperOptionsViewModel @Inject constructor(
             onToggled = ::onEnableInteracToggled
         )
 
+    private fun createApiFakerItem() = ListItem.NonToggleableListItem(
+        icon = drawable.ic_globe,
+        label = UiStringRes(string.api_faker),
+        key = UiStringRes(string.api_faker_key),
+        isEnabled = true,
+        onClick = {
+            triggerEvent(DeveloperOptionsEvents.OpenApiFaker)
+        }
+    )
+
     private fun onSimulatedReaderToggled(isChecked: Boolean) {
+        simulatedReaderStateChanged(isChecked)
+        _viewState.value = _viewState.value?.copy(rows = prepareItems())
         if (!isChecked) {
-            viewState.value?.rows = getListItemsForHardwareReader()
             disconnectAndClearSelectedCardReader()
             triggerEvent(
                 DeveloperOptionsEvents.ShowToastString(string.simulated_reader_toast)
             )
-        } else {
-            viewState.value?.rows =
-                getListItemsForSimulatedReader()
         }
-        simulatedReaderStateChanged(isChecked)
     }
 
     private fun disconnectAndClearSelectedCardReader() {
@@ -152,10 +163,8 @@ class DeveloperOptionsViewModel @Inject constructor(
             val options: List<UpdateOptions>,
             var selectedValue: UpdateOptions,
         ) : DeveloperOptionsEvents()
-    }
 
-    private fun getListItemsForSimulatedReader(): List<ListItem> {
-        return getListItemsForHardwareReader() + createReaderUpdateFrequencyItem() + createEnableInteractItem()
+        object OpenApiFaker : DeveloperOptionsEvents()
     }
 
     data class DeveloperOptionsViewState(
