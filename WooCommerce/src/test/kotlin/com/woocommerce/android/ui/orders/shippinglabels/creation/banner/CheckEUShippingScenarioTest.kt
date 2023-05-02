@@ -23,7 +23,7 @@ import org.junit.Before
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class CheckEUShippingScenarioTest: BaseUnitTest() {
+internal class CheckEUShippingScenarioTest : BaseUnitTest() {
     lateinit var sut: CheckEUShippingScenario
 
     @Before
@@ -83,20 +83,20 @@ internal class CheckEUShippingScenarioTest: BaseUnitTest() {
         originCountryCode: String,
         destinationCountryCode: String
     ) = WaitingForInput(
-            data = StateMachineData(
-                order = Order.EMPTY,
-                stepsState = emptyStepState.copy(
-                    originAddressStep = OriginAddressStep(
-                        StepStatus.READY,
-                        Address.EMPTY.copy(country = Location.EMPTY.copy(code = originCountryCode))
-                    ),
-                    shippingAddressStep = ShippingAddressStep(
-                        StepStatus.READY,
-                        Address.EMPTY.copy(country = Location.EMPTY.copy(code = destinationCountryCode))
-                    )
+        data = StateMachineData(
+            order = Order.EMPTY,
+            stepsState = emptyStepState.copy(
+                originAddressStep = OriginAddressStep(
+                    StepStatus.READY,
+                    Address.EMPTY.copy(country = Location.EMPTY.copy(code = originCountryCode))
+                ),
+                shippingAddressStep = ShippingAddressStep(
+                    StepStatus.READY,
+                    Address.EMPTY.copy(country = Location.EMPTY.copy(code = destinationCountryCode))
                 )
             )
-        ).let { ShippingLabelsStateMachine.Transition(it, null) }
+        )
+    ).let { ShippingLabelsStateMachine.Transition(it, null) }
 
     private val emptyStepState = ShippingLabelsStateMachine.StepsState(
         originAddressStep = OriginAddressStep(StepStatus.NOT_READY, Address.EMPTY),
