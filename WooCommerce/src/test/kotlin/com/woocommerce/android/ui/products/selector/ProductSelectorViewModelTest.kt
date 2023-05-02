@@ -436,6 +436,35 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given published products restriction, when view model created, should not show draft products in the last sold section`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined,
+            ).initSavedStateHandle()
+            val ordersList = generateTestOrders()
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(ordersList)
+            whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(
+                listOf(
+                    DRAFT_PRODUCT,
+                    DRAFT_PRODUCT,
+                    VALID_PRODUCT
+                )
+            )
+
+            val sut = createViewModel(navArgs)
+
+            var viewState: ProductSelectorViewModel.ViewState? = null
+            sut.viewState.observeForever { state ->
+                viewState = state
+            }
+            assertThat(viewState?.recentProducts).isNotEmpty
+            assertThat(viewState?.recentProducts?.filter { it.id == DRAFT_PRODUCT.remoteId }).isEmpty()
+        }
+    }
+
+    @Test
     fun `given popular products, when view model created, then verify popular products are sorted in descending order`() {
         testBlocking {
             val navArgs = ProductSelectorFragmentArgs(
