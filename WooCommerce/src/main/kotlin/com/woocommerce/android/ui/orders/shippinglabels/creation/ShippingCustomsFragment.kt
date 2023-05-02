@@ -87,7 +87,7 @@ class ShippingCustomsFragment :
         if (viewModel.isEUShippingScenario) {
             with(binding.shippingNoticeBanner) {
                 isVisible = AppPrefs.isEUShippingNoticeDismissed.not()
-                setLearnMoreClickListener(viewModel::onShippingNoticeLearnMoreClicked)
+                onLearnMoreClicked = viewModel::onShippingNoticeLearnMoreClicked
             }
         }
 
@@ -113,7 +113,7 @@ class ShippingCustomsFragment :
             new.isShippingNoticeVisible.takeIfNotEqualTo(old?.isShippingNoticeVisible) { show ->
                 with(binding.shippingNoticeBanner) {
                     isVisible = show
-                    setLearnMoreClickListener(viewModel::onShippingNoticeLearnMoreClicked)
+                    onLearnMoreClicked = viewModel::onShippingNoticeLearnMoreClicked
                 }
             }
         }
