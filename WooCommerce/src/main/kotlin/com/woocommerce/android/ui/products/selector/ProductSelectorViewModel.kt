@@ -162,7 +162,12 @@ class ProductSelectorViewModel @Inject constructor(
         if (searchQuery.value.isNotNullOrEmpty() || filterState.value.filterOptions.isNotEmpty()) {
             return emptyList()
         }
-        return productsList.map { it.toUiModel(selectedIds) }
+        return productsList
+            .filter { product ->
+                productsRestrictions.map { restriction -> restriction(product) }
+                    .fold(true) { acc, result -> acc && result }
+            }
+            .map { it.toUiModel(selectedIds) }
     }
 
     private suspend fun loadRecentProducts() {
