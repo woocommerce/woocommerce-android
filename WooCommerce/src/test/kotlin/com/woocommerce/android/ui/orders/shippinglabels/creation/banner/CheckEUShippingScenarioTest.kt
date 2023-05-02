@@ -32,6 +32,26 @@ internal class CheckEUShippingScenarioTest: BaseUnitTest() {
     }
 
     @Test
+    fun `when origin country is NOT US, then emit true`() = testBlocking {
+        // Given
+        val transitions = generateExpectedTransitions(
+            originCountryCode = "DE",
+            destinationCountryCodePair = Pair("AT", "AUT")
+        )
+        val results = mutableListOf<Boolean>()
+
+        // When
+        sut.invoke(transitions)
+            .onEach { results.add(it) }
+            .launchIn(this)
+
+        // Then
+        assertThat(results).hasSize(2)
+        assertThat(results[0]).isFalse
+        assertThat(results[1]).isFalse
+    }
+
+    @Test
     fun `when origin country is US and destination country is AT then emit true`() = testBlocking {
         // Given
         val transitions = generateExpectedTransitions(
@@ -47,6 +67,8 @@ internal class CheckEUShippingScenarioTest: BaseUnitTest() {
 
         // Then
         assertThat(results).hasSize(2)
+        assertThat(results[0]).isTrue
+        assertThat(results[1]).isTrue
     }
 
     private fun generateExpectedTransitions(
