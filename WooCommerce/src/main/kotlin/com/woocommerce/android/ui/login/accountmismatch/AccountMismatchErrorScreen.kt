@@ -142,7 +142,8 @@ private fun SiteCredentialsScreen(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
         ) {
             Text(text = stringResource(id = R.string.enter_credentials_for_site, viewState.siteUrl))
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
