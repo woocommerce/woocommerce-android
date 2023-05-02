@@ -35,14 +35,18 @@
             android:id="@+id/shipping_notice_icon"
             android:layout_width="@dimen/image_minor_50"
             android:layout_height="@dimen/image_minor_50"
+            android:clickable="true"
+            android:focusable="true"
             android:visibility="gone"
             app:srcCompat="@drawable/ic_tintable_info_outline_24dp"
-            app:tint="@color/color_secondary" />
+            app:tint="@color/color_secondary"
+            tools:visibility="visible" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/error_view"
             android:layout_width="@dimen/image_minor_50"
             android:layout_height="@dimen/image_minor_50"
+            android:layout_marginStart="@dimen/minor_100"
             app:srcCompat="@drawable/mtrl_ic_error"
             app:tint="@color/woo_red_50" />
 
