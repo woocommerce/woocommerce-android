@@ -60,7 +60,6 @@ import java.math.BigDecimal
 
 private const val PAYMENT_URL = "paymentUrl"
 private const val ORDER_TOTAL = "100$"
-private const val COUNTRY_CODE = "US"
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SelectPaymentMethodViewModelTest : BaseUnitTest() {
@@ -96,9 +95,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
     private val cardReaderTracker: CardReaderTracker = mock()
-    private val wooStore: WooCommerceStore = mock {
-        on { getStoreCountryCode(site) }.thenReturn(COUNTRY_CODE)
-    }
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock()
     private val appPrefs: AppPrefs = mock()
 
@@ -170,7 +166,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
-            whenever(tapToPayAvailabilityStatus(COUNTRY_CODE)).thenReturn(TapToPayAvailabilityStatus.Result.Available)
+            whenever(tapToPayAvailabilityStatus()).thenReturn(TapToPayAvailabilityStatus.Result.Available)
             val orderId = 1L
 
             // WHEN
@@ -185,7 +181,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(false)
-            whenever(tapToPayAvailabilityStatus(COUNTRY_CODE)).thenReturn(TapToPayAvailabilityStatus.Result.Available)
+            whenever(tapToPayAvailabilityStatus()).thenReturn(TapToPayAvailabilityStatus.Result.Available)
             val orderId = 1L
 
             // WHEN
@@ -200,7 +196,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
-            whenever(tapToPayAvailabilityStatus(COUNTRY_CODE)).thenReturn(
+            whenever(tapToPayAvailabilityStatus()).thenReturn(
                 TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
             )
             val orderId = 1L
@@ -836,7 +832,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             val orderId = 1L
             val param = Payment(orderId = orderId, paymentType = ORDER)
             val tapToPayDisabled = TapToPayAvailabilityStatus.Result.NotAvailable.TapToPayDisabled
-            whenever(tapToPayAvailabilityStatus(COUNTRY_CODE)).thenReturn(tapToPayDisabled)
+            whenever(tapToPayAvailabilityStatus()).thenReturn(tapToPayDisabled)
 
             // WHEN
             initViewModel(param)
@@ -852,7 +848,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             val orderId = 1L
             val param = Payment(orderId = orderId, paymentType = ORDER)
             val tapToPaySystemNotSupported = TapToPayAvailabilityStatus.Result.NotAvailable.SystemVersionNotSupported
-            whenever(tapToPayAvailabilityStatus(COUNTRY_CODE)).thenReturn(tapToPaySystemNotSupported)
+            whenever(tapToPayAvailabilityStatus()).thenReturn(tapToPaySystemNotSupported)
 
             // WHEN
             initViewModel(param)
@@ -868,7 +864,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             val orderId = 1L
             val param = Payment(orderId = orderId, paymentType = ORDER)
             val tapToPayCountryNotSupported = TapToPayAvailabilityStatus.Result.NotAvailable.CountryNotSupported
-            whenever(tapToPayAvailabilityStatus(COUNTRY_CODE)).thenReturn(tapToPayCountryNotSupported)
+            whenever(tapToPayAvailabilityStatus()).thenReturn(tapToPayCountryNotSupported)
 
             // WHEN
             initViewModel(param)
@@ -882,7 +878,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             val tapToPayGpsNotAvailable = TapToPayAvailabilityStatus.Result.NotAvailable.GooglePlayServicesNotAvailable
-            whenever(tapToPayAvailabilityStatus(COUNTRY_CODE)).thenReturn(tapToPayGpsNotAvailable)
+            whenever(tapToPayAvailabilityStatus()).thenReturn(tapToPayGpsNotAvailable)
             val orderId = 1L
             val param = Payment(orderId = orderId, paymentType = ORDER)
 
@@ -900,7 +896,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             val orderId = 1L
             val param = Payment(orderId = orderId, paymentType = ORDER)
             val tapToPayNfcNotAvailable = TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
-            whenever(tapToPayAvailabilityStatus(COUNTRY_CODE)).thenReturn(tapToPayNfcNotAvailable)
+            whenever(tapToPayAvailabilityStatus()).thenReturn(tapToPayNfcNotAvailable)
 
             // WHEN
             initViewModel(param)
@@ -923,7 +919,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             cardPaymentCollectibilityChecker,
             learnMoreUrlProvider,
             cardReaderTracker,
-            wooStore,
             tapToPayAvailabilityStatus,
             appPrefs,
         )

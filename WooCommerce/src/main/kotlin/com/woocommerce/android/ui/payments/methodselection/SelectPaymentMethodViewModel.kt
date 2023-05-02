@@ -67,7 +67,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val cardPaymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
     private val learnMoreUrlProvider: LearnMoreUrlProvider,
     private val cardReaderTracker: CardReaderTracker,
-    private val wooStore: WooCommerceStore,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val appPrefs: AppPrefs = AppPrefs,
 ) : ScopedViewModel(savedState) {
@@ -131,8 +130,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     )
 
     private fun isTapToPayAvailable(): Boolean {
-        val countryCode = wooStore.getStoreCountryCode(selectedSite.get()) ?: return false
-        val result = isTapToPayAvailable(countryCode)
+        val result = tapToPayAvailabilityStatus()
         return if (result is NotAvailable) {
             cardReaderTracker.trackTapToPayNotAvailableReason(result)
             false

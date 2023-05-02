@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
+import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.util.captureValues
@@ -70,6 +71,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     private val appPrefsWrapper: AppPrefsWrapper = mock()
 
     private lateinit var viewModel: MoreMenuViewModel
+    private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock()
 
     suspend fun setup(setupMocks: suspend () -> Unit = {}) {
         setupMocks()
@@ -82,6 +84,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             planRepository = planRepository,
             resourceProvider = resourceProvider,
             unseenReviewsCountHandler = unseenReviewsCountHandler,
+            tapToPayAvailabilityStatus = tapToPayAvailabilityStatus,
             appPrefsWrapper = appPrefsWrapper
         )
     }
@@ -101,50 +104,6 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     }
 
     @Test
-    fun `when on view resumed, then new feature handler marks new feature as seen`() = testBlocking {
-        // GIVEN
-        setup { }
-
-        // WHEN
-        viewModel.onViewResumed()
-
-        // THEN
-        verify(moreMenuNewFeatureHandler).markNewFeatureAsSeen()
-    }
-
-    @Test
-    fun `given user never clicked payments, when building state, then badge displayed`() = testBlocking {
-        // GIVEN
-        val prefsChanges = MutableSharedFlow<Boolean>()
-        setup {
-            whenever(moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked).thenReturn(prefsChanges)
-        }
-
-        // WHEN
-        val states = viewModel.moreMenuViewState.captureValues()
-        prefsChanges.emit(false)
-
-        // THEN
-        assertThat(states.last().moreMenuItems.first().badgeState).isNotNull
-    }
-
-    @Test
-    fun `given user clicked payments, when building state, then badge is not displayed`() = testBlocking {
-        // GIVEN
-        val prefsChanges = MutableSharedFlow<Boolean>()
-        setup {
-            whenever(moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked).thenReturn(prefsChanges)
-        }
-
-        // WHEN
-        val states = viewModel.moreMenuViewState.captureValues()
-        prefsChanges.emit(true)
-
-        // THEN
-        assertThat(states.last().moreMenuItems.first().badgeState).isNull()
-    }
-
-    @Test
     fun `when building state, then payments icon displayed`() = testBlocking {
         // GIVEN
         val prefsChanges = MutableSharedFlow<Boolean>()
@@ -160,7 +119,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         val paymentsButton = states.last().generalMenuItems.first { it.title == R.string.more_menu_button_payments }
         assertThat(paymentsButton.icon).isEqualTo(R.drawable.ic_more_menu_payments)
         assertThat(paymentsButton.badgeState?.textColor).isEqualTo(
-            R.color.color_on_surface_inverted
+            R.color.color_on_surface
         )
         assertThat(paymentsButton.badgeState?.badgeSize).isEqualTo(
             R.dimen.major_110
@@ -341,7 +300,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         prefsChanges.emit(false)
 
         // THEN
-        assertThat(states.last().moreMenuItems.first().badgeState).isNotNull
+        assertThat(states.last().generalMenuItems.first().badgeState).isNotNull
     }
 
     @Test
@@ -357,7 +316,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         prefsChanges.emit(true)
 
         // THEN
-        assertThat(states.last().moreMenuItems.first().badgeState).isNull()
+        assertThat(states.last().generalMenuItems.first().badgeState).isNull()
     }
 
     @Test
