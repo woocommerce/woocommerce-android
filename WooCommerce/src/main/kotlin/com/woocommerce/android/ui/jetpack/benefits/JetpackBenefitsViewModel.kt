@@ -83,9 +83,7 @@ class JetpackBenefitsViewModel @Inject constructor(
         result: Result<Pair<JetpackStatus, JetpackStatusFetchResponse>>
     ) {
         fun startJetpackActivation(jetpackStatus: JetpackStatus) {
-            triggerEvent(
-                StartJetpackActivationForApplicationPasswords(selectedSite.get().url, jetpackStatus)
-            )
+            triggerEvent(StartJetpackActivationForApplicationPasswords(selectedSite.get().url, jetpackStatus))
         }
 
         fun showGenericError() = triggerEvent(ShowSnackbar(string.error_generic))
@@ -103,12 +101,7 @@ class JetpackBenefitsViewModel @Inject constructor(
                                 startJetpackActivation(jetpackStatus)
                             }
                             else -> {
-                                triggerEvent(
-                                    OpenJetpackEligibilityError(
-                                        user.username,
-                                        user.roles.first().value
-                                    )
-                                )
+                                triggerEvent(OpenJetpackEligibilityError(user.username, user.roles.first().value))
 
                                 logError(
                                     statusCode,
