@@ -104,6 +104,7 @@ class TapToPayAvailabilityStatusTest {
         }
         whenever(systemVersionUtilsWrapper.isAtLeastP()).thenReturn(true)
         whenever(appPrefs.isTapToPayEnabled).thenReturn(true)
+        whenever(wooStore.getStoreCountryCode(siteModel)).thenReturn("RU")
 
         val result = TapToPayAvailabilityStatus(
             appPrefs,
