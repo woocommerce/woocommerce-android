@@ -1,6 +1,7 @@
 package com.woocommerce.android.support
 
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.support.zendesk.TicketCustomField
 import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.support.zendesk.ZendeskEnvironmentDataSource
 import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetException
@@ -27,6 +28,10 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCSSRModel
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -388,7 +393,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             val expectedTags = arrayOf("application_password_authenticated")
             val captor = argumentCaptor<CreateRequest>()
             wooStore.stub {
-                onBlocking { fetchSSR(selectedSite) } doReturn WooResult()
+                onBlocking { fetchSSR(selectedSite) } doReturn WooResult(model = WCSSRModel(123))
             }
 
             // When
@@ -540,6 +545,98 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
 
             val actualRequest = captor.firstValue
             assertThat(actualRequest.tags).contains(*expectedTags)
+        }
+
+    @Test
+    fun `given the ssr report is returned and site is selected, when creating the request, attach ssr`() =
+        testBlocking {
+            // given
+            wooStore.stub {
+                onBlocking { fetchSSR(any()) } doReturn WooResult(model = WCSSRModel(123))
+            }
+            val captor = argumentCaptor<CreateRequest>()
+            createSUT()
+
+            // when
+            sut.createRequest(
+                context = mock(),
+                origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                ticketType = TicketType.MobileApp,
+                selectedSite = SiteModel(),
+                subject = "subject",
+                description = "description",
+                extraTags = emptyList()
+            ).first()
+
+            // then
+            verify(requestProvider).createRequest(captor.capture(), any())
+            val customFields = captor.firstValue.customFields
+            assertThat(customFields).anySatisfy {
+                assertThat(it.id).isEqualTo(TicketCustomField.ssr)
+                assertThat(it.valueString).isNotBlank()
+            }
+        }
+
+    @Test
+    fun `given the site is not selected, when creating the request, attach empty ssr`() =
+        testBlocking {
+            // given
+            val captor = argumentCaptor<CreateRequest>()
+            createSUT()
+
+            // when
+            sut.createRequest(
+                context = mock(),
+                origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                ticketType = TicketType.MobileApp,
+                selectedSite = null,
+                subject = "subject",
+                description = "description",
+                extraTags = emptyList()
+            ).first()
+
+            // then
+            verify(requestProvider).createRequest(captor.capture(), any())
+            val customFields = captor.firstValue.customFields
+            assertThat(customFields).anySatisfy {
+                assertThat(it.id).isEqualTo(TicketCustomField.ssr)
+                assertThat(it.valueString).isNull()
+            }
+        }
+
+    @Test
+    fun `given the site is selected but app fails on fetching ssr, when creating the request, attach empty ssr`() =
+        testBlocking {
+            // given
+            wooStore.stub {
+                onBlocking { fetchSSR(any()) } doReturn WooResult(
+                    WooError(
+                        WooErrorType.GENERIC_ERROR,
+                        BaseRequest.GenericErrorType.NETWORK_ERROR
+                    )
+                )
+            }
+            val captor = argumentCaptor<CreateRequest>()
+            createSUT()
+
+            // when
+            sut.createRequest(
+                context = mock(),
+                origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                ticketType = TicketType.MobileApp,
+                selectedSite = SiteModel(),
+                subject = "subject",
+                description = "description",
+                extraTags = emptyList()
+            ).first()
+
+            // then
+            verify(requestProvider).createRequest(captor.capture(), any())
+            val customFields = captor.firstValue.customFields
+            assertThat(customFields).anySatisfy {
+                assertThat(it.id).isEqualTo(TicketCustomField.ssr)
+                assertThat(it.valueString).isNull()
+            }
         }
 
     private fun createSUT() {

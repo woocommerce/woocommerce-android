@@ -241,7 +241,7 @@ private object ZendeskConstants {
     const val storeSubcategoryValue = "Store"
 }
 
-private object TicketCustomField {
+object TicketCustomField {
     const val appVersion = 360000086866L
     const val blogList = 360000087183L
     const val deviceFreeSpace = 360000089123L
