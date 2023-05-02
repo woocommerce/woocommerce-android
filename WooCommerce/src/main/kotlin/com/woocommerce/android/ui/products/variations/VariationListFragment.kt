@@ -205,7 +205,7 @@ class VariationListFragment :
                 is ShowBulkUpdateLimitExceededWarning -> showBulkUpdateLimitExceededWarning()
                 is ShowGenerateVariationConfirmation -> showGenerateVariationConfirmation(event.variationCandidates)
                 is ShowGenerateVariationsError -> handleGenerateVariationError(event)
-                is ShowVariationDialog -> showAddVariationSelectDialog()
+                is ShowVariationDialog -> showGenerateVariationBottomSheet()
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_LIST_RESULT, event.data)
                 is Exit -> activity?.onBackPressedDispatcher?.onBackPressed()
             }
@@ -283,7 +283,7 @@ class VariationListFragment :
             .show()
     }
 
-    private fun showAddVariationSelectDialog() {
+    private fun showGenerateVariationBottomSheet() {
         VariationListFragmentDirections
             .actionVariationListFragmentToGenerateVariationBottomSheetFragment()
             .run { findNavController().navigateSafely(this) }
