@@ -104,11 +104,14 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     }
 
     @Test
-    fun `when building state, then payments icon displayed`() = testBlocking {
+    fun `given ttp is available, when building state, then payments icon displayed with badge`() = testBlocking {
         // GIVEN
         val prefsChanges = MutableSharedFlow<Boolean>()
         setup {
             whenever(moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked).thenReturn(prefsChanges)
+            whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(
+                TapToPayAvailabilityStatus.Result.Available
+            )
         }
 
         // WHEN
@@ -131,6 +134,26 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         assertThat(paymentsButton.badgeState?.textState?.text).isEqualTo("")
         assertThat(paymentsButton.badgeState?.textState?.fontSize)
             .isEqualTo(R.dimen.text_minor_80)
+    }
+
+    @Test
+    fun `given ttp is not available, when building state, then payments badge is not displayed`() = testBlocking {
+        // GIVEN
+        val prefsChanges = MutableSharedFlow<Boolean>()
+        setup {
+            whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(
+                TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
+            )
+            whenever(moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked).thenReturn(prefsChanges)
+        }
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+        prefsChanges.emit(false)
+
+        // THEN
+        val paymentsButton = states.last().generalMenuItems.first { it.title == R.string.more_menu_button_payments }
+        assertThat(paymentsButton.badgeState).isNull()
     }
 
     @Test
@@ -288,20 +311,24 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     }
 
     @Test
-    fun `given user never clicked payments, when building state, then badge displayed`() = testBlocking {
-        // GIVEN
-        val prefsChanges = MutableSharedFlow<Boolean>()
-        setup {
-            whenever(moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked).thenReturn(prefsChanges)
+    fun `given user never clicked payments and ttp available, when building state, then badge displayed`() =
+        testBlocking {
+            // GIVEN
+            val prefsChanges = MutableSharedFlow<Boolean>()
+            setup {
+                whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(
+                    TapToPayAvailabilityStatus.Result.Available
+                )
+                whenever(moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked).thenReturn(prefsChanges)
+            }
+
+            // WHEN
+            val states = viewModel.moreMenuViewState.captureValues()
+            prefsChanges.emit(false)
+
+            // THEN
+            assertThat(states.last().generalMenuItems.first().badgeState).isNotNull
         }
-
-        // WHEN
-        val states = viewModel.moreMenuViewState.captureValues()
-        prefsChanges.emit(false)
-
-        // THEN
-        assertThat(states.last().generalMenuItems.first().badgeState).isNotNull
-    }
 
     @Test
     fun `given user clicked payments, when building state, then badge is not displayed`() = testBlocking {

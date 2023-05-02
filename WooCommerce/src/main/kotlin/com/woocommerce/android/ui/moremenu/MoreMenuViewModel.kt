@@ -144,7 +144,7 @@ class MoreMenuViewModel @Inject constructor(
         if (!paymentsFeatureWasClicked && tapToPayAvailabilityStatus().isAvailable) BadgeState(
             badgeSize = R.dimen.major_110,
             backgroundColor = R.color.color_secondary,
-            textColor = R.color.color_surface,
+            textColor = R.color.color_on_surface,
             textState = TextState("", R.dimen.text_minor_80),
             animateAppearance = true,
         ) else null

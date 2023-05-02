@@ -33,7 +33,9 @@ class MoreMenuNewFeatureHandlerTest : BaseUnitTest() {
     fun `given new feature is not seen and ttp not available, when checking state, then returns empty list`() =
         testBlocking {
             // GIVEN
-            whenever(tapToPayAvailabilityStatus()).thenReturn(TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable)
+            whenever(tapToPayAvailabilityStatus()).thenReturn(
+                TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
+            )
             whenever(appPrefsWrapper.observePrefs()).thenReturn(MutableStateFlow(Unit))
             whenever(appPrefsWrapper.isUserSeenNewFeatureOnMoreScreen()).thenReturn(false)
             val moreMenuNewFeatureHandler = MoreMenuNewFeatureHandler(appPrefsWrapper, tapToPayAvailabilityStatus)
