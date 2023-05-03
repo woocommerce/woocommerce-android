@@ -39,6 +39,7 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFail
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentMethodType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPaymentCompleted
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.Unknown
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.WaitingForInput
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
@@ -339,6 +340,7 @@ class CardReaderPaymentViewModel
                 tracker.trackPaymentFailed(paymentStatus.errorMessage, paymentStatus.type)
                 emitFailedPaymentState(orderId, billingEmail, paymentStatus, amountLabel)
             }
+            is Unknown -> {}
         }.exhaustive
     }
 

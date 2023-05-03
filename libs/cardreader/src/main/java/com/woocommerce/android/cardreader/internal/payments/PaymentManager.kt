@@ -21,8 +21,9 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.*
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
 
 @Suppress("LongParameterList")
@@ -37,14 +38,20 @@ internal class PaymentManager(
     private val errorMapper: PaymentErrorMapper,
     private val cardReaderConfigFactory: CardReaderConfigFactory,
 ) {
-    suspend fun acceptPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> = flow {
-        if (isInvalidState(paymentInfo)) return@flow
+    private val _cardPaymentStatus = MutableStateFlow<CardPaymentStatus>(Unknown)
+    val cardPaymentStatus = _cardPaymentStatus.asStateFlow()
+
+    suspend fun acceptPayment(paymentInfo: PaymentInfo) {
+        validateState(paymentInfo)?.let {
+            _cardPaymentStatus.emit(it)
+            return
+        }
 
         val paymentIntent = createPaymentIntent(paymentInfo)
         if (paymentIntent?.status != PaymentIntentStatus.REQUIRES_PAYMENT_METHOD) {
-            return@flow
+            return
         }
-        processPaymentIntent(paymentInfo.orderId, paymentIntent).collect { emit(it) }
+        processPaymentIntent(paymentInfo.orderId, paymentIntent).collect { _cardPaymentStatus.emit(it) }
     }
 
     fun retryPayment(orderId: Long, paymentData: PaymentData) =
@@ -113,43 +120,45 @@ internal class PaymentManager(
         }
     }
 
-    private suspend fun FlowCollector<CardPaymentStatus>.createPaymentIntent(paymentInfo: PaymentInfo): PaymentIntent? {
+    private suspend fun createPaymentIntent(paymentInfo: PaymentInfo): PaymentIntent? {
         var paymentIntent: PaymentIntent? = null
-        emit(InitializingPayment)
+        _cardPaymentStatus.emit(InitializingPayment)
         createPaymentAction.createPaymentIntent(paymentInfo).collect {
             when (it) {
-                is Failure -> emit(errorMapper.mapTerminalError(paymentIntent, it.exception))
+                is Failure -> _cardPaymentStatus.emit(errorMapper.mapTerminalError(paymentIntent, it.exception))
                 is Success -> paymentIntent = it.paymentIntent
             }
         }
         return paymentIntent
     }
 
-    private suspend fun FlowCollector<CardPaymentStatus>.collectPayment(
+    private suspend fun collectPayment(
         paymentIntent: PaymentIntent
     ): PaymentIntent {
         var result = paymentIntent
-        emit(CollectingPayment)
+        _cardPaymentStatus.emit(CollectingPayment)
         collectPaymentAction.collectPayment(paymentIntent).collect {
             when (it) {
-                is CollectPaymentStatus.Failure -> emit(errorMapper.mapTerminalError(paymentIntent, it.exception))
+                is CollectPaymentStatus.Failure -> _cardPaymentStatus.emit(errorMapper.mapTerminalError(paymentIntent, it.exception))
                 is CollectPaymentStatus.Success -> result = it.paymentIntent
             }
         }
         return result
     }
 
-    private suspend fun FlowCollector<CardPaymentStatus>.processPayment(
+    private suspend fun processPayment(
         paymentIntent: PaymentIntent
     ): PaymentIntent {
         var result = paymentIntent
-        emit(ProcessingPayment)
+        _cardPaymentStatus.emit(ProcessingPayment)
         processPaymentAction.processPayment(paymentIntent).collect {
             when (it) {
-                is ProcessPaymentStatus.Failure -> emit(errorMapper.mapTerminalError(paymentIntent, it.exception))
+                is ProcessPaymentStatus.Failure -> _cardPaymentStatus.emit(
+                    errorMapper.mapTerminalError(paymentIntent, it.exception)
+                )
                 is ProcessPaymentStatus.Success -> {
                     val paymentMethodType = determinePaymentMethodType(it)
-                    emit(ProcessingPaymentCompleted(paymentMethodType))
+                    _cardPaymentStatus.emit(ProcessingPaymentCompleted(paymentMethodType))
                     result = it.paymentIntent
                 }
             }
@@ -157,32 +166,30 @@ internal class PaymentManager(
         return result
     }
 
-    private suspend fun FlowCollector<CardPaymentStatus>.capturePayment(
+    private suspend fun capturePayment(
         receiptUrl: String,
         orderId: Long,
         cardReaderStore: CardReaderStore,
         paymentIntent: PaymentIntent
     ) {
-        emit(CapturingPayment)
+        _cardPaymentStatus.emit(CapturingPayment)
         when (val captureResponse = cardReaderStore.capturePaymentIntent(orderId, paymentIntent.id)) {
-            is CapturePaymentResponse.Successful -> emit(PaymentCompleted(receiptUrl))
-            is CapturePaymentResponse.Error -> emit(errorMapper.mapCapturePaymentError(paymentIntent, captureResponse))
+            is CapturePaymentResponse.Successful -> _cardPaymentStatus.emit(PaymentCompleted(receiptUrl))
+            is CapturePaymentResponse.Error -> _cardPaymentStatus.emit(errorMapper.mapCapturePaymentError(paymentIntent, captureResponse))
         }
     }
 
-    private suspend fun FlowCollector<CardPaymentStatus>.isInvalidState(paymentInfo: PaymentInfo): Boolean {
+    private fun validateState(paymentInfo: PaymentInfo): PaymentFailed? {
         val cardReaderConfig = cardReaderConfigFactory.getCardReaderConfigFor(paymentInfo.countryCode)
         return when {
             cardReaderConfig !is CardReaderConfigForSupportedCountry ||
                 !paymentUtils.isSupportedCurrency(paymentInfo.currency, cardReaderConfig) -> {
-                emit(errorMapper.mapError(errorMessage = "Unsupported currency: $paymentInfo.currency"))
-                true
+                errorMapper.mapError(errorMessage = "Unsupported currency: $paymentInfo.currency")
             }
             !terminalWrapper.isInitialized() -> {
-                emit(errorMapper.mapError(errorMessage = "Reader not connected"))
-                true
+                errorMapper.mapError(errorMessage = "Reader not connected")
             }
-            else -> false
+            else -> null
         }
     }
 

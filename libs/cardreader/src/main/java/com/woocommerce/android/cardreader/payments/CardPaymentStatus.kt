@@ -1,6 +1,7 @@
 package com.woocommerce.android.cardreader.payments
 
 sealed class CardPaymentStatus {
+    object Unknown : CardPaymentStatus()
     object InitializingPayment : CardPaymentStatus()
     object CollectingPayment : CardPaymentStatus()
     object WaitingForInput : CardPaymentStatus()
