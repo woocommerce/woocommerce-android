@@ -302,7 +302,11 @@ class ShippingCustomsViewModel @Inject constructor(
         fun CustomsLine.validateItemDescription(): String? {
             return if (itemDescription.isBlank()) {
                 resourceProvider.getString(R.string.shipping_label_customs_required_field)
-            } else null
+            } else if (isEUShippingScenario && itemDescription.length < 3) {
+                resourceProvider.getString(R.string.shipping_label_customs_item_description_too_short)
+            } else {
+                null
+            }
         }
 
         fun CustomsLine.validateWeight(): String? {
