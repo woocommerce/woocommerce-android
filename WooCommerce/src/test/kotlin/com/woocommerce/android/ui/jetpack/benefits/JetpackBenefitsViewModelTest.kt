@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.jetpack.benefits
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
@@ -19,7 +20,9 @@ import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
 @ExperimentalCoroutinesApi
 class JetpackBenefitsViewModelTest : BaseUnitTest() {
     private val savedState: SavedStateHandle = SavedStateHandle()
-    private val siteModelMock: SiteModel = mock()
+    private val siteModelMock: SiteModel = mock {
+        on { url }.doReturn("https://woocommerce.com/")
+    }
     private val selectedSiteMock: SelectedSite = mock {
         on { get() }.doReturn(siteModelMock)
     }
@@ -45,7 +48,7 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
     @Test
     fun `given Jetpack CP connection type, when user starts installation, then StartJetpackActivationForJetpackCP event is triggered`() {
         // Given
-        whenever(selectedSiteMock.connectionType).thenReturn(SiteConnectionType.JetpackConnectionPackage)
+        givenConnectionType(SiteConnectionType.JetpackConnectionPackage)
 
         // When
         sut.onInstallClick()
@@ -54,5 +57,44 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
         assertThat(sut.event.value).isEqualTo(
             JetpackBenefitsViewModel.StartJetpackActivationForJetpackCP
         )
+    }
+
+    @Test
+    fun `given REST API connection type and Jetpack fetch status is SUCCESS, when user starts installation, then StartJetpackActivationForApplicationPasswords event is triggered`() =
+        testBlocking {
+            // Given
+            val jetpackStatus = JetpackStatus(
+                isJetpackInstalled = true,
+                isJetpackConnected = false,
+                wpComEmail = null
+            )
+            givenConnectionType(SiteConnectionType.ApplicationPasswords)
+            givenJetpackStatus(
+                jetpackStatus,
+                FetchJetpackStatus.JetpackStatusFetchResponse.SUCCESS
+            )
+
+            // When
+            sut.onInstallClick()
+
+            // Then
+            assertThat(sut.event.value).isEqualTo(
+                JetpackBenefitsViewModel.StartJetpackActivationForApplicationPasswords(
+                    selectedSiteMock.get().url,
+                    jetpackStatus
+                )
+            )
+        }
+
+    private fun givenConnectionType(connectionType: SiteConnectionType) {
+        whenever(selectedSiteMock.connectionType).thenReturn(connectionType)
+    }
+
+    private fun givenJetpackStatus(
+        jetpackStatus: JetpackStatus,
+        jetpackStatusFetchResponse: FetchJetpackStatus.JetpackStatusFetchResponse
+    ) = testBlocking {
+        val result = Result.success(jetpackStatus to jetpackStatusFetchResponse)
+        whenever(fetchJetpackStatus.invoke()).thenReturn(result)
     }
 }
