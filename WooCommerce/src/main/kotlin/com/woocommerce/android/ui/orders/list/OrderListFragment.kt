@@ -229,10 +229,12 @@ class OrderListFragment :
      */
     private fun refreshOptionsMenu() {
         if (!isChildFragmentShowing() && isSearching) {
-            enableSearchListeners()
             val savedSearchQuery = searchQuery
             searchMenuItem?.expandActionView()
+            enableSearchListeners()
             searchQuery = savedSearchQuery
+            searchView?.setQuery(searchQuery, false)
+            if (searchQuery.isEmpty()) binding.orderListView.clearAdapterData()
         } else {
             val showSearch = shouldShowSearchMenuItem()
             searchMenuItem?.let {
