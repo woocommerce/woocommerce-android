@@ -3,75 +3,64 @@ package com.woocommerce.android.ui.prefs
 import android.content.Context
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsEvent.PRIVACY_SETTINGS_COLLECT_INFO_TOGGLED
-import com.woocommerce.android.analytics.AnalyticsEvent.PRIVACY_SETTINGS_CRASH_REPORTING_TOGGLED
-import com.woocommerce.android.analytics.AnalyticsEvent.PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.PRIVACY_SETTINGS_SHARE_INFO_LINK_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentSettingsPrivacyBinding
-import com.woocommerce.android.util.AnalyticsUtils
+import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.prefs.PrivacySettingsViewModel.PrivacySettingsEvent.ShowCookiePolicy
+import com.woocommerce.android.ui.prefs.PrivacySettingsViewModel.PrivacySettingsEvent.ShowPrivacyPolicy
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class PrivacySettingsFragment : Fragment(R.layout.fragment_settings_privacy) {
+class PrivacySettingsFragment : BaseFragment(R.layout.fragment_settings_privacy) {
     companion object {
         const val TAG = "privacy-settings"
     }
 
     private val viewModel: PrivacySettingsViewModel by viewModels()
 
+    override fun getFragmentTitle() = getString(R.string.privacy_settings)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val binding = FragmentSettingsPrivacyBinding.bind(view)
 
         binding.switchSendStats.isChecked = viewModel.getSendUsageStats()
         binding.switchSendStats.setOnCheckedChangeListener { _, isChecked ->
-            AnalyticsTracker.track(
-                PRIVACY_SETTINGS_COLLECT_INFO_TOGGLED,
-                mapOf(
-                    AnalyticsTracker.KEY_STATE to
-                        AnalyticsUtils.getToggleStateLabel(binding.switchSendStats.isChecked)
-                )
-            )
-            viewModel.setSendUsageStats(isChecked)
+            viewModel.onSendStatsSettingChanged(isChecked)
         }
 
         binding.buttonLearnMore.setOnClickListener {
-            AnalyticsTracker.track(PRIVACY_SETTINGS_SHARE_INFO_LINK_TAPPED)
-            showCookiePolicy()
+            viewModel.onLearnMoreShareInfoClicked()
         }
         binding.buttonPrivacyPolicy.setOnClickListener {
-            AnalyticsTracker.track(PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED)
-            showPrivacyPolicy()
+            viewModel.onPrivacyPolicyClicked()
         }
         binding.buttonTracking.setOnClickListener {
-            AnalyticsTracker.track(PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED)
-            showCookiePolicy()
+            viewModel.onLearnMoreThirdPartyClicked()
         }
 
         binding.switchCrashReporting.isChecked = viewModel.getCrashReportingEnabled()
         binding.switchCrashReporting.setOnCheckedChangeListener { _, isChecked ->
-            AnalyticsTracker.track(
-                PRIVACY_SETTINGS_CRASH_REPORTING_TOGGLED,
-                mapOf(
-                    AnalyticsTracker.KEY_STATE to
-                        AnalyticsUtils.getToggleStateLabel(binding.switchCrashReporting.isChecked)
-                )
-            )
-            viewModel.setCrashReportingEnabled(isChecked)
+            viewModel.onCrashReportingSettingChanged(isChecked)
+        }
+        observeEvents()
+    }
+
+    private fun observeEvents() {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowCookiePolicy -> showCookiePolicy()
+                is ShowPrivacyPolicy -> showPrivacyPolicy()
+            }
         }
     }
 
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-
-        activity?.setTitle(R.string.privacy_settings)
     }
 
     override fun onStart() {

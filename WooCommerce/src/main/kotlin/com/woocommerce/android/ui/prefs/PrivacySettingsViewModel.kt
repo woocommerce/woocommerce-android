@@ -2,11 +2,14 @@ package com.woocommerce.android.ui.prefs
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTING_CHANGE
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTING_CHANGE_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTING_CHANGE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.dispatchAndAwait
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -31,7 +34,7 @@ class PrivacySettingsViewModel @Inject constructor(
 
     fun getSendUsageStats() = !accountStore.account.tracksOptOut
 
-    fun setSendUsageStats(sendUsageStats: Boolean) {
+    private fun setSendUsageStats(sendUsageStats: Boolean) {
         // note that we don't init/disable Crashlytics here because that requires the app to be restarted
         AnalyticsTracker.sendUsageStats = sendUsageStats
 
@@ -61,7 +64,7 @@ class PrivacySettingsViewModel @Inject constructor(
 
     fun getCrashReportingEnabled() = AppPrefs.isCrashReportingEnabled()
 
-    fun setCrashReportingEnabled(enabled: Boolean) {
+    private fun setCrashReportingEnabled(enabled: Boolean) {
         AppPrefs.setCrashReportingEnabled(enabled)
     }
 
@@ -88,5 +91,46 @@ class PrivacySettingsViewModel @Inject constructor(
                 else -> Unit // Do nothing
             }
         }
+    }
+
+    fun onLearnMoreShareInfoClicked() {
+        AnalyticsTracker.track(AnalyticsEvent.PRIVACY_SETTINGS_SHARE_INFO_LINK_TAPPED)
+        triggerEvent(PrivacySettingsEvent.ShowCookiePolicy)
+    }
+
+    fun onPrivacyPolicyClicked() {
+        AnalyticsTracker.track(AnalyticsEvent.PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED)
+        triggerEvent(PrivacySettingsEvent.ShowPrivacyPolicy)
+    }
+
+    fun onLearnMoreThirdPartyClicked() {
+        AnalyticsTracker.track(AnalyticsEvent.PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED)
+        triggerEvent(PrivacySettingsEvent.ShowCookiePolicy)
+    }
+
+    fun onCrashReportingSettingChanged(checked: Boolean) {
+        AnalyticsTracker.track(
+            AnalyticsEvent.PRIVACY_SETTINGS_CRASH_REPORTING_TOGGLED,
+            mapOf(
+                AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(checked)
+            )
+        )
+        setCrashReportingEnabled(checked)
+    }
+
+    fun onSendStatsSettingChanged(checked: Boolean) {
+        AnalyticsTracker.track(
+            AnalyticsEvent.PRIVACY_SETTINGS_COLLECT_INFO_TOGGLED,
+            mapOf(
+                AnalyticsTracker.KEY_STATE to
+                    AnalyticsUtils.getToggleStateLabel(checked)
+            )
+        )
+        setSendUsageStats(checked)
+    }
+
+    sealed class PrivacySettingsEvent : MultiLiveEvent.Event() {
+        object ShowCookiePolicy : PrivacySettingsEvent()
+        object ShowPrivacyPolicy : PrivacySettingsEvent()
     }
 }
