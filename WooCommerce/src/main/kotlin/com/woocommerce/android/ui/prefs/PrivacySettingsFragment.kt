@@ -19,7 +19,7 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class PrivacySettingsFragment : Fragment(R.layout.fragment_settings_privacy), PrivacySettingsContract.View {
+class PrivacySettingsFragment : Fragment(R.layout.fragment_settings_privacy) {
     companion object {
         const val TAG = "privacy-settings"
     }
@@ -88,11 +88,11 @@ class PrivacySettingsFragment : Fragment(R.layout.fragment_settings_privacy), Pr
         ChromeCustomTabUtils.disconnect(activity as Context)
     }
 
-    override fun showCookiePolicy() {
+    private fun showCookiePolicy() {
         ChromeCustomTabUtils.launchUrl(activity as Context, AppUrls.AUTOMATTIC_COOKIE_POLICY)
     }
 
-    override fun showPrivacyPolicy() {
+    private fun showPrivacyPolicy() {
         ChromeCustomTabUtils.launchUrl(activity as Context, AppUrls.AUTOMATTIC_PRIVACY_POLICY)
     }
 }
