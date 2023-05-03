@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.model.ContentsType
 import com.woocommerce.android.model.CustomsLine
+import com.woocommerce.android.model.CustomsLine.Companion.MINIMUM_EU_DESCRIPTION_LENGTH
 import com.woocommerce.android.model.CustomsPackage
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.RestrictionType
@@ -302,7 +303,7 @@ class ShippingCustomsViewModel @Inject constructor(
         fun CustomsLine.validateItemDescription(): String? {
             return if (itemDescription.isBlank()) {
                 resourceProvider.getString(R.string.shipping_label_customs_required_field)
-            } else if (isEUShippingScenario && itemDescription.length < 3) {
+            } else if (isEUShippingScenario && itemDescription.length < MINIMUM_EU_DESCRIPTION_LENGTH) {
                 resourceProvider.getString(R.string.shipping_label_customs_item_description_too_short)
             } else {
                 null
