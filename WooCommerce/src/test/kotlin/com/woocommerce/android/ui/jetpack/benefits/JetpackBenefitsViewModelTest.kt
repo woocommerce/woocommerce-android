@@ -72,7 +72,7 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
             wpComEmail = null
         )
         givenConnectionType(SiteConnectionType.ApplicationPasswords)
-        givenJetpackStatus(
+        givenJetpackFetchResult(
             jetpackStatus,
             FetchJetpackStatus.JetpackStatusFetchResponse.SUCCESS
         )
@@ -98,7 +98,7 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
             wpComEmail = null
         )
         givenConnectionType(SiteConnectionType.ApplicationPasswords)
-        givenJetpackStatus(jetpackStatus, FetchJetpackStatus.JetpackStatusFetchResponse.FORBIDDEN)
+        givenJetpackFetchResult(jetpackStatus, FetchJetpackStatus.JetpackStatusFetchResponse.FORBIDDEN)
         givenUserEligibility(user, UserRole.Editor)
 
         // When
@@ -117,7 +117,7 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
         whenever(selectedSiteMock.connectionType).thenReturn(connectionType)
     }
 
-    private fun givenJetpackStatus(
+    private fun givenJetpackFetchResult(
         jetpackStatus: JetpackStatus,
         jetpackStatusFetchResponse: FetchJetpackStatus.JetpackStatusFetchResponse
     ) = testBlocking {
