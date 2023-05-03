@@ -375,7 +375,7 @@ open class Screen {
         SupplierIdler(supplier).idleUntilReady(false)
     }
 
-    private fun waitForAtLeastOneElementToBeDisplayed(elementId: Int) {
+    fun waitForAtLeastOneElementToBeDisplayed(elementId: Int) {
         waitForConditionToBeTrue(
             Supplier {
                 atLeastOneElementIsDisplayed(elementId)

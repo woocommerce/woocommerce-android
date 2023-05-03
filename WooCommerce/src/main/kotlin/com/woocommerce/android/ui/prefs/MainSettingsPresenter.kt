@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.prefs
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.ui.login.storecreation.onboarding.ShouldShowOnboarding
+import com.woocommerce.android.ui.login.storecreation.onboarding.ShouldShowOnboarding.Source.SETTINGS
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.FeatureFlag
@@ -20,6 +22,7 @@ class MainSettingsPresenter @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val featureAnnouncementRepository: FeatureAnnouncementRepository,
     private val buildConfigWrapper: BuildConfigWrapper,
+    private val shouldShowOnboarding: ShouldShowOnboarding
 ) : MainSettingsContract.Presenter {
     private var appSettingsFragmentView: MainSettingsContract.View? = null
 
@@ -75,6 +78,20 @@ class MainSettingsPresenter @Inject constructor(
     override fun setupApplicationPasswordsSettings() {
         if (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords) {
             appSettingsFragmentView?.handleApplicationPasswordsSettings()
+        }
+    }
+
+    override fun setupOnboardingListVisibilitySetting() {
+        if (!shouldShowOnboarding.isOnboardingMarkedAsCompleted()) {
+            appSettingsFragmentView?.handleStoreSetupListSetting(
+                enabled = shouldShowOnboarding.isOnboardingListSettingVisible(),
+                onToggleChange = { isChecked ->
+                    shouldShowOnboarding.updateOnboardingVisibilitySetting(
+                        show = isChecked,
+                        source = SETTINGS
+                    )
+                }
+            )
         }
     }
 
