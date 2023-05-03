@@ -20,7 +20,7 @@ import org.wordpress.android.fluxc.store.AccountStore.PushAccountSettingsPayload
 import javax.inject.Inject
 
 @HiltViewModel
-class PrivacySettingsPresenter @Inject constructor(
+class PrivacySettingsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatcher: Dispatcher,
     private val accountStore: AccountStore,

@@ -24,7 +24,7 @@ class PrivacySettingsFragment : Fragment(R.layout.fragment_settings_privacy), Pr
         const val TAG = "privacy-settings"
     }
 
-    private val viewModel: PrivacySettingsPresenter by viewModels()
+    private val viewModel: PrivacySettingsViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val binding = FragmentSettingsPrivacyBinding.bind(view)
