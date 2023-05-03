@@ -1,5 +1,6 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 13.4
+- [*] Adds guidance for new Customs rule when shipping to some EU countries [https://github.com/woocommerce/woocommerce-android/pull/8958]
 - [*] [Internal] Adds partial height chrome tab in a few places. [https://github.com/woocommerce/woocommerce-android/pull/8502]
 - [*] [Internal] Better payments error tracking [https://github.com/woocommerce/woocommerce-android/pull/8875]
 - [**] Allow users to show or hide onboarding list [https://github.com/woocommerce/woocommerce-android/pull/8907]
