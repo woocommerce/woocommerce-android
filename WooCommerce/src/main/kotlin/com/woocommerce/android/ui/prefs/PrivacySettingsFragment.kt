@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.PRIVACY_SETTINGS_COLLECT_INFO_TOGGLED
@@ -16,7 +17,6 @@ import com.woocommerce.android.databinding.FragmentSettingsPrivacyBinding
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class PrivacySettingsFragment : Fragment(R.layout.fragment_settings_privacy), PrivacySettingsContract.View {
@@ -24,14 +24,12 @@ class PrivacySettingsFragment : Fragment(R.layout.fragment_settings_privacy), Pr
         const val TAG = "privacy-settings"
     }
 
-    @Inject lateinit var presenter: PrivacySettingsContract.Presenter
+    private val viewModel: PrivacySettingsPresenter by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        presenter.takeView(this)
-
         val binding = FragmentSettingsPrivacyBinding.bind(view)
 
-        binding.switchSendStats.isChecked = presenter.getSendUsageStats()
+        binding.switchSendStats.isChecked = viewModel.getSendUsageStats()
         binding.switchSendStats.setOnCheckedChangeListener { _, isChecked ->
             AnalyticsTracker.track(
                 PRIVACY_SETTINGS_COLLECT_INFO_TOGGLED,
@@ -40,7 +38,7 @@ class PrivacySettingsFragment : Fragment(R.layout.fragment_settings_privacy), Pr
                         AnalyticsUtils.getToggleStateLabel(binding.switchSendStats.isChecked)
                 )
             )
-            presenter.setSendUsageStats(isChecked)
+            viewModel.setSendUsageStats(isChecked)
         }
 
         binding.buttonLearnMore.setOnClickListener {
@@ -56,7 +54,7 @@ class PrivacySettingsFragment : Fragment(R.layout.fragment_settings_privacy), Pr
             showCookiePolicy()
         }
 
-        binding.switchCrashReporting.isChecked = presenter.getCrashReportingEnabled()
+        binding.switchCrashReporting.isChecked = viewModel.getCrashReportingEnabled()
         binding.switchCrashReporting.setOnCheckedChangeListener { _, isChecked ->
             AnalyticsTracker.track(
                 PRIVACY_SETTINGS_CRASH_REPORTING_TOGGLED,
@@ -65,13 +63,8 @@ class PrivacySettingsFragment : Fragment(R.layout.fragment_settings_privacy), Pr
                         AnalyticsUtils.getToggleStateLabel(binding.switchCrashReporting.isChecked)
                 )
             )
-            presenter.setCrashReportingEnabled(requireActivity(), isChecked)
+            viewModel.setCrashReportingEnabled(isChecked)
         }
-    }
-
-    override fun onDestroyView() {
-        presenter.dropView()
-        super.onDestroyView()
     }
 
     override fun onResume() {
