@@ -324,7 +324,7 @@ class ShippingCustomsLineAdapter(
 
             binding.errorView.isVisible = !validationState.isValid
 
-            binding.shippingNoticeIcon.isVisible = shouldDisplayShippingNotice
+            binding.shippingNoticeIcon.isVisible = shouldDisplayShippingNotice && validationState.isValid
             binding.shippingNoticeIcon.setOnClickListener { listener.onShippingNoticeClicked() }
         }
     }
