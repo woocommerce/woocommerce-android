@@ -502,6 +502,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         // -- Store Onboarding
         const val ONBOARDING_TASK_KEY = "task"
+        const val KEY_HIDE_ONBOARDING_SOURCE = "source"
+        const val KEY_ONBOARDING_PENDING_TASKS = "pending_tasks"
+        const val KEY_HIDE_ONBOARDING_LIST_VALUE = "hide"
         const val VALUE_STORE_DETAILS = "store_details"
         const val VALUE_PRODUCTS = "products"
         const val VALUE_ADD_DOMAIN = "add_domain"

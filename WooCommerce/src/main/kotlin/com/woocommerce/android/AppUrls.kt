@@ -86,4 +86,6 @@ object AppUrls {
         LOGIN_SITE_ADDRESS to "$LOGIN_HELP_CENTER#enter-store-address",
         LOGIN_USERNAME_PASSWORD to "$LOGIN_HELP_CENTER#enter-store-credentials",
     )
+
+    const val EU_SHIPPING_CUSTOMS_REQUIREMENTS = "https://www.usps.com/international/new-eu-customs-rules.htm"
 }

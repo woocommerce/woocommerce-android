@@ -2,7 +2,6 @@ package com.woocommerce.android.extensions
 
 import android.view.View
 import androidx.annotation.IdRes
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -131,8 +130,8 @@ fun <T> Fragment.handleDialogResult(key: String, entryId: Int, handler: (T) -> U
  * called, the value is nulled and the handler won't be called. This puts a limit on the number of observers for
  * a particular key-result pair to 1.
  */
-fun <T> Fragment.handleDialogNotice(key: String, entryId: Int, handler: (T) -> Unit) {
-    handleResult(key, entryId, handler)
+fun Fragment.handleDialogNotice(key: String, entryId: Int, handler: () -> Unit) {
+    handleNotice(key, entryId, handler)
 }
 
 /**
@@ -172,11 +171,9 @@ fun Fragment.handleNotice(key: String, entryId: Int? = null, handler: () -> Unit
  * @param [fabButton] The FAB button to be pinned in place using the App Bar Layout as reference
  */
 fun Fragment.pinFabAboveBottomNavigationBar(fabButton: FloatingActionButton) {
-    val bottomNavigationView = (requireActivity().findViewById<View>(R.id.bottom_nav))
     val appBarLayout = (requireActivity().findViewById<View>(R.id.app_bar_layout) as AppBarLayout)
     appBarLayout.verticalOffsetChanges()
         .onEach { verticalOffset ->
-            fabButton.isVisible = bottomNavigationView.animation == null
             fabButton.translationY =
                 (abs(verticalOffset) - appBarLayout.totalScrollRange).toFloat()
         }.launchIn(viewLifecycleOwner.lifecycleScope)

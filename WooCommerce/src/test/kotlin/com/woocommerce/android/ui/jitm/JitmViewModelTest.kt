@@ -134,6 +134,45 @@ class JitmViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(selectedSite.get()).thenReturn(SiteModel())
             val imageUrl = "https://test.com/image.png"
+            val imageDarkUrl = "https://test.com/image_dark.png"
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(
+                        provideJitmApiResponse(
+                            content = provideJitmContent(),
+                            assets = mapOf(
+                                "background_image_url" to imageUrl,
+                                "background_image_dark_url" to imageDarkUrl
+                            )
+                        )
+                    )
+                )
+            )
+
+            whenViewModelIsCreated()
+
+            assertThat(
+                (sut.jitmState.value as JitmState.Banner).backgroundImage
+            ).isEqualTo(
+                JitmState.Banner.LocalOrRemoteImage.Remote(imageUrl, imageDarkUrl)
+            )
+            assertThat(
+                (sut.jitmState.value as JitmState.Banner).badgeIcon
+            ).isEqualTo(
+                JitmState.Banner.LabelOrRemoteIcon.Label(
+                    UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm success response with only light background image, when viewmodel init, then proper jitm light background image is used in UI`() {
+        testBlocking {
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            val imageUrl = "https://test.com/image.png"
             whenever(
                 jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
@@ -152,7 +191,7 @@ class JitmViewModelTest : BaseUnitTest() {
             assertThat(
                 (sut.jitmState.value as JitmState.Banner).backgroundImage
             ).isEqualTo(
-                JitmState.Banner.LocalOrRemoteImage.Remote(imageUrl)
+                JitmState.Banner.LocalOrRemoteImage.Remote(imageUrl, imageUrl)
             )
             assertThat(
                 (sut.jitmState.value as JitmState.Banner).badgeIcon
@@ -166,6 +205,43 @@ class JitmViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given jitm success response with badge image, when viewmodel init, then proper jitm badge icon is used in UI`() {
+        testBlocking {
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            val imageUrl = "https://test.com/image.png"
+            val imageDarkUrl = "https://test.com/image_dark.png"
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(
+                        provideJitmApiResponse(
+                            content = provideJitmContent(),
+                            assets = mapOf(
+                                "badge_image_url" to imageUrl,
+                                "badge_image_dark_url" to imageDarkUrl
+                            )
+                        )
+                    )
+                )
+            )
+
+            whenViewModelIsCreated()
+
+            assertThat(
+                (sut.jitmState.value as JitmState.Banner).badgeIcon
+            ).isEqualTo(
+                JitmState.Banner.LabelOrRemoteIcon.Remote(imageUrl, imageDarkUrl)
+            )
+            assertThat(
+                (sut.jitmState.value as JitmState.Banner).backgroundImage
+            ).isEqualTo(
+                JitmState.Banner.LocalOrRemoteImage.Local(R.drawable.ic_banner_upsell_card_reader_illustration)
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm success response with only light badge image, when viewmodel init, then light jitm badge icon is used in UI`() {
         testBlocking {
             whenever(selectedSite.get()).thenReturn(SiteModel())
             val imageUrl = "https://test.com/image.png"
@@ -187,7 +263,7 @@ class JitmViewModelTest : BaseUnitTest() {
             assertThat(
                 (sut.jitmState.value as JitmState.Banner).badgeIcon
             ).isEqualTo(
-                JitmState.Banner.LabelOrRemoteIcon.Remote(imageUrl)
+                JitmState.Banner.LabelOrRemoteIcon.Remote(imageUrl, imageUrl)
             )
             assertThat(
                 (sut.jitmState.value as JitmState.Banner).backgroundImage
@@ -240,7 +316,10 @@ class JitmViewModelTest : BaseUnitTest() {
                                 message = "message",
                                 description = "description",
                             ),
-                            assets = mapOf("background_image_url" to "imageUrl")
+                            assets = mapOf(
+                                "background_image_url" to "imageLightUrl",
+                                "background_image_dark_url" to "imageDarkUrl"
+                            )
                         )
                     )
                 )
@@ -252,7 +331,43 @@ class JitmViewModelTest : BaseUnitTest() {
             assertThat(modal.title).isEqualTo(UiString.UiStringText("message"))
             assertThat(modal.description)
                 .isEqualTo(UiString.UiStringText("description"))
-            assertThat(modal.backgroundImageUrl).isEqualTo("imageUrl")
+            assertThat(modal.backgroundLightImageUrl).isEqualTo("imageLightUrl")
+            assertThat(modal.backgroundDarkImageUrl).isEqualTo("imageDarkUrl")
+            assertThat(modal.primaryActionLabel).isEqualTo(UiString.UiStringText("primaryActionLabel"))
+        }
+    }
+
+    @Test
+    fun `given jitm success response with modal and light image url, when viewmodel init, then light image jitm is used in UI`() {
+        testBlocking {
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            val imageUrl = "https://test.com/image.png"
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(
+                        provideJitmApiResponse(
+                            template = "modal",
+                            jitmCta = provideJitmCta(message = "primaryActionLabel"),
+                            content = provideJitmContent(
+                                message = "message",
+                                description = "description",
+                            ),
+                            assets = mapOf("background_image_url" to imageUrl)
+                        )
+                    )
+                )
+            )
+
+            whenViewModelIsCreated()
+
+            val modal = sut.jitmState.value as JitmState.Modal
+            assertThat(modal.title).isEqualTo(UiString.UiStringText("message"))
+            assertThat(modal.description)
+                .isEqualTo(UiString.UiStringText("description"))
+            assertThat(modal.backgroundLightImageUrl).isEqualTo(imageUrl)
+            assertThat(modal.backgroundDarkImageUrl).isEqualTo(imageUrl)
             assertThat(modal.primaryActionLabel).isEqualTo(UiString.UiStringText("primaryActionLabel"))
         }
     }

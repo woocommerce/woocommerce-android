@@ -60,6 +60,11 @@
                 android:name="selectedProductCategoryName"
                 app:argType="string"
                 app:nullable="true" />
+            <argument
+                android:name="restrictions"
+                app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorRestriction[]"
+                app:nullable="true"
+                android:defaultValue="@null" />
         </action>
     </fragment>
     <include app:graph="@navigation/nav_graph_product_filters" />

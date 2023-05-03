@@ -57,7 +57,7 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given Server error, when map to ui error, then Server error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.Server
+        val error = CardPaymentStatusErrorType.Server("")
 
         // WHEN
         val result = mapper.mapPaymentErrorToUiError(error, config)

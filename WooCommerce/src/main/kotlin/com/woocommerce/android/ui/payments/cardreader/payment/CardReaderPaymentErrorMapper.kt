@@ -25,7 +25,7 @@ class CardReaderPaymentErrorMapper @Inject constructor(
                 mapPaymentDeclinedErrorType(errorType, config)
             CardPaymentStatus.CardPaymentStatusErrorType.CardReadTimeOut,
             CardPaymentStatus.CardPaymentStatusErrorType.Generic -> PaymentFlowError.Generic
-            CardPaymentStatus.CardPaymentStatusErrorType.Server -> PaymentFlowError.Server
+            is CardPaymentStatus.CardPaymentStatusErrorType.Server -> PaymentFlowError.Server
             CardPaymentStatus.CardPaymentStatusErrorType.Canceled -> PaymentFlowError.Canceled
             CardPaymentStatus.CardPaymentStatusErrorType.BuiltInReader.NfcDisabled ->
                 PaymentFlowError.BuiltInReader.NfcDisabled

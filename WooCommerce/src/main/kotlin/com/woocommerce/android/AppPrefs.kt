@@ -27,6 +27,7 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.PRODUCT_SORTING_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.UPDATE_SIMULATED_READER_OPTION
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED
+import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_SETTING_VISIBILITY
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_TASKS_COMPLETED
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_PHONE_NUMBER
@@ -109,6 +110,7 @@ object AppPrefs {
         IS_TAP_TO_PAY_BETA_ENABLED,
         JETPACK_INSTALLATION_FROM_BANNER,
         NOTIFICATIONS_PERMISSION_BAR,
+        IS_EU_SHIPPING_NOTICE_DISMISSED,
     }
 
     /**
@@ -182,6 +184,9 @@ object AppPrefs {
         // Was store onboarding shown at least once
         STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE,
 
+        // User preference in regards to show store onboarding or not
+        STORE_ONBOARDING_SETTING_VISIBILITY,
+
         // Time when the last successful payment was made with a card reader
         CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME,
 
@@ -250,6 +255,10 @@ object AppPrefs {
     var updateReaderOptionSelected: String
         get() = getString(UPDATE_SIMULATED_READER_OPTION, UpdateOptions.RANDOM.toString())
         set(option) = setString(UPDATE_SIMULATED_READER_OPTION, option)
+
+    var isEUShippingNoticeDismissed: Boolean
+        get() = getBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, false)
+        set(value) = setBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, value)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 
@@ -934,6 +943,19 @@ object AppPrefs {
             key = PrefKeyString("$STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE:$siteId"),
             default = false
         )
+
+    fun getOnboardingSettingVisibility(siteId: Int): Boolean =
+        getBoolean(
+            key = PrefKeyString("$STORE_ONBOARDING_SETTING_VISIBILITY:$siteId"),
+            default = true
+        )
+
+    fun setOnboardingSettingVisibility(siteId: Int, visible: Boolean) {
+        setBoolean(
+            key = PrefKeyString("$STORE_ONBOARDING_SETTING_VISIBILITY:$siteId"),
+            value = visible
+        )
+    }
 
     fun getCardReaderLastSuccessfulPaymentTime() =
         getLong(UndeletablePrefKey.CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME, 0L)

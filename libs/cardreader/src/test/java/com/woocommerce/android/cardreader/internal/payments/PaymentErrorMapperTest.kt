@@ -94,37 +94,47 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `when NETWORK_ERROR capture payment exception thrown, then NO_NETWORK type returned`() {
-        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.Error.NetworkError)
+        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.Error.NetworkError("error message"))
 
         assertThat(result.type).isEqualTo(NoNetwork)
+        assertThat(result.errorMessage).isEqualTo("Capturing payment failed: NetworkError(errorMsg=error message)")
     }
 
     @Test
     fun `when GENERIC_ERROR capture payment exception thrown, then NO_NETWORK type returned`() {
-        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.Error.GenericError)
+        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.Error.GenericError("error message"))
 
         assertThat(result.type).isEqualTo(Generic)
+        assertThat(result.errorMessage).isEqualTo("Capturing payment failed: GenericError(errorMsg=error message)")
     }
 
     @Test
     fun `when MISSING_ORDER capture payment exception thrown, then NO_NETWORK type returned`() {
-        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.Error.MissingOrder)
+        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.Error.MissingOrder("error message"))
 
         assertThat(result.type).isEqualTo(Generic)
+        assertThat(result.errorMessage).isEqualTo("Capturing payment failed: MissingOrder(errorMsg=error message)")
     }
 
     @Test
     fun `when CAPTURE_ERROR capture payment exception thrown, then NO_NETWORK type returned`() {
-        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.Error.CaptureError)
+        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.Error.CaptureError("error message"))
 
         assertThat(result.type).isEqualTo(Generic)
+        assertThat(result.errorMessage).isEqualTo("Capturing payment failed: CaptureError(errorMsg=error message)")
     }
 
     @Test
     fun `when SERVER_ERROR capture payment exception thrown, then SERVER_ERROR type returned`() {
-        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.Error.ServerError)
+        val result = mapper.mapCapturePaymentError(
+            mock(),
+            CapturePaymentResponse.Error.ServerError(
+                "error message"
+            )
+        )
 
-        assertThat(result.type).isEqualTo(Server)
+        assertThat(result.type).isEqualTo(Server("error message"))
+        assertThat(result.errorMessage).isEqualTo("Capturing payment failed: ServerError(errorMsg=error message)")
     }
 
     @Test

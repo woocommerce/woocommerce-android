@@ -120,9 +120,12 @@ class ProductListFragment :
         setupResultHandlers()
         ViewGroupCompat.setTransitionGroup(binding.productsRefreshLayout, true)
         _productAdapter = ProductListAdapter(
-            ::onProductClick,
             loadMoreListener = this,
-            currencyFormatter = currencyFormatter
+            currencyFormatter = currencyFormatter,
+            clickListener = { id, sharedView ->
+                binding.addProductButton.hide()
+                onProductClick(id, sharedView)
+            }
         )
         binding.productsRecycler.layoutManager = LinearLayoutManager(requireActivity())
         binding.productsRecycler.adapter = productAdapter

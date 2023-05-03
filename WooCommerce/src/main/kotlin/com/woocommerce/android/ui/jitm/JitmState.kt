@@ -15,12 +15,18 @@ sealed interface JitmState {
     ) : JitmState {
         sealed class LocalOrRemoteImage {
             data class Local(@DrawableRes val drawableId: Int) : LocalOrRemoteImage()
-            data class Remote(val url: String) : LocalOrRemoteImage()
+            data class Remote(
+                val urlLightMode: String,
+                val urlDarkMode: String,
+            ) : LocalOrRemoteImage()
         }
 
         sealed class LabelOrRemoteIcon {
             data class Label(val label: UiString) : LabelOrRemoteIcon()
-            data class Remote(val url: String) : LabelOrRemoteIcon()
+            data class Remote(
+                val urlLightMode: String,
+                val urlDarkMode: String,
+            ) : LabelOrRemoteIcon()
         }
     }
 
@@ -30,7 +36,8 @@ sealed interface JitmState {
         val title: UiString,
         val description: UiString,
         val primaryActionLabel: UiString,
-        val backgroundImageUrl: String?,
+        val backgroundLightImageUrl: String?,
+        val backgroundDarkImageUrl: String?,
     ) : JitmState
 
     object Hidden : JitmState
