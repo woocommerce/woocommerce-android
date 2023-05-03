@@ -1,2 +1,0 @@
-13,2:
-Den här versionen innehåller några buggfixar, visuella förbättringar och tillgänglighetsförbättringar i appens beställnings- och produktsektioner. Fortsätt skicka in feedback, det hjälper oss att ta reda på vad vi ska arbeta med härnäst.

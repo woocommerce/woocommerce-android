@@ -14,6 +14,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsViewModel.LineValidationState
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -132,6 +133,10 @@ class ShippingCustomsViewModel @Inject constructor(
 
     fun onBackButtonClicked() {
         triggerEvent(Exit)
+    }
+
+    fun onShippingNoticeLearnMoreClicked(learnMoreUrl: String) {
+        triggerEvent(OpenShippingInstructions(learnMoreUrl))
     }
 
     override fun onPackageExpandedChanged(position: Int, isExpanded: Boolean) {
@@ -364,6 +369,8 @@ class ShippingCustomsViewModel @Inject constructor(
             get() = itemDescriptionErrorMessage == null && hsTariffErrorMessage == null &&
                 weightErrorMessage == null && valueErrorMessage == null
     }
+
+    data class OpenShippingInstructions(val url: String) : MultiLiveEvent.Event()
 }
 
 typealias CustomsLineUiState = Pair<CustomsLine, LineValidationState>

@@ -1,68 +1,68 @@
 <ar>
-13.2:
-يتضمن هذا الإصدار بعض إصلاحات الأخطاء وتحسينات في المرئيات وقابلية الوصول إلى أقسام الطلبات والمنتجات في التطبيق. استمر في جمع الملاحظات؛ لأن ذلك يساعدنا على معرفة ما يجب العمل عليه بعد ذلك.
+13.3:
+المملكة المتحدة، قول مرحبًا لميزة المدفوعات الشخصية! يسعدنا أن نعلن أن المدفوعات الشخصية متوافرة الآن للتجار في المملكة المتحدة الذين يستخدمون ميزة مدفوعات WooCommerce في الوقت الحالي. يتضمن هذا الإصدار دعم القراءة فقط للتجار باستخدام المنتجات المركَّبة. شكرًا لكم جميعًا مرة أخرى على ملحوظاتكم الرائعة. استمروا!
 </ar>
 <de-DE>
-13.2:
-Diese Version enthält Fehlerkorrekturen, visuelle Verbesserungen und Verbesserungen an der Zugänglichkeit der Bestell- und Produktabschnitte in der App. Sende uns weiterhin Feedback! So finden wir heraus, was wir als Nächstes optimieren können.
+13.3:
+Großbritannien, begrüße die persönlichen Zahlungen! Wir freuen uns sehr, bekanntgeben zu dürfen, dass persönliche Zahlungen ab sofort britischen Verkäufern zur Verfügung stehen, die derzeit WooCommerce Payments nutzen. Diese Version unterstützt außerdem Lesezugriff für Verkäufer, die Composite Products verwenden. Danke an alle für euer hervorragendes Feedback. Weiter so!
 </de-DE>
 <es-ES>
-13.2:
-Esta versión incluye algunas correcciones de errores, mejoras visuales y de accesibilidad en los pedidos y secciones de productos de la aplicación. Sigue haciéndonos llegar tus opiniones para que podamos saber en qué debemos trabajar.
+13.3:
+Reino Unido, ya están aquí los pagos en persona. Es un placer anunciar que los vendedores del Reino Unido que utilizan WooCommerce Payments tienen ahora a su disposición los pagos en persona. Esta versión también incluye soporte solo de lectura para vendedores mediante Composite Products Gracias de nuevo por tus increíbles comentarios. ¡Sigue así!
 </es-ES>
 <fr-FR>
-13.2 :
-Cette version inclut des résolutions de bogues, des améliorations visuelles et concernant l’accessibilité des sections relatives aux commandes et aux produits de l’application. Continuez à nous faire part de vos commentaires ; ils nous aident à nous améliorer.
+13.3 :
+Les paiements en personne sont arrivés au Royaume-Uni ! Nous avons l’immense plaisir de vous annoncer que les paiements en personne sont à présent disponibles pour les vendeurs basés au Royaume-Uni qui utilisent WooCommerce Payments. Cette version comprend également l’assistance en lecture seule pour les vendeurs qui utilisent Composite Products. Une fois encore, merci à tous pour vos précieux commentaires ! Continuez à nous les envoyer !
 </fr-FR>
 <iw-IL>
-13.2:
-הגרסה הזאת כוללת כמה תיקוני באגים ושיפורים באלמנטים חזותיים ובנגישות במקטעים של ההזמנות והמוצרים באפליקציה. נשמח להמשיך לקבל משוב, זה עוזר לנו להבין על מה כדאי לנו לעבוד בשלב הבא.
+13.3:
+נמצאים בבריטניה? הכירו את 'תשלומים באופן אישי'! אנחנו שמחים להודיע שהאפשרות 'תשלומים באופן אישי' זמינה כעת לסוחרים בבריטניה שמשתמשים עכשיו ב-WooCommerce Payments. בגרסה הזאת הוספנו גם תמיכה לקריאה בלבד בשביל סוחרים שמשתמשים ב'מוצרים בהרכב'. אנחנו שוב רוצים להודות לכולם על המשוב החשוב. תמיד נשמח לשמוע מה דעתכם!
 </iw-IL>
 <id>
-13.2:
-Rilis ini termasuk perbaikan beberapa bug, peningkatan visual & aksesibilitas di bagian pesanan dan produk dalam aplikasi. Tetap berikan feedback Anda agar kami mengetahui apa yang harus diupayakan selanjutnya.
+13.3:
+Inggris, sambutlah pembayaran langsung! Kami umumkan bahwa fitur pembayaran langsung kini hadir bagi penjual di Inggris yang menggunakan sistem Pembayaran WooCommerce. Rilis ini juga meliputi dukungan hanya baca bagi penjual yang menggunakan Produk Gabungan. Sekali lagi, terima kasih atas feedback Anda. Terus kirimkan feedback Anda!
 </id>
 <it-IT>
-13.2:
-Questa versione include alcune correzioni di bug, miglioramenti visivi e di accessibilità alle sezioni dedicate a ordini e prodotti dell'app. Continua a ricevere feedback; ci aiuta a capire su cosa dobbiamo ancora lavorare.
+13.3:
+Regno Unito, saluta i pagamenti di persona. Siamo eccitati nell'annunciare che i pagamenti di persona sono ora disponibili per i rivenditori del Regno Unito che attualmente usano WooCommerce Payments. Questa versione include anche il supporto di sola lettura per i commercianti che utilizzano prodotti compositi. Grazie a tutti ancora per il meraviglioso feedback. Continuate a inviarlo.
 </it-IT>
 <ja-JP>
-13.2:
-今回のリリースには、アプリの注文と商品の各セクションでのバグ修正、ビジュアルやアクセシビリティの強化が含まれます。今後のアップデートの参考にさせていただきますので、引き続きフィードバックをお寄せください。
+13.3:
+英国でオフラインでの支払いが可能になりました この度、WooCommerce Payments を現在ご利用中の英国のマーチャントが対面でのお支払いを選択できるようになりました。 今回のリリースには、混合商品を使用するマーチャント向けの読み取り専用サポートが含まれます。 皆さまからのフィードバックが改善の励みになります。 今後ともよろしくお願いいたします。
 </ja-JP>
 <ko-KR>
-13.2:
-이 릴리스에는 일부 버그 수정, 앱의 주문 및 상품 섹션에 대한 비주얼 및 접근성 향상이 포함되어 있습니다. 피드백을 계속 보내주세요. 다음에 작업할 내용을 파악하는 데 도움이 됩니다.
+13.3:
+영국에서 직접 결제가 가능합니다! 이제는 현재 WooCommerce Payments를 이용하는 영국 판매자가 직접 결제를 이용할 수 있습니다. 이 릴리스에는 복합 상품을 사용하는 판매자에 대한 읽기 전용 지원도 포함되어 있습니다. 놀라운 피드백을 제공해 주셔서 정말로 감사합니다. 계속 보내주세요!
 </ko-KR>
 <nl-NL>
-13.2:
-Deze release bevat een aantal bugfixes en visuele en toegankelijkheidsverbeteringen aan de bestel- en productgedeelten van de app. Blijf maar komen met jullie feedback, dat helpt ons kiezen waar we aan moeten werken.
+13.3:
+VK, zeg hallo tegen fysieke betalingen! We zijn blij te kunnen vertellen dat fysieke betalingen nu beschikbaar zijn voor verkopers in het VK die nu WooCommerce Payments gebruiken. Deze release bevat ook alleen-lezen ondersteuning voor verkopers die samengestelde producten gebruiken. Wederom bedankt voor jullie geweldige feedback. Blijf zo doorgaan!
 </nl-NL>
 <pt-BR>
-13.2:
-Esta versão inclui algumas correções de bugs, melhorias visuais e de acessibilidade nas seções de pedidos e produtos do aplicativo. Continue dando feedback, ele nos ajuda a saber no que trabalhar em seguida.
+13.3:
+Reino Unido, diga "oi" aos pagamentos presenciais! Temos o prazer de anunciar que os pagamentos presenciais agora estão disponíveis para vendedores britânicos que usam o WooCommerce Payments. Esta versão também inclui suporte ao modo somente leitura para comerciantes que usam produtos compostos. Obrigado a todos pelos incríveis feedbacks. Continuem mandando!
 </pt-BR>
 <ru-RU>
-13.2:
-Эта версия включает в себя исправления ошибок, визуальные улучшения и расширение возможностей доступа для разделов заказов и товаров в приложении. Отправляйте отзывы — это помогает нам понять, над чем работать дальше.
+Версия 13.3
+Великобритания, встречай очные платежи! Мы счастливы объявить о том, что теперь очные платежи доступны продавцам из Великобритании, которые используют WooCommerce Payments. В этом выпуске также добавлена поддержка режима «Только для чтения» для продавцов, которые используют составные товары. Благодарим вас за невероятные отзывы. Они очень важны для нас!
 </ru-RU>
 <sv-SE>
-13,2:
-Den här versionen innehåller några buggfixar, visuella förbättringar och tillgänglighetsförbättringar i appens beställnings- och produktsektioner. Fortsätt skicka in feedback, det hjälper oss att ta reda på vad vi ska arbeta med härnäst.
+13.3:
+Storbritannien, säg hej till personliga betalningar. Vi är glada att kunna meddela att personliga betalningar nu är tillgängliga för brittiska handlare som använder WooCommerce Payments. Den här versionen inkluderar också skrivskyddsstöd för handlare som använder sammansatta produkter. Tack ännu en gång för all fantastisk feedback. Fortsätt skicka in den!
 </sv-SE>
 <tr-TR>
-13.2:
-Bu sürüm, uygulamanın siparişler ve ürünler bölümlerinde bazı hata düzeltmelerini, görsel geliştirmeleri ve erişilebilirlik geliştirmelerini içerir. Geri bildirimlerinizi göndermeye devam etmeniz bundan sonra ne üzerinde çalışacağımızı anlamamıza yardımcı oluyor.
+13.3:
+İngiltereliler, şahsen ödemelere merhaba deyin! Şu anda WooCommerce Payments'ı kullanan İngiltereli satıcıların artık şahsen ödemeleri de kabul edebileceğini duyurmaktan heyecan duyuyoruz. Bu sürüm aynı zamanda Composite Products kullanan satıcılar için salt okunur destek içerir. Harika geri bildirimleriniz için herkese tekrar teşekkür ederim. Devam edin!
 </tr-TR>
 <zh-CN>
-13.2：
-此版本修复了应用的订单和产品部分的一些错误，并对视觉和可访问性进行了一些改进。请随时提供您的反馈，为我们接下来的工作提供灵感。
+13.3：
+我们在英国推出现场付款了！ 我们很高兴地宣布，目前使用 WooCommerce Payments 的英国商家现在可以使用现场付款了。 此发布还包括面向使用 Composite Products 的商家的只读支持。 再次感谢您宝贵的反馈。 请继续提供反馈！
 </zh-CN>
 <zh-TW>
-13.2：
-此版本修正了一些錯誤，並加強了應用程式訂單和產品區段的視覺和協助工具。歡迎各位批評指教，讓我們能夠繼續進步。
+13.3：
+英國現已推出親自收款功能了！ 我們很高興宣佈，目前使用 WooCommerce Payments 的英國商家現在可使用親自收款功能了。 此版本也為使用複合產品的商家提供唯讀支援。 感謝各位提供寶貴的意見。 未來請繼續多多指教！
 </zh-TW>
 <en-US>
-13.2:
-This release includes some bug fixes, visual & accessibility enhancements to the orders and products sections of the app. Keep your feedback rolling in; it helps us figure out what to work on next.
+13.3:
+UK, say hello to in-person payments! We are thrilled to announce that in-person payments are now available to UK merchants currently using WooCommerce Payments. This release also includeds read only support for merchants using Composite Products. Thank you all again for your amazing feedback. Keep it coming!
 </en-US>

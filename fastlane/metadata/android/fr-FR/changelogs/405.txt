@@ -1,2 +1,0 @@
-13.2 :
-Cette version inclut des résolutions de bogues, des améliorations visuelles et concernant l’accessibilité des sections relatives aux commandes et aux produits de l’application. Continuez à nous faire part de vos commentaires ; ils nous aident à nous améliorer.

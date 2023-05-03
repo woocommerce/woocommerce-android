@@ -130,8 +130,8 @@ fun <T> Fragment.handleDialogResult(key: String, entryId: Int, handler: (T) -> U
  * called, the value is nulled and the handler won't be called. This puts a limit on the number of observers for
  * a particular key-result pair to 1.
  */
-fun <T> Fragment.handleDialogNotice(key: String, entryId: Int, handler: (T) -> Unit) {
-    handleResult(key, entryId, handler)
+fun Fragment.handleDialogNotice(key: String, entryId: Int, handler: () -> Unit) {
+    handleNotice(key, entryId, handler)
 }
 
 /**
