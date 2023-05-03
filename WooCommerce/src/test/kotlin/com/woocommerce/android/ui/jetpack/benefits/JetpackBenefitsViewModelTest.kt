@@ -60,31 +60,30 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given REST API connection type and Jetpack fetch status is SUCCESS, when user starts installation, then StartJetpackActivationForApplicationPasswords event is triggered`() =
-        testBlocking {
-            // Given
-            val jetpackStatus = JetpackStatus(
-                isJetpackInstalled = true,
-                isJetpackConnected = false,
-                wpComEmail = null
-            )
-            givenConnectionType(SiteConnectionType.ApplicationPasswords)
-            givenJetpackStatus(
-                jetpackStatus,
-                FetchJetpackStatus.JetpackStatusFetchResponse.SUCCESS
-            )
+    fun `given REST API connection type and Jetpack fetch status is SUCCESS, when user starts installation, then StartJetpackActivationForApplicationPasswords event is triggered`() = testBlocking {
+        // Given
+        val jetpackStatus = JetpackStatus(
+            isJetpackInstalled = true,
+            isJetpackConnected = false,
+            wpComEmail = null
+        )
+        givenConnectionType(SiteConnectionType.ApplicationPasswords)
+        givenJetpackStatus(
+            jetpackStatus,
+            FetchJetpackStatus.JetpackStatusFetchResponse.SUCCESS
+        )
 
-            // When
-            sut.onInstallClick()
+        // When
+        sut.onInstallClick()
 
-            // Then
-            assertThat(sut.event.value).isEqualTo(
-                JetpackBenefitsViewModel.StartJetpackActivationForApplicationPasswords(
-                    selectedSiteMock.get().url,
-                    jetpackStatus
-                )
+        // Then
+        assertThat(sut.event.value).isEqualTo(
+            JetpackBenefitsViewModel.StartJetpackActivationForApplicationPasswords(
+                selectedSiteMock.get().url,
+                jetpackStatus
             )
-        }
+        )
+    }
 
     private fun givenConnectionType(connectionType: SiteConnectionType) {
         whenever(selectedSiteMock.connectionType).thenReturn(connectionType)
