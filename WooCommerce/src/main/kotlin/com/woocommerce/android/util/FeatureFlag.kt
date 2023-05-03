@@ -50,12 +50,12 @@ enum class FeatureFlag {
             IPP_UK,
             ANALYTICS_HUB_FEEDBACK_BANNER,
             STORE_CREATION_PROFILER,
-            COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT -> true
+            COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT,
+            EU_SHIPPING_NOTIFICATION -> true
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
-            IPP_TAP_TO_PAY,
-            EU_SHIPPING_NOTIFICATION -> PackageUtils.isDebugBuild()
+            IPP_TAP_TO_PAY -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
         }
