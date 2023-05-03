@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.jetpack.benefits
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.JetpackStatus
+import com.woocommerce.android.model.User
+import com.woocommerce.android.model.UserRole
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
@@ -30,6 +32,8 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val fetchJetpackStatus: FetchJetpackStatus = mock()
     private val wpComAccessToken: AccessToken = mock()
+
+    private val user: User = mock()
 
     private lateinit var sut: JetpackBenefitsViewModel
 
@@ -85,6 +89,30 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `given REST API connection type and user role is not eligible, when user starts installation, then OpenJetpackEligibilityError event is triggered`() = testBlocking {
+        // Given
+        val jetpackStatus = JetpackStatus(
+            isJetpackInstalled = true,
+            isJetpackConnected = false,
+            wpComEmail = null
+        )
+        givenConnectionType(SiteConnectionType.ApplicationPasswords)
+        givenJetpackStatus(jetpackStatus, FetchJetpackStatus.JetpackStatusFetchResponse.FORBIDDEN)
+        givenUserEligibility(user, UserRole.Editor)
+
+        // When
+        sut.onInstallClick()
+
+        // Then
+        assertThat(sut.event.value).isEqualTo(
+            JetpackBenefitsViewModel.OpenJetpackEligibilityError(
+                user.username,
+                user.roles.first().value
+            )
+        )
+    }
+
     private fun givenConnectionType(connectionType: SiteConnectionType) {
         whenever(selectedSiteMock.connectionType).thenReturn(connectionType)
     }
@@ -95,5 +123,11 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
     ) = testBlocking {
         val result = Result.success(jetpackStatus to jetpackStatusFetchResponse)
         whenever(fetchJetpackStatus.invoke()).thenReturn(result)
+    }
+
+    private fun givenUserEligibility(user: User, role: UserRole) = testBlocking {
+        whenever(user.username).thenReturn("username")
+        whenever(user.roles).thenReturn(listOf(role))
+        whenever(userEligibilityFetcher.fetchUserInfo()).thenReturn(Result.success(user))
     }
 }
