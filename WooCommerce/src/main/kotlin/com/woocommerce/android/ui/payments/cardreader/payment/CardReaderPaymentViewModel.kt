@@ -190,7 +190,20 @@ class CardReaderPaymentViewModel
                     return@launch
                 }
                 launch {
-                    collectPaymentFlow(cardReaderManager, order)
+                    if (savedState.get<Boolean>("payment_in_progress") != true) {
+                        savedState["payment_in_progress"] = true
+                        collectPaymentFlow(cardReaderManager, order)
+                    }
+                }
+                launch {
+                    cardReaderManager.cardPaymentStatus.collect { paymentStatus ->
+                        onPaymentStatusChanged(
+                            order.id,
+                            order.billingAddress.email,
+                            paymentStatus,
+                            cardReaderPaymentOrderHelper.getAmountLabel(order)
+                        )
+                    }
                 }
                 launch {
                     listenForBluetoothCardReaderMessages()
@@ -281,14 +294,7 @@ class CardReaderPaymentViewModel
                 countryCode = countryCode,
                 feeAmount = calculateFeeInCents(countryCode)
             )
-        ).collect { paymentStatus ->
-            onPaymentStatusChanged(
-                order.id,
-                customerEmail,
-                paymentStatus,
-                cardReaderPaymentOrderHelper.getAmountLabel(order)
-            )
-        }
+        )
     }
 
     private suspend fun onPaymentStatusChanged(

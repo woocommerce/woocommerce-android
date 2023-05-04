@@ -20,7 +20,10 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.RefundParams
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 /**
  * Implementation of CardReaderManager using StripeTerminalSDK.
@@ -55,6 +58,8 @@ internal class CardReaderManagerImpl(
     override val batteryStatus = connectionManager.batteryStatus
 
     override val displayBluetoothCardReaderMessages = connectionManager.displayBluetoothCardReaderMessages
+
+    override val cardPaymentStatus = paymentManager.cardPaymentStatus
 
     override fun initialize(
         updateFrequency: CardReaderManager.SimulatorUpdateFrequency,
@@ -110,10 +115,12 @@ internal class CardReaderManagerImpl(
         return connectionManager.disconnectReader()
     }
 
-    override suspend fun collectPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> {
+    @OptIn(DelicateCoroutinesApi::class)
+    override fun collectPayment(paymentInfo: PaymentInfo) {
         resetBluetoothDisplayMessage()
-        paymentManager.acceptPayment(paymentInfo)
-        return paymentManager.cardPaymentStatus
+        GlobalScope.launch {
+            paymentManager.acceptPayment(paymentInfo)
+        }
     }
 
     override suspend fun refundInteracPayment(refundParams: RefundParams): Flow<CardInteracRefundStatus> {
