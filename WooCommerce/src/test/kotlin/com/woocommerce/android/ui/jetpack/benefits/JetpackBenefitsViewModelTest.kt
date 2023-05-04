@@ -15,6 +15,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
@@ -164,6 +165,15 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
                 user.roles.first().value
             )
         )
+    }
+
+    @Test
+    fun `when user dismisses the dialog, then wpcom access token is cleared`() {
+        // When
+        sut.onDismiss()
+
+        // Then
+        verify(wpComAccessToken).set(null)
     }
 
     private fun givenConnectionType(connectionType: SiteConnectionType) {
