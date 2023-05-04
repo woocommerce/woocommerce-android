@@ -137,6 +137,30 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `given REST API login and Jetpack is not installed while user role is not eligible, when user starts installation, then OpenJetpackEligibilityError event is triggered`() = testBlocking {
+        // Given
+        val jetpackStatus = JetpackStatus(
+            isJetpackInstalled = false,
+            isJetpackConnected = false,
+            wpComEmail = null
+        )
+        givenConnectionType(SiteConnectionType.ApplicationPasswords)
+        givenJetpackFetchResult(jetpackStatus, FetchJetpackStatus.JetpackStatusFetchResponse.NOT_FOUND)
+        givenUserEligibility(user, UserRole.Editor)
+
+        // When
+        sut.onInstallClick()
+
+        // Then
+        assertThat(sut.event.value).isEqualTo(
+            JetpackBenefitsViewModel.OpenJetpackEligibilityError(
+                user.username,
+                user.roles.first().value
+            )
+        )
+    }
+
     private fun givenConnectionType(connectionType: SiteConnectionType) {
         whenever(selectedSiteMock.connectionType).thenReturn(connectionType)
     }
