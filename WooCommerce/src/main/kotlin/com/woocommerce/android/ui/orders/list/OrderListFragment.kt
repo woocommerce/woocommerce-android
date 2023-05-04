@@ -490,6 +490,7 @@ class OrderListFragment :
             submitSearchDelayed(newText)
         } else {
             binding.orderListView.clearAdapterData()
+            hideEmptyView()
         }
         return true
     }
