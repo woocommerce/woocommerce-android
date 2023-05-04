@@ -160,8 +160,7 @@ class ProductSelectorViewModel @Inject constructor(
         if (searchQuery.value.isNotNullOrEmpty() || filterState.value.filterOptions.isNotEmpty()) {
             return emptyList()
         }
-        return productsList.filter { product -> isProductRestricted(product = product) }
-            .map { it.toUiModel(selectedIds) }
+        return productsList.map { it.toUiModel(selectedIds) }
     }
 
     private fun isProductRestricted(product: Product): Boolean {
@@ -175,7 +174,9 @@ class ProductSelectorViewModel @Inject constructor(
             getProductIdsFromRecentlySoldOrders(
                 recentlySoldOrders
             ).distinctBy { it }
-        )
+        ).filter { product ->
+            isProductRestricted(product = product)
+        }
     }
 
     private suspend fun loadPopularProducts() {
@@ -188,7 +189,11 @@ class ProductSelectorViewModel @Inject constructor(
             .sortedByDescending { it.second }
             .take(NUMBER_OF_SUGGESTED_ITEMS)
             .toMap()
-        popularProducts.value = productsMapper.mapProductIdsToProduct(topPopularProductsSorted.keys.toList())
+        popularProducts.value = productsMapper.mapProductIdsToProduct(
+            topPopularProductsSorted.keys.toList()
+        ).filter { product ->
+            isProductRestricted(product = product)
+        }
     }
 
     private suspend fun getRecentlySoldOrders() =
