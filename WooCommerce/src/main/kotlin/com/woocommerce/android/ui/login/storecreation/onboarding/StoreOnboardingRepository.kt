@@ -60,6 +60,7 @@ class StoreOnboardingRepository @Inject constructor(
                         else it
                     }
                     ?.sortedBy { it.type.order }
+                    ?.sortedBy { it.isComplete }
                     ?: emptyList()
 
                 onboardingTasksCacheFlow.emit(mobileSupportedTasks)
