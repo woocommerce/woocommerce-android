@@ -63,12 +63,17 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
         )
     }
 
+    // This unit test is to handle the case where:
+    // 1. Site initially doesn't have Jetpack,
+    // 2. User logs in via REST API login,
+    // 3. User returns to site and installs and connects Jetpack,
+    // 4. User comes back to app and uses the Jetpack Benefits dialog to install Jetpack.
     @Test
-    fun `given REST API login and Jetpack is already installed but not connected, when user starts installation, then StartJetpackActivationForApplicationPasswords event is triggered`() = testBlocking {
+    fun `given REST API login and Jetpack is already activated, when user starts installation, then StartJetpackActivationForApplicationPasswords event is triggered`() = testBlocking {
         // Given
         val jetpackStatus = JetpackStatus(
             isJetpackInstalled = true,
-            isJetpackConnected = false,
+            isJetpackConnected = true,
             wpComEmail = null
         )
         givenConnectionType(SiteConnectionType.ApplicationPasswords)
