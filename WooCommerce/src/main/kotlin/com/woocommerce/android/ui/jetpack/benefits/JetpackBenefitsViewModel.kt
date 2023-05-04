@@ -38,6 +38,11 @@ class JetpackBenefitsViewModel @Inject constructor(
     private val wpComAccessToken: AccessToken
 ) : ScopedViewModel(savedStateHandle) {
 
+    companion object {
+        const val ERROR_CODE_FORBIDDEN = 403
+        const val ERROR_CODE_NOT_FOUND = 404
+    }
+
     private val _viewState = MutableStateFlow(
         ViewState(
             isUsingJetpackCP = selectedSite.connectionType == SiteConnectionType.JetpackConnectionPackage,
@@ -74,94 +79,72 @@ class JetpackBenefitsViewModel @Inject constructor(
         }
     }
 
-    @Suppress("LongMethod")
     private fun handleJetpackStatusResult(
         result: Result<Pair<JetpackStatus, JetpackStatusFetchResponse>>
     ) {
-        result.fold(
-            onSuccess = {
-                when (it.second) {
-                    JetpackStatusFetchResponse.SUCCESS -> {
-                        triggerEvent(
-                            StartJetpackActivationForApplicationPasswords(
-                                siteUrl = selectedSite.get().url,
-                                jetpackStatus = it.first
-                            )
-                        )
+        fun startJetpackActivation(jetpackStatus: JetpackStatus) {
+            triggerEvent(StartJetpackActivationForApplicationPasswords(selectedSite.get().url, jetpackStatus))
+        }
 
-                        logSuccess(it)
-                    }
-                    JetpackStatusFetchResponse.FORBIDDEN -> {
-                        launch {
-                            userEligibilityFetcher.fetchUserInfo().fold(
-                                onSuccess = { user ->
-                                    triggerEvent(
-                                        OpenJetpackEligibilityError(
-                                            user.username,
-                                            user.roles.first().value
-                                        )
-                                    )
-                                    logError("${user.roles.first().value}: User not authorized to install Jetpack")
-                                },
-                                onFailure = {
-                                    triggerEvent(ShowSnackbar(string.error_generic))
-                                    logError("HTTP 403")
-                                }
-                            )
-                        }
-                    }
-                    JetpackStatusFetchResponse.NOT_FOUND -> {
-                        launch {
-                            userEligibilityFetcher.fetchUserInfo().fold(
-                                onSuccess = { user ->
-                                    val hasInstallCapability = user.roles.contains(UserRole.Administrator)
-                                    if (hasInstallCapability) {
-                                        triggerEvent(
-                                            StartJetpackActivationForApplicationPasswords(
-                                                siteUrl = selectedSite.get().url,
-                                                jetpackStatus = it.first
-                                            )
-                                        )
+        fun showGenericError() = triggerEvent(ShowSnackbar(string.error_generic))
 
-                                        logSuccess(it)
-                                    } else {
-                                        triggerEvent(
-                                            OpenJetpackEligibilityError(
-                                                user.username,
-                                                user.roles.first().value
-                                            )
-                                        )
+        fun logError(statusCode: Int, reason: String) = logError("HTTP Code $statusCode: $reason")
 
-                                        logError("${user.roles.first().value}: User not authorized to install Jetpack")
-                                    }
-                                },
-                                onFailure = {
-                                    triggerEvent(ShowSnackbar(string.error_generic))
-                                    logError("HTTP 404")
-                                }
-                            )
-                        }
-                    }
-                }
-            },
-            onFailure = {
-                triggerEvent(ShowSnackbar(string.error_generic))
-                logError(it.message)
-            }
-        )
-    }
-
-    private fun logSuccess(it: Pair<JetpackStatus, JetpackStatusFetchResponse>) {
-        if (isAppPasswords) {
+        fun logSuccess(jetpackStatus: JetpackStatus) {
             analyticsTrackerWrapper.track(
                 stat = JETPACK_SETUP_CONNECTION_CHECK_COMPLETED,
                 properties = mapOf(
-                    AnalyticsTracker.KEY_JETPACK_SETUP_IS_ALREADY_CONNECTED to it.first.isJetpackConnected,
+                    AnalyticsTracker.KEY_JETPACK_SETUP_IS_ALREADY_CONNECTED to jetpackStatus.isJetpackConnected,
                     AnalyticsTracker.KEY_JETPACK_SETUP_REQUIRES_CONNECTION_ONLY to
-                        (it.first.isJetpackInstalled && !it.first.isJetpackConnected)
+                        (jetpackStatus.isJetpackInstalled && !jetpackStatus.isJetpackConnected)
                 )
             )
         }
+
+        fun handleUserEligibility(statusCode: Int, jetpackStatus: JetpackStatus? = null) {
+            launch {
+                userEligibilityFetcher.fetchUserInfo().fold(
+                    onSuccess = { user ->
+                        val hasInstallCapability = user.roles.contains(UserRole.Administrator)
+
+                        when {
+                            hasInstallCapability && statusCode == ERROR_CODE_NOT_FOUND && jetpackStatus != null -> {
+                                startJetpackActivation(jetpackStatus)
+                            }
+                            else -> {
+                                triggerEvent(OpenJetpackEligibilityError(user.username, user.roles.first().value))
+
+                                logError(
+                                    statusCode,
+                                    "${user.roles.first().value}: User not authorized to install Jetpack"
+                                )
+                            }
+                        }
+                    },
+                    onFailure = {
+                        showGenericError()
+                        logError(statusCode, it.message.orEmpty())
+                    }
+                )
+            }
+        }
+
+        result.fold(
+            onSuccess = { (jetpackStatus, fetchResponse) ->
+                when (fetchResponse) {
+                    JetpackStatusFetchResponse.SUCCESS -> {
+                        startJetpackActivation(jetpackStatus)
+                        logSuccess(jetpackStatus)
+                    }
+                    JetpackStatusFetchResponse.FORBIDDEN -> handleUserEligibility(ERROR_CODE_FORBIDDEN)
+                    JetpackStatusFetchResponse.NOT_FOUND -> handleUserEligibility(ERROR_CODE_NOT_FOUND, jetpackStatus)
+                }
+            },
+            onFailure = {
+                showGenericError()
+                logError(it.message)
+            }
+        )
     }
 
     private fun logError(message: String?) {
