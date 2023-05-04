@@ -123,7 +123,7 @@ class JetpackBenefitsViewModel @Inject constructor(
                 when (fetchResponse) {
                     JetpackStatusFetchResponse.SUCCESS -> {
                         startJetpackActivation(jetpackStatus)
-                        logSuccess(Pair(jetpackStatus, fetchResponse))
+                        logSuccess(jetpackStatus)
                     }
                     JetpackStatusFetchResponse.FORBIDDEN -> handleUserEligibility(ERROR_CODE_FORBIDDEN)
                     JetpackStatusFetchResponse.NOT_FOUND -> handleUserEligibility(ERROR_CODE_NOT_FOUND, jetpackStatus)
@@ -136,14 +136,14 @@ class JetpackBenefitsViewModel @Inject constructor(
         )
     }
 
-    private fun logSuccess(it: Pair<JetpackStatus, JetpackStatusFetchResponse>) {
+    private fun logSuccess(jetpackStatus: JetpackStatus) {
         if (isAppPasswords) {
             analyticsTrackerWrapper.track(
                 stat = JETPACK_SETUP_CONNECTION_CHECK_COMPLETED,
                 properties = mapOf(
-                    AnalyticsTracker.KEY_JETPACK_SETUP_IS_ALREADY_CONNECTED to it.first.isJetpackConnected,
+                    AnalyticsTracker.KEY_JETPACK_SETUP_IS_ALREADY_CONNECTED to jetpackStatus.isJetpackConnected,
                     AnalyticsTracker.KEY_JETPACK_SETUP_REQUIRES_CONNECTION_ONLY to
-                        (it.first.isJetpackInstalled && !it.first.isJetpackConnected)
+                        (jetpackStatus.isJetpackInstalled && !jetpackStatus.isJetpackConnected)
                 )
             )
         }
