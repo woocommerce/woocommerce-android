@@ -2976,6 +2976,70 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given Unknown refund error, when view model starts, then ui has contact support button`() =
+        testBlocking {
+            setupViewModelForInteracRefund()
+            whenever(
+                interacRefundErrorMapper.mapRefundErrorToUiError(
+                    CardInteracRefundStatus.RefundStatusErrorType.Generic
+                )
+            ).thenReturn(InteracRefundFlowError.Unknown)
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow {
+                    emit(
+                        CardInteracRefundStatus.InteracRefundFailure(
+                            CardInteracRefundStatus.RefundStatusErrorType.Generic,
+                            "",
+                            RefundParams(
+                                amount = BigDecimal.TEN,
+                                chargeId = "",
+                                currency = "USD"
+                            )
+                        )
+                    )
+                }
+            }
+
+            viewModel.start()
+
+            val externalReaderFailedPaymentState = viewModel.viewStateData.value as FailedRefundState
+            assertThat(externalReaderFailedPaymentState.primaryActionLabel).isEqualTo(R.string.support_contact)
+            assertThat(externalReaderFailedPaymentState.secondaryActionLabel).isEqualTo(R.string.cancel)
+        }
+
+    @Test
+    fun `given unknown error, when contact support clicked, then contact support event emited`() =
+        testBlocking {
+            setupViewModelForInteracRefund()
+            whenever(
+                interacRefundErrorMapper.mapRefundErrorToUiError(
+                    CardInteracRefundStatus.RefundStatusErrorType.Generic
+                )
+            ).thenReturn(InteracRefundFlowError.Unknown)
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow {
+                    emit(
+                        CardInteracRefundStatus.InteracRefundFailure(
+                            CardInteracRefundStatus.RefundStatusErrorType.Generic,
+                            "",
+                            RefundParams(
+                                amount = BigDecimal.TEN,
+                                chargeId = "",
+                                currency = "USD"
+                            )
+                        )
+                    )
+                }
+            }
+
+            viewModel.start()
+
+            val externalReaderFailedPaymentState = viewModel.viewStateData.value as FailedRefundState
+            externalReaderFailedPaymentState.onPrimaryActionClicked.invoke()
+            assertThat(viewModel.event.value).isEqualTo(ContactSupport)
+        }
+
+    @Test
     fun `given interac refund shown, when INSERT_CARD received, then refund payment hint updated`() =
         testBlocking {
             setupViewModelForInteracRefund()
