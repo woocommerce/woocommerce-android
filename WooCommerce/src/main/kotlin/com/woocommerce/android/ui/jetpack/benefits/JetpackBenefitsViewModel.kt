@@ -90,6 +90,17 @@ class JetpackBenefitsViewModel @Inject constructor(
 
         fun logError(statusCode: Int, reason: String) = logError("HTTP Code $statusCode: $reason")
 
+        fun logSuccess(jetpackStatus: JetpackStatus) {
+            analyticsTrackerWrapper.track(
+                stat = JETPACK_SETUP_CONNECTION_CHECK_COMPLETED,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_JETPACK_SETUP_IS_ALREADY_CONNECTED to jetpackStatus.isJetpackConnected,
+                    AnalyticsTracker.KEY_JETPACK_SETUP_REQUIRES_CONNECTION_ONLY to
+                        (jetpackStatus.isJetpackInstalled && !jetpackStatus.isJetpackConnected)
+                )
+            )
+        }
+
         fun handleUserEligibility(statusCode: Int, jetpackStatus: JetpackStatus? = null) {
             launch {
                 userEligibilityFetcher.fetchUserInfo().fold(
@@ -134,19 +145,6 @@ class JetpackBenefitsViewModel @Inject constructor(
                 logError(it.message)
             }
         )
-    }
-
-    private fun logSuccess(jetpackStatus: JetpackStatus) {
-        if (isAppPasswords) {
-            analyticsTrackerWrapper.track(
-                stat = JETPACK_SETUP_CONNECTION_CHECK_COMPLETED,
-                properties = mapOf(
-                    AnalyticsTracker.KEY_JETPACK_SETUP_IS_ALREADY_CONNECTED to jetpackStatus.isJetpackConnected,
-                    AnalyticsTracker.KEY_JETPACK_SETUP_REQUIRES_CONNECTION_ONLY to
-                        (jetpackStatus.isJetpackInstalled && !jetpackStatus.isJetpackConnected)
-                )
-            )
-        }
     }
 
     private fun logError(message: String?) {
