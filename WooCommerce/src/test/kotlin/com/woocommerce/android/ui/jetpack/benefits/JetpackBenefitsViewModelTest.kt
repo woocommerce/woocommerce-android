@@ -50,7 +50,7 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given Jetpack CP connection type, when user starts installation, then StartJetpackActivationForJetpackCP event is triggered`() {
+    fun `given Jetpack CP login, when user starts installation, then StartJetpackActivationForJetpackCP event is triggered`() {
         // Given
         givenConnectionType(SiteConnectionType.JetpackConnectionPackage)
 
@@ -64,7 +64,7 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given REST API connection type and Jetpack fetch status is SUCCESS, when user starts installation, then StartJetpackActivationForApplicationPasswords event is triggered`() = testBlocking {
+    fun `given REST API login and Jetpack is already installed but not connected, when user starts installation, then StartJetpackActivationForApplicationPasswords event is triggered`() = testBlocking {
         // Given
         val jetpackStatus = JetpackStatus(
             isJetpackInstalled = true,
@@ -90,7 +90,7 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given REST API connection type and user role is not eligible, when user starts installation, then OpenJetpackEligibilityError event is triggered`() = testBlocking {
+    fun `given REST API login and user role is not eligible, when user starts installation, then OpenJetpackEligibilityError event is triggered`() = testBlocking {
         // Given
         val jetpackStatus = JetpackStatus(
             isJetpackInstalled = true,
@@ -114,7 +114,7 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given REST API connection type and Jetpack is not installed while user is eligible, when user starts installation, then StartJetpackActivationForApplicationPasswords event is triggered`() = testBlocking {
+    fun `given REST API login and Jetpack is not installed while user role is eligible, when user starts installation, then StartJetpackActivationForApplicationPasswords event is triggered`() = testBlocking {
         // Given
         val jetpackStatus = JetpackStatus(
             isJetpackInstalled = false,
