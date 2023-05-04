@@ -92,9 +92,7 @@ class ProductSelectorViewModel @Inject constructor(
     private val filterState = savedState.getStateFlow(viewModelScope, FilterState())
     private val productsRestrictions = navArgs.restrictions
     private val products = listHandler.productsFlow.map { products ->
-        products.filter { product ->
-            productsRestrictions.map { restriction -> restriction(product) }.fold(true) { acc, result -> acc && result }
-        }
+        products.filter { product -> isProductRestricted(product = product) }
     }
     private val popularProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
     private val recentProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
@@ -165,13 +163,20 @@ class ProductSelectorViewModel @Inject constructor(
         return productsList.map { it.toUiModel(selectedIds) }
     }
 
+    private fun isProductRestricted(product: Product): Boolean {
+        return productsRestrictions.map { restriction -> restriction(product) }
+            .fold(true) { acc, result -> acc && result }
+    }
+
     private suspend fun loadRecentProducts() {
         val recentlySoldOrders = getRecentlySoldOrders().take(NUMBER_OF_SUGGESTED_ITEMS)
         recentProducts.value = productsMapper.mapProductIdsToProduct(
             getProductIdsFromRecentlySoldOrders(
                 recentlySoldOrders
             ).distinctBy { it }
-        )
+        ).filter { product ->
+            isProductRestricted(product = product)
+        }
     }
 
     private suspend fun loadPopularProducts() {
@@ -184,7 +189,11 @@ class ProductSelectorViewModel @Inject constructor(
             .sortedByDescending { it.second }
             .take(NUMBER_OF_SUGGESTED_ITEMS)
             .toMap()
-        popularProducts.value = productsMapper.mapProductIdsToProduct(topPopularProductsSorted.keys.toList())
+        popularProducts.value = productsMapper.mapProductIdsToProduct(
+            topPopularProductsSorted.keys.toList()
+        ).filter { product ->
+            isProductRestricted(product = product)
+        }
     }
 
     private suspend fun getRecentlySoldOrders() =
@@ -515,6 +524,7 @@ class ProductSelectorViewModel @Inject constructor(
                 return product.status == ProductStatus.PUBLISH
             }
         }
+
         @Parcelize
         object NoVariableProductsWithNoVariations : ProductSelectorRestriction() {
             override fun invoke(product: Product): Boolean {
@@ -535,6 +545,7 @@ val Collection<ProductSelectorViewModel.SelectedItem>.variationIds: List<Long>
         return filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductOrVariation>().map { it.id } +
             filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductVariation>().map { it.variationId }
     }
+
 enum class ProductSourceForTracking {
     POPULAR,
     LAST_SOLD,
