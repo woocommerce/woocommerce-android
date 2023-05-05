@@ -4071,9 +4071,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     @Test
     fun `given ttp in progress and reader connected, when vm starts, then AppKilledWhileInBackground state emitted`() =
         testBlocking {
-            val cardReader: CardReader = mock {
-                on { type }.thenReturn("COTS_DEVICE")
-            }
+            val cardReader: CardReader = mock()
             whenever(cardReaderManager.readerStatus).thenReturn(
                 MutableStateFlow(CardReaderStatus.Connected(cardReader))
             )
