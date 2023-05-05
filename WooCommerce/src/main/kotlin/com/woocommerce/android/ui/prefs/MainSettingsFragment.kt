@@ -207,9 +207,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         binding.optionTheme.setOnClickListener {
             showThemeChooser()
         }
-        binding.btnOptionCloseAccount.setOnClickListener {
-            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_closeAccountDialogFragment)
-        }
 
         lifecycleScope.launch {
             binding.optionDomain.isVisible = presenter.isDomainOptionVisible
@@ -217,6 +214,11 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
                 AnalyticsTracker.track(SETTINGS_DOMAINS_TAPPED)
                 showDomainDashboard()
             }
+        }
+
+        binding.containerOptionCloseAccount.isVisible = presenter.isCloseAccountOptionVisible
+        binding.btnOptionCloseAccount.setOnClickListener {
+            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_closeAccountDialogFragment)
         }
 
         presenter.setupAnnouncementOption()
