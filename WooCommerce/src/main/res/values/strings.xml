@@ -1294,6 +1294,7 @@
     <string name="card_reader_payment_order_paid_payment_cancelled">The order is already paid</string>
     <string name="card_reader_payment_reader_not_connected">Please make sure that the card reader is connected.</string>
     <string name="card_reader_payment_reader_receipt_sent">A receipt has been sent to &lt;strong&gt;%s&lt;/strong&gt;</string>
+    <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">The system terminated the Woo app while it was running in the background. You may attempt to use it again.</string>
 
     <string name="card_reader_welcome_dialog_header">Collect payments with a card reader</string>
     <string name="card_reader_welcome_dialog_text">Congrats, you are now able to accept debit and credit card payments with WooCommerce Payments!</string>

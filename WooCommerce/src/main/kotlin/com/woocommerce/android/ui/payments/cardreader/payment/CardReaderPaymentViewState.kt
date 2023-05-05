@@ -344,6 +344,10 @@ sealed class PaymentFlowError(val message: UiString) {
         object InvalidAppSetup :
             BuiltInReader(R.string.card_reader_payment_failed_app_setup_is_invalid),
             ContactSupportError
+
+        object AppKilledWhileInBackground :
+            BuiltInReader(R.string.card_reader_payment_vm_killed_when_tpp_in_foreground),
+            NonRetryableError
     }
 
     interface NonRetryableError
