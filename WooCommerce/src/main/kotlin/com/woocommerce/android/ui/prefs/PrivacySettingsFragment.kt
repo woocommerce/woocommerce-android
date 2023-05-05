@@ -18,7 +18,7 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class PrivacySettingsFragment : BaseFragment(R.layout.fragment_settings_privacy) {
+class PrivacySettingsFragment : BaseFragment() {
     companion object {
         const val TAG = "privacy-settings"
     }
