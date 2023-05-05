@@ -145,29 +145,35 @@ class CardReaderPaymentViewModel
 
     fun start() {
         if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
-            val isVMKilledWhenTTPActivityInForeground = paymentFlowJob == null && isTTPPaymentInProgress
-            if (isVMKilledWhenTTPActivityInForeground) {
-                tracker.trackPaymentFailed("VM killed when TTP activity in foreground")
-                viewState.postValue(buildFailedPaymentState(
-                    PaymentFlowError.BuiltInReader.AppKilledWhileInBackground, "", {}
-                ))
-            } else {
-                when (arguments.paymentOrRefund) {
-                    is CardReaderFlowParam.PaymentOrRefund.Payment -> {
-                        if (paymentFlowJob == null) initPaymentFlow(isRetry = false)
-                    }
-
-                    is CardReaderFlowParam.PaymentOrRefund.Refund -> {
-                        if (refundFlowJob == null) initRefundFlow(isRetry = false)
-                    }
-                }
-            }
+            startFlowWhenReaderConnected()
         } else {
             exitWithSnackbar(R.string.card_reader_payment_reader_not_connected)
         }
 
         viewModelScope.launch {
             listenToCardReaderBatteryChanges()
+        }
+    }
+
+    private fun startFlowWhenReaderConnected() {
+        val isVMKilledWhenTTPActivityInForeground = paymentFlowJob == null && isTTPPaymentInProgress
+        if (isVMKilledWhenTTPActivityInForeground) {
+            tracker.trackPaymentFailed("VM killed when TTP activity in foreground")
+            viewState.postValue(
+                buildFailedPaymentState(
+                    PaymentFlowError.BuiltInReader.AppKilledWhileInBackground, "", {}
+                )
+            )
+        } else {
+            when (arguments.paymentOrRefund) {
+                is CardReaderFlowParam.PaymentOrRefund.Payment -> {
+                    if (paymentFlowJob == null) initPaymentFlow(isRetry = false)
+                }
+
+                is CardReaderFlowParam.PaymentOrRefund.Refund -> {
+                    if (refundFlowJob == null) initRefundFlow(isRetry = false)
+                }
+            }
         }
     }
 
