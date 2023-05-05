@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.AmbiguousLocation
@@ -79,6 +80,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock()
     private val parameterRepository: ParameterRepository = mock()
     private val currencyFormatter: CurrencyFormatter = mock()
+    private val appPrefs: AppPrefsWrapper = mock()
     private lateinit var stateFlow: MutableStateFlow<Transition>
 
     private val originAddress = CreateShippingLabelTestUtils.generateAddress()
@@ -204,7 +206,8 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
                 accountStore,
                 resourceProvider,
                 currencyFormatter,
-                mock()
+                mock(),
+                appPrefs
             )
         )
 

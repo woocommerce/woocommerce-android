@@ -50,7 +50,7 @@ abstract class BaseStoreProfilerViewModel(
         searchQuery.value = query
     }
 
-    fun onSkipPressed() {
+    open fun onSkipPressed() {
         triggerEvent(NavigateToNextStep)
     }
 

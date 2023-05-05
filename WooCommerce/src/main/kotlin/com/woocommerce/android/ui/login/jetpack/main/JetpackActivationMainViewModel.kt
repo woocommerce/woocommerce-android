@@ -14,11 +14,14 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.support.help.HelpOrigin.JETPACK_INSTALLATION
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.common.PluginRepository
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivated
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivationFailed
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstallFailed
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstalled
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel.UrlComparisonMode
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.jetpack.GoToStore
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
@@ -63,7 +66,9 @@ class JetpackActivationMainViewModel @Inject constructor(
     companion object {
         private const val JETPACK_SLUG = "jetpack"
         private const val JETPACK_NAME = "jetpack/jetpack"
-        private const val JETPACK_PLANS_URL = "wordpress.com/jetpack/connect/plans"
+        private const val JETPACK_PLANS_URL = "https://wordpress.com/jetpack/connect/plans"
+        private const val JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX = "https://jetpack.wordpress.com/jetpack.authorize"
+        private const val MOBILE_REDIRECT = "woocommerce://jetpack-connected"
         private const val DELAY_AFTER_CONNECTION_MS = 500L
         private const val DELAY_BEFORE_SHOWING_ERROR_STATE_MS = 1000L
         private const val CONNECTED_EMAIL_KEY = "connected-email"
@@ -396,9 +401,12 @@ class JetpackActivationMainViewModel @Inject constructor(
         }
     }
 
+    @Suppress("LongMethod")
     private suspend fun startJetpackConnection() {
         WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: start Jetpack Connection")
-        jetpackActivationRepository.fetchJetpackConnectionUrl(site.await()).fold(
+        val currentSite = site.await()
+        val useApplicationPasswords = currentSite.connectionType == SiteConnectionType.ApplicationPasswords
+        jetpackActivationRepository.fetchJetpackConnectionUrl(currentSite, useApplicationPasswords).fold(
             onSuccess = { connectionUrl ->
                 if (!isFromBanner) {
                     analyticsTrackerWrapper.track(
@@ -406,12 +414,61 @@ class JetpackActivationMainViewModel @Inject constructor(
                     )
                 }
 
-                triggerEvent(
-                    ShowJetpackConnectionWebView(
-                        url = connectionUrl,
-                        connectionValidationUrls = listOf(JETPACK_PLANS_URL, navArgs.siteUrl)
+                if (useApplicationPasswords) {
+                    // Depending on the site's connection status, we should provide different URLs to the webview.
+                    // If the site already has a Jetpack site-connection, we can use the API-given URL as-is. We
+                    // know this is the case if the URL starts with JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX.
+
+                    // If the site lacks a connection, the API-provided URL will be in the format of
+                    // https://{site_url}/wp-admin/admin.php?page=jetpack&action=register&_wpnonce={nonce}.
+                    // For application password login, where we don't want to use cookie-nonce authentication, the URL
+                    // above cannot be used to connect the site to Jetpack.
+                    // See: https://github.com/woocommerce/woocommerce-android/issues/7525
+
+                    // As a workaround, we use a special URL that enables site connection without the app needing
+                    // cookie-nonce authentication. The format looks like below:
+                    // https://wordpress.com/jetpack/connect?url=<site_url>
+                    //  &mobile_redirect=woocommerce://jetpack-connected&from=mobile
+                    // See: pe5sF9-1le-p2#comment-1942
+
+                    val chosenUrl =
+                        if (connectionUrl.startsWith(JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX)) {
+                            connectionUrl
+                        } else {
+                            "https://wordpress.com/jetpack/connect?url=" + navArgs.siteUrl +
+                                "&mobile_redirect=" + MOBILE_REDIRECT +
+                                "&from=mobile"
+                        }
+
+                    // We use STARTS_WITH for the special URL case, to make sure MOBILE_REDIRECT is only used
+                    // as validation if it's at the start of the URL, not as a parameter in the special URL.
+                    val comparisonMode =
+                        if (connectionUrl.startsWith(JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX)) {
+                            UrlComparisonMode.PARTIAL
+                        } else {
+                            UrlComparisonMode.STARTS_WITH
+                        }
+
+                    // Occasionally, while connecting Jetpack, the webview may redirect to the Jetpack plans page
+                    // instead of MOBILE_REDIRECT. We are uncertain about the cause. However, since this redirect
+                    // occurs after the site connects, let's use the plans page as a validation URL too.
+
+                    triggerEvent(
+                        ShowJetpackConnectionWebView(
+                            url = chosenUrl,
+                            connectionValidationUrls = listOf(MOBILE_REDIRECT, JETPACK_PLANS_URL),
+                            urlComparisonMode = comparisonMode,
+                            clearCache = true
+                        )
                     )
-                )
+                } else {
+                    triggerEvent(
+                        ShowJetpackConnectionWebView(
+                            url = connectionUrl,
+                            connectionValidationUrls = listOf(JETPACK_PLANS_URL, navArgs.siteUrl)
+                        )
+                    )
+                }
             },
             onFailure = {
                 val error = (it as? OnChangedException)?.error as? JetpackConnectionUrlError
@@ -565,7 +622,9 @@ class JetpackActivationMainViewModel @Inject constructor(
 
     data class ShowJetpackConnectionWebView(
         val url: String,
-        val connectionValidationUrls: List<String>
+        val connectionValidationUrls: List<String>,
+        val urlComparisonMode: UrlComparisonMode = UrlComparisonMode.PARTIAL,
+        val clearCache: Boolean = false
     ) : MultiLiveEvent.Event()
 
     data class GoToPasswordScreen(val email: String) : MultiLiveEvent.Event()

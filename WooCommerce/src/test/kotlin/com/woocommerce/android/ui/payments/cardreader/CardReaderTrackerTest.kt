@@ -32,6 +32,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CASH_ON_DELIVERY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.ONBOARDING
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
@@ -39,7 +40,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.NotAvailable
+import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -914,6 +915,69 @@ class CardReaderTrackerTest : BaseUnitTest() {
 
             verify(trackerWrapper).track(
                 eq(CARD_PRESENT_COLLECT_PAYMENT_FAILED), any(), any(), anyOrNull(), eq(dummyMessage)
+            )
+        }
+
+    @Test
+    fun `given CardReadTimeOut error type, when payment fails, then CARD_PRESENT_COLLECT_PAYMENT_FAILED tracked with readable error type`() =
+        testBlocking {
+            val dummyMessage = "error msg"
+            cardReaderTracker.trackPaymentFailed(
+                dummyMessage,
+                CardPaymentStatus.CardPaymentStatusErrorType.CardReadTimeOut
+            )
+
+            verify(trackerWrapper).track(
+                eq(CARD_PRESENT_COLLECT_PAYMENT_FAILED),
+                any(),
+                any(),
+                errorType = eq("CardPaymentStatus\$CardPaymentStatusErrorType\$CardReadTimeOut"),
+                errorDescription = eq(dummyMessage)
+            )
+        }
+
+    @Test
+    fun `given CardNotSupported error type, when payment fails, then CARD_PRESENT_COLLECT_PAYMENT_FAILED tracked with readable error type`() =
+        testBlocking {
+            val dummyMessage = "error msg"
+            cardReaderTracker.trackPaymentFailed(
+                dummyMessage,
+                CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.CardNotSupported
+            )
+
+            verify(trackerWrapper).track(
+                eq(CARD_PRESENT_COLLECT_PAYMENT_FAILED),
+                any(),
+                any(),
+                errorType = eq(
+                    "CardPaymentStatus" +
+                        "\$CardPaymentStatusErrorType" +
+                        "\$DeclinedByBackendError" +
+                        "\$CardDeclined" +
+                        "\$CardNotSupported"
+                ),
+                errorDescription = eq(dummyMessage)
+            )
+        }
+
+    @Test
+    fun `given Server error type, when payment fails, then CARD_PRESENT_COLLECT_PAYMENT_FAILED tracked with readable error type`() =
+        testBlocking {
+            val dummyMessage = "error msg"
+            val dummyServerError = "server error"
+            cardReaderTracker.trackPaymentFailed(
+                dummyMessage,
+                CardPaymentStatus.CardPaymentStatusErrorType.Server(dummyServerError)
+            )
+
+            verify(trackerWrapper).track(
+                eq(CARD_PRESENT_COLLECT_PAYMENT_FAILED),
+                any(),
+                any(),
+                errorType = eq(
+                    "Server(errorMessage=$dummyServerError)"
+                ),
+                errorDescription = eq(dummyMessage)
             )
         }
 

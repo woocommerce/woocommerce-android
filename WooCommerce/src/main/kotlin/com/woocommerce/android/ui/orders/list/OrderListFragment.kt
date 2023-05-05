@@ -229,10 +229,12 @@ class OrderListFragment :
      */
     private fun refreshOptionsMenu() {
         if (!isChildFragmentShowing() && isSearching) {
-            enableSearchListeners()
             val savedSearchQuery = searchQuery
             searchMenuItem?.expandActionView()
+            enableSearchListeners()
             searchQuery = savedSearchQuery
+            searchView?.setQuery(searchQuery, false)
+            if (searchQuery.isEmpty()) binding.orderListView.clearAdapterData()
         } else {
             val showSearch = shouldShowSearchMenuItem()
             searchMenuItem?.let {
@@ -448,6 +450,8 @@ class OrderListFragment :
     override fun openOrderDetail(orderId: Long, orderStatus: String, sharedView: View?) {
         viewModel.trackOrderClickEvent(orderId, orderStatus)
 
+        _binding?.createOrderButton?.hide()
+
         // if a search is active, we need to collapse the search view so order detail can show it's title and then
         // remember the user was searching (since both searchQuery and isSearching will be reset)
         if (isSearching) {
@@ -486,6 +490,7 @@ class OrderListFragment :
             submitSearchDelayed(newText)
         } else {
             binding.orderListView.clearAdapterData()
+            hideEmptyView()
         }
         return true
     }

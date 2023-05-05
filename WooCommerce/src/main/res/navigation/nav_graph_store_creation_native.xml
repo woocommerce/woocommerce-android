@@ -33,10 +33,6 @@
             android:id="@+id/action_storeNamePickerFragment_to_domainPickerFragment"
             app:destination="@id/domainPickerFragment" />
         <action
-            android:id="@+id/action_storeNamePickerFragment_to_installationFragment"
-            app:destination="@id/installationFragment"
-            app:popUpTo="@id/nav_graph_store_creation" />
-        <action
             android:id="@+id/action_storeNamePickerFragment_to_summaryFragment"
             app:destination="@id/summaryFragment"
             app:popUpTo="@id/nav_graph_store_creation" />
@@ -85,8 +81,7 @@
             app:popUpTo="@id/nav_graph_store_creation" />
         <action
             android:id="@+id/action_countryPickerFragment_to_summaryFragment"
-            app:destination="@id/summaryFragment"
-            app:popUpTo="@id/nav_graph_store_creation" />
+            app:destination="@id/summaryFragment" />
     </fragment>
 
     <fragment
@@ -122,7 +117,7 @@
 
     <fragment
         android:id="@+id/installationFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.installation.InstallationFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationFragment"
         android:label="InstallationFragment" />
 
     <fragment

@@ -9,6 +9,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCreateShippingLabelBinding
 import com.woocommerce.android.databinding.ViewShippingLabelOrderPackagePriceBinding
@@ -18,7 +19,12 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.*
+import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.CustomsPackage
+import com.woocommerce.android.model.PaymentMethod
+import com.woocommerce.android.model.ShippingLabelPackage
+import com.woocommerce.android.model.ShippingRate
+import com.woocommerce.android.model.getTitle
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
@@ -37,6 +43,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingL
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.FlowStep.PACKAGING
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.FlowStep.PAYMENT
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.FlowStep.SHIPPING_ADDRESS
+import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.OpenShippingInstructions
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.OrderSummaryState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.StepUiState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.UiState.Failed
@@ -55,7 +62,9 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustoms
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_ACCEPTED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SELECTED_ADDRESS_TO_BE_EDITED
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SUGGESTED_ADDRESS_DISCARDED
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -269,6 +278,7 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                         )
                     findNavController().navigateSafely(action)
                 }
+                is OpenShippingInstructions -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 is ShowDialog -> event.showDialog()
                 is Exit -> findNavController().navigateUp()
                 else -> event.isHandled = false
@@ -303,6 +313,13 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
     }
 
     private fun initializeViews(binding: FragmentCreateShippingLabelBinding) {
+        if (FeatureFlag.EU_SHIPPING_NOTIFICATION.isEnabled()) {
+            with(binding.shippingNoticeBanner) {
+                isVisible = AppPrefs.isEUShippingNoticeDismissed.not()
+                setLearnMoreClickListener(viewModel::onShippingNoticeLearnMoreClicked)
+            }
+        }
+
         binding.originStep.continueButtonClickListener = {
             viewModel.onContinueButtonTapped(
                 ORIGIN_ADDRESS

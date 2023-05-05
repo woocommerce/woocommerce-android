@@ -27,8 +27,10 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.PRODUCT_SORTING_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.UPDATE_SIMULATED_READER_OPTION
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED
+import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_SETTING_VISIBILITY
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_TASKS_COMPLETED
+import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_PHONE_NUMBER
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.extensions.packageInfo
@@ -107,6 +109,8 @@ object AppPrefs {
         CUSTOM_DOMAINS_SOURCE,
         IS_TAP_TO_PAY_BETA_ENABLED,
         JETPACK_INSTALLATION_FROM_BANNER,
+        NOTIFICATIONS_PERMISSION_BAR,
+        IS_EU_SHIPPING_NOTICE_DISMISSED,
     }
 
     /**
@@ -180,8 +184,18 @@ object AppPrefs {
         // Was store onboarding shown at least once
         STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE,
 
+        // User preference in regards to show store onboarding or not
+        STORE_ONBOARDING_SETTING_VISIBILITY,
+
         // Time when the last successful payment was made with a card reader
         CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME,
+
+        // A phone number associated with the store (used in shipping labels)
+        STORE_PHONE_NUMBER,
+
+        USER_SEEN_NEW_FEATURE_MORE_SCREEN,
+
+        USER_CLICKED_ON_PAYMENTS_MORE_SCREEN,
     }
 
     fun init(context: Context) {
@@ -245,6 +259,10 @@ object AppPrefs {
     var updateReaderOptionSelected: String
         get() = getString(UPDATE_SIMULATED_READER_OPTION, UpdateOptions.RANDOM.toString())
         set(option) = setString(UPDATE_SIMULATED_READER_OPTION, option)
+
+    var isEUShippingNoticeDismissed: Boolean
+        get() = getBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, false)
+        set(value) = setBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, value)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 
@@ -832,6 +850,20 @@ object AppPrefs {
     fun hasOnboardingCarouselBeenDisplayed(): Boolean =
         getBoolean(ONBOARDING_CAROUSEL_DISPLAYED, false)
 
+    fun isUserSeenNewFeatureOnMoreScreen(): Boolean =
+        getBoolean(UndeletablePrefKey.USER_SEEN_NEW_FEATURE_MORE_SCREEN, false)
+
+    fun setUserSeenNewFeatureOnMoreScreen() {
+        setBoolean(UndeletablePrefKey.USER_SEEN_NEW_FEATURE_MORE_SCREEN, true)
+    }
+
+    fun isPaymentsIconWasClickedOnMoreScreen(): Boolean =
+        getBoolean(UndeletablePrefKey.USER_CLICKED_ON_PAYMENTS_MORE_SCREEN, false)
+
+    fun setPaymentsIconWasClickedOnMoreScreen() {
+        setBoolean(UndeletablePrefKey.USER_CLICKED_ON_PAYMENTS_MORE_SCREEN, true)
+    }
+
     fun setActiveStatsGranularity(currentSiteId: Int, activeStatsGranularity: String) {
         setString(getActiveStatsGranularityFilterKey(currentSiteId), activeStatsGranularity)
     }
@@ -863,6 +895,12 @@ object AppPrefs {
     }
 
     fun getJetpackInstallationIsFromBanner() = getBoolean(DeletablePrefKey.JETPACK_INSTALLATION_FROM_BANNER, false)
+
+    fun setWasNotificationsPermissionBarDismissed(source: Boolean) {
+        setBoolean(DeletablePrefKey.NOTIFICATIONS_PERMISSION_BAR, source)
+    }
+
+    fun getWasNotificationsPermissionBarDismissed() = getBoolean(DeletablePrefKey.NOTIFICATIONS_PERMISSION_BAR, false)
 
     private fun getActiveStatsGranularityFilterKey(currentSiteId: Int) =
         PrefKeyString("${DeletablePrefKey.ACTIVE_STATS_GRANULARITY}:$currentSiteId")
@@ -924,12 +962,37 @@ object AppPrefs {
             default = false
         )
 
+    fun getOnboardingSettingVisibility(siteId: Int): Boolean =
+        getBoolean(
+            key = PrefKeyString("$STORE_ONBOARDING_SETTING_VISIBILITY:$siteId"),
+            default = true
+        )
+
+    fun setOnboardingSettingVisibility(siteId: Int, visible: Boolean) {
+        setBoolean(
+            key = PrefKeyString("$STORE_ONBOARDING_SETTING_VISIBILITY:$siteId"),
+            value = visible
+        )
+    }
+
     fun getCardReaderLastSuccessfulPaymentTime() =
         getLong(UndeletablePrefKey.CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME, 0L)
 
     fun setCardReaderSuccessfulPaymentTime() {
         setLong(UndeletablePrefKey.CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME, System.currentTimeMillis())
     }
+
+    fun setStorePhoneNumber(siteId: Int, phoneNumber: String) {
+        setString(
+            key = PrefKeyString("$STORE_PHONE_NUMBER:$siteId"),
+            value = phoneNumber
+        )
+    }
+
+    fun getStorePhoneNumber(siteId: Int): String =
+        getString(
+            key = PrefKeyString("$STORE_PHONE_NUMBER:$siteId"),
+        )
 
     /**
      * Remove all user and site-related preferences.

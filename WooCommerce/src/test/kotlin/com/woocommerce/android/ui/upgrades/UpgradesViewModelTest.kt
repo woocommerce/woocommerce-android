@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.upgrades
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -56,7 +57,8 @@ class UpgradesViewModelTest : BaseUnitTest() {
         testBlocking {
             // Given
             resourceProvider = mock {
-                on { getString(any(), eq(1)) } doReturn "1 day"
+                on { getString(R.string.free_trial_one_day_left, 1) } doReturn "1 day"
+                on { getString(R.string.subscription_free_trial) } doReturn TEST_SITE_NAME
             }
 
             createSut(
@@ -84,7 +86,8 @@ class UpgradesViewModelTest : BaseUnitTest() {
         testBlocking {
             // Given
             resourceProvider = mock {
-                on { getString(any(), eq(10)) } doReturn "10 days"
+                on { getString(R.string.free_trial_days_left_plural, 10) } doReturn "10 days"
+                on { getString(R.string.subscription_free_trial) } doReturn TEST_SITE_NAME
             }
 
             createSut(

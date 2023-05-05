@@ -1,2 +1,0 @@
-13.0 : 
-Bonne nouvelle pour les utilisateurs de l’extension WooCommerce Subscriptions. Nous avons ajouté un accès en lecture seule à l’extension WooCommerce Subscriptions sur les pages des détails de la commande et du produit. D’autres fonctionnalités sont à venir !

@@ -1,0 +1,2 @@
+13.3:
+Reino Unido, ya están aquí los pagos en persona. Es un placer anunciar que los vendedores del Reino Unido que utilizan WooCommerce Payments tienen ahora a su disposición los pagos en persona. Esta versión también incluye soporte solo de lectura para vendedores mediante Composite Products Gracias de nuevo por tus increíbles comentarios. ¡Sigue así!

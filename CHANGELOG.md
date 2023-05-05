@@ -1,6 +1,18 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 13.5
+This release contains a handful of minor improvements to make your experience smoother. We hope you notice the love we put into our software. Stay tuned for some exciting news coming your way!
+
+## 13.4
+This release includes several bug fixes and improvements to make your experience smoother. We're committed to continuously improving the WooCommerce app, and we have some exciting updates coming in the next few weeks. Stay tuned!
+
+## 13.3
+UK, say hello to in-person payments! We are thrilled to announce that in-person payments are now available to UK merchants currently using WooCommerce Payments. This release also includeds read only support for merchants using Composite Products. Thank you all again for your amazing feedback. Keep it coming!
+
+## 13.2
+This release includes some bug fixes, visual & accessibility enhancements to the orders and products sections of the app. Keep your feedback rolling in; it helps us figure out what to work on next.
+
 ## 13.1
 More love for In-Person Payments and orders this time around, including the option to select your most popular products when creating an order.
 

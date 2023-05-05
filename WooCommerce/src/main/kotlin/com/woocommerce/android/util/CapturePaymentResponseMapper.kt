@@ -21,10 +21,12 @@ class CapturePaymentResponseMapper @Inject constructor() {
         when (response.error?.type) {
             null -> Success
             PAYMENT_ALREADY_CAPTURED -> PaymentAlreadyCaptured
-            GENERIC_ERROR -> GenericError
-            MISSING_ORDER -> MissingOrder
-            CAPTURE_ERROR -> CaptureError
-            SERVER_ERROR -> ServerError
-            NETWORK_ERROR -> NetworkError
+            GENERIC_ERROR -> GenericError(response.error?.message.toErrorMessage())
+            MISSING_ORDER -> MissingOrder(response.error?.message.toErrorMessage())
+            CAPTURE_ERROR -> CaptureError(response.error?.message.toErrorMessage())
+            SERVER_ERROR -> ServerError(response.error?.message.toErrorMessage())
+            NETWORK_ERROR -> NetworkError(response.error?.message.toErrorMessage())
         }
+
+    private fun String?.toErrorMessage() = this ?: "No error message provided"
 }

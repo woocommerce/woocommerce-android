@@ -96,13 +96,13 @@ class OrdersRealAPI : TestBase() {
             // Filter by "Order Status" = "Completed"
             .tapFilters()
             .filterByPropertyAndValue("Order Status", "Completed")
-            .tapShowOrders()
+            .showOrders(true)
             .assertOrderCard(order41)
             .assertOrdersCount(1)
             // Check that "Clear" button works
             .tapFilters()
             .clearFilters()
-            .tapShowOrders()
+            .showOrders(true)
             .assertOrderCard(order40)
             .assertOrderCard(order41)
             .assertOrdersCount(2)
@@ -120,7 +120,9 @@ class OrdersRealAPI : TestBase() {
             .enterSearchTerm(order40.customerName)
             .assertOrderCard(order40)
             .assertOrdersCount(1)
+            .leaveSearchMode()
             // Search for non-existing order
+            .openSearchPane()
             .enterAbsentSearchTerm("Absent Order")
             .assertSearchResultsAbsent("Absent Order")
             // Leave search and make sure all orders are listed

@@ -138,6 +138,11 @@
                 android:name="selectedProductCategoryName"
                 app:argType="string"
                 app:nullable="true" />
+            <argument
+                android:name="restrictions"
+                app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorRestriction[]"
+                app:nullable="true"
+                android:defaultValue="@null" />
         </action>
         <action
             android:id="@+id/action_productListFragment_to_productTypesBottomSheet"
@@ -373,6 +378,10 @@
             android:name="urlComparisonMode"
             android:defaultValue="PARTIAL"
             app:argType="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel$UrlComparisonMode" />
+        <argument
+            android:name="clearCache"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </fragment>
     <action
         android:id="@+id/action_global_WPComWebViewFragment"

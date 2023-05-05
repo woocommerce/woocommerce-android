@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.NotAvailable
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.APPENDING
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.IDLE
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.LOADING
@@ -91,9 +92,7 @@ class ProductSelectorViewModel @Inject constructor(
     private val filterState = savedState.getStateFlow(viewModelScope, FilterState())
     private val productsRestrictions = navArgs.restrictions
     private val products = listHandler.productsFlow.map { products ->
-        products.filter { product ->
-            productsRestrictions.map { restriction -> restriction(product) }.fold(true) { acc, result -> acc && result }
-        }
+        products.filter { product -> isProductRestricted(product = product) }
     }
     private val popularProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
     private val recentProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
@@ -144,24 +143,29 @@ class ProductSelectorViewModel @Inject constructor(
         popularProducts: List<Product>,
         selectedIds: List<SelectedItem>
     ): List<ProductListItem> {
-        return getProductItemsIfSearchQueryIsNotEmpty(popularProducts, selectedIds)
+        return getProductItemsIfSearchQueryEmptyOrNoFilter(popularProducts, selectedIds)
     }
 
     private fun getRecentProductsToDisplay(
         recentProducts: List<Product>,
         selectedIds: List<SelectedItem>
     ): List<ProductListItem> {
-        return getProductItemsIfSearchQueryIsNotEmpty(recentProducts, selectedIds)
+        return getProductItemsIfSearchQueryEmptyOrNoFilter(recentProducts, selectedIds)
     }
 
-    private fun getProductItemsIfSearchQueryIsNotEmpty(
+    private fun getProductItemsIfSearchQueryEmptyOrNoFilter(
         productsList: List<Product>,
         selectedIds: List<SelectedItem>
     ): List<ProductListItem> {
-        if (searchQuery.value.isNotNullOrEmpty()) {
+        if (searchQuery.value.isNotNullOrEmpty() || filterState.value.filterOptions.isNotEmpty()) {
             return emptyList()
         }
         return productsList.map { it.toUiModel(selectedIds) }
+    }
+
+    private fun isProductRestricted(product: Product): Boolean {
+        return productsRestrictions.map { restriction -> restriction(product) }
+            .fold(true) { acc, result -> acc && result }
     }
 
     private suspend fun loadRecentProducts() {
@@ -170,7 +174,9 @@ class ProductSelectorViewModel @Inject constructor(
             getProductIdsFromRecentlySoldOrders(
                 recentlySoldOrders
             ).distinctBy { it }
-        )
+        ).filter { product ->
+            isProductRestricted(product = product)
+        }
     }
 
     private suspend fun loadPopularProducts() {
@@ -183,7 +189,11 @@ class ProductSelectorViewModel @Inject constructor(
             .sortedByDescending { it.second }
             .take(NUMBER_OF_SUGGESTED_ITEMS)
             .toMap()
-        popularProducts.value = productsMapper.mapProductIdsToProduct(topPopularProductsSorted.keys.toList())
+        popularProducts.value = productsMapper.mapProductIdsToProduct(
+            topPopularProductsSorted.keys.toList()
+        ).filter { product ->
+            isProductRestricted(product = product)
+        }
     }
 
     private suspend fun getRecentlySoldOrders() =
@@ -203,7 +213,7 @@ class ProductSelectorViewModel @Inject constructor(
 
     private fun Product.toUiModel(selectedItems: Collection<SelectedItem>): ProductListItem {
         fun getProductSelection(): SelectionState {
-            return if (productType == VARIABLE && numVariations > 0) {
+            return if (isVariable() && numVariations > 0) {
                 val intersection = variationIds.intersect(selectedItems.variationIds.toSet())
                 when {
                     intersection.isEmpty() -> UNSELECTED
@@ -218,8 +228,11 @@ class ProductSelectorViewModel @Inject constructor(
 
         val stockStatus = when (stockStatus) {
             InStock -> {
-                if (productType == VARIABLE) {
-                    resourceProvider.getString(string.product_stock_status_instock_with_variations, numVariations)
+                if (isVariable()) {
+                    resourceProvider.getString(
+                        string.product_stock_status_instock_with_variations,
+                        numVariations
+                    )
                 } else {
                     getStockStatusLabel()
                 }
@@ -273,14 +286,15 @@ class ProductSelectorViewModel @Inject constructor(
                 filterState.value.filterOptions[ProductFilterOption.TYPE],
                 filterState.value.filterOptions[ProductFilterOption.STATUS],
                 filterState.value.filterOptions[ProductFilterOption.CATEGORY],
-                filterState.value.productCategoryName
+                filterState.value.productCategoryName,
+                productsRestrictions.toList()
             )
         )
     }
 
     fun onProductClick(item: ProductListItem, productSourceForTracking: ProductSourceForTracking) {
         val productSource = updateProductSourceIfSearchIsEnabled(productSourceForTracking)
-        if (item.type == VARIABLE && item.numVariations > 0) {
+        if ((item.type == VARIABLE || item.type == VARIABLE_SUBSCRIPTION) && item.numVariations > 0) {
             triggerEvent(
                 NavigateToVariationSelector(
                     item.id,
@@ -289,7 +303,7 @@ class ProductSelectorViewModel @Inject constructor(
                     productSource
                 )
             )
-        } else if (item.type != VARIABLE) {
+        } else if (item.type != VARIABLE && item.type != VARIABLE_SUBSCRIPTION) {
             selectedItems.update { items ->
                 val selectedProductItems = items.filter {
                     it is SelectedItem.ProductOrVariation || it is SelectedItem.Product
@@ -330,7 +344,7 @@ class ProductSelectorViewModel @Inject constructor(
         triggerEvent(ExitWithResult(selectedItems.value))
     }
 
-    private fun isFilterActive() = !filterState.value.filterOptions.isNullOrEmpty()
+    private fun isFilterActive() = filterState.value.filterOptions.isNotEmpty()
 
     fun onSearchQueryChanged(query: String) {
         searchQuery.value = query
@@ -510,10 +524,11 @@ class ProductSelectorViewModel @Inject constructor(
                 return product.status == ProductStatus.PUBLISH
             }
         }
+
         @Parcelize
         object NoVariableProductsWithNoVariations : ProductSelectorRestriction() {
             override fun invoke(product: Product): Boolean {
-                return !(product.productType == VARIABLE && product.numVariations == 0)
+                return !(product.isVariable() && product.numVariations == 0)
             }
         }
     }
@@ -523,11 +538,14 @@ class ProductSelectorViewModel @Inject constructor(
     }
 }
 
+private fun Product.isVariable() = productType == VARIABLE || productType == VARIABLE_SUBSCRIPTION
+
 val Collection<ProductSelectorViewModel.SelectedItem>.variationIds: List<Long>
     get() {
         return filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductOrVariation>().map { it.id } +
             filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductVariation>().map { it.variationId }
     }
+
 enum class ProductSourceForTracking {
     POPULAR,
     LAST_SOLD,

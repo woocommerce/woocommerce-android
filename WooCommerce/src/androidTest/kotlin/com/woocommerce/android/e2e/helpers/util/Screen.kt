@@ -136,8 +136,6 @@ open class Screen {
     }
 
     fun scrollTo(elementID: Int) {
-        waitForElementToBeDisplayed(elementID)
-
         // Need to use the NestedScrollViewExtension because Espresso doesn't natively support it:
         // https://medium.com/@devasierra/espresso-nestedscrollview-scrolling-via-kotlin-delegation-5e7f0aa64c09
         onView(withId(elementID)).perform(NestedScrollViewExtension())
@@ -377,7 +375,7 @@ open class Screen {
         SupplierIdler(supplier).idleUntilReady(false)
     }
 
-    private fun waitForAtLeastOneElementToBeDisplayed(elementId: Int) {
+    fun waitForAtLeastOneElementToBeDisplayed(elementId: Int) {
         waitForConditionToBeTrue(
             Supplier {
                 atLeastOneElementIsDisplayed(elementId)

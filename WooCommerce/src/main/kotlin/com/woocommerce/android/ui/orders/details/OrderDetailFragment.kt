@@ -374,7 +374,7 @@ class OrderDetailFragment :
         handleResult<Boolean>(OrderFulfillViewModel.KEY_REFRESH_SHIPMENT_TRACKING_RESULT) {
             viewModel.refreshShipmentTracking()
         }
-        handleDialogNotice<String>(
+        handleDialogNotice(
             key = CardReaderPaymentDialogFragment.KEY_CARD_PAYMENT_RESULT,
             entryId = R.id.orderDetailFragment
         ) {

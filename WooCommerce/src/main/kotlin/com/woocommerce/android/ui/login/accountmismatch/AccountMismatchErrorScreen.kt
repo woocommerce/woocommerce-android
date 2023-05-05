@@ -130,7 +130,7 @@ fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
 @Composable
 private fun SiteCredentialsScreen(
     viewState: ViewState.SiteCredentialsViewState,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
@@ -142,7 +142,8 @@ private fun SiteCredentialsScreen(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
         ) {
             Text(text = stringResource(id = R.string.enter_credentials_for_site, viewState.siteUrl))
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
@@ -406,6 +407,26 @@ private fun AccountMismatchPreview() {
                 inlineButtonAction = {},
                 showJetpackTermsConsent = true,
                 showNavigationIcon = true,
+                onBackPressed = {}
+            )
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun SiteCredentialsScreenPreview() {
+    WooThemeWithBackground {
+        SiteCredentialsScreen(
+            viewState = ViewState.SiteCredentialsViewState(
+                siteUrl = "woocommerce.com",
+                username = "username",
+                password = "password",
+                errorMessage = null,
+                onUsernameChanged = {},
+                onPasswordChanged = {},
+                onContinueClick = {},
+                onLoginWithAnotherAccountClick = {},
                 onBackPressed = {}
             )
         )

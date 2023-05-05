@@ -21,6 +21,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.CardReaderPaymentDialogBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderPaymentSuccessfulReceiptSentAutomaticallyState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderPaymentSuccessfulState
@@ -32,6 +34,7 @@ import com.woocommerce.android.ui.payments.refunds.RefundSummaryFragment.Compani
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.PrintHtmlHelper
 import com.woocommerce.android.util.UiHelpers
+import com.woocommerce.android.util.UiHelpers.getTextOfUiString
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -91,6 +94,7 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
                     requireView(), event.message, BaseTransientBottomBar.LENGTH_LONG
                 ).show()
                 is PlayChaChing -> playChaChing()
+                is ContactSupport -> openSupportRequestScreen()
                 else -> event.isHandled = false
             }
         }
@@ -132,6 +136,14 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
         }
     }
 
+    private fun openSupportRequestScreen() {
+        SupportRequestFormActivity.createIntent(
+            context = requireContext(),
+            origin = HelpOrigin.CARD_READER_PAYMENT_ERROR,
+            extraTags = ArrayList()
+        ).let { activity?.startActivity(it) }
+    }
+
     private fun announceForAccessibility(binding: CardReaderPaymentDialogBinding, viewState: ViewState) {
         with(binding) {
             val isPaymentSuccessful = viewState is BuiltInReaderPaymentSuccessfulState ||
@@ -145,7 +157,7 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
                 }
             } else {
                 viewState.paymentStateLabel?.let {
-                    paymentStateLabel.announceForAccessibility(getString(it))
+                    paymentStateLabel.announceForAccessibility(getTextOfUiString(requireContext(), it))
                 }
             }
             viewState.hintLabel?.let {

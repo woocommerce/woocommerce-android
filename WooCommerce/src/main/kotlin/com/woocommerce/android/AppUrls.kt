@@ -31,7 +31,7 @@ object AppUrls {
     const val CROWDSIGNAL_SHIPPING_LABELS_SURVEY =
         "https://automattic.survey.fm/woo-app-feature-feedback-shipping-labels"
 
-    const val CROWDSIGNAL_ANALYTICS_HUB_SURVEY = "https://automattic.survey.fm/woo-app-analytics-hub-testing"
+    const val CROWDSIGNAL_ANALYTICS_HUB_SURVEY = "https://automattic.survey.fm/woo-app-analytics-hub-production"
 
     const val ORDER_CREATION_SURVEY = "https://automattic.survey.fm/woo-app-order-creation-production"
 
@@ -86,4 +86,6 @@ object AppUrls {
         LOGIN_SITE_ADDRESS to "$LOGIN_HELP_CENTER#enter-store-address",
         LOGIN_USERNAME_PASSWORD to "$LOGIN_HELP_CENTER#enter-store-credentials",
     )
+
+    const val EU_SHIPPING_CUSTOMS_REQUIREMENTS = "https://www.usps.com/international/new-eu-customs-rules.htm"
 }

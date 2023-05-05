@@ -25,23 +25,22 @@ import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.OpenGenericWebView
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToast
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToastString
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.GapBetweenSections
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.NonToggleableListItem
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.GapBetweenSections
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.NonToggleableListItem
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub.OpenInHub
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.Available
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.NotAvailable.CountryNotSupported
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.NotAvailable.GooglePlayServicesNotAvailable
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.NotAvailable.NfcNotAvailable
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.NotAvailable.SystemVersionNotSupported
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.NotAvailable.TapToPayDisabled
+import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
+import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.Available
+import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.CountryNotSupported
+import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.GooglePlayServicesNotAvailable
+import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
+import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.SystemVersionNotSupported
+import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.TapToPayDisabled
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -87,7 +86,9 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
     private val cardReaderTracker: CardReaderTracker = mock()
     private val paymentMenuUtmProvider: UtmProvider = mock()
-    private val isTapToPayAvailable: IsTapToPayAvailable = mock()
+    private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock {
+        on { invoke() }.thenReturn(Available)
+    }
     private val appPrefs: AppPrefs = mock()
     private val feedbackRepository: FeedbackRepository = mock {
         on { getFeatureFeedbackSetting(any()) }.thenReturn(
@@ -172,7 +173,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         initViewModel()
 
         assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
-            .noneMatch() {
+            .noneMatch {
                 it.icon == R.drawable.ic_card_reader_manual &&
                     it.label == UiStringRes(R.string.settings_card_reader_manuals)
             }
@@ -1270,7 +1271,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-            whenever(isTapToPayAvailable("US")).thenReturn(Available)
+            whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(
                 mock<CardReaderOnboardingState.OnboardingCompleted>()
             )
@@ -1288,7 +1289,8 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
                     it.icon == R.drawable.ic_baseline_contactless &&
                     it.label == UiStringRes(R.string.card_reader_test_tap_to_pay) &&
                     it.description == UiStringRes(R.string.card_reader_tap_to_pay_description) &&
-                    it.index == 5
+                    it.index == 5 &&
+                    it.iconBadge == R.drawable.ic_badge_new
             }
         }
 
@@ -1297,7 +1299,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-            whenever(isTapToPayAvailable("US")).thenReturn(Available)
+            whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(
                 mock<CardReaderOnboardingState.OnboardingCompleted>()
             )
@@ -1314,7 +1316,8 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
                     it.icon == R.drawable.ic_feedback_banner_logo &&
                     it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback) &&
                     it.description == null &&
-                    it.index == 6
+                    it.index == 6 &&
+                    it.iconBadge == null
             }
         }
 
@@ -1323,7 +1326,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-            whenever(isTapToPayAvailable("US")).thenReturn(Available)
+            whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(
                 mock<CardReaderOnboardingState.OnboardingCompleted>()
             )
@@ -1352,7 +1355,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-            whenever(isTapToPayAvailable("US")).thenReturn(Available)
+            whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(
                 mock<CardReaderOnboardingState.OnboardingCompleted>()
             )
@@ -1384,7 +1387,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-            whenever(isTapToPayAvailable("US")).thenReturn(Available)
+            whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
             whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(false)
 
             // WHEN
@@ -1398,11 +1401,54 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when learn more ipp clicked, then learn more button tracked with source`() =
+        testBlocking {
+            // GIVEN
+            val url = "https://www.example.com"
+            whenever(
+                learnMoreUrlProvider.provideLearnMoreUrlFor(
+                    LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
+                )
+            ).thenReturn(url)
+            initViewModel()
+
+            // WHEN
+            (viewModel.viewStateData.getOrAwaitValue()).rows
+                .first { it is CardReaderHubViewState.ListItem.LearnMoreListItem }
+                .onClick!!.invoke()
+
+            // THEN
+            verify(cardReaderTracker).trackIPPLearnMoreClicked("payments_menu")
+        }
+
+    @Test
+    fun `when learn more ipp clicked, then open web view event emitted`() =
+        testBlocking {
+            // GIVEN
+            val url = "https://www.example.com"
+            whenever(
+                learnMoreUrlProvider.provideLearnMoreUrlFor(
+                    LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
+                )
+            ).thenReturn(url)
+            initViewModel()
+
+            // WHEN
+            (viewModel.viewStateData.getOrAwaitValue()).rows
+                .first { it is CardReaderHubViewState.ListItem.LearnMoreListItem }
+                .onClick!!.invoke()
+
+            // THEN
+            val event = viewModel.event.getOrAwaitValue()
+            assertThat((event as OpenGenericWebView).url).isEqualTo(url)
+        }
+
+    @Test
     fun `given ttp available and multiple plugin, when view model started, then rows shows sorted by index`() =
         testBlocking {
             // GIVEN
             whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-            whenever(isTapToPayAvailable("US")).thenReturn(Available)
+            whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(
                 mock<CardReaderOnboardingState.OnboardingCompleted>()
             )
@@ -1423,14 +1469,14 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             // THEN
             val rows = (viewModel.viewStateData.getOrAwaitValue()).rows
-            assertThat(rows.map { it.index }).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+            assertThat(rows.map { it.index }).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
         }
 
     @Test
     fun `given ttp is disabled, when view model started, then do not show ttp row`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(isTapToPayAvailable("US")).thenReturn(TapToPayDisabled)
+        whenever(tapToPayAvailabilityStatus()).thenReturn(TapToPayDisabled)
 
         // WHEN
         initViewModel()
@@ -1445,7 +1491,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     fun `given ttp system not supported, when view model started, then do not show ttp row`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(isTapToPayAvailable("US")).thenReturn(SystemVersionNotSupported)
+        whenever(tapToPayAvailabilityStatus()).thenReturn(SystemVersionNotSupported)
 
         // WHEN
         initViewModel()
@@ -1460,7 +1506,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     fun `given ttp gps not available, when view model started, then do not show ttp row`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(isTapToPayAvailable("US")).thenReturn(GooglePlayServicesNotAvailable)
+        whenever(tapToPayAvailabilityStatus()).thenReturn(GooglePlayServicesNotAvailable)
 
         // WHEN
         initViewModel()
@@ -1475,7 +1521,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     fun `given ttp nfc not available, when view model started, then do not show ttp row`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(isTapToPayAvailable("US")).thenReturn(NfcNotAvailable)
+        whenever(tapToPayAvailabilityStatus()).thenReturn(NfcNotAvailable)
 
         // WHEN
         initViewModel()
@@ -1490,7 +1536,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     fun `given ttp country not supported, when view model started, then do not show ttp row`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("CA")
-        whenever(isTapToPayAvailable("CA")).thenReturn(CountryNotSupported)
+        whenever(tapToPayAvailabilityStatus()).thenReturn(CountryNotSupported)
 
         // WHEN
         initViewModel()
@@ -1503,46 +1549,10 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     // endregion
 
     @Test
-    fun `when learn more IPP clicked, then trigger correct event`() {
-        // GIVEN
-        whenever(
-            learnMoreUrlProvider.provideLearnMoreUrlFor(LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS)
-        ).thenReturn(
-            AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
-        )
-
-        // WHEN
-        viewModel.viewStateData.getOrAwaitValue().learnMoreIppState?.onClick?.invoke()
-
-        // THEN
-        assertThat(viewModel.event.value).isEqualTo(
-            viewModel.event.value
-        ).isInstanceOf(OpenGenericWebView::class.java)
-    }
-
-    @Test
-    fun `when learn more IPP clicked, then trigger correct event with correct url`() {
-        // GIVEN
-        whenever(
-            learnMoreUrlProvider.provideLearnMoreUrlFor(LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS)
-        ).thenReturn(
-            AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
-        )
-
-        // WHEN
-        viewModel.viewStateData.getOrAwaitValue().learnMoreIppState?.onClick?.invoke()
-
-        // THEN
-        assertThat(viewModel.event.value).isEqualTo(
-            viewModel.event.value
-        ).isEqualTo(OpenGenericWebView(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS))
-    }
-
-    @Test
     fun `given tpp available, when tap to pay clicked, then navigate to tap to pay summary screen event emitted`() {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(isTapToPayAvailable("US")).thenReturn(Available)
+        whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
 
         // WHEN
         initViewModel()
@@ -1558,7 +1568,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     fun `given tpp available, when tap to pay clicked, then tap is tracked`() {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(isTapToPayAvailable("US")).thenReturn(Available)
+        whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
 
         // WHEN
         initViewModel()
@@ -1585,10 +1595,29 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when view model initiated, then learn more item visible`() {
+        // WHEN
+        initViewModel()
+
+        // THEN
+        val rows = (viewModel.viewStateData.getOrAwaitValue()).rows
+        val learnMoreListItems = rows.filterIsInstance<CardReaderHubViewState.ListItem.LearnMoreListItem>()
+        assertThat(learnMoreListItems).hasSize(1)
+        assertThat(learnMoreListItems[0].label).isEqualTo(
+            UiStringRes(
+                R.string.card_reader_detail_learn_more,
+                containsHtml = true
+            )
+        )
+        assertThat(learnMoreListItems[0].icon).isEqualTo(R.drawable.ic_info_outline_20dp)
+        assertThat(learnMoreListItems[0].index).isEqualTo(11)
+    }
+
+    @Test
     fun `given hub flow with ttp, when view model initiated, then navigate to ttp emitted`() {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(isTapToPayAvailable("US")).thenReturn(Available)
+        whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
 
         // WHEN
         initViewModel(OpenInHub.TAP_TO_PAY_SUMMARY)
@@ -1601,7 +1630,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     fun `given hub flow with ttp when ttp is not available, when view model initiated, then show toast emitted`() {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(isTapToPayAvailable("US")).thenReturn(SystemVersionNotSupported)
+        whenever(tapToPayAvailabilityStatus()).thenReturn(SystemVersionNotSupported)
 
         // WHEN
         initViewModel(OpenInHub.TAP_TO_PAY_SUMMARY)
@@ -1626,7 +1655,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         // GIVEN
         whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(isTapToPayAvailable("US")).thenReturn(Available)
+        whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US"))
             .thenReturn(CardReaderConfigForUSA)
 
@@ -1647,7 +1676,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             .thenReturn(FeatureFeedbackSettings(FeatureFeedbackSettings.Feature.TAP_TO_PAY))
         whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(isTapToPayAvailable("US")).thenReturn(Available)
+        whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US"))
             .thenReturn(CardReaderConfigForUSA)
 
@@ -1666,7 +1695,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         // GIVEN
         whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(isTapToPayAvailable("US")).thenReturn(Available)
+        whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US"))
             .thenReturn(CardReaderConfigForUSA)
 
@@ -1721,7 +1750,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             cardReaderCountryConfigProvider,
             cardReaderTracker,
             paymentMenuUtmProvider,
-            isTapToPayAvailable,
+            tapToPayAvailabilityStatus,
             appPrefs,
             feedbackRepository,
         )
