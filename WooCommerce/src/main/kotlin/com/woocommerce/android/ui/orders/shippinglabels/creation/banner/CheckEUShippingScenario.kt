@@ -64,42 +64,5 @@ class CheckEUShippingScenario @Inject constructor() {
             "SE", "SWE",
             "CH", "CHE"
         )
-        EU_COUNTRIES_FOLLOWING_CUSTOMS_RULES.any { countryIsoCode ->
-            countryIsoCode.first == code || countryIsoCode.second == code
-        }
-
-    companion object {
-        const val US_COUNTRY_CODE = "US"
-        val EU_COUNTRIES_FOLLOWING_CUSTOMS_RULES = listOf(
-            Pair("AT", "AUT"),
-            Pair("BE", "BEL"),
-            Pair("BG", "BGR"),
-            Pair("HR", "HRV"),
-            Pair("CY", "CYP"),
-            Pair("CZ", "CZE"),
-            Pair("DK", "DNK"),
-            Pair("EE", "EST"),
-            Pair("FI", "FIN"),
-            Pair("FR", "FRA"),
-            Pair("DE", "DEU"),
-            Pair("GR", "GRC"),
-            Pair("HU", "HUN"),
-            Pair("IE", "IRL"),
-            Pair("IT", "ITA"),
-            Pair("LV", "LVA"),
-            Pair("LT", "LTU"),
-            Pair("LU", "LUX"),
-            Pair("MT", "MLT"),
-            Pair("NL", "NLD"),
-            Pair("NO", "NOR"),
-            Pair("PL", "POL"),
-            Pair("PT", "PRT"),
-            Pair("RO", "ROU"),
-            Pair("SK", "SVK"),
-            Pair("SI", "SVN"),
-            Pair("ES", "ESP"),
-            Pair("SE", "SWE"),
-            Pair("CH", "CHE")
-        )
     }
 }
