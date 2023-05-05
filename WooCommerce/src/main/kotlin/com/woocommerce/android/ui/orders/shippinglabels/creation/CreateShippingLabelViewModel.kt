@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -110,6 +111,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.NOT_READY
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.READY
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepsState
+import com.woocommerce.android.ui.orders.shippinglabels.creation.banner.CheckEUShippingScenario
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
@@ -141,6 +143,7 @@ import kotlin.system.measureTimeMillis
 class CreateShippingLabelViewModel @Inject constructor(
     savedState: SavedStateHandle,
     parameterRepository: ParameterRepository,
+    checkEUShippingScenario: CheckEUShippingScenario,
     private val orderDetailRepository: OrderDetailRepository,
     private val shippingLabelRepository: ShippingLabelRepository,
     private val stateMachine: ShippingLabelsStateMachine,
@@ -166,6 +169,10 @@ class CreateShippingLabelViewModel @Inject constructor(
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
+
+    val shouldDisplayShippingNotice = checkEUShippingScenario(
+        stateMachine.transitions
+    ).asLiveData()
 
     init {
         initializeStateMachine()
@@ -362,7 +369,8 @@ class CreateShippingLabelViewModel @Inject constructor(
                 originCountryCode = originCountryCode,
                 destinationCountryCode = destinationCountryCode,
                 shippingPackages = shippingPackages,
-                customsPackages = customsPackages
+                customsPackages = customsPackages,
+                isEUShippingScenario = shouldDisplayShippingNotice.value ?: false
             )
         )
     }

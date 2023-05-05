@@ -21,7 +21,6 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsViewModel.OpenShippingInstructions
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -84,7 +83,7 @@ class ShippingCustomsFragment :
             }
         }
 
-        if (FeatureFlag.EU_SHIPPING_NOTIFICATION.isEnabled()) {
+        if (viewModel.isEUShippingScenario) {
             with(binding.shippingNoticeBanner) {
                 isVisible = AppPrefs.isEUShippingNoticeDismissed.not()
                 setLearnMoreClickListener(viewModel::onShippingNoticeLearnMoreClicked)
@@ -111,6 +110,7 @@ class ShippingCustomsFragment :
                 binding.packagesList.isVisible = !show
             }
         }
+
         viewModel.event.observe(
             viewLifecycleOwner
         ) { event ->

@@ -69,6 +69,9 @@ class ShippingCustomsViewModel @Inject constructor(
     val countries: List<Location>
         get() = dataStore.getCountries().map { it.toAppModel() }
 
+    val isEUShippingScenario
+        get() = args.isEUShippingScenario
+
     init {
         loadData()
     }
