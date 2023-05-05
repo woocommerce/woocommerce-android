@@ -16,6 +16,8 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Switch
+import androidx.compose.material.SwitchColors
+import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -128,6 +130,9 @@ private fun OptionRow(
                     .width(1.dp)
             )
             Switch(
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = MaterialTheme.colors.primary
+                ),
                 modifier = Modifier.padding(start = 8.dp),
                 checked = switchChecked,
                 onCheckedChange = onSwitchChanged,
