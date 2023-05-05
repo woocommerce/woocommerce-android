@@ -2265,8 +2265,8 @@
     <string name="notifications_permission_description">We need your permission to send you push notifications for new orders, reviews, etc. delivered to your device.</string>
 
     <!-- Jetpack Connection Package -->
-    <string name="jetpack_benefits_bottom_banner_title">Get the full experience with Jetpack</string>
-    <string name="jetpack_benefits_bottom_banner_subtitle">See the benefits</string>
+    <string name="jetpack_benefits_bottom_banner_title">Get order notifications and more</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Stay updated and boost store security. Explore Jetpack now.</string>
     <string name="jetpack_benefits_modal_title">Get the most out of your store</string>
     <string name="jetpack_benefits_modal_subtitle">Install the free Jetpack plugin to experience the best mobile experience.</string>
     <string name="jetpack_benefits_modal_push_notifications_title">Push Notifications</string>
