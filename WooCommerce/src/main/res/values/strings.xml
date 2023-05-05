@@ -1914,6 +1914,9 @@
     <string name="settings_tracking_header">Tracking</string>
     <string name="settings_tracking_analytics">Analytics</string>
     <string name="settings_tracking_analytics_description">These cookies allow us to optimize performance by collecting information on how users interact with our mobile apps.</string>
+    <string name="settings_reports_header">Reports</string>
+    <string name="settings_reports_report_crashes">Report Crashes</string>
+    <string name="settings_reports_report_crashes_description">To help us improve the app’s performance and fix the occasional bug, enable automatic crash report.</string>
     <string name="settings_tracking">We use other tracking tools, including some from third parties. Read about these and how to control them.</string>
     <string name="settings_footer">Made with love by Automattic. %1$s</string>
     <string name="settings_hiring">We\'re hiring!</string>

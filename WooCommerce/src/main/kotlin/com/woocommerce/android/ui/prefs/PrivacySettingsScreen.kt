@@ -38,6 +38,7 @@ fun PrivacySettingsScreen(
     PrivacySettingsScreen(
         state,
         onAnalyticsSettingChanged = viewModel::onSendStatsSettingChanged,
+        onReportCrashesChanged = viewModel::onCrashReportingSettingChanged,
     )
 }
 
@@ -45,6 +46,7 @@ fun PrivacySettingsScreen(
 fun PrivacySettingsScreen(
     state: PrivacySettingsViewModel.State,
     onAnalyticsSettingChanged: (Boolean) -> Unit,
+    onReportCrashesChanged: (Boolean) -> Unit,
 ) {
     Scaffold { paddingValues ->
         Column(
@@ -62,47 +64,74 @@ fun PrivacySettingsScreen(
                     .fillMaxWidth()
                     .padding(vertical = 16.dp),
                 elevation = 8.dp,
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = stringResource(R.string.settings_tracking_header),
-                        style = MaterialTheme.typography.caption,
-                        modifier = Modifier.padding(bottom = 16.dp),
-                        color = MaterialTheme.colors.primary,
-                    )
-                    Row(
-                        modifier = Modifier
-                            .height(IntrinsicSize.Min)
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(end = 16.dp)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.settings_tracking_analytics),
-                            )
-                            Text(
-                                style = MaterialTheme.typography.caption,
-                                text = stringResource(R.string.settings_tracking_analytics_description),
-                            )
-                        }
-                        Divider(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .padding(vertical = 8.dp)
-                                .width(1.dp)
+                content = {
+                    Column {
+                        OptionRow(
+                            switchChecked = state.sendUsageStats,
+                            onAnalyticsSettingChanged,
+                            sectionHeader = stringResource(R.string.settings_tracking_header),
+                            sectionTitle = stringResource(R.string.settings_tracking_analytics),
+                            sectionDescription = stringResource(R.string.settings_tracking_analytics_description),
                         )
-                        Switch(
-                            modifier = Modifier.padding(start = 8.dp),
-                            checked = state.sendUsageStats,
-                            onCheckedChange = onAnalyticsSettingChanged,
+                        OptionRow(
+                            switchChecked = state.crashReportingEnabled,
+                            onReportCrashesChanged,
+                            sectionHeader = stringResource(R.string.settings_reports_header),
+                            sectionTitle = stringResource(R.string.settings_reports_report_crashes),
+                            sectionDescription = stringResource(R.string.settings_reports_report_crashes_description),
                         )
                     }
-                }
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun OptionRow(
+    switchChecked: Boolean,
+    onSwitchChanged: (Boolean) -> Unit,
+    sectionHeader: String,
+    sectionTitle: String,
+    sectionDescription: String,
+) {
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text(
+            text = sectionHeader,
+            style = MaterialTheme.typography.caption,
+            modifier = Modifier.padding(bottom = 16.dp),
+            color = MaterialTheme.colors.primary,
+        )
+        Row(
+            modifier = Modifier
+                .height(IntrinsicSize.Min)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 16.dp)
+            ) {
+                Text(
+                    text = sectionTitle,
+                )
+                Text(
+                    style = MaterialTheme.typography.caption,
+                    text = sectionDescription,
+                )
             }
+            Divider(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(vertical = 8.dp)
+                    .width(1.dp)
+            )
+            Switch(
+                modifier = Modifier.padding(start = 8.dp),
+                checked = switchChecked,
+                onCheckedChange = onSwitchChanged,
+            )
         }
     }
 }
@@ -118,7 +147,7 @@ private fun Default() {
                 sendUsageStats = true,
                 crashReportingEnabled = false
             ),
-            onAnalyticsSettingChanged = {},
+            {}, {}
         )
     }
 }
