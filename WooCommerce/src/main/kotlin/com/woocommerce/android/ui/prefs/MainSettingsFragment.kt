@@ -205,8 +205,10 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
         binding.optionTheme.optionValue = getString(AppPrefs.getAppTheme().label)
         binding.optionTheme.setOnClickListener {
-            // FIXME AMANDA tracks event
             showThemeChooser()
+        }
+        binding.btnOptionCloseAccount.setOnClickListener {
+            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_closeAccountDialogFragment)
         }
 
         lifecycleScope.launch {

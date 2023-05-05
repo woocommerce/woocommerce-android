@@ -1894,6 +1894,7 @@
     <string name="beta_features_coupons">Coupons Management</string>
     <string name="beta_features_simple_payments">Simple payments</string>
     <string name="settings_signout">Log out</string>
+    <string name="settings_close_account">Close Account</string>
     <string name="settings_preferences">Preferences</string>
     <string name="settings_confirm_logout">Are you sure you want to logout from the account %s?</string>
     <string name="settings_confirm_logout_site_credentials">Are you sure you want to log out of your account?</string>
