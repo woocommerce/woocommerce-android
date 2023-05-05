@@ -7,16 +7,12 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.combine
-import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToProductFilter
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToVariationSelector
 import com.woocommerce.android.ui.products.ProductStatus
-import com.woocommerce.android.ui.products.ProductStockStatus.Custom
-import com.woocommerce.android.ui.products.ProductStockStatus.InStock
-import com.woocommerce.android.ui.products.ProductStockStatus.NotAvailable
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
@@ -30,6 +26,7 @@ import com.woocommerce.android.ui.products.variations.selector.VariationSelector
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.VariationSelectionResult
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
+import com.woocommerce.android.util.ProductUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -226,20 +223,7 @@ class ProductSelectorViewModel @Inject constructor(
             }
         }
 
-        val stockStatus = when (stockStatus) {
-            InStock -> {
-                if (isVariable()) {
-                    resourceProvider.getString(
-                        string.product_stock_status_instock_with_variations,
-                        numVariations
-                    )
-                } else {
-                    getStockStatusLabel()
-                }
-            }
-            NotAvailable, is Custom -> null
-            else -> resourceProvider.getString(stockStatus.stringResource)
-        }
+        val stockStatus = ProductUtils.getStockText(this, resourceProvider)
 
         val price = price?.let { PriceUtils.formatCurrency(price, currencyCode, currencyFormatter) }
 
@@ -256,16 +240,6 @@ class ProductSelectorViewModel @Inject constructor(
             selectedVariationIds = variationIds.intersect(selectedItems.variationIds.toSet()),
             selectionState = getProductSelection()
         )
-    }
-
-    private fun Product.getStockStatusLabel() = if (isStockManaged) {
-        val quantity = if (stockQuantity.isInteger()) stockQuantity.toInt() else stockQuantity
-        resourceProvider.getString(
-            string.product_stock_status_instock_quantified,
-            quantity.toString()
-        )
-    } else {
-        resourceProvider.getString(string.product_stock_status_instock)
     }
 
     fun onClearButtonClick() {
