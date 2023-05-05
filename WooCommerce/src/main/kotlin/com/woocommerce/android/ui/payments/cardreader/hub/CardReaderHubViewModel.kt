@@ -41,8 +41,8 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.OnboardingCompleted
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.Available
+import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
+import com.woocommerce.android.ui.payments.taptopay.isAvailable
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.CARD_READER
@@ -68,7 +68,7 @@ class CardReaderHubViewModel @Inject constructor(
     cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
     private val cardReaderTracker: CardReaderTracker,
     @Named("payment-menu") private val paymentMenuUtmProvider: UtmProvider,
-    private val isTapToPayAvailable: IsTapToPayAvailable,
+    private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val appPrefs: AppPrefs,
     private val feedbackRepository: FeedbackRepository,
 ) : ScopedViewModel(savedState) {
@@ -181,7 +181,7 @@ class CardReaderHubViewModel @Inject constructor(
     }
 
     private fun MutableList<ListItem>.addTapToPay() {
-        if (isTTPAvailable) {
+        if (tapToPayAvailabilityStatus().isAvailable) {
             add(GapBetweenSections(index = 4))
             add(
                 NonToggleableListItem(
@@ -414,7 +414,7 @@ class CardReaderHubViewModel @Inject constructor(
             is CardReadersHub -> {
                 when (params.openInHub) {
                     TAP_TO_PAY_SUMMARY -> {
-                        if (isTTPAvailable) {
+                        if (tapToPayAvailabilityStatus().isAvailable) {
                             triggerEvent(CardReaderHubEvents.NavigateToTapTooPaySummaryScreen)
                         } else {
                             triggerEvent(ShowToast(R.string.card_reader_tap_to_pay_not_available_error))
@@ -451,9 +451,6 @@ class CardReaderHubViewModel @Inject constructor(
             remoteSiteId = selectedSite.get().siteId,
             selfHostedSiteId = selectedSite.get().selfHostedSiteId,
         )
-
-    private val isTTPAvailable
-        get() = storeCountryCode != null && isTapToPayAvailable(storeCountryCode) == Available
 
     private val shouldShowTTPFeedbackRequest: Boolean
         get() {
