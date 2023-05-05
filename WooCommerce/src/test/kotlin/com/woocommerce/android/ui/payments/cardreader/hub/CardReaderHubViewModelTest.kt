@@ -1287,7 +1287,8 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
                     it.icon == R.drawable.ic_baseline_contactless &&
                     it.label == UiStringRes(R.string.card_reader_test_tap_to_pay) &&
                     it.description == UiStringRes(R.string.card_reader_tap_to_pay_description) &&
-                    it.index == 5
+                    it.index == 5 &&
+                    it.iconBadge == R.drawable.ic_badge_new
             }
         }
 
@@ -1313,7 +1314,8 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
                     it.icon == R.drawable.ic_feedback_banner_logo &&
                     it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback) &&
                     it.description == null &&
-                    it.index == 6
+                    it.index == 6 &&
+                    it.iconBadge == null
             }
         }
 
