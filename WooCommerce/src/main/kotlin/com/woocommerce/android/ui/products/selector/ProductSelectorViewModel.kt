@@ -26,7 +26,7 @@ import com.woocommerce.android.ui.products.variations.selector.VariationSelector
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.VariationSelectionResult
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
-import com.woocommerce.android.util.ProductUtils
+import com.woocommerce.android.util.getStockText
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -223,7 +223,7 @@ class ProductSelectorViewModel @Inject constructor(
             }
         }
 
-        val stockStatus = ProductUtils.getStockText(this, resourceProvider)
+        val stockStatus = getStockText(resourceProvider)
 
         val price = price?.let { PriceUtils.formatCurrency(price, currencyCode, currencyFormatter) }
 

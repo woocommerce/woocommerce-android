@@ -15,7 +15,7 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.orders.creation.ProductUIModel
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.ProductUtils
+import com.woocommerce.android.util.getStockText
 import org.wordpress.android.util.HtmlUtils
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
@@ -63,7 +63,7 @@ class ProductItemView @JvmOverloads constructor(
             if (productUIModel.item.isVariation && productUIModel.item.attributesDescription.isNotEmpty()) {
                 append(productUIModel.item.attributesDescription)
             } else {
-                append(ProductUtils.getStockText(productUIModel, context))
+                append(productUIModel.getStockText(context))
             }
             append(" $bullet ")
             append(decimalFormatter(productUIModel.item.total).replace(" ", "\u00A0"))
@@ -133,7 +133,7 @@ class ProductItemView @JvmOverloads constructor(
         val decimalFormatter = getDecimalFormatter(currencyFormatter, currencyCode)
 
         val statusHtml = getProductStatusHtml(product.status)
-        val stock = ProductUtils.getStockText(product, context)
+        val stock = product.getStockText(context)
         val stockAndStatus = if (statusHtml != null) "$statusHtml $bullet $stock" else stock
         val stockStatusPrice = if (product.price != null) {
             val fmtPrice = decimalFormatter(product.price)
