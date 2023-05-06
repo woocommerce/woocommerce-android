@@ -8,6 +8,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.databinding.ShippingNoticeBannerBinding
 import com.woocommerce.android.extensions.collapse
+import com.woocommerce.android.extensions.expand
 
 class ShippingNoticeCard @JvmOverloads constructor(
     context: Context,
@@ -18,16 +19,25 @@ class ShippingNoticeCard @JvmOverloads constructor(
         LayoutInflater.from(context), this, true
     )
 
+    var onDismissClicked: () -> Unit = {}
+    var onLearnMoreClicked: (url: String) -> Unit = {}
+    var isVisible: Boolean = visibility == VISIBLE
+        set(show) {
+            if (show != isVisible) {
+                field = show
+                if (show) expand() else collapse()
+            }
+        }
+
     init {
         binding.dismissButton.setOnClickListener {
+            onDismissClicked()
             AppPrefs.isEUShippingNoticeDismissed = true
             collapse()
         }
-    }
 
-    fun setLearnMoreClickListener(action: (url: String) -> Unit) {
         binding.learnMoreButton.setOnClickListener {
-            action(AppUrls.EU_SHIPPING_CUSTOMS_REQUIREMENTS)
+            onLearnMoreClicked(AppUrls.EU_SHIPPING_CUSTOMS_REQUIREMENTS)
         }
     }
 }
