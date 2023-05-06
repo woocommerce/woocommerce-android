@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-28 09:54:04+0000
+Translation-Revision-Date: 2023-05-02 13:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="store_onboarding_setting_description">스토어 설정 목록 표시 또는 숨기기</string>
+    <string name="store_onboarding_setting_title">스토어 설정 목록</string>
+    <string name="store_onboarding_dialog_description">필요하면 메뉴 &gt; 설정 &gt; 스토어에서 복원할 수 있습니다.</string>
+    <string name="store_onboarding_dialog_title">스토어 설정 목록 숨기기</string>
+    <string name="store_onboarding_menu_hide_store_setup">스토어 설정 목록 숨기기</string>
+    <string name="card_reader_tap_to_pay_successful_refund_action_label">주문 보기</string>
+    <string name="card_reader_tap_to_pay_successful_refund_message">테스트 Tap To Pay 결제가 환불되었습니다.</string>
+    <string name="card_reader_tap_to_pay_explanation_refund_failed">환불되지 않았습니다. 수동으로 환불 시도해 보기</string>
+    <string name="card_reader_tap_to_pay_explanation_refunding_payment">테스트 결제 환불 중…</string>
+    <string name="signup_terms_of_service">계속하면 &lt;a href=\'termsOfService\'&gt;&lt;u&gt;서비스 약관에 동의하는 것입니다.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="signup_get_started_create_account_label">먼저 계정을 만들겠습니다. </string>
+    <string name="signup_create_password_label">비밀번호 생성</string>
     <string name="component_type_categories">카테고리</string>
     <string name="component_type_products">상품</string>
     <string name="component_default_option">기본 옵션</string>
@@ -228,7 +240,7 @@ Language: ko_KR
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">문제가 발생했습니다. 나중에 다시 시도하세요.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">결제 체험</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find"> Android에서는 Tap to Pay를 찾으려면\n메뉴 &gt; 결제 또는 결제 받기로 이동하고\nTap to Pay를 선택하면 됩니다.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">카드를 사용하여 결제를 체험하고\n완료하면 환불하세요.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund">카드를 사용하여 결제를 시도합니다.\n완료하면 환불됩니다.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">회원님의 휴대폰에서 Tap to Pay가 준비되었습니다.\n고객이 회원님의 휴대폰에서 자신의 카드를\n눌러서 결제할 수 있습니다.</string>
     <string name="card_reader_tap_to_pay_explanation_title">휴대폰으로\n카드 결제 받기</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
@@ -497,14 +509,12 @@ Language: ko_KR
     <string name="signup_password_too_short">비밀번호가 너무 짧습니다. 6자 이상의 비밀번호를 선택하세요.</string>
     <string name="signup_email_invalid_input">유효한 이메일 주소를 입력하세요.</string>
     <string name="signup_email_exist_input">이 이메일이 포함된 계정이 이미 있습니다.</string>
-    <string name="signup_already_registered">먼저 계정을 만들겠습니다. 이미 등록하셨나요? &lt;a href=\'login\'&gt;&lt;u&gt;로그인&lt;/u&gt;&lt;/a&gt;</string>
     <string name="login_create_an_account">계정 만들기</string>
     <string name="login_try_another_email">다른 주소 시도</string>
     <string name="date_timeframe_custom_date_range_title">사용자 정의 날짜 범위</string>
     <string name="date_timeframe_custom">사용자 정의</string>
     <string name="what_is_wordpress_link">워드프레스닷컴이란 무엇인가요?</string>
     <string name="signup_creating_account_loading_message">새 계정 만들기</string>
-    <string name="signup_terms_of_service">계속하면 &lt;u&gt;서비스 약관에 동의하는 것입니다.&lt;/u&gt;</string>
     <string name="signup_password_hint">비밀번호 선택</string>
     <string name="signup_email_address_hint">사용 중인 이메일 주소</string>
     <string name="signup_get_started_label">시작하기 \n분 단위</string>

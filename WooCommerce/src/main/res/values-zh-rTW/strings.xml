@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-27 09:54:04+0000
+Translation-Revision-Date: 2023-05-02 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="store_onboarding_setting_description">顯示或隱藏商店設定清單</string>
+    <string name="store_onboarding_setting_title">商店設定清單</string>
+    <string name="store_onboarding_dialog_description">你可以視需要從「選單」&gt;「設定」&gt;「商店」將其還原</string>
+    <string name="store_onboarding_dialog_title">隱藏商店設定清單</string>
+    <string name="store_onboarding_menu_hide_store_setup">隱藏商店設定清單</string>
+    <string name="card_reader_tap_to_pay_successful_refund_action_label">查看訂單</string>
+    <string name="card_reader_tap_to_pay_successful_refund_message">「卡緊收」測試付款已成功退款</string>
+    <string name="card_reader_tap_to_pay_explanation_refund_failed">退款失敗。 嘗試手動退款</string>
+    <string name="card_reader_tap_to_pay_explanation_refunding_payment">正在退還測試付款…</string>
+    <string name="signup_terms_of_service">繼續操作即代表你同意我們的&lt;a href=\'termsOfService\'&gt;&lt;u&gt;服務條款。&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="signup_get_started_create_account_label">首先來建立你的帳號。 </string>
+    <string name="signup_create_password_label">建立密碼</string>
     <string name="component_type_categories">類別</string>
     <string name="component_type_products">產品</string>
     <string name="component_default_option">預設選項</string>
@@ -228,7 +240,7 @@ Language: zh_TW
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">發生錯誤。 請稍後再試一次。</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">嘗試付款</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find"> 若使用 Android 系統，可以在\n「選單」&gt;「付款」找到「點選支付」或「收款」\n，然後選擇「點選支付」。</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">使用信用卡嘗試付款\n，完成後退款。</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund">使用信用卡嘗試付款\n，完成後就會退款。</string>
     <string name="card_reader_tap_to_pay_explanation_ready">你的手機已可使用「點選支付」功能。\n你的顧客可以在手機上點選信用卡\n來付款。</string>
     <string name="card_reader_tap_to_pay_explanation_title">使用手機\n收取信用卡款項</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">點選支付</string>
@@ -497,14 +509,12 @@ Language: zh_TW
     <string name="signup_password_too_short">你的密碼太短了。 請選擇一個至少含有 6 個字元的密碼。</string>
     <string name="signup_email_invalid_input">請輸入有效的電子郵件地址。</string>
     <string name="signup_email_exist_input">已有其他帳號使用此電子郵件。</string>
-    <string name="signup_already_registered">首先來建立你的帳號。 已經註冊了嗎？ &lt;a href=\'login\'&gt;&lt;u&gt;登入&lt;/u&gt;&lt;/a&gt;</string>
     <string name="login_create_an_account">建立帳號</string>
     <string name="login_try_another_email">嘗試其他地址</string>
     <string name="date_timeframe_custom_date_range_title">自訂日期範圍</string>
     <string name="date_timeframe_custom">自訂</string>
     <string name="what_is_wordpress_link">什麼是 WordPress.com？</string>
     <string name="signup_creating_account_loading_message">建立新帳號</string>
-    <string name="signup_terms_of_service">繼續操作即代表你同意我們的&lt;u&gt;服務條款。&lt;/u&gt;</string>
     <string name="signup_password_hint">選擇密碼</string>
     <string name="signup_email_address_hint">你的電子郵件地址</string>
     <string name="signup_get_started_label">開始使用 \n設定只要幾分鐘</string>

@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-27 09:54:04+0000
+Translation-Revision-Date: 2023-05-02 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="store_onboarding_setting_description">ストア設定リストを表示または非表示</string>
+    <string name="store_onboarding_setting_title">ストア設定リスト</string>
+    <string name="store_onboarding_dialog_description">必要に応じて「メニュー」&gt;「設定」&gt;「ストア」から再度復元できます。</string>
+    <string name="store_onboarding_dialog_title">ストア設定リストを非表示</string>
+    <string name="store_onboarding_menu_hide_store_setup">ストア設定リストを非表示</string>
+    <string name="card_reader_tap_to_pay_successful_refund_action_label">注文を表示</string>
+    <string name="card_reader_tap_to_pay_successful_refund_message">Tap To Pay のテスト支払いが正常に返金されました</string>
+    <string name="card_reader_tap_to_pay_explanation_refund_failed">返金が失敗しました。 手動で返金を試す</string>
+    <string name="card_reader_tap_to_pay_explanation_refunding_payment">テスト支払いの返金を行っています…</string>
+    <string name="signup_terms_of_service">継続することで、&lt;a href=\'termsOfService\'&gt;&lt;u&gt;利用規約に合意したことになります。&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="signup_get_started_create_account_label">最初に、アカウントを作成しましょう。 </string>
+    <string name="signup_create_password_label">パスワードを作成</string>
     <string name="component_type_categories">カテゴリー</string>
     <string name="component_type_products">商品</string>
     <string name="component_default_option">デフォルトオプション</string>
@@ -228,7 +240,7 @@ Language: ja_JP
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">エラーが発生しました。 後でもう一度お試しください。</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">支払いを試す</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find"> Android では Tap to Pay は\n「メニュー」&gt;「支払い」または「支払いを受け取る」の順に移動し\n「Tap to Pay」を選択します。</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">お持ちのカードを使って支払いを試し、\n完了したら返金します。</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund">お持ちのカードを使って支払いを試し、\n完了したら返金されます。</string>
     <string name="card_reader_tap_to_pay_explanation_ready">お使いのスマートフォンでは今すぐ Tap to Pay を使用できます。\nお客様はスマートフォンで\nカードをタップして支払うことができます。</string>
     <string name="card_reader_tap_to_pay_explanation_title">スマートフォンでカードでの\n支払いを受け取る</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
@@ -497,14 +509,12 @@ Language: ja_JP
     <string name="signup_password_too_short">パスワードが短すぎます。 6文字以上のパスワードを設定してください。</string>
     <string name="signup_email_invalid_input">有効なメールアドレスを入力してください。</string>
     <string name="signup_email_exist_input">このメールアドレスのアカウントはすでにあります。</string>
-    <string name="signup_already_registered">最初に、アカウントを作成しましょう。 すでに登録されていますか ? &lt;a href=\'login\'&gt;&lt;u&gt;ログイン&lt;/u&gt;&lt;/a&gt;</string>
     <string name="login_create_an_account">アカウントを作成</string>
     <string name="login_try_another_email">別のアドレスを試す</string>
     <string name="date_timeframe_custom_date_range_title">カスタムの日付の範囲</string>
     <string name="date_timeframe_custom">カスタム</string>
     <string name="what_is_wordpress_link">WordPress.com とは何ですか ?</string>
     <string name="signup_creating_account_loading_message">新しいアカウントの作成中</string>
-    <string name="signup_terms_of_service">継続することで、&lt;u&gt;利用規約に合意したことになります。&lt;/u&gt;</string>
     <string name="signup_password_hint">パスワードを選択</string>
     <string name="signup_email_address_hint">あなたのメールアドレス</string>
     <string name="signup_get_started_label">数分で\n新規登録</string>
