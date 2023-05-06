@@ -1,13 +1,15 @@
 package com.woocommerce.android.ui.prefs
 
-import android.content.Context
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTING_CHANGE
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTING_CHANGE_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.SETTING_CHANGE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
+import com.woocommerce.android.util.dispatchAndAwait
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
@@ -17,58 +19,53 @@ import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.PushAccountSettingsPayload
 import javax.inject.Inject
 
-class PrivacySettingsPresenter @Inject constructor(
+@HiltViewModel
+class PrivacySettingsViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     private val dispatcher: Dispatcher,
     private val accountStore: AccountStore,
-) : PrivacySettingsContract.Presenter {
+) : ScopedViewModel(savedState) {
     companion object {
         private const val SETTING_TRACKS_OPT_OUT = "tracks_opt_out"
     }
-    private var privacySettingsFragmentView: PrivacySettingsContract.View? = null
 
-    override fun takeView(view: PrivacySettingsContract.View) {
-        dispatcher.register(this)
-        privacySettingsFragmentView = view
-    }
+    fun getSendUsageStats() = !accountStore.account.tracksOptOut
 
-    override fun dropView() {
-        dispatcher.unregister(this)
-        privacySettingsFragmentView = null
-    }
-
-    override fun getSendUsageStats() = !accountStore.account.tracksOptOut
-
-    override fun setSendUsageStats(sendUsageStats: Boolean) {
+    fun setSendUsageStats(sendUsageStats: Boolean) {
         // note that we don't init/disable Crashlytics here because that requires the app to be restarted
         AnalyticsTracker.sendUsageStats = sendUsageStats
 
-        // sync with wpcom if a token is available
-        if (accountStore.hasAccessToken()) {
-            AnalyticsTracker.track(
-                SETTING_CHANGE,
-                mapOf(
-                    AnalyticsTracker.KEY_NAME to SETTING_TRACKS_OPT_OUT,
-                    AnalyticsTracker.KEY_FROM to !sendUsageStats,
-                    AnalyticsTracker.KEY_TO to sendUsageStats
+        launch {
+            // sync with wpcom if a token is available
+            if (accountStore.hasAccessToken()) {
+                AnalyticsTracker.track(
+                    SETTING_CHANGE,
+                    mapOf(
+                        AnalyticsTracker.KEY_NAME to SETTING_TRACKS_OPT_OUT,
+                        AnalyticsTracker.KEY_FROM to !sendUsageStats,
+                        AnalyticsTracker.KEY_TO to sendUsageStats
+                    )
                 )
-            )
 
-            val payload = PushAccountSettingsPayload().apply {
-                params = mapOf(SETTING_TRACKS_OPT_OUT to !sendUsageStats)
+                val payload = PushAccountSettingsPayload().apply {
+                    params = mapOf(SETTING_TRACKS_OPT_OUT to !sendUsageStats)
+                }
+
+                val action = AccountActionBuilder.newPushSettingsAction(payload)
+                val event: OnAccountChanged = dispatcher.dispatchAndAwait(action)
+
+                handleOnAccountChanged(event)
             }
-            dispatcher.dispatch(AccountActionBuilder.newPushSettingsAction(payload))
         }
     }
 
-    override fun getCrashReportingEnabled() = AppPrefs.isCrashReportingEnabled()
+    fun getCrashReportingEnabled() = AppPrefs.isCrashReportingEnabled()
 
-    override fun setCrashReportingEnabled(context: Context, enabled: Boolean) {
+    fun setCrashReportingEnabled(enabled: Boolean) {
         AppPrefs.setCrashReportingEnabled(enabled)
     }
 
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onAccountChanged(event: OnAccountChanged) {
+    private fun handleOnAccountChanged(event: OnAccountChanged) {
         if (event.isError) {
             when (event.error.type) {
                 AccountErrorType.SETTINGS_POST_ERROR -> {
@@ -79,6 +76,7 @@ class PrivacySettingsPresenter @Inject constructor(
                         event.error.message
                     )
                 }
+
                 else -> {}
             }
         } else {
@@ -86,6 +84,7 @@ class PrivacySettingsPresenter @Inject constructor(
                 AccountAction.PUSH_SETTINGS -> {
                     AnalyticsTracker.track(SETTING_CHANGE_SUCCESS)
                 }
+
                 else -> Unit // Do nothing
             }
         }
