@@ -4,12 +4,12 @@
 
 
 13.5
-- [*][Internal] Adds "contact support" button on some IPP error states. [https://github.com/woocommerce/woocommerce-android/pull/8882]
+- [*] [Internal] Adds "contact support" button on some IPP error states. [https://github.com/woocommerce/woocommerce-android/pull/8882]
+- [*] [Internal] Adds guidance for new Customs rule when shipping to some EU countries [https://github.com/woocommerce/woocommerce-android/pull/8958]
 -----
 
 
 13.4
-- [*] Adds guidance for new Customs rule when shipping to some EU countries [https://github.com/woocommerce/woocommerce-android/pull/8958]
 - [*] [Internal] Adds partial height chrome tab in a few places. [https://github.com/woocommerce/woocommerce-android/pull/8502]
 - [*] [Internal] Better payments error tracking [https://github.com/woocommerce/woocommerce-android/pull/8875]
 - [**] Allow users to show or hide onboarding list [https://github.com/woocommerce/woocommerce-android/pull/8907]
