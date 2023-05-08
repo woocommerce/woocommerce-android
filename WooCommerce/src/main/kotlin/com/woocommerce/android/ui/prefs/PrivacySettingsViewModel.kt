@@ -108,7 +108,9 @@ class PrivacySettingsViewModel @Inject constructor(
         triggerEvent(PrivacySettingsEvent.ShowPrivacyPolicy)
     }
 
-    fun onAdvertisingOptionsClicked() = Unit
+    fun onAdvertisingOptionsClicked() {
+        triggerEvent(PrivacySettingsEvent.ShowAdvertisingOptions)
+    }
 
     fun onCookiePolicyClicked() {
         AnalyticsTracker.track(AnalyticsEvent.PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED)
@@ -144,6 +146,7 @@ class PrivacySettingsViewModel @Inject constructor(
     )
 
     sealed class PrivacySettingsEvent : MultiLiveEvent.Event() {
+        object ShowAdvertisingOptions : PrivacySettingsEvent()
         object ShowCookiePolicy : PrivacySettingsEvent()
         object ShowPrivacyPolicy : PrivacySettingsEvent()
     }
