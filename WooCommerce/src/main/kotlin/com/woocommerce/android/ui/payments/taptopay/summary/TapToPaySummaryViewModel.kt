@@ -96,7 +96,7 @@ class TapToPaySummaryViewModel @Inject constructor(
         refundStore.createAmountRefund(
             selectedSite.get(),
             order.id,
-            order.total,
+            calculateRefundAmount(order),
             resourceProvider.getString(R.string.tap_to_pay_refund_reason),
             true,
         ).apply {
@@ -108,6 +108,13 @@ class TapToPaySummaryViewModel @Inject constructor(
             }
         }
     }
+
+    private fun calculateRefundAmount(order: Order) =
+        if (order.feesLines.first().taxStatus == Order.FeeLine.FeeLineTaxStatus.TAXABLE) {
+            order.total
+        } else {
+            order.total - order.totalTax
+        }
 
     private fun showSuccessfulRefundNotification(orderId: Long) {
         triggerEvent(
