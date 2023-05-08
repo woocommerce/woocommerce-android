@@ -95,6 +95,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val createOrderItem: CreateOrderItem,
     private val determineMultipleLinesContext: DetermineMultipleLinesContext,
     private val tracker: AnalyticsTrackerWrapper,
+    private val codeScanner: CodeScanner,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -283,6 +284,21 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
 
                 _orderDraft.update { order -> order.updateItems(order.items + itemsToAdd) }
+            }
+        }
+    }
+
+    fun startScan() {
+        launch {
+            codeScanner.startScan().collect { status ->
+                when (status) {
+                    is CodeScannerStatus.Failure -> {
+                    // TODO handle failure case
+                    }
+                    is CodeScannerStatus.Success -> {
+                        // TODO handle success case
+                    }
+                }
             }
         }
     }
