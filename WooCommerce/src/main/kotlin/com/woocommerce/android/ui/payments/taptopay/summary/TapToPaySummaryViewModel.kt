@@ -110,7 +110,7 @@ class TapToPaySummaryViewModel @Inject constructor(
     }
 
     private fun calculateRefundAmount(order: Order) =
-        if (order.feesLines.first().taxStatus == Order.FeeLine.FeeLineTaxStatus.TAXABLE) {
+        if (order.feesLines.firstOrNull()?.taxStatus == Order.FeeLine.FeeLineTaxStatus.TAXABLE) {
             order.total
         } else {
             order.total - order.totalTax

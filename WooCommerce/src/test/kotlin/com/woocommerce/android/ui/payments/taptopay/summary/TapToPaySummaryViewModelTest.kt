@@ -31,6 +31,8 @@ import java.math.BigDecimal
 class TapToPaySummaryViewModelTest : BaseUnitTest() {
     private val order: Order = mock {
         on { id }.thenReturn(1L)
+        on { total }.thenReturn(BigDecimal.valueOf(0.6))
+        on { totalTax }.thenReturn(BigDecimal.valueOf(0.1))
     }
     private val site: SiteModel = mock()
     private val orderCreateEditRepository: OrderCreateEditRepository = mock()
@@ -189,7 +191,7 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
                 refundStore.createAmountRefund(
                     selectedSite.get(),
                     order.id,
-                    order.total,
+                    BigDecimal(0.5),
                     "Test Tap To Pay payment auto refund",
                     true,
                 )
@@ -205,6 +207,60 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given try ttp payment flow with taxable status, when vm created, then correct amount refunded`() =
+        testBlocking {
+            // GIVEN
+            val feesLine: Order.FeeLine = mock {
+                on { taxStatus }.thenReturn(Order.FeeLine.FeeLineTaxStatus.TAXABLE)
+            }
+            whenever(order.feesLines).thenReturn(listOf(feesLine))
+            whenever(
+                refundStore.createAmountRefund(
+                    selectedSite.get(),
+                    order.id,
+                    order.total,
+                    "Test Tap To Pay payment auto refund",
+                    true,
+                )
+            ).thenReturn(WooResult(mock<WCRefundModel>()))
+
+            // WHEN
+            val viewModel = initViewModel(TapToPaySummaryFragment.TestTapToPayFlow.AfterPayment(order))
+
+            // THEN
+            assertThat(viewModel.event.value).isInstanceOf(
+                TapToPaySummaryViewModel.ShowSuccessfulRefundNotification::class.java
+            )
+        }
+
+    @Test
+    fun `given try ttp payment flow with none status, when vm created, then correct amount refunded`() =
+        testBlocking {
+            // GIVEN
+            val feesLine: Order.FeeLine = mock {
+                on { taxStatus }.thenReturn(Order.FeeLine.FeeLineTaxStatus.NONE)
+            }
+            whenever(order.feesLines).thenReturn(listOf(feesLine))
+            whenever(
+                refundStore.createAmountRefund(
+                    selectedSite.get(),
+                    order.id,
+                    order.total - order.totalTax,
+                    "Test Tap To Pay payment auto refund",
+                    true,
+                )
+            ).thenReturn(WooResult(mock<WCRefundModel>()))
+
+            // WHEN
+            val viewModel = initViewModel(TapToPaySummaryFragment.TestTapToPayFlow.AfterPayment(order))
+
+            // THEN
+            assertThat(viewModel.event.value).isInstanceOf(
+                TapToPaySummaryViewModel.ShowSuccessfulRefundNotification::class.java
+            )
+        }
+
+    @Test
     fun `given try ttp payment flow and autorefund success, when vm created, then UIState loading true and then false`() =
         testBlocking {
             // GIVEN
@@ -212,7 +268,7 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
                 refundStore.createAmountRefund(
                     selectedSite.get(),
                     order.id,
-                    order.total,
+                    BigDecimal(0.5),
                     "Test Tap To Pay payment auto refund",
                     true,
                 )
@@ -239,7 +295,7 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
                 refundStore.createAmountRefund(
                     selectedSite.get(),
                     order.id,
-                    order.total,
+                    BigDecimal(0.5),
                     "Test Tap To Pay payment auto refund",
                     true,
                 )
@@ -261,7 +317,7 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
                 refundStore.createAmountRefund(
                     selectedSite.get(),
                     order.id,
-                    order.total,
+                    BigDecimal(0.5),
                     "Test Tap To Pay payment auto refund",
                     true,
                 )
