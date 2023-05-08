@@ -47,6 +47,9 @@ fun PrivacySettingsScreen(
         state,
         onAnalyticsSettingChanged = viewModel::onSendStatsSettingChanged,
         onReportCrashesChanged = viewModel::onCrashReportingSettingChanged,
+        onAdvertisingOptionsClicked = viewModel::onAdvertisingOptionsClicked,
+        onPrivacyPolicyClicked = viewModel::onPrivacyPolicyClicked,
+        onCookiePolicyClicked = viewModel::onCookiePolicyClicked,
     )
 }
 
@@ -55,6 +58,9 @@ fun PrivacySettingsScreen(
     state: PrivacySettingsViewModel.State,
     onAnalyticsSettingChanged: (Boolean) -> Unit,
     onReportCrashesChanged: (Boolean) -> Unit,
+    onAdvertisingOptionsClicked: () -> Unit,
+    onPrivacyPolicyClicked: () -> Unit,
+    onCookiePolicyClicked: () -> Unit,
 ) {
     Scaffold { paddingValues ->
         Column(
@@ -89,8 +95,7 @@ fun PrivacySettingsScreen(
                 actionContent = {
                     IconButton(
                         modifier = Modifier.padding(start = 8.dp),
-                        onClick = { /*TODO*/
-                        }
+                        onClick = onAdvertisingOptionsClicked
                     ) {
                         Icon(
                             imageVector = OpenInNew,
@@ -99,7 +104,10 @@ fun PrivacySettingsScreen(
                     }
                 }
             )
-            ExplanationText()
+            ExplanationText(
+                onPrivacyPolicyClicked = onPrivacyPolicyClicked,
+                onCookiePolicyClicked = onCookiePolicyClicked
+            )
             OptionCard(
                 sectionHeader = stringResource(R.string.settings_reports_header),
                 sectionTitle = stringResource(R.string.settings_reports_report_crashes),
@@ -119,45 +127,58 @@ fun PrivacySettingsScreen(
     }
 }
 
+private const val COOKIES_TAG = "cookies"
+private const val PRIVACY_TAG = "privacy"
+
 @Composable
-private fun ExplanationText() {
-    val privacyPolicyPart = stringResource(R.string.settings_advertising_options_explanation_privacy_policy)
-    val cookiePolicyPart = stringResource(R.string.settings_advertising_options_explanation_cookie_policy)
-    val formattedString =
-        stringResource(R.string.settings_advertising_options_explanation, privacyPolicyPart, cookiePolicyPart)
-    val annotatedString = AnnotatedString.Builder(formattedString).apply {
-        addStyle(
-            SpanStyle(color = MaterialTheme.colors.onBackground),
-            0,
-            formattedString.length
+private fun ExplanationText(
+    onPrivacyPolicyClicked: () -> Unit,
+    onCookiePolicyClicked: () -> Unit,
+) {
+    val privacyText =
+        stringResource(R.string.settings_advertising_options_explanation_privacy_policy)
+    val cookieText = stringResource(R.string.settings_advertising_options_explanation_cookie_policy)
+    val explanation = stringResource(
+        R.string.settings_advertising_options_explanation, privacyText, cookieText
+    )
+    val annotatedString = AnnotatedString.Builder(explanation).apply {
+        val defaultSpanStyle = SpanStyle(color = MaterialTheme.colors.onBackground)
+        val linkSpanStyle = SpanStyle(
+            textDecoration = TextDecoration.Underline,
+            color = MaterialTheme.colors.primary
         )
-        addStyle(
-            SpanStyle(
-                textDecoration = TextDecoration.Underline,
-                color = MaterialTheme.colors.primary,
-            ),
-            formattedString.indexOf(cookiePolicyPart),
-            formattedString.indexOf(cookiePolicyPart) + cookiePolicyPart.length
-        )
-        addStyle(
-            SpanStyle(
-                textDecoration = TextDecoration.Underline,
-                color = MaterialTheme.colors.primary,
-            ),
-            formattedString.indexOf(privacyPolicyPart),
-            formattedString.indexOf(privacyPolicyPart) + privacyPolicyPart.length
+
+        addStyle(defaultSpanStyle, 0, explanation.length)
+
+        val privacyPolicyRange =
+            explanation.indexOf(privacyText)..explanation.indexOf(privacyText) + privacyText.length
+        val cookiePolicyRange =
+            explanation.indexOf(cookieText)..explanation.indexOf(cookieText) + cookieText.length
+
+        addStyle(linkSpanStyle, privacyPolicyRange.first, privacyPolicyRange.last)
+        addStyle(linkSpanStyle, cookiePolicyRange.first, cookiePolicyRange.last)
+
+        addStringAnnotation(
+            PRIVACY_TAG,
+            explanation,
+            privacyPolicyRange.first,
+            privacyPolicyRange.last
         )
         addStringAnnotation(
-            "",
-            formattedString,
-            formattedString.indexOf(cookiePolicyPart),
-            formattedString.indexOf(cookiePolicyPart) + cookiePolicyPart.length
+            COOKIES_TAG,
+            explanation,
+            cookiePolicyRange.first,
+            cookiePolicyRange.last
         )
     }.toAnnotatedString()
 
     ClickableText(
         text = annotatedString,
-        onClick = {
+        onClick = { offset ->
+            annotatedString.getStringAnnotations(PRIVACY_TAG, offset, offset).firstOrNull()
+                ?.let { onPrivacyPolicyClicked.invoke() }
+            annotatedString.getStringAnnotations(COOKIES_TAG, offset, offset).firstOrNull()
+                ?.let { onCookiePolicyClicked.invoke() }
         },
         modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
         style = MaterialTheme.typography.caption,
@@ -175,8 +196,7 @@ private fun OptionCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 16.dp),
-        elevation = 4.dp,
-        content = {
+        elevation = 4.dp, content = {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
                     text = sectionHeader,
@@ -224,10 +244,9 @@ private fun Default() {
     WooThemeWithBackground {
         PrivacySettingsScreen(
             state = PrivacySettingsViewModel.State(
-                sendUsageStats = true,
-                crashReportingEnabled = false
+                sendUsageStats = true, crashReportingEnabled = false
             ),
-            {}, {}
+            {}, {}, {}, {}, {}
         )
     }
 }

@@ -103,17 +103,14 @@ class PrivacySettingsViewModel @Inject constructor(
         }
     }
 
-    fun onLearnMoreShareInfoClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.PRIVACY_SETTINGS_SHARE_INFO_LINK_TAPPED)
-        triggerEvent(PrivacySettingsEvent.ShowCookiePolicy)
-    }
-
     fun onPrivacyPolicyClicked() {
         AnalyticsTracker.track(AnalyticsEvent.PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED)
         triggerEvent(PrivacySettingsEvent.ShowPrivacyPolicy)
     }
 
-    fun onLearnMoreThirdPartyClicked() {
+    fun onAdvertisingOptionsClicked() = Unit
+
+    fun onCookiePolicyClicked() {
         AnalyticsTracker.track(AnalyticsEvent.PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED)
         triggerEvent(PrivacySettingsEvent.ShowCookiePolicy)
     }
