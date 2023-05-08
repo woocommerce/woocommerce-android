@@ -13,6 +13,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Switch
@@ -28,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.icons.OpenInNew
 
 @Composable
 fun PrivacySettingsScreen(
@@ -60,84 +63,112 @@ fun PrivacySettingsScreen(
                 text = stringResource(R.string.settings_privacy_statement),
                 modifier = Modifier.padding(16.dp)
             )
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                elevation = 8.dp,
-                content = {
-                    Column {
-                        OptionRow(
-                            switchChecked = state.sendUsageStats,
-                            onAnalyticsSettingChanged,
-                            sectionHeader = stringResource(R.string.settings_tracking_header),
-                            sectionTitle = stringResource(R.string.settings_tracking_analytics),
-                            sectionDescription = stringResource(R.string.settings_tracking_analytics_description),
-                        )
-                        OptionRow(
-                            switchChecked = state.crashReportingEnabled,
-                            onReportCrashesChanged,
-                            sectionHeader = stringResource(R.string.settings_reports_header),
-                            sectionTitle = stringResource(R.string.settings_reports_report_crashes),
-                            sectionDescription = stringResource(R.string.settings_reports_report_crashes_description),
+            OptionCard(
+                sectionHeader = stringResource(R.string.settings_tracking_header),
+                sectionTitle = stringResource(R.string.settings_tracking_analytics),
+                sectionDescription = stringResource(R.string.settings_tracking_analytics_description),
+                actionContent = {
+                    Switch(
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = MaterialTheme.colors.primary
+                        ),
+                        modifier = Modifier.padding(start = 8.dp),
+                        checked = state.sendUsageStats,
+                        onCheckedChange = onAnalyticsSettingChanged,
+                    )
+                }
+            )
+            OptionCard(
+                sectionHeader = stringResource(R.string.settings_more_privacy_options_header),
+                sectionTitle = stringResource(R.string.settings_advertising_options),
+                sectionDescription = stringResource(R.string.settings_advertising_options_description),
+                actionContent = {
+                    IconButton(
+                        modifier = Modifier.padding(start = 8.dp),
+                        onClick = { /*TODO*/
+                        }
+                    ) {
+                        Icon(
+                            imageVector = OpenInNew,
+                            contentDescription = stringResource(id = R.string.cancel)
                         )
                     }
-                },
+                }
+            )
+            Text(
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                style = MaterialTheme.typography.caption,
+                text = stringResource(R.string.settings_advertising_options_explanation)
+            )
+            OptionCard(
+                sectionHeader = stringResource(R.string.settings_reports_header),
+                sectionTitle = stringResource(R.string.settings_reports_report_crashes),
+                sectionDescription = stringResource(R.string.settings_reports_report_crashes_description),
+                actionContent = {
+                    Switch(
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = MaterialTheme.colors.primary
+                        ),
+                        modifier = Modifier.padding(start = 8.dp),
+                        checked = state.crashReportingEnabled,
+                        onCheckedChange = onReportCrashesChanged,
+                    )
+                }
             )
         }
     }
 }
 
 @Composable
-private fun OptionRow(
-    switchChecked: Boolean,
-    onSwitchChanged: (Boolean) -> Unit,
+private fun OptionCard(
     sectionHeader: String,
     sectionTitle: String,
     sectionDescription: String,
+    actionContent: @Composable () -> Unit,
 ) {
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text(
-            text = sectionHeader,
-            style = MaterialTheme.typography.caption,
-            modifier = Modifier.padding(bottom = 16.dp),
-            color = MaterialTheme.colors.primary,
-        )
-        Row(
-            modifier = Modifier
-                .height(IntrinsicSize.Min)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 16.dp)
-            ) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp),
+        elevation = 4.dp,
+        content = {
+            Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = sectionTitle,
-                )
-                Text(
+                    text = sectionHeader,
                     style = MaterialTheme.typography.caption,
-                    text = sectionDescription,
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    color = MaterialTheme.colors.primary,
                 )
+                Row(
+                    modifier = Modifier
+                        .height(IntrinsicSize.Min)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 16.dp)
+                    ) {
+                        Text(
+                            text = sectionTitle,
+                        )
+                        Text(
+                            style = MaterialTheme.typography.caption,
+                            text = sectionDescription,
+                        )
+                    }
+                    Divider(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .padding(vertical = 8.dp)
+                            .width(1.dp)
+                    )
+                    actionContent()
+                }
             }
-            Divider(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(vertical = 8.dp)
-                    .width(1.dp)
-            )
-            Switch(
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = MaterialTheme.colors.primary
-                ),
-                modifier = Modifier.padding(start = 8.dp),
-                checked = switchChecked,
-                onCheckedChange = onSwitchChanged,
-            )
         }
-    }
+    )
 }
 
 @Preview(name = "Light mode")
