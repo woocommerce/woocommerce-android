@@ -56,7 +56,7 @@ class StoreOnboardingViewModel @Inject constructor(
             onboardingRepository.observeOnboardingTasks()
                 .collectLatest { tasks ->
                     _viewState.value = OnboardingState(
-                        show = shouldShowOnboarding(tasks),
+                        show = shouldShowOnboarding.showForTasks(tasks),
                         title = R.string.store_onboarding_title,
                         tasks = tasks.map { mapToOnboardingTaskState(it) },
                     )

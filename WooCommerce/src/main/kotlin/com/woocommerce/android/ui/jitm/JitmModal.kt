@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.jitm
 
 import android.content.res.Configuration
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
+import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
@@ -57,9 +59,13 @@ fun JitmModal(state: JitmState.Modal) {
                 ) {
                     AsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
-                            .data(state.backgroundImageUrl)
+                            .data(
+                                if (isSystemInDarkTheme()) state.backgroundDarkImageUrl
+                                else state.backgroundLightImageUrl
+                            )
                             .fallback(R.drawable.img_woo_generic_error)
                             .error(R.drawable.img_woo_generic_error)
+                            .decoderFactory(SvgDecoder.Factory())
                             .build(),
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
@@ -127,7 +133,8 @@ fun JitmDialogPreview() {
                 title = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_title),
                 description = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_description),
                 primaryActionLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_cta),
-                backgroundImageUrl = "",
+                backgroundLightImageUrl = "",
+                backgroundDarkImageUrl = ""
             )
         )
     }

@@ -1,2 +1,0 @@
-13.3:
-İngiltereliler, şahsen ödemelere merhaba deyin! Şu anda WooCommerce Payments'ı kullanan İngiltereli satıcıların artık şahsen ödemeleri de kabul edebileceğini duyurmaktan heyecan duyuyoruz. Bu sürüm aynı zamanda Composite Products kullanan satıcılar için salt okunur destek içerir. Harika geri bildirimleriniz için herkese tekrar teşekkür ederim. Devam edin!

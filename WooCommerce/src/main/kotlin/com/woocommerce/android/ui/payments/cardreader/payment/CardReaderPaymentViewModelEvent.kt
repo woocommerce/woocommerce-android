@@ -8,3 +8,5 @@ class ShowSnackbarInDialog(@StringRes val message: Int) : Event()
 object PlayChaChing : Event()
 
 object InteracRefundSuccessful : Event()
+
+object ContactSupport : Event()

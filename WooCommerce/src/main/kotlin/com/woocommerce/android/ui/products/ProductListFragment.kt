@@ -261,14 +261,14 @@ class ProductListFragment :
 
             val isSearchActive = viewModel.viewStateLiveData.liveData.value?.isSearchActive == true
             if (menuItem.isActionViewExpanded != isSearchActive) {
-                disableSearchListeners()
                 if (isSearchActive) {
+                    disableSearchListeners()
                     menuItem.expandActionView()
-                    searchView?.setQuery(viewModel.viewStateLiveData.liveData.value?.query, false)
                     val queryHint = getSearchQueryHint()
                     searchView?.queryHint = queryHint
+                    searchView?.setQuery(viewModel.viewStateLiveData.liveData.value?.query, false)
+                    enableSearchListeners()
                 }
-                enableSearchListeners()
             }
         }
     }
@@ -645,6 +645,7 @@ class ProductListFragment :
 
     private fun onProductClick(remoteProductId: Long, sharedView: View?) {
         if (shouldPreventDetailNavigation(remoteProductId)) return
+        disableSearchListeners()
         (activity as? MainNavigationRouter)?.let { router ->
             if (sharedView == null) {
                 router.showProductDetail(remoteProductId, enableTrash = true)

@@ -27,6 +27,10 @@ abstract class CardReaderHubViewHolder(val parent: ViewGroup, @LayoutRes layout:
             binding.cardReaderHubListItemLabelTv.text = UiHelpers.getTextOfUiString(itemView.context, uiState.label)
             UiHelpers.setTextOrHide(binding.cardReaderHubListItemDescriptionTv, uiState.description)
             binding.cardReaderMenuIcon.setImageResource(uiState.icon)
+            UiHelpers.setDrawableOrHide(
+                binding.cardReaderHubBadgeIcon,
+                uiState.iconBadge?.let { AppCompatResources.getDrawable(parent.context, it) }
+            )
 
             if (uiState.isEnabled) {
                 binding.root.setOnClickListener { uiState.onClick.invoke() }

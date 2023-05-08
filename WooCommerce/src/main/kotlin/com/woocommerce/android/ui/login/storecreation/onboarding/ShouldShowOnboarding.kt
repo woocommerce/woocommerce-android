@@ -16,7 +16,6 @@ import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboarding
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.PAYMENTS
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.WC_PAYMENTS
 import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.WooLog
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -28,14 +27,13 @@ class ShouldShowOnboarding @Inject constructor(
 ) {
     private var pendingTasks: List<OnboardingTask> = emptyList()
 
-    operator fun invoke(tasks: List<OnboardingTask>): Boolean {
+    fun showForTasks(tasks: List<OnboardingTask>): Boolean {
         if (tasks.isEmpty()) return false
 
         pendingTasks = tasks.filter { !it.isComplete }
 
         val siteId = selectedSite.getSelectedSiteId()
         val areAllTaskCompleted = if (tasks.all { it.isComplete }) {
-            WooLog.d(WooLog.T.ONBOARDING, "All onboarding tasks are completed for siteId: $siteId")
             appPrefsWrapper.markAllOnboardingTasksCompleted(siteId)
             if (appPrefsWrapper.getStoreOnboardingShown(siteId)) {
                 analyticsTrackerWrapper.track(stat = STORE_ONBOARDING_COMPLETED)
