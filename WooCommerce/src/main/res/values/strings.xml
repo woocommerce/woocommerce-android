@@ -1914,6 +1914,12 @@
     <string name="settings_tracking_header">Tracking</string>
     <string name="settings_tracking_analytics">Analytics</string>
     <string name="settings_tracking_analytics_description">These cookies allow us to optimize performance by collecting information on how users interact with our mobile apps.</string>
+    <string name="settings_more_privacy_options_header">More privacy options</string>
+    <string name="settings_advertising_options">Advertising Options</string>
+    <string name="settings_advertising_options_description">More Privacy Options Available. Check here to learn more.</string>
+    <string name="settings_advertising_options_explanation">To learn more about how we use your data to optimize our mobile apps, enhance your experience, and deliver relevant marketing, learn more in our %1$s and %2$s.</string>
+    <string name="settings_advertising_options_explanation_privacy_policy">Privacy Policy</string>
+    <string name="settings_advertising_options_explanation_cookie_policy">Cookie Policy</string>
     <string name="settings_reports_header">Reports</string>
     <string name="settings_reports_report_crashes">Report Crashes</string>
     <string name="settings_reports_report_crashes_description">To help us improve the app’s performance and fix the occasional bug, enable automatic crash report.</string>
@@ -3265,8 +3271,4 @@
     <string name="shipping_notice_banner_content">When shipping to countries that follow European Union (EU) customs rules, you must provide a clear, specific description of every item. Otherwise, shipments may be delayed or interrupted at customs.</string>
     <string name="shipping_notice_learn_more">Learn More</string>
     <string name="shipping_notice_dismiss">Dismiss</string>
-    <string name="settings_more_privacy_options_header">More privacy options</string>
-    <string name="settings_advertising_options">Advertising Options</string>
-    <string name="settings_advertising_options_description">More Privacy Options Available. Check here to learn more.</string>
-    <string name="settings_advertising_options_explanation">To learn more about how we use your data to optimize our mobile apps, enhance your experience, and deliver relevant marketing, learn more in our Privacy Policy and Cookie Policy.</string>
 </resources>

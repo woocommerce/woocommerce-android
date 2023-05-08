@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
@@ -26,6 +27,9 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -34,7 +38,7 @@ import com.woocommerce.android.ui.icons.OpenInNew
 
 @Composable
 fun PrivacySettingsScreen(
-    viewModel: PrivacySettingsViewModel
+    viewModel: PrivacySettingsViewModel,
 ) {
     val state: PrivacySettingsViewModel.State by viewModel.state.observeAsState(
         PrivacySettingsViewModel.State(sendUsageStats = false, crashReportingEnabled = false)
@@ -95,11 +99,7 @@ fun PrivacySettingsScreen(
                     }
                 }
             )
-            Text(
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-                style = MaterialTheme.typography.caption,
-                text = stringResource(R.string.settings_advertising_options_explanation)
-            )
+            ExplanationText()
             OptionCard(
                 sectionHeader = stringResource(R.string.settings_reports_header),
                 sectionTitle = stringResource(R.string.settings_reports_report_crashes),
@@ -117,6 +117,51 @@ fun PrivacySettingsScreen(
             )
         }
     }
+}
+
+@Composable
+private fun ExplanationText() {
+    val privacyPolicyPart = stringResource(R.string.settings_advertising_options_explanation_privacy_policy)
+    val cookiePolicyPart = stringResource(R.string.settings_advertising_options_explanation_cookie_policy)
+    val formattedString =
+        stringResource(R.string.settings_advertising_options_explanation, privacyPolicyPart, cookiePolicyPart)
+    val annotatedString = AnnotatedString.Builder(formattedString).apply {
+        addStyle(
+            SpanStyle(color = MaterialTheme.colors.onBackground),
+            0,
+            formattedString.length
+        )
+        addStyle(
+            SpanStyle(
+                textDecoration = TextDecoration.Underline,
+                color = MaterialTheme.colors.primary,
+            ),
+            formattedString.indexOf(cookiePolicyPart),
+            formattedString.indexOf(cookiePolicyPart) + cookiePolicyPart.length
+        )
+        addStyle(
+            SpanStyle(
+                textDecoration = TextDecoration.Underline,
+                color = MaterialTheme.colors.primary,
+            ),
+            formattedString.indexOf(privacyPolicyPart),
+            formattedString.indexOf(privacyPolicyPart) + privacyPolicyPart.length
+        )
+        addStringAnnotation(
+            "",
+            formattedString,
+            formattedString.indexOf(cookiePolicyPart),
+            formattedString.indexOf(cookiePolicyPart) + cookiePolicyPart.length
+        )
+    }.toAnnotatedString()
+
+    ClickableText(
+        text = annotatedString,
+        onClick = {
+        },
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+        style = MaterialTheme.typography.caption,
+    )
 }
 
 @Composable
