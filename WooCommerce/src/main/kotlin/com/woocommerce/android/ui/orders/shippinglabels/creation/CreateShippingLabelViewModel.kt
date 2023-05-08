@@ -138,6 +138,8 @@ import java.math.BigDecimal
 import java.text.DecimalFormat
 import javax.inject.Inject
 import kotlin.system.measureTimeMillis
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.onEach
 
 @HiltViewModel
 class CreateShippingLabelViewModel @Inject constructor(
@@ -170,9 +172,10 @@ class CreateShippingLabelViewModel @Inject constructor(
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
-    val shouldDisplayShippingNotice = checkEUShippingScenario(
-        stateMachine.transitions
-    ).asLiveData()
+    val shouldDisplayShippingNotice = checkEUShippingScenario(stateMachine.transitions)
+        .distinctUntilChanged()
+        .onEach { if (it) AnalyticsTracker.track(AnalyticsEvent.EU_SHIPPING_NOTICE_SHOWN) }
+        .asLiveData()
 
     init {
         initializeStateMachine()
