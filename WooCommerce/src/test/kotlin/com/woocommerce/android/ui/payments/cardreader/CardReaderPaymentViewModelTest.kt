@@ -4081,12 +4081,12 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             verify(tracker).trackPaymentFailed("VM killed when TTP activity in foreground")
             val state = viewModel.viewStateData.value as BuiltInReaderFailedPaymentState
-            assertThat(state.primaryActionLabel).isEqualTo(R.string.card_reader_payment_payment_failed_ok)
+            assertThat(state.primaryActionLabel).isEqualTo(R.string.support_contact)
+            assertThat(state.secondaryActionLabel).isEqualTo(R.string.cancel)
             assertThat(state.paymentStateLabel).isEqualTo(
                 UiStringRes(R.string.card_reader_payment_vm_killed_when_tpp_in_foreground)
             )
             assertThat(state.hintLabel).isNull()
-            assertThat(state.secondaryActionLabel).isNull()
         }
 
     private suspend fun simulateFetchOrderJobState(inProgress: Boolean) {

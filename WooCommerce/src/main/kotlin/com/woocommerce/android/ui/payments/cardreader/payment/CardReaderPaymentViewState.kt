@@ -347,7 +347,7 @@ sealed class PaymentFlowError(val message: UiString) {
 
         object AppKilledWhileInBackground :
             BuiltInReader(R.string.card_reader_payment_vm_killed_when_tpp_in_foreground),
-            NonRetryableError
+            ContactSupportError
     }
 
     interface NonRetryableError
