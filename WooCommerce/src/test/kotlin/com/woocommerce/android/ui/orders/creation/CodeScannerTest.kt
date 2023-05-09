@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.creation
 
+import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -56,7 +57,7 @@ class CodeScannerTest : BaseUnitTest() {
             whenever(mockBarcode.addOnSuccessListener(any())).thenAnswer {
                 @Suppress("UNCHECKED_CAST")
                 (it.arguments[0] as OnSuccessListener<Barcode>).onSuccess(
-                    mock() {
+                    mock {
                         on {
                             rawValue
                         }.thenReturn(barcodeRawValue)
@@ -87,6 +88,26 @@ class CodeScannerTest : BaseUnitTest() {
             val result = codeScanner.startScan().toList()
 
             assertThat(result.size).isEqualTo(1)
+        }
+    }
+
+    @Test
+    fun `when scanning code fails, then failure is emitted`() {
+        testBlocking {
+            val mockBarcode = mock<Task<Barcode>>()
+            whenever(scanner.startScan()).thenAnswer {
+                mockBarcode
+            }
+            whenever(mockBarcode.addOnSuccessListener(any())).thenReturn(mockBarcode)
+            whenever(mockBarcode.addOnFailureListener(any())).thenAnswer {
+                @Suppress("UNCHECKED_CAST")
+                (it.arguments[0] as OnFailureListener).onFailure(mock())
+                mock<Task<Barcode>>()
+            }
+
+            val result = codeScanner.startScan().first()
+
+            assertThat(result).isExactlyInstanceOf(CodeScannerStatus.Failure::class.java)
         }
     }
 }
