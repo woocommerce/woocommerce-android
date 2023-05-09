@@ -44,7 +44,8 @@ fun ScanToPayScreen(
         WCColoredButton(
             modifier = Modifier
                 .fillMaxWidth(),
-            onClick = { onDoneClicked() }) {
+            onClick = { onDoneClicked() }
+        ) {
             Text(text = stringResource(id = R.string.done))
         }
     }

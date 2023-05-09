@@ -73,38 +73,7 @@ private fun rememberQrBitmapPainter(
         if (bitmap != null) return@LaunchedEffect
 
         launch(Dispatchers.IO) {
-            val bitmapMatrix = try {
-                MultiFormatWriter().encode(
-                    content,
-                    BarcodeFormat.QR_CODE,
-                    sizePx,
-                    sizePx,
-                    mapOf(
-                        EncodeHintType.ERROR_CORRECTION to ErrorCorrectionLevel.H,
-                        EncodeHintType.MARGIN to 0,
-                    )
-                )
-            } catch (ex: WriterException) {
-                WooLog.e(WooLog.T.CARD_READER, "Error generating QR code", ex)
-                null
-            }
-
-            val matrixWidth = bitmapMatrix?.width ?: sizePx
-            val matrixHeight = bitmapMatrix?.height ?: sizePx
-
-            val newBitmap = Bitmap.createBitmap(
-                bitmapMatrix?.width ?: sizePx,
-                bitmapMatrix?.height ?: sizePx,
-                Bitmap.Config.ARGB_8888,
-            )
-
-            for (x in 0 until matrixWidth) {
-                for (y in 0 until matrixHeight) {
-                    val shouldColorPixel = bitmapMatrix?.get(x, y) ?: false
-                    if (!shouldColorPixel) continue
-                    newBitmap.setPixel(x, y, pixelColor)
-                }
-            }
+            val newBitmap = generateQr(content, sizePx, pixelColor)
 
             bitmap = newBitmap
         }
@@ -126,16 +95,55 @@ private fun rememberQrBitmapPainter(
     }
 }
 
+private fun generateQr(content: String, sizePx: Int, pixelColor: Int): Bitmap? {
+    val bitmapMatrix = try {
+        MultiFormatWriter().encode(
+            content,
+            BarcodeFormat.QR_CODE,
+            sizePx,
+            sizePx,
+            mapOf(
+                EncodeHintType.ERROR_CORRECTION to ErrorCorrectionLevel.H,
+                EncodeHintType.MARGIN to 0,
+            )
+        )
+    } catch (ex: WriterException) {
+        WooLog.e(WooLog.T.CARD_READER, "Error generating QR code", ex)
+        null
+    }
+
+    val matrixWidth = bitmapMatrix?.width ?: sizePx
+    val matrixHeight = bitmapMatrix?.height ?: sizePx
+
+    val newBitmap = Bitmap.createBitmap(
+        bitmapMatrix?.width ?: sizePx,
+        bitmapMatrix?.height ?: sizePx,
+        Bitmap.Config.ARGB_8888,
+    )
+
+    for (x in 0 until matrixWidth) {
+        for (y in 0 until matrixHeight) {
+            val shouldColorPixel = bitmapMatrix?.get(x, y) ?: false
+            if (!shouldColorPixel) continue
+            newBitmap.setPixel(x, y, pixelColor)
+        }
+    }
+    return newBitmap
+}
+
 private fun Bitmap.addOverlayToCenter(overlayBitmap: Bitmap): Bitmap {
     val bitmap2Width = overlayBitmap.width
     val bitmap2Height = overlayBitmap.height
-    val marginLeft = (width * 0.5 - bitmap2Width * 0.5).toFloat()
-    val marginTop = (height * 0.5 - bitmap2Height * 0.5).toFloat()
+    val marginLeft = (width * HALF - bitmap2Width * HALF).toFloat()
+    val marginTop = (height * HALF - bitmap2Height * HALF).toFloat()
     val canvas = Canvas(this)
     canvas.drawBitmap(this, Matrix(), null)
-    canvas.drawBitmap(overlayBitmap, marginLeft, marginTop, Paint().apply { alpha = 230 })
+    canvas.drawBitmap(overlayBitmap, marginLeft, marginTop, Paint().apply { alpha = OVERLAY_ALPHA })
     return this
 }
+
+private const val HALF = 0.5
+private const val OVERLAY_ALPHA = 230
 
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
