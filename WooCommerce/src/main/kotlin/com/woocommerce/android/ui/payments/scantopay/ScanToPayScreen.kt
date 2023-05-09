@@ -38,9 +38,9 @@ fun ScanToPayScreen(
             style = MaterialTheme.typography.subtitle2,
             textAlign = TextAlign.Center,
         )
-        Spacer(modifier = Modifier.height(16.dp))
-        QRCode(content = qrContent, size = 250.dp)
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
+        QRCode(content = qrContent, size = 290.dp)
+        Spacer(modifier = Modifier.height(12.dp))
         WCColoredButton(
             modifier = Modifier
                 .fillMaxWidth(),

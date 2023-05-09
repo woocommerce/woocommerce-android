@@ -118,7 +118,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
         }
 
         with(binding.tvScanToPay) {
-            isVisible = state.isScanToPayAvailable
+            isVisible = state.isScanToPayAvailable && state.paymentUrl.isNotEmpty()
             setOnClickListener { viewModel.onScanToPayClicked() }
         }
         binding.dividerAfterScanToPay.isVisible = state.isScanToPayAvailable
