@@ -808,8 +808,6 @@ Language: nl
     <string name="coupon_details_copy_error">Fout bij kopiëren van couponcode naar klembord.</string>
     <string name="coupon_details_copy_success">Couponcode gekopieerd naar klembord.</string>
     <string name="coupon_details_copy_clipboard_label">Couponcode</string>
-    <string name="coupon_beta_features_subheading">Probeer het beheer van coupons uit in de app</string>
-    <string name="coupon_beta_features_heading">Couponbeheer</string>
     <string name="coupon_summary_loading_failure">Laden van couponoverzicht mislukt</string>
     <string name="coupon_details_expiration_date">Verloopt %1$s</string>
     <string name="coupon_summary_template">%1$s korting %2$s</string>
@@ -821,7 +819,6 @@ Language: nl
     <string name="coupon_details_menu_share">Coupon delen</string>
     <string name="coupon_details_menu_copy">Couponcode kopiëren</string>
     <string name="inbox_note_survey_actioned">Bedankt voor je feedback!</string>
-    <string name="beta_features_coupons">Couponbeheer</string>
     <string name="card_reader_connect_permission_rationale_hint">Kaartlezerbetalingen vereisen toestemming tot precieze locatie</string>
     <string name="card_reader_connect_permission_rationale_header">Toestemming tot locatie vereist</string>
     <string name="simple_payments_share_payment_dialog_title">Betalen - %s</string>

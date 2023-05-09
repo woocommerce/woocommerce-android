@@ -54,14 +54,12 @@ class MoreMenuViewModel @Inject constructor(
         combine(
             unseenReviewsCountHandler.observeUnseenCount(),
             selectedSite.observe().filterNotNull(),
-            moreMenuRepository.observeCouponBetaSwitch(),
             loadSitePlanName(),
             moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked,
-        ) { count, selectedSite, isCouponsEnabled, sitePlanName, paymentsFeatureWasClicked ->
+        ) { count, selectedSite, sitePlanName, paymentsFeatureWasClicked ->
             MoreMenuViewState(
                 generalMenuItems = generateGeneralMenuButtons(
                     unseenReviewsCount = count,
-                    isCouponsEnabled = isCouponsEnabled,
                     paymentsFeatureWasClicked = paymentsFeatureWasClicked,
                 ),
                 settingsMenuItems = generateSettingsMenuButtons(),
@@ -79,7 +77,6 @@ class MoreMenuViewModel @Inject constructor(
 
     private suspend fun generateGeneralMenuButtons(
         unseenReviewsCount: Int,
-        isCouponsEnabled: Boolean,
         paymentsFeatureWasClicked: Boolean,
     ) = listOf(
         MenuUiButton(
@@ -105,7 +102,6 @@ class MoreMenuViewModel @Inject constructor(
             title = R.string.more_menu_button_coupons,
             description = R.string.more_menu_button_coupons_description,
             icon = R.drawable.ic_more_menu_coupons,
-            isEnabled = isCouponsEnabled,
             onClick = ::onCouponsButtonClick
         ),
         MenuUiButton(

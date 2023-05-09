@@ -808,8 +808,6 @@ Language: ru
     <string name="coupon_details_copy_error">Ошибка при копировании кода купона в буфер обмена.</string>
     <string name="coupon_details_copy_success">Код купона скопирован в буфер обмена.</string>
     <string name="coupon_details_copy_clipboard_label">Код купона</string>
-    <string name="coupon_beta_features_subheading">Попробовать работу с купонами в приложении</string>
-    <string name="coupon_beta_features_heading">Управление купонами</string>
     <string name="coupon_summary_loading_failure">Не удалось загрузить сводку по купонам</string>
     <string name="coupon_details_expiration_date">Истекает %1$s</string>
     <string name="coupon_summary_template">Скидка %1$s %2$s</string>
@@ -821,7 +819,6 @@ Language: ru
     <string name="coupon_details_menu_share">Поделиться купоном</string>
     <string name="coupon_details_menu_copy">Копировать код купона</string>
     <string name="inbox_note_survey_actioned">Спасибо за ваш отзыв!</string>
-    <string name="beta_features_coupons">Управление купонами</string>
     <string name="card_reader_connect_permission_rationale_hint">Для платежей через устройство чтения карт необходимо разрешение определять точное местоположение</string>
     <string name="card_reader_connect_permission_rationale_header">Требуется доступ к данным о местоположении</string>
     <string name="simple_payments_share_payment_dialog_title">Оформление заказа — %s</string>

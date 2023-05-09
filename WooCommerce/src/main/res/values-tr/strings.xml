@@ -808,8 +808,6 @@ Language: tr
     <string name="coupon_details_copy_error">Kupon kodu panoya kopyalanırken hata oluştu.</string>
     <string name="coupon_details_copy_success">Kupon kodu panoya kopyalandı.</string>
     <string name="coupon_details_copy_clipboard_label">Kupon kodu</string>
-    <string name="coupon_beta_features_subheading">Uygulamadaki kuponları yönetme işlevini test edin</string>
-    <string name="coupon_beta_features_heading">Kupon Yönetimi</string>
     <string name="coupon_summary_loading_failure">Kupon özeti yüklenemedi</string>
     <string name="coupon_details_expiration_date">Son Kullanma Tarihi: %1$s</string>
     <string name="coupon_summary_template">%2$s ürününde %1$s indirim</string>
@@ -821,7 +819,6 @@ Language: tr
     <string name="coupon_details_menu_share">Kuponu Paylaş</string>
     <string name="coupon_details_menu_copy">Kupon Kodunu Kopyala</string>
     <string name="inbox_note_survey_actioned">Geri bildiriminiz için teşekkürler!</string>
-    <string name="beta_features_coupons">Kupon Yönetimi</string>
     <string name="card_reader_connect_permission_rationale_hint">Kart okuyucu ödemeleri kesin konum izni gerektirir</string>
     <string name="card_reader_connect_permission_rationale_header">Konum Erişimi Gerekli</string>
     <string name="simple_payments_share_payment_dialog_title">Ödeme - %s</string>

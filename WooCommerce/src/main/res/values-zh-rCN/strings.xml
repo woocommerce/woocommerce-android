@@ -808,8 +808,6 @@ Language: zh_CN
     <string name="coupon_details_copy_error">将优惠券代码复制到剪贴板时出错。</string>
     <string name="coupon_details_copy_success">已将优惠券代码复制到剪贴板。</string>
     <string name="coupon_details_copy_clipboard_label">优惠券代码</string>
-    <string name="coupon_beta_features_subheading">在应用程序中测试管理优惠券</string>
-    <string name="coupon_beta_features_heading">优惠券管理</string>
     <string name="coupon_summary_loading_failure">加载优惠券汇总失败</string>
     <string name="coupon_details_expiration_date">到期日期 %1$s</string>
     <string name="coupon_summary_template">%1$s 的优惠 %2$s</string>
@@ -821,7 +819,6 @@ Language: zh_CN
     <string name="coupon_details_menu_share">共享优惠券</string>
     <string name="coupon_details_menu_copy">复制优惠券代码</string>
     <string name="inbox_note_survey_actioned">感谢您的反馈！</string>
-    <string name="beta_features_coupons">优惠券管理</string>
     <string name="card_reader_connect_permission_rationale_hint">读卡器付款需要访问确切位置的权限</string>
     <string name="card_reader_connect_permission_rationale_header">需要位置访问权限</string>
     <string name="simple_payments_share_payment_dialog_title">结账 - %s</string>

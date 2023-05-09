@@ -808,8 +808,6 @@ Language: id
     <string name="coupon_details_copy_error">Error saat menyalin kode kupon ke clipboard.</string>
     <string name="coupon_details_copy_success">Kode kupon disalin ke clipboard.</string>
     <string name="coupon_details_copy_clipboard_label">Kode Kupon</string>
-    <string name="coupon_beta_features_subheading">Coba kelola kupon di aplikasi</string>
-    <string name="coupon_beta_features_heading">Pengelolaan Kupon</string>
     <string name="coupon_summary_loading_failure">Gagal memuat ringkasan kupon</string>
     <string name="coupon_details_expiration_date">Kedaluwarsa %1$s</string>
     <string name="coupon_summary_template">%1$sDiskon %2$s</string>
@@ -821,7 +819,6 @@ Language: id
     <string name="coupon_details_menu_share">Bagikan Kupon</string>
     <string name="coupon_details_menu_copy">Salin Kode Kupon</string>
     <string name="inbox_note_survey_actioned">Terima kasih atas masukan Anda!</string>
-    <string name="beta_features_coupons">Pengelolaan Kupon</string>
     <string name="card_reader_connect_permission_rationale_hint">Pembayaran pembaca kartu memerlukan izin lokasi yang tepat</string>
     <string name="card_reader_connect_permission_rationale_header">Akses Lokasi Diperlukan</string>
     <string name="simple_payments_share_payment_dialog_title">Checkout - %s</string>

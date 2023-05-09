@@ -808,8 +808,6 @@ Language: sv_SE
     <string name="coupon_details_copy_error">Det gick inte att kopiera rabattkoden till urklipp.</string>
     <string name="coupon_details_copy_success">Rabattkod kopierad till urklipp.</string>
     <string name="coupon_details_copy_clipboard_label">Rabattkod</string>
-    <string name="coupon_beta_features_subheading">Testa att hantera rabattkoder i appen</string>
-    <string name="coupon_beta_features_heading">Hantering av rabattkoder</string>
     <string name="coupon_summary_loading_failure">Det gick inte att ladda rabattkodssammanfattningen</string>
     <string name="coupon_details_expiration_date">Löper ut %1$s</string>
     <string name="coupon_summary_template">%1$s rabatt på %2$s</string>
@@ -821,7 +819,6 @@ Language: sv_SE
     <string name="coupon_details_menu_share">Dela rabattkod</string>
     <string name="coupon_details_menu_copy">Kopiera rabattkod</string>
     <string name="inbox_note_survey_actioned">Tack för din feedback!</string>
-    <string name="beta_features_coupons">Hantering av rabattkoder</string>
     <string name="card_reader_connect_permission_rationale_hint">Kortläsarbetalningar kräver exakt platsbehörighet</string>
     <string name="card_reader_connect_permission_rationale_header">Åtkomst till plats krävs</string>
     <string name="simple_payments_share_payment_dialog_title">Kassa – %s</string>

@@ -808,8 +808,6 @@ Language: it
     <string name="coupon_details_copy_error">Errore durante la copia del codice promozionale negli appunti.</string>
     <string name="coupon_details_copy_success">Codice promozionale copiato negli appunti.</string>
     <string name="coupon_details_copy_clipboard_label">Codice promozionale</string>
-    <string name="coupon_beta_features_subheading">Verifica la gestione dei codici promozionali nell\'app</string>
-    <string name="coupon_beta_features_heading">Gestione dei codici promozionali</string>
     <string name="coupon_summary_loading_failure">Caricamento del riepilogo dei codici promozionali non riuscito</string>
     <string name="coupon_details_expiration_date">Scade il giorno %1$s</string>
     <string name="coupon_summary_template">%1$s di sconto su %2$s</string>
@@ -821,7 +819,6 @@ Language: it
     <string name="coupon_details_menu_share">Condividi codice promozionale</string>
     <string name="coupon_details_menu_copy">Copia codice promozionale</string>
     <string name="inbox_note_survey_actioned">Grazie per il feedback!</string>
-    <string name="beta_features_coupons">Gestione dei codici promozionali</string>
     <string name="card_reader_connect_permission_rationale_hint">I pagamenti tramite il lettore di carte richiedono l\'autorizzazione della posizione precisa</string>
     <string name="card_reader_connect_permission_rationale_header">Accesso alla posizione richiesto</string>
     <string name="simple_payments_share_payment_dialog_title">Pagamento: %s</string>
