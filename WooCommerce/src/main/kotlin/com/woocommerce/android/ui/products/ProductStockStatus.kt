@@ -14,6 +14,7 @@ sealed class ProductStockStatus(@StringRes val stringResource: Int = 0, val valu
     @Parcelize object InStock : ProductStockStatus(R.string.product_stock_status_instock)
     @Parcelize object OutOfStock : ProductStockStatus(R.string.product_stock_status_out_of_stock)
     @Parcelize object OnBackorder : ProductStockStatus(R.string.product_stock_status_on_backorder)
+    @Parcelize object InsufficientStock : ProductStockStatus(R.string.product_stock_status_insufficient_stock)
     @Parcelize object NotAvailable : ProductStockStatus()
     class Custom(value: String) : ProductStockStatus(value = value)
 
@@ -31,6 +32,7 @@ sealed class ProductStockStatus(@StringRes val stringResource: Int = 0, val valu
                 "instock" -> InStock
                 "outofstock" -> OutOfStock
                 "onbackorder" -> OnBackorder
+                "insufficientstock" -> InsufficientStock
                 null, "" -> NotAvailable
                 else -> Custom(value)
             }

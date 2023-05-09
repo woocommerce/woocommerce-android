@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-28 11:54:26+0000
+Translation-Revision-Date: 2023-05-02 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="store_onboarding_setting_description">Visa eller dölj listan för butikskonfiguration</string>
+    <string name="store_onboarding_setting_title">Lista för butikskonfiguration</string>
+    <string name="store_onboarding_dialog_description">Du kan få tillbaka den vid behov från Meny &gt; Inställningar &gt; Butik</string>
+    <string name="store_onboarding_dialog_title">Dölj listan för butikskonfiguration</string>
+    <string name="store_onboarding_menu_hide_store_setup">Dölj listan för butikskonfiguration</string>
+    <string name="card_reader_tap_to_pay_successful_refund_action_label">Visa order</string>
+    <string name="card_reader_tap_to_pay_successful_refund_message">Testa Tryck för att betala-betalningen återbetalades</string>
+    <string name="card_reader_tap_to_pay_explanation_refund_failed">Återbetalningen misslyckades. Försök att återbetala manuellt</string>
+    <string name="card_reader_tap_to_pay_explanation_refunding_payment">Återbetalar testbetalning …</string>
+    <string name="signup_terms_of_service">Genom att fortsätta godkänner du våra &lt;a href=\'termsOfService\'&gt;&lt;u&gt;användarvillkor.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="signup_get_started_create_account_label">Låt oss börja med att skapa ditt konto. </string>
+    <string name="signup_create_password_label">Skapa ditt lösenord</string>
     <string name="component_type_categories">Kategorier</string>
     <string name="component_type_products">Produkter</string>
     <string name="component_default_option">Standardalternativ</string>
@@ -228,7 +240,7 @@ Language: sv_SE
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Något blev fel. Försök igen senare.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Prova en betalning</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find"> Du hittar Tryck för att betala på Android via\nMeny &gt; Betalningar, eller genom att gå till Ta emot betalning och\nvälja Tryck för att betala.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Prova att genomföra en betalning med ditt kort och\nåterbetala den när du är klar.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Prova en betalning med ditt kort och\ndet kommer att återbetalas när du är klar.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Din telefon är redo för Tryck för att betala.\nDin kund kan trycka på sitt kort\npå din telefon för att betala.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Ta emot kortbetalningar\nmed din telefon</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tryck för att betala</string>
@@ -497,14 +509,12 @@ Language: sv_SE
     <string name="signup_password_too_short">Ditt lösenord är för kort. Välj ett lösenord som har minst 6 tecken.</string>
     <string name="signup_email_invalid_input">Ange en giltig e-postadress.</string>
     <string name="signup_email_exist_input">Ett konto med denna e-post finns redan.</string>
-    <string name="signup_already_registered">Låt oss först skapa ditt konto. Redan registrerad? &lt;a href=\'login\'&gt;&lt;u&gt;Logga in&lt;/u&gt;&lt;/a&gt;</string>
     <string name="login_create_an_account">Skapa ett konto</string>
     <string name="login_try_another_email">Försök med en annan adress</string>
     <string name="date_timeframe_custom_date_range_title">Anpassat datumintervall</string>
     <string name="date_timeframe_custom">Anpassat</string>
     <string name="what_is_wordpress_link">Vad är WordPress.com?</string>
     <string name="signup_creating_account_loading_message">Skapar nytt konto</string>
-    <string name="signup_terms_of_service">Genom att fortsätta godkänner du våra &lt;u&gt;användarvillkor.&lt;/u&gt;</string>
     <string name="signup_password_hint">Välj ett lösenord</string>
     <string name="signup_email_address_hint">Din e-postadress</string>
     <string name="signup_get_started_label">Kom igång \npå några minuter</string>

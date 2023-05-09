@@ -192,6 +192,10 @@ object AppPrefs {
 
         // A phone number associated with the store (used in shipping labels)
         STORE_PHONE_NUMBER,
+
+        USER_SEEN_NEW_FEATURE_MORE_SCREEN,
+
+        USER_CLICKED_ON_PAYMENTS_MORE_SCREEN,
     }
 
     fun init(context: Context) {
@@ -845,6 +849,20 @@ object AppPrefs {
 
     fun hasOnboardingCarouselBeenDisplayed(): Boolean =
         getBoolean(ONBOARDING_CAROUSEL_DISPLAYED, false)
+
+    fun isUserSeenNewFeatureOnMoreScreen(): Boolean =
+        getBoolean(UndeletablePrefKey.USER_SEEN_NEW_FEATURE_MORE_SCREEN, false)
+
+    fun setUserSeenNewFeatureOnMoreScreen() {
+        setBoolean(UndeletablePrefKey.USER_SEEN_NEW_FEATURE_MORE_SCREEN, true)
+    }
+
+    fun isPaymentsIconWasClickedOnMoreScreen(): Boolean =
+        getBoolean(UndeletablePrefKey.USER_CLICKED_ON_PAYMENTS_MORE_SCREEN, false)
+
+    fun setPaymentsIconWasClickedOnMoreScreen() {
+        setBoolean(UndeletablePrefKey.USER_CLICKED_ON_PAYMENTS_MORE_SCREEN, true)
+    }
 
     fun setActiveStatsGranularity(currentSiteId: Int, activeStatsGranularity: String) {
         setString(getActiveStatsGranularityFilterKey(currentSiteId), activeStatsGranularity)

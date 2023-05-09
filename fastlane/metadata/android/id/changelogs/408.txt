@@ -1,2 +1,0 @@
-13.3:
-Inggris, sambutlah pembayaran langsung! Kami umumkan bahwa fitur pembayaran langsung kini hadir bagi penjual di Inggris yang menggunakan sistem Pembayaran WooCommerce. Rilis ini juga meliputi dukungan hanya baca bagi penjual yang menggunakan Produk Gabungan. Sekali lagi, terima kasih atas feedback Anda. Terus kirimkan feedback Anda!
