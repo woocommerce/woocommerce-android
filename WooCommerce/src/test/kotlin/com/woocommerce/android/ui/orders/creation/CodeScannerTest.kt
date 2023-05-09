@@ -43,4 +43,30 @@ class CodeScannerTest : BaseUnitTest() {
             Assertions.assertThat(result).isExactlyInstanceOf(CodeScannerStatus.Success::class.java)
         }
     }
+
+    @Test
+    fun `when scanning code succeeds, then proper barcode value is emitted`() {
+        testBlocking {
+            val mockBarcode = mock<Task<Barcode>>()
+            whenever(scanner.startScan()).thenAnswer {
+                mockBarcode
+            }
+            val barcodeRawValue = "12345"
+            whenever(mockBarcode.addOnSuccessListener(any())).thenAnswer {
+                @Suppress("UNCHECKED_CAST")
+                (it.arguments[0] as OnSuccessListener<Barcode>).onSuccess(
+                    mock() {
+                        on {
+                            rawValue
+                        }.thenReturn(barcodeRawValue)
+                    }
+                )
+                mock<Task<Barcode>>()
+            }
+
+            val result = codeScanner.startScan().first()
+
+            Assertions.assertThat((result as CodeScannerStatus.Success).code).isEqualTo(barcodeRawValue)
+        }
+    }
 }
