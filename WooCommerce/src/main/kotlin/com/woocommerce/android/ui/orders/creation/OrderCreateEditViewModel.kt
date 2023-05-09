@@ -293,7 +293,7 @@ class OrderCreateEditViewModel @Inject constructor(
             codeScanner.startScan().collect { status ->
                 when (status) {
                     is CodeScannerStatus.Failure -> {
-                    // TODO handle failure case
+                        // TODO handle failure case
                     }
                     is CodeScannerStatus.Success -> {
                         // TODO handle success case

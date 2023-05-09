@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
 interface CodeScanner {
-    fun startScan() : Flow<CodeScannerStatus>
+    fun startScan(): Flow<CodeScannerStatus>
 }
 
 class GoogleCodeScanner @Inject constructor(private val scanner: GmsBarcodeScanner) : CodeScanner {
