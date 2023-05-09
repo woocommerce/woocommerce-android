@@ -46,6 +46,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -74,8 +75,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
 
-    private val viewState = MutableLiveData<SelectPaymentMethodViewState>(Loading)
-    val viewStateData: LiveData<SelectPaymentMethodViewState> = viewState
+    private val _viewState = MutableLiveData<SelectPaymentMethodViewState>(Loading)
+    val viewStateData: LiveData<SelectPaymentMethodViewState> = _viewState
 
     private lateinit var order: Order
     private lateinit var orderTotal: String
@@ -95,22 +96,26 @@ class SelectPaymentMethodViewModel @Inject constructor(
                     is Payment -> {
                         // stay on screen
                         cardReaderPaymentFlowParam = param
-                        order = orderStore.getOrderByIdAndSite(param.orderId, selectedSite.get())!!.let {
-                            orderMapper.toAppModel(it)
-                        }
-                        val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
-                        orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode)
-                        viewState.value = buildSuccessState(
-                            currencyCode = currencyCode,
-                            isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order),
-                            isPaymentCollectableWithTapToPay = isTapToPayAvailable()
-                        )
+                        showPaymentState(param)
                     }
 
                     is Refund -> triggerEvent(NavigateToCardReaderRefundFlow(param, EXTERNAL))
                 }
             }
         }.exhaustive
+    }
+
+    private suspend fun showPaymentState(param: PaymentOrRefund) {
+        order = orderStore.getOrderByIdAndSite(param.orderId, selectedSite.get())!!.let {
+            orderMapper.toAppModel(it)
+        }
+        val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
+        orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode)
+        _viewState.value = buildSuccessState(
+            currencyCode = currencyCode,
+            isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order),
+            isPaymentCollectableWithTapToPay = isTapToPayAvailable()
+        )
     }
 
     private fun buildSuccessState(
@@ -175,7 +180,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
                         cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
                     )
                 )
-                updateOrderStatus(Order.Status.Completed.value)
+                updateOrderStatus(Order.Status.Completed.value).handleOrderUpdateResultBeforeExit()
             }
         } else {
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
@@ -196,7 +201,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
             )
         )
         launch {
-            updateOrderStatus(Order.Status.Pending.value)
+            updateOrderStatus(Order.Status.Pending.value).handleOrderUpdateResultBeforeExit()
         }
     }
 
@@ -254,7 +259,30 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     fun onScanToPayClicked() {
-        triggerEvent(SharePaymentUrlViaQr(order.paymentUrl))
+        launch {
+            updateOrderStatus(Order.Status.Pending.value).collect { result ->
+                _viewState.value = Loading
+                when (result) {
+                    is WCOrderStore.UpdateOrderResult.RemoteUpdateResult -> {
+                        if (result.event.isError) {
+                            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.order_error_update_general))
+                            analyticsTrackerWrapper.track(
+                                AnalyticsEvent.PAYMENTS_FLOW_FAILED,
+                                mapOf(
+                                    AnalyticsTracker.KEY_SOURCE to
+                                        AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD,
+                                    cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
+                                )
+                            )
+                        } else {
+                            triggerEvent(SharePaymentUrlViaQr(order.paymentUrl))
+                        }
+                        showPaymentState(cardReaderPaymentFlowParam)
+                    }
+                    else -> {}
+                }
+            }
+        }
     }
 
     fun onBackPressed() {
@@ -282,7 +310,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         )
     }
 
-    private suspend fun updateOrderStatus(statusKey: String) {
+    private suspend fun updateOrderStatus(statusKey: String): Flow<WCOrderStore.UpdateOrderResult> {
         val statusModel = withContext(dispatchers.io) {
             orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), statusKey)
                 ?: WCOrderStatusModel(statusKey = statusKey).apply {
@@ -290,11 +318,15 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 }
         }
 
-        orderStore.updateOrderStatus(
+        return orderStore.updateOrderStatus(
             cardReaderPaymentFlowParam.orderId,
             selectedSite.get(),
             statusModel
-        ).collect { result ->
+        )
+    }
+
+    private suspend fun Flow<WCOrderStore.UpdateOrderResult>.handleOrderUpdateResultBeforeExit() {
+        collect { result ->
             when (result) {
                 is WCOrderStore.UpdateOrderResult.OptimisticUpdateResult -> exitFlow()
                 is WCOrderStore.UpdateOrderResult.RemoteUpdateResult -> {
