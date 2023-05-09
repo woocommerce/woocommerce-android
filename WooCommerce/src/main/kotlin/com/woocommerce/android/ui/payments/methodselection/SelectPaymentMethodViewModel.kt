@@ -253,6 +253,10 @@ class SelectPaymentMethodViewModel @Inject constructor(
         }
     }
 
+    fun onScanToPayClicked() {
+        TODO("Not yet implemented")
+    }
+
     fun onBackPressed() {
         // Simple payments flow is not canceled if we going back from this fragment
         if (cardReaderPaymentFlowParam.paymentType == ORDER) {

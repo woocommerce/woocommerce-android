@@ -117,8 +117,11 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
             }
         }
 
-        binding.tvScanToPay = state.isScanToPayAvailable
-        binding.dividerAfterScanToPay = state.isScanToPayAvailable
+        with (binding.tvScanToPay) {
+            isVisible = state.isScanToPayAvailable
+            setOnClickListener { viewModel.onScanToPayClicked() }
+        }
+        binding.dividerAfterScanToPay.isVisible = state.isScanToPayAvailable
 
         with(binding.learnMoreIppPaymentMethodsTv) {
             learnMore.setOnClickListener { state.learMoreIpp.onClick.invoke() }
