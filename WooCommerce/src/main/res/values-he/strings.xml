@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-27 13:54:03+0000
+Translation-Revision-Date: 2023-05-02 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="store_onboarding_setting_description">להציג או להסתיר את רשימת ההגדרות לחנות</string>
+    <string name="store_onboarding_setting_title">רשימה להגדרות החנות</string>
+    <string name="store_onboarding_dialog_description">אפשר לשחזר את המידע כשצריך דרך \'תפריט\' &gt; \'הגדרות\' &gt; \'חנות\'</string>
+    <string name="store_onboarding_dialog_title">להסתיר את רשימת ההגדרות לחנות</string>
+    <string name="store_onboarding_menu_hide_store_setup">להסתיר את רשימת ההגדרות לחנות</string>
+    <string name="card_reader_tap_to_pay_successful_refund_action_label">הצגת הזמנה</string>
+    <string name="card_reader_tap_to_pay_successful_refund_message">החזר כספי עבור התשלום לבדיקה דרך Tap To Pay בוצע בהצלחה</string>
+    <string name="card_reader_tap_to_pay_explanation_refund_failed">ההחזר הכספי נכשל. כדאי לנסות לבצע החזר כספי באופן ידני</string>
+    <string name="card_reader_tap_to_pay_explanation_refunding_payment">מבצע החזר כספי עבור התשלום לבדיקה…</string>
+    <string name="signup_terms_of_service">המשך הפעולה מהווה את הסכמתך &lt;a href=\'termsOfService\'&gt;&lt;u&gt;לתנאי השימוש שלנו.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="signup_get_started_create_account_label">ראשית, ניצור את החשבון שלך. </string>
+    <string name="signup_create_password_label">ליצור סיסמה</string>
     <string name="component_type_categories">קטגוריות</string>
     <string name="component_type_products">מוצרים</string>
     <string name="component_default_option">אפשרות בברירת מחדל</string>
@@ -228,7 +240,7 @@ Language: he_IL
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">משהו השתבש. יש לנסות שוב מאוחר יותר.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">לנסות גביית תשלום</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find"> אפשר למצוא את האפשרות Tap to Pay ב-Android במקטע\nMenu (תפריט) &gt; ‏Payments (תשלומים) &gt; Collect Payment (לגבות תשלום) ואז\nלבחור Tap to Pay (להקיש לתשלום).</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">ניתן לנסות גביית תשלום באמצעות הכרטיס שלך ואז\nלבצע החזר כספי כשסיימת.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund">ניתן לנסות גביית תשלום באמצעות הכרטיס שלך ואז\nלקבל החזר כספי לאחר שסיימת.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">הטלפון שלך מוכן לשימוש באפשרות Tap to Pay.\nהלקוחות שלך יוכלו להצמיד את הכרטיס שלהם\nלטלפון שלך כדי לשלם.</string>
     <string name="card_reader_tap_to_pay_explanation_title">לקבל תשלומים באמצעות כרטיס אשראי\nדרך הטלפון שלך</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
@@ -497,14 +509,12 @@ Language: he_IL
     <string name="signup_password_too_short">הסיסמה שלך קצרה מדי. יש לבחור סיסמה בת שישה תווים לפחות.</string>
     <string name="signup_email_invalid_input">נא להזין כתובת אימייל תקינה.</string>
     <string name="signup_email_exist_input">כבר קיים חשבון עם כתובת האימייל הזאת.</string>
-    <string name="signup_already_registered">ראשית, ניצור את החשבון שלך. כבר נרשמת? &lt;a href=\'login\'&gt;&lt;u&gt;להתחברות&lt;/u&gt;&lt;/a&gt;</string>
     <string name="login_create_an_account">ליצור חשבון</string>
     <string name="login_try_another_email">יש לנסות כתובת אחרת</string>
     <string name="date_timeframe_custom_date_range_title">טווח תאריכים מותאם אישית</string>
     <string name="date_timeframe_custom">התאמה אישית</string>
     <string name="what_is_wordpress_link">מה זה WordPress.com?</string>
     <string name="signup_creating_account_loading_message">יוצר חשבון</string>
-    <string name="signup_terms_of_service">המשך הפעולה מהווה את הסכמתך &lt;u&gt;לתנאי השימוש שלנו&lt;/u&gt;</string>
     <string name="signup_password_hint">בחירת סיסמה</string>
     <string name="signup_email_address_hint">כתובת האימייל שלך</string>
     <string name="signup_get_started_label">להתחיל כעת › \nin minutes</string>

@@ -2264,8 +2264,8 @@
     <string name="notifications_permission_description">We need your permission to send you push notifications for new orders, reviews, etc. delivered to your device.</string>
 
     <!-- Jetpack Connection Package -->
-    <string name="jetpack_benefits_bottom_banner_title">Get the full experience with Jetpack</string>
-    <string name="jetpack_benefits_bottom_banner_subtitle">See the benefits</string>
+    <string name="jetpack_benefits_bottom_banner_title">Get order notifications and more</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Stay updated and boost store security. Explore Jetpack now.</string>
     <string name="jetpack_benefits_modal_title">Get the most out of your store</string>
     <string name="jetpack_benefits_modal_subtitle">Install the free Jetpack plugin to experience the best mobile experience.</string>
     <string name="jetpack_benefits_modal_push_notifications_title">Push Notifications</string>
@@ -3248,4 +3248,11 @@
     <string name="component_default_option">Default option</string>
     <string name="component_type_products">Products</string>
     <string name="component_type_categories">Categories</string>
+
+    <!--
+    Eu-Bound Shipping notice banner
+    -->
+    <string name="shipping_notice_banner_content">When shipping to countries that follow European Union (EU) customs rules, you must provide a clear, specific description of every item. Otherwise, shipments may be delayed or interrupted at customs.</string>
+    <string name="shipping_notice_learn_more">Learn More</string>
+    <string name="shipping_notice_dismiss">Dismiss</string>
 </resources>

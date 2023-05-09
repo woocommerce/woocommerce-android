@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-27 15:54:03+0000
+Translation-Revision-Date: 2023-05-03 11:54:05+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="store_onboarding_setting_description">Показать или скрыть список действий по настройке магазина</string>
+    <string name="store_onboarding_setting_title">Список действий по настройке магазина</string>
+    <string name="store_onboarding_dialog_description">Вы можете снова посмотреть его в любое время, открыв «Меню &gt; Настройки &gt; Магазин»</string>
+    <string name="store_onboarding_dialog_title">Скрыть список действий по настройке магазина</string>
+    <string name="store_onboarding_menu_hide_store_setup">Скрыть список действий по настройке магазина</string>
+    <string name="card_reader_tap_to_pay_successful_refund_action_label">Просмотреть заказ</string>
+    <string name="card_reader_tap_to_pay_successful_refund_message">Возврат средств для проверки «Оплаты в касание» выполнен успешно.</string>
+    <string name="card_reader_tap_to_pay_explanation_refund_failed">Возврат не выполнен. Попробуйте вернуть средства вручную</string>
+    <string name="card_reader_tap_to_pay_explanation_refunding_payment">Возврат пробного платежа…</string>
+    <string name="signup_terms_of_service">Продолжая, вы принимаете наши &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Условия предоставления услуг.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="signup_get_started_create_account_label">Сначала создайте учётную запись. </string>
+    <string name="signup_create_password_label">Создайте пароль</string>
     <string name="component_type_categories">Категории</string>
     <string name="component_type_products">Товары</string>
     <string name="component_default_option">Опция по умолчанию</string>
@@ -228,7 +240,7 @@ Language: ru
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Что-то пошло не так. Повторите попытку позже.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Попробуйте выполнить платёж</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find"> В Android функцию «Оплата в касание» можно найти в разделе\nМеню &gt; Платежи, либо откройте «Получение платежей» и\nвыберите «Оплата в касание».</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Попробуйте выполнить платёж, используя свою карту, и\nверните денежные средства после проведения платежа.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Попробуйте выполнить платёж, используя свою карту, и\nпосле этого средства будут возвращены.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Ваш телефон готов выполнить операцию «Оплата в касание».\nВаш клиент может задействовать свою карту\nна вашем телефоне, чтобы выполнить платёж.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Получение платежей по карте\nна вашем телефоне</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Оплата в касание</string>
@@ -497,14 +509,12 @@ Language: ru
     <string name="signup_password_too_short">Пароль слишком короткий. Придумайте пароль, состоящий как минимум из шести символов.</string>
     <string name="signup_email_invalid_input">Введите допустимый адрес электронной почты.</string>
     <string name="signup_email_exist_input">Учётная запись с этим адресом эл. почты уже существует.</string>
-    <string name="signup_already_registered">Сначала создадим вам учётную запись. Уже зарегистрированы? &lt;a href=\'login\'&gt;&lt;u&gt;Войти&lt;/u&gt;&lt;/a&gt;</string>
     <string name="login_create_an_account">Создать учётную запись</string>
     <string name="login_try_another_email">Использовать другой адрес</string>
     <string name="date_timeframe_custom_date_range_title">Произвольный период</string>
     <string name="date_timeframe_custom">Произвольный</string>
     <string name="what_is_wordpress_link">Что такое WordPress.com?</string>
     <string name="signup_creating_account_loading_message">Создание учетной записи</string>
-    <string name="signup_terms_of_service">Продолжая, вы принимаете наши &lt;u&gt;Условия предоставления услуг.&lt;/u&gt;</string>
     <string name="signup_password_hint">Выберите пароль</string>
     <string name="signup_email_address_hint">Ваш адрес электронной почты</string>
     <string name="signup_get_started_label">Начало работы \nчерез несколько минут</string>

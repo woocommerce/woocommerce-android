@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-27 15:54:03+0000
+Translation-Revision-Date: 2023-05-02 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="store_onboarding_setting_description">Tampilkan atau sembunyikan daftar penyiapan toko</string>
+    <string name="store_onboarding_setting_title">Daftar Penyiapan Toko</string>
+    <string name="store_onboarding_dialog_description">Anda dapat memulihkannya jika dibutuhkan dari Menu &gt; Pengaturan &gt; Toko</string>
+    <string name="store_onboarding_dialog_title">Sembunyikan daftar penyiapan toko</string>
+    <string name="store_onboarding_menu_hide_store_setup">Sembunyikan daftar penyiapan toko</string>
+    <string name="card_reader_tap_to_pay_successful_refund_action_label">Lihat Pesanan</string>
+    <string name="card_reader_tap_to_pay_successful_refund_message">Uji coba pembayaran menggunakan Ketuk untuk Bayar berhasil dikembalikan</string>
+    <string name="card_reader_tap_to_pay_explanation_refund_failed">Pengembalian dana gagal. Coba pengembalian dana secara manual</string>
+    <string name="card_reader_tap_to_pay_explanation_refunding_payment">Mengembalikan dana uji coba pembayaran…</string>
+    <string name="signup_terms_of_service">Dengan melanjutkan, Anda menyetujui &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Ketentuan Layanan kami.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="signup_get_started_create_account_label">Pertama-tama, mari buat akun Anda. </string>
+    <string name="signup_create_password_label">Buat kata sandi</string>
     <string name="component_type_categories">Kategori</string>
     <string name="component_type_products">Produk</string>
     <string name="component_default_option">Pilihan default</string>
@@ -228,7 +240,7 @@ Language: id
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Ada yang salah! Silakan coba lagi nanti.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Uji coba pembayaran</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find"> Fitur Ketuk untuk Membayar di Android dapat ditemukan di\nMenu &gt; Pembayaran, atau Anda bisa memilih Terima Pembayaran dan\nmemilih Ketuk untuk Membayar.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Gunakan kartu Anda sendiri untuk uji coba pembayaran lalu\nkembalikan lagi dananya jika sudah selesai.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Gunakan kartu Anda sendiri untuk uji coba pembayaran lalu\nDana akan dikembalikan saat selesai.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Ketuk untuk Membayar sudah tersedia di ponsel Anda.\nPelanggan dapat menempelkan kartunya\nke ponsel Anda untuk membayar.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Terima pembayaran dengan kartu\nmenggunakan ponsel Anda</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Ketuk Untuk Membayar</string>
@@ -497,14 +509,12 @@ Language: id
     <string name="signup_password_too_short">Kata sandi Anda terlalu pendek. Gunakan kata sandi yang terdiri dari sedikitnya 6 karakter.</string>
     <string name="signup_email_invalid_input">Masukkan alamat email yang valid.</string>
     <string name="signup_email_exist_input">Akun dengan email ini sudah ada.</string>
-    <string name="signup_already_registered">Pertama-tama, mari buat akun Anda. Telah terdaftar? &lt;a href=\'login\'&gt;&lt;u&gt;Login&lt;/u&gt;&lt;/a&gt;</string>
     <string name="login_create_an_account">Buat Akun</string>
     <string name="login_try_another_email">Coba Alamat Lainnya</string>
     <string name="date_timeframe_custom_date_range_title">Rentang tanggal kustom</string>
     <string name="date_timeframe_custom">Kustom</string>
     <string name="what_is_wordpress_link">Apa itu WordPress.com?</string>
     <string name="signup_creating_account_loading_message">Membuat akun baru</string>
-    <string name="signup_terms_of_service">Dengan melanjutkan, Anda menyetujui &lt;u&gt;Ketentuan Layanan kami.&lt;/u&gt;</string>
     <string name="signup_password_hint">Pilih kata sandi</string>
     <string name="signup_email_address_hint">Alamat email Anda</string>
     <string name="signup_get_started_label">Memulai \ndalam hitungan menit</string>

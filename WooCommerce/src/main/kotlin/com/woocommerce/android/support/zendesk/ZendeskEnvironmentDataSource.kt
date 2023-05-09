@@ -14,8 +14,9 @@ import org.wordpress.android.util.DeviceUtils
 import org.wordpress.android.util.StringUtils
 import org.wordpress.android.util.UrlUtils
 import java.util.Locale
+import javax.inject.Inject
 
-class ZendeskEnvironmentDataSource {
+class ZendeskEnvironmentDataSource @Inject constructor() {
     val totalAvailableMemorySize: String get() = DeviceUtils.getTotalAvailableMemorySize()
     val deviceLanguage: String get() = Locale.getDefault().language
     val deviceLogs get() = WooLog.toString().takeLast(maxLogfileLength)

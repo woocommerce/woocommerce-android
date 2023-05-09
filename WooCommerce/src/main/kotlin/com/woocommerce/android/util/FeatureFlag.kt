@@ -27,7 +27,8 @@ enum class FeatureFlag {
     BUNDLED_PRODUCTS_READ_ONLY_SUPPORT,
     COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT,
     STORE_CREATION_PROFILER,
-    EU_SHIPPING_NOTIFICATION;
+    EU_SHIPPING_NOTIFICATION,
+    PRIVACY_CHOICES;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -50,12 +51,13 @@ enum class FeatureFlag {
             IPP_UK,
             ANALYTICS_HUB_FEEDBACK_BANNER,
             STORE_CREATION_PROFILER,
-            COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT -> true
+            COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT,
+            EU_SHIPPING_NOTIFICATION -> true
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             IPP_TAP_TO_PAY,
-            EU_SHIPPING_NOTIFICATION -> PackageUtils.isDebugBuild()
+            PRIVACY_CHOICES -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
         }

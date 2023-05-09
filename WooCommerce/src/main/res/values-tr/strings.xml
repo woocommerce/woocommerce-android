@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-28 18:54:04+0000
+Translation-Revision-Date: 2023-05-03 16:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="store_onboarding_setting_description">Mağaza kurulumu listesini göster veya gizle</string>
+    <string name="store_onboarding_setting_title">Mağaza Kurulumu Listesi</string>
+    <string name="store_onboarding_dialog_description">İhtiyacınız olduğunda Menü &gt; Ayarlar &gt; Mağaza\'dan geri yükleyebilirsiniz.</string>
+    <string name="store_onboarding_dialog_title">Mağaza kurulumu listesini gizle</string>
+    <string name="store_onboarding_menu_hide_store_setup">Mağaza kurulumu listesini gizle</string>
+    <string name="card_reader_tap_to_pay_successful_refund_action_label">Siparişi Görüntüle</string>
+    <string name="card_reader_tap_to_pay_successful_refund_message">Tap To Pay test ödemesi başarıyla iade edildi</string>
+    <string name="card_reader_tap_to_pay_explanation_refund_failed">Para iadesi başarısız oldu. Manuel olarak para iadesi yapmayı deneyin</string>
+    <string name="card_reader_tap_to_pay_explanation_refunding_payment">Test ödemesi iade ediliyor…</string>
+    <string name="signup_terms_of_service">Devam ederek &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Hizmet Şartlarımızı kabul etmiş olursunuz.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="signup_get_started_create_account_label">Önce hesabınızı oluşturalım. </string>
+    <string name="signup_create_password_label">Şifrenizi oluşturun</string>
     <string name="component_type_categories">Kategoriler</string>
     <string name="component_type_products">Ürünler</string>
     <string name="component_default_option">Varsayılan seçenek</string>
@@ -228,7 +240,7 @@ Language: tr
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Bir sorun oluştu. Lütfen daha sonra tekrar deneyin.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Ödeme yapmayı deneyin</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find"> Tap to Pay on Android\'i\nMenü &gt; Ödemeler kısmında bulabilirsiniz veya Ödeme Al ve\nTap to Pay\'i seçin.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Kartınızı kullanarak ödeme yapmayı deneyin ve\nişiniz bittiğinde iade edin.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Kartınızı kullanarak ödeme yapmayı deneyin ve\nişiniz bittiğinde iade edilecek.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Telefonunuz Tap to Pay için hazır.\nMüşteriniz ödeme yapmak için\nkartını telefonunuza dokundurabilir.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Kart ödemelerini\ntelefonunuzla alın</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
@@ -497,14 +509,12 @@ Language: tr
     <string name="signup_password_too_short">Şifreniz çok kısa. Lütfen en az 6 karakterden oluşan bir şifre seçin.</string>
     <string name="signup_email_invalid_input">Lütfen geçerli bir e-posta adresi girin.</string>
     <string name="signup_email_exist_input">Bu e-postayla kayıtlı bir hesap zaten var</string>
-    <string name="signup_already_registered"> likle hesabınızı oluşturalım. Zaten kayıtlı mısınız? &lt;a href=\'login\'&gt;&lt;u&gt;Oturum aç&lt;/u&gt;&lt;/a&gt;</string>
     <string name="login_create_an_account">Bir Hesap Oluşturun</string>
     <string name="login_try_another_email">Başka Bir Adres Deneyin</string>
     <string name="date_timeframe_custom_date_range_title">Özel tarih aralığı</string>
     <string name="date_timeframe_custom">Özel</string>
     <string name="what_is_wordpress_link">WordPress.com nedir?</string>
     <string name="signup_creating_account_loading_message">Yeni hesap oluşturma</string>
-    <string name="signup_terms_of_service">Devam ederek &lt;u&gt;Hizmet Şartlarımızı kabul etmiş olursunuz.&lt;/u&gt;</string>
     <string name="signup_password_hint">Bir şifre seçin</string>
     <string name="signup_email_address_hint">E-posta adresiniz</string>
     <string name="signup_get_started_label">Hemen başlayın: \ndakikalar içinde</string>

@@ -31,7 +31,7 @@ class MapItemToProductUiModel @Inject constructor(
                     imageUrl = product?.firstImageUrl.orEmpty(),
                     isStockManaged = product?.isStockManaged ?: false,
                     stockQuantity = product?.stockQuantity ?: 0.0,
-                    stockStatus = product?.stockStatus ?: ProductStockStatus.InStock
+                    stockStatus = product?.specialStockStatus ?: product?.stockStatus ?: ProductStockStatus.InStock
                 )
                 // TODO check if we need to disable the plus button depending on stock quantity
             }
