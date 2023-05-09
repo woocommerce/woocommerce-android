@@ -95,8 +95,9 @@ private fun OptionRow(
     sectionHeader: String,
     sectionTitle: String,
     sectionDescription: String,
+    modifier: Modifier = Modifier,
 ) {
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = modifier.padding(16.dp)) {
         Text(
             text = sectionHeader,
             style = MaterialTheme.typography.caption,
