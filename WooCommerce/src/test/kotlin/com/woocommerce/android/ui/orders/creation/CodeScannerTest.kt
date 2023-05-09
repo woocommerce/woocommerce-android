@@ -137,4 +137,24 @@ class CodeScannerTest : BaseUnitTest() {
             assertThat((result as CodeScannerStatus.Failure).error?.message).isEqualTo(errorMessage)
         }
     }
+
+    @Test
+    fun `when scanning code fails, then flow is terminated`() {
+        testBlocking {
+            val mockBarcode = mock<Task<Barcode>>()
+            whenever(scanner.startScan()).thenAnswer {
+                mockBarcode
+            }
+            whenever(mockBarcode.addOnSuccessListener(any())).thenReturn(mockBarcode)
+            whenever(mockBarcode.addOnFailureListener(any())).thenAnswer {
+                @Suppress("UNCHECKED_CAST")
+                (it.arguments[0] as OnFailureListener).onFailure(mock())
+                mock<Task<Barcode>>()
+            }
+
+            val result = codeScanner.startScan().toList()
+
+            assertThat(result.size).isEqualTo(1)
+        }
+    }
 }
