@@ -7,7 +7,8 @@ import com.google.mlkit.vision.codescanner.GmsBarcodeScanner
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import org.assertj.core.api.Assertions
+import kotlinx.coroutines.flow.toList
+import org.assertj.core.api.Assertions.*
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -40,7 +41,7 @@ class CodeScannerTest : BaseUnitTest() {
 
             val result = codeScanner.startScan().first()
 
-            Assertions.assertThat(result).isExactlyInstanceOf(CodeScannerStatus.Success::class.java)
+            assertThat(result).isExactlyInstanceOf(CodeScannerStatus.Success::class.java)
         }
     }
 
@@ -66,7 +67,26 @@ class CodeScannerTest : BaseUnitTest() {
 
             val result = codeScanner.startScan().first()
 
-            Assertions.assertThat((result as CodeScannerStatus.Success).code).isEqualTo(barcodeRawValue)
+            assertThat((result as CodeScannerStatus.Success).code).isEqualTo(barcodeRawValue)
+        }
+    }
+
+    @Test
+    fun `when scanning code succeeds, then flow is terminated`() {
+        testBlocking {
+            val mockBarcode = mock<Task<Barcode>>()
+            whenever(scanner.startScan()).thenAnswer {
+                mockBarcode
+            }
+            whenever(mockBarcode.addOnSuccessListener(any())).thenAnswer {
+                @Suppress("UNCHECKED_CAST")
+                (it.arguments[0] as OnSuccessListener<Barcode>).onSuccess(mock())
+                mock<Task<Barcode>>()
+            }
+
+            val result = codeScanner.startScan().toList()
+
+            assertThat(result.size).isEqualTo(1)
         }
     }
 }
