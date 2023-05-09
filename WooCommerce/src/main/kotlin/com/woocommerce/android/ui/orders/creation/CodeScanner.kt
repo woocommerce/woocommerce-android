@@ -22,7 +22,7 @@ class GoogleCodeScanner @Inject constructor(private val scanner: GmsBarcodeScann
                     this@callbackFlow.trySend(CodeScannerStatus.Failure(throwable.cause))
                     this@callbackFlow.close()
                 }
-            awaitClose {  }
+            awaitClose()
         }
     }
 }
