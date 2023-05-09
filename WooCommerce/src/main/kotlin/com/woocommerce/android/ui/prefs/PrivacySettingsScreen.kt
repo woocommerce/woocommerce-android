@@ -52,7 +52,7 @@ fun PrivacySettingsScreen(
     onAnalyticsSettingChanged: (Boolean) -> Unit,
     onReportCrashesChanged: (Boolean) -> Unit,
 ) {
-    Scaffold { paddingValues ->
+    Scaffold(backgroundColor = MaterialTheme.colors.surface) { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
