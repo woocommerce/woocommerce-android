@@ -523,6 +523,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
 
     // -- Product subscriptions
     PRODUCT_DETAILS_VIEW_SUBSCRIPTIONS_TAPPED,
+    PRODUCT_VARIATION_VIEW_SUBSCRIPTIONS_TAPPED,
 
     // -- Product attributes
     PRODUCT_ATTRIBUTE_EDIT_BUTTON_TAPPED,
