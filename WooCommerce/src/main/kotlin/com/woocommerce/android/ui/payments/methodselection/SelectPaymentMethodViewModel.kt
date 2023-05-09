@@ -254,7 +254,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     fun onScanToPayClicked() {
-        TODO("Not yet implemented")
+        triggerEvent(SharePaymentUrlViaQr(order.paymentUrl))
     }
 
     fun onBackPressed() {

@@ -151,6 +151,15 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                     sharePaymentUrl(event.storeName, event.paymentUrl)
                 }
 
+                is SharePaymentUrlViaQr -> {
+                    val action =
+                        SelectPaymentMethodFragmentDirections
+                            .actionSelectPaymentMethodFragmentToScanToPayDialogFragment(
+                                event.paymentUrl
+                            )
+                    findNavController().navigate(action)
+                }
+
                 is NavigateToCardReaderPaymentFlow -> {
                     val action =
                         SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToCardReaderPaymentFlow(
@@ -189,9 +198,11 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                         )
                     findNavController().navigateSafely(action)
                 }
+
                 is OpenGenericWebView -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
+
                 is NavigateToOrderDetails -> {
                     val action =
                         SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderDetailFragment(
@@ -199,6 +210,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                         )
                     findNavController().navigateSafely(action)
                 }
+
                 is NavigateToTapToPaySummary -> {
                     findNavController().navigateSafely(
                         SelectPaymentMethodFragmentDirections

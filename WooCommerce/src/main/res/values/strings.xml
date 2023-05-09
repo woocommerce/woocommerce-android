@@ -1199,7 +1199,7 @@
     <!--
     Scan To Pay
         -->
-    <string name="scan_to_pay_title">Scan QR, follow instructions</string>
+    <string name="scan_to_pay_title">Scan QR and follow instructions</string>
 
     <!--
             Card Reader Interac refund

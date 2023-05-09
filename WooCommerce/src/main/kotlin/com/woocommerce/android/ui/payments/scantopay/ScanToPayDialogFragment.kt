@@ -6,10 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import com.woocommerce.android.ui.base.BaseFragment
+import androidx.fragment.app.DialogFragment
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
-class ScanToPayFragment : BaseFragment() {
+class ScanToPayDialogFragment : DialogFragment() {
+    private val args: ScanToPayDialogFragmentArgs by navArgs()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -19,7 +23,7 @@ class ScanToPayFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    ScanToPayScreen("https://woocommerce.com")
+                    ScanToPayScreen(args.qrContent) { findNavController().popBackStack() }
                 }
             }
         }

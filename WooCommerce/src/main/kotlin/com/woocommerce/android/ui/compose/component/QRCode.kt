@@ -33,13 +33,11 @@ import kotlinx.coroutines.launch
 fun QRCode(
     content: String,
     size: Dp,
-    padding: Dp,
 ) {
     Image(
         painter = rememberQrBitmapPainter(
             content,
             size = size,
-            padding = padding,
         ),
         contentDescription = "QR Code",
         contentScale = ContentScale.FillBounds,
@@ -50,12 +48,10 @@ fun QRCode(
 @Composable
 private fun rememberQrBitmapPainter(
     content: String,
-    size: Dp,
-    padding: Dp,
+    size: Dp
 ): BitmapPainter {
     val density = LocalDensity.current
     val sizePx = with(density) { size.roundToPx() }
-    val paddingPx = with(density) { padding.roundToPx() }
 
     var bitmap by remember(content) { mutableStateOf<Bitmap?>(null) }
 
@@ -67,13 +63,8 @@ private fun rememberQrBitmapPainter(
         launch(Dispatchers.IO) {
             val qrCodeWriter = QRCodeWriter()
 
-            val encodeHints = mutableMapOf<EncodeHintType, Any?>()
-                .apply {
-                    this[EncodeHintType.MARGIN] = paddingPx
-                }
-
             val bitmapMatrix = try {
-                qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, sizePx, sizePx, encodeHints)
+                qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, sizePx, sizePx, mapOf<EncodeHintType, Any>())
             } catch (ex: WriterException) {
                 null
             }
@@ -116,6 +107,5 @@ fun QRCodePreview() {
     QRCode(
         content = "https://woocommerce.com",
         size = 150.dp,
-        padding = 5.dp,
     )
 }
