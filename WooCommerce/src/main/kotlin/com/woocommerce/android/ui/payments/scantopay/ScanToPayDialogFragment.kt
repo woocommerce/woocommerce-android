@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.DialogFragment
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 class ScanToPayDialogFragment : DialogFragment() {
@@ -23,9 +23,15 @@ class ScanToPayDialogFragment : DialogFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    ScanToPayScreen(args.qrContent) { findNavController().popBackStack() }
+                    ScanToPayScreen(args.qrContent) {
+                        navigateBackWithNotice(KEY_SCAN_TO_PAY_RESULT)
+                    }
                 }
             }
         }
+    }
+
+    companion object {
+        const val KEY_SCAN_TO_PAY_RESULT = "key_scan_to_pay_result"
     }
 }

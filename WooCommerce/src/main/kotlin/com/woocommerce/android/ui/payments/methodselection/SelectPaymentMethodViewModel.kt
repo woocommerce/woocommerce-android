@@ -295,6 +295,13 @@ class SelectPaymentMethodViewModel @Inject constructor(
         }
     }
 
+    fun onScanToPayCompleted() {
+        launch {
+            delay(DELAY_MS)
+            exitFlow()
+        }
+    }
+
     private fun trackPaymentMethodSelection(paymentMethodType: String, cardReaderType: String? = null) {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
