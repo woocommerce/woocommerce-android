@@ -94,7 +94,7 @@ fun PrivacySettingsScreen(
                     ) {
                         Icon(
                             imageVector = OpenInNew,
-                            contentDescription = stringResource(id = R.string.cancel)
+                            contentDescription = stringResource(id = R.string.settings_advertising_options)
                         )
                     }
                 }
