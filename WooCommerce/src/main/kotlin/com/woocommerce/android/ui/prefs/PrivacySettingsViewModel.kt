@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.prefs
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -32,7 +34,15 @@ class PrivacySettingsViewModel @Inject constructor(
         private const val SETTING_TRACKS_OPT_OUT = "tracks_opt_out"
     }
 
-    fun getSendUsageStats() = !accountStore.account.tracksOptOut
+    private val _state = MutableLiveData(
+        State(
+            sendUsageStats = getSendUsageStats(),
+            crashReportingEnabled = getCrashReportingEnabled(),
+        )
+    )
+    val state: LiveData<State> = _state
+
+    private fun getSendUsageStats() = !accountStore.account.tracksOptOut
 
     private fun setSendUsageStats(sendUsageStats: Boolean) {
         // note that we don't init/disable Crashlytics here because that requires the app to be restarted
@@ -115,6 +125,7 @@ class PrivacySettingsViewModel @Inject constructor(
                 AnalyticsTracker.KEY_STATE to AnalyticsUtils.getToggleStateLabel(checked)
             )
         )
+        _state.value = _state.value?.copy(crashReportingEnabled = checked)
         setCrashReportingEnabled(checked)
     }
 
@@ -126,8 +137,14 @@ class PrivacySettingsViewModel @Inject constructor(
                     AnalyticsUtils.getToggleStateLabel(checked)
             )
         )
+        _state.value = _state.value?.copy(sendUsageStats = checked)
         setSendUsageStats(checked)
     }
+
+    data class State(
+        val sendUsageStats: Boolean,
+        val crashReportingEnabled: Boolean
+    )
 
     sealed class PrivacySettingsEvent : MultiLiveEvent.Event() {
         object ShowCookiePolicy : PrivacySettingsEvent()

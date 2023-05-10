@@ -2,20 +2,23 @@ package com.woocommerce.android.ui.prefs
 
 import android.content.Context
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.databinding.FragmentSettingsPrivacyBinding
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.prefs.PrivacySettingsViewModel.PrivacySettingsEvent.ShowCookiePolicy
 import com.woocommerce.android.ui.prefs.PrivacySettingsViewModel.PrivacySettingsEvent.ShowPrivacyPolicy
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class PrivacySettingsFragment : BaseFragment(R.layout.fragment_settings_privacy) {
+class PrivacySettingsFragment : BaseFragment() {
     companion object {
         const val TAG = "privacy-settings"
     }
@@ -25,28 +28,21 @@ class PrivacySettingsFragment : BaseFragment(R.layout.fragment_settings_privacy)
     override fun getFragmentTitle() = getString(R.string.privacy_settings)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val binding = FragmentSettingsPrivacyBinding.bind(view)
-
-        binding.switchSendStats.isChecked = viewModel.getSendUsageStats()
-        binding.switchSendStats.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.onSendStatsSettingChanged(isChecked)
-        }
-
-        binding.buttonLearnMore.setOnClickListener {
-            viewModel.onLearnMoreShareInfoClicked()
-        }
-        binding.buttonPrivacyPolicy.setOnClickListener {
-            viewModel.onPrivacyPolicyClicked()
-        }
-        binding.buttonTracking.setOnClickListener {
-            viewModel.onLearnMoreThirdPartyClicked()
-        }
-
-        binding.switchCrashReporting.isChecked = viewModel.getCrashReportingEnabled()
-        binding.switchCrashReporting.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.onCrashReportingSettingChanged(isChecked)
-        }
         observeEvents()
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return ComposeView(requireContext()).apply {
+            setContent {
+                WooThemeWithBackground {
+                    PrivacySettingsScreen(viewModel)
+                }
+            }
+        }
     }
 
     private fun observeEvents() {

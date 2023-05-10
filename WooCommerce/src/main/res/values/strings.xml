@@ -1910,6 +1910,13 @@
     <string name="settings_privacy_detail">This information helps us improve our products, make marketing to you more relevant, personalize your WooCommerce experience, and more as detailed in our privacy policy</string>
     <string name="settings_privacy_policy">Read privacy policy</string>
     <string name="settings_privacy_policy_ca">Privacy Notice for California Users</string>
+    <string name="settings_privacy_statement">We value your privacy. Your personal data is used to optimize our mobile apps, improve security, conduct analytics and marketing activities, and enhance your user experience.</string>
+    <string name="settings_tracking_header">Tracking</string>
+    <string name="settings_tracking_analytics">Analytics</string>
+    <string name="settings_tracking_analytics_description">These cookies allow us to optimize performance by collecting information on how users interact with our mobile apps.</string>
+    <string name="settings_reports_header">Reports</string>
+    <string name="settings_reports_report_crashes">Report Crashes</string>
+    <string name="settings_reports_report_crashes_description">To help us improve the app’s performance and fix the occasional bug, enable automatic crash report.</string>
     <string name="settings_tracking">We use other tracking tools, including some from third parties. Read about these and how to control them.</string>
     <string name="settings_footer">Made with love by Automattic. %1$s</string>
     <string name="settings_hiring">We\'re hiring!</string>
