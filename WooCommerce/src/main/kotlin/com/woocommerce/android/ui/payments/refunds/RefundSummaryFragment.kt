@@ -101,7 +101,7 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
                     binding.refundSummaryMethodDescription.hide()
                 }
             }
-            handleDialogNotice<String>(
+            handleDialogNotice(
                 KEY_INTERAC_SUCCESS,
                 entryId = R.id.refundSummaryFragment
             ) {

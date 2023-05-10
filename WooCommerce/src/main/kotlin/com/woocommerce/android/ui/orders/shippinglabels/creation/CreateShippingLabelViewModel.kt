@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -110,12 +111,14 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.NOT_READY
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.READY
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepsState
+import com.woocommerce.android.ui.orders.shippinglabels.creation.banner.CheckEUShippingScenario
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -123,6 +126,8 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
@@ -140,6 +145,7 @@ import kotlin.system.measureTimeMillis
 class CreateShippingLabelViewModel @Inject constructor(
     savedState: SavedStateHandle,
     parameterRepository: ParameterRepository,
+    checkEUShippingScenario: CheckEUShippingScenario,
     private val orderDetailRepository: OrderDetailRepository,
     private val shippingLabelRepository: ShippingLabelRepository,
     private val stateMachine: ShippingLabelsStateMachine,
@@ -165,6 +171,11 @@ class CreateShippingLabelViewModel @Inject constructor(
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
+
+    val shouldDisplayShippingNotice = checkEUShippingScenario(stateMachine.transitions)
+        .distinctUntilChanged()
+        .onEach { if (it) AnalyticsTracker.track(AnalyticsEvent.EU_SHIPPING_NOTICE_SHOWN) }
+        .asLiveData()
 
     init {
         initializeStateMachine()
@@ -361,7 +372,8 @@ class CreateShippingLabelViewModel @Inject constructor(
                 originCountryCode = originCountryCode,
                 destinationCountryCode = destinationCountryCode,
                 shippingPackages = shippingPackages,
-                customsPackages = customsPackages
+                customsPackages = customsPackages,
+                isEUShippingScenario = shouldDisplayShippingNotice.value ?: false
             )
         )
     }
@@ -755,6 +767,10 @@ class CreateShippingLabelViewModel @Inject constructor(
         }
     }
 
+    fun onShippingNoticeLearnMoreClicked(learnMoreUrl: String) {
+        triggerEvent(OpenShippingInstructions(learnMoreUrl))
+    }
+
     override fun onCleared() {
         super.onCleared()
         shippingLabelRepository.clearCache()
@@ -840,4 +856,6 @@ class CreateShippingLabelViewModel @Inject constructor(
     enum class FlowStep {
         ORIGIN_ADDRESS, SHIPPING_ADDRESS, PACKAGING, CUSTOMS, CARRIER, PAYMENT
     }
+
+    data class OpenShippingInstructions(val url: String) : MultiLiveEvent.Event()
 }

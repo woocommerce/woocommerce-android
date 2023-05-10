@@ -77,8 +77,11 @@ class JitmViewModel @Inject constructor(
                     title = UiString.UiStringText(model.content.message),
                     description = UiString.UiStringText(model.content.description),
                     primaryActionLabel = UiString.UiStringText(model.cta.message),
-                    backgroundImageUrl = model.assets?.get(JITM_ASSETS_BACKGROUND_IMAGE_KEY),
+                    backgroundLightImageUrl = model.assets?.get(JITM_ASSETS_BACKGROUND_IMAGE_LIGHT_THEME_KEY),
+                    backgroundDarkImageUrl = model.assets?.get(JITM_ASSETS_BACKGROUND_IMAGE_DARK_THEME_KEY)
+                        ?: model.assets?.get(JITM_ASSETS_BACKGROUND_IMAGE_LIGHT_THEME_KEY),
                 )
+
                 else -> JitmState.Banner(
                     onPrimaryActionClicked = { onJitmCtaClicked(model) },
                     onDismissClicked = { onJitmDismissClicked(model) },
@@ -127,6 +130,7 @@ class JitmViewModel @Inject constructor(
                             model.featureClass
                         )
                     }
+
                     else -> jitmTracker.trackJitmDismissFailure(
                         MyStoreViewModel.UTM_SOURCE,
                         model.id,
@@ -140,11 +144,20 @@ class JitmViewModel @Inject constructor(
     }
 
     private fun Assets.getBackgroundImage() =
-        this?.get(JITM_ASSETS_BACKGROUND_IMAGE_KEY)?.let { JitmState.Banner.LocalOrRemoteImage.Remote(it) }
-            ?: JitmState.Banner.LocalOrRemoteImage.Local(R.drawable.ic_banner_upsell_card_reader_illustration)
+        this?.get(JITM_ASSETS_BACKGROUND_IMAGE_LIGHT_THEME_KEY)?.let {
+            JitmState.Banner.LocalOrRemoteImage.Remote(
+                urlLightMode = it,
+                urlDarkMode = this[JITM_ASSETS_BACKGROUND_IMAGE_DARK_THEME_KEY] ?: it
+            )
+        } ?: JitmState.Banner.LocalOrRemoteImage.Local(R.drawable.ic_banner_upsell_card_reader_illustration)
 
     private fun Assets.getBadgeIcon() =
-        this?.get(JITM_ASSETS_BADGE_IMAGE_KEY)?.let { JitmState.Banner.LabelOrRemoteIcon.Remote(it) }
+        this?.get(JITM_ASSETS_BADGE_IMAGE_LIGHT_THEME_KEY)?.let {
+            JitmState.Banner.LabelOrRemoteIcon.Remote(
+                urlLightMode = it,
+                urlDarkMode = this[JITM_ASSETS_BADGE_IMAGE_DARK_THEME_KEY] ?: it
+            )
+        }
             ?: JitmState.Banner.LabelOrRemoteIcon.Label(
                 UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
             )
@@ -153,8 +166,12 @@ class JitmViewModel @Inject constructor(
 
     companion object {
         const val JITM_MESSAGE_PATH_KEY = "jitm_message_path_key"
-        private const val JITM_ASSETS_BACKGROUND_IMAGE_KEY = "background_image_url"
-        private const val JITM_ASSETS_BADGE_IMAGE_KEY = "badge_image_url"
+
+        private const val JITM_ASSETS_BACKGROUND_IMAGE_LIGHT_THEME_KEY = "background_image_url"
+        private const val JITM_ASSETS_BACKGROUND_IMAGE_DARK_THEME_KEY = "background_image_dark_url"
+
+        private const val JITM_ASSETS_BADGE_IMAGE_LIGHT_THEME_KEY = "badge_image_url"
+        private const val JITM_ASSETS_BADGE_IMAGE_DARK_THEME_KEY = "badge_image_dark_url"
 
         private const val JITM_TEMPLATE_MODAL = "modal"
     }

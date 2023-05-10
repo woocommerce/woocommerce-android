@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.payments.banner
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -32,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
@@ -134,7 +136,11 @@ private fun BackgroundImage(bannerState: JitmState.Banner) {
         is JitmState.Banner.LocalOrRemoteImage.Remote -> {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(icon.url)
+                    .data(
+                        if (isSystemInDarkTheme()) icon.urlDarkMode
+                        else icon.urlLightMode
+                    )
+                    .decoderFactory(SvgDecoder.Factory())
                     .build(),
                 contentDescription = null,
                 modifier = Modifier.width(154.dp)
@@ -169,7 +175,11 @@ private fun BadgeIcon(bannerState: JitmState.Banner) {
         is JitmState.Banner.LabelOrRemoteIcon.Remote -> {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(icon.url)
+                    .data(
+                        if (isSystemInDarkTheme()) icon.urlDarkMode
+                        else icon.urlLightMode
+                    )
+                    .decoderFactory(SvgDecoder.Factory())
                     .build(),
                 contentDescription = null,
                 modifier = Modifier.height(26.dp)

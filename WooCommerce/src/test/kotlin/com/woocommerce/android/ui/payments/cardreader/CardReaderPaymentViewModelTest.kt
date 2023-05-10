@@ -60,6 +60,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentO
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentReaderTypeStateProvider
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentReceiptHelper
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentViewModel
+import com.woocommerce.android.ui.payments.cardreader.payment.ContactSupport
 import com.woocommerce.android.ui.payments.cardreader.payment.InteracRefundFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError.AmountTooSmall
@@ -91,6 +92,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.STARTED
+import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -788,6 +790,78 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ExternalReaderFailedPaymentState::class.java)
+        }
+
+    @Test
+    fun `given external reader fails with Unknown error, when view model starts, then ui has contact support button`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(Generic, cardReaderConfig))
+                .thenReturn(Unknown)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithEmptyDataForRetry) }
+            }
+
+            viewModel.start()
+
+            val externalReaderFailedPaymentState = viewModel.viewStateData.value as ExternalReaderFailedPaymentState
+            assertThat(externalReaderFailedPaymentState.primaryActionLabel).isEqualTo(R.string.support_contact)
+            assertThat(externalReaderFailedPaymentState.secondaryActionLabel).isEqualTo(R.string.cancel)
+        }
+
+    @Test
+    fun `given built in reader fails with Unknown error, when view model starts, then ui has contact support button`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(Generic, cardReaderConfig))
+                .thenReturn(Unknown)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithEmptyDataForRetry) }
+            }
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            val externalReaderFailedPaymentState = viewModel.viewStateData.value as BuiltInReaderFailedPaymentState
+            assertThat(externalReaderFailedPaymentState.primaryActionLabel).isEqualTo(R.string.support_contact)
+            assertThat(externalReaderFailedPaymentState.secondaryActionLabel).isEqualTo(R.string.cancel)
+        }
+
+    @Test
+    fun `given external reader fails with generic error, when contact support clicked, then contact support emitted and flow canceled`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(Generic, cardReaderConfig))
+                .thenReturn(PaymentFlowError.Declined.Generic)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithEmptyDataForRetry) }
+            }
+
+            viewModel.start()
+
+            val events = viewModel.event.captureValues()
+
+            (viewModel.viewStateData.value as ExternalReaderFailedPaymentState).onPrimaryActionClicked.invoke()
+
+            assertThat(events[0]).isInstanceOf(Exit::class.java)
+            assertThat(events[1]).isInstanceOf(ContactSupport::class.java)
+        }
+
+    @Test
+    fun `given built in reader fails with generic error, when contact support clicked, then contact support emitted and flow canceled`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(Generic, cardReaderConfig))
+                .thenReturn(PaymentFlowError.Declined.Generic)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithEmptyDataForRetry) }
+            }
+            initViewModel(BUILT_IN)
+
+            viewModel.start()
+
+            val events = viewModel.event.captureValues()
+
+            (viewModel.viewStateData.value as BuiltInReaderFailedPaymentState).onPrimaryActionClicked.invoke()
+
+            assertThat(events[0]).isInstanceOf(Exit::class.java)
+            assertThat(events[1]).isInstanceOf(ContactSupport::class.java)
         }
 
     @Test
@@ -2899,6 +2973,70 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertThat((viewModel.viewStateData.value as CollectRefundState).hintLabel)
                 .isEqualTo(R.string.card_reader_payment_retry_card_prompt)
+        }
+
+    @Test
+    fun `given Unknown refund error, when view model starts, then ui has contact support button`() =
+        testBlocking {
+            setupViewModelForInteracRefund()
+            whenever(
+                interacRefundErrorMapper.mapRefundErrorToUiError(
+                    CardInteracRefundStatus.RefundStatusErrorType.Generic
+                )
+            ).thenReturn(InteracRefundFlowError.Unknown)
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow {
+                    emit(
+                        CardInteracRefundStatus.InteracRefundFailure(
+                            CardInteracRefundStatus.RefundStatusErrorType.Generic,
+                            "",
+                            RefundParams(
+                                amount = BigDecimal.TEN,
+                                chargeId = "",
+                                currency = "USD"
+                            )
+                        )
+                    )
+                }
+            }
+
+            viewModel.start()
+
+            val externalReaderFailedPaymentState = viewModel.viewStateData.value as FailedRefundState
+            assertThat(externalReaderFailedPaymentState.primaryActionLabel).isEqualTo(R.string.support_contact)
+            assertThat(externalReaderFailedPaymentState.secondaryActionLabel).isEqualTo(R.string.cancel)
+        }
+
+    @Test
+    fun `given unknown error, when contact support clicked, then contact support event emited`() =
+        testBlocking {
+            setupViewModelForInteracRefund()
+            whenever(
+                interacRefundErrorMapper.mapRefundErrorToUiError(
+                    CardInteracRefundStatus.RefundStatusErrorType.Generic
+                )
+            ).thenReturn(InteracRefundFlowError.Unknown)
+            whenever(cardReaderManager.refundInteracPayment(any())).thenAnswer {
+                flow {
+                    emit(
+                        CardInteracRefundStatus.InteracRefundFailure(
+                            CardInteracRefundStatus.RefundStatusErrorType.Generic,
+                            "",
+                            RefundParams(
+                                amount = BigDecimal.TEN,
+                                chargeId = "",
+                                currency = "USD"
+                            )
+                        )
+                    )
+                }
+            }
+
+            viewModel.start()
+
+            val externalReaderFailedPaymentState = viewModel.viewStateData.value as FailedRefundState
+            externalReaderFailedPaymentState.onPrimaryActionClicked.invoke()
+            assertThat(viewModel.event.value).isEqualTo(ContactSupport)
         }
 
     @Test

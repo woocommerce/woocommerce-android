@@ -24,6 +24,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentVariationListBinding
 import com.woocommerce.android.di.GlideApp
+import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
@@ -35,6 +36,8 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.OnLoadMoreListener
+import com.woocommerce.android.ui.products.variations.GenerateVariationBottomSheetFragment.Companion.KEY_ADD_NEW_VARIATION
+import com.woocommerce.android.ui.products.variations.GenerateVariationBottomSheetFragment.Companion.KEY_GENERATE_ALL_VARIATIONS
 import com.woocommerce.android.ui.products.variations.VariationDetailFragment.Companion.KEY_VARIATION_DETAILS_RESULT
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.DeletedVariationData
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState.Hidden
@@ -67,7 +70,6 @@ class VariationListFragment :
     BaseFragment(R.layout.fragment_variation_list),
     BackPressListener,
     OnLoadMoreListener,
-    GenerateVariationPickerDialog.GenerateVariationPickerDialogListener,
     MenuProvider {
     companion object {
         const val TAG: String = "VariationListFragment"
@@ -89,8 +91,6 @@ class VariationListFragment :
     private var _binding: FragmentVariationListBinding? = null
     private val binding get() = _binding!!
 
-    private var generateVariationPickerDialog: GenerateVariationPickerDialog? = null
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -105,7 +105,6 @@ class VariationListFragment :
         skeletonView.hide()
         super.onDestroyView()
         _binding = null
-        generateVariationPickerDialog = null
         progressDialog = null
         layoutManager = null
     }
@@ -206,7 +205,7 @@ class VariationListFragment :
                 is ShowBulkUpdateLimitExceededWarning -> showBulkUpdateLimitExceededWarning()
                 is ShowGenerateVariationConfirmation -> showGenerateVariationConfirmation(event.variationCandidates)
                 is ShowGenerateVariationsError -> handleGenerateVariationError(event)
-                is ShowVariationDialog -> showAddVariationSelectDialog()
+                is ShowVariationDialog -> showGenerateVariationBottomSheet()
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_LIST_RESULT, event.data)
                 is Exit -> activity?.onBackPressedDispatcher?.onBackPressed()
             }
@@ -284,11 +283,10 @@ class VariationListFragment :
             .show()
     }
 
-    private fun showAddVariationSelectDialog() {
-        val dialog = generateVariationPickerDialog ?: GenerateVariationPickerDialog(requireContext()).apply {
-            listener = this@VariationListFragment
-        }
-        dialog.show()
+    private fun showGenerateVariationBottomSheet() {
+        VariationListFragmentDirections
+            .actionVariationListFragmentToGenerateVariationBottomSheetFragment()
+            .run { findNavController().navigateSafely(this) }
     }
 
     private fun showBulkUpdateLimitExceededWarning() {
@@ -302,6 +300,12 @@ class VariationListFragment :
     private fun setupResultHandlers(viewModel: VariationListViewModel) {
         handleResult<DeletedVariationData>(KEY_VARIATION_DETAILS_RESULT) {
             viewModel.onVariationDeleted(it.productID, it.variationID)
+        }
+        handleDialogNotice(KEY_ADD_NEW_VARIATION, R.id.variationListFragment) {
+            viewModel.onNewVariationClicked()
+        }
+        handleDialogNotice(KEY_GENERATE_ALL_VARIATIONS, R.id.variationListFragment) {
+            viewModel.onAddAllVariationsClicked()
         }
     }
 
@@ -402,13 +406,5 @@ class VariationListFragment :
             }
             else -> false
         }
-    }
-
-    override fun onGenerateAllVariations() {
-        viewModel.onAddAllVariationsClicked()
-    }
-
-    override fun onGenerateNewVariation() {
-        viewModel.onNewVariationClicked()
     }
 }

@@ -1,15 +1,13 @@
 package com.woocommerce.android.ui.login.storecreation.onboarding
 
-import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.analytics.AnalyticsEvent.STORE_ONBOARDING_COMPLETED
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.LAUNCH_YOUR_STORE
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.values
 import com.woocommerce.android.util.WooLog
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.onboarding.TaskDto
 import org.wordpress.android.fluxc.store.OnboardingStore
 import org.wordpress.android.fluxc.store.SiteStore
@@ -23,19 +21,17 @@ import javax.inject.Singleton
 class StoreOnboardingRepository @Inject constructor(
     private val onboardingStore: OnboardingStore,
     private val selectedSite: SelectedSite,
-    private val siteStore: SiteStore,
-    private val appPrefsWrapper: AppPrefsWrapper,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val siteStore: SiteStore
 ) {
 
-    private val onboardingTasksCacheFlow: MutableStateFlow<List<OnboardingTask>> = MutableStateFlow(emptyList())
+    private val onboardingTasksCacheFlow: MutableSharedFlow<List<OnboardingTask>> = MutableSharedFlow()
 
-    fun observeOnboardingTasks() = onboardingTasksCacheFlow
+    fun observeOnboardingTasks(): SharedFlow<List<OnboardingTask>> = onboardingTasksCacheFlow
 
     suspend fun fetchOnboardingTasks() {
         WooLog.d(WooLog.T.ONBOARDING, "Fetching onboarding tasks")
         val result = onboardingStore.fetchOnboardingTasks(selectedSite.get())
-        return when {
+        when {
             result.isError ->
                 WooLog.i(WooLog.T.ONBOARDING, "Error fetching onboarding tasks: ${result.error}")
 
@@ -64,21 +60,8 @@ class StoreOnboardingRepository @Inject constructor(
                         else it
                     }
                     ?.sortedBy { it.type.order }
+                    ?.sortedBy { it.isComplete }
                     ?: emptyList()
-
-                if (mobileSupportedTasks.all { it.isComplete }) {
-                    WooLog.d(
-                        WooLog.T.ONBOARDING,
-                        "All onboarding tasks are completed for siteId: ${selectedSite.getSelectedSiteId()}"
-                    )
-                    appPrefsWrapper.markAllOnboardingTasksCompleted(selectedSite.getSelectedSiteId())
-                    if (appPrefsWrapper.getStoreOnboardingShown(selectedSite.getSelectedSiteId())) {
-                        analyticsTrackerWrapper.track(stat = STORE_ONBOARDING_COMPLETED)
-                    }
-                }
-                if (mobileSupportedTasks.any { !it.isComplete }) {
-                    appPrefsWrapper.setStoreOnboardingShown(selectedSite.getSelectedSiteId())
-                }
 
                 onboardingTasksCacheFlow.emit(mobileSupportedTasks)
             }
@@ -87,9 +70,6 @@ class StoreOnboardingRepository @Inject constructor(
 
     private fun shouldMarkLaunchStoreAsCompleted(task: OnboardingTask) =
         task.type == LAUNCH_YOUR_STORE && selectedSite.get().isVisible && !selectedSite.get().isFreeTrial
-
-    fun isOnboardingCompleted(): Boolean =
-        appPrefsWrapper.isOnboardingCompleted(selectedSite.getSelectedSiteId())
 
     suspend fun launchStore(): LaunchStoreResult {
         WooLog.d(WooLog.T.ONBOARDING, "Launching store")

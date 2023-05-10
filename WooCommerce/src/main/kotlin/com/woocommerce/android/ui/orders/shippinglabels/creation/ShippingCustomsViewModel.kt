@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.model.ContentsType
 import com.woocommerce.android.model.CustomsLine
+import com.woocommerce.android.model.CustomsLine.Companion.MINIMUM_EU_DESCRIPTION_LENGTH
 import com.woocommerce.android.model.CustomsPackage
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.RestrictionType
@@ -14,6 +15,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCustomsViewModel.LineValidationState
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -68,6 +70,9 @@ class ShippingCustomsViewModel @Inject constructor(
     val countries: List<Location>
         get() = dataStore.getCountries().map { it.toAppModel() }
 
+    val isEUShippingScenario
+        get() = args.isEUShippingScenario
+
     init {
         loadData()
     }
@@ -83,6 +88,7 @@ class ShippingCustomsViewModel @Inject constructor(
             }
             viewState = viewState.copy(
                 isProgressViewShown = false,
+                isShippingNoticeVisible = isEUShippingScenario,
                 customsPackages = packagesUiStates
             )
         }
@@ -132,6 +138,14 @@ class ShippingCustomsViewModel @Inject constructor(
 
     fun onBackButtonClicked() {
         triggerEvent(Exit)
+    }
+
+    fun onShippingNoticeLearnMoreClicked(learnMoreUrl: String) {
+        triggerEvent(OpenShippingInstructions(learnMoreUrl))
+    }
+
+    fun onShippingNoticeDismissClicked() {
+        viewState = viewState.copy(isShippingNoticeVisible = false)
     }
 
     override fun onPackageExpandedChanged(position: Int, isExpanded: Boolean) {
@@ -197,6 +211,10 @@ class ShippingCustomsViewModel @Inject constructor(
     override fun onOriginCountryChanged(packagePosition: Int, linePosition: Int, country: Location) {
         val newLine = viewState.customsPackages[packagePosition].data.lines[linePosition].copy(originCountry = country)
         updateLine(packagePosition, linePosition, newLine)
+    }
+
+    override fun onShippingNoticeClicked() {
+        viewState = viewState.copy(isShippingNoticeVisible = true)
     }
 
     private fun updateLine(packagePosition: Int, linePosition: Int, line: CustomsLine) {
@@ -285,7 +303,11 @@ class ShippingCustomsViewModel @Inject constructor(
         fun CustomsLine.validateItemDescription(): String? {
             return if (itemDescription.isBlank()) {
                 resourceProvider.getString(R.string.shipping_label_customs_required_field)
-            } else null
+            } else if (isEUShippingScenario && itemDescription.length < MINIMUM_EU_DESCRIPTION_LENGTH) {
+                resourceProvider.getString(R.string.shipping_label_customs_item_description_too_short)
+            } else {
+                null
+            }
         }
 
         fun CustomsLine.validateWeight(): String? {
@@ -320,7 +342,8 @@ class ShippingCustomsViewModel @Inject constructor(
     @Parcelize
     data class ViewState(
         val customsPackages: List<CustomsPackageUiState> = emptyList(),
-        val isProgressViewShown: Boolean = false
+        val isProgressViewShown: Boolean = false,
+        val isShippingNoticeVisible: Boolean = false
     ) : Parcelable {
         @IgnoredOnParcel
         val canSubmitForm: Boolean
@@ -364,6 +387,8 @@ class ShippingCustomsViewModel @Inject constructor(
             get() = itemDescriptionErrorMessage == null && hsTariffErrorMessage == null &&
                 weightErrorMessage == null && valueErrorMessage == null
     }
+
+    data class OpenShippingInstructions(val url: String) : MultiLiveEvent.Event()
 }
 
 typealias CustomsLineUiState = Pair<CustomsLine, LineValidationState>

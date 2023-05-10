@@ -384,10 +384,11 @@
     -->
     <string name="signup_get_started_button">Get Started</string>
     <string name="signup_get_started_label">Get started in minutes</string>
-    <string name="signup_already_registered">First, let’s create your account. Already registered? &lt;a href=\'login\'&gt;&lt;u&gt;Log in&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="signup_create_password_label">Create your password</string>
+    <string name="signup_get_started_create_account_label">First, let’s create your account. </string>
     <string name="signup_email_address_hint">Your email address</string>
     <string name="signup_password_hint">Choose a password</string>
-    <string name="signup_terms_of_service">By continuing, you agree to our &lt;u&gt;Terms of Service.&lt;/u&gt;</string>
+    <string name="signup_terms_of_service">By continuing, you agree to our &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Terms of Service.&lt;/u&gt;&lt;/a&gt;</string>
     <string name="signup_creating_account_loading_message">Creating new account</string>
     <string name="signup_email_exist_input">An account with this email already exists.</string>
     <string name="signup_email_invalid_input">Please enter a valid email address.</string>
@@ -1171,13 +1172,17 @@
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
     <string name="card_reader_tap_to_pay_explanation_title">Collect card payments\nwith your phone</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Your phone is ready for Tap to Pay.\nYour customer can tap their card\non your phone to pay.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Try a payment using your card and\nrefund it when you’re done.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Try a payment using your card and\nit will be refunded when you’re done.</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find"> You can find Tap to Pay on Android in\nMenu &gt; Payments, or Collect Payment and\nchoose Tap to Pay.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Try a payment</string>
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Something went wrong. Please try again later.</string>
+    <string name="card_reader_tap_to_pay_explanation_refunding_payment">Refunding test payment…</string>
+    <string name="card_reader_tap_to_pay_explanation_refund_failed">The refund failed. Try to refund manually</string>
     <string name="card_reader_tap_to_pay_beta_features_heading">Tap To Pay</string>
     <string name="card_reader_tap_to_pay_beta_features_subheading">Test out Tap To Pay in the app</string>
     <string name="card_reader_tap_to_pay_test_payment_note">Tap To Pay Test Payment</string>
+    <string name="card_reader_tap_to_pay_successful_refund_message">Test Tap To Pay payment was successfully refunded</string>
+    <string name="card_reader_tap_to_pay_successful_refund_action_label">View Order</string>
 
     <!--
             Card Reader Type Selection
@@ -1886,7 +1891,6 @@
     <string name="send_feedback">Send feedback</string>
     <string name="beta_features">Beta features</string>
     <string name="beta_features_add_ons">View Add-ons</string>
-    <string name="beta_features_coupons">Coupons Management</string>
     <string name="beta_features_simple_payments">Simple payments</string>
     <string name="settings_signout">Log out</string>
     <string name="settings_preferences">Preferences</string>
@@ -2260,8 +2264,8 @@
     <string name="notifications_permission_description">We need your permission to send you push notifications for new orders, reviews, etc. delivered to your device.</string>
 
     <!-- Jetpack Connection Package -->
-    <string name="jetpack_benefits_bottom_banner_title">Get the full experience with Jetpack</string>
-    <string name="jetpack_benefits_bottom_banner_subtitle">See the benefits</string>
+    <string name="jetpack_benefits_bottom_banner_title">Get order notifications and more</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Stay updated and boost store security. Explore Jetpack now.</string>
     <string name="jetpack_benefits_modal_title">Get the most out of your store</string>
     <string name="jetpack_benefits_modal_subtitle">Install the free Jetpack plugin to experience the best mobile experience.</string>
     <string name="jetpack_benefits_modal_push_notifications_title">Push Notifications</string>
@@ -2352,8 +2356,6 @@
     <string name="coupon_summary_template">%1$s off %2$s</string>
     <string name="coupon_details_expiration_date">Expires %1$s</string>
     <string name="coupon_summary_loading_failure">Loading coupon summary failed</string>
-    <string name="coupon_beta_features_heading">Coupons Management</string>
-    <string name="coupon_beta_features_subheading">Test out managing coupons in the app</string>
     <string name="coupon_details_copy_clipboard_label">Coupon Code</string>
     <string name="coupon_details_copy_success">Coupon code copied to clipboard.</string>
     <string name="coupon_details_copy_error">Error copying coupon code to clipboard.</string>
@@ -3030,6 +3032,9 @@
     <string name="store_onboarding_full_screen_transition_name">Onboarding full screen</string>
     <string name="store_onboarding_collapsed_transition_name">Onboarding collapsed list</string>
     <string name="store_onboarding_menu_share_feedback">Share feedback</string>
+    <string name="store_onboarding_menu_hide_store_setup">Hide store setup list</string>
+    <string name="store_onboarding_dialog_title">Hide store setup list</string>
+    <string name="store_onboarding_dialog_description">You can restore it back when you need it from Menu &gt; Settings &gt; Store</string>
     <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">To launch your store, you need to upgrade to our plan. &lt;u&gt;Upgrade&lt;/u&gt;</string>
     <string name="store_onboarding_launch_store_button">Publish my store</string>
     <string name="store_onboarding_launch_store_share_url_button">Share URL</string>
@@ -3045,6 +3050,8 @@
     <string name="store_onboarding_launch_store_ok">OK</string>
     <string name="store_onboarding_get_paid_title">Payments Setup</string>
     <string name="store_onboarding_get_paid_loading_label">Loading…</string>
+    <string name="store_onboarding_setting_title">Store Setup List</string>
+    <string name="store_onboarding_setting_description">Show or hide store setup list</string>
 
     <!--
     Support Request
@@ -3241,4 +3248,11 @@
     <string name="component_default_option">Default option</string>
     <string name="component_type_products">Products</string>
     <string name="component_type_categories">Categories</string>
+
+    <!--
+    Eu-Bound Shipping notice banner
+    -->
+    <string name="shipping_notice_banner_content">When shipping to countries that follow European Union (EU) customs rules, you must provide a clear, specific description of every item. Otherwise, shipments may be delayed or interrupted at customs.</string>
+    <string name="shipping_notice_learn_more">Learn More</string>
+    <string name="shipping_notice_dismiss">Dismiss</string>
 </resources>
