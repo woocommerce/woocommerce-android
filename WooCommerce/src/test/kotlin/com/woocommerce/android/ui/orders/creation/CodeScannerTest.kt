@@ -165,6 +165,32 @@ class CodeScannerTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when scanning code succeeds but does not contain raw value, then proper failure message is emitted`() {
+        testBlocking {
+            val errorMessage = "Failed to find a valid raw value!"
+            val mockBarcode = mock<Task<Barcode>>()
+            whenever(scanner.startScan()).thenAnswer {
+                mockBarcode
+            }
+            whenever(mockBarcode.addOnSuccessListener(any())).thenAnswer {
+                @Suppress("UNCHECKED_CAST")
+                (it.arguments[0] as OnSuccessListener<Barcode>).onSuccess(
+                    mock {
+                        on {
+                            rawValue
+                        }.thenReturn(null)
+                    }
+                )
+                mock<Task<Barcode>>()
+            }
+
+            val result = codeScanner.startScan().first()
+
+            assertThat((result as CodeScannerStatus.Failure).error?.message).isEqualTo(errorMessage)
+        }
+    }
+
+    @Test
     fun `when scanning code fails, then flow is terminated`() {
         testBlocking {
             val mockBarcode = mock<Task<Barcode>>()
