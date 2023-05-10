@@ -1,8 +1,12 @@
 package com.woocommerce.android.ui.prefs
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,9 +22,14 @@ class CloseAccountViewModel @Inject constructor(
 
     private val _viewState = MutableLiveData(
         CloseAccountState(
-            userName = accountRepository.getUserAccount()?.userName
+            title = R.string.settings_close_account_dialog_title,
+            description = R.string.settings_close_account_dialog_description,
+            mainButtonText = R.string.settings_close_account_dialog_confirm_button,
+            currentUserName = accountRepository.getUserAccount()?.userName
                 ?: error("Account deletion setting requires user to log in with WP.com account"),
-            enteredUserNameError = null
+            enteredUserName = "",
+            isLoading = false,
+            isAccountDeletionError = false,
         )
     )
     val viewState = _viewState
@@ -29,7 +38,18 @@ class CloseAccountViewModel @Inject constructor(
         launch {
             _viewState.value = _viewState.value?.copy(isLoading = true)
             delay(3000)
+            _viewState.value = _viewState.value?.copy(
+                title = R.string.settings_close_account_error_dialog_title,
+                description = R.string.settings_close_account_error_dialog_description,
+                mainButtonText = R.string.settings_close_account_dialog_contact_support_button,
+                isLoading = false,
+                isAccountDeletionError = true
+            )
         }
+    }
+
+    fun onContactSupportClicked() {
+        triggerEvent(ContactSupport(HelpOrigin.ACCOUNT_DELETION))
     }
 
     fun onCloseAccountDismissed() {
@@ -41,9 +61,14 @@ class CloseAccountViewModel @Inject constructor(
     }
 
     data class CloseAccountState(
-        val userName: String,
-        val enteredUserName: String = "",
-        val enteredUserNameError: String?,
-        val isLoading: Boolean = false
+        @StringRes val title: Int,
+        @StringRes val description: Int,
+        @StringRes val mainButtonText: Int,
+        val currentUserName: String,
+        val enteredUserName: String,
+        val isAccountDeletionError: Boolean,
+        val isLoading: Boolean
     )
+
+    data class ContactSupport(val origin: HelpOrigin) : MultiLiveEvent.Event()
 }

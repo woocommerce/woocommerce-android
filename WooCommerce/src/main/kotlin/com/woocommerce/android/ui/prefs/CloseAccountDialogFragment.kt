@@ -34,13 +34,12 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.R.color
-import com.woocommerce.android.R.dimen
-import com.woocommerce.android.R.string
+import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.prefs.CloseAccountViewModel.CloseAccountState
+import com.woocommerce.android.ui.prefs.CloseAccountViewModel.ContactSupport
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -69,8 +68,13 @@ class CloseAccountDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is Event.Exit -> {
-                    findNavController().popBackStack()
+                is Event.Exit -> findNavController().popBackStack()
+                is ContactSupport -> {
+                    SupportRequestFormActivity.createIntent(
+                        context = requireContext(),
+                        origin = event.origin,
+                        extraTags = ArrayList()
+                    ).let { activity?.startActivity(it) }
                 }
             }
         }
@@ -81,42 +85,41 @@ class CloseAccountDialogFragment : DialogFragment() {
         val focusRequester = remember { FocusRequester() }
         Column {
             Column(
-                modifier = Modifier.padding(dimensionResource(id = dimen.major_100)),
-                verticalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.major_75)),
-
-                ) {
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75)),
+            ) {
                 Text(
-                    text = stringResource(id = string.settings_close_account_dialog_title),
+                    text = stringResource(id = state.title),
                     style = MaterialTheme.typography.h6,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = stringResource(id = string.settings_close_account_dialog_description),
+                    text = stringResource(id = state.description),
                     style = MaterialTheme.typography.subtitle1,
                 )
                 Text(
-                    text = state.userName,
+                    text = state.currentUserName,
                     style = MaterialTheme.typography.subtitle1,
                 )
                 WCOutlinedTextField(
                     modifier = Modifier
                         .focusRequester(focusRequester)
-                        .padding(top = dimensionResource(id = dimen.minor_100)),
+                        .padding(top = dimensionResource(id = R.dimen.minor_100)),
                     value = state.enteredUserName,
                     onValueChange = { viewModel.onUserNameInputChanged(it) },
-                    label = stringResource(id = string.username),
+                    label = stringResource(id = R.string.username),
                     singleLine = true,
                 )
             }
             Divider(
-                color = colorResource(id = color.divider_color),
-                thickness = dimensionResource(id = dimen.minor_10)
+                color = colorResource(id = R.color.divider_color),
+                thickness = dimensionResource(id = R.dimen.minor_10)
             )
             Row(
                 modifier = Modifier.padding(
-                    start = dimensionResource(id = dimen.major_100),
-                    end = dimensionResource(id = dimen.major_100),
-                    bottom = dimensionResource(id = dimen.minor_100),
+                    start = dimensionResource(id = R.dimen.major_100),
+                    end = dimensionResource(id = R.dimen.major_100),
+                    bottom = dimensionResource(id = R.dimen.minor_100),
                 ),
                 verticalAlignment = Alignment.CenterVertically
             )
@@ -125,32 +128,36 @@ class CloseAccountDialogFragment : DialogFragment() {
                     onClick = viewModel::onCloseAccountDismissed
                 ) {
                     Text(
-                        text = stringResource(id = string.cancel),
+                        text = stringResource(id = R.string.cancel),
                         style = MaterialTheme.typography.subtitle1
                     )
                 }
                 WCTextButton(
-                    onClick = viewModel::onConfirmCloseAccount,
-                    enabled = state.enteredUserName == state.userName
+                    onClick = if (state.isAccountDeletionError) viewModel::onContactSupportClicked
+                    else viewModel::onConfirmCloseAccount,
+                    enabled = state.enteredUserName == state.currentUserName
                 ) {
                     Box(
                         modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.Center,
                     ) {
                         if (state.isLoading) {
-                            CircularProgressIndicator(modifier = Modifier.size(size = dimensionResource(id = dimen.major_150)))
+                            CircularProgressIndicator(modifier = Modifier.size(size = dimensionResource(id = R.dimen.major_150)))
                         } else {
                             Text(
-                                text = stringResource(id = string.settings_close_account_dialog_confirm_button),
+                                text = stringResource(id = state.mainButtonText),
                                 style = MaterialTheme.typography.subtitle1,
                                 textAlign = TextAlign.Center,
-                                color =
-                                if (state.enteredUserName == state.userName) colorResource(id = color.color_error)
-                                else colorResource(id = color.color_on_surface_disabled)
+                                color = colorResource(
+                                    when {
+                                        state.isAccountDeletionError -> R.color.color_primary
+                                        state.enteredUserName == state.currentUserName -> R.color.color_error
+                                        else -> R.color.color_on_surface_disabled
+                                    }
+                                )
                             )
                         }
                     }
-
                 }
             }
         }
