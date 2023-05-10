@@ -32,4 +32,14 @@ class PrivacySettingsRepository @Inject constructor(
             else -> Result.success(Unit)
         }
     }
+
+    suspend fun fetchAccountSettings(): Result<Unit> {
+        val event: AccountStore.OnAccountChanged =
+            dispatcher.dispatchAndAwait(AccountActionBuilder.newFetchAccountAction())
+
+        return when {
+            event.isError -> Result.failure(OnChangedException(event.error))
+            else -> Result.success(Unit)
+        }
+    }
 }

@@ -85,4 +85,48 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
             assertThat(sut.state.value?.sendUsageStats).isFalse
             assertThat(sut.event.value).isInstanceOf(MultiLiveEvent.Event.ShowActionSnackbar::class.java)
         }
+
+    @Test
+    fun `given the API responses with disabled tracking and tracking locally enabled, when user opens the screen, turn off tracking and update state`(): Unit =
+        testBlocking {
+            // given
+            accountStore.stub {
+                on { account } doReturn AccountModel().apply {
+                    tracksOptOut = false
+                } doReturn AccountModel().apply { tracksOptOut = true }
+            }
+            repository.stub {
+                onBlocking { fetchAccountSettings() } doReturn Result.success(Unit)
+            }
+
+            // when
+            init()
+            runCurrent()
+
+            // then
+            assertThat(sut.state.value?.sendUsageStats).isFalse
+            verify(appPrefs).sendUsageStats(false)
+        }
+
+    @Test
+    fun `given failed API response, when user opens the screen, keep state unchanged and show snackbar`() =
+        testBlocking {
+            // given
+            accountStore.stub {
+                on { account } doReturn AccountModel().apply {
+                    tracksOptOut = true
+                }
+            }
+            repository.stub {
+                onBlocking { fetchAccountSettings() } doReturn Result.failure(Exception())
+            }
+
+            // when
+            init()
+            runCurrent()
+
+            // then
+            assertThat(sut.state.value?.sendUsageStats).isFalse
+            assertThat(sut.event.value).isInstanceOf(MultiLiveEvent.Event.ShowActionSnackbar::class.java)
+        }
 }

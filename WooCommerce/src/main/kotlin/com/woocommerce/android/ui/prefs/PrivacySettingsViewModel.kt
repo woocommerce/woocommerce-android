@@ -33,6 +33,33 @@ class PrivacySettingsViewModel @Inject constructor(
     )
     val state: LiveData<State> = _state
 
+    init {
+        initialize()
+    }
+
+    fun initialize() {
+        launch {
+            val event = repository.fetchAccountSettings()
+
+            event.fold(
+                onSuccess = {
+                    appPrefs.sendUsageStats(!accountStore.account.tracksOptOut)
+                    _state.value =
+                        _state.value?.copy(sendUsageStats = !accountStore.account.tracksOptOut)
+                },
+                onFailure = {
+                    triggerEvent(
+                        MultiLiveEvent.Event.ShowActionSnackbar(
+                            resourceProvider.getString(R.string.settings_tracking_analytics_error_fetch)
+                        ) {
+                            initialize()
+                        }
+                    )
+                }
+            )
+        }
+    }
+
     private fun getSendUsageStats() = !accountStore.account.tracksOptOut
 
     private fun getCrashReportingEnabled() = appPrefs.isCrashReportingEnabled()
