@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -21,6 +23,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.ComposeView
@@ -30,6 +33,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -58,7 +62,14 @@ class CloseAccountDialogFragment : DialogFragment() {
             setContent {
                 WooThemeWithBackground {
                     viewModel.viewState.observeAsState().value?.let { state ->
-                        CloseAccountDialog(state)
+                        val focusRequester = remember { FocusRequester() }
+                        Column(modifier = Modifier.clip(RoundedCornerShape(35.dp))) {
+                            if (state.isLoading) {
+                                LoadingDialog()
+                            } else
+                                AccountClosingDialog(state, focusRequester)
+                        }
+                        LaunchedEffect(Unit) { focusRequester.requestFocus() }
                     }
                 }
             }
@@ -81,86 +92,98 @@ class CloseAccountDialogFragment : DialogFragment() {
     }
 
     @Composable
-    private fun CloseAccountDialog(state: CloseAccountState) {
-        val focusRequester = remember { FocusRequester() }
-        Column {
-            Column(
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
-                verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75)),
+    private fun LoadingDialog() {
+        Column(
+            modifier = Modifier
+                .padding(dimensionResource(id = R.dimen.major_100))
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = stringResource(id = R.string.settings_close_account_dialog_loading_title),
+                style = MaterialTheme.typography.h6
+            )
+            Spacer(modifier = Modifier.size(size = dimensionResource(id = R.dimen.major_150)))
+            CircularProgressIndicator(modifier = Modifier.size(size = dimensionResource(id = R.dimen.major_150)))
+        }
+    }
+
+    @Composable
+    private fun AccountClosingDialog(
+        state: CloseAccountState,
+        focusRequester: FocusRequester
+    ) {
+        Column(
+            modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75)),
+        ) {
+            Text(
+                text = stringResource(id = state.title),
+                style = MaterialTheme.typography.h6,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = stringResource(id = state.description),
+                style = MaterialTheme.typography.subtitle1,
+            )
+            Text(
+                text = state.currentUserName,
+                style = MaterialTheme.typography.subtitle1,
+            )
+            WCOutlinedTextField(
+                modifier = Modifier
+                    .focusRequester(focusRequester)
+                    .padding(top = dimensionResource(id = R.dimen.minor_100)),
+                value = state.enteredUserName,
+                onValueChange = { viewModel.onUserNameInputChanged(it) },
+                label = stringResource(id = R.string.username),
+                singleLine = true,
+            )
+        }
+        Divider(
+            color = colorResource(id = R.color.divider_color),
+            thickness = dimensionResource(id = R.dimen.minor_10)
+        )
+        Row(
+            modifier = Modifier.padding(
+                start = dimensionResource(id = R.dimen.major_100),
+                end = dimensionResource(id = R.dimen.major_100),
+                bottom = dimensionResource(id = R.dimen.minor_100),
+            ),
+            verticalAlignment = Alignment.CenterVertically
+        )
+        {
+            WCTextButton(
+                onClick = viewModel::onCloseAccountDismissed
             ) {
                 Text(
-                    text = stringResource(id = state.title),
-                    style = MaterialTheme.typography.h6,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = stringResource(id = state.description),
-                    style = MaterialTheme.typography.subtitle1,
-                )
-                Text(
-                    text = state.currentUserName,
-                    style = MaterialTheme.typography.subtitle1,
-                )
-                WCOutlinedTextField(
-                    modifier = Modifier
-                        .focusRequester(focusRequester)
-                        .padding(top = dimensionResource(id = R.dimen.minor_100)),
-                    value = state.enteredUserName,
-                    onValueChange = { viewModel.onUserNameInputChanged(it) },
-                    label = stringResource(id = R.string.username),
-                    singleLine = true,
+                    text = stringResource(id = R.string.cancel),
+                    style = MaterialTheme.typography.subtitle1
                 )
             }
-            Divider(
-                color = colorResource(id = R.color.divider_color),
-                thickness = dimensionResource(id = R.dimen.minor_10)
-            )
-            Row(
-                modifier = Modifier.padding(
-                    start = dimensionResource(id = R.dimen.major_100),
-                    end = dimensionResource(id = R.dimen.major_100),
-                    bottom = dimensionResource(id = R.dimen.minor_100),
-                ),
-                verticalAlignment = Alignment.CenterVertically
-            )
-            {
-                WCTextButton(
-                    onClick = viewModel::onCloseAccountDismissed
+            WCTextButton(
+                onClick = if (state.isAccountDeletionError) viewModel::onContactSupportClicked
+                else viewModel::onConfirmCloseAccount,
+                enabled = state.enteredUserName == state.currentUserName
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = stringResource(id = R.string.cancel),
-                        style = MaterialTheme.typography.subtitle1
+                        text = stringResource(id = state.mainButtonText),
+                        style = MaterialTheme.typography.subtitle1,
+                        textAlign = TextAlign.Center,
+                        color = colorResource(
+                            when {
+                                state.isAccountDeletionError -> R.color.color_primary
+                                state.enteredUserName == state.currentUserName -> R.color.color_error
+                                else -> R.color.color_on_surface_disabled
+                            }
+                        )
                     )
-                }
-                WCTextButton(
-                    onClick = if (state.isAccountDeletionError) viewModel::onContactSupportClicked
-                    else viewModel::onConfirmCloseAccount,
-                    enabled = state.enteredUserName == state.currentUserName
-                ) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        if (state.isLoading) {
-                            CircularProgressIndicator(modifier = Modifier.size(size = dimensionResource(id = R.dimen.major_150)))
-                        } else {
-                            Text(
-                                text = stringResource(id = state.mainButtonText),
-                                style = MaterialTheme.typography.subtitle1,
-                                textAlign = TextAlign.Center,
-                                color = colorResource(
-                                    when {
-                                        state.isAccountDeletionError -> R.color.color_primary
-                                        state.enteredUserName == state.currentUserName -> R.color.color_error
-                                        else -> R.color.color_on_surface_disabled
-                                    }
-                                )
-                            )
-                        }
-                    }
                 }
             }
         }
-        LaunchedEffect(Unit) { focusRequester.requestFocus() }
     }
 }
