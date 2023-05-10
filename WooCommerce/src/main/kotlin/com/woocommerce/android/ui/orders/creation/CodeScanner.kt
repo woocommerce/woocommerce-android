@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders.creation
 
+import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanner
+import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -15,15 +17,7 @@ class GoogleCodeScanner @Inject constructor(private val scanner: GmsBarcodeScann
         return callbackFlow {
             scanner.startScan()
                 .addOnSuccessListener { code ->
-                    code.rawValue?.let {
-                        this@callbackFlow.trySend(CodeScannerStatus.Success(code.rawValue))
-                    } ?: run {
-                        this@callbackFlow.trySend(
-                            CodeScannerStatus.Failure(
-                                Throwable("Failed to find a valid raw value!")
-                            )
-                        )
-                    }
+                    handleScanSuccess(code)
                     this@callbackFlow.close()
                 }
                 .addOnFailureListener { throwable ->
@@ -31,6 +25,18 @@ class GoogleCodeScanner @Inject constructor(private val scanner: GmsBarcodeScann
                     this@callbackFlow.close()
                 }
             awaitClose()
+        }
+    }
+
+    private fun ProducerScope<CodeScannerStatus>.handleScanSuccess(code: Barcode) {
+        code.rawValue?.let {
+            trySend(CodeScannerStatus.Success(code.rawValue))
+        } ?: run {
+            trySend(
+                CodeScannerStatus.Failure(
+                    Throwable("Failed to find a valid raw value!")
+                )
+            )
         }
     }
 }

@@ -30,13 +30,20 @@ class CodeScannerTest : BaseUnitTest() {
     @Test
     fun `when scanning code succeeds, then success is emitted`() {
         testBlocking {
+            val barcodeRawValue = "12345"
             val mockBarcode = mock<Task<Barcode>>()
             whenever(scanner.startScan()).thenAnswer {
                 mockBarcode
             }
             whenever(mockBarcode.addOnSuccessListener(any())).thenAnswer {
                 @Suppress("UNCHECKED_CAST")
-                (it.arguments[0] as OnSuccessListener<Barcode>).onSuccess(mock())
+                (it.arguments[0] as OnSuccessListener<Barcode>).onSuccess(
+                    mock {
+                        on {
+                            rawValue
+                        }.thenReturn(barcodeRawValue)
+                    }
+                )
                 mock<Task<Barcode>>()
             }
 
