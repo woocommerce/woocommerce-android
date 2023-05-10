@@ -32,6 +32,7 @@ class PrivacySettingsViewModel @Inject constructor(
         State(
             sendUsageStats = getSendUsageStats(),
             crashReportingEnabled = getCrashReportingEnabled(),
+            progressBarVisible = false,
         )
     )
     val state: LiveData<State> = _state
@@ -85,7 +86,8 @@ class PrivacySettingsViewModel @Inject constructor(
 
     data class State(
         val sendUsageStats: Boolean,
-        val crashReportingEnabled: Boolean
+        val crashReportingEnabled: Boolean,
+        val progressBarVisible: Boolean,
     )
 
     sealed class PrivacySettingsEvent : MultiLiveEvent.Event() {

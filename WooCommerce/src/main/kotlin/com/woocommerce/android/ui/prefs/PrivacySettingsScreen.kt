@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.prefs
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -17,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Switch
@@ -44,7 +48,11 @@ fun PrivacySettingsScreen(
     viewModel: PrivacySettingsViewModel,
 ) {
     val state: PrivacySettingsViewModel.State by viewModel.state.observeAsState(
-        PrivacySettingsViewModel.State(sendUsageStats = false, crashReportingEnabled = false)
+        PrivacySettingsViewModel.State(
+            sendUsageStats = false,
+            crashReportingEnabled = false,
+            progressBarVisible = false
+        )
     )
     PrivacySettingsScreen(
         state,
@@ -66,6 +74,13 @@ fun PrivacySettingsScreen(
     onCookiePolicyClicked: () -> Unit,
 ) {
     Scaffold(backgroundColor = MaterialTheme.colors.surface) { paddingValues ->
+        AnimatedVisibility(
+            visible = state.progressBarVisible,
+            enter = slideInVertically(),
+            exit = slideOutVertically()
+        ) {
+            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+        }
         Column(
             modifier = Modifier
                 .padding(paddingValues)
@@ -263,7 +278,7 @@ private fun Default() {
     WooThemeWithBackground {
         PrivacySettingsScreen(
             state = PrivacySettingsViewModel.State(
-                sendUsageStats = true, crashReportingEnabled = false
+                sendUsageStats = true, crashReportingEnabled = false, progressBarVisible = true
             ),
             {}, {}, {}, {}, {}
         )
