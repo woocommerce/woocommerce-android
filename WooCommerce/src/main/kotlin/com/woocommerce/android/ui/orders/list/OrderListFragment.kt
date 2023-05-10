@@ -74,7 +74,7 @@ class OrderListFragment :
         const val STATE_KEY_IS_SEARCHING = "is_searching"
         const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
 
-        private const val JITM_MESSAGE_PATH = "woomobile:my_store:admin_notices"
+        private const val JITM_MESSAGE_PATH = "woomobile:order_list:admin_notices"
         private const val JITM_FRAGMENT_TAG = "jitm_orders_fragment"
     }
 
