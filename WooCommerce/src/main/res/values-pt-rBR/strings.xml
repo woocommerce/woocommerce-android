@@ -818,8 +818,6 @@ Language: pt_BR
     <string name="coupon_details_copy_error">Erro ao copiar o código do cupom para a área de transferência.</string>
     <string name="coupon_details_copy_success">Código do cupom copiado para a área de transferência.</string>
     <string name="coupon_details_copy_clipboard_label">Código do cupom</string>
-    <string name="coupon_beta_features_subheading">Experimente gerenciar os cupons no aplicativo</string>
-    <string name="coupon_beta_features_heading">Gerenciamento de cupons</string>
     <string name="coupon_summary_loading_failure">Falha ao carregar o resumo dos cupons</string>
     <string name="coupon_details_expiration_date">Expira em %1$s</string>
     <string name="coupon_summary_template">%1$s de desconto %2$s</string>
@@ -831,7 +829,6 @@ Language: pt_BR
     <string name="coupon_details_menu_share">Compartilhar cupom</string>
     <string name="coupon_details_menu_copy">Copiar código do cupom</string>
     <string name="inbox_note_survey_actioned">Obrigado pelo feedback.</string>
-    <string name="beta_features_coupons">Gerenciamento de cupons</string>
     <string name="card_reader_connect_permission_rationale_hint">Os pagamentos por leitor de cartão exigem uma permissão de localização precisa</string>
     <string name="card_reader_connect_permission_rationale_header">Acesso ao local obrigatório</string>
     <string name="simple_payments_share_payment_dialog_title">Finalizar compra - %s</string>

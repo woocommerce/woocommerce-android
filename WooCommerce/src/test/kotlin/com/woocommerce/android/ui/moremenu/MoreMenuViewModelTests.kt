@@ -46,7 +46,6 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     }
     private val moreMenuRepository: MoreMenuRepository = mock {
         onBlocking { isInboxEnabled() } doReturn true
-        on { observeCouponBetaSwitch() } doReturn flowOf(true)
     }
     private val accountStore: AccountStore = mock {
         on { account } doReturn AccountModel().apply {
@@ -87,20 +86,6 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             tapToPayAvailabilityStatus = tapToPayAvailabilityStatus,
             appPrefsWrapper = appPrefsWrapper
         )
-    }
-
-    @Test
-    fun `when coupons beta feature toggle is updated, then refresh the list of button`() = testBlocking {
-        val prefsChanges = MutableSharedFlow<Boolean>()
-        setup {
-            whenever(moreMenuRepository.observeCouponBetaSwitch()).thenReturn(prefsChanges)
-        }
-        val states = viewModel.moreMenuViewState.captureValues()
-
-        prefsChanges.emit(false)
-        prefsChanges.emit(true)
-
-        assertThat(states.size).isEqualTo(2)
     }
 
     @Test

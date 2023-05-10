@@ -818,8 +818,6 @@ Language: fr
     <string name="coupon_details_copy_error">Erreur lors de la copie du code promo dans le presse-papier.</string>
     <string name="coupon_details_copy_success">Le code promo a été copié dans le presse-papier.</string>
     <string name="coupon_details_copy_clipboard_label">Code promo</string>
-    <string name="coupon_beta_features_subheading">Testez la gestion de codes promo dans l’application</string>
-    <string name="coupon_beta_features_heading">Gestion des codes promo</string>
     <string name="coupon_summary_loading_failure">Le chargement du résumé du code promo a échoué</string>
     <string name="coupon_details_expiration_date">Expire %1$s</string>
     <string name="coupon_summary_template">%1$s de remise sur %2$s</string>
@@ -831,7 +829,6 @@ Language: fr
     <string name="coupon_details_menu_share">Partager des codes promo</string>
     <string name="coupon_details_menu_copy">Copier le code promo</string>
     <string name="inbox_note_survey_actioned">Merci de votre retour.</string>
-    <string name="beta_features_coupons">Gestion des codes promo</string>
     <string name="card_reader_connect_permission_rationale_hint">Les paiements par lecteur de carte nécessitent une autorisation de localisation précise</string>
     <string name="card_reader_connect_permission_rationale_header">Accès à la localisation requise</string>
     <string name="simple_payments_share_payment_dialog_title">Validation de la commande - %s</string>

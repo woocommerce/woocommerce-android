@@ -818,8 +818,6 @@ Language: he_IL
     <string name="coupon_details_copy_error">שגיאה בהעתקת קוד הקופון ללוח.</string>
     <string name="coupon_details_copy_success">קוד הקופון הועתק ללוח.</string>
     <string name="coupon_details_copy_clipboard_label">קוד קופון</string>
-    <string name="coupon_beta_features_subheading">לנסות ניהול קופונים באפליקציה</string>
-    <string name="coupon_beta_features_heading">ניהול קופונים</string>
     <string name="coupon_summary_loading_failure">הטעינה של סיכום הקופונים נכשלה</string>
     <string name="coupon_details_expiration_date">בתוקף עד ⁦%1$s⁩</string>
     <string name="coupon_summary_template">הנחה של ⁦%1$s⁩ על ⁦%2$s⁩</string>
@@ -831,7 +829,6 @@ Language: he_IL
     <string name="coupon_details_menu_share">לשתף קופון</string>
     <string name="coupon_details_menu_copy">להעתיק קוד קופון</string>
     <string name="inbox_note_survey_actioned">תודה ששלחת את המשוב!</string>
-    <string name="beta_features_coupons">ניהול קופונים</string>
     <string name="card_reader_connect_permission_rationale_hint">לתשלומים בקורא הכרטיסים נדרשת הרשאה למיקום מדויק</string>
     <string name="card_reader_connect_permission_rationale_header">נדרשת גישה למיקום</string>
     <string name="simple_payments_share_payment_dialog_title">תשלום בקופה – %s</string>

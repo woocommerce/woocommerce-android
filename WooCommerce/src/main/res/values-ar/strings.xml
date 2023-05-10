@@ -818,8 +818,6 @@ Language: ar
     <string name="coupon_details_copy_error">خطأ في أثناء نسخ رمز القسيمة إلى الحافظة.</string>
     <string name="coupon_details_copy_success">تم نسخ رمز القسيمة إلى الحافظة.</string>
     <string name="coupon_details_copy_clipboard_label">رمز القسيمة</string>
-    <string name="coupon_beta_features_subheading">اختبار إدارة القسائم في التطبيق</string>
-    <string name="coupon_beta_features_heading">إدارة القسائم</string>
     <string name="coupon_summary_loading_failure">فشل تحميل ملخص القسيمة</string>
     <string name="coupon_details_expiration_date">تنتهي الصلاحية بتاريخ ⁦%1$s⁩</string>
     <string name="coupon_summary_template">خصم قدره ⁦%1$s⁩ على ⁦%2$s⁩</string>
@@ -831,7 +829,6 @@ Language: ar
     <string name="coupon_details_menu_share">مشاركة قسيمة</string>
     <string name="coupon_details_menu_copy">نسخ رمز القسيمة</string>
     <string name="inbox_note_survey_actioned">نشكرك على ملاحظاتك!</string>
-    <string name="beta_features_coupons">إدارة القسائم</string>
     <string name="card_reader_connect_permission_rationale_hint">تتطلب مدفوعات قارئ البطاقة صلاحية موقع دقيقة</string>
     <string name="card_reader_connect_permission_rationale_header">يلزم الوصول إلى الموقع</string>
     <string name="simple_payments_share_payment_dialog_title">إجراءات السداد - %s</string>
