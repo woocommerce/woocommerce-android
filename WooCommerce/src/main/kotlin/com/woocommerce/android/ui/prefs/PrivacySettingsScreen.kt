@@ -103,7 +103,7 @@ private fun OptionRow(
         Text(
             text = sectionHeader,
             style = MaterialTheme.typography.subtitle1,
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+            modifier = Modifier.padding(horizontal = 16.dp),
             color = MaterialTheme.colors.primary,
         )
         Row(
@@ -139,7 +139,7 @@ private fun OptionRow(
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = MaterialTheme.colors.primary
                 ),
-                modifier = Modifier.padding(start = 8.dp),
+                modifier = Modifier.padding(horizontal = 8.dp),
                 checked = switchChecked,
                 onCheckedChange = onSwitchChanged,
             )
