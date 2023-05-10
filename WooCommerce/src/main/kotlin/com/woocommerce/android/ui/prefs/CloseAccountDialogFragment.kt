@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -86,6 +85,7 @@ class CloseAccountDialogFragment : DialogFragment() {
                         origin = event.origin,
                         extraTags = ArrayList()
                     ).let { activity?.startActivity(it) }
+                    findNavController().popBackStack()
                 }
             }
         }
@@ -95,7 +95,7 @@ class CloseAccountDialogFragment : DialogFragment() {
     private fun LoadingDialog() {
         Column(
             modifier = Modifier
-                .padding(dimensionResource(id = R.dimen.major_100))
+                .padding(dimensionResource(id = R.dimen.major_150))
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -114,7 +114,7 @@ class CloseAccountDialogFragment : DialogFragment() {
         focusRequester: FocusRequester
     ) {
         Column(
-            modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
+            modifier = Modifier.padding(dimensionResource(id = R.dimen.major_125)),
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75)),
         ) {
             Text(
@@ -126,30 +126,29 @@ class CloseAccountDialogFragment : DialogFragment() {
                 text = stringResource(id = state.description),
                 style = MaterialTheme.typography.subtitle1,
             )
-            Text(
-                text = state.currentUserName,
-                style = MaterialTheme.typography.subtitle1,
-            )
-            WCOutlinedTextField(
-                modifier = Modifier
-                    .focusRequester(focusRequester)
-                    .padding(top = dimensionResource(id = R.dimen.minor_100)),
-                value = state.enteredUserName,
-                onValueChange = { viewModel.onUserNameInputChanged(it) },
-                label = stringResource(id = R.string.username),
-                singleLine = true,
-            )
+            if (!state.isAccountDeletionError) {
+                Text(
+                    text = state.currentUserName,
+                    style = MaterialTheme.typography.subtitle1,
+                )
+                WCOutlinedTextField(
+                    modifier = Modifier
+                        .focusRequester(focusRequester)
+                        .padding(top = dimensionResource(id = R.dimen.minor_100)),
+                    value = state.enteredUserName,
+                    onValueChange = { viewModel.onUserNameInputChanged(it) },
+                    label = stringResource(id = R.string.username),
+                    singleLine = true,
+                )
+            }
         }
-        Divider(
-            color = colorResource(id = R.color.divider_color),
-            thickness = dimensionResource(id = R.dimen.minor_10)
-        )
         Row(
             modifier = Modifier.padding(
                 start = dimensionResource(id = R.dimen.major_100),
                 end = dimensionResource(id = R.dimen.major_100),
                 bottom = dimensionResource(id = R.dimen.minor_100),
             ),
+            horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         )
         {
