@@ -5,9 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -129,14 +133,24 @@ class CloseAccountDialogFragment : DialogFragment() {
                     onClick = viewModel::onConfirmCloseAccount,
                     enabled = state.enteredUserName == state.userName
                 ) {
-                    Text(
-                        text = stringResource(id = string.settings_close_account_dialog_confirm_button),
-                        style = MaterialTheme.typography.subtitle1,
-                        textAlign = TextAlign.Center,
-                        color =
-                        if (state.enteredUserName == state.userName) colorResource(id = color.color_error)
-                        else colorResource(id = color.color_on_surface_disabled)
-                    )
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        if (state.isLoading) {
+                            CircularProgressIndicator(modifier = Modifier.size(size = dimensionResource(id = dimen.major_150)))
+                        } else {
+                            Text(
+                                text = stringResource(id = string.settings_close_account_dialog_confirm_button),
+                                style = MaterialTheme.typography.subtitle1,
+                                textAlign = TextAlign.Center,
+                                color =
+                                if (state.enteredUserName == state.userName) colorResource(id = color.color_error)
+                                else colorResource(id = color.color_on_surface_disabled)
+                            )
+                        }
+                    }
+
                 }
             }
         }

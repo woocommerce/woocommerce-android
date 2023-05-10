@@ -6,6 +6,8 @@ import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,7 +26,10 @@ class CloseAccountViewModel @Inject constructor(
     val viewState = _viewState
 
     fun onConfirmCloseAccount() {
-
+        launch {
+            _viewState.value = _viewState.value?.copy(isLoading = true)
+            delay(3000)
+        }
     }
 
     fun onCloseAccountDismissed() {
