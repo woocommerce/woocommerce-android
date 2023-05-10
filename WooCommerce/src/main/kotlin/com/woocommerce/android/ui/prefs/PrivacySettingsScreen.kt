@@ -129,7 +129,7 @@ fun PrivacySettingsScreen(
 }
 
 @Composable
-private fun ExplanationText() {
+private fun ExplanationText(modifier: Modifier = Modifier) {
     val privacyPolicyPart =
         stringResource(R.string.settings_advertising_options_explanation_privacy_policy)
     val cookiePolicyPart =
@@ -174,7 +174,7 @@ private fun ExplanationText() {
         text = annotatedString,
         onClick = {
         },
-        modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+        modifier = modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
         style = MaterialTheme.typography.caption,
     )
 }
