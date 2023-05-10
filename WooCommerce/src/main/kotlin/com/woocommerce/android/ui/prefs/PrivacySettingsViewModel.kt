@@ -3,30 +3,26 @@ package com.woocommerce.android.ui.prefs
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.util.dispatchAndAwait
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
-import org.wordpress.android.fluxc.store.AccountStore.PushAccountSettingsPayload
 import javax.inject.Inject
 
 @HiltViewModel
 class PrivacySettingsViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val dispatcher: Dispatcher,
     private val accountStore: AccountStore,
+    private val appPrefs: AppPrefsWrapper,
+    private val resourceProvider: ResourceProvider,
+    private val repository: PrivacySettingsRepository,
 ) : ScopedViewModel(savedState) {
-    companion object {
-        private const val SETTING_TRACKS_OPT_OUT = "tracks_opt_out"
-    }
 
     private val _state = MutableLiveData(
         State(
@@ -39,25 +35,10 @@ class PrivacySettingsViewModel @Inject constructor(
 
     private fun getSendUsageStats() = !accountStore.account.tracksOptOut
 
-    private fun setSendUsageStats(sendUsageStats: Boolean) {
-        AnalyticsTracker.sendUsageStats = sendUsageStats
-
-        launch {
-            if (accountStore.hasAccessToken()) {
-                val payload = PushAccountSettingsPayload().apply {
-                    params = mapOf(SETTING_TRACKS_OPT_OUT to !sendUsageStats)
-                }
-
-                val action = AccountActionBuilder.newPushSettingsAction(payload)
-                dispatcher.dispatchAndAwait<PushAccountSettingsPayload?, OnAccountChanged>(action)
-            }
-        }
-    }
-
-    private fun getCrashReportingEnabled() = AppPrefs.isCrashReportingEnabled()
+    private fun getCrashReportingEnabled() = appPrefs.isCrashReportingEnabled()
 
     private fun setCrashReportingEnabled(enabled: Boolean) {
-        AppPrefs.setCrashReportingEnabled(enabled)
+        appPrefs.setCrashReportingEnabled(enabled)
     }
 
     fun onPrivacyPolicyClicked() {
@@ -80,8 +61,32 @@ class PrivacySettingsViewModel @Inject constructor(
     }
 
     fun onSendStatsSettingChanged(checked: Boolean) {
-        _state.value = _state.value?.copy(sendUsageStats = checked)
-        setSendUsageStats(checked)
+        launch {
+            if (accountStore.hasAccessToken()) {
+
+                _state.value = _state.value?.copy(
+                    sendUsageStats = checked, progressBarVisible = true
+                )
+
+                val event = repository.updateTracksSetting(checked)
+
+                _state.value = _state.value?.copy(progressBarVisible = false)
+
+                event.fold(
+                    onSuccess = {
+                        appPrefs.sendUsageStats(checked)
+                    },
+                    onFailure = {
+                        _state.value = _state.value?.copy(sendUsageStats = !checked)
+                        triggerEvent(
+                            MultiLiveEvent.Event.ShowActionSnackbar(
+                                resourceProvider.getString(R.string.settings_tracking_analytics_error_update)
+                            ) { onSendStatsSettingChanged(state.value!!.sendUsageStats.not()) }
+                        )
+                    }
+                )
+            }
+        }
     }
 
     data class State(

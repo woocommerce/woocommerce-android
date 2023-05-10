@@ -10,12 +10,15 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.prefs.PrivacySettingsViewModel.PrivacySettingsEvent.ShowAdvertisingOptions
 import com.woocommerce.android.ui.prefs.PrivacySettingsViewModel.PrivacySettingsEvent.ShowCookiePolicy
 import com.woocommerce.android.ui.prefs.PrivacySettingsViewModel.PrivacySettingsEvent.ShowPrivacyPolicy
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class PrivacySettingsFragment : BaseFragment() {
@@ -24,6 +27,9 @@ class PrivacySettingsFragment : BaseFragment() {
     }
 
     private val viewModel: PrivacySettingsViewModel by viewModels()
+
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     override fun getFragmentTitle() = getString(R.string.privacy_settings)
 
@@ -51,6 +57,12 @@ class PrivacySettingsFragment : BaseFragment() {
                 is ShowAdvertisingOptions -> showAdvertisingOptions()
                 is ShowCookiePolicy -> showCookiePolicy()
                 is ShowPrivacyPolicy -> showPrivacyPolicy()
+                is MultiLiveEvent.Event.ShowActionSnackbar ->
+                    uiMessageResolver.getIndefiniteActionSnack(
+                        event.message,
+                        actionText = getString(R.string.retry),
+                        actionListener = event.action
+                    ).show()
             }
         }
     }

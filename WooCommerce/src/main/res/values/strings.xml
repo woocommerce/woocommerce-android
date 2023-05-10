@@ -1914,6 +1914,7 @@
     <string name="settings_tracking_header">Tracking</string>
     <string name="settings_tracking_analytics">Analytics</string>
     <string name="settings_tracking_analytics_description">These cookies allow us to optimize performance by collecting information on how users interact with our mobile apps.</string>
+    <string name="settings_tracking_analytics_error_update">Error notice when failing to update account settings on the privacy screen.</string>
     <string name="settings_more_privacy_options_header">More privacy options</string>
     <string name="settings_advertising_options">Advertising Options</string>
     <string name="settings_advertising_options_description">More Privacy Options Available. Check here to learn more.</string>
