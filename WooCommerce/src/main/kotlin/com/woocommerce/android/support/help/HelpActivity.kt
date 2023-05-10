@@ -90,10 +90,6 @@ class HelpActivity : AppCompatActivity() {
 
         binding.textVersion.text = getString(R.string.version_with_name_param, PackageUtils.getVersionName(this))
 
-        if (originFromExtras == HelpOrigin.LOGIN_HELP_NOTIFICATION) {
-            loginNotificationScheduler.onNotificationTapped(extraTagsFromExtras?.first())
-        }
-
         if (originFromExtras == HelpOrigin.SITE_PICKER_JETPACK_TIMEOUT) {
             viewModel.contactSupport(TicketType.MobileApp)
         }
@@ -240,7 +236,7 @@ class HelpActivity : AppCompatActivity() {
         ): Intent {
             val intent = Intent(context, HelpActivity::class.java)
             intent.putExtra(ORIGIN_KEY, origin)
-            if (extraSupportTags != null && extraSupportTags.isNotEmpty()) {
+            if (!extraSupportTags.isNullOrEmpty()) {
                 intent.putStringArrayListExtra(EXTRA_TAGS_KEY, extraSupportTags as ArrayList<String>?)
             }
 

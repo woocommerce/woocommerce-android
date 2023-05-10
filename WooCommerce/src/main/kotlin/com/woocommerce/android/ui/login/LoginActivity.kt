@@ -78,8 +78,6 @@ import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.network.MemorizingTrustManager
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme.WOOCOMMERCE
-import org.wordpress.android.fluxc.store.AccountStore.AuthOptionsErrorType.UNKNOWN_USER
-import org.wordpress.android.fluxc.store.AccountStore.OnAuthOptionsFetched
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnConnectSiteInfoChecked
@@ -113,7 +111,6 @@ class LoginActivity :
     LoginNoJetpackListener,
     LoginEmailHelpDialogFragment.Listener,
     WooLoginEmailFragment.Listener,
-    WooLoginEmailPasswordFragment.Listener,
     LoginNoWPcomAccountFoundDialogFragment.Listener,
     SignUpFragment.Listener,
     QrCodeLoginListener {
@@ -180,8 +177,6 @@ class LoginActivity :
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val loginHelpNotification = getLoginHelpNotification()
-
         when {
             intent?.action == LOGIN_WITH_WPCOM_EMAIL_ACTION -> {
                 val email = intent.extras!!.getString(EMAIL_PARAMETER)
@@ -194,10 +189,6 @@ class LoginActivity :
                     properties = mapOf(KEY_SOURCE to VALUE_JETPACK_INSTALLATION_SOURCE_WEB)
                 )
                 startLoginViaWPCom()
-            }
-
-            !loginHelpNotification.isNullOrBlank() -> {
-                processLoginHelpNotification(loginHelpNotification)
             }
 
             savedInstanceState == null -> {
@@ -354,7 +345,6 @@ class LoginActivity :
 
     private fun showMainActivityAndFinish() {
         experimentTracker.log(ExperimentTracker.LOGIN_SUCCESSFUL_EVENT)
-        loginNotificationScheduler.onLoginSuccess()
 
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -870,7 +860,6 @@ class LoginActivity :
 
             // show the "not WordPress error" screen
             LoginNotWPDialogFragment().show(LoginNotWPDialogFragment.TAG)
-            loginNotificationScheduler.scheduleNotification(LOGIN_SITE_ADDRESS_ERROR)
         } else {
             // Just in case we use this method for a different scenario in the future
             TODO("Handle a new error scenario")
@@ -886,21 +875,8 @@ class LoginActivity :
         changeFragment(SignUpFragment.newInstance(SITE_PICKER), true, SignUpFragment.TAG)
     }
 
-    private fun getLoginHelpNotification(): String? =
-        intent.extras?.getString(KEY_LOGIN_HELP_NOTIFICATION)
-
     override fun onCarouselFinished() {
         showPrologueFragment()
-    }
-
-    override fun onPasswordError() {
-        val notificationType = when {
-            !appPrefsWrapper.getLoginSiteAddress()
-                .isNullOrBlank() -> LOGIN_SITE_ADDRESS_PASSWORD_ERROR
-
-            else -> LOGIN_WPCOM_PASSWORD_ERROR
-        }
-        loginNotificationScheduler.scheduleNotification(notificationType)
     }
 
     override fun onAccountCreated() {
@@ -916,35 +892,13 @@ class LoginActivity :
         )
     }
 
-    private fun processLoginHelpNotification(loginHelpNotification: String) {
-        when (LoginHelpNotificationType.fromString(loginHelpNotification)) {
-            LOGIN_SITE_ADDRESS_ERROR -> startLoginViaWPCom()
-            LOGIN_SITE_ADDRESS_PASSWORD_ERROR,
-            LOGIN_WPCOM_PASSWORD_ERROR -> useMagicLinkInstead(appPrefsWrapper.getLoginEmail(), verifyEmail = false)
-
-            LOGIN_WPCOM_EMAIL_ERROR,
-            LOGIN_SITE_ADDRESS_EMAIL_ERROR,
-            DEFAULT_HELP ->
-                WooLog.e(WooLog.T.NOTIFICATIONS, "Invalid notification type to be handled by LoginActivity")
-        }
-        loginNotificationScheduler.onNotificationTapped(loginHelpNotification)
-    }
-
-    @SuppressWarnings("unused")
-    @Subscribe(threadMode = MAIN)
-    fun onAuthOptionsFetched(event: OnAuthOptionsFetched) {
-        if (event.error?.type == UNKNOWN_USER) {
-            loginNotificationScheduler.onPasswordLoginError()
-        }
-    }
-
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onFetchedConnectSiteInfo(event: OnConnectSiteInfoChecked) {
-        if (event.isError) {
-            connectSiteInfo = null
+        connectSiteInfo = if (event.isError) {
+            null
         } else {
-            connectSiteInfo = event.info.let {
+            event.info.let {
                 ConnectSiteInfo(
                     isWPCom = it.isWPCom,
                     isJetpackConnected = it.isJetpackConnected,
