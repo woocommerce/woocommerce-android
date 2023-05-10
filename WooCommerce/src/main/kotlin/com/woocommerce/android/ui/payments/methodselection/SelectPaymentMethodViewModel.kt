@@ -265,21 +265,17 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 when (result) {
                     is WCOrderStore.UpdateOrderResult.RemoteUpdateResult -> {
                         if (result.event.isError) {
-                            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.order_error_update_general))
-                            analyticsTrackerWrapper.track(
-                                AnalyticsEvent.PAYMENTS_FLOW_FAILED,
-                                mapOf(
-                                    AnalyticsTracker.KEY_SOURCE to
-                                        AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD,
-                                    cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
-                                )
-                            )
+                            handleUpdateOrderStatusError()
                         } else {
                             triggerEvent(SharePaymentUrlViaQr(order.paymentUrl))
                         }
                         showPaymentState(cardReaderPaymentFlowParam)
                     }
-                    else -> {}
+
+                    is WCOrderStore.UpdateOrderResult.OptimisticUpdateResult -> {
+                        // we need to make sure that remote call has been successful
+                        // otherwise the order is not collectable
+                    }
                 }
             }
         }
@@ -338,19 +334,23 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 is WCOrderStore.UpdateOrderResult.OptimisticUpdateResult -> exitFlow()
                 is WCOrderStore.UpdateOrderResult.RemoteUpdateResult -> {
                     if (result.event.isError) {
-                        triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.order_error_update_general))
-                        analyticsTrackerWrapper.track(
-                            AnalyticsEvent.PAYMENTS_FLOW_FAILED,
-                            mapOf(
-                                AnalyticsTracker.KEY_SOURCE to
-                                    AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD,
-                                cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
-                            )
-                        )
+                        handleUpdateOrderStatusError()
                     }
                 }
             }
         }
+    }
+
+    private fun handleUpdateOrderStatusError() {
+        triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.order_error_update_general))
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.PAYMENTS_FLOW_FAILED,
+            mapOf(
+                AnalyticsTracker.KEY_SOURCE to
+                    AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD,
+                cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
+            )
+        )
     }
 
     private fun exitFlow() {
