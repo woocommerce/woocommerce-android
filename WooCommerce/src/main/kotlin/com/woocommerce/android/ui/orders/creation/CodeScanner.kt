@@ -15,7 +15,15 @@ class GoogleCodeScanner @Inject constructor(private val scanner: GmsBarcodeScann
         return callbackFlow {
             scanner.startScan()
                 .addOnSuccessListener { code ->
-                    this@callbackFlow.trySend(CodeScannerStatus.Success(code.rawValue))
+                    code.rawValue?.let {
+                        this@callbackFlow.trySend(CodeScannerStatus.Success(code.rawValue))
+                    } ?: run {
+                        this@callbackFlow.trySend(
+                            CodeScannerStatus.Failure(
+                                Throwable("Failed to find a valid raw value!")
+                            )
+                        )
+                    }
                     this@callbackFlow.close()
                 }
                 .addOnFailureListener { throwable ->
