@@ -39,7 +39,7 @@ fun ScanToPayScreen(
             textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.height(12.dp))
-        QRCode(content = qrContent, size = 290.dp)
+        QRCode(content = qrContent, size = 290.dp, overlayId = R.drawable.img_woo_bubble_white)
         Spacer(modifier = Modifier.height(12.dp))
         WCColoredButton(
             modifier = Modifier

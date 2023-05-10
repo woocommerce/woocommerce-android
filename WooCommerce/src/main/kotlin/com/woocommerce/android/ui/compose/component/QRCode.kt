@@ -42,7 +42,7 @@ import kotlinx.coroutines.launch
 fun QRCode(
     content: String,
     size: Dp,
-    @DrawableRes overlayId: Int = R.drawable.img_woo_bubble_white,
+    @DrawableRes overlayId: Int? = null,
 ) {
     Image(
         painter = rememberQrBitmapPainter(
@@ -60,7 +60,7 @@ fun QRCode(
 private fun rememberQrBitmapPainter(
     content: String,
     size: Dp,
-    @DrawableRes overlayId: Int,
+    @DrawableRes overlayId: Int?,
 ): BitmapPainter {
     val density = LocalDensity.current
     val sizePx = with(density) { size.roundToPx() }
@@ -81,8 +81,10 @@ private fun rememberQrBitmapPainter(
 
     val context = LocalContext.current
     return remember(bitmap) {
-        val overlay = ContextCompat.getDrawable(context, overlayId)?.run {
-            toBitmap(intrinsicWidth, intrinsicHeight)
+        val overlay = overlayId?.let {
+            ContextCompat.getDrawable(context, overlayId)?.run {
+                toBitmap(intrinsicWidth, intrinsicHeight)
+            }
         }
         val currentBitmap = bitmap ?: Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888)
             .apply {
@@ -152,5 +154,6 @@ fun QRCodePreview() {
     QRCode(
         content = "https://woocommerce.com",
         size = 150.dp,
+        overlayId = R.drawable.img_woo_bubble_white
     )
 }
