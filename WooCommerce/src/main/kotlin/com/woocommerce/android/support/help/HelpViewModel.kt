@@ -1,11 +1,8 @@
 package com.woocommerce.android.support.help
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.extensions.formatResult
 import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,29 +17,9 @@ class HelpViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val wooStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
-    private val wooLogWrapper: WooLogWrapper,
 ) : ScopedViewModel(savedState) {
     var ssr: String? = null
         private set
-
-    init {
-        if (selectedSite.exists()) {
-            fetchSSR()
-        }
-    }
-
-    private fun fetchSSR() {
-        launch {
-            wooLogWrapper.i(WooLog.T.SUPPORT, "Fetching SSR")
-            val result = wooStore.fetchSSR(selectedSite.get())
-            if (result.isError) {
-                wooLogWrapper.e(WooLog.T.SUPPORT, "Error fetching SSR")
-            } else {
-                wooLogWrapper.i(WooLog.T.SUPPORT, "SSR fetched successfully")
-            }
-            ssr = result.model?.formatResult()
-        }
-    }
 
     fun contactSupport(ticketType: TicketType) {
         if (!selectedSite.exists()) {

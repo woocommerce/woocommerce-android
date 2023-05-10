@@ -11,8 +11,6 @@ import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
 class AppPrefsWrapper @Inject constructor() {
-    var isCouponsEnabled: Boolean by AppPrefs::isCouponsEnabled
-
     fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
         AppPrefs.getReceiptUrl(localSiteId, remoteSiteId, selfHostedSiteId, orderId)
 
@@ -191,6 +189,14 @@ class AppPrefsWrapper @Inject constructor() {
         AppPrefs.setLoginEmail(email)
 
     fun getLoginEmail() = AppPrefs.getLoginEmail()
+
+    fun isUserSeenNewFeatureOnMoreScreen() = AppPrefs.isUserSeenNewFeatureOnMoreScreen()
+
+    fun setUserSeenNewFeatureOnMoreScreen() = AppPrefs.setUserSeenNewFeatureOnMoreScreen()
+
+    fun isPaymentsIconWasClickedOnMoreScreen() = AppPrefs.isPaymentsIconWasClickedOnMoreScreen()
+
+    fun setPaymentsIconWasClickedOnMoreScreen() = AppPrefs.setPaymentsIconWasClickedOnMoreScreen()
 
     fun setOnboardingCarouselDisplayed(displayed: Boolean) =
         AppPrefs.setOnboardingCarouselDisplayed(displayed)

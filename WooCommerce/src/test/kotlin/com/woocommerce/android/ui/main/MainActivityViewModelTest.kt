@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewTapToPay
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewUrlInWebView
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
+import com.woocommerce.android.ui.moremenu.MoreMenuNewFeatureHandler
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -108,6 +109,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     private val featureAnnouncementRepository: FeatureAnnouncementRepository = mock()
     private val buildConfigWrapper: BuildConfigWrapper = mock()
     private val prefs: AppPrefs = mock()
+    private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler = mock()
     private val unseenReviewsCountHandler: UnseenReviewsCountHandler = mock {
         on { observeUnseenCount() } doReturn MutableStateFlow(1)
     }
@@ -379,10 +381,11 @@ class MainActivityViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given zero unseen reviews, when listening badge state, then hidden returned`() =
+    fun `given zero unseen reviews and no new features, when listening badge state, then hidden returned`() =
         testBlocking {
             // GIVEN
             whenever(unseenReviewsCountHandler.observeUnseenCount()).thenReturn(flowOf(0))
+            whenever(moreMenuNewFeatureHandler.moreMenuNewFeaturesAvailable).thenReturn(MutableStateFlow(emptyList()))
             createViewModel()
 
             // WHEN
@@ -393,10 +396,13 @@ class MainActivityViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given unseen reviews, when listening badge state, then unseen reviews returned`() =
+    fun `given unseen reviews and no new features, when listening badge state, then unseen reviews returned`() =
         testBlocking {
             // GIVEN
             whenever(unseenReviewsCountHandler.observeUnseenCount()).thenReturn(flowOf(1))
+            whenever(moreMenuNewFeatureHandler.moreMenuNewFeaturesAvailable).thenReturn(
+                MutableStateFlow(emptyList())
+            )
             createViewModel()
 
             // WHEN
@@ -526,6 +532,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 prefs,
                 analyticsTrackerWrapper,
                 resolveAppLink,
+                moreMenuNewFeatureHandler,
                 unseenReviewsCountHandler,
                 mock {
                     onBlocking { invoke(any()) } doReturn emptyFlow()

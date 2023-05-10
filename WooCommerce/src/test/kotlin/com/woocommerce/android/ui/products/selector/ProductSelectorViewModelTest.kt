@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products.selector
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_COUNT
@@ -87,7 +86,6 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        whenever(resourceProvider.getString(R.string.product_stock_status_instock)).thenReturn("In stock")
         val site: SiteModel = mock()
         whenever(selectedSite.get()).thenReturn(site)
         whenever(siteSettings.currencyCode).thenReturn("USD")
@@ -403,6 +401,66 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     }
 
     // region Sort by popularity and recently sold products
+
+    @Test
+    fun `given published products restriction, when view model created, should not show draft products in the popular section`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined,
+            ).initSavedStateHandle()
+            val popularOrdersList = generatePopularOrders()
+            val ordersList = generateTestOrders()
+            val totalOrders = ordersList + popularOrdersList
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+            whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(
+                listOf(
+                    DRAFT_PRODUCT,
+                    DRAFT_PRODUCT,
+                    VALID_PRODUCT
+                )
+            )
+
+            val sut = createViewModel(navArgs)
+
+            var viewState: ProductSelectorViewModel.ViewState? = null
+            sut.viewState.observeForever { state ->
+                viewState = state
+            }
+            assertThat(viewState?.popularProducts).isNotEmpty
+            assertThat(viewState?.popularProducts?.filter { it.id == DRAFT_PRODUCT.remoteId }).isEmpty()
+        }
+    }
+
+    @Test
+    fun `given published products restriction, when view model created, should not show draft products in the last sold section`() {
+        testBlocking {
+            val navArgs = ProductSelectorFragmentArgs(
+                selectedItems = emptyArray(),
+                restrictions = arrayOf(OnlyPublishedProducts),
+                productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined,
+            ).initSavedStateHandle()
+            val ordersList = generateTestOrders()
+            whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(ordersList)
+            whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(
+                listOf(
+                    DRAFT_PRODUCT,
+                    DRAFT_PRODUCT,
+                    VALID_PRODUCT
+                )
+            )
+
+            val sut = createViewModel(navArgs)
+
+            var viewState: ProductSelectorViewModel.ViewState? = null
+            sut.viewState.observeForever { state ->
+                viewState = state
+            }
+            assertThat(viewState?.recentProducts).isNotEmpty
+            assertThat(viewState?.recentProducts?.filter { it.id == DRAFT_PRODUCT.remoteId }).isEmpty()
+        }
+    }
 
     @Test
     fun `given popular products, when view model created, then verify popular products are sorted in descending order`() {

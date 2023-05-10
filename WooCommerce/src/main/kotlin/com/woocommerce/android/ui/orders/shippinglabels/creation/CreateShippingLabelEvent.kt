@@ -50,7 +50,8 @@ sealed class CreateShippingLabelEvent : MultiLiveEvent.Event() {
         val originCountryCode: String,
         val destinationCountryCode: String,
         val shippingPackages: List<ShippingLabelPackage>,
-        val customsPackages: List<CustomsPackage>
+        val customsPackages: List<CustomsPackage>,
+        val isEUShippingScenario: Boolean
     ) : CreateShippingLabelEvent()
 
     data class ShowShippingRates(
