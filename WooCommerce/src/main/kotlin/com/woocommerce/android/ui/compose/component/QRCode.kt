@@ -79,11 +79,11 @@ private fun rememberQrBitmapPainter(
         }
     }
 
-    val overlay = ContextCompat.getDrawable(LocalContext.current, overlayId)?.run {
-        toBitmap(intrinsicWidth, intrinsicHeight)
-    }
-
+    val context = LocalContext.current
     return remember(bitmap) {
+        val overlay = ContextCompat.getDrawable(context, overlayId)?.run {
+            toBitmap(intrinsicWidth, intrinsicHeight)
+        }
         val currentBitmap = bitmap ?: Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888)
             .apply {
                 eraseColor(Color.TRANSPARENT)
