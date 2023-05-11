@@ -48,6 +48,7 @@ import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_DESC
@@ -459,7 +460,7 @@ class ProductListViewModel @Inject constructor(
         } else if (searchQuery?.isNotEmpty() == true) {
             productRepository.searchProductList(
                 searchQuery = searchQuery,
-                isSkuSearch = isSkuSearch,
+                skuSearchOptions = WCProductStore.SkuSearchOptions(isSkuSearch = isSkuSearch),
                 loadMore = loadMore,
                 productFilterOptions = productFilterOptions
             )?.let { products ->

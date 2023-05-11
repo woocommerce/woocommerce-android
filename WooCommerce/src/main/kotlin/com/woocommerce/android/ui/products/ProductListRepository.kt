@@ -107,7 +107,7 @@ class ProductListRepository @Inject constructor(
      */
     suspend fun searchProductList(
         searchQuery: String,
-        isSkuSearch: Boolean = false,
+        skuSearchOptions: WCProductStore.SkuSearchOptions,
         loadMore: Boolean = false,
         excludedProductIds: List<Long>? = null,
         productFilterOptions: Map<ProductFilterOption, String> = emptyMap(),
@@ -118,11 +118,11 @@ class ProductListRepository @Inject constructor(
         val result = searchContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
             lastSearchQuery = searchQuery
-            lastIsSkuSearch = isSkuSearch
+            lastIsSkuSearch = skuSearchOptions.isSkuSearch
             val payload = WCProductStore.SearchProductsPayload(
                 site = selectedSite.get(),
                 searchQuery = searchQuery,
-                isSkuSearch = isSkuSearch,
+                skuSearchOptions = skuSearchOptions,
                 pageSize = PRODUCT_PAGE_SIZE,
                 offset = offset,
                 sorting = productSortingChoice,
