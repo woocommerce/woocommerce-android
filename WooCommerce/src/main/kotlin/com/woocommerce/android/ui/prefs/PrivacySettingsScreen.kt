@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -28,10 +27,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,9 +47,7 @@ fun PrivacySettingsScreen(
         state,
         onAnalyticsSettingChanged = viewModel::onSendStatsSettingChanged,
         onReportCrashesChanged = viewModel::onCrashReportingSettingChanged,
-        onAdvertisingOptionsClicked = viewModel::onAdvertisingOptionsClicked,
-        onPrivacyPolicyClicked = viewModel::onPrivacyPolicyClicked,
-        onCookiePolicyClicked = viewModel::onCookiePolicyClicked,
+        onPoliciesClicked = viewModel::onPoliciesClicked,
     )
 }
 
@@ -61,9 +56,7 @@ fun PrivacySettingsScreen(
     state: PrivacySettingsViewModel.State,
     onAnalyticsSettingChanged: (Boolean) -> Unit,
     onReportCrashesChanged: (Boolean) -> Unit,
-    onAdvertisingOptionsClicked: () -> Unit,
-    onPrivacyPolicyClicked: () -> Unit,
-    onCookiePolicyClicked: () -> Unit,
+    onPoliciesClicked: () -> Unit,
 ) {
     Scaffold(backgroundColor = MaterialTheme.colors.surface) { paddingValues ->
         Column(
@@ -72,13 +65,22 @@ fun PrivacySettingsScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             Text(
-                style = MaterialTheme.typography.caption,
-                text = stringResource(R.string.settings_privacy_statement),
-                modifier = Modifier.padding(16.dp)
+                style = MaterialTheme.typography.h6,
+                text = stringResource(R.string.settings_privacy_header),
+                modifier = Modifier.padding(top = 16.dp, start = 16.dp)
             )
-            Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                style = MaterialTheme.typography.body2,
+                text = stringResource(R.string.settings_privacy_statement),
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
+            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 32.dp)
+            ) {
                 Column {
-                    OptionRow(
+                    OptionRowWithHeader(
                         sectionHeader = stringResource(R.string.settings_tracking_header),
                         sectionTitle = stringResource(R.string.settings_tracking_analytics),
                         sectionDescription = stringResource(R.string.settings_tracking_analytics_description),
@@ -94,7 +96,7 @@ fun PrivacySettingsScreen(
                         )
                     }
                     Spacer(modifier = Modifier.height(16.dp))
-                    OptionRow(
+                    OptionRowWithHeader(
                         sectionHeader = stringResource(R.string.settings_more_privacy_options_header),
                         sectionTitle = stringResource(R.string.settings_advertising_options),
                         sectionDescription = stringResource(R.string.settings_advertising_options_description),
@@ -110,13 +112,15 @@ fun PrivacySettingsScreen(
                             )
                         }
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    ExplanationText(
-                        onPrivacyPolicyClicked = onPrivacyPolicyClicked,
-                        onCookiePolicyClicked = onCookiePolicyClicked
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                     OptionRow(
+                        onRowClicked = onPoliciesClicked,
+                        sectionTitle = stringResource(R.string.settings_privacy_cookies_polices),
+                        sectionDescription = stringResource(R.string.settings_privacy_cookies_polices_description),
+                        actionContent = null,
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                    OptionRowWithHeader(
                         sectionHeader = stringResource(R.string.settings_reports_header),
                         sectionTitle = stringResource(R.string.settings_reports_report_crashes),
                         sectionDescription = stringResource(R.string.settings_reports_report_crashes_description),
@@ -141,63 +145,7 @@ private const val COOKIES_TAG = "cookies"
 private const val PRIVACY_TAG = "privacy"
 
 @Composable
-private fun ExplanationText(
-    onPrivacyPolicyClicked: () -> Unit,
-    onCookiePolicyClicked: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val privacyText =
-        stringResource(R.string.settings_advertising_options_explanation_privacy_policy)
-    val cookieText = stringResource(R.string.settings_advertising_options_explanation_cookie_policy)
-    val explanation = stringResource(
-        R.string.settings_advertising_options_explanation, privacyText, cookieText
-    )
-    val annotatedString = AnnotatedString.Builder(explanation).apply {
-        val defaultSpanStyle = SpanStyle(color = MaterialTheme.colors.onBackground)
-        val linkSpanStyle = SpanStyle(
-            textDecoration = TextDecoration.Underline,
-            color = MaterialTheme.colors.primary
-        )
-
-        addStyle(defaultSpanStyle, 0, explanation.length)
-
-        val privacyPolicyRange =
-            explanation.indexOf(privacyText)..explanation.indexOf(privacyText) + privacyText.length
-        val cookiePolicyRange =
-            explanation.indexOf(cookieText)..explanation.indexOf(cookieText) + cookieText.length
-
-        addStyle(linkSpanStyle, privacyPolicyRange.first, privacyPolicyRange.last)
-        addStyle(linkSpanStyle, cookiePolicyRange.first, cookiePolicyRange.last)
-
-        addStringAnnotation(
-            PRIVACY_TAG,
-            explanation,
-            privacyPolicyRange.first,
-            privacyPolicyRange.last
-        )
-        addStringAnnotation(
-            COOKIES_TAG,
-            explanation,
-            cookiePolicyRange.first,
-            cookiePolicyRange.last
-        )
-    }.toAnnotatedString()
-
-    ClickableText(
-        text = annotatedString,
-        onClick = { offset ->
-            annotatedString.getStringAnnotations(PRIVACY_TAG, offset, offset).firstOrNull()
-                ?.let { onPrivacyPolicyClicked.invoke() }
-            annotatedString.getStringAnnotations(COOKIES_TAG, offset, offset).firstOrNull()
-                ?.let { onCookiePolicyClicked.invoke() }
-        },
-        modifier = modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-        style = MaterialTheme.typography.caption,
-    )
-}
-
-@Composable
-private fun OptionRow(
+private fun OptionRowWithHeader(
     sectionHeader: String,
     sectionTitle: String,
     sectionDescription: String,
@@ -205,37 +153,58 @@ private fun OptionRow(
     onRowClicked: () -> Unit,
     actionContent: @Composable () -> Unit,
 ) {
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier
+    ) {
         Text(
             text = sectionHeader,
-            style = MaterialTheme.typography.subtitle1,
+            style = MaterialTheme.typography.button,
             modifier = Modifier.padding(horizontal = 16.dp),
             color = MaterialTheme.colors.primary,
         )
-        Row(
+        OptionRow(
+            onRowClicked,
+            sectionTitle,
+            sectionDescription,
+            actionContent
+        )
+    }
+}
+
+@Composable
+fun OptionRow(
+    onRowClicked: () -> Unit,
+    sectionTitle: String,
+    sectionDescription: String,
+    actionContent: (@Composable () -> Unit)?,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .height(IntrinsicSize.Min)
+            .padding(top = 8.dp)
+            .fillMaxWidth()
+            .clickable {
+                onRowClicked()
+            },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
             modifier = Modifier
-                .height(IntrinsicSize.Min)
-                .fillMaxWidth()
-                .clickable {
-                    onRowClicked()
-                },
-            verticalAlignment = Alignment.CenterVertically
+                .weight(1f)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            ) {
-                Text(
-                    text = sectionTitle,
-                    style = MaterialTheme.typography.subtitle1,
-                )
-                Text(
-                    modifier = Modifier.padding(top = 4.dp),
-                    style = textAppearanceWooBody2(),
-                    text = sectionDescription,
-                )
-            }
+            Text(
+                text = sectionTitle,
+                style = MaterialTheme.typography.subtitle1,
+            )
+            Text(
+                modifier = Modifier.padding(top = 4.dp),
+                style = textAppearanceWooBody2(),
+                text = sectionDescription,
+            )
+        }
+        if (actionContent != null) {
             Divider(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -260,6 +229,7 @@ private fun textAppearanceWooBody2() = TextStyle(
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Preview(name = "RTL mode", locale = "ar")
+@Preview(name = "Smaller screen", device = Devices.NEXUS_5)
 @Composable
 private fun Default() {
     WooThemeWithBackground {
@@ -267,7 +237,7 @@ private fun Default() {
             state = PrivacySettingsViewModel.State(
                 sendUsageStats = true, crashReportingEnabled = false
             ),
-            {}, {}, {}, {}, {}
+            {}, {}, {}
         )
     }
 }

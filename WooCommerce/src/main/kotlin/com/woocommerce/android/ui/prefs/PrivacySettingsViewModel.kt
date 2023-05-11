@@ -74,6 +74,10 @@ class PrivacySettingsViewModel @Inject constructor(
 
     fun getCrashReportingEnabled() = AppPrefs.isCrashReportingEnabled()
 
+    fun onPoliciesClicked() {
+        triggerEvent(PrivacySettingsEvent.OpenPolicies)
+    }
+
     private fun setCrashReportingEnabled(enabled: Boolean) {
         AppPrefs.setCrashReportingEnabled(enabled)
     }
@@ -149,5 +153,6 @@ class PrivacySettingsViewModel @Inject constructor(
         object ShowAdvertisingOptions : PrivacySettingsEvent()
         object ShowCookiePolicy : PrivacySettingsEvent()
         object ShowPrivacyPolicy : PrivacySettingsEvent()
+        object OpenPolicies : PrivacySettingsEvent()
     }
 }
