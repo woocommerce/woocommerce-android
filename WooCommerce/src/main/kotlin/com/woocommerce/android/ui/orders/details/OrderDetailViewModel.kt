@@ -139,8 +139,8 @@ class OrderDetailViewModel @Inject constructor(
     private val _orderRefunds = MutableLiveData<List<Refund>>()
     val orderRefunds: LiveData<List<Refund>> = _orderRefunds
 
-    private val _productList = MutableLiveData<List<Order.Item>>()
-    val productList: LiveData<List<Order.Item>> = _productList
+    private val _productList = MutableLiveData<List<OrderProduct>>()
+    val productList: LiveData<List<OrderProduct>> = _productList
 
     private val _shipmentTrackings = MutableLiveData<List<OrderShipmentTracking>>()
     val shipmentTrackings: LiveData<List<OrderShipmentTracking>> = _shipmentTrackings
@@ -604,10 +604,25 @@ class OrderDetailViewModel @Inject constructor(
 
     private fun loadOrderProducts(
         refunds: ListInfo<Refund>
-    ): ListInfo<Order.Item> {
+    ): ListInfo<OrderProduct> {
         val products = refunds.list.getNonRefundedProducts(order.items)
         checkAddonAvailability(products)
-        return ListInfo(isVisible = products.isNotEmpty(), list = products)
+        val orderProducts = toOrderProducts(products)
+        return ListInfo(isVisible = orderProducts.isNotEmpty(), list = orderProducts)
+    }
+
+    private fun toOrderProducts(products: List<Order.Item>): List<OrderProduct> {
+        val mockList = products.toMutableList()
+        while (mockList.size < 7){
+            mockList.addAll(products)
+        }
+        return buildList {
+            add(OrderProduct.GroupedProductItem(
+                product = mockList.first(),
+                children = mockList.slice(1 until mockList.lastIndex - 2).map { OrderProduct.ProductItem(it) }
+            ))
+            addAll(mockList.slice(mockList.lastIndex - 2 until mockList.lastIndex).map { OrderProduct.ProductItem(it) })
+        }
     }
 
     private fun checkAddonAvailability(products: List<Order.Item>) {
