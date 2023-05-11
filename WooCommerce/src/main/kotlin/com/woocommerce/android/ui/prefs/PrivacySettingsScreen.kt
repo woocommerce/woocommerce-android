@@ -101,7 +101,7 @@ fun PrivacySettingsScreen(
                         onRowClicked = onAdvertisingOptionsClicked
                     ) {
                         IconButton(
-                            modifier = Modifier.padding(start = 8.dp),
+                            modifier = Modifier.padding(horizontal = 8.dp),
                             onClick = onAdvertisingOptionsClicked
                         ) {
                             Icon(
@@ -110,6 +110,7 @@ fun PrivacySettingsScreen(
                             )
                         }
                     }
+                    Spacer(modifier = Modifier.height(16.dp))
                     ExplanationText(
                         onPrivacyPolicyClicked = onPrivacyPolicyClicked,
                         onCookiePolicyClicked = onCookiePolicyClicked
@@ -230,6 +231,7 @@ private fun OptionRow(
                     style = MaterialTheme.typography.subtitle1,
                 )
                 Text(
+                    modifier = Modifier.padding(top = 4.dp),
                     style = textAppearanceWooBody2(),
                     text = sectionDescription,
                 )
