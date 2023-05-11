@@ -326,6 +326,27 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         )
     }
 
+    // region Scanned and Deliver
+    @Test
+    fun `when code scanner returns code, then set isUpdatingOrderDraft to true`() {
+        createSut()
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(CodeScannerStatus.Success("12345"))
+            }
+        }
+        var isUpdatingOrderDraft: Boolean? = null
+        sut.viewStateData.observeForever { _, viewState ->
+            isUpdatingOrderDraft = viewState.isUpdatingOrderDraft
+        }
+
+        sut.startScan()
+
+        assertTrue(isUpdatingOrderDraft!!)
+    }
+
+    //endregion
+
     protected fun createSut() {
         autoSyncPriceModifier = AutoSyncPriceModifier(createUpdateOrderUseCase)
         autoSyncOrder = AutoSyncOrder(createUpdateOrderUseCase)
@@ -341,7 +362,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             autoSyncOrder = autoSyncOrder,
             autoSyncPriceModifier = autoSyncPriceModifier,
             tracker = tracker,
-            codeScanner = mock()
+            codeScanner = mock(),
+            productRepository = mock()
         )
     }
 
