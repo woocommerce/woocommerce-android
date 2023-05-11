@@ -610,17 +610,19 @@ class OrderDetailViewModel @Inject constructor(
         val orderProducts = toOrderProducts(products)
         return ListInfo(isVisible = orderProducts.isNotEmpty(), list = orderProducts)
     }
-
+    @Suppress("MagicNumber")
     private fun toOrderProducts(products: List<Order.Item>): List<OrderProduct> {
         val mockList = products.toMutableList()
-        while (mockList.size < 7){
+        while (mockList.size < 7) {
             mockList.addAll(products)
         }
         return buildList {
-            add(OrderProduct.GroupedProductItem(
-                product = mockList.first(),
-                children = mockList.slice(1 until mockList.lastIndex - 2).map { OrderProduct.ProductItem(it) }
-            ))
+            add(
+                OrderProduct.GroupedProductItem(
+                    product = mockList.first(),
+                    children = mockList.slice(1 until mockList.lastIndex - 2).map { OrderProduct.ProductItem(it) }
+                )
+            )
             addAll(mockList.slice(mockList.lastIndex - 2 until mockList.lastIndex).map { OrderProduct.ProductItem(it) })
         }
     }

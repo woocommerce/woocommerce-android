@@ -134,7 +134,7 @@ class OrderDetailProductItemListAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when(getItemViewType(position)){
+        when (getItemViewType(position)) {
             GROUPED_PRODUCT_ITEM_VIEW -> {
                 (holder as GroupedItemViewHolder).onBind(
                     productItems[position] as OrderDetailViewModel.OrderProduct.GroupedProductItem,
