@@ -5,9 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -25,7 +29,24 @@ class PrivacySettingsPolicesFragment : BaseFragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 WooThemeWithBackground {
-                    PrivacySettingsPolicesScreen()
+                    PrivacySettingsPolicesScreen(
+                        onPrivacyPolicyClicked = {
+                            AnalyticsTracker.track(AnalyticsEvent.PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED)
+                            ChromeCustomTabUtils.launchUrl(
+                                requireActivity(),
+                                AppUrls.AUTOMATTIC_PRIVACY_POLICY
+                            )
+                        },
+                        onCookiePolicyClicked = {
+                            AnalyticsTracker.track(
+                                AnalyticsEvent.PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED
+                            )
+                            ChromeCustomTabUtils.launchUrl(
+                                requireActivity(),
+                                AppUrls.AUTOMATTIC_COOKIE_POLICY
+                            )
+                        }
+                    )
                 }
             }
         }

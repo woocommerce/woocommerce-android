@@ -14,8 +14,6 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.prefs.PrivacySettingsViewModel.PrivacySettingsEvent.ShowAdvertisingOptions
-import com.woocommerce.android.ui.prefs.PrivacySettingsViewModel.PrivacySettingsEvent.ShowCookiePolicy
-import com.woocommerce.android.ui.prefs.PrivacySettingsViewModel.PrivacySettingsEvent.ShowPrivacyPolicy
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -50,11 +48,10 @@ class PrivacySettingsFragment : BaseFragment() {
     private fun observeEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
+                is ShowAdvertisingOptions -> showAdvertisingOptions()
                 is PrivacySettingsViewModel.PrivacySettingsEvent.OpenPolicies -> findNavController().navigateSafely(
                     PrivacySettingsFragmentDirections.actionPrivacySettingsFragmentToPrivacySettingsPolicesFragment()
                 )
-                is ShowCookiePolicy -> showCookiePolicy()
-                is ShowPrivacyPolicy -> showPrivacyPolicy()
             }
         }
     }
@@ -62,14 +59,6 @@ class PrivacySettingsFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-    }
-
-    private fun showCookiePolicy() {
-        ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.AUTOMATTIC_COOKIE_POLICY)
-    }
-
-    private fun showPrivacyPolicy() {
-        ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.AUTOMATTIC_PRIVACY_POLICY)
     }
 
     private fun showAdvertisingOptions() {

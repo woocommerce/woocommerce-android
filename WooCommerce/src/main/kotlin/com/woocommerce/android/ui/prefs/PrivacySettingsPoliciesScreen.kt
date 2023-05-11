@@ -14,7 +14,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.icons.OpenInNew
 
 @Composable
-fun PrivacySettingsPolicesScreen() {
+fun PrivacySettingsPolicesScreen(
+    onPrivacyPolicyClicked: () -> Unit,
+    onCookiePolicyClicked: () -> Unit,
+) {
     Scaffold(backgroundColor = MaterialTheme.colors.surface) { paddingValues ->
         Column(
             modifier = Modifier.padding(paddingValues)
@@ -22,10 +25,12 @@ fun PrivacySettingsPolicesScreen() {
             OptionRow(
                 sectionTitle = stringResource(R.string.settings_policies_privacy_policy),
                 sectionDescription = stringResource(R.string.settings_policies_privacy_policy_description),
-                onRowClicked = { /*TODO*/ }
+                onRowClicked = onPrivacyPolicyClicked
             ) {
-                IconButton(modifier = Modifier.padding(horizontal = 8.dp), onClick = { /*TODO*/
-                }) {
+                IconButton(
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    onClick = onPrivacyPolicyClicked
+                ) {
                     Icon(
                         imageVector = OpenInNew,
                         contentDescription = stringResource(id = R.string.settings_privacy_policy)
@@ -35,10 +40,12 @@ fun PrivacySettingsPolicesScreen() {
             OptionRow(
                 sectionTitle = stringResource(R.string.settings_policies_cookie_policy),
                 sectionDescription = stringResource(R.string.settings_policies_cookie_policy_description),
-                onRowClicked = { /*TODO*/ }
+                onRowClicked = onCookiePolicyClicked
             ) {
-                IconButton(modifier = Modifier.padding(horizontal = 8.dp), onClick = { /*TODO*/
-                }) {
+                IconButton(
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    onClick = onCookiePolicyClicked
+                ) {
                     Icon(
                         imageVector = OpenInNew,
                         contentDescription = stringResource(id = R.string.settings_privacy_cookies_polices)

@@ -47,6 +47,7 @@ fun PrivacySettingsScreen(
         state,
         onAnalyticsSettingChanged = viewModel::onSendStatsSettingChanged,
         onReportCrashesChanged = viewModel::onCrashReportingSettingChanged,
+        onAdvertisingOptionsClicked = viewModel::onAdvertisingOptionsClicked,
         onPoliciesClicked = viewModel::onPoliciesClicked,
     )
 }
@@ -56,6 +57,7 @@ fun PrivacySettingsScreen(
     state: PrivacySettingsViewModel.State,
     onAnalyticsSettingChanged: (Boolean) -> Unit,
     onReportCrashesChanged: (Boolean) -> Unit,
+    onAdvertisingOptionsClicked: () -> Unit,
     onPoliciesClicked: () -> Unit,
 ) {
     Scaffold(backgroundColor = MaterialTheme.colors.surface) { paddingValues ->
@@ -141,9 +143,6 @@ fun PrivacySettingsScreen(
     }
 }
 
-private const val COOKIES_TAG = "cookies"
-private const val PRIVACY_TAG = "privacy"
-
 @Composable
 private fun OptionRowWithHeader(
     sectionHeader: String,
@@ -166,7 +165,7 @@ private fun OptionRowWithHeader(
             onRowClicked,
             sectionTitle,
             sectionDescription,
-            actionContent
+            actionContent = actionContent
         )
     }
 }
@@ -176,8 +175,8 @@ fun OptionRow(
     onRowClicked: () -> Unit,
     sectionTitle: String,
     sectionDescription: String,
-    actionContent: (@Composable () -> Unit)?,
     modifier: Modifier = Modifier,
+    actionContent: (@Composable () -> Unit)?,
 ) {
     Row(
         modifier = modifier
@@ -237,7 +236,7 @@ private fun Default() {
             state = PrivacySettingsViewModel.State(
                 sendUsageStats = true, crashReportingEnabled = false
             ),
-            {}, {}, {}
+            {}, {}, {}, {}
         )
     }
 }
