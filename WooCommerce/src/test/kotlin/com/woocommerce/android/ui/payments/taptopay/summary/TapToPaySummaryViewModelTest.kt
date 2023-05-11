@@ -15,6 +15,8 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -207,30 +209,74 @@ class TapToPaySummaryViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given try ttp payment flow with taxable status, when vm created, then correct amount refunded`() =
+    fun `given try ttp payment flow with taxable status, when vm created, then correct refunded is calculated`() =
         testBlocking {
             // GIVEN
             val feesLine: Order.FeeLine = mock {
                 on { taxStatus }.thenReturn(Order.FeeLine.FeeLineTaxStatus.TAXABLE)
             }
             whenever(order.feesLines).thenReturn(listOf(feesLine))
+            whenever(order.total).thenReturn(BigDecimal(10))
+            val captor = argumentCaptor<BigDecimal>()
             whenever(
                 refundStore.createAmountRefund(
-                    selectedSite.get(),
-                    order.id,
-                    order.total,
-                    "Test Tap To Pay payment auto refund",
-                    true,
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any()
                 )
             ).thenReturn(WooResult(mock<WCRefundModel>()))
 
             // WHEN
-            val viewModel = initViewModel(TapToPaySummaryFragment.TestTapToPayFlow.AfterPayment(order))
+            initViewModel(TapToPaySummaryFragment.TestTapToPayFlow.AfterPayment(order))
 
             // THEN
-            assertThat(viewModel.event.value).isInstanceOf(
-                TapToPaySummaryViewModel.ShowSuccessfulRefundNotification::class.java
+            verify(refundStore).createAmountRefund(
+                any(),
+                any(),
+                captor.capture(),
+                any(),
+                any()
             )
+
+            assertThat(captor.firstValue).isEqualTo(BigDecimal(10))
+        }
+
+    @Test
+    fun `given try ttp payment flow with NONE status, when vm created, then correct refunded is calculated`() =
+        testBlocking {
+            // GIVEN
+            val feesLine: Order.FeeLine = mock {
+                on { taxStatus }.thenReturn(Order.FeeLine.FeeLineTaxStatus.NONE)
+            }
+            whenever(order.feesLines).thenReturn(listOf(feesLine))
+            whenever(order.total).thenReturn(BigDecimal(10))
+            whenever(order.totalTax).thenReturn(BigDecimal(1))
+            val captor = argumentCaptor<BigDecimal>()
+            whenever(
+                refundStore.createAmountRefund(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any()
+                )
+            ).thenReturn(WooResult(mock<WCRefundModel>()))
+
+            // WHEN
+            initViewModel(TapToPaySummaryFragment.TestTapToPayFlow.AfterPayment(order))
+
+            // THEN
+            verify(refundStore).createAmountRefund(
+                any(),
+                any(),
+                captor.capture(),
+                any(),
+                any()
+            )
+
+            assertThat(captor.firstValue).isEqualTo(BigDecimal(9))
         }
 
     @Test
