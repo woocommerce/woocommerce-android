@@ -370,49 +370,85 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             sut.startScan()
 
             assertFalse(isUpdatingOrderDraft!!)
-    }
+        }
 
-    //endregion
+        @Test
+        fun `when SKU search succeeds, then add the scanned product`() {
+            testBlocking {
+                createSut()
+                whenever(codeScanner.startScan()).thenAnswer {
+                    flow<CodeScannerStatus> {
+                        emit(CodeScannerStatus.Success("12345"))
+                    }
+                }
+                whenever(
+                    productListRepository.searchProductList(
+                        "12345",
+                        WCProductStore.SkuSearchOptions(isSkuSearch = true, isExactSkuSearch = true)
+                    )
+                ).thenReturn(
+                    listOf(
+                        ProductTestUtils.generateProduct(
+                            productId = 10L,
+                            isVariable = true,
+                        )
+                    )
+                )
+                whenever(createOrderItemUseCase.invoke(10L)).thenReturn(
+                    createOrderItem(10L)
+                )
+                var newOrder: Order? = null
+                sut.orderDraft.observeForever { newOrderData ->
+                    newOrder = newOrderData
+                }
 
-    protected fun createSut() {
-        autoSyncPriceModifier = AutoSyncPriceModifier(createUpdateOrderUseCase)
-        autoSyncOrder = AutoSyncOrder(createUpdateOrderUseCase)
-        sut = OrderCreateEditViewModel(
-            savedState = savedState,
-            dispatchers = coroutinesTestRule.testDispatchers,
-            orderDetailRepository = orderDetailRepository,
-            orderCreateEditRepository = orderCreateEditRepository,
-            mapItemToProductUiModel = mapItemToProductUIModel,
-            createOrderItem = createOrderItemUseCase,
-            determineMultipleLinesContext = determineMultipleLinesContext,
-            parameterRepository = parameterRepository,
-            autoSyncOrder = autoSyncOrder,
-            autoSyncPriceModifier = autoSyncPriceModifier,
-            tracker = tracker,
-            codeScanner = mock(),
-            productRepository = mock()
-        )
-    }
+                sut.startScan()
 
-    protected fun createOrderItem(withProductId: Long = 123, withVariationId: Long? = null) =
-        if (withVariationId != null) {
-            Order.Item.EMPTY.copy(
-                productId = withProductId,
-                itemId = (1L..1000000000L).random(),
-                variationId = withVariationId,
-                quantity = 1F,
-            )
-        } else {
-            Order.Item.EMPTY.copy(
-                productId = withProductId,
-                itemId = (1L..1000000000L).random(),
-                quantity = 1F,
+                assertThat(newOrder?.getProductIds()?.any { it == 10L }).isTrue()
+            }
+        }
+
+        //endregion
+
+        protected fun createSut() {
+            autoSyncPriceModifier = AutoSyncPriceModifier(createUpdateOrderUseCase)
+            autoSyncOrder = AutoSyncOrder(createUpdateOrderUseCase)
+            sut = OrderCreateEditViewModel(
+                savedState = savedState,
+                dispatchers = coroutinesTestRule.testDispatchers,
+                orderDetailRepository = orderDetailRepository,
+                orderCreateEditRepository = orderCreateEditRepository,
+                mapItemToProductUiModel = mapItemToProductUIModel,
+                createOrderItem = createOrderItemUseCase,
+                determineMultipleLinesContext = determineMultipleLinesContext,
+                parameterRepository = parameterRepository,
+                autoSyncOrder = autoSyncOrder,
+                autoSyncPriceModifier = autoSyncPriceModifier,
+                tracker = tracker,
+                codeScanner = mock(),
+                productRepository = mock()
             )
         }
 
-    protected val orderStatusList = listOf(
-        Order.OrderStatus("first key", "first status"),
-        Order.OrderStatus("second key", "second status"),
-        Order.OrderStatus("third key", "third status")
-    )
-}
+        protected fun createOrderItem(withProductId: Long = 123, withVariationId: Long? = null) =
+            if (withVariationId != null) {
+                Order.Item.EMPTY.copy(
+                    productId = withProductId,
+                    itemId = (1L..1000000000L).random(),
+                    variationId = withVariationId,
+                    quantity = 1F,
+                )
+            } else {
+                Order.Item.EMPTY.copy(
+                    productId = withProductId,
+                    itemId = (1L..1000000000L).random(),
+                    quantity = 1F,
+                )
+            }
+
+        protected val orderStatusList = listOf(
+            Order.OrderStatus("first key", "first status"),
+            Order.OrderStatus("second key", "second status"),
+            Order.OrderStatus("third key", "third status")
+        )
+    }
