@@ -17,7 +17,6 @@ import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Notification
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.util.WooLog
@@ -64,48 +63,6 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
         putExtra(MainActivity.FIELD_PUSH_ID, pushId)
         if (notification.remoteNoteId != 0L) {
             putExtra(MainActivity.FIELD_REMOTE_NOTIFICATION, notification)
-        }
-    }
-
-    fun buildAndDisplayZendeskNotification(
-        channelId: String,
-        notification: Notification
-    ) {
-        getNotificationBuilder(channelId, notification).apply {
-            showNotification(notification.noteId, notification = notification, builder = this)
-        }
-    }
-
-    fun buildAndDisplayLoginHelpNotification(
-        notificationLocalId: Int,
-        channelId: String,
-        notification: Notification,
-        notificationTappedIntent: Intent,
-        actions: List<Pair<String, Intent>> = emptyList()
-    ) {
-        val channelType = notification.channelType
-        getNotificationBuilder(channelId, notification).apply {
-            val notificationContentIntent =
-                buildPendingIntentForGivenIntent(notificationLocalId, notificationTappedIntent)
-            setContentIntent(notificationContentIntent)
-            actions.forEach { action ->
-                addAction(
-                    R.drawable.ic_woo_w_notification,
-                    action.first,
-                    buildPendingIntentForGivenIntent(notificationLocalId, action.second)
-                )
-            }
-            setLargeIcon(getLargeIconBitmap(context, notification.icon, channelType.shouldCircularizeNoteIcon()))
-            // Call processing service when notification is dismissed
-            val pendingDeleteIntent = NotificationsProcessingService.getPendingIntentForNotificationDismiss(
-                context, notificationLocalId
-            )
-            setDeleteIntent(pendingDeleteIntent)
-            NotificationManagerCompat.from(context).notify(
-                LoginNotificationScheduler.LOGIN_HELP_NOTIFICATION_TAG,
-                notificationLocalId,
-                build()
-            )
         }
     }
 
