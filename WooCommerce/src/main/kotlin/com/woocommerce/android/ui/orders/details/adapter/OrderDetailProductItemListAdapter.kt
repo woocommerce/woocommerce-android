@@ -1,0 +1,160 @@
+package com.woocommerce.android.ui.orders.details.adapter
+
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.woocommerce.android.R
+import com.woocommerce.android.databinding.OrderDetailProductGroupItemBinding
+import com.woocommerce.android.tools.ProductImageMap
+import com.woocommerce.android.ui.orders.OrderDetailProductItemView
+import com.woocommerce.android.ui.orders.OrderProductActionListener
+import com.woocommerce.android.ui.orders.ViewAddonClickListener
+import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
+import com.woocommerce.android.widgets.AlignedDividerDecoration
+import org.wordpress.android.util.PhotonUtils
+import java.math.BigDecimal
+
+class OrderDetailProductItemListAdapter(
+    private val productItems: List<OrderDetailViewModel.OrderProduct>,
+    private val productImageMap: ProductImageMap,
+    private val formatCurrencyForDisplay: (BigDecimal) -> String,
+    private val productItemListener: OrderProductActionListener,
+    private val onViewAddonsClick: ViewAddonClickListener? = null
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private inner class ProductItemViewHolder(val view: OrderDetailProductItemView) : RecyclerView.ViewHolder(view) {
+        fun onBind(
+            productItem: OrderDetailViewModel.OrderProduct.ProductItem,
+            productImageMap: ProductImageMap,
+            formatCurrencyForDisplay: (BigDecimal) -> String,
+            productItemListener: OrderProductActionListener,
+            onViewAddonsClick: ViewAddonClickListener? = null
+        ) {
+            val item = productItem.product
+            val imageSize = view.resources.getDimensionPixelSize(R.dimen.image_minor_100)
+            val productImage = PhotonUtils.getPhotonImageUrl(productImageMap.get(item.uniqueId), imageSize, imageSize)
+            view.initView(item, productImage, formatCurrencyForDisplay, onViewAddonsClick)
+            view.setOnClickListener {
+                if (item.isVariation) {
+                    productItemListener.openOrderProductVariationDetail(item.productId, item.variationId)
+                } else {
+                    productItemListener.openOrderProductDetail(item.productId)
+                }
+            }
+        }
+    }
+
+    private inner class GroupedItemViewHolder(val binding: OrderDetailProductGroupItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun onBind(
+            groupedItem: OrderDetailViewModel.OrderProduct.GroupedProductItem,
+            productImageMap: ProductImageMap,
+            formatCurrencyForDisplay: (BigDecimal) -> String,
+            productItemListener: OrderProductActionListener,
+            onViewAddonsClick: ViewAddonClickListener? = null
+        ) {
+            val item = groupedItem.product
+            val imageSize = itemView.resources.getDimensionPixelSize(R.dimen.image_minor_100)
+            val productImage = PhotonUtils.getPhotonImageUrl(productImageMap.get(item.uniqueId), imageSize, imageSize)
+
+            binding.productInfoGroupedProduct.initView(item, productImage, formatCurrencyForDisplay, onViewAddonsClick)
+            binding.productInfoGroupedProduct.setOnClickListener {
+                if (item.isVariation) {
+                    productItemListener.openOrderProductVariationDetail(item.productId, item.variationId)
+                } else {
+                    productItemListener.openOrderProductDetail(item.productId)
+                }
+            }
+
+            val childrenAdapter = OrderDetailProductChildItemListAdapter(
+                groupedItem.children,
+                productImageMap,
+                formatCurrencyForDisplay,
+                productItemListener
+            )
+
+            binding.productInfoChildrenRecyclerView.apply {
+                setHasFixedSize(false)
+                layoutManager = LinearLayoutManager(context)
+                itemAnimator = DefaultItemAnimator()
+                adapter = childrenAdapter
+
+                if (itemDecorationCount == 0) {
+                    addItemDecoration(
+                        AlignedDividerDecoration(
+                            context,
+                            DividerItemDecoration.VERTICAL,
+                            R.id.productInfo_name
+                        )
+                    )
+                }
+
+                // Setting this field to false ensures that the RecyclerView children do NOT receive multiple clicks,
+                // and only processes the first click event. More details on this issue can be found here:
+                // https://github.com/woocommerce/woocommerce-android/issues/2074
+                isMotionEventSplittingEnabled = false
+            }
+        }
+    }
+
+    companion object {
+        private const val PRODUCT_ITEM_VIEW = 1
+        private const val GROUPED_PRODUCT_ITEM_VIEW = 2
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return when (productItems[position]) {
+            is OrderDetailViewModel.OrderProduct.GroupedProductItem -> GROUPED_PRODUCT_ITEM_VIEW
+            is OrderDetailViewModel.OrderProduct.ProductItem -> PRODUCT_ITEM_VIEW
+        }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val layoutInflater = LayoutInflater.from(parent.context)
+        return when (viewType) {
+            GROUPED_PRODUCT_ITEM_VIEW -> {
+                val binding = OrderDetailProductGroupItemBinding.inflate(layoutInflater, parent, false)
+                GroupedItemViewHolder(binding)
+            }
+
+            PRODUCT_ITEM_VIEW -> {
+                val view: OrderDetailProductItemView =
+                    layoutInflater.inflate(R.layout.order_detail_product_list_item, parent, false)
+                        as OrderDetailProductItemView
+                ProductItemViewHolder(view)
+            }
+
+            else -> {
+                // Fail fast if a new view type is added so we can handle it
+                error("The view type '$viewType' needs to be handled")
+            }
+        }
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when(getItemViewType(position)){
+            GROUPED_PRODUCT_ITEM_VIEW -> {
+                (holder as GroupedItemViewHolder).onBind(
+                    productItems[position] as OrderDetailViewModel.OrderProduct.GroupedProductItem,
+                    productImageMap,
+                    formatCurrencyForDisplay,
+                    productItemListener,
+                    onViewAddonsClick
+                )
+            }
+            PRODUCT_ITEM_VIEW -> {
+                (holder as ProductItemViewHolder).onBind(
+                    productItems[position] as OrderDetailViewModel.OrderProduct.ProductItem,
+                    productImageMap,
+                    formatCurrencyForDisplay,
+                    productItemListener,
+                    onViewAddonsClick
+                )
+            }
+        }
+    }
+
+    override fun getItemCount() = productItems.size
+}
