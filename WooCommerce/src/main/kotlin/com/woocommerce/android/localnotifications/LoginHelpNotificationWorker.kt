@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.localnotifications
+package com.woocommerce.android.localnotifications
 
 import android.content.Context
 import android.content.Intent
@@ -8,10 +8,11 @@ import androidx.work.WorkerParameters
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent.LOGIN_LOCAL_NOTIFICATION_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.localnotifications.LoginHelpNotificationType.Companion
 import com.woocommerce.android.push.WooNotificationBuilder
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_NOTIFICATION_TYPE_KEY
+import com.woocommerce.android.localnotifications.LoginNotificationScheduler.Companion.LOGIN_NOTIFICATION_TYPE_KEY
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject

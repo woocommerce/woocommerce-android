@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.localnotifications
+package com.woocommerce.android.localnotifications
 
 import android.content.Context
 import androidx.core.app.NotificationManagerCompat
@@ -9,6 +9,8 @@ import androidx.work.workDataOf
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.localnotifications.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_EMAIL_ERROR
+import com.woocommerce.android.localnotifications.LoginHelpNotificationType.LOGIN_WPCOM_EMAIL_ERROR
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.UUID
 import java.util.concurrent.TimeUnit
@@ -59,8 +61,8 @@ class LoginNotificationScheduler @Inject constructor(
     fun onPasswordLoginError() {
         val notificationType = when {
             !prefsWrapper.getLoginSiteAddress()
-                .isNullOrBlank() -> LoginHelpNotificationType.LOGIN_SITE_ADDRESS_EMAIL_ERROR
-            else -> LoginHelpNotificationType.LOGIN_WPCOM_EMAIL_ERROR
+                .isNullOrBlank() -> LOGIN_SITE_ADDRESS_EMAIL_ERROR
+            else -> LOGIN_WPCOM_EMAIL_ERROR
         }
         scheduleNotification(notificationType)
     }
