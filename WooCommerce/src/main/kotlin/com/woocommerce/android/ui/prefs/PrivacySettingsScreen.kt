@@ -47,6 +47,7 @@ fun PrivacySettingsScreen(
         state,
         onAnalyticsSettingChanged = viewModel::onSendStatsSettingChanged,
         onReportCrashesChanged = viewModel::onCrashReportingSettingChanged,
+        onPoliciesClicked = viewModel::onPoliciesClicked,
     )
 }
 
@@ -55,6 +56,7 @@ fun PrivacySettingsScreen(
     state: PrivacySettingsViewModel.State,
     onAnalyticsSettingChanged: (Boolean) -> Unit,
     onReportCrashesChanged: (Boolean) -> Unit,
+    onPoliciesClicked: () -> Unit,
 ) {
     Scaffold(backgroundColor = MaterialTheme.colors.surface) { paddingValues ->
         Column(
@@ -78,7 +80,7 @@ fun PrivacySettingsScreen(
                     .padding(top = 32.dp)
             ) {
                 Column {
-                    OptionRow(
+                    OptionRowWithHeader(
                         sectionHeader = stringResource(R.string.settings_tracking_header),
                         sectionTitle = stringResource(R.string.settings_tracking_analytics),
                         sectionDescription = stringResource(R.string.settings_tracking_analytics_description),
@@ -94,7 +96,7 @@ fun PrivacySettingsScreen(
                         )
                     }
                     Spacer(modifier = Modifier.height(16.dp))
-                    OptionRow(
+                    OptionRowWithHeader(
                         sectionHeader = stringResource(R.string.settings_more_privacy_options_header),
                         sectionTitle = stringResource(R.string.settings_advertising_options),
                         sectionDescription = stringResource(R.string.settings_advertising_options_description),
@@ -112,22 +114,14 @@ fun PrivacySettingsScreen(
                         }
                     }
                     Spacer(modifier = Modifier.height(12.dp))
-                    Column(
-                        modifier = Modifier
-                            .padding(top = 16.dp, bottom = 16.dp, start = 16.dp, end = 64.dp)
-                    ) {
-                        Text(
-                            text = stringResource(R.string.settings_privacy_cookies_polices),
-                            style = MaterialTheme.typography.subtitle1,
-                        )
-                        Text(
-                            modifier = Modifier.padding(top = 4.dp),
-                            style = textAppearanceWooBody2(),
-                            text = stringResource(R.string.settings_privacy_cookies_polices_description),
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(24.dp))
                     OptionRow(
+                        onRowClicked = onPoliciesClicked,
+                        sectionTitle = stringResource(R.string.settings_privacy_cookies_polices),
+                        sectionDescription = stringResource(R.string.settings_privacy_cookies_polices_description),
+                        actionContent = null,
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                    OptionRowWithHeader(
                         sectionHeader = stringResource(R.string.settings_reports_header),
                         sectionTitle = stringResource(R.string.settings_reports_report_crashes),
                         sectionDescription = stringResource(R.string.settings_reports_report_crashes_description),
@@ -149,7 +143,7 @@ fun PrivacySettingsScreen(
 }
 
 @Composable
-private fun OptionRow(
+private fun OptionRowWithHeader(
     sectionHeader: String,
     sectionTitle: String,
     sectionDescription: String,
@@ -157,38 +151,58 @@ private fun OptionRow(
     onRowClicked: () -> Unit,
     actionContent: @Composable () -> Unit,
 ) {
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier
+    ) {
         Text(
             text = sectionHeader,
             style = MaterialTheme.typography.button,
             modifier = Modifier.padding(horizontal = 16.dp),
             color = MaterialTheme.colors.primary,
         )
-        Row(
+        OptionRow(
+            onRowClicked,
+            sectionTitle,
+            sectionDescription,
+            actionContent
+        )
+    }
+}
+
+@Composable
+fun OptionRow(
+    onRowClicked: () -> Unit,
+    sectionTitle: String,
+    sectionDescription: String,
+    actionContent: (@Composable () -> Unit)?,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .height(IntrinsicSize.Min)
+            .padding(top = 8.dp)
+            .fillMaxWidth()
+            .clickable {
+                onRowClicked()
+            },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
             modifier = Modifier
-                .height(IntrinsicSize.Min)
-                .padding(top = 8.dp)
-                .fillMaxWidth()
-                .clickable {
-                    onRowClicked()
-                },
-            verticalAlignment = Alignment.CenterVertically
+                .weight(1f)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            ) {
-                Text(
-                    text = sectionTitle,
-                    style = MaterialTheme.typography.subtitle1,
-                )
-                Text(
-                    modifier = Modifier.padding(top = 4.dp),
-                    style = textAppearanceWooBody2(),
-                    text = sectionDescription,
-                )
-            }
+            Text(
+                text = sectionTitle,
+                style = MaterialTheme.typography.subtitle1,
+            )
+            Text(
+                modifier = Modifier.padding(top = 4.dp),
+                style = textAppearanceWooBody2(),
+                text = sectionDescription,
+            )
+        }
+        if (actionContent != null) {
             Divider(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -222,7 +236,7 @@ private fun Default() {
                 sendUsageStats = true,
                 crashReportingEnabled = false
             ),
-            {}, {}
+            {}, {}, {}
         )
     }
 }

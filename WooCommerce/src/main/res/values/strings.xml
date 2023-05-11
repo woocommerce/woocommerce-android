@@ -1924,6 +1924,10 @@
     <string name="settings_reports_report_crashes">Report Crashes</string>
     <string name="settings_reports_report_crashes_description">To help us improve the app’s performance and fix the occasional bug, enable automatic crash report.</string>
     <string name="settings_tracking">We use other tracking tools, including some from third parties. Read about these and how to control them.</string>
+    <string name="settings_policies_privacy_policy">Privacy Policy</string>
+    <string name="settings_policies_privacy_policy_description">Your information helps us to improve our products, marketing, and personalize your experience on WooCommerce</string>
+    <string name="settings_policies_cookie_policy">Cookie Policy</string>
+    <string name="settings_policies_cookie_policy_description">Our cookie policy explains how we and others use cookies and how you can manage them.</string>
     <string name="settings_footer">Made with love by Automattic. %1$s</string>
     <string name="settings_hiring">We\'re hiring!</string>
     <string name="settings_selected_store">Selected store</string>
