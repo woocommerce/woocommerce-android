@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-28 13:54:04+0000
+Translation-Revision-Date: 2023-05-02 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="store_onboarding_setting_description">Muestra u oculta la lista de configuración de la tienda.</string>
+    <string name="store_onboarding_setting_title">Lista de configuración de la tienda</string>
+    <string name="store_onboarding_dialog_description">Puedes restaurarla siempre que quieras desde Menú &gt; Ajustes &gt; Tienda.</string>
+    <string name="store_onboarding_dialog_title">Ocultar lista de configuración de la tienda</string>
+    <string name="store_onboarding_menu_hide_store_setup">Ocultar lista de configuración de la tienda</string>
+    <string name="card_reader_tap_to_pay_successful_refund_action_label">Ver pedido</string>
+    <string name="card_reader_tap_to_pay_successful_refund_message">El pago de prueba de Tap to Pay se ha reembolsado correctamente.</string>
+    <string name="card_reader_tap_to_pay_explanation_refund_failed">No se ha podido efectuar el reembolso. Prueba a hacerlo manualmente.</string>
+    <string name="card_reader_tap_to_pay_explanation_refunding_payment">Reembolsando pago de prueba…</string>
+    <string name="signup_terms_of_service">Si continúas, aceptas nuestras &lt;a href=\'termsOfService\'&gt;&lt;u&gt;condiciones del servicio.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="signup_get_started_create_account_label">Primero, vamos a crear tu cuenta. </string>
+    <string name="signup_create_password_label">Crea tu contraseña.</string>
     <string name="component_type_categories">Categorías</string>
     <string name="component_type_products">Productos</string>
     <string name="component_default_option">Opción por defecto</string>
@@ -228,7 +240,7 @@ Language: es
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Se ha producido un error. Inténtalo de nuevo más tarde.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Intentar un pago</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find"> Puedes encontrar Tocar para pagar en Android en\nMenú &gt; Pagos, o Recopilar pago y\nelegir Tocar para pagar.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Intenta realizar un pago con la tarjeta y\ndevuélvelo cuando hayas terminado.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Intenta realizar un pago con la tarjeta y\nse te reembolsará cuando hayas terminado.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Tu teléfono está listo para Tocar para pagar.\nTu cliente puede tocar su tarjeta\nen su teléfono para pagar.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Recibe pagos con tarjeta\ncon tu teléfono</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tocar para pagar</string>
@@ -497,14 +509,12 @@ Language: es
     <string name="signup_password_too_short">La contraseña es demasiado corta. Elige otra contraseña que tenga al menos 6 caracteres.</string>
     <string name="signup_email_invalid_input">Introduce una dirección de correo electrónico válida.</string>
     <string name="signup_email_exist_input">Ya existe una cuenta con esta dirección de correo electrónico.</string>
-    <string name="signup_already_registered">Primero, vamos a crear tu cuenta. ¿Ya te has registrado? &lt;a href=\'login\'&gt;&lt;u&gt;Acceder&lt;/u&gt;&lt;/a&gt;</string>
     <string name="login_create_an_account">Crear una cuenta</string>
     <string name="login_try_another_email">Prueba con otra dirección</string>
     <string name="date_timeframe_custom_date_range_title">Intervalo de fechas personalizado</string>
     <string name="date_timeframe_custom">Personalizado</string>
     <string name="what_is_wordpress_link">¿Qué es WordPress.com?</string>
     <string name="signup_creating_account_loading_message">Creando una nueva cuenta</string>
-    <string name="signup_terms_of_service">Si continúas, aceptas nuestras &lt;u&gt;condiciones del servicio.&lt;/u&gt;</string>
     <string name="signup_password_hint">Selecciona una contraseña</string>
     <string name="signup_email_address_hint">Tu dirección de correo electrónico</string>
     <string name="signup_get_started_label">Empieza ahora \nen unos minutos</string>
@@ -808,8 +818,6 @@ Language: es
     <string name="coupon_details_copy_error">Se ha producido un error al copiar el código de cupón en el portapapeles.</string>
     <string name="coupon_details_copy_success">Se ha copiado el código de cupón en el portapapeles.</string>
     <string name="coupon_details_copy_clipboard_label">Código de cupón</string>
-    <string name="coupon_beta_features_subheading">Prueba a gestionar cupones en la aplicación</string>
-    <string name="coupon_beta_features_heading">Gestión de cupones</string>
     <string name="coupon_summary_loading_failure">No se ha podido cargar el resumen del cupón</string>
     <string name="coupon_details_expiration_date">Caduca el %1$s</string>
     <string name="coupon_summary_template">%1$s de descuento %2$s</string>
@@ -821,7 +829,6 @@ Language: es
     <string name="coupon_details_menu_share">Compartir cupón</string>
     <string name="coupon_details_menu_copy">Copiar código de cupón</string>
     <string name="inbox_note_survey_actioned">¡Gracias por tus comentarios!</string>
-    <string name="beta_features_coupons">Gestión de cupones</string>
     <string name="card_reader_connect_permission_rationale_hint">Los pagos mediante el lector de tarjetas necesitan un permiso de ubicación precisa</string>
     <string name="card_reader_connect_permission_rationale_header">Se necesita acceso a la ubicación</string>
     <string name="simple_payments_share_payment_dialog_title">Finalizar compra - %s</string>

@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-28 13:54:04+0000
+Translation-Revision-Date: 2023-05-02 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="store_onboarding_setting_description">Lijst voor configuratie van winkel weergeven of verbergen</string>
+    <string name="store_onboarding_setting_title">Lijst voor configuratie van winkel</string>
+    <string name="store_onboarding_dialog_description">Wanneer je het nodig hebt, kan je het herstellen via Menu &gt; Instellingen &gt; Winkel</string>
+    <string name="store_onboarding_dialog_title">Lijst voor configuratie van winkel verbergen</string>
+    <string name="store_onboarding_menu_hide_store_setup">Lijst voor configuratie van winkel verbergen</string>
+    <string name="card_reader_tap_to_pay_successful_refund_action_label">Bestelling weergeven</string>
+    <string name="card_reader_tap_to_pay_successful_refund_message">Tap to Pay-testbetaling is teruggestort</string>
+    <string name="card_reader_tap_to_pay_explanation_refund_failed">De terugbetaling is mislukt. Probeer het handmatig terug te betalen</string>
+    <string name="card_reader_tap_to_pay_explanation_refunding_payment">Testbetaling terugbetalen …</string>
+    <string name="signup_terms_of_service">Door verder te gaan, ga je akkoord met onze &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Servicevoorwaarden&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="signup_get_started_create_account_label">Laten we eerst je account aanmaken. </string>
+    <string name="signup_create_password_label">Maak je wachtwoord aan</string>
     <string name="component_type_categories">Categorieën</string>
     <string name="component_type_products">Producten</string>
     <string name="component_default_option">Standaardoptie</string>
@@ -228,7 +240,7 @@ Language: nl
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Er is iets fout gegaan. Probeer later opnieuw.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Probeer een betaling</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find"> Op Android kun je Tap to Pay vinden bij\nMenu &gt; Betalingen, of Betalingen innen en\nKies Tap to Pay.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Probeer een betaling door je betaalpas te kiezen en\nstort de betaling terug wanneer je klaar bent.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Probeer een betaling door je betaalpas te kiezen en\nje zult het terugbetaald krijgen zodra je klaar bent.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Je telefoon is gereed voor Tap to Pay.\nDe klant kan met hun pas\njouw telefoon aantikken om te betalen.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Pinbetalingen verzamelen\nMet je telefoon</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tik om te betalen</string>
@@ -497,14 +509,12 @@ Language: nl
     <string name="signup_password_too_short">Je wachtwoord is te kort. Kies een wachtwoord met minstens zes tekens.</string>
     <string name="signup_email_invalid_input">Voer een geldig e-mailadres in.</string>
     <string name="signup_email_exist_input">Er bestaat al een account met dit e-mailadres.</string>
-    <string name="signup_already_registered">Laten we eerst je account aanmaken. Ben je al geregistreerd? &lt;a href=\'login\'&gt;&lt;u&gt;Log in&lt;/u&gt;&lt;/a&gt;</string>
     <string name="login_create_an_account">Een account maken</string>
     <string name="login_try_another_email">Probeer een ander adres</string>
     <string name="date_timeframe_custom_date_range_title">Aangepast datumbereik</string>
     <string name="date_timeframe_custom">Aangepast</string>
     <string name="what_is_wordpress_link">Wat is WordPress.com?</string>
     <string name="signup_creating_account_loading_message">Account wordt aangemaakt</string>
-    <string name="signup_terms_of_service">Door verder te gaan, ga je akkoord met onze &lt;u&gt;Servicevoorwaarden&lt;/u&gt;</string>
     <string name="signup_password_hint">Kies een wachtwoord</string>
     <string name="signup_email_address_hint">Je e-mailadres</string>
     <string name="signup_get_started_label">Aan de slag \nin minuten</string>
@@ -808,8 +818,6 @@ Language: nl
     <string name="coupon_details_copy_error">Fout bij kopiëren van couponcode naar klembord.</string>
     <string name="coupon_details_copy_success">Couponcode gekopieerd naar klembord.</string>
     <string name="coupon_details_copy_clipboard_label">Couponcode</string>
-    <string name="coupon_beta_features_subheading">Probeer het beheer van coupons uit in de app</string>
-    <string name="coupon_beta_features_heading">Couponbeheer</string>
     <string name="coupon_summary_loading_failure">Laden van couponoverzicht mislukt</string>
     <string name="coupon_details_expiration_date">Verloopt %1$s</string>
     <string name="coupon_summary_template">%1$s korting %2$s</string>
@@ -821,7 +829,6 @@ Language: nl
     <string name="coupon_details_menu_share">Coupon delen</string>
     <string name="coupon_details_menu_copy">Couponcode kopiëren</string>
     <string name="inbox_note_survey_actioned">Bedankt voor je feedback!</string>
-    <string name="beta_features_coupons">Couponbeheer</string>
     <string name="card_reader_connect_permission_rationale_hint">Kaartlezerbetalingen vereisen toestemming tot precieze locatie</string>
     <string name="card_reader_connect_permission_rationale_header">Toestemming tot locatie vereist</string>
     <string name="simple_payments_share_payment_dialog_title">Betalen - %s</string>

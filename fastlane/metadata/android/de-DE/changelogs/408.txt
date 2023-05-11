@@ -1,2 +1,0 @@
-13.3:
-Großbritannien, begrüße die persönlichen Zahlungen! Wir freuen uns sehr, bekanntgeben zu dürfen, dass persönliche Zahlungen ab sofort britischen Verkäufern zur Verfügung stehen, die derzeit WooCommerce Payments nutzen. Diese Version unterstützt außerdem Lesezugriff für Verkäufer, die Composite Products verwenden. Danke an alle für euer hervorragendes Feedback. Weiter so!
