@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -28,10 +27,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -66,11 +63,20 @@ fun PrivacySettingsScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             Text(
-                style = MaterialTheme.typography.caption,
-                text = stringResource(R.string.settings_privacy_statement),
-                modifier = Modifier.padding(16.dp)
+                style = MaterialTheme.typography.h6,
+                text = stringResource(R.string.settings_privacy_header),
+                modifier = Modifier.padding(top = 16.dp, start = 16.dp)
             )
-            Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                style = MaterialTheme.typography.body2,
+                text = stringResource(R.string.settings_privacy_statement),
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
+            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 32.dp)
+            ) {
                 Column {
                     OptionRow(
                         sectionHeader = stringResource(R.string.settings_tracking_header),
@@ -105,9 +111,22 @@ fun PrivacySettingsScreen(
                             )
                         }
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    ExplanationText()
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Column(
+                        modifier = Modifier
+                            .padding(top = 16.dp, bottom = 16.dp, start = 16.dp, end = 64.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.settings_privacy_cookies_polices),
+                            style = MaterialTheme.typography.subtitle1,
+                        )
+                        Text(
+                            modifier = Modifier.padding(top = 4.dp),
+                            style = textAppearanceWooBody2(),
+                            text = stringResource(R.string.settings_privacy_cookies_polices_description),
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(24.dp))
                     OptionRow(
                         sectionHeader = stringResource(R.string.settings_reports_header),
                         sectionTitle = stringResource(R.string.settings_reports_report_crashes),
@@ -130,57 +149,6 @@ fun PrivacySettingsScreen(
 }
 
 @Composable
-private fun ExplanationText(modifier: Modifier = Modifier) {
-    val privacyPolicyPart =
-        stringResource(R.string.settings_advertising_options_explanation_privacy_policy)
-    val cookiePolicyPart =
-        stringResource(R.string.settings_advertising_options_explanation_cookie_policy)
-    val formattedString =
-        stringResource(
-            R.string.settings_advertising_options_explanation,
-            privacyPolicyPart,
-            cookiePolicyPart
-        )
-    val annotatedString = AnnotatedString.Builder(formattedString).apply {
-        addStyle(
-            SpanStyle(color = MaterialTheme.colors.onBackground),
-            0,
-            formattedString.length
-        )
-        addStyle(
-            SpanStyle(
-                textDecoration = TextDecoration.Underline,
-                color = MaterialTheme.colors.primary,
-            ),
-            formattedString.indexOf(cookiePolicyPart),
-            formattedString.indexOf(cookiePolicyPart) + cookiePolicyPart.length
-        )
-        addStyle(
-            SpanStyle(
-                textDecoration = TextDecoration.Underline,
-                color = MaterialTheme.colors.primary,
-            ),
-            formattedString.indexOf(privacyPolicyPart),
-            formattedString.indexOf(privacyPolicyPart) + privacyPolicyPart.length
-        )
-        addStringAnnotation(
-            "",
-            formattedString,
-            formattedString.indexOf(cookiePolicyPart),
-            formattedString.indexOf(cookiePolicyPart) + cookiePolicyPart.length
-        )
-    }.toAnnotatedString()
-
-    ClickableText(
-        text = annotatedString,
-        onClick = {
-        },
-        modifier = modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-        style = MaterialTheme.typography.caption,
-    )
-}
-
-@Composable
 private fun OptionRow(
     sectionHeader: String,
     sectionTitle: String,
@@ -192,13 +160,14 @@ private fun OptionRow(
     Column(modifier = modifier) {
         Text(
             text = sectionHeader,
-            style = MaterialTheme.typography.subtitle1,
+            style = MaterialTheme.typography.button,
             modifier = Modifier.padding(horizontal = 16.dp),
             color = MaterialTheme.colors.primary,
         )
         Row(
             modifier = Modifier
                 .height(IntrinsicSize.Min)
+                .padding(top = 8.dp)
                 .fillMaxWidth()
                 .clickable {
                     onRowClicked()
@@ -244,6 +213,7 @@ private fun textAppearanceWooBody2() = TextStyle(
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Preview(name = "RTL mode", locale = "ar")
+@Preview(name = "Smaller screen", device = Devices.NEXUS_5)
 @Composable
 private fun Default() {
     WooThemeWithBackground {
