@@ -10,7 +10,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -37,14 +36,19 @@ class CloseAccountViewModel @Inject constructor(
     fun onConfirmCloseAccount() {
         launch {
             _viewState.value = _viewState.value?.copy(isLoading = true)
-            delay(3000)
-            _viewState.value = _viewState.value?.copy(
-                title = R.string.settings_close_account_error_dialog_title,
-                description = R.string.settings_close_account_error_dialog_description,
-                mainButtonText = R.string.settings_close_account_dialog_contact_support_button,
-                isLoading = false,
-                isAccountDeletionError = true
-            )
+            accountRepository.closeAccount()
+                .fold(
+                    onFailure = {
+                        _viewState.value = _viewState.value?.copy(
+                            title = R.string.settings_close_account_error_dialog_title,
+                            description = R.string.settings_close_account_error_dialog_description,
+                            mainButtonText = R.string.settings_close_account_dialog_contact_support_button,
+                            isLoading = false,
+                            isAccountDeletionError = true
+                        )
+                    },
+                    onSuccess = { triggerEvent(Exit) }
+                )
         }
     }
 

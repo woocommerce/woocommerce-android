@@ -20,11 +20,13 @@ import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.account.CloseAccountStore
 import javax.inject.Inject
 
 class AccountRepository @Inject constructor(
     private val accountStore: AccountStore,
     private val siteStore: SiteStore,
+    private val closeAccountStore: CloseAccountStore,
     private val selectedSite: SelectedSite,
     private val dispatcher: Dispatcher,
     private val zendeskSettings: ZendeskSettings,
@@ -61,6 +63,7 @@ class AccountRepository @Inject constructor(
                 )
                 false
             } else {
+                AnalyticsTracker.track(AnalyticsEvent.ACCOUNT_LOGOUT)
                 cleanup()
                 true
             }
@@ -85,9 +88,18 @@ class AccountRepository @Inject constructor(
         }
     }
 
-    private fun cleanup() {
-        AnalyticsTracker.track(AnalyticsEvent.ACCOUNT_LOGOUT)
+    suspend fun closeAccount(): Result<Unit> {
+        val result = closeAccountStore.closeAccount()
+        return when {
+            result.isError -> Result.failure(OnChangedException(result.error, result.error.message))
+            else -> {
+                cleanup()
+                Result.success(Unit)
+            }
+        }
+    }
 
+    private fun cleanup() {
         // Reset analytics
         AnalyticsTracker.flush()
         AnalyticsTracker.clearAllData()
