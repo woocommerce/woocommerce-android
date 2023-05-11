@@ -158,15 +158,6 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
         }
     }
 
-    private fun buildPendingIntentForGivenIntent(notificationLocalId: Int, intent: Intent): PendingIntent {
-        val flags = if (SystemVersionUtils.isAtLeastS()) {
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        } else {
-            PendingIntent.FLAG_UPDATE_CURRENT
-        }
-        return PendingIntent.getActivity(context, notificationLocalId, intent, flags)
-    }
-
     fun createNotificationChannels() {
         for (noteType in NotificationChannelType.values()) {
             createNotificationChannel(
