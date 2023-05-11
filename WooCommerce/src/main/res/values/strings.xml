@@ -1917,6 +1917,8 @@
     <string name="settings_more_privacy_options_header">More privacy options</string>
     <string name="settings_advertising_options">Advertising Options</string>
     <string name="settings_advertising_options_description">More Privacy Options Available. Check here to learn more.</string>
+    <string name="settings_usage_tracker">Usage Tracker</string>
+    <string name="settings_usage_tracker_description">Check here to learn more about the WooCommerce usage tracker.</string>
     <string name="settings_privacy_header">Privacy</string>
     <string name="settings_privacy_cookies_polices">Privacy and Cookies Polices</string>
     <string name="settings_privacy_cookies_polices_description">Learn more about our privacy and cookies policies.</string>

@@ -114,7 +114,22 @@ fun PrivacySettingsScreen(
                             )
                         }
                     }
-                    Spacer(modifier = Modifier.height(12.dp))
+                    OptionRow(
+                        onRowClicked = {},
+                        sectionTitle = stringResource(R.string.settings_usage_tracker),
+                        sectionDescription = stringResource(R.string.settings_usage_tracker_description),
+                    ) {
+                        IconButton(
+                            modifier = Modifier.padding(horizontal = 8.dp),
+                            onClick = { /*TODO*/
+                            }
+                        ) {
+                            Icon(
+                                imageVector = OpenInNew,
+                                contentDescription = stringResource(id = R.string.settings_usage_tracker)
+                            )
+                        }
+                    }
                     OptionRow(
                         onRowClicked = onPoliciesClicked,
                         sectionTitle = stringResource(R.string.settings_privacy_cookies_polices),
