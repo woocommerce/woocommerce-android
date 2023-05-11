@@ -111,6 +111,10 @@ class PrivacySettingsViewModel @Inject constructor(
         triggerEvent(PrivacySettingsEvent.ShowAdvertisingOptions)
     }
 
+    fun onUsageTrackerClicked() {
+        triggerEvent(PrivacySettingsEvent.ShowUsageTracker)
+    }
+
     fun onCrashReportingSettingChanged(checked: Boolean) {
         AnalyticsTracker.track(
             AnalyticsEvent.PRIVACY_SETTINGS_CRASH_REPORTING_TOGGLED,
@@ -140,7 +144,8 @@ class PrivacySettingsViewModel @Inject constructor(
     )
 
     sealed class PrivacySettingsEvent : MultiLiveEvent.Event() {
-        object ShowAdvertisingOptions : PrivacySettingsEvent()
         object OpenPolicies : PrivacySettingsEvent()
+        object ShowAdvertisingOptions : PrivacySettingsEvent()
+        object ShowUsageTracker : PrivacySettingsEvent()
     }
 }

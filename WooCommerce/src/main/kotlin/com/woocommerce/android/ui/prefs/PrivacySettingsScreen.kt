@@ -48,6 +48,7 @@ fun PrivacySettingsScreen(
         onAnalyticsSettingChanged = viewModel::onSendStatsSettingChanged,
         onReportCrashesChanged = viewModel::onCrashReportingSettingChanged,
         onAdvertisingOptionsClicked = viewModel::onAdvertisingOptionsClicked,
+        onUsageTrackerClicked = viewModel::onUsageTrackerClicked,
         onPoliciesClicked = viewModel::onPoliciesClicked,
     )
 }
@@ -58,6 +59,7 @@ fun PrivacySettingsScreen(
     onAnalyticsSettingChanged: (Boolean) -> Unit,
     onReportCrashesChanged: (Boolean) -> Unit,
     onAdvertisingOptionsClicked: () -> Unit,
+    onUsageTrackerClicked: () -> Unit,
     onPoliciesClicked: () -> Unit,
 ) {
     Scaffold(backgroundColor = MaterialTheme.colors.surface) { paddingValues ->
@@ -115,14 +117,13 @@ fun PrivacySettingsScreen(
                         }
                     }
                     OptionRow(
-                        onRowClicked = {},
+                        onRowClicked = onUsageTrackerClicked,
                         sectionTitle = stringResource(R.string.settings_usage_tracker),
                         sectionDescription = stringResource(R.string.settings_usage_tracker_description),
                     ) {
                         IconButton(
                             modifier = Modifier.padding(horizontal = 8.dp),
-                            onClick = { /*TODO*/
-                            }
+                            onClick = onUsageTrackerClicked,
                         ) {
                             Icon(
                                 imageVector = OpenInNew,
@@ -251,7 +252,7 @@ private fun Default() {
             state = PrivacySettingsViewModel.State(
                 sendUsageStats = true, crashReportingEnabled = false
             ),
-            {}, {}, {}, {}
+            {}, {}, {}, {}, {}
         )
     }
 }
