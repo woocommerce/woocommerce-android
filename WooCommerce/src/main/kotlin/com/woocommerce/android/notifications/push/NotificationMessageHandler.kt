@@ -12,11 +12,11 @@ import com.woocommerce.android.model.isOrderNotification
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.WooNotificationBuilder
-import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.notifications.local.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_ID
 import com.woocommerce.android.notifications.WooNotificationType.NEW_ORDER
 import com.woocommerce.android.notifications.getChannelId
 import com.woocommerce.android.notifications.getDefaults
+import com.woocommerce.android.notifications.local.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_ID
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.util.WooLog.T.NOTIFS
