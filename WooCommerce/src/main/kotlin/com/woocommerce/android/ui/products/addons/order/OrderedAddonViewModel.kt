@@ -33,7 +33,7 @@ class OrderedAddonViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
     private val addonsRepository: AddonRepository,
-    val feedbackPrefs: FeedbackPrefs,
+    private val feedbackPrefs: FeedbackPrefs,
     parameterRepository: ParameterRepository
 ) : ScopedViewModel(savedState) {
     companion object {
