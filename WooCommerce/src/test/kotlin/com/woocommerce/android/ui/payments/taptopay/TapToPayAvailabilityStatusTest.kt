@@ -55,6 +55,28 @@ class TapToPayAvailabilityStatusTest {
     }
 
     @Test
+    fun `given device has no NFC and ttp enabled and simulated reader enabled, when invoking, then nfc Available returned`() {
+        val deviceFeatures = mock<DeviceFeatures> {
+            whenever(it.isNFCAvailable()).thenReturn(false)
+            whenever(it.isGooglePlayServicesAvailable()).thenReturn(true)
+        }
+        whenever(systemVersionUtilsWrapper.isAtLeastP()).thenReturn(true)
+        whenever(appPrefs.isTapToPayEnabled).thenReturn(true)
+        whenever(appPrefs.isSimulatedReaderEnabled).thenReturn(true)
+
+        val result = TapToPayAvailabilityStatus(
+            appPrefs,
+            selectedSite,
+            deviceFeatures,
+            systemVersionUtilsWrapper,
+            cardReaderCountryConfigProvider,
+            wooStore
+        ).invoke()
+
+        assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.Available)
+    }
+
+    @Test
     fun `given device has no Google Play Services and ttp enabled, when invoking, then GPS not available`() {
         val deviceFeatures = mock<DeviceFeatures> {
             whenever(it.isNFCAvailable()).thenReturn(true)
