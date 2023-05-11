@@ -8,11 +8,11 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.FeatureAnnouncementItem
-import com.woocommerce.android.push.NotificationChannelType
-import com.woocommerce.android.push.NotificationMessageHandler
+import com.woocommerce.android.notifications.NotificationChannelType
+import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.push.NotificationTestUtils
-import com.woocommerce.android.push.UnseenReviewsCountHandler
-import com.woocommerce.android.push.WooNotificationType
+import com.woocommerce.android.notifications.UnseenReviewsCountHandler
+import com.woocommerce.android.notifications.WooNotificationType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews

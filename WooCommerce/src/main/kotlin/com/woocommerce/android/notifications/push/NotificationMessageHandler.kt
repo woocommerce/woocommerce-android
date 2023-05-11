@@ -1,4 +1,4 @@
-package com.woocommerce.android.push
+package com.woocommerce.android.notifications.push
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
@@ -10,8 +10,13 @@ import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.model.isOrderNotification
 import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.notifications.NotificationChannelType
+import com.woocommerce.android.notifications.WooNotificationBuilder
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.notifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_ID
+import com.woocommerce.android.notifications.local.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_ID
+import com.woocommerce.android.notifications.WooNotificationType.NEW_ORDER
+import com.woocommerce.android.notifications.getChannelId
+import com.woocommerce.android.notifications.getDefaults
 import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.util.WooLog.T.NOTIFS
@@ -170,7 +175,7 @@ class NotificationMessageHandler @Inject constructor(
             return
         }
 
-        val randomNumber = if (notification.noteType == WooNotificationType.NEW_ORDER) Random.nextInt() else 0
+        val randomNumber = if (notification.noteType == NEW_ORDER) Random.nextInt() else 0
         val localPushId = getLocalPushIdForNoteId(notification.remoteNoteId, randomNumber)
         ACTIVE_NOTIFICATIONS_MAP[getLocalPushId(localPushId, randomNumber)] = notification
         if (notificationBuilder.isNotificationsEnabled()) {

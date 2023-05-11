@@ -1,10 +1,11 @@
-package com.woocommerce.android.push
+package com.woocommerce.android.notifications
 
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.IBinder
+import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T

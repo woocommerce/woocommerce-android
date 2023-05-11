@@ -1,13 +1,13 @@
-package com.woocommerce.android.push
+package com.woocommerce.android.notifications
 
 import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
-import com.woocommerce.android.push.NotificationChannelType.NEW_ORDER
-import com.woocommerce.android.push.NotificationChannelType.OTHER
-import com.woocommerce.android.push.NotificationChannelType.PRE_LOGIN
-import com.woocommerce.android.push.NotificationChannelType.REVIEW
+import com.woocommerce.android.notifications.NotificationChannelType.NEW_ORDER
+import com.woocommerce.android.notifications.NotificationChannelType.OTHER
+import com.woocommerce.android.notifications.NotificationChannelType.PRE_LOGIN
+import com.woocommerce.android.notifications.NotificationChannelType.REVIEW
 
 /**
  * Note that we have separate notification channels for orders with and without the cha-ching sound - this is

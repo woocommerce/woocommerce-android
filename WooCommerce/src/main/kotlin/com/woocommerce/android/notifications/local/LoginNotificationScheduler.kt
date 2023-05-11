@@ -1,4 +1,4 @@
-package com.woocommerce.android.notifications
+package com.woocommerce.android.notifications.local
 
 import android.content.Context
 import androidx.core.app.NotificationManagerCompat
@@ -9,8 +9,8 @@ import androidx.work.workDataOf
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.notifications.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_EMAIL_ERROR
-import com.woocommerce.android.notifications.LoginHelpNotificationType.LOGIN_WPCOM_EMAIL_ERROR
+import com.woocommerce.android.notifications.local.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_EMAIL_ERROR
+import com.woocommerce.android.notifications.local.LoginHelpNotificationType.LOGIN_WPCOM_EMAIL_ERROR
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.UUID
 import java.util.concurrent.TimeUnit

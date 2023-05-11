@@ -1,4 +1,4 @@
-package com.woocommerce.android.push
+package com.woocommerce.android.notifications
 
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite

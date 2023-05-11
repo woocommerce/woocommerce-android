@@ -1,7 +1,9 @@
-package com.woocommerce.android.push
+package com.woocommerce.android.notifications.push
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.notifications.push.RegisterDevice.Mode.FORCEFULLY
+import com.woocommerce.android.notifications.push.RegisterDevice.Mode.IF_NEEDED
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.GetDeviceRegistrationStatus
@@ -18,12 +20,12 @@ class RegisterDevice @Inject constructor(
             WooLog.d(WooLog.T.UTILS, "Current FCM token: ${appPrefsWrapper.getFCMToken()}")
         }
         when (mode) {
-            Mode.IF_NEEDED -> {
+            IF_NEEDED -> {
                 if (getDeviceRegistrationStatus() == GetDeviceRegistrationStatus.Status.UNREGISTERED) {
                     sendToken()
                 }
             }
-            Mode.FORCEFULLY -> sendToken()
+            FORCEFULLY -> sendToken()
         }
     }
 

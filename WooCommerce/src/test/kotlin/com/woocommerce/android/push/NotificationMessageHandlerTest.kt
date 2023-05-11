@@ -4,6 +4,11 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.notifications.push.NotificationAnalyticsTracker
+import com.woocommerce.android.notifications.push.NotificationMessageHandler
+import com.woocommerce.android.notifications.WooNotificationBuilder
+import com.woocommerce.android.notifications.getChannelId
+import com.woocommerce.android.notifications.getDefaults
 import com.woocommerce.android.push.NotificationTestUtils.TEST_ORDER_NOTE_FULL_DATA_2
 import com.woocommerce.android.push.NotificationTestUtils.TEST_ORDER_NOTE_FULL_DATA_SITE_2
 import com.woocommerce.android.push.NotificationTestUtils.TEST_REVIEW_NOTE_FULL_DATA_2
