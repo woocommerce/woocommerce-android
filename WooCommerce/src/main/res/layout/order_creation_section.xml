@@ -56,6 +56,7 @@
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/add_buttons_layout"
+        android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
