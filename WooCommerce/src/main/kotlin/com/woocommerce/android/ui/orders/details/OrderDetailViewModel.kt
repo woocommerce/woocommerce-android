@@ -819,4 +819,13 @@ class OrderDetailViewModel @Inject constructor(
     ) : Parcelable
 
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
+
+    @Parcelize
+    sealed class OrderProduct : Parcelable {
+        @Parcelize
+        data class ProductItem(val product: Order.Item) : OrderProduct()
+
+        @Parcelize
+        data class GroupedProductItem(val product: Order.Item, val children: List<ProductItem>) : OrderProduct()
+    }
 }
