@@ -7,9 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.prefs.PrivacySettingsViewModel.PrivacySettingsEvent.ShowCookiePolicy
@@ -48,6 +50,9 @@ class PrivacySettingsFragment : BaseFragment() {
     private fun observeEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
+                is PrivacySettingsViewModel.PrivacySettingsEvent.OpenPolicies -> findNavController().navigateSafely(
+                    PrivacySettingsFragmentDirections.actionPrivacySettingsFragmentToPrivacySettingsPolicesFragment()
+                )
                 is ShowCookiePolicy -> showCookiePolicy()
                 is ShowPrivacyPolicy -> showPrivacyPolicy()
             }
