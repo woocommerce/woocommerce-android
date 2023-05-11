@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.login
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -45,7 +44,6 @@ import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorView
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
 import com.woocommerce.android.ui.login.error.LoginNoWPcomAccountFoundDialogFragment
 import com.woocommerce.android.ui.login.error.LoginNotWPDialogFragment
-import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
@@ -115,25 +113,10 @@ class LoginActivity :
 
         private const val KEY_UNIFIED_TRACKER_SOURCE = "KEY_UNIFIED_TRACKER_SOURCE"
         private const val KEY_UNIFIED_TRACKER_FLOW = "KEY_UNIFIED_TRACKER_FLOW"
-        private const val KEY_LOGIN_HELP_NOTIFICATION = "KEY_LOGIN_HELP_NOTIFICATION"
         private const val KEY_CONNECT_SITE_INFO = "KEY_CONNECT_SITE_INFO"
 
         const val LOGIN_WITH_WPCOM_EMAIL_ACTION = "login_with_wpcom_email"
         const val EMAIL_PARAMETER = "email"
-
-        fun createIntent(
-            context: Context,
-            notificationType: LoginHelpNotificationType,
-        ): Intent {
-            val intent = Intent(context, LoginActivity::class.java)
-            intent.apply {
-                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or
-                    Intent.FLAG_ACTIVITY_CLEAR_TASK
-                putExtra(KEY_LOGIN_HELP_NOTIFICATION, notificationType.toString())
-                LoginMode.WOO_LOGIN_MODE.putInto(this)
-            }
-            return intent
-        }
     }
 
     @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
