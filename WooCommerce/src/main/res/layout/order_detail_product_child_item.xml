@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <FrameLayout
+        android:id="@+id/productInfo_iconFrame"
+        android:layout_width="@dimen/image_minor_100"
+        android:layout_height="@dimen/image_minor_100"
+        android:layout_gravity="center_vertical"
+        android:layout_marginVertical="@dimen/major_100"
+        android:layout_marginStart="@dimen/major_325"
+        android:background="@drawable/picture_frame"
+        android:padding="@dimen/image_frame_stroke_width"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ImageView
+            android:id="@+id/productInfo_icon"
+            android:layout_width="@dimen/image_minor_100"
+            android:layout_height="@dimen/image_minor_100"
+            android:layout_gravity="center"
+            android:contentDescription="@string/orderdetail_product_image_contentdesc"
+            android:padding="@dimen/image_frame_stroke_width"
+            app:srcCompat="@drawable/ic_product"
+            tools:visibility="visible" />
+    </FrameLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/productInfo_name"
+        style="@style/Woo.ListItem.Title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="2"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBaseline_toBaselineOf="@+id/productInfo_total"
+        app:layout_constraintEnd_toStartOf="@+id/productInfo_total"
+        app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
+        tools:text="Candle" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/productInfo_total"
+        style="@style/Woo.ListItem.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="@dimen/major_100"
+        tools:text="$30.00" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/productInfo_attributes"
+        style="@style/Woo.ListItem.Body"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@+id/productInfo_total"
+        app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
+        app:layout_constraintTop_toBottomOf="@+id/productInfo_name"
+        tools:text="Red, Medium • $15.00 x 2" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/productInfo_SKU"
+        style="@style/Woo.ListItem.Body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/orderdetail_product_lineitem_sku_value"
+        app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
+        app:layout_constraintTop_toBottomOf="@+id/productInfo_attributes"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:visibility="visible"
+        android:layout_marginBottom="@dimen/minor_100"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
