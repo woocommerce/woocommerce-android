@@ -21,7 +21,6 @@ import com.google.android.play.core.review.ReviewManagerFactory
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.FeedbackPrefs
-import com.woocommerce.android.FeedbackPrefs.userFeedbackIsDue
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.R.attr
@@ -93,6 +92,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     @Inject lateinit var dateUtils: DateUtils
     @Inject lateinit var usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter
     @Inject lateinit var appPrefsWrapper: AppPrefsWrapper
+    @Inject lateinit var feedbackPrefs: FeedbackPrefs
 
     private var _binding: FragmentMyStoreBinding? = null
     private val binding get() = _binding!!
@@ -502,9 +502,9 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
      * If should be and it's already visible, nothing happens
      */
     private fun handleFeedbackRequestCardState() = with(binding.storeFeedbackRequestCard) {
-        if (userFeedbackIsDue && visibility == View.GONE) {
+        if (feedbackPrefs.userFeedbackIsDue && visibility == View.GONE) {
             setupFeedbackRequestCard()
-        } else if (userFeedbackIsDue.not() && visibility == View.VISIBLE) {
+        } else if (feedbackPrefs.userFeedbackIsDue.not() && visibility == View.VISIBLE) {
             visibility = View.GONE
         }
     }
@@ -514,14 +514,14 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         val negativeCallback = {
             mainNavigationRouter?.showFeedbackSurvey()
             binding.storeFeedbackRequestCard.visibility = View.GONE
-            FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
+            feedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
         }
         binding.storeFeedbackRequestCard.initView(negativeCallback, ::handleFeedbackRequestPositiveClick)
     }
 
     private fun handleFeedbackRequestPositiveClick() {
         // set last feedback date to now and hide the card
-        FeedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
+        feedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
         binding.storeFeedbackRequestCard.visibility = View.GONE
 
         // Request a ReviewInfo object from the Google Reviews API. If this fails
