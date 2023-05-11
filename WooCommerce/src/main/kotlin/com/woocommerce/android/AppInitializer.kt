@@ -141,8 +141,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     fun init(application: Application) {
         this.application = application
 
-        FeedbackPrefs.init(application)
-
         // Apply Theme
         AppThemeUtils.setAppTheme()
 

@@ -818,8 +818,6 @@ Language: ko_KR
     <string name="coupon_details_copy_error">클립보드로 쿠폰 코드 복사 중 오류.</string>
     <string name="coupon_details_copy_success">클립보드로 쿠폰 코드 복사됨.</string>
     <string name="coupon_details_copy_clipboard_label">쿠폰 코드</string>
-    <string name="coupon_beta_features_subheading">앱에서 쿠폰 관리 체험</string>
-    <string name="coupon_beta_features_heading">쿠폰 관리</string>
     <string name="coupon_summary_loading_failure">쿠폰 요약 로드 실패</string>
     <string name="coupon_details_expiration_date">%1$s 만료</string>
     <string name="coupon_summary_template">%1$s 할인 %2$s</string>
@@ -831,7 +829,6 @@ Language: ko_KR
     <string name="coupon_details_menu_share">쿠폰 공유</string>
     <string name="coupon_details_menu_copy">쿠폰 코드 복사</string>
     <string name="inbox_note_survey_actioned">피드백을 보내주셔서 감사합니다!</string>
-    <string name="beta_features_coupons">쿠폰 관리</string>
     <string name="card_reader_connect_permission_rationale_hint">카드 리더 결제에 정확한 위치 권한 필요</string>
     <string name="card_reader_connect_permission_rationale_header">위치 접근 권한 필요</string>
     <string name="simple_payments_share_payment_dialog_title">계산 - %s</string>

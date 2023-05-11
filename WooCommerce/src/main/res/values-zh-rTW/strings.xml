@@ -818,8 +818,6 @@ Language: zh_TW
     <string name="coupon_details_copy_error">將優惠券代碼複製到剪貼簿時發生錯誤。</string>
     <string name="coupon_details_copy_success">優惠券代碼已複製到剪貼簿。</string>
     <string name="coupon_details_copy_clipboard_label">優惠券代碼</string>
-    <string name="coupon_beta_features_subheading">在應用程式中試用優惠券管理功能</string>
-    <string name="coupon_beta_features_heading">優惠券管理</string>
     <string name="coupon_summary_loading_failure">載入優惠券摘要失敗</string>
     <string name="coupon_details_expiration_date">有效期限︰%1$s</string>
     <string name="coupon_summary_template">%2$s 可享 %1$s 折扣</string>
@@ -831,7 +829,6 @@ Language: zh_TW
     <string name="coupon_details_menu_share">分享優惠券</string>
     <string name="coupon_details_menu_copy">複製優惠券代碼</string>
     <string name="inbox_note_survey_actioned">感謝你的意見回饋！</string>
-    <string name="beta_features_coupons">優惠券管理</string>
     <string name="card_reader_connect_permission_rationale_hint">讀卡機付款需要準確定位的權限</string>
     <string name="card_reader_connect_permission_rationale_header">需要定位權限</string>
     <string name="simple_payments_share_payment_dialog_title">結帳 - %s</string>

@@ -818,8 +818,6 @@ Language: de
     <string name="coupon_details_copy_error">Fehler beim Kopieren des Gutscheincodes in die Zwischenablage.</string>
     <string name="coupon_details_copy_success">Gutscheincode wurde in die Zwischenablage kopiert.</string>
     <string name="coupon_details_copy_clipboard_label">Gutscheincode</string>
-    <string name="coupon_beta_features_subheading">Teste das Gutscheinmanagement in der App</string>
-    <string name="coupon_beta_features_heading">Gutscheinmanagement</string>
     <string name="coupon_summary_loading_failure">Gutscheinübersicht konnte nicht geladen werden</string>
     <string name="coupon_details_expiration_date">Läuft am %1$s ab</string>
     <string name="coupon_summary_template">%1$s Rabatt auf %2$s</string>
@@ -831,7 +829,6 @@ Language: de
     <string name="coupon_details_menu_share">Gutschein teilen</string>
     <string name="coupon_details_menu_copy">Gutscheincode kopieren</string>
     <string name="inbox_note_survey_actioned">Vielen Dank für dein Feedback!</string>
-    <string name="beta_features_coupons">Gutscheinmanagement</string>
     <string name="card_reader_connect_permission_rationale_hint">Für Zahlungen mit Kartenleser sind genaue Standortberechtigungen erforderlich</string>
     <string name="card_reader_connect_permission_rationale_header">Standortzugriff erforderlich</string>
     <string name="simple_payments_share_payment_dialog_title">Bezahlen – %s</string>
