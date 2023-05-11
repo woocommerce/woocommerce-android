@@ -32,7 +32,6 @@ import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -48,7 +47,6 @@ class HelpActivity : AppCompatActivity() {
     @Inject lateinit var supportHelper: SupportHelper
     @Inject lateinit var zendeskSettings: ZendeskSettings
     @Inject lateinit var selectedSite: SelectedSite
-    @Inject lateinit var loginNotificationScheduler: LoginNotificationScheduler
 
     private lateinit var binding: ActivityHelpBinding
 

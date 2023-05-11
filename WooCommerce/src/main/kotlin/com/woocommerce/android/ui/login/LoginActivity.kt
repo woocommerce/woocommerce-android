@@ -46,7 +46,6 @@ import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorView
 import com.woocommerce.android.ui.login.error.LoginNoWPcomAccountFoundDialogFragment
 import com.woocommerce.android.ui.login.error.LoginNotWPDialogFragment
 import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
@@ -144,7 +143,6 @@ class LoginActivity :
     @Inject internal lateinit var experimentTracker: ExperimentTracker
     @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
     @Inject internal lateinit var dispatcher: Dispatcher
-    @Inject internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver
 
     private var loginMode: LoginMode? = null
