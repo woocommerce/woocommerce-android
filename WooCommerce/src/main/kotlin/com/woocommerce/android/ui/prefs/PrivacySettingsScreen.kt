@@ -12,8 +12,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Switch
@@ -25,16 +28,20 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.icons.OpenInNew
 
 @Composable
 fun PrivacySettingsScreen(
-    viewModel: PrivacySettingsViewModel
+    viewModel: PrivacySettingsViewModel,
 ) {
     val state: PrivacySettingsViewModel.State by viewModel.state.observeAsState(
         PrivacySettingsViewModel.State(sendUsageStats = false, crashReportingEnabled = false)
@@ -63,41 +70,124 @@ fun PrivacySettingsScreen(
                 text = stringResource(R.string.settings_privacy_statement),
                 modifier = Modifier.padding(16.dp)
             )
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                content = {
-                    Column {
-                        OptionRow(
-                            switchChecked = state.sendUsageStats,
-                            onAnalyticsSettingChanged,
-                            sectionHeader = stringResource(R.string.settings_tracking_header),
-                            sectionTitle = stringResource(R.string.settings_tracking_analytics),
-                            sectionDescription = stringResource(R.string.settings_tracking_analytics_description),
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        OptionRow(
-                            switchChecked = state.crashReportingEnabled,
-                            onReportCrashesChanged,
-                            sectionHeader = stringResource(R.string.settings_reports_header),
-                            sectionTitle = stringResource(R.string.settings_reports_report_crashes),
-                            sectionDescription = stringResource(R.string.settings_reports_report_crashes_description),
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Column {
+                    OptionRow(
+                        sectionHeader = stringResource(R.string.settings_tracking_header),
+                        sectionTitle = stringResource(R.string.settings_tracking_analytics),
+                        sectionDescription = stringResource(R.string.settings_tracking_analytics_description),
+                        onRowClicked = { onAnalyticsSettingChanged(!state.sendUsageStats) }
+                    ) {
+                        Switch(
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = MaterialTheme.colors.primary
+                            ),
+                            modifier = Modifier.padding(horizontal = 8.dp),
+                            checked = state.sendUsageStats,
+                            onCheckedChange = onAnalyticsSettingChanged,
                         )
                     }
-                },
-            )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    OptionRow(
+                        sectionHeader = stringResource(R.string.settings_more_privacy_options_header),
+                        sectionTitle = stringResource(R.string.settings_advertising_options),
+                        sectionDescription = stringResource(R.string.settings_advertising_options_description),
+                        onRowClicked = {}
+                    ) {
+                        IconButton(
+                            modifier = Modifier.padding(horizontal = 8.dp),
+                            onClick = { /*TODO*/
+                            }
+                        ) {
+                            Icon(
+                                imageVector = OpenInNew,
+                                contentDescription = stringResource(id = R.string.settings_advertising_options)
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    ExplanationText()
+                    Spacer(modifier = Modifier.height(16.dp))
+                    OptionRow(
+                        sectionHeader = stringResource(R.string.settings_reports_header),
+                        sectionTitle = stringResource(R.string.settings_reports_report_crashes),
+                        sectionDescription = stringResource(R.string.settings_reports_report_crashes_description),
+                        onRowClicked = { onReportCrashesChanged(!state.crashReportingEnabled) }
+                    ) {
+                        Switch(
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = MaterialTheme.colors.primary
+                            ),
+                            modifier = Modifier.padding(horizontal = 8.dp),
+                            checked = state.crashReportingEnabled,
+                            onCheckedChange = onReportCrashesChanged,
+                        )
+                    }
+                }
+            }
         }
     }
 }
 
 @Composable
+private fun ExplanationText(modifier: Modifier = Modifier) {
+    val privacyPolicyPart =
+        stringResource(R.string.settings_advertising_options_explanation_privacy_policy)
+    val cookiePolicyPart =
+        stringResource(R.string.settings_advertising_options_explanation_cookie_policy)
+    val formattedString =
+        stringResource(
+            R.string.settings_advertising_options_explanation,
+            privacyPolicyPart,
+            cookiePolicyPart
+        )
+    val annotatedString = AnnotatedString.Builder(formattedString).apply {
+        addStyle(
+            SpanStyle(color = MaterialTheme.colors.onBackground),
+            0,
+            formattedString.length
+        )
+        addStyle(
+            SpanStyle(
+                textDecoration = TextDecoration.Underline,
+                color = MaterialTheme.colors.primary,
+            ),
+            formattedString.indexOf(cookiePolicyPart),
+            formattedString.indexOf(cookiePolicyPart) + cookiePolicyPart.length
+        )
+        addStyle(
+            SpanStyle(
+                textDecoration = TextDecoration.Underline,
+                color = MaterialTheme.colors.primary,
+            ),
+            formattedString.indexOf(privacyPolicyPart),
+            formattedString.indexOf(privacyPolicyPart) + privacyPolicyPart.length
+        )
+        addStringAnnotation(
+            "",
+            formattedString,
+            formattedString.indexOf(cookiePolicyPart),
+            formattedString.indexOf(cookiePolicyPart) + cookiePolicyPart.length
+        )
+    }.toAnnotatedString()
+
+    ClickableText(
+        text = annotatedString,
+        onClick = {
+        },
+        modifier = modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+        style = MaterialTheme.typography.caption,
+    )
+}
+
+@Composable
 private fun OptionRow(
-    switchChecked: Boolean,
-    onSwitchChanged: (Boolean) -> Unit,
     sectionHeader: String,
     sectionTitle: String,
     sectionDescription: String,
     modifier: Modifier = Modifier,
+    onRowClicked: () -> Unit,
+    actionContent: @Composable () -> Unit,
 ) {
     Column(modifier = modifier) {
         Text(
@@ -111,7 +201,7 @@ private fun OptionRow(
                 .height(IntrinsicSize.Min)
                 .fillMaxWidth()
                 .clickable {
-                    onSwitchChanged(!switchChecked)
+                    onRowClicked()
                 },
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -125,6 +215,7 @@ private fun OptionRow(
                     style = MaterialTheme.typography.subtitle1,
                 )
                 Text(
+                    modifier = Modifier.padding(top = 4.dp),
                     style = textAppearanceWooBody2(),
                     text = sectionDescription,
                 )
@@ -135,14 +226,7 @@ private fun OptionRow(
                     .padding(vertical = 8.dp)
                     .width(1.dp)
             )
-            Switch(
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = MaterialTheme.colors.primary
-                ),
-                modifier = Modifier.padding(horizontal = 8.dp),
-                checked = switchChecked,
-                onCheckedChange = onSwitchChanged,
-            )
+            actionContent()
         }
     }
 }
