@@ -9,9 +9,9 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent.LOGIN_LOCAL_NOTIFICATION_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.notifications.WooNotificationBuilder
+import com.woocommerce.android.notifications.local.LoginNotificationScheduler.Companion.LOGIN_NOTIFICATION_TYPE_KEY
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
-import com.woocommerce.android.notifications.local.LoginNotificationScheduler.Companion.LOGIN_NOTIFICATION_TYPE_KEY
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject

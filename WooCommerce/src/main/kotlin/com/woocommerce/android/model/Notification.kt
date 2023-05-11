@@ -6,7 +6,6 @@ import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.WooNotificationType
 import com.woocommerce.android.notifications.getGroupId
 import com.woocommerce.android.notifications.getWooType
-import com.woocommerce.android.push.*
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize

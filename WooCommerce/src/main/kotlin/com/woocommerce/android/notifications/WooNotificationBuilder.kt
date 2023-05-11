@@ -17,8 +17,8 @@ import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Notification
-import com.woocommerce.android.notifications.local.LoginNotificationScheduler
 import com.woocommerce.android.notifications.NotificationChannelType.NEW_ORDER
+import com.woocommerce.android.notifications.local.LoginNotificationScheduler
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.util.WooLog
