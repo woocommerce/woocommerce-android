@@ -27,6 +27,7 @@ import java.util.Date
 @Parcelize
 data class Product(
     val remoteId: Long,
+    val parentId: Long,
     val name: String,
     val description: String,
     val shortDescription: String,
@@ -81,7 +82,7 @@ data class Product(
     override val width: Float,
     override val height: Float,
     override val weight: Float,
-    val subscription: SubscriptionDetails?
+    val subscription: SubscriptionDetails?,
 ) : Parcelable, IProduct {
     companion object {
         const val TAX_CLASS_DEFAULT = "standard"
@@ -477,6 +478,7 @@ fun WCProductModel.toAppModel(): Product {
     }
     return Product(
         remoteId = this.remoteProductId,
+        parentId = this.parentId,
         name = this.name,
         description = this.description,
         shortDescription = this.shortDescription,
@@ -558,7 +560,7 @@ fun WCProductModel.toAppModel(): Product {
         upsellProductIds = this.getUpsellProductIdList(),
         variationIds = this.getVariationIdList(),
         isPurchasable = this.purchasable,
-        subscription = subscription
+        subscription = subscription,
     )
 }
 
