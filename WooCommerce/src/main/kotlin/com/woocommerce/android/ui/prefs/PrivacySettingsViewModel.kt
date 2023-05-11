@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.util.dispatchAndAwait
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -55,22 +54,20 @@ class PrivacySettingsViewModel @Inject constructor(
 
     private fun getCrashReportingEnabled() = AppPrefs.isCrashReportingEnabled()
 
-    private fun setCrashReportingEnabled(enabled: Boolean) {
-        AppPrefs.setCrashReportingEnabled(enabled)
+    fun onPoliciesClicked() {
+        triggerEvent(PrivacySettingsEvent.OpenPolicies)
     }
 
-    fun onPrivacyPolicyClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED)
-        triggerEvent(PrivacySettingsEvent.ShowPrivacyPolicy)
+    private fun setCrashReportingEnabled(enabled: Boolean) {
+        AppPrefs.setCrashReportingEnabled(enabled)
     }
 
     fun onAdvertisingOptionsClicked() {
         triggerEvent(PrivacySettingsEvent.ShowAdvertisingOptions)
     }
 
-    fun onCookiePolicyClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED)
-        triggerEvent(PrivacySettingsEvent.ShowCookiePolicy)
+    fun onUsageTrackerClicked() {
+        triggerEvent(PrivacySettingsEvent.ShowUsageTracker)
     }
 
     fun onCrashReportingSettingChanged(checked: Boolean) {
@@ -89,8 +86,8 @@ class PrivacySettingsViewModel @Inject constructor(
     )
 
     sealed class PrivacySettingsEvent : MultiLiveEvent.Event() {
+        object OpenPolicies : PrivacySettingsEvent()
         object ShowAdvertisingOptions : PrivacySettingsEvent()
-        object ShowCookiePolicy : PrivacySettingsEvent()
-        object ShowPrivacyPolicy : PrivacySettingsEvent()
+        object ShowUsageTracker : PrivacySettingsEvent()
     }
 }

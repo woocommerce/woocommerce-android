@@ -6,14 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.prefs.PrivacySettingsViewModel.PrivacySettingsEvent.OpenPolicies
 import com.woocommerce.android.ui.prefs.PrivacySettingsViewModel.PrivacySettingsEvent.ShowAdvertisingOptions
-import com.woocommerce.android.ui.prefs.PrivacySettingsViewModel.PrivacySettingsEvent.ShowCookiePolicy
-import com.woocommerce.android.ui.prefs.PrivacySettingsViewModel.PrivacySettingsEvent.ShowPrivacyPolicy
+import com.woocommerce.android.ui.prefs.PrivacySettingsViewModel.PrivacySettingsEvent.ShowUsageTracker
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -49,8 +51,10 @@ class PrivacySettingsFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowAdvertisingOptions -> showAdvertisingOptions()
-                is ShowCookiePolicy -> showCookiePolicy()
-                is ShowPrivacyPolicy -> showPrivacyPolicy()
+                is ShowUsageTracker -> showUsageTracker()
+                is OpenPolicies -> findNavController().navigateSafely(
+                    PrivacySettingsFragmentDirections.actionPrivacySettingsFragmentToPrivacySettingsPolicesFragment()
+                )
             }
         }
     }
@@ -60,15 +64,11 @@ class PrivacySettingsFragment : BaseFragment() {
         AnalyticsTracker.trackViewShown(this)
     }
 
-    private fun showCookiePolicy() {
-        ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.AUTOMATTIC_COOKIE_POLICY)
-    }
-
-    private fun showPrivacyPolicy() {
-        ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.AUTOMATTIC_PRIVACY_POLICY)
-    }
-
     private fun showAdvertisingOptions() {
         ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.AUTOMATTIC_ADVERTISING_OPTIONS)
+    }
+
+    private fun showUsageTracker() {
+        ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.AUTOMATTIC_USAGE_TRACKER)
     }
 }
