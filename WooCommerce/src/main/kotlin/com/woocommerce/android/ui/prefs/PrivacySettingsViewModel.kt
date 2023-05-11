@@ -107,19 +107,12 @@ class PrivacySettingsViewModel @Inject constructor(
         }
     }
 
-    fun onLearnMoreShareInfoClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.PRIVACY_SETTINGS_SHARE_INFO_LINK_TAPPED)
-        triggerEvent(PrivacySettingsEvent.ShowCookiePolicy)
+    fun onAdvertisingOptionsClicked() {
+        triggerEvent(PrivacySettingsEvent.ShowAdvertisingOptions)
     }
 
-    fun onPrivacyPolicyClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED)
-        triggerEvent(PrivacySettingsEvent.ShowPrivacyPolicy)
-    }
-
-    fun onLearnMoreThirdPartyClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED)
-        triggerEvent(PrivacySettingsEvent.ShowCookiePolicy)
+    fun onUsageTrackerClicked() {
+        triggerEvent(PrivacySettingsEvent.ShowUsageTracker)
     }
 
     fun onCrashReportingSettingChanged(checked: Boolean) {
@@ -151,8 +144,8 @@ class PrivacySettingsViewModel @Inject constructor(
     )
 
     sealed class PrivacySettingsEvent : MultiLiveEvent.Event() {
-        object ShowCookiePolicy : PrivacySettingsEvent()
-        object ShowPrivacyPolicy : PrivacySettingsEvent()
         object OpenPolicies : PrivacySettingsEvent()
+        object ShowAdvertisingOptions : PrivacySettingsEvent()
+        object ShowUsageTracker : PrivacySettingsEvent()
     }
 }
