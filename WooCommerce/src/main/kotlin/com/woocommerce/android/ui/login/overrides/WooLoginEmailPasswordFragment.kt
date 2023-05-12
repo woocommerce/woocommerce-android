@@ -10,11 +10,8 @@ import com.bumptech.glide.Registry.MissingComponentException
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import dagger.android.support.AndroidSupportInjection
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.login.LoginEmailPasswordFragment
 import org.wordpress.android.login.LoginListener
-import org.wordpress.android.login.LoginWpcomService
 import org.wordpress.android.login.widgets.WPLoginInputRow
 
 class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
@@ -42,11 +39,6 @@ class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
         }
     }
 
-    interface Listener {
-        fun onPasswordError()
-    }
-
-    private lateinit var onPassWordErrorListener: Listener
     private var loginListener: LoginListener? = null
     private var email: String? = null
     private var isSocialLogin: Boolean = false
@@ -65,10 +57,6 @@ class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
             context
         } else {
             throw MissingComponentException("$context must implement LoginListener")
-        }
-
-        if (activity is Listener) {
-            onPassWordErrorListener = activity as Listener
         }
     }
 
@@ -93,14 +81,6 @@ class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
         val prefilledPassword = requireArguments().getString(ARG_PASSWORD)
         if (prefilledPassword.isNotNullOrEmpty()) {
             rootView.findViewById<WPLoginInputRow>(R.id.login_password_row)
-        }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
-    override fun onLoginStateUpdated(loginState: LoginWpcomService.LoginState) {
-        super.onLoginStateUpdated(loginState)
-        if (loginState.step == LoginWpcomService.LoginStep.FAILURE_EMAIL_WRONG_PASSWORD) {
-            onPassWordErrorListener.onPasswordError()
         }
     }
 }
