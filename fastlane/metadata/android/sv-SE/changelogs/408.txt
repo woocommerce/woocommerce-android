@@ -1,2 +1,0 @@
-13.3:
-Storbritannien, säg hej till personliga betalningar. Vi är glada att kunna meddela att personliga betalningar nu är tillgängliga för brittiska handlare som använder WooCommerce Payments. Den här versionen inkluderar också skrivskyddsstöd för handlare som använder sammansatta produkter. Tack ännu en gång för all fantastisk feedback. Fortsätt skicka in den!

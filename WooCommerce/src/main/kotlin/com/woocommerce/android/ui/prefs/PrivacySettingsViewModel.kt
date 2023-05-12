@@ -5,8 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -64,22 +62,20 @@ class PrivacySettingsViewModel @Inject constructor(
 
     private fun getCrashReportingEnabled() = appPrefs.isCrashReportingEnabled()
 
-    private fun setCrashReportingEnabled(enabled: Boolean) {
-        appPrefs.setCrashReportingEnabled(enabled)
+    fun onPoliciesClicked() {
+        triggerEvent(PrivacySettingsEvent.OpenPolicies)
     }
 
-    fun onPrivacyPolicyClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.PRIVACY_SETTINGS_PRIVACY_POLICY_LINK_TAPPED)
-        triggerEvent(PrivacySettingsEvent.ShowPrivacyPolicy)
+    private fun setCrashReportingEnabled(enabled: Boolean) {
+        appPrefs.setCrashReportingEnabled(enabled)
     }
 
     fun onAdvertisingOptionsClicked() {
         triggerEvent(PrivacySettingsEvent.ShowAdvertisingOptions)
     }
 
-    fun onCookiePolicyClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.PRIVACY_SETTINGS_THIRD_PARTY_TRACKING_INFO_LINK_TAPPED)
-        triggerEvent(PrivacySettingsEvent.ShowCookiePolicy)
+    fun onUsageTrackerClicked() {
+        triggerEvent(PrivacySettingsEvent.ShowUsageTracker)
     }
 
     fun onCrashReportingSettingChanged(checked: Boolean) {
@@ -123,8 +119,8 @@ class PrivacySettingsViewModel @Inject constructor(
     )
 
     sealed class PrivacySettingsEvent : MultiLiveEvent.Event() {
+        object OpenPolicies : PrivacySettingsEvent()
         object ShowAdvertisingOptions : PrivacySettingsEvent()
-        object ShowCookiePolicy : PrivacySettingsEvent()
-        object ShowPrivacyPolicy : PrivacySettingsEvent()
+        object ShowUsageTracker : PrivacySettingsEvent()
     }
 }

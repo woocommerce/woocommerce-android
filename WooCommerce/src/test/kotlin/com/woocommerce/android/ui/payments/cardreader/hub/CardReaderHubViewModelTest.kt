@@ -34,13 +34,13 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.Available
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.NotAvailable.CountryNotSupported
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.NotAvailable.GooglePlayServicesNotAvailable
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.NotAvailable.NfcNotAvailable
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.NotAvailable.SystemVersionNotSupported
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.NotAvailable.TapToPayDisabled
+import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
+import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.Available
+import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.CountryNotSupported
+import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.GooglePlayServicesNotAvailable
+import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
+import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.SystemVersionNotSupported
+import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.TapToPayDisabled
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -86,7 +86,9 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
     private val cardReaderTracker: CardReaderTracker = mock()
     private val paymentMenuUtmProvider: UtmProvider = mock()
-    private val isTapToPayAvailable: IsTapToPayAvailable = mock()
+    private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock {
+        on { invoke() }.thenReturn(Available)
+    }
     private val appPrefs: AppPrefs = mock()
     private val feedbackRepository: FeedbackRepository = mock {
         on { getFeatureFeedbackSetting(any()) }.thenReturn(
@@ -171,7 +173,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         initViewModel()
 
         assertThat((viewModel.viewStateData.getOrAwaitValue()).rows)
-            .noneMatch() {
+            .noneMatch {
                 it.icon == R.drawable.ic_card_reader_manual &&
                     it.label == UiStringRes(R.string.settings_card_reader_manuals)
             }
@@ -1269,7 +1271,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-            whenever(isTapToPayAvailable("US")).thenReturn(Available)
+            whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(
                 mock<CardReaderOnboardingState.OnboardingCompleted>()
             )
@@ -1287,7 +1289,8 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
                     it.icon == R.drawable.ic_baseline_contactless &&
                     it.label == UiStringRes(R.string.card_reader_test_tap_to_pay) &&
                     it.description == UiStringRes(R.string.card_reader_tap_to_pay_description) &&
-                    it.index == 5
+                    it.index == 5 &&
+                    it.iconBadge == R.drawable.ic_badge_new
             }
         }
 
@@ -1296,7 +1299,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-            whenever(isTapToPayAvailable("US")).thenReturn(Available)
+            whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(
                 mock<CardReaderOnboardingState.OnboardingCompleted>()
             )
@@ -1313,7 +1316,8 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
                     it.icon == R.drawable.ic_feedback_banner_logo &&
                     it.label == UiStringRes(R.string.card_reader_tap_to_pay_share_feedback) &&
                     it.description == null &&
-                    it.index == 6
+                    it.index == 6 &&
+                    it.iconBadge == null
             }
         }
 
@@ -1322,7 +1326,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-            whenever(isTapToPayAvailable("US")).thenReturn(Available)
+            whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(
                 mock<CardReaderOnboardingState.OnboardingCompleted>()
             )
@@ -1351,7 +1355,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-            whenever(isTapToPayAvailable("US")).thenReturn(Available)
+            whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(
                 mock<CardReaderOnboardingState.OnboardingCompleted>()
             )
@@ -1383,7 +1387,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-            whenever(isTapToPayAvailable("US")).thenReturn(Available)
+            whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
             whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(false)
 
             // WHEN
@@ -1444,7 +1448,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-            whenever(isTapToPayAvailable("US")).thenReturn(Available)
+            whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(
                 mock<CardReaderOnboardingState.OnboardingCompleted>()
             )
@@ -1472,7 +1476,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     fun `given ttp is disabled, when view model started, then do not show ttp row`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(isTapToPayAvailable("US")).thenReturn(TapToPayDisabled)
+        whenever(tapToPayAvailabilityStatus()).thenReturn(TapToPayDisabled)
 
         // WHEN
         initViewModel()
@@ -1487,7 +1491,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     fun `given ttp system not supported, when view model started, then do not show ttp row`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(isTapToPayAvailable("US")).thenReturn(SystemVersionNotSupported)
+        whenever(tapToPayAvailabilityStatus()).thenReturn(SystemVersionNotSupported)
 
         // WHEN
         initViewModel()
@@ -1502,7 +1506,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     fun `given ttp gps not available, when view model started, then do not show ttp row`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(isTapToPayAvailable("US")).thenReturn(GooglePlayServicesNotAvailable)
+        whenever(tapToPayAvailabilityStatus()).thenReturn(GooglePlayServicesNotAvailable)
 
         // WHEN
         initViewModel()
@@ -1517,7 +1521,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     fun `given ttp nfc not available, when view model started, then do not show ttp row`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(isTapToPayAvailable("US")).thenReturn(NfcNotAvailable)
+        whenever(tapToPayAvailabilityStatus()).thenReturn(NfcNotAvailable)
 
         // WHEN
         initViewModel()
@@ -1532,7 +1536,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     fun `given ttp country not supported, when view model started, then do not show ttp row`() = testBlocking {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("CA")
-        whenever(isTapToPayAvailable("CA")).thenReturn(CountryNotSupported)
+        whenever(tapToPayAvailabilityStatus()).thenReturn(CountryNotSupported)
 
         // WHEN
         initViewModel()
@@ -1548,7 +1552,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     fun `given tpp available, when tap to pay clicked, then navigate to tap to pay summary screen event emitted`() {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(isTapToPayAvailable("US")).thenReturn(Available)
+        whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
 
         // WHEN
         initViewModel()
@@ -1564,7 +1568,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     fun `given tpp available, when tap to pay clicked, then tap is tracked`() {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(isTapToPayAvailable("US")).thenReturn(Available)
+        whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
 
         // WHEN
         initViewModel()
@@ -1613,7 +1617,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     fun `given hub flow with ttp, when view model initiated, then navigate to ttp emitted`() {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(isTapToPayAvailable("US")).thenReturn(Available)
+        whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
 
         // WHEN
         initViewModel(OpenInHub.TAP_TO_PAY_SUMMARY)
@@ -1626,7 +1630,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     fun `given hub flow with ttp when ttp is not available, when view model initiated, then show toast emitted`() {
         // GIVEN
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(isTapToPayAvailable("US")).thenReturn(SystemVersionNotSupported)
+        whenever(tapToPayAvailabilityStatus()).thenReturn(SystemVersionNotSupported)
 
         // WHEN
         initViewModel(OpenInHub.TAP_TO_PAY_SUMMARY)
@@ -1651,7 +1655,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         // GIVEN
         whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(isTapToPayAvailable("US")).thenReturn(Available)
+        whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US"))
             .thenReturn(CardReaderConfigForUSA)
 
@@ -1672,7 +1676,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             .thenReturn(FeatureFeedbackSettings(FeatureFeedbackSettings.Feature.TAP_TO_PAY))
         whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(isTapToPayAvailable("US")).thenReturn(Available)
+        whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US"))
             .thenReturn(CardReaderConfigForUSA)
 
@@ -1691,7 +1695,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         // GIVEN
         whenever(appPrefs.isTTPWasUsedAtLeastOnce()).thenReturn(true)
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-        whenever(isTapToPayAvailable("US")).thenReturn(Available)
+        whenever(tapToPayAvailabilityStatus()).thenReturn(Available)
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US"))
             .thenReturn(CardReaderConfigForUSA)
 
@@ -1746,7 +1750,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             cardReaderCountryConfigProvider,
             cardReaderTracker,
             paymentMenuUtmProvider,
-            isTapToPayAvailable,
+            tapToPayAvailabilityStatus,
             appPrefs,
             feedbackRepository,
         )

@@ -480,6 +480,9 @@
         <argument
             android:name="customsPackages"
             app:argType="com.woocommerce.android.model.CustomsPackage[]" />
+        <argument
+            android:name="isEUShippingScenario"
+            app:argType="boolean" />
     </fragment>
     <dialog
         android:id="@+id/moveShippingItemDialog"

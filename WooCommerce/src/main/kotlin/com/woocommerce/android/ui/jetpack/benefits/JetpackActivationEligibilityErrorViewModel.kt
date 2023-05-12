@@ -64,32 +64,36 @@ class JetpackActivationEligibilityErrorViewModel @Inject constructor(
     private fun handleJetpackStatusResult(
         result: Result<Pair<JetpackStatus, JetpackStatusFetchResponse>>
     ) {
+        fun handleSuccess(jetpackStatus: JetpackStatus) {
+            triggerEvent(
+                StartJetpackActivationForApplicationPasswords(
+                    siteUrl = selectedSite.get().url,
+                    jetpackStatus = jetpackStatus
+                )
+            )
+        }
+
+        fun checkUserEligibility(jetpackStatus: JetpackStatus) {
+            launch {
+                userEligibilityFetcher.fetchUserInfo().fold(
+                    onSuccess = {
+                        if (it.roles.contains(UserRole.Administrator)) {
+                            handleSuccess(jetpackStatus)
+                        } else {
+                            /* Still not eligible, keep showing error screen */
+                        }
+                    },
+                    onFailure = { /* Still not eligible, keep showing error screen */ }
+                )
+            }
+        }
+
         result.fold(
-            onSuccess = { pair ->
-                if (pair.second == JetpackStatusFetchResponse.SUCCESS) {
-                    triggerEvent(
-                        StartJetpackActivationForApplicationPasswords(
-                            siteUrl = selectedSite.get().url,
-                            jetpackStatus = pair.first
-                        )
-                    )
-                } else if (pair.second == JetpackStatusFetchResponse.NOT_FOUND) {
-                    launch {
-                        userEligibilityFetcher.fetchUserInfo().fold(
-                            onSuccess = {
-                                val hasInstallCapability = it.roles.contains(UserRole.Administrator)
-                                if (hasInstallCapability) {
-                                    triggerEvent(
-                                        StartJetpackActivationForApplicationPasswords(
-                                            siteUrl = selectedSite.get().url,
-                                            jetpackStatus = pair.first
-                                        )
-                                    )
-                                }
-                            },
-                            onFailure = { /* Still not eligible, keep showing error screen */ }
-                        )
-                    }
+            onSuccess = { (jetpackStatus, fetchResponse) ->
+                when (fetchResponse) {
+                    JetpackStatusFetchResponse.SUCCESS -> handleSuccess(jetpackStatus)
+                    JetpackStatusFetchResponse.NOT_FOUND -> checkUserEligibility(jetpackStatus)
+                    else -> { /* Still not eligible, keep showing error screen */ }
                 }
             },
             onFailure = { /* Still not eligible, keep showing error screen */ }

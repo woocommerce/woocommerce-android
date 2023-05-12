@@ -45,7 +45,15 @@
     <fragment
         android:id="@+id/privacySettingsFragment"
         android:name="com.woocommerce.android.ui.prefs.PrivacySettingsFragment"
-        android:label="PrivacySettingsFragment" />
+        android:label="PrivacySettingsFragment" >
+        <action
+            android:id="@+id/action_privacySettingsFragment_to_privacySettingsPolicesFragment"
+            app:destination="@id/privacySettingsPolicesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/privacySettingsPolicesFragment"
+        android:name="com.woocommerce.android.ui.prefs.PrivacySettingsPolicesFragment"
+        android:label="PrivacySettingsPolicesFragment" />
 
     <activity
         android:id="@+id/aboutActivity"
