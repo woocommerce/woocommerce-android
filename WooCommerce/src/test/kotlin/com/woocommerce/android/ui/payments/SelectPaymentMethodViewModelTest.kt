@@ -72,6 +72,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val order: Order = mock {
         on { paymentUrl }.thenReturn(PAYMENT_URL)
         on { total }.thenReturn(BigDecimal(1L))
+        on { id }.thenReturn(1L)
     }
     private val orderEntity: OrderEntity = mock()
 
@@ -302,6 +303,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
                 mapOf(
                     AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CASH,
+                    "order_id" to 1L,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
                 )
             )
@@ -321,6 +323,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
                 mapOf(
                     AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CASH,
+                    "order_id" to 1L,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
                 )
             )
@@ -340,6 +343,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
                 mapOf(
                     AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
+                    "order_id" to 1L,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
                     "card_reader_type" to "external"
                 )
@@ -360,6 +364,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
                 mapOf(
                     AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
+                    "order_id" to 1L,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
                     "card_reader_type" to "external"
                 )
@@ -418,6 +423,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
                 mapOf(
                     "payment_method" to "card",
+                    "order_id" to 1L,
                     "flow" to "simple_payment",
                     "card_reader_type" to "built_in",
                 )
@@ -438,6 +444,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
                 mapOf(
                     "payment_method" to "card",
+                    "order_id" to 1L,
                     "flow" to "order_payment",
                     "card_reader_type" to "built_in",
                 )
@@ -510,6 +517,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
                 mapOf(
                     AnalyticsTracker.KEY_AMOUNT to "100$",
+                    "order_id" to 1L,
                     AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
                 )
@@ -531,6 +539,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
                 mapOf(
                     AnalyticsTracker.KEY_AMOUNT to "100$",
+                    "order_id" to 1L,
                     AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
                 )
@@ -621,6 +630,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
                 mapOf(
                     AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK,
+                    "order_id" to 1L,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
                 )
             )
@@ -640,6 +650,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
                 mapOf(
                     AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK,
+                    "order_id" to 1L,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
                 )
             )
@@ -659,6 +670,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
                 mapOf(
                     AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK,
+                    "order_id" to 1L,
                     AnalyticsTracker.KEY_FLOW to "tap_to_pay_try_a_payment",
                 )
             )
@@ -678,6 +690,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
                 mapOf(
                     AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK,
+                    "order_id" to 1L,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW,
                 )
             )
@@ -697,6 +710,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
                 mapOf(
                     AnalyticsTracker.KEY_PAYMENT_METHOD to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK,
+                    "order_id" to 1L,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
                 )
             )
@@ -1000,6 +1014,28 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when onScanToPayClicked, then collect tracked`() {
+        // GIVEN
+        val orderId = 1L
+        val param = Payment(orderId = orderId, paymentType = ORDER)
+        whenever(isScanToPayAvailable()).thenReturn(true)
+        val viewModel = initViewModel(param)
+
+        // WHEN
+        viewModel.onScanToPayClicked()
+
+        // THEN
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
+            mapOf(
+                "payment_method" to "scan_to_pay",
+                "order_id" to 1L,
+                "flow" to "order_payment",
+            )
+        )
+    }
+
+    @Test
     fun `given order payment type, when onScanToPayCompleted, then NavigateBackToOrderList`() =
         testBlocking {
             // GIVEN
@@ -1014,6 +1050,27 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             // THEN
             assertThat(viewModel.event.value).isEqualTo(NavigateBackToOrderList)
         }
+
+    @Test
+    fun `when onScanToPayCompleted, then completed tracked`() {
+        // GIVEN
+        val orderId = 1L
+        val param = Payment(orderId = orderId, paymentType = ORDER)
+        val viewModel = initViewModel(param)
+
+        // WHEN
+        viewModel.onScanToPayCompleted()
+
+        // THEN
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
+            mapOf(
+                "payment_method" to "scan_to_pay",
+                "order_id" to 1L,
+                "flow" to "order_payment",
+            )
+        )
+    }
 
     @Test
     fun `given simple payment type, when onScanToPayCompleted, then NavigateBackToHub`() =

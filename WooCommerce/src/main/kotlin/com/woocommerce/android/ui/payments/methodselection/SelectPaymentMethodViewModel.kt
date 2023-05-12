@@ -172,13 +172,9 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private fun onCashPaymentConfirmed() {
         if (networkStatus.isConnected()) {
             launch {
-                analyticsTrackerWrapper.track(
-                    AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
-                    mapOf(
-                        AnalyticsTracker.KEY_AMOUNT to orderTotal,
-                        AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_SIMPLE_PAYMENTS_COLLECT_CASH,
-                        cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
-                    )
+                trackPaymentMethodCompletion(
+                    VALUE_SIMPLE_PAYMENTS_COLLECT_CASH,
+                    extraField = AnalyticsTracker.KEY_AMOUNT to orderTotal
                 )
                 updateOrderStatus(Order.Status.Completed.value).handleOrderUpdateResultBeforeExit()
             }
@@ -193,13 +189,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     fun onSharePaymentUrlCompleted() {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
-            mapOf(
-                AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_SIMPLE_PAYMENTS_COLLECT_LINK,
-                cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
-            )
-        )
+        trackPaymentMethodCompletion(VALUE_SIMPLE_PAYMENTS_COLLECT_LINK)
         launch {
             updateOrderStatus(Order.Status.Pending.value).handleOrderUpdateResultBeforeExit()
         }
@@ -236,13 +226,9 @@ class SelectPaymentMethodViewModel @Inject constructor(
             // status of the order to determine whether payment succeeded
             val status = orderStore.getOrderByIdAndSite(cardReaderPaymentFlowParam.orderId, selectedSite.get())?.status
             if (status == CoreOrderStatus.COMPLETED.value) {
-                analyticsTrackerWrapper.track(
-                    AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
-                    mapOf(
-                        AnalyticsTracker.KEY_AMOUNT to orderTotal,
-                        AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
-                        cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
-                    )
+                trackPaymentMethodCompletion(
+                    VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
+                    extraField = AnalyticsTracker.KEY_AMOUNT to orderTotal
                 )
                 delay(DELAY_MS)
                 exitFlow()
@@ -259,6 +245,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     fun onScanToPayClicked() {
+        trackPaymentMethodSelection(AnalyticsTracker.VALUE_SCAN_TO_PAY_PAYMENT_FLOW)
         launch {
             updateOrderStatus(Order.Status.Pending.value).collect { result ->
                 _viewState.value = Loading
@@ -292,6 +279,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     fun onScanToPayCompleted() {
+        trackPaymentMethodCompletion(AnalyticsTracker.VALUE_SCAN_TO_PAY_PAYMENT_FLOW)
         launch {
             delay(DELAY_MS)
             exitFlow()
@@ -303,12 +291,26 @@ class SelectPaymentMethodViewModel @Inject constructor(
             AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
             mutableMapOf(
                 AnalyticsTracker.KEY_PAYMENT_METHOD to paymentMethodType,
+                AnalyticsTracker.KEY_ORDER_ID to order.id,
                 cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
             ).also { mutableMap ->
                 cardReaderType?.let { mutableMap[KEY_PAYMENT_CARD_READER_TYPE] = it }
                 OrderDurationRecorder.millisecondsSinceOrderAddNew().getOrNull()?.let { timeElapsed ->
                     mutableMap[KEY_TIME_ELAPSED_SINCE_ADD_NEW_ORDER_IN_MILLIS] = timeElapsed.toString()
                 }
+            }
+        )
+    }
+
+    private fun trackPaymentMethodCompletion(paymentMethodType: String, extraField: Pair<String, String>? = null) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
+            mutableMapOf(
+                AnalyticsTracker.KEY_PAYMENT_METHOD to paymentMethodType,
+                AnalyticsTracker.KEY_ORDER_ID to order.id,
+                cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
+            ).apply {
+                extraField?.let { put(it.first, it.second) }
             }
         )
     }
