@@ -20,6 +20,7 @@ class JitmStoreWrapper @Inject constructor(
     private val jsonFileName = BuildConfig.JITM_TESTING_JSON_FILE_NAME
     private val isTestingModeEnabled = PackageUtils.isDebugBuild() && jsonFileName.isNotBlank()
 
+    @Suppress("TooGenericExceptionCaught")
     suspend fun fetchJitmMessage(
         site: SiteModel,
         messagePath: String,
@@ -31,6 +32,7 @@ class JitmStoreWrapper @Inject constructor(
                 WooLog.d(WooLog.T.JITM, "Using JITM JSON file: $jsonFileName")
                 WooResult(parseJsonFile(jsonFileName))
             } catch (e: Exception) {
+                WooLog.e(WooLog.T.JITM, e)
                 error("Failed to parse JITM JSON file: $jsonFileName")
             }
         } else {
