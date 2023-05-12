@@ -40,6 +40,11 @@ class WPComRemoteFeatureFlagRepository @Inject constructor(
         }
     }
 
+    fun getFeatureFlag(key: String): RemoteFeatureFlag? {
+        val flag = featureFlagsStore.getFeatureFlags().find { it.key == key }
+        return flag?.let { RemoteFeatureFlag(key = it.key, value = it.value) }
+    }
+
     class RemoteFeatureFlag(
         val key: String,
         val value: Boolean
