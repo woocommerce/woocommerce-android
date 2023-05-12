@@ -612,6 +612,7 @@ class OrderDetailViewModel @Inject constructor(
     }
     @Suppress("MagicNumber")
     private fun toOrderProducts(products: List<Order.Item>): List<OrderProduct> {
+        if(products.isEmpty()) return emptyList()
         val mockList = products.toMutableList()
         while (mockList.size < 7) {
             mockList.addAll(products)

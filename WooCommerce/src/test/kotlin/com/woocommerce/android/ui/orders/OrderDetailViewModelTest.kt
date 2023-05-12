@@ -255,7 +255,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
         // product list should not be empty when shipping labels are not available and products are not refunded
-        val products = ArrayList<Order.Item>()
+        val products = ArrayList<OrderDetailViewModel.OrderProduct>()
         viewModel.productList.observeForever {
             it?.let { products.addAll(it) }
         }
