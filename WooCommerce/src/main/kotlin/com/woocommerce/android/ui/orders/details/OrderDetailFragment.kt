@@ -488,7 +488,7 @@ class OrderDetailFragment :
         }
     }
 
-    private fun showOrderProducts(products: List<OrderDetailViewModel.OrderProduct>, currency: String) {
+    private fun showOrderProducts(products: List<OrderProduct>, currency: String) {
         products.whenNotNullNorEmpty {
             with(binding.orderDetailProductList) {
                 updateProductItemsList(

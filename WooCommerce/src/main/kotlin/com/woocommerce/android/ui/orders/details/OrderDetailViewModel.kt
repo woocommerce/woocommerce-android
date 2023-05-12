@@ -607,27 +607,9 @@ class OrderDetailViewModel @Inject constructor(
     ): ListInfo<OrderProduct> {
         val products = refunds.list.getNonRefundedProducts(order.items)
         checkAddonAvailability(products)
-        val orderProducts = toOrderProducts(products)
+        val orderProducts = products.toOrderProducts()
         return ListInfo(isVisible = orderProducts.isNotEmpty(), list = orderProducts)
     }
-    @Suppress("MagicNumber")
-    private fun toOrderProducts(products: List<Order.Item>): List<OrderProduct> {
-        if (products.isEmpty()) return emptyList()
-        val mockList = products.toMutableList()
-        while (mockList.size < 7) {
-            mockList.addAll(products)
-        }
-        return buildList {
-            add(
-                OrderProduct.GroupedProductItem(
-                    product = mockList.first(),
-                    children = mockList.slice(1 until mockList.lastIndex - 2).map { OrderProduct.ProductItem(it) }
-                )
-            )
-            addAll(mockList.slice(mockList.lastIndex - 2 until mockList.lastIndex).map { OrderProduct.ProductItem(it) })
-        }
-    }
-
     private fun checkAddonAvailability(products: List<Order.Item>) {
         launch(coroutineDispatchers.computation) {
             products.forEach { it.containsAddons = addonsRepository.containsAddonsFrom(it) }
@@ -837,13 +819,4 @@ class OrderDetailViewModel @Inject constructor(
     ) : Parcelable
 
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
-
-    @Parcelize
-    sealed class OrderProduct : Parcelable {
-        @Parcelize
-        data class ProductItem(val product: Order.Item) : OrderProduct()
-
-        @Parcelize
-        data class GroupedProductItem(val product: Order.Item, val children: List<ProductItem>) : OrderProduct()
-    }
 }

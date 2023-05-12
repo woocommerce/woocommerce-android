@@ -12,13 +12,13 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderProductActionListener
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
+import com.woocommerce.android.ui.orders.details.OrderProduct
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 
 class OrderDetailProductChildItemListAdapter(
-    private val productItems: List<OrderDetailViewModel.OrderProduct.ProductItem>,
+    private val productItems: List<OrderProduct.ProductItem>,
     private val productImageMap: ProductImageMap,
     private val formatCurrencyForDisplay: (BigDecimal) -> String,
     private val productItemListener: OrderProductActionListener
@@ -50,7 +50,7 @@ class OrderDetailProductChildItemListAdapter(
     ) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(
-            productItem: OrderDetailViewModel.OrderProduct.ProductItem,
+            productItem: OrderProduct.ProductItem,
             productImageMap: ProductImageMap,
             productItemListener: OrderProductActionListener,
             formatCurrencyForDisplay: (BigDecimal) -> String
