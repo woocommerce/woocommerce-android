@@ -14,7 +14,7 @@ enum class RemoteFeatureFlag(private val remoteKey: String) {
 
     // Similar to how it works in `FeatureFlag`, add `PackageUtils.isDebugBuild()` to force-enable
     // the feature flag in debug builds.
-    fun isEnabled() : Boolean {
+    fun isEnabled(): Boolean {
         return when (this) {
             LOCAL_NOTIFICATION_STORE_CREATION_READY,
             LOCAL_NOTIFICATION_NUDGE_FREE_TRIAL_AFTER_1D,
