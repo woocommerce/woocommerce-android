@@ -11,13 +11,13 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="?selectableItemBackground"/>
 
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/productInfo_children_divider"
         android:layout_width="0dp"
         android:layout_height="@dimen/minor_10"
-        android:layout_marginTop="@dimen/major_100"
         android:layout_marginStart="@dimen/major_100"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

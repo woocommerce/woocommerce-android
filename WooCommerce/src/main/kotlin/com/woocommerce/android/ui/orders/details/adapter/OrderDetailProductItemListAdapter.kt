@@ -36,7 +36,7 @@ class OrderDetailProductItemListAdapter(
             val imageSize = view.resources.getDimensionPixelSize(R.dimen.image_minor_100)
             val productImage = PhotonUtils.getPhotonImageUrl(productImageMap.get(item.uniqueId), imageSize, imageSize)
             view.initView(item, productImage, formatCurrencyForDisplay, onViewAddonsClick)
-            view.setOnClickListener {
+            itemView.setOnClickListener {
                 if (item.isVariation) {
                     productItemListener.openOrderProductVariationDetail(item.productId, item.variationId)
                 } else {

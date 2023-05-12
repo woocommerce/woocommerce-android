@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
-import com.woocommerce.android.R.dimen
 import com.woocommerce.android.databinding.OrderDetailProductListBinding
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.ProductImageMap
@@ -99,8 +98,7 @@ class OrderDetailProductListView @JvmOverloads constructor(
                     AlignedDividerDecoration(
                         context,
                         DividerItemDecoration.VERTICAL,
-                        R.id.productInfo_iconFrame,
-                        padding = context.resources.getDimensionPixelSize(dimen.major_100)
+                        R.id.productInfo_iconFrame
                     )
                 )
             }
