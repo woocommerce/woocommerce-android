@@ -37,7 +37,9 @@ class PrivacySettingsViewModel @Inject constructor(
 
     fun initialize() {
         launch {
+            _state.value = _state.value?.copy(progressBarVisible = true)
             val event = repository.fetchAccountSettings()
+            _state.value = _state.value?.copy(progressBarVisible = false)
 
             event.fold(
                 onSuccess = {

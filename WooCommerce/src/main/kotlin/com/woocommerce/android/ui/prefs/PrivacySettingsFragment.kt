@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -32,6 +33,8 @@ class PrivacySettingsFragment : BaseFragment() {
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
+
+    private var snackbar: Snackbar? = null
 
     override fun getFragmentTitle() = getString(R.string.privacy_settings)
 
@@ -62,11 +65,13 @@ class PrivacySettingsFragment : BaseFragment() {
                     PrivacySettingsFragmentDirections.actionPrivacySettingsFragmentToPrivacySettingsPolicesFragment()
                 )
                 is MultiLiveEvent.Event.ShowActionSnackbar ->
-                    uiMessageResolver.getIndefiniteActionSnack(
+                    snackbar = uiMessageResolver.getIndefiniteActionSnack(
                         event.message,
                         actionText = getString(R.string.retry),
                         actionListener = event.action
-                    ).show()
+                    ).apply {
+                        show()
+                    }
             }
         }
     }
@@ -74,6 +79,11 @@ class PrivacySettingsFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        snackbar?.dismiss()
     }
 
     private fun showAdvertisingOptions() {
