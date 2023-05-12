@@ -40,6 +40,10 @@ class AutoSyncOrder @Inject constructor(val createUpdateOrderUseCase: CreateUpda
                     this.total isEqualTo newLine.total
             }
 
+        val hasSameCouponLines = old.couponLines.areSameAs(new.couponLines) { newLine ->
+            this.code == newLine.code
+        }
+
         val hasSameStatus = old.status == new.status
 
         val hasSameCustomerInfo = old.billingAddress == new.billingAddress &&
@@ -47,11 +51,10 @@ class AutoSyncOrder @Inject constructor(val createUpdateOrderUseCase: CreateUpda
             old.customerNote == new.customerNote &&
             old.shippingPhone == new.shippingPhone
 
-        // TODO: compare coupon lines as well
-
         return hasSameItems &&
             hasSameShippingLines &&
             hasSameFeeLines &&
+            hasSameCouponLines &&
             hasSameStatus &&
             hasSameCustomerInfo
     }
