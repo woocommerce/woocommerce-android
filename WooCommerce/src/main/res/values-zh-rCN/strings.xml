@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-27 13:54:03+0000
+Translation-Revision-Date: 2023-05-04 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="store_onboarding_setting_description">显示或隐藏商店设置列表</string>
+    <string name="store_onboarding_setting_title">商店设置列表</string>
+    <string name="store_onboarding_dialog_description">您可以根据需要，访问“菜单”&gt;“设置”&gt;“商店”将其还原</string>
+    <string name="store_onboarding_dialog_title">隐藏商店设置列表</string>
+    <string name="store_onboarding_menu_hide_store_setup">隐藏商店设置列表</string>
+    <string name="card_reader_tap_to_pay_successful_refund_action_label">查看订单</string>
+    <string name="card_reader_tap_to_pay_successful_refund_message">测试“点按付款”的付款已成功退款</string>
+    <string name="card_reader_tap_to_pay_explanation_refund_failed">退款失败。 尝试手动退款</string>
+    <string name="card_reader_tap_to_pay_explanation_refunding_payment">正在为测试付款退款…</string>
+    <string name="signup_terms_of_service">继续即表示您同意我们的&lt;a href=\'termsOfService\'&gt;&lt;u&gt;服务条款。&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="signup_get_started_create_account_label">首先，我们来创建您的账户。 </string>
+    <string name="signup_create_password_label">创建您的密码</string>
     <string name="component_type_categories">分类</string>
     <string name="component_type_products">产品</string>
     <string name="component_default_option">默认选项</string>
@@ -228,7 +240,7 @@ Language: zh_CN
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">出错了。 请稍后重试。</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">尝试付款</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find"> 您可以在 Android 设备上找到“点按付款”，具体操作为\n点击“菜单”&gt;“付款”，或“收款”，然后\n选择“点按付款”。</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">尝试使用银行卡付款，并\n在完成后进行退款。</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund">尝试使用银行卡付款，并\n完成后将退款。</string>
     <string name="card_reader_tap_to_pay_explanation_ready">您的手机已准备好使用“点按付款”功能。\n您的客户可以在他们的手机上\n点按此银行卡，以进行付款。</string>
     <string name="card_reader_tap_to_pay_explanation_title">使用手机\n收取银行卡付款</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">点按付款</string>
@@ -497,14 +509,12 @@ Language: zh_CN
     <string name="signup_password_too_short">您的密码太短。 请选择一个至少包含 6 个字符的密码。</string>
     <string name="signup_email_invalid_input">请输入有效的电子邮箱地址。</string>
     <string name="signup_email_exist_input">已存在使用此电子邮件的账户。</string>
-    <string name="signup_already_registered">首先，我们来创建您的账户。 已注册？ &lt;a href=\'login\'&gt;&lt;u&gt;登录&lt;/u&gt;&lt;/a&gt;</string>
     <string name="login_create_an_account">创建账户</string>
     <string name="login_try_another_email">尝试其他地址</string>
     <string name="date_timeframe_custom_date_range_title">自定义日期范围</string>
     <string name="date_timeframe_custom">自定义</string>
     <string name="what_is_wordpress_link">什么是 WordPress.com？</string>
     <string name="signup_creating_account_loading_message">正在创建账户</string>
-    <string name="signup_terms_of_service">继续即表示您同意我们的&lt;u&gt;服务条款。&lt;/u&gt;</string>
     <string name="signup_password_hint">选择一个密码</string>
     <string name="signup_email_address_hint">您的电子邮箱地址</string>
     <string name="signup_get_started_label">几分钟内\n即可开始使用</string>
@@ -808,8 +818,6 @@ Language: zh_CN
     <string name="coupon_details_copy_error">将优惠券代码复制到剪贴板时出错。</string>
     <string name="coupon_details_copy_success">已将优惠券代码复制到剪贴板。</string>
     <string name="coupon_details_copy_clipboard_label">优惠券代码</string>
-    <string name="coupon_beta_features_subheading">在应用程序中测试管理优惠券</string>
-    <string name="coupon_beta_features_heading">优惠券管理</string>
     <string name="coupon_summary_loading_failure">加载优惠券汇总失败</string>
     <string name="coupon_details_expiration_date">到期日期 %1$s</string>
     <string name="coupon_summary_template">%1$s 的优惠 %2$s</string>
@@ -821,7 +829,6 @@ Language: zh_CN
     <string name="coupon_details_menu_share">共享优惠券</string>
     <string name="coupon_details_menu_copy">复制优惠券代码</string>
     <string name="inbox_note_survey_actioned">感谢您的反馈！</string>
-    <string name="beta_features_coupons">优惠券管理</string>
     <string name="card_reader_connect_permission_rationale_hint">读卡器付款需要访问确切位置的权限</string>
     <string name="card_reader_connect_permission_rationale_header">需要位置访问权限</string>
     <string name="simple_payments_share_payment_dialog_title">结账 - %s</string>

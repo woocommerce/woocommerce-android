@@ -340,7 +340,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             parameterRepository = parameterRepository,
             autoSyncOrder = autoSyncOrder,
             autoSyncPriceModifier = autoSyncPriceModifier,
-            tracker = tracker
+            tracker = tracker,
+            codeScanner = mock()
         )
     }
 

@@ -38,6 +38,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsS
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.READY
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepsState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Transition
+import com.woocommerce.android.ui.orders.shippinglabels.creation.banner.CheckEUShippingScenario
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -49,6 +50,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -93,6 +95,9 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             on { invoke(any(), any()) } doReturn (Location.EMPTY to AmbiguousLocation.EMPTY)
         }
     )
+    private val checkEUShippingScenario: CheckEUShippingScenario = mock {
+        on { invoke(any()) } doReturn flowOf(false)
+    }
 
     private val data = StateMachineData(
         order = orderMapper.toAppModel(order),
@@ -197,6 +202,7 @@ class CreateShippingLabelViewModelTest : BaseUnitTest() {
             CreateShippingLabelViewModel(
                 savedState,
                 parameterRepository,
+                checkEUShippingScenario,
                 orderDetailRepository,
                 shippingLabelRepository,
                 stateMachine,

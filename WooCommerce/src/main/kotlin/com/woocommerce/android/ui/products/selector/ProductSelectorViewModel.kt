@@ -7,16 +7,12 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.combine
-import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToProductFilter
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToVariationSelector
 import com.woocommerce.android.ui.products.ProductStatus
-import com.woocommerce.android.ui.products.ProductStockStatus.Custom
-import com.woocommerce.android.ui.products.ProductStockStatus.InStock
-import com.woocommerce.android.ui.products.ProductStockStatus.NotAvailable
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
@@ -30,6 +26,7 @@ import com.woocommerce.android.ui.products.variations.selector.VariationSelector
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.VariationSelectionResult
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
+import com.woocommerce.android.util.getStockText
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -92,9 +89,7 @@ class ProductSelectorViewModel @Inject constructor(
     private val filterState = savedState.getStateFlow(viewModelScope, FilterState())
     private val productsRestrictions = navArgs.restrictions
     private val products = listHandler.productsFlow.map { products ->
-        products.filter { product ->
-            productsRestrictions.map { restriction -> restriction(product) }.fold(true) { acc, result -> acc && result }
-        }
+        products.filter { product -> isProductRestricted(product = product) }
     }
     private val popularProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
     private val recentProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
@@ -165,13 +160,20 @@ class ProductSelectorViewModel @Inject constructor(
         return productsList.map { it.toUiModel(selectedIds) }
     }
 
+    private fun isProductRestricted(product: Product): Boolean {
+        return productsRestrictions.map { restriction -> restriction(product) }
+            .fold(true) { acc, result -> acc && result }
+    }
+
     private suspend fun loadRecentProducts() {
         val recentlySoldOrders = getRecentlySoldOrders().take(NUMBER_OF_SUGGESTED_ITEMS)
         recentProducts.value = productsMapper.mapProductIdsToProduct(
             getProductIdsFromRecentlySoldOrders(
                 recentlySoldOrders
             ).distinctBy { it }
-        )
+        ).filter { product ->
+            isProductRestricted(product = product)
+        }
     }
 
     private suspend fun loadPopularProducts() {
@@ -184,7 +186,11 @@ class ProductSelectorViewModel @Inject constructor(
             .sortedByDescending { it.second }
             .take(NUMBER_OF_SUGGESTED_ITEMS)
             .toMap()
-        popularProducts.value = productsMapper.mapProductIdsToProduct(topPopularProductsSorted.keys.toList())
+        popularProducts.value = productsMapper.mapProductIdsToProduct(
+            topPopularProductsSorted.keys.toList()
+        ).filter { product ->
+            isProductRestricted(product = product)
+        }
     }
 
     private suspend fun getRecentlySoldOrders() =
@@ -217,20 +223,7 @@ class ProductSelectorViewModel @Inject constructor(
             }
         }
 
-        val stockStatus = when (stockStatus) {
-            InStock -> {
-                if (isVariable()) {
-                    resourceProvider.getString(
-                        string.product_stock_status_instock_with_variations,
-                        numVariations
-                    )
-                } else {
-                    getStockStatusLabel()
-                }
-            }
-            NotAvailable, is Custom -> null
-            else -> resourceProvider.getString(stockStatus.stringResource)
-        }
+        val stockStatus = getStockText(resourceProvider)
 
         val price = price?.let { PriceUtils.formatCurrency(price, currencyCode, currencyFormatter) }
 
@@ -247,16 +240,6 @@ class ProductSelectorViewModel @Inject constructor(
             selectedVariationIds = variationIds.intersect(selectedItems.variationIds.toSet()),
             selectionState = getProductSelection()
         )
-    }
-
-    private fun Product.getStockStatusLabel() = if (isStockManaged) {
-        val quantity = if (stockQuantity.isInteger()) stockQuantity.toInt() else stockQuantity
-        resourceProvider.getString(
-            string.product_stock_status_instock_quantified,
-            quantity.toString()
-        )
-    } else {
-        resourceProvider.getString(string.product_stock_status_instock)
     }
 
     fun onClearButtonClick() {
@@ -515,6 +498,7 @@ class ProductSelectorViewModel @Inject constructor(
                 return product.status == ProductStatus.PUBLISH
             }
         }
+
         @Parcelize
         object NoVariableProductsWithNoVariations : ProductSelectorRestriction() {
             override fun invoke(product: Product): Boolean {
@@ -535,6 +519,7 @@ val Collection<ProductSelectorViewModel.SelectedItem>.variationIds: List<Long>
         return filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductOrVariation>().map { it.id } +
             filterIsInstance<ProductSelectorViewModel.SelectedItem.ProductVariation>().map { it.variationId }
     }
+
 enum class ProductSourceForTracking {
     POPULAR,
     LAST_SOLD,

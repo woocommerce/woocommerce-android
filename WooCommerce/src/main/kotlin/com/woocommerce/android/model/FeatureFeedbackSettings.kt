@@ -15,7 +15,7 @@ data class FeatureFeedbackSettings(
     val key
         get() = feature.toString()
 
-    fun registerItself() = FeedbackPrefs.setFeatureFeedbackSettings(this)
+    fun registerItself(feedbackPrefs: FeedbackPrefs) = feedbackPrefs.setFeatureFeedbackSettings(this)
 
     enum class FeedbackState {
         GIVEN,

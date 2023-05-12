@@ -5,7 +5,6 @@ import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -13,7 +12,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCSSRModel
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -29,9 +27,7 @@ class HelpViewModelTest : BaseUnitTest() {
         on { get() }.thenReturn(siteModel)
         on { exists() }.thenReturn(true)
     }
-    private val wooStore: WooCommerceStore = mock {
-        onBlocking { fetchSSR(any()) }.thenReturn(WooResult(WooError(mock(), mock())))
-    }
+    private val wooStore: WooCommerceStore = mock()
 
     private lateinit var viewModel: HelpViewModel
 
@@ -41,7 +37,6 @@ class HelpViewModelTest : BaseUnitTest() {
             savedState,
             wooStore,
             selectedSite,
-            mock()
         )
     }
 
@@ -359,56 +354,4 @@ class HelpViewModelTest : BaseUnitTest() {
                 )
             )
         }
-
-    @Test
-    fun `given site doesnt exist, when view model init, then ssr is null`() {
-        // GIVEN
-        whenever(selectedSite.exists()).thenReturn(false)
-
-        // WHEN
-        viewModel = HelpViewModel(
-            savedState,
-            wooStore,
-            selectedSite,
-            mock()
-        )
-
-        // THEN
-        assertThat(viewModel.ssr).isNull()
-    }
-
-    @Test
-    fun `given site exists and fetch ssr success, when view model init, then ssr is not null`() = runTest {
-        // GIVEN
-        whenever(selectedSite.exists()).thenReturn(true)
-        whenever(wooStore.fetchSSR(any())).thenReturn(WooResult(WCSSRModel(remoteSiteId = 1)))
-
-        // WHEN
-        viewModel = HelpViewModel(
-            savedState,
-            wooStore,
-            selectedSite,
-            mock()
-        )
-
-        // THEN
-        assertThat(viewModel.ssr).isNotNull
-    }
-
-    @Test
-    fun `given site exists and fetch ssr error, when view model init, then ssr is null`() {
-        // GIVEN
-        whenever(selectedSite.exists()).thenReturn(true)
-
-        // WHEN
-        viewModel = HelpViewModel(
-            savedState,
-            wooStore,
-            selectedSite,
-            mock()
-        )
-
-        // THEN
-        assertThat(viewModel.ssr).isNull()
-    }
 }
