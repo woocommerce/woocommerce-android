@@ -129,7 +129,8 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             billingAddress = null,
             customerNote = order.customerNote,
             shippingLines = emptyList(),
-            feeLines = emptyList()
+            feeLines = emptyList(),
+            couponLines = emptyList(),
         )
 
         verify(orderUpdateStore).createOrder(defaultSiteModel, request)
@@ -159,7 +160,8 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             billingAddress = null,
             customerNote = order.customerNote,
             shippingLines = emptyList(),
-            feeLines = emptyList()
+            feeLines = emptyList(),
+            couponLines = emptyList(),
         )
 
         verify(orderUpdateStore).createOrder(defaultSiteModel, request)
