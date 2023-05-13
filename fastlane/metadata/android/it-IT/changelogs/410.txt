@@ -1,2 +1,0 @@
-13.4:
-Questo rilascio include diverse correzioni ai bug e miglioramenti che rendono l'esperienza più agevole. Ci impegniamo a migliorare continuamente l'app WooCommerce e abbiamo alcuni interessanti aggiornamenti in arrivo nelle prossime settimane. Rimani aggiornato.
