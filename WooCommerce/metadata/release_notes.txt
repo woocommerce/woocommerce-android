@@ -1,1 +1,3 @@
-This release contains a handful of minor improvements to make your experience smoother. We hope you notice the love we put into our software. Stay tuned for some exciting news coming your way!
+- [*] [Internal] JITM added to the Orders list screen (behind TTP feature flag) [https://github.com/woocommerce/woocommerce-android/pull/8914]
+- [**] Enable coupon management by default [https://github.com/woocommerce/woocommerce-android/pull/8995]
+
