@@ -1,3 +1,1 @@
-- [*] [Internal] JITM added to the Orders list screen (behind TTP feature flag) [https://github.com/woocommerce/woocommerce-android/pull/8914]
-- [**] Enable coupon management by default [https://github.com/woocommerce/woocommerce-android/pull/8995]
-
+Our experimental coupons feature is now available for everyone! Simply click on the menu option to manage your coupons from the app. Try it out and share your feedback!
