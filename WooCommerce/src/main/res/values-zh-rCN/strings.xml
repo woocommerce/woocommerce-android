@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-04 09:54:04+0000
+Translation-Revision-Date: 2023-05-08 10:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="shipping_notice_dismiss">忽略</string>
+    <string name="shipping_notice_learn_more">了解更多</string>
+    <string name="shipping_notice_banner_content">当运送到遵守欧盟 (EU) 海关规则的国家/地区时，您必须针对每件商品提供清晰、具体的描述。 否则货物可能会在海关滞留或被扣留。</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">随时更新，提高商店安全性。 立即探索 Jetpack。</string>
+    <string name="jetpack_benefits_bottom_banner_title">获取订单通知等信息</string>
     <string name="store_onboarding_setting_description">显示或隐藏商店设置列表</string>
     <string name="store_onboarding_setting_title">商店设置列表</string>
     <string name="store_onboarding_dialog_description">您可以根据需要，访问“菜单”&gt;“设置”&gt;“商店”将其还原</string>
@@ -818,8 +823,6 @@ Language: zh_CN
     <string name="coupon_details_copy_error">将优惠券代码复制到剪贴板时出错。</string>
     <string name="coupon_details_copy_success">已将优惠券代码复制到剪贴板。</string>
     <string name="coupon_details_copy_clipboard_label">优惠券代码</string>
-    <string name="coupon_beta_features_subheading">在应用程序中测试管理优惠券</string>
-    <string name="coupon_beta_features_heading">优惠券管理</string>
     <string name="coupon_summary_loading_failure">加载优惠券汇总失败</string>
     <string name="coupon_details_expiration_date">到期日期 %1$s</string>
     <string name="coupon_summary_template">%1$s 的优惠 %2$s</string>
@@ -831,7 +834,6 @@ Language: zh_CN
     <string name="coupon_details_menu_share">共享优惠券</string>
     <string name="coupon_details_menu_copy">复制优惠券代码</string>
     <string name="inbox_note_survey_actioned">感谢您的反馈！</string>
-    <string name="beta_features_coupons">优惠券管理</string>
     <string name="card_reader_connect_permission_rationale_hint">读卡器付款需要访问确切位置的权限</string>
     <string name="card_reader_connect_permission_rationale_header">需要位置访问权限</string>
     <string name="simple_payments_share_payment_dialog_title">结账 - %s</string>
@@ -1115,8 +1117,6 @@ Language: zh_CN
     <string name="orderfilters_show_orders_button">显示订单</string>
     <string name="orderlist_filters_title">已过滤的订单</string>
     <string name="orderlist_no_filters_title">所有订单</string>
-    <string name="jetpack_benefits_bottom_banner_subtitle">了解优势</string>
-    <string name="jetpack_benefits_bottom_banner_title">通过 Jetpack 获取完整体验 </string>
     <string name="product_description_hint_with_title">告知我们更多关于 %s 的信息…</string>
     <string name="product_description_hint_no_title">向您的潜在客户描述您的产品…</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">将读卡器的序列号复制到剪贴板</string>

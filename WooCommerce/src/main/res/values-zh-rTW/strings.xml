@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-02 09:54:03+0000
+Translation-Revision-Date: 2023-05-09 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="shipping_notice_dismiss">關閉</string>
+    <string name="shipping_notice_learn_more">深入瞭解</string>
+    <string name="shipping_notice_banner_content">運送到遵循歐盟 (EU) 海關規定的國家/地區時，你必須針對每件商品提供清楚明確的描述。 否則貨件可能會在海關階段延誤或中斷。</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">保持最新狀態並提升商店安全性。 立即深入瞭解 Jetpack。</string>
+    <string name="jetpack_benefits_bottom_banner_title">收到訂單通知等其他資訊</string>
     <string name="store_onboarding_setting_description">顯示或隱藏商店設定清單</string>
     <string name="store_onboarding_setting_title">商店設定清單</string>
     <string name="store_onboarding_dialog_description">你可以視需要從「選單」&gt;「設定」&gt;「商店」將其還原</string>
@@ -818,8 +823,6 @@ Language: zh_TW
     <string name="coupon_details_copy_error">將優惠券代碼複製到剪貼簿時發生錯誤。</string>
     <string name="coupon_details_copy_success">優惠券代碼已複製到剪貼簿。</string>
     <string name="coupon_details_copy_clipboard_label">優惠券代碼</string>
-    <string name="coupon_beta_features_subheading">在應用程式中試用優惠券管理功能</string>
-    <string name="coupon_beta_features_heading">優惠券管理</string>
     <string name="coupon_summary_loading_failure">載入優惠券摘要失敗</string>
     <string name="coupon_details_expiration_date">有效期限︰%1$s</string>
     <string name="coupon_summary_template">%2$s 可享 %1$s 折扣</string>
@@ -831,7 +834,6 @@ Language: zh_TW
     <string name="coupon_details_menu_share">分享優惠券</string>
     <string name="coupon_details_menu_copy">複製優惠券代碼</string>
     <string name="inbox_note_survey_actioned">感謝你的意見回饋！</string>
-    <string name="beta_features_coupons">優惠券管理</string>
     <string name="card_reader_connect_permission_rationale_hint">讀卡機付款需要準確定位的權限</string>
     <string name="card_reader_connect_permission_rationale_header">需要定位權限</string>
     <string name="simple_payments_share_payment_dialog_title">結帳 - %s</string>
@@ -1115,8 +1117,6 @@ Language: zh_TW
     <string name="orderfilters_show_orders_button">顯示訂單</string>
     <string name="orderlist_filters_title">篩選的訂單</string>
     <string name="orderlist_no_filters_title">全部訂單</string>
-    <string name="jetpack_benefits_bottom_banner_subtitle">查看優勢</string>
-    <string name="jetpack_benefits_bottom_banner_title">取得 Jetpack 完整功能</string>
     <string name="product_description_hint_with_title">進一步介紹 %s…</string>
     <string name="product_description_hint_no_title">請向未來的客戶描述你的產品…</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">讀卡機序號已複製到剪貼簿</string>
