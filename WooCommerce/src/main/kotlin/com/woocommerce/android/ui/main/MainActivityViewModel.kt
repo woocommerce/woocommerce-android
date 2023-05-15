@@ -258,7 +258,7 @@ class MainActivityViewModel @Inject constructor(
             AnalyticsEvent.LOCAL_NOTIFICATION_TAPPED,
             mapOf(AnalyticsTracker.KEY_TYPE to notification.tag)
         )
-        WooLog.d(T.NOTIFICATIONS, "Local notification tapped: $notification")
+        WooLog.d(T.NOTIFICATIONS, "Local notification TAPPED: $notification")
     }
 
     object ViewOrderList : Event()
