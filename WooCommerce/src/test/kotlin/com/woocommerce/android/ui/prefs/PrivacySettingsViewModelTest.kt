@@ -118,8 +118,8 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
     fun `given user is not WPCOM, when user opens the screen, load settings from local preferences`() =
         testBlocking {
             // given
-            accountStore.stub {
-                on { hasAccessToken() } doReturn false
+            repository.stub {
+                on { isUserWPCOM() } doReturn false
             }
             appPrefs.stub {
                 on { getSendUsageStats() } doReturn false

@@ -34,7 +34,7 @@ class PrivacySettingsViewModel @Inject constructor(
     }
 
     fun initialize() {
-        if (isWpComUser()) {
+        if (repository.isUserWPCOM()) {
             launch {
                 _state.value = _state.value?.copy(progressBarVisible = true)
                 val event = repository.fetchAccountSettings()
@@ -61,7 +61,7 @@ class PrivacySettingsViewModel @Inject constructor(
     }
 
     private fun getSendUsageStats() =
-        if (isWpComUser()) !repository.userOptOutFromTracks() else appPrefs.getSendUsageStats()
+        if (repository.isUserWPCOM()) !repository.userOptOutFromTracks() else appPrefs.getSendUsageStats()
 
     private fun getCrashReportingEnabled() = appPrefs.isCrashReportingEnabled()
 
