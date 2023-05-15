@@ -2,6 +2,7 @@ package com.woocommerce.android.notifications.local
 
 import java.util.concurrent.TimeUnit
 
+@Suppress("ForbiddenComment")
 sealed class LocalNotification(
     open val title: String,
     open val description: String,

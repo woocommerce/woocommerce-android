@@ -248,8 +248,9 @@ class MainActivityViewModel @Inject constructor(
     }
 
     // TODO: Remove
+    @Suppress("ForbiddenComment")
     fun showLocalNotification() {
-        notificationScheduler.scheduleNotification(Test("Ahoj", "Onko toto funguje?"))
+        notificationScheduler.scheduleNotification(Test("Test", "This is a test"))
     }
 
     fun onLocalNotificationTapped(notification: Notification) {

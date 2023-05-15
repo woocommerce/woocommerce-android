@@ -23,7 +23,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
 @HiltWorker
-@Suppress("UnusedPrivateMember")
+@Suppress("ComplexCondition")
 class LocalNotificationWorker @AssistedInject constructor(
     @Assisted private val appContext: Context,
     @Assisted workerParams: WorkerParameters,

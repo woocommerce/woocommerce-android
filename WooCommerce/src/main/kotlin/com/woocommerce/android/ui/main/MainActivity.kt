@@ -695,10 +695,13 @@ class MainActivity :
     // endregion
 
     // region Fragment Processing
+    @Suppress("ForbiddenComment")
     private fun initFragment(savedInstanceState: Bundle?) {
         // TODO: Remove
-        binding.offlineBar.setOnClickListener {
-            viewModel.showLocalNotification()
+        if (BuildConfig.DEBUG) {
+            binding.offlineBar.setOnClickListener {
+                viewModel.showLocalNotification()
+            }
         }
 
         setupObservers()
