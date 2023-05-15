@@ -22,7 +22,6 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Refund
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
-import com.woocommerce.android.ui.payments.methodselection.IsScanToPayAvailable
 import com.woocommerce.android.ui.payments.methodselection.NavigateBackToHub
 import com.woocommerce.android.ui.payments.methodselection.NavigateBackToOrderList
 import com.woocommerce.android.ui.payments.methodselection.NavigateToCardReaderHubFlow
@@ -101,7 +100,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val cardReaderTracker: CardReaderTracker = mock()
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock()
     private val appPrefs: AppPrefs = mock()
-    private val isScanToPayAvailable: IsScanToPayAvailable = mock()
 
     @Test
     fun `given hub flow, when view model init, then navigate to hub flow emitted`() = testBlocking {
@@ -924,12 +922,11 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given scan to pay available, when vm init, then true returned`() =
+    fun `when vm init, then scat to pay true returned`() =
         testBlocking {
             // GIVEN
             val orderId = 1L
             val param = Payment(orderId = orderId, paymentType = ORDER)
-            whenever(isScanToPayAvailable()).thenReturn(true)
 
             // WHEN
             val viewModel = initViewModel(param)
@@ -939,27 +936,11 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given scan to pay not available, when vm init, then false returned`() =
-        testBlocking {
-            // GIVEN
-            val orderId = 1L
-            val param = Payment(orderId = orderId, paymentType = ORDER)
-            whenever(isScanToPayAvailable()).thenReturn(false)
-
-            // WHEN
-            val viewModel = initViewModel(param)
-
-            // THEN
-            assertThat((viewModel.viewStateData.value as Success).isScanToPayAvailable).isFalse()
-        }
-
-    @Test
     fun `given update order status success, when onScanToPayClicked, then SharePaymentUrlViaQr emitted`() =
         testBlocking {
             // GIVEN
             val orderId = 1L
             val param = Payment(orderId = orderId, paymentType = ORDER)
-            whenever(isScanToPayAvailable()).thenReturn(true)
             val viewModel = initViewModel(param)
             val event = mock<OnOrderChanged> {
                 on { isError }.thenReturn(false)
@@ -987,7 +968,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             // GIVEN
             val orderId = 1L
             val param = Payment(orderId = orderId, paymentType = ORDER)
-            whenever(isScanToPayAvailable()).thenReturn(true)
             val viewModel = initViewModel(param)
             val event = mock<OnOrderChanged> {
                 on { isError }.thenReturn(true)
@@ -1018,7 +998,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         // GIVEN
         val orderId = 1L
         val param = Payment(orderId = orderId, paymentType = ORDER)
-        whenever(isScanToPayAvailable()).thenReturn(true)
         val viewModel = initViewModel(param)
 
         // WHEN
@@ -1104,7 +1083,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             cardReaderTracker,
             tapToPayAvailabilityStatus,
             appPrefs,
-            isScanToPayAvailable,
         )
     }
 }
