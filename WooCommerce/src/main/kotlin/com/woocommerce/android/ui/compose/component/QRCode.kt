@@ -34,6 +34,7 @@ import com.google.zxing.MultiFormatWriter
 import com.google.zxing.WriterException
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -151,9 +152,11 @@ private const val OVERLAY_ALPHA = 230
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun QRCodePreview() {
-    QRCode(
-        content = "https://woocommerce.com",
-        size = 150.dp,
-        overlayId = R.drawable.img_woo_bubble_white
-    )
+    WooThemeWithBackground {
+        QRCode(
+            content = "https://woocommerce.com",
+            size = 150.dp,
+            overlayId = R.drawable.img_woo_bubble_white
+        )
+    }
 }
