@@ -30,7 +30,7 @@
         android:paddingStart="@dimen/minor_00"
         android:paddingEnd="@dimen/major_75"
         android:paddingBottom="@dimen/major_100"
-        android:text="@string/shipping_notice_banner_content"
+        android:text="@string/shipping_notice_banner_warning_content"
         android:textColor="@color/material_on_surface_emphasis_high_type"
         android:textSize="@dimen/text_minor_125"
         app:layout_constraintEnd_toEndOf="parent"
