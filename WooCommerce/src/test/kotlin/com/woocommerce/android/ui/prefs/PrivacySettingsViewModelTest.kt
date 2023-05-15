@@ -16,18 +16,14 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
-import org.wordpress.android.fluxc.model.AccountModel
-import org.wordpress.android.fluxc.store.AccountStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
 
-    private val accountStore: AccountStore = mock {
-        on { hasAccessToken() } doReturn true
-    }
-
     private val appPrefs: AppPrefsWrapper = mock()
-    private val repository: PrivacySettingsRepository = mock()
+    private val repository: PrivacySettingsRepository = mock {
+        on { isUserWPCOM() } doReturn true
+    }
 
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { it.arguments[0].toString() }
@@ -38,7 +34,6 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
     fun init() {
         sut = PrivacySettingsViewModel(
             mock(),
-            accountStore,
             appPrefs,
             resourceProvider,
             repository,
@@ -49,10 +44,8 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
     fun `given successful API response, when user turns on analytical events, turn on analytical events and update state`(): Unit =
         testBlocking {
             // given
-            accountStore.stub {
-                on { account } doReturn AccountModel().apply { tracksOptOut = true }
-            }
             repository.stub {
+                on { userOptOutFromTracks() } doReturn true
                 onBlocking { updateTracksSetting(true) } doReturn Result.success(Unit)
             }
             init()
@@ -72,9 +65,7 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
             // given
             repository.stub {
                 onBlocking { updateTracksSetting(true) } doReturn Result.failure(Exception())
-            }
-            accountStore.stub {
-                on { account } doReturn AccountModel().apply { tracksOptOut = true }
+                on { userOptOutFromTracks() } doReturn true
             }
             init()
 
@@ -91,13 +82,9 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
     fun `given the API responses with disabled tracking and tracking locally enabled, when user opens the screen, turn off tracking and update state`(): Unit =
         testBlocking {
             // given
-            accountStore.stub {
-                on { account } doReturn AccountModel().apply {
-                    tracksOptOut = false
-                } doReturn AccountModel().apply { tracksOptOut = true }
-            }
             repository.stub {
                 onBlocking { fetchAccountSettings() } doReturn Result.success(Unit)
+                on { userOptOutFromTracks() } doReturn false doReturn true
             }
 
             // when
@@ -113,12 +100,8 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
     fun `given failed API response, when user opens the screen, keep state unchanged and show snackbar`() =
         testBlocking {
             // given
-            accountStore.stub {
-                on { account } doReturn AccountModel().apply {
-                    tracksOptOut = true
-                }
-            }
             repository.stub {
+                on { userOptOutFromTracks() } doReturn true
                 onBlocking { fetchAccountSettings() } doReturn Result.failure(Exception())
             }
 
