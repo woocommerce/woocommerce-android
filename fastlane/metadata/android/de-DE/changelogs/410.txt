@@ -1,2 +1,0 @@
-13.4:
-Diese Version enthält verschiedene Fehlerkorrekturen und Verbesserungen für ein optimiertes Nutzererlebnis. Wir arbeiten daran, die WooCommerce-App stetig verbessern, und in den nächsten Wochen stehen einige spannende Updates an. Rechne also mit weiteren Neuigkeiten!
