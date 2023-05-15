@@ -184,7 +184,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         viewModel.handleIncomingNotification(localPushId, testOrderNotification)
 
         verify(notificationMessageHandler, atLeastOnce()).markNotificationTapped(eq(testOrderNotification.remoteNoteId))
-        verify(notificationMessageHandler, atLeastOnce()).removeNotificationByPushIdFromSystemsBar(eq(localPushId))
+        verify(notificationMessageHandler, atLeastOnce()).removeNotificationByNotificationIdFromSystemsBar(eq(localPushId))
         assertThat(event).isEqualTo(
             ViewOrderDetail(
                 testOrderNotification.uniqueId,
@@ -206,7 +206,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         viewModel.handleIncomingNotification(localPushId, testOrderNotification)
 
         verify(notificationMessageHandler, atLeastOnce()).markNotificationTapped(eq(testOrderNotification.remoteNoteId))
-        verify(notificationMessageHandler, atLeastOnce()).removeNotificationByPushIdFromSystemsBar(eq(localPushId))
+        verify(notificationMessageHandler, atLeastOnce()).removeNotificationByNotificationIdFromSystemsBar(eq(localPushId))
         assertThat(event).isEqualTo(ViewOrderList)
     }
 
@@ -222,7 +222,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
 
         verify(notificationMessageHandler, atLeastOnce())
             .markNotificationTapped(eq(testReviewNotification.remoteNoteId))
-        verify(notificationMessageHandler, atLeastOnce()).removeNotificationByPushIdFromSystemsBar(eq(localPushId))
+        verify(notificationMessageHandler, atLeastOnce()).removeNotificationByNotificationIdFromSystemsBar(eq(localPushId))
         assertThat(event).isEqualTo(ViewReviewDetail(testReviewNotification.uniqueId))
     }
 
@@ -247,7 +247,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         verify(notificationMessageHandler, atLeastOnce()).markNotificationTapped(
             eq(testZendeskNotification.remoteNoteId)
         )
-        verify(notificationMessageHandler, atLeastOnce()).removeNotificationByPushIdFromSystemsBar(
+        verify(notificationMessageHandler, atLeastOnce()).removeNotificationByNotificationIdFromSystemsBar(
             eq(TEST_ZENDESK_PUSH_NOTIFICATION_ID)
         )
         assertThat(event).isEqualTo(ViewZendeskTickets)
