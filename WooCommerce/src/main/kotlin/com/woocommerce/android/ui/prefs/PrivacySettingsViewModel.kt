@@ -59,13 +59,11 @@ class PrivacySettingsViewModel @Inject constructor(
                     }
                 )
             }
-        } else {
-            _state.value =
-                _state.value?.copy(sendUsageStats = appPrefs.getSendUsageStats())
         }
     }
 
-    private fun getSendUsageStats() = !accountStore.account.tracksOptOut
+    private fun getSendUsageStats() =
+        if (isWpComUser()) !accountStore.account.tracksOptOut else appPrefs.getSendUsageStats()
 
     private fun getCrashReportingEnabled() = appPrefs.isCrashReportingEnabled()
 

@@ -13,6 +13,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.model.AccountModel
@@ -128,5 +129,26 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
             // then
             assertThat(sut.state.value?.sendUsageStats).isFalse
             assertThat(sut.event.value).isInstanceOf(MultiLiveEvent.Event.ShowActionSnackbar::class.java)
+        }
+
+    @Test
+    fun `given user is not WPCOM, when user opens the screen, load settings from local preferences`() =
+        testBlocking {
+            // given
+            accountStore.stub {
+                on { hasAccessToken() } doReturn false
+            }
+            appPrefs.stub {
+                on { getSendUsageStats() } doReturn false
+            }
+
+            // when
+            init()
+            runCurrent()
+
+            // then
+            verify(appPrefs).getSendUsageStats()
+            verify(repository, never()).fetchAccountSettings()
+            assertThat(sut.state.value?.sendUsageStats).isFalse()
         }
 }
