@@ -37,12 +37,13 @@ class LocalNotificationWorker @AssistedInject constructor(
         val description = inputData.getString(LOCAL_NOTIFICATION_DESC)
 
         if (tag != null && id != -1 && title != null && description != null) {
+            val notification = buildNotification(id, tag, title, description)
             wooNotificationBuilder.buildAndDisplayLocalNotification(
                 tag,
                 id,
                 appContext.getString(R.string.notification_channel_general_id),
-                buildNotification(id, title, description),
-                getIntent(appContext, buildNotification(id, title, description)),
+                notification,
+                getIntent(appContext, notification),
             )
 
             AnalyticsTracker.track(
@@ -62,8 +63,9 @@ class LocalNotificationWorker @AssistedInject constructor(
         }
     }
 
-    private fun buildNotification(id: Int, title: String, description: String) = Notification(
+    private fun buildNotification(id: Int, tag: String, title: String, description: String) = Notification(
         noteId = id,
+        tag = tag,
         uniqueId = 0,
         remoteNoteId = 0,
         remoteSiteId = 0,
