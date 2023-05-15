@@ -45,17 +45,6 @@ class LocalNotificationScheduler @Inject constructor(
         workManager.enqueue(workRequest)
     }
 
-    fun onNotificationTapped(notification: LocalNotification) {
-        NotificationManagerCompat.from(appContext).cancel(
-            notification.tag,
-            notification.id
-        )
-        AnalyticsTracker.track(
-            AnalyticsEvent.LOCAL_NOTIFICATION_TAPPED,
-            mapOf(AnalyticsTracker.KEY_TYPE to notification.tag)
-        )
-    }
-
     private fun cancelScheduledNotification(notification: LocalNotification) {
         workManager.cancelAllWorkByTag(notification.tag)
     }
