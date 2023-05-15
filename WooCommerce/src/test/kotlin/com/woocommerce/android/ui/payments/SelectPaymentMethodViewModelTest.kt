@@ -922,7 +922,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when vm init, then scat to pay true returned`() =
+    fun `when vm init, then scan to pay true returned`() =
         testBlocking {
             // GIVEN
             val orderId = 1L
