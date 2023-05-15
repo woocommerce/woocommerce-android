@@ -62,7 +62,7 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
 
             // then
             assertThat(sut.state.value?.sendUsageStats).isTrue
-            verify(appPrefs).sendUsageStats(true)
+            verify(appPrefs).setSendUsageStats(true)
         }
 
     @Test
@@ -105,7 +105,7 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
 
             // then
             assertThat(sut.state.value?.sendUsageStats).isFalse
-            verify(appPrefs).sendUsageStats(false)
+            verify(appPrefs).setSendUsageStats(false)
         }
 
     @Test

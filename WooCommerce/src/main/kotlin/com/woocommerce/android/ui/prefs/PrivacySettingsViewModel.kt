@@ -36,27 +36,32 @@ class PrivacySettingsViewModel @Inject constructor(
     }
 
     fun initialize() {
-        launch {
-            _state.value = _state.value?.copy(progressBarVisible = true)
-            val event = repository.fetchAccountSettings()
-            _state.value = _state.value?.copy(progressBarVisible = false)
+        if (isWpComUser()) {
+            launch {
+                _state.value = _state.value?.copy(progressBarVisible = true)
+                val event = repository.fetchAccountSettings()
+                _state.value = _state.value?.copy(progressBarVisible = false)
 
-            event.fold(
-                onSuccess = {
-                    appPrefs.sendUsageStats(!accountStore.account.tracksOptOut)
-                    _state.value =
-                        _state.value?.copy(sendUsageStats = !accountStore.account.tracksOptOut)
-                },
-                onFailure = {
-                    triggerEvent(
-                        MultiLiveEvent.Event.ShowActionSnackbar(
-                            resourceProvider.getString(R.string.settings_tracking_analytics_error_fetch)
-                        ) {
-                            initialize()
-                        }
-                    )
-                }
-            )
+                event.fold(
+                    onSuccess = {
+                        appPrefs.setSendUsageStats(!accountStore.account.tracksOptOut)
+                        _state.value =
+                            _state.value?.copy(sendUsageStats = !accountStore.account.tracksOptOut)
+                    },
+                    onFailure = {
+                        triggerEvent(
+                            MultiLiveEvent.Event.ShowActionSnackbar(
+                                resourceProvider.getString(R.string.settings_tracking_analytics_error_fetch)
+                            ) {
+                                initialize()
+                            }
+                        )
+                    }
+                )
+            }
+        } else {
+            _state.value =
+                _state.value?.copy(sendUsageStats = appPrefs.getSendUsageStats())
         }
     }
 
@@ -87,7 +92,7 @@ class PrivacySettingsViewModel @Inject constructor(
 
     fun onSendStatsSettingChanged(checked: Boolean) {
         launch {
-            if (accountStore.hasAccessToken()) {
+            if (isWpComUser()) {
 
                 _state.value = _state.value?.copy(
                     sendUsageStats = checked, progressBarVisible = true
@@ -99,7 +104,7 @@ class PrivacySettingsViewModel @Inject constructor(
 
                 event.fold(
                     onSuccess = {
-                        appPrefs.sendUsageStats(checked)
+                        appPrefs.setSendUsageStats(checked)
                     },
                     onFailure = {
                         _state.value = _state.value?.copy(sendUsageStats = !checked)
@@ -110,9 +115,14 @@ class PrivacySettingsViewModel @Inject constructor(
                         )
                     }
                 )
+            } else {
+                _state.value = _state.value?.copy(sendUsageStats = checked)
+                appPrefs.setSendUsageStats(checked)
             }
         }
     }
+
+    private fun isWpComUser() = accountStore.hasAccessToken()
 
     data class State(
         val sendUsageStats: Boolean,
