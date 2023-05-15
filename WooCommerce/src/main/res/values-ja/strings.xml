@@ -621,7 +621,6 @@ Language: ja_JP
     <string name="login_prologue_label_orders_subtitle">スピーディかつ簡単に管理できます</string>
     <string name="login_prologue_label_analytics_subtitle">ビジネスに欠かせないものであることはわかっています</string>
     <string name="login_prologue_new_to_woo">初めて WooCommerce をお使いになる場合</string>
-    <string name="notification_channel_pre_login_title">ログインのトラブルシューティングに関するリマインダー</string>
     <string name="tests_notification_new_order_message">WooCommerce ストアに $50の新しい注文があります</string>
     <string name="tests_notification_new_order_title">新しい注文があります。🎉</string>
     <string name="lines_all_details">詳細</string>

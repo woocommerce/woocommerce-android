@@ -621,7 +621,6 @@ Language: ar
     <string name="login_prologue_label_orders_subtitle">يمكنك إدارتها بسرعة وسهولة</string>
     <string name="login_prologue_label_analytics_subtitle">نعلم أنه ضروري لعملك التجاري</string>
     <string name="login_prologue_new_to_woo">جديد على WooCommerce</string>
-    <string name="notification_channel_pre_login_title">تذكيرات حل مشكلات تسجيل الدخول</string>
     <string name="tests_notification_new_order_message">طلب جديد مقابل 50 دولارًا على متجر WooCommerce الخاص بك</string>
     <string name="tests_notification_new_order_title">لديك طلب جديد! 🎉</string>
     <string name="lines_all_details">التفاصيل</string>
