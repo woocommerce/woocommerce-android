@@ -2,7 +2,7 @@ package com.woocommerce.android.notifications.push
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsEvent.LOGIN_LOCAL_NOTIFICATION_DISMISSED
+import com.woocommerce.android.analytics.AnalyticsEvent.LOCAL_NOTIFICATION_DISMISSED
 import com.woocommerce.android.analytics.AnalyticsEvent.PUSH_NOTIFICATION_RECEIVED
 import com.woocommerce.android.analytics.AnalyticsEvent.PUSH_NOTIFICATION_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -15,7 +15,6 @@ import com.woocommerce.android.notifications.WooNotificationBuilder
 import com.woocommerce.android.notifications.WooNotificationType.NEW_ORDER
 import com.woocommerce.android.notifications.getChannelId
 import com.woocommerce.android.notifications.getDefaults
-import com.woocommerce.android.notifications.local.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_ID
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.SystemVersionUtils
@@ -62,18 +61,16 @@ class NotificationMessageHandler @Inject constructor(
     }
 
     @Synchronized
-    fun onNotificationDismissed(localPushId: Int) {
-        removeNotificationByPushIdFromSystemsBar(localPushId)
-        if (localPushId == LOGIN_HELP_NOTIFICATION_ID) {
-            onLocalNotificationDismissed()
-        }
+    fun onPushNotificationDismissed(notificationId: Int) {
+        removeNotificationByNotificationIdFromSystemsBar(notificationId)
     }
 
-    private fun onLocalNotificationDismissed() {
-        val notificationTypeName = appPrefsWrapper.getPreLoginNotificationDisplayedType()
+    @Synchronized
+    fun onLocalNotificationDismissed(notificationId: Int, notificationTag: String) {
+        removeNotificationByNotificationIdFromSystemsBar(notificationId)
         AnalyticsTracker.track(
-            stat = LOGIN_LOCAL_NOTIFICATION_DISMISSED,
-            properties = mapOf(AnalyticsTracker.KEY_TYPE to notificationTypeName)
+            stat = LOCAL_NOTIFICATION_DISMISSED,
+            properties = mapOf(AnalyticsTracker.KEY_TYPE to notificationTag)
         )
     }
 
@@ -282,7 +279,7 @@ class NotificationMessageHandler @Inject constructor(
     }
 
     @Synchronized
-    fun removeNotificationByPushIdFromSystemsBar(localPushId: Int) {
+    fun removeNotificationByNotificationIdFromSystemsBar(localPushId: Int) {
         val keptNotifs = HashMap<Int, Notification>()
         ACTIVE_NOTIFICATIONS_MAP.asSequence()
             .forEach { row ->

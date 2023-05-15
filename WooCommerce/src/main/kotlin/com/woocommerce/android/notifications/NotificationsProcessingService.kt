@@ -18,11 +18,14 @@ class NotificationsProcessingService : Service() {
         const val ARG_ACTION_TYPE = "action_type"
         const val ARG_ACTION_NOTIFICATION_DISMISS = "action_dismiss"
         const val ARG_PUSH_ID = "notificationId"
+        const val ARG_TAG = "notificationTag"
+        const val ARG_IS_LOCAL = "is-local"
 
-        fun getPendingIntentForNotificationDismiss(context: Context, pushId: Int): PendingIntent {
+        fun getPendingIntentForPushNotificationDismiss(context: Context, pushId: Int): PendingIntent {
             val intent = Intent(context, NotificationsProcessingService::class.java)
             intent.putExtra(ARG_ACTION_TYPE, ARG_ACTION_NOTIFICATION_DISMISS)
             intent.putExtra(ARG_PUSH_ID, pushId)
+            intent.putExtra(ARG_IS_LOCAL, false)
             intent.addCategory(ARG_ACTION_NOTIFICATION_DISMISS)
             val flags = if (SystemVersionUtils.isAtLeastS()) {
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
@@ -30,6 +33,20 @@ class NotificationsProcessingService : Service() {
                 PendingIntent.FLAG_UPDATE_CURRENT
             }
             return PendingIntent.getService(context, pushId, intent, flags)
+        }
+
+        fun getPendingIntentForLocalNotificationDismiss(context: Context, id: Int, tag: String): PendingIntent {
+            val intent = Intent(context, NotificationsProcessingService::class.java)
+            intent.putExtra(ARG_ACTION_TYPE, ARG_ACTION_NOTIFICATION_DISMISS)
+            intent.putExtra(ARG_TAG, tag)
+            intent.putExtra(ARG_IS_LOCAL, true)
+            intent.addCategory(ARG_ACTION_NOTIFICATION_DISMISS)
+            val flags = if (SystemVersionUtils.isAtLeastS()) {
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            } else {
+                PendingIntent.FLAG_UPDATE_CURRENT
+            }
+            return PendingIntent.getService(context, id, intent, flags)
         }
     }
 
@@ -67,7 +84,14 @@ class NotificationsProcessingService : Service() {
                 // Check notification dismissed pending intent
                 if (actionType == ARG_ACTION_NOTIFICATION_DISMISS) {
                     val notificationId = intent.getIntExtra(ARG_PUSH_ID, 0)
-                    notificationMessageHandler.onNotificationDismissed(notificationId)
+                    val isLocal = intent.getBooleanExtra(ARG_IS_LOCAL, false)
+
+                    if (isLocal) {
+                        val tag = intent.getStringExtra(ARG_TAG) ?: "Unknown"
+                        notificationMessageHandler.onLocalNotificationDismissed(notificationId, tag)
+                    } else {
+                        notificationMessageHandler.onPushNotificationDismissed(notificationId)
+                    }
                 }
             } ?: stopSelf(taskId)
         }
