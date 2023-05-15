@@ -18,6 +18,8 @@ import com.woocommerce.android.notifications.getDefaults
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.SystemVersionUtils
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.NOTIFS
 import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -72,6 +74,8 @@ class NotificationMessageHandler @Inject constructor(
             stat = LOCAL_NOTIFICATION_DISMISSED,
             properties = mapOf(AnalyticsTracker.KEY_TYPE to notificationTag)
         )
+
+        WooLog.d(T.NOTIFICATIONS, "Local notification DISMISSED: $notificationTag")
     }
 
     @Suppress("ReturnCount", "ComplexMethod")

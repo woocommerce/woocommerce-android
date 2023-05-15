@@ -8,6 +8,8 @@ import androidx.work.WorkRequest
 import androidx.work.workDataOf
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -42,6 +44,9 @@ class LocalNotificationScheduler @Inject constructor(
             AnalyticsEvent.LOCAL_NOTIFICATION_SCHEDULED,
             mapOf(AnalyticsTracker.KEY_TYPE to notification.tag)
         )
+
+        WooLog.d(T.NOTIFICATIONS, "Local notification SCHEDULED: $notification")
+
         workManager.enqueue(workRequest)
     }
 

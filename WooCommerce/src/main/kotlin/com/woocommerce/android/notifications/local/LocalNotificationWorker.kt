@@ -17,6 +17,7 @@ import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Co
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_TAG
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_TITLE
 import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLogWrapper
 import dagger.assisted.Assisted
@@ -50,6 +51,8 @@ class LocalNotificationWorker @AssistedInject constructor(
                 LOCAL_NOTIFICATION_DISPLAYED,
                 mapOf(AnalyticsTracker.KEY_TYPE to tag)
             )
+
+            WooLog.d(T.NOTIFICATIONS, "Local notification DISPLAYED: $notification")
         } else {
             wooLogWrapper.e(T.NOTIFICATIONS, "Scheduled local notification data is invalid")
         }
