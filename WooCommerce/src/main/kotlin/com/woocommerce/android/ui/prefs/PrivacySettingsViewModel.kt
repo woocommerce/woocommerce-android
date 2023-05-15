@@ -10,13 +10,11 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.store.AccountStore
 import javax.inject.Inject
 
 @HiltViewModel
 class PrivacySettingsViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val accountStore: AccountStore,
     private val appPrefs: AppPrefsWrapper,
     private val resourceProvider: ResourceProvider,
     private val repository: PrivacySettingsRepository,
@@ -43,9 +41,9 @@ class PrivacySettingsViewModel @Inject constructor(
 
             event.fold(
                 onSuccess = {
-                    appPrefs.sendUsageStats(!accountStore.account.tracksOptOut)
+                    appPrefs.sendUsageStats(!repository.userOptOutFromTracks())
                     _state.value =
-                        _state.value?.copy(sendUsageStats = !accountStore.account.tracksOptOut)
+                        _state.value?.copy(sendUsageStats = !repository.userOptOutFromTracks())
                 },
                 onFailure = {
                     triggerEvent(
@@ -60,7 +58,7 @@ class PrivacySettingsViewModel @Inject constructor(
         }
     }
 
-    private fun getSendUsageStats() = !accountStore.account.tracksOptOut
+    private fun getSendUsageStats() = !repository.userOptOutFromTracks()
 
     private fun getCrashReportingEnabled() = appPrefs.isCrashReportingEnabled()
 
@@ -87,7 +85,7 @@ class PrivacySettingsViewModel @Inject constructor(
 
     fun onSendStatsSettingChanged(checked: Boolean) {
         launch {
-            if (accountStore.hasAccessToken()) {
+            if (repository.isUserWPCOM()) {
 
                 _state.value = _state.value?.copy(
                     sendUsageStats = checked, progressBarVisible = true
@@ -106,7 +104,7 @@ class PrivacySettingsViewModel @Inject constructor(
                         triggerEvent(
                             MultiLiveEvent.Event.ShowActionSnackbar(
                                 resourceProvider.getString(R.string.settings_tracking_analytics_error_update)
-                            ) { onSendStatsSettingChanged(state.value!!.sendUsageStats.not()) }
+                            ) { onSendStatsSettingChanged(!checked) }
                         )
                     }
                 )

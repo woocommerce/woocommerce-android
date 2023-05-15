@@ -8,6 +8,7 @@ import org.wordpress.android.fluxc.store.AccountStore
 import javax.inject.Inject
 
 class PrivacySettingsRepository @Inject constructor(
+    private val accountStore: AccountStore,
     private val dispatcher: Dispatcher,
 ) {
     companion object {
@@ -41,5 +42,13 @@ class PrivacySettingsRepository @Inject constructor(
             event.isError -> Result.failure(OnChangedException(event.error))
             else -> Result.success(Unit)
         }
+    }
+
+    fun userOptOutFromTracks(): Boolean {
+        return accountStore.account.tracksOptOut
+    }
+
+    fun isUserWPCOM(): Boolean {
+        return accountStore.hasAccessToken()
     }
 }
