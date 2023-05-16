@@ -1,6 +1,7 @@
 package com.woocommerce.android
 
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.domain.DomainFlowSource
@@ -11,6 +12,11 @@ import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
 class AppPrefsWrapper @Inject constructor() {
+
+    fun sendUsageStats(enabled: Boolean) {
+        AnalyticsTracker.sendUsageStats = enabled
+    }
+
     fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
         AppPrefs.getReceiptUrl(localSiteId, remoteSiteId, selfHostedSiteId, orderId)
 
@@ -348,4 +354,10 @@ class AppPrefsWrapper @Inject constructor() {
     fun setStorePhoneNumber(siteId: Int, phoneNumber: String) = AppPrefs.setStorePhoneNumber(siteId, phoneNumber)
 
     fun getStorePhoneNumber(siteId: Int): String = AppPrefs.getStorePhoneNumber(siteId)
+
+    fun isCrashReportingEnabled(): Boolean = AppPrefs.isCrashReportingEnabled()
+
+    fun setCrashReportingEnabled(enabled: Boolean) {
+        AppPrefs.setCrashReportingEnabled(enabled)
+    }
 }
