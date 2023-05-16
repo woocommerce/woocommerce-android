@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-02 09:54:04+0000
+Translation-Revision-Date: 2023-05-10 10:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="shipping_notice_dismiss">閉じる</string>
+    <string name="shipping_notice_learn_more">さらに詳しく</string>
+    <string name="shipping_notice_banner_content">欧州連合 (EU) の関税法規則に従う国に発送する場合、すべての品目について明確で具体的な説明を行う必要があります。 これを怠ると、税関で発送の遅延や中断が発生することがあります。</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">常に最新の情報を入手して、ストアのセキュリティ向上を図りましょう。 Jetpack を今すぐお試しください。</string>
+    <string name="jetpack_benefits_bottom_banner_title">注文通知などを受け取る</string>
     <string name="store_onboarding_setting_description">ストア設定リストを表示または非表示</string>
     <string name="store_onboarding_setting_title">ストア設定リスト</string>
     <string name="store_onboarding_dialog_description">必要に応じて「メニュー」&gt;「設定」&gt;「ストア」から再度復元できます。</string>
@@ -1111,8 +1116,6 @@ Language: ja_JP
     <string name="orderfilters_show_orders_button">注文を表示</string>
     <string name="orderlist_filters_title">絞り込み済み注文</string>
     <string name="orderlist_no_filters_title">すべての注文</string>
-    <string name="jetpack_benefits_bottom_banner_subtitle">メリットを見る</string>
-    <string name="jetpack_benefits_bottom_banner_title">Jetpack でフル機能を利用</string>
     <string name="product_description_hint_with_title">%s の詳しい情報を教えてください…</string>
     <string name="product_description_hint_no_title">将来の顧客に商品を説明してください…</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">クリップボードにコピーされたリーダーのシリアル番号</string>

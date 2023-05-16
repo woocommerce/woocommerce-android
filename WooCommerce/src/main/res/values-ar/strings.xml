@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-02 09:54:04+0000
+Translation-Revision-Date: 2023-05-08 19:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="shipping_notice_dismiss">تجاهل</string>
+    <string name="shipping_notice_learn_more">التعرّف على المزيد</string>
+    <string name="shipping_notice_banner_content">عند الشحن إلى البلدان التي تتبع القواعد الجمركية المعمول بها في الاتحاد الأوروبي، يجب عليك تقديم وصف صريح ومحدد لكل عنصر. وإلا، فإن الشحنات قد تتأجل أو تُعتَرض في الجمارك.</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">ابقَّ على اطلاع وعزز أمان المتجر. استكشف Jetpack الآن.</string>
+    <string name="jetpack_benefits_bottom_banner_title">تلقي تنبيهات الطلبات والمزيد</string>
     <string name="store_onboarding_setting_description">إظهار قائمة إعداد المتجر أو إخفاؤها</string>
     <string name="store_onboarding_setting_title">قائمة إعداد المتجر</string>
     <string name="store_onboarding_dialog_description">يمكنك استعادته مجددًا عندما تحتاج إليه من القائمة &gt; الإعدادات &gt; المتجر</string>
@@ -1111,8 +1116,6 @@ Language: ar
     <string name="orderfilters_show_orders_button">إظهار الطلبات</string>
     <string name="orderlist_filters_title">الطلبات التي تمت تصفيتها</string>
     <string name="orderlist_no_filters_title">جميع الطلبات</string>
-    <string name="jetpack_benefits_bottom_banner_subtitle">الاطلاع على المزايا</string>
-    <string name="jetpack_benefits_bottom_banner_title">الحصول على التجربة الكاملة باستخدام Jetpack</string>
     <string name="product_description_hint_with_title">إخبارنا بالمزيد حول %s…</string>
     <string name="product_description_hint_no_title">صِف منتجك لعملائك في المستقبل…</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">تم نسخ الرقم التسلسلي للقارئ إلى الحافظة</string>

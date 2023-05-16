@@ -1,4 +1,4 @@
-package com.woocommerce.android.push
+package com.woocommerce.android.notifications.push
 
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.notifications.NotificationChannelType

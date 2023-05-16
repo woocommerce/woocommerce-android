@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-03 16:54:03+0000
+Translation-Revision-Date: 2023-05-09 15:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="shipping_notice_dismiss">Kapat</string>
+    <string name="shipping_notice_learn_more">Daha Fazla Bilgi Edinin</string>
+    <string name="shipping_notice_banner_content">Avrupa Birliği (AB) gümrük kurallarını uygulayan ülkelere gönderim yaparken her öğenin net ve özel bir açıklamasını sağlamalısınız. Aksi takdirde gümrükte gönderimler gecikebilir veya kesintiye uğrayabilir.</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Güncel kalın ve mağaza güvenliğini artırın. Jetpack\'i şimdi keşfedin.</string>
+    <string name="jetpack_benefits_bottom_banner_title">Sipariş bildirimleri ve daha fazlasını alın</string>
     <string name="store_onboarding_setting_description">Mağaza kurulumu listesini göster veya gizle</string>
     <string name="store_onboarding_setting_title">Mağaza Kurulumu Listesi</string>
     <string name="store_onboarding_dialog_description">İhtiyacınız olduğunda Menü &gt; Ayarlar &gt; Mağaza\'dan geri yükleyebilirsiniz.</string>
@@ -1111,8 +1116,6 @@ Language: tr
     <string name="orderfilters_show_orders_button">Siparişleri Göster</string>
     <string name="orderlist_filters_title">Filtrelenmiş Siparişler</string>
     <string name="orderlist_no_filters_title">Tüm Siparişler</string>
-    <string name="jetpack_benefits_bottom_banner_subtitle">Avantajları görün</string>
-    <string name="jetpack_benefits_bottom_banner_title">Jetpack ile tam deneyimi yaşayın</string>
     <string name="product_description_hint_with_title">Bize %s hakkında daha fazla bilgi verin…</string>
     <string name="product_description_hint_no_title">Ürününüzü gelecekteki müşterilerinize anlatın…</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">Okuyucunun seri numarası panoya kopyalandı</string>

@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-02 15:54:03+0000
+Translation-Revision-Date: 2023-05-09 09:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="shipping_notice_dismiss">Ignorar</string>
+    <string name="shipping_notice_learn_more">Saiba mais</string>
+    <string name="shipping_notice_banner_content">Em envios para países que seguem as regras alfandegárias da União Europeia (UE), você deve fornecer uma descrição clara e específica de cada item. Caso contrário, os envios podem sofrer atrasos ou ficar interditados na alfândega.</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Fique por dentro e turbine a segurança da loja. Conheça o Jetpack agora mesmo.</string>
+    <string name="jetpack_benefits_bottom_banner_title">Receba notificações de pedidos e muito mais</string>
     <string name="store_onboarding_setting_description">Mostrar ou ocultar lista de configurações da loja</string>
     <string name="store_onboarding_setting_title">Lista de configurações da loja</string>
     <string name="store_onboarding_dialog_description">Se precisar, você pode restaurá-la em Menu &gt; Configurações &gt; Loja</string>
@@ -1111,8 +1116,6 @@ Language: pt_BR
     <string name="orderfilters_show_orders_button">Mostrar pedidos</string>
     <string name="orderlist_filters_title">Pedidos filtrados</string>
     <string name="orderlist_no_filters_title">Todos os pedidos</string>
-    <string name="jetpack_benefits_bottom_banner_subtitle">Veja os benefícios</string>
-    <string name="jetpack_benefits_bottom_banner_title">Obtenha uma experiência completa com o Jetpack</string>
     <string name="product_description_hint_with_title">Fale mais sobre %s…</string>
     <string name="product_description_hint_no_title">Descreva seu produto para os futuros clientes…</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">Número de série do leitor copiado para a área de transferência</string>

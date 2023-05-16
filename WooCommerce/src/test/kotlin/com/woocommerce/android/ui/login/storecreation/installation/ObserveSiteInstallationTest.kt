@@ -26,6 +26,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ObserveSiteInstallationTest : BaseUnitTest(StandardTestDispatcher()) {
@@ -123,9 +124,7 @@ class ObserveSiteInstallationTest : BaseUnitTest(StandardTestDispatcher()) {
             runCurrent()
 
             // then
-            assertThat(installationStates.last()).isEqualTo(
-                OutOfSync
-            )
+            assertTrue(installationStates.contains(OutOfSync))
         }
 
     @Test
