@@ -97,8 +97,9 @@ class AccountRepository @Inject constructor(
                 CloseAccountErrorType.GENERIC_ERROR -> CloseAccountResult.Error(hasActiveStores = false)
             }
         } else {
-            cleanup()
-            CloseAccountResult.Success
+            selectedSite.reset()
+                cleanup()
+                CloseAccountResult.Success
         }
     }
 

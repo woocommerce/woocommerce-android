@@ -39,7 +39,7 @@ class CloseAccountViewModel @Inject constructor(
         launch {
             _viewState.value = _viewState.value?.copy(isLoading = true)
             when (val result = accountRepository.closeAccount()) {
-                Success -> triggerEvent(Exit)
+                Success -> triggerEvent(OnAccountClosed)
                 is Error -> {
                     val errorDescription =
                         if (result.hasActiveStores) R.string.settings_close_account_active_stores_error_description
@@ -79,4 +79,5 @@ class CloseAccountViewModel @Inject constructor(
     )
 
     data class ContactSupport(val origin: HelpOrigin) : MultiLiveEvent.Event()
+    object OnAccountClosed : MultiLiveEvent.Event()
 }

@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.prefs
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -41,10 +42,13 @@ import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.prefs.CloseAccountViewModel.CloseAccountState
 import com.woocommerce.android.ui.prefs.CloseAccountViewModel.ContactSupport
+import com.woocommerce.android.ui.prefs.CloseAccountViewModel.OnAccountClosed
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.login.LoginMode
 
 @AndroidEntryPoint
 class CloseAccountDialogFragment : DialogFragment() {
@@ -87,8 +91,19 @@ class CloseAccountDialogFragment : DialogFragment() {
                     ).let { activity?.startActivity(it) }
                     findNavController().popBackStack()
                 }
+
+                is OnAccountClosed -> onAccountClosed()
             }
         }
+    }
+
+    private fun onAccountClosed() {
+        findNavController().popBackStack()
+        val intent = Intent(context, LoginActivity::class.java)
+        LoginMode.WOO_LOGIN_MODE.putInto(intent)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        startActivity(intent)
+        activity?.finish()
     }
 
     @Composable

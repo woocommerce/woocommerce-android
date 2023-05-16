@@ -85,7 +85,7 @@ class SitePickerViewModel @Inject constructor(
         get() = savedState["key"] ?: appPrefsWrapper.getLoginSiteAddress()
         set(value) = savedState.set("key", value)
 
-    val shouldShowToolbar: Boolean
+    val openedFromLogin: Boolean
         get() = !navArgs.openedFromLogin
 
     init {
@@ -178,7 +178,9 @@ class SitePickerViewModel @Inject constructor(
         sitePickerViewState = sitePickerViewState.copy(
             isHelpBtnVisible = true,
             isSecondaryBtnVisible = true,
-            primaryBtnText = resourceProvider.getString(string.continue_button)
+            primaryBtnText = resourceProvider.getString(string.continue_button),
+            toolbarTitle = "",
+            showCloseAccountMenuItem = true
         )
     }
 
@@ -679,6 +681,7 @@ class SitePickerViewModel @Inject constructor(
         val isPrimaryBtnVisible: Boolean = false,
         val isSecondaryBtnVisible: Boolean = false,
         val isNoStoresBtnVisible: Boolean = false,
+        val showCloseAccountMenuItem: Boolean = false,
         val currentSitePickerState: SitePickerState = SitePickerState.StoreListState
     ) : Parcelable
 
