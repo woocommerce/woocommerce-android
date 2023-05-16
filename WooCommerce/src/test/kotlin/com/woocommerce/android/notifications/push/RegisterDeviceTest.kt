@@ -1,8 +1,6 @@
 package com.woocommerce.android.notifications.push
 
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.notifications.push.NotificationRepository
-import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.notifications.push.RegisterDevice.Mode.FORCEFULLY
 import com.woocommerce.android.notifications.push.RegisterDevice.Mode.IF_NEEDED
 import com.woocommerce.android.viewmodel.BaseUnitTest

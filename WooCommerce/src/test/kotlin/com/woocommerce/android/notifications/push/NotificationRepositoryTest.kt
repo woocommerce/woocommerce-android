@@ -1,6 +1,5 @@
 package com.woocommerce.android.notifications.push
 
-import com.woocommerce.android.notifications.push.NotificationRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
