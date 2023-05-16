@@ -523,6 +523,9 @@
             app:destination="@id/getPaidFragment"
             app:popUpTo="@id/dashboard" />
     </fragment>
+    <dialog
+        android:id="@+id/privacyBannerFragment"
+        android:name="com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragment" />
     <fragment
         android:id="@+id/launchStoreFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.onboarding.launchstore.LaunchStoreFragment"
@@ -548,4 +551,7 @@
     <action
         android:id="@+id/action_global_planUpgradeStartFragment"
         app:destination="@id/planUpgradeStartFragment" />
+    <action
+        android:id="@+id/action_global_privacyBannerFragment"
+        app:destination="@id/privacyBannerFragment" />
 </navigation>
