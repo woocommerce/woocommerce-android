@@ -32,7 +32,6 @@ import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -48,7 +47,6 @@ class HelpActivity : AppCompatActivity() {
     @Inject lateinit var supportHelper: SupportHelper
     @Inject lateinit var zendeskSettings: ZendeskSettings
     @Inject lateinit var selectedSite: SelectedSite
-    @Inject lateinit var loginNotificationScheduler: LoginNotificationScheduler
 
     private lateinit var binding: ActivityHelpBinding
 
@@ -89,10 +87,6 @@ class HelpActivity : AppCompatActivity() {
         }
 
         binding.textVersion.text = getString(R.string.version_with_name_param, PackageUtils.getVersionName(this))
-
-        if (originFromExtras == HelpOrigin.LOGIN_HELP_NOTIFICATION) {
-            loginNotificationScheduler.onNotificationTapped(extraTagsFromExtras?.first())
-        }
 
         if (originFromExtras == HelpOrigin.SITE_PICKER_JETPACK_TIMEOUT) {
             viewModel.contactSupport(TicketType.MobileApp)
@@ -240,7 +234,7 @@ class HelpActivity : AppCompatActivity() {
         ): Intent {
             val intent = Intent(context, HelpActivity::class.java)
             intent.putExtra(ORIGIN_KEY, origin)
-            if (extraSupportTags != null && extraSupportTags.isNotEmpty()) {
+            if (!extraSupportTags.isNullOrEmpty()) {
                 intent.putStringArrayListExtra(EXTRA_TAGS_KEY, extraSupportTags as ArrayList<String>?)
             }
 
