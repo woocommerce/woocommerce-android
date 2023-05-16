@@ -127,7 +127,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode),
         isPaymentCollectableWithExternalCardReader = isPaymentCollectableWithCardReader,
         isPaymentCollectableWithTapToPay = isPaymentCollectableWithCardReader && isPaymentCollectableWithTapToPay,
-        isScanToPayAvailable = isScanToPayAvailable(),
+        isScanToPayAvailable = isScanToPayAvailable() && order.paymentUrl.isNotEmpty(),
         learMoreIpp = SelectPaymentMethodViewState.LearMoreIpp(
             label = UiStringRes(
                 R.string.card_reader_connect_learn_more,
