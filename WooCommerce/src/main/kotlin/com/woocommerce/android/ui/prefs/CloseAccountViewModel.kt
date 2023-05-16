@@ -40,8 +40,11 @@ class CloseAccountViewModel @Inject constructor(
     )
     val viewState = _viewState
 
-    fun onConfirmCloseAccount() {
+    init {
         analyticsTrackerWrapper.track(CLOSE_ACCOUNT_TAPPED)
+    }
+
+    fun onConfirmCloseAccount() {
         launch {
             _viewState.value = _viewState.value?.copy(isLoading = true)
             when (val result = accountRepository.closeAccount()) {
