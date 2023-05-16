@@ -60,9 +60,12 @@ class OrderCreateEditFormFragment :
     MenuProvider {
     private val viewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
 
-    @Inject lateinit var currencyFormatter: CurrencyFormatter
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var isAddProductViaBarcodeScanningEnabled: IsAddProductViaBarcodeScanningEnabled
+    @Inject
+    lateinit var currencyFormatter: CurrencyFormatter
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var isAddProductViaBarcodeScanningEnabled: IsAddProductViaBarcodeScanningEnabled
 
     private var createOrderMenuItem: MenuItem? = null
     private var progressDialog: CustomProgressDialog? = null
@@ -191,33 +194,31 @@ class OrderCreateEditFormFragment :
     }
 
     private fun FragmentOrderCreateEditFormBinding.initProductsSection() {
-        productsSection.setAddButtons(
-            if (isAddProductViaBarcodeScanningEnabled()) {
-                listOf(
-                    AddButton(
-                        text = getString(R.string.order_creation_add_products),
-                        onClickListener = {
-                            viewModel.onAddProductClicked()
-                        }
-                    ),
-                    AddButton(
-                        text = getString(R.string.order_creation_add_product_via_barcode_scanning),
-                        onClickListener = {
-                            viewModel.startScan()
-                        }
-                    )
+        if (isAddProductViaBarcodeScanningEnabled()) {
+            productsSection.setAddProductButtons(
+                addProductsButton = AddButton(
+                    text = getString(R.string.order_creation_add_products),
+                    onClickListener = {
+                        viewModel.onAddProductClicked()
+                    }
+                ),
+                addProductsViaScanButton = AddButton(
+                    text = getString(R.string.order_creation_add_product_via_barcode_scanning),
+                    onClickListener = {
+                        viewModel.startScan()
+                    }
                 )
-            } else {
-                listOf(
-                    AddButton(
-                        text = getString(R.string.order_creation_add_products),
-                        onClickListener = {
-                            viewModel.onAddProductClicked()
-                        }
-                    )
+            )
+        } else {
+            productsSection.setAddProductButtons(
+                addProductsButton = AddButton(
+                    text = getString(R.string.order_creation_add_products),
+                    onClickListener = {
+                        viewModel.onAddProductClicked()
+                    }
                 )
-            }
-        )
+            )
+        }
     }
 
     private fun FragmentOrderCreateEditFormBinding.initPaymentSection() {
