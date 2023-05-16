@@ -6,11 +6,11 @@ import java.util.concurrent.TimeUnit
 sealed class LocalNotification(
     open val title: String,
     open val description: String,
-    val tag: String,
+    val type: String,
     val delay: Long,
     val delayUnit: TimeUnit
 ) {
-    val id = tag.hashCode()
+    val id = type.hashCode()
 
     // TODO: Remove this test notification
     data class Test(
@@ -19,7 +19,7 @@ sealed class LocalNotification(
     ) : LocalNotification(
         title = title,
         description = description,
-        tag = "test",
+        type = "test",
         delay = 10,
         delayUnit = TimeUnit.SECONDS
     )
@@ -30,7 +30,7 @@ sealed class LocalNotification(
     ) : LocalNotification(
         title = title,
         description = description,
-        tag = "new_store_ready",
+        type = "store_creation_complete",
         delay = 5,
         delayUnit = TimeUnit.MINUTES
     )
@@ -41,7 +41,7 @@ sealed class LocalNotification(
     ) : LocalNotification(
         title = title,
         description = description,
-        tag = "free_trial_reminder",
+        type = "one_day_after_store_creation_name_without_free_trial",
         delay = 24,
         delayUnit = TimeUnit.HOURS
     )
@@ -52,7 +52,7 @@ sealed class LocalNotification(
     ) : LocalNotification(
         title = title,
         description = description,
-        tag = "free_trial_expiring",
+        type = "one_day_before_free_trial_expires",
         delay = 13,
         delayUnit = TimeUnit.DAYS
     )
@@ -63,8 +63,8 @@ sealed class LocalNotification(
     ) : LocalNotification(
         title = title,
         description = description,
-        tag = "free_trial_expired",
-        delay = 14,
+        type = "one_day_after_free_trial_expires",
+        delay = 15,
         delayUnit = TimeUnit.DAYS
     )
 }

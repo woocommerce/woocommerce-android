@@ -1,7 +1,6 @@
 package com.woocommerce.android.notifications.local
 
 import android.content.Context
-import androidx.core.app.NotificationManagerCompat
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
@@ -28,7 +27,7 @@ class LocalNotificationScheduler @Inject constructor(
     fun scheduleNotification(notification: LocalNotification) {
         cancelScheduledNotification(notification)
         val notificationData = workDataOf(
-            LOCAL_NOTIFICATION_TAG to notification.tag,
+            LOCAL_NOTIFICATION_TAG to notification.type,
             LOCAL_NOTIFICATION_ID to notification.id,
             LOCAL_NOTIFICATION_TITLE to notification.title,
             LOCAL_NOTIFICATION_DESC to notification.description
@@ -36,13 +35,13 @@ class LocalNotificationScheduler @Inject constructor(
         val workRequest: WorkRequest =
             OneTimeWorkRequestBuilder<LocalNotificationWorker>()
                 .setInputData(notificationData)
-                .addTag(notification.tag)
+                .addTag(notification.type)
                 .setInitialDelay(notification.delay, notification.delayUnit)
                 .build()
 
         AnalyticsTracker.track(
             AnalyticsEvent.LOCAL_NOTIFICATION_SCHEDULED,
-            mapOf(AnalyticsTracker.KEY_TYPE to notification.tag)
+            mapOf(AnalyticsTracker.KEY_TYPE to notification.type)
         )
 
         WooLog.d(T.NOTIFICATIONS, "Local notification SCHEDULED: $notification")
@@ -51,6 +50,6 @@ class LocalNotificationScheduler @Inject constructor(
     }
 
     private fun cancelScheduledNotification(notification: LocalNotification) {
-        workManager.cancelAllWorkByTag(notification.tag)
+        workManager.cancelAllWorkByTag(notification.type)
     }
 }
