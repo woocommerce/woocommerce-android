@@ -186,7 +186,9 @@ class OrderNavigator @Inject constructor() {
                     ).let { fragment.findNavController().navigateSafely(it) }
             }
             is ViewCustomFields -> {
-                val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToCustomOrderFieldsFragment()
+                val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToCustomOrderFieldsFragment(
+                    orderId = target.orderId
+                )
                 fragment.findNavController().navigateSafely(action)
             }
         }
