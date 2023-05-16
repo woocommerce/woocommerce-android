@@ -1,4 +1,4 @@
-package com.woocommerce.android.push
+package com.woocommerce.android.notifications.push
 
 import com.woocommerce.android.notifications.push.NotificationRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
