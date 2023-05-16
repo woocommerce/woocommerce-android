@@ -40,7 +40,6 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -71,7 +70,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val cardReaderTracker: CardReaderTracker,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val appPrefs: AppPrefs = AppPrefs,
-    private val isScanToPayAvailable: IsScanToPayAvailable,
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
 
@@ -127,7 +125,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode),
         isPaymentCollectableWithExternalCardReader = isPaymentCollectableWithCardReader,
         isPaymentCollectableWithTapToPay = isPaymentCollectableWithCardReader && isPaymentCollectableWithTapToPay,
-        isScanToPayAvailable = isScanToPayAvailable() && order.paymentUrl.isNotEmpty(),
+        isScanToPayAvailable = order.paymentUrl.isNotEmpty(),
         learMoreIpp = SelectPaymentMethodViewState.LearMoreIpp(
             label = UiStringRes(
                 R.string.card_reader_connect_learn_more,
@@ -390,8 +388,4 @@ class SelectPaymentMethodViewModel @Inject constructor(
         const val UTM_CONTENT = "upsell_card_readers"
         const val LEARN_MORE_SOURCE = "payment_methods"
     }
-}
-
-class IsScanToPayAvailable @Inject constructor() {
-    operator fun invoke() = FeatureFlag.IPP_SCAN_TO_PAY.isEnabled()
 }
