@@ -13,9 +13,11 @@ import javax.inject.Inject
 
 class AppPrefsWrapper @Inject constructor() {
 
-    fun sendUsageStats(enabled: Boolean) {
+    fun setSendUsageStats(enabled: Boolean) {
         AnalyticsTracker.sendUsageStats = enabled
     }
+
+    fun getSendUsageStats() = AnalyticsTracker.sendUsageStats
 
     fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
         AppPrefs.getReceiptUrl(localSiteId, remoteSiteId, selfHostedSiteId, orderId)

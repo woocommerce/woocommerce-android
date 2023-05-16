@@ -34,31 +34,34 @@ class PrivacySettingsViewModel @Inject constructor(
     }
 
     fun initialize() {
-        launch {
-            _state.value = _state.value?.copy(progressBarVisible = true)
-            val event = repository.fetchAccountSettings()
-            _state.value = _state.value?.copy(progressBarVisible = false)
+        if (repository.isUserWPCOM()) {
+            launch {
+                _state.value = _state.value?.copy(progressBarVisible = true)
+                val event = repository.fetchAccountSettings()
+                _state.value = _state.value?.copy(progressBarVisible = false)
 
-            event.fold(
-                onSuccess = {
-                    appPrefs.sendUsageStats(!repository.userOptOutFromTracks())
-                    _state.value =
-                        _state.value?.copy(sendUsageStats = !repository.userOptOutFromTracks())
-                },
-                onFailure = {
-                    triggerEvent(
-                        MultiLiveEvent.Event.ShowActionSnackbar(
-                            resourceProvider.getString(R.string.settings_tracking_analytics_error_fetch)
-                        ) {
-                            initialize()
-                        }
-                    )
-                }
-            )
+                event.fold(
+                    onSuccess = {
+                        appPrefs.setSendUsageStats(!repository.userOptOutFromTracks())
+                        _state.value =
+                            _state.value?.copy(sendUsageStats = !repository.userOptOutFromTracks())
+                    },
+                    onFailure = {
+                        triggerEvent(
+                            MultiLiveEvent.Event.ShowActionSnackbar(
+                                resourceProvider.getString(R.string.settings_tracking_analytics_error_fetch)
+                            ) {
+                                initialize()
+                            }
+                        )
+                    }
+                )
+            }
         }
     }
 
-    private fun getSendUsageStats() = !repository.userOptOutFromTracks()
+    private fun getSendUsageStats() =
+        if (repository.isUserWPCOM()) !repository.userOptOutFromTracks() else appPrefs.getSendUsageStats()
 
     private fun getCrashReportingEnabled() = appPrefs.isCrashReportingEnabled()
 
@@ -97,7 +100,7 @@ class PrivacySettingsViewModel @Inject constructor(
 
                 event.fold(
                     onSuccess = {
-                        appPrefs.sendUsageStats(checked)
+                        appPrefs.setSendUsageStats(checked)
                     },
                     onFailure = {
                         _state.value = _state.value?.copy(sendUsageStats = !checked)
@@ -108,6 +111,9 @@ class PrivacySettingsViewModel @Inject constructor(
                         )
                     }
                 )
+            } else {
+                _state.value = _state.value?.copy(sendUsageStats = checked)
+                appPrefs.setSendUsageStats(checked)
             }
         }
     }

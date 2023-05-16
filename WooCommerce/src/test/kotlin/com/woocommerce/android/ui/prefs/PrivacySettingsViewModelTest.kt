@@ -13,6 +13,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 
@@ -55,7 +56,7 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
 
             // then
             assertThat(sut.state.value?.sendUsageStats).isTrue
-            verify(appPrefs).sendUsageStats(true)
+            verify(appPrefs).setSendUsageStats(true)
         }
 
     @Test
@@ -92,7 +93,7 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
 
             // then
             assertThat(sut.state.value?.sendUsageStats).isFalse
-            verify(appPrefs).sendUsageStats(false)
+            verify(appPrefs).setSendUsageStats(false)
         }
 
     @Test
@@ -111,5 +112,26 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
             // then
             assertThat(sut.state.value?.sendUsageStats).isFalse
             assertThat(sut.event.value).isInstanceOf(MultiLiveEvent.Event.ShowActionSnackbar::class.java)
+        }
+
+    @Test
+    fun `given user is not WPCOM, when user opens the screen, load settings from local preferences`() =
+        testBlocking {
+            // given
+            repository.stub {
+                on { isUserWPCOM() } doReturn false
+            }
+            appPrefs.stub {
+                on { getSendUsageStats() } doReturn false
+            }
+
+            // when
+            init()
+            runCurrent()
+
+            // then
+            verify(appPrefs).getSendUsageStats()
+            verify(repository, never()).fetchAccountSettings()
+            assertThat(sut.state.value?.sendUsageStats).isFalse()
         }
 }
