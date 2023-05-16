@@ -1,8 +1,8 @@
-package com.woocommerce.android.push
+package com.woocommerce.android.notifications.push
 
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.push.RegisterDevice.Mode.FORCEFULLY
-import com.woocommerce.android.push.RegisterDevice.Mode.IF_NEEDED
+import com.woocommerce.android.notifications.push.RegisterDevice.Mode.FORCEFULLY
+import com.woocommerce.android.notifications.push.RegisterDevice.Mode.IF_NEEDED
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before

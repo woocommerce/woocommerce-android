@@ -1,8 +1,8 @@
 package com.woocommerce.android.model
 
-import com.woocommerce.android.push.NotificationChannelType
-import com.woocommerce.android.push.NotificationTestUtils
-import com.woocommerce.android.push.WooNotificationType
+import com.woocommerce.android.notifications.NotificationChannelType
+import com.woocommerce.android.notifications.WooNotificationType
+import com.woocommerce.android.notifications.push.NotificationTestUtils
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 

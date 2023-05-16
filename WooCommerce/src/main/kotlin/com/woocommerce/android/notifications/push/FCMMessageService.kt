@@ -1,9 +1,9 @@
-package com.woocommerce.android.push
+package com.woocommerce.android.notifications.push
 
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.push.RegisterDevice.Mode.FORCEFULLY
+import com.woocommerce.android.notifications.push.RegisterDevice.Mode.FORCEFULLY
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import dagger.hilt.android.AndroidEntryPoint

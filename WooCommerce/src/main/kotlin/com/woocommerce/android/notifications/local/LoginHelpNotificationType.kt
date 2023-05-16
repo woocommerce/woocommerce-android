@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.localnotifications
+package com.woocommerce.android.notifications.local
 
 enum class LoginHelpNotificationType(private val typeName: String) {
     LOGIN_SITE_ADDRESS_ERROR("site_address_error"),
