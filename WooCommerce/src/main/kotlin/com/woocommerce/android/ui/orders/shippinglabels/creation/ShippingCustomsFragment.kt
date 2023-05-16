@@ -46,6 +46,7 @@ class ShippingCustomsFragment :
             weightUnit = viewModel.weightUnit,
             currencyUnit = viewModel.currencyUnit,
             countries = viewModel.countries.toTypedArray(),
+            isShippingNoticeActive = viewModel.isEUShippingScenario,
             listener = viewModel
         )
     }
@@ -86,7 +87,8 @@ class ShippingCustomsFragment :
         if (viewModel.isEUShippingScenario) {
             with(binding.shippingNoticeBanner) {
                 isVisible = AppPrefs.isEUShippingNoticeDismissed.not()
-                setLearnMoreClickListener(viewModel::onShippingNoticeLearnMoreClicked)
+                onLearnMoreClicked = viewModel::onShippingNoticeLearnMoreClicked
+                onDismissClicked = viewModel::onShippingNoticeDismissClicked
             }
         }
 
@@ -108,6 +110,9 @@ class ShippingCustomsFragment :
             new.isProgressViewShown.takeIfNotEqualTo(old?.isProgressViewShown) { show ->
                 binding.progressView.isVisible = show
                 binding.packagesList.isVisible = !show
+            }
+            new.isShippingNoticeVisible.takeIfNotEqualTo(old?.isShippingNoticeVisible) { show ->
+                binding.shippingNoticeBanner.isVisible = show
             }
         }
 

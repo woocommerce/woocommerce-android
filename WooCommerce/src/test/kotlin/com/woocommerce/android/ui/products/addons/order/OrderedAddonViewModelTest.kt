@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.products.addons.order
 
-import android.content.Context
-import android.content.SharedPreferences
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
@@ -20,7 +18,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -32,6 +29,7 @@ import kotlin.test.fail
 class OrderedAddonViewModelTest : BaseUnitTest() {
     private lateinit var viewModelUnderTest: OrderedAddonViewModel
     private var addonRepositoryMock: AddonRepository = mock()
+    private val feedbackPrefs: FeedbackPrefs = mock()
 
     @Before
     fun setUp() {
@@ -49,18 +47,11 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
                 .doReturn(storeParametersMock)
         }
 
-        val editor = mock<SharedPreferences.Editor>()
-        val preferences = mock<SharedPreferences> { whenever(it.edit()).thenReturn(editor) }
-        mock<Context> {
-            whenever(it.applicationContext).thenReturn(it)
-            whenever(it.getSharedPreferences(any(), any())).thenReturn(preferences)
-            FeedbackPrefs.init(it)
-        }
-
         viewModelUnderTest = OrderedAddonViewModel(
             savedState,
             coroutinesTestRule.testDispatchers,
             addonRepositoryMock,
+            feedbackPrefs,
             parameterRepositoryMock
         )
     }
