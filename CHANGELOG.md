@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 13.6
+Our experimental coupons feature is now available for everyone! Simply click on the menu option to manage your coupons from the app. Do try it out and share your feedback!
+
 ## 13.5
 This release contains a handful of minor improvements to make your experience smoother. We hope you notice the love we put into our software. Stay tuned for some exciting news coming your way!
 
