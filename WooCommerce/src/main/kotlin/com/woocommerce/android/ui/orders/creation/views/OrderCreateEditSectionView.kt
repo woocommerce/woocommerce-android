@@ -6,11 +6,13 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RelativeLayout
 import androidx.annotation.DimenRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.res.use
 import androidx.core.view.children
 import androidx.core.view.isVisible
+import androidx.core.view.setPadding
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
@@ -77,6 +79,43 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
         }
+    }
+
+    fun setAddProductButtons(
+        addProductsButton: AddButton,
+        addProductsViaScanButton: AddButton? = null,
+    ) {
+        binding.addButtonsLayout.removeAllViews()
+        val container = RelativeLayout(context)
+        var params = RelativeLayout.LayoutParams(
+            LayoutParams.WRAP_CONTENT,
+            LayoutParams.WRAP_CONTENT
+        )
+        params.addRule(RelativeLayout.ALIGN_PARENT_LEFT)
+        val addingProductsManuallyButton = MaterialButton(context, null, R.attr.secondaryTextButtonStyle)
+        addingProductsManuallyButton.text = addProductsButton.text
+        addingProductsManuallyButton.icon = AppCompatResources.getDrawable(context, R.drawable.ic_add)
+        addingProductsManuallyButton.layoutParams = params
+        addingProductsManuallyButton.setOnClickListener { addProductsButton.onClickListener() }
+
+        container.addView(addingProductsManuallyButton)
+
+        addProductsViaScanButton?.let {
+            val addingProductsViaScanningButton = MaterialButton(context, null, R.attr.secondaryTextButtonStyle)
+            addingProductsViaScanningButton.icon = AppCompatResources.getDrawable(context, R.drawable.ic_barcode)
+            addingProductsViaScanningButton.iconPadding = 0
+            addingProductsViaScanningButton.setPadding(0)
+            addingProductsViaScanningButton.iconGravity = MaterialButton.ICON_GRAVITY_TEXT_START
+            addingProductsViaScanningButton.setOnClickListener { addProductsViaScanButton.onClickListener() }
+            params = RelativeLayout.LayoutParams(
+                LayoutParams.WRAP_CONTENT,
+                LayoutParams.WRAP_CONTENT
+            )
+            params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+            addingProductsViaScanningButton.layoutParams = params
+            container.addView(addingProductsViaScanningButton)
+        }
+        binding.addButtonsLayout.addView(container)
     }
 
     private fun updateContent(content: View?) {
