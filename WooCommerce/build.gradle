@@ -282,6 +282,8 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-code-scanner:16.0.0-beta3'
 
+    implementation "com.google.zxing:core:3.5.1"
+
     // Debug dependencies
     debugImplementation "com.facebook.flipper:flipper:$flipperVersion"
     debugImplementation "com.facebook.soloader:soloader:0.10.4"
