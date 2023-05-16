@@ -922,17 +922,33 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when vm init, then scan to pay true returned`() =
+    fun `given paymentUrl not empty, when vm init, then true returned`() =
         testBlocking {
             // GIVEN
             val orderId = 1L
             val param = Payment(orderId = orderId, paymentType = ORDER)
+            whenever(order.paymentUrl).thenReturn(PAYMENT_URL)
 
             // WHEN
             val viewModel = initViewModel(param)
 
             // THEN
             assertThat((viewModel.viewStateData.value as Success).isScanToPayAvailable).isTrue()
+        }
+
+    @Test
+    fun `given paymentUrl empty, when vm init, then false returned`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = Payment(orderId = orderId, paymentType = ORDER)
+            whenever(order.paymentUrl).thenReturn("")
+
+            // WHEN
+            val viewModel = initViewModel(param)
+
+            // THEN
+            assertThat((viewModel.viewStateData.value as Success).isScanToPayAvailable).isFalse()
         }
 
     @Test
