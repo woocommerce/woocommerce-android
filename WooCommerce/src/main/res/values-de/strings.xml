@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-02 13:54:04+0000
+Translation-Revision-Date: 2023-05-08 14:54:24+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="shipping_notice_dismiss">Schließen</string>
+    <string name="shipping_notice_learn_more">Weitere Informationen</string>
+    <string name="shipping_notice_banner_content">Beim Versand in Länder, die den Zollvorschriften der Europäischen Union unterliegen, musst du eine klare, spezifische Beschreibung aller Artikel angeben. Ansonsten kann es zu Verzögerungen oder Unterbrechungen von Lieferungen durch den Zoll kommen.</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Bleibe auf dem neuesten Stand und erhöhe die Sicherheit deines Shops. Sieh dir Jetpack jetzt an.</string>
+    <string name="jetpack_benefits_bottom_banner_title">Erhalte Bestellbenachrichtigungen und vieles mehr</string>
     <string name="store_onboarding_setting_description">Checkliste für die Store-Einrichtung ein- oder ausblenden</string>
     <string name="store_onboarding_setting_title">Checkliste für die Store-Einrichtung</string>
     <string name="store_onboarding_dialog_description">Du kannst sie wiederherstellen, falls erforderlich. Gehe dazu zu Menü &gt; Einstellungen &gt; Shop</string>
@@ -818,8 +823,6 @@ Language: de
     <string name="coupon_details_copy_error">Fehler beim Kopieren des Gutscheincodes in die Zwischenablage.</string>
     <string name="coupon_details_copy_success">Gutscheincode wurde in die Zwischenablage kopiert.</string>
     <string name="coupon_details_copy_clipboard_label">Gutscheincode</string>
-    <string name="coupon_beta_features_subheading">Teste das Gutscheinmanagement in der App</string>
-    <string name="coupon_beta_features_heading">Gutscheinmanagement</string>
     <string name="coupon_summary_loading_failure">Gutscheinübersicht konnte nicht geladen werden</string>
     <string name="coupon_details_expiration_date">Läuft am %1$s ab</string>
     <string name="coupon_summary_template">%1$s Rabatt auf %2$s</string>
@@ -831,7 +834,6 @@ Language: de
     <string name="coupon_details_menu_share">Gutschein teilen</string>
     <string name="coupon_details_menu_copy">Gutscheincode kopieren</string>
     <string name="inbox_note_survey_actioned">Vielen Dank für dein Feedback!</string>
-    <string name="beta_features_coupons">Gutscheinmanagement</string>
     <string name="card_reader_connect_permission_rationale_hint">Für Zahlungen mit Kartenleser sind genaue Standortberechtigungen erforderlich</string>
     <string name="card_reader_connect_permission_rationale_header">Standortzugriff erforderlich</string>
     <string name="simple_payments_share_payment_dialog_title">Bezahlen – %s</string>
@@ -1115,8 +1117,6 @@ Language: de
     <string name="orderfilters_show_orders_button">Bestellungen anzeigen</string>
     <string name="orderlist_filters_title">Gefilterte Bestellungen</string>
     <string name="orderlist_no_filters_title">Alle Bestellungen</string>
-    <string name="jetpack_benefits_bottom_banner_subtitle">Die Vorteile</string>
-    <string name="jetpack_benefits_bottom_banner_title">Mit Jetpack sämtliche Optionen erhalten</string>
     <string name="product_description_hint_with_title">Erzähle uns mehr über %s …</string>
     <string name="product_description_hint_no_title">Beschreibe deinen zukünftigen Kunden dein Produkt …</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">Seriennummer des Lesegeräts in die Zwischenablage kopiert</string>

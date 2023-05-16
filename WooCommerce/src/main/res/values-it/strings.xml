@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-03 11:54:04+0000
+Translation-Revision-Date: 2023-05-10 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="shipping_notice_dismiss">Ignora</string>
+    <string name="shipping_notice_learn_more">Scopri di più</string>
+    <string name="shipping_notice_banner_content">Quando spedisci in Paesi che seguono le norme doganali dell\'Unione Europea (UE), devi fornire una descrizione chiara e specifica per ogni articolo. In caso contrario, le spedizioni potrebbero subire dei ritardi o essere fermate alla dogana.</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Resta aggiornato e aumenta la sicurezza del negozio. Esplora Jetpack ora.</string>
+    <string name="jetpack_benefits_bottom_banner_title">Ricevi notifiche sugli ordini e altro ancora</string>
     <string name="store_onboarding_setting_description">Mostra o nascondi l\'elenco delle impostazioni del negozio</string>
     <string name="store_onboarding_setting_title">Elenco delle impostazioni del negozio</string>
     <string name="store_onboarding_dialog_description">Puoi ripristinarlo quando lo necessiti da Menu &gt; Impostazioni &gt; Negozio</string>
@@ -818,8 +823,6 @@ Language: it
     <string name="coupon_details_copy_error">Errore durante la copia del codice promozionale negli appunti.</string>
     <string name="coupon_details_copy_success">Codice promozionale copiato negli appunti.</string>
     <string name="coupon_details_copy_clipboard_label">Codice promozionale</string>
-    <string name="coupon_beta_features_subheading">Verifica la gestione dei codici promozionali nell\'app</string>
-    <string name="coupon_beta_features_heading">Gestione dei codici promozionali</string>
     <string name="coupon_summary_loading_failure">Caricamento del riepilogo dei codici promozionali non riuscito</string>
     <string name="coupon_details_expiration_date">Scade il giorno %1$s</string>
     <string name="coupon_summary_template">%1$s di sconto su %2$s</string>
@@ -831,7 +834,6 @@ Language: it
     <string name="coupon_details_menu_share">Condividi codice promozionale</string>
     <string name="coupon_details_menu_copy">Copia codice promozionale</string>
     <string name="inbox_note_survey_actioned">Grazie per il feedback!</string>
-    <string name="beta_features_coupons">Gestione dei codici promozionali</string>
     <string name="card_reader_connect_permission_rationale_hint">I pagamenti tramite il lettore di carte richiedono l\'autorizzazione della posizione precisa</string>
     <string name="card_reader_connect_permission_rationale_header">Accesso alla posizione richiesto</string>
     <string name="simple_payments_share_payment_dialog_title">Pagamento: %s</string>
@@ -1115,8 +1117,6 @@ Language: it
     <string name="orderfilters_show_orders_button">Mostra ordini</string>
     <string name="orderlist_filters_title">Ordini filtrati</string>
     <string name="orderlist_no_filters_title">Tutti gli ordini</string>
-    <string name="jetpack_benefits_bottom_banner_subtitle">Scopri i vantaggi</string>
-    <string name="jetpack_benefits_bottom_banner_title">Vivi l\'esperienza completa con Jetpack</string>
     <string name="product_description_hint_with_title">Raccontaci di più su %s…</string>
     <string name="product_description_hint_no_title">Descrivi il prodotto ai futuri clienti…</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">Numero di serie del lettore copiato negli appunti</string>

@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ShippingNoticeBannerBinding
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
@@ -31,12 +33,14 @@ class ShippingNoticeCard @JvmOverloads constructor(
 
     init {
         binding.dismissButton.setOnClickListener {
+            AnalyticsTracker.track(AnalyticsEvent.EU_SHIPPING_NOTICE_DISMISSED)
             onDismissClicked()
             AppPrefs.isEUShippingNoticeDismissed = true
             collapse()
         }
 
         binding.learnMoreButton.setOnClickListener {
+            AnalyticsTracker.track(AnalyticsEvent.EU_SHIPPING_NOTICE_LEARN_MORE_TAPPED)
             onLearnMoreClicked(AppUrls.EU_SHIPPING_CUSTOMS_REQUIREMENTS)
         }
     }

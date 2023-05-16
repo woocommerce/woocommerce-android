@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-02 15:54:03+0000
+Translation-Revision-Date: 2023-05-09 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="shipping_notice_dismiss">ביטול</string>
+    <string name="shipping_notice_learn_more">למידע נוסף</string>
+    <string name="shipping_notice_banner_content">במשלוח למדינות שעונות על כללי המכס של האיחוד האירופי, עליך לספק תיאור ברור וספציפי לגבי כל פריט. אחרת, ייתכן שמשלוחים יעוכבו או יחסמו במכס.</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">לקבל עדכונים ולשפר את אבטחת החנות. לעיין ב-Jetpack כעת.</string>
+    <string name="jetpack_benefits_bottom_banner_title">לקבל הודעות לגבי הזמנות ועוד</string>
     <string name="store_onboarding_setting_description">להציג או להסתיר את רשימת ההגדרות לחנות</string>
     <string name="store_onboarding_setting_title">רשימה להגדרות החנות</string>
     <string name="store_onboarding_dialog_description">אפשר לשחזר את המידע כשצריך דרך \'תפריט\' &gt; \'הגדרות\' &gt; \'חנות\'</string>
@@ -818,8 +823,6 @@ Language: he_IL
     <string name="coupon_details_copy_error">שגיאה בהעתקת קוד הקופון ללוח.</string>
     <string name="coupon_details_copy_success">קוד הקופון הועתק ללוח.</string>
     <string name="coupon_details_copy_clipboard_label">קוד קופון</string>
-    <string name="coupon_beta_features_subheading">לנסות ניהול קופונים באפליקציה</string>
-    <string name="coupon_beta_features_heading">ניהול קופונים</string>
     <string name="coupon_summary_loading_failure">הטעינה של סיכום הקופונים נכשלה</string>
     <string name="coupon_details_expiration_date">בתוקף עד ⁦%1$s⁩</string>
     <string name="coupon_summary_template">הנחה של ⁦%1$s⁩ על ⁦%2$s⁩</string>
@@ -831,7 +834,6 @@ Language: he_IL
     <string name="coupon_details_menu_share">לשתף קופון</string>
     <string name="coupon_details_menu_copy">להעתיק קוד קופון</string>
     <string name="inbox_note_survey_actioned">תודה ששלחת את המשוב!</string>
-    <string name="beta_features_coupons">ניהול קופונים</string>
     <string name="card_reader_connect_permission_rationale_hint">לתשלומים בקורא הכרטיסים נדרשת הרשאה למיקום מדויק</string>
     <string name="card_reader_connect_permission_rationale_header">נדרשת גישה למיקום</string>
     <string name="simple_payments_share_payment_dialog_title">תשלום בקופה – %s</string>
@@ -1115,8 +1117,6 @@ Language: he_IL
     <string name="orderfilters_show_orders_button">להציג הזמנות</string>
     <string name="orderlist_filters_title">הזמנות שסוננו</string>
     <string name="orderlist_no_filters_title">כל ההזמנות</string>
-    <string name="jetpack_benefits_bottom_banner_subtitle">לצפייה בהטבות</string>
-    <string name="jetpack_benefits_bottom_banner_title">אפשר ליהנות מהחוויה המלאה עם Jetpack</string>
     <string name="product_description_hint_with_title">נשמח לשמוע פרטים נוספים על %s…</string>
     <string name="product_description_hint_no_title">לתאר את המוצר שלך ללקוחות עתידיים…</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">המספר הסידורי של הקורא הועתק ללקוח</string>

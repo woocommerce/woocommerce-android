@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-02 11:54:04+0000
+Translation-Revision-Date: 2023-05-09 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="shipping_notice_dismiss">Tutup</string>
+    <string name="shipping_notice_learn_more">Pelajari Selengkapnya</string>
+    <string name="shipping_notice_banner_content">Ketika mengirimkan barang ke negara yang menerapkan aturan bea cukai Uni Eropa (UE), Anda harus memberikan deskripsi yang jelas dan spesifik tentang setiap item. Jika tidak, pengiriman akan tertunda atau tertahan di bea cukai.</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Terus dapatkan pembaruan dan tingkatkan keamanan toko. Jelajahi Jetpack sekarang.</string>
+    <string name="jetpack_benefits_bottom_banner_title">Dapatkan pemberitahuan pesanan dan aneka fitur lainnya</string>
     <string name="store_onboarding_setting_description">Tampilkan atau sembunyikan daftar penyiapan toko</string>
     <string name="store_onboarding_setting_title">Daftar Penyiapan Toko</string>
     <string name="store_onboarding_dialog_description">Anda dapat memulihkannya jika dibutuhkan dari Menu &gt; Pengaturan &gt; Toko</string>
@@ -818,8 +823,6 @@ Language: id
     <string name="coupon_details_copy_error">Error saat menyalin kode kupon ke clipboard.</string>
     <string name="coupon_details_copy_success">Kode kupon disalin ke clipboard.</string>
     <string name="coupon_details_copy_clipboard_label">Kode Kupon</string>
-    <string name="coupon_beta_features_subheading">Coba kelola kupon di aplikasi</string>
-    <string name="coupon_beta_features_heading">Pengelolaan Kupon</string>
     <string name="coupon_summary_loading_failure">Gagal memuat ringkasan kupon</string>
     <string name="coupon_details_expiration_date">Kedaluwarsa %1$s</string>
     <string name="coupon_summary_template">%1$sDiskon %2$s</string>
@@ -831,7 +834,6 @@ Language: id
     <string name="coupon_details_menu_share">Bagikan Kupon</string>
     <string name="coupon_details_menu_copy">Salin Kode Kupon</string>
     <string name="inbox_note_survey_actioned">Terima kasih atas masukan Anda!</string>
-    <string name="beta_features_coupons">Pengelolaan Kupon</string>
     <string name="card_reader_connect_permission_rationale_hint">Pembayaran pembaca kartu memerlukan izin lokasi yang tepat</string>
     <string name="card_reader_connect_permission_rationale_header">Akses Lokasi Diperlukan</string>
     <string name="simple_payments_share_payment_dialog_title">Checkout - %s</string>
@@ -1115,8 +1117,6 @@ Language: id
     <string name="orderfilters_show_orders_button">Tampilkan Pesanan</string>
     <string name="orderlist_filters_title">Pesanan Disaring</string>
     <string name="orderlist_no_filters_title">Semua Pesanan</string>
-    <string name="jetpack_benefits_bottom_banner_subtitle">Lihat manfaatnya</string>
-    <string name="jetpack_benefits_bottom_banner_title">Dapatkan pengalaman penuh menggunakan Jetpack</string>
     <string name="product_description_hint_with_title">Beri tahu kami lebih banyak tentang %s…</string>
     <string name="product_description_hint_no_title">Jelaskan produk Anda ke calon pelanggan…</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">Nomor seri pembaca disalin ke clipboard</string>

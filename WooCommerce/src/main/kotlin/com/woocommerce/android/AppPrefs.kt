@@ -19,7 +19,6 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_UPSELL_BANN
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.IMAGE_OPTIMIZE_ENABLED
-import com.woocommerce.android.AppPrefs.DeletablePrefKey.IS_COUPONS_ENABLED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_END
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_START
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_PREFIX
@@ -72,7 +71,6 @@ object AppPrefs {
         DATABASE_DOWNGRADED,
         IS_PRODUCTS_FEATURE_ENABLED,
         IS_PRODUCT_ADDONS_ENABLED,
-        IS_COUPONS_ENABLED,
         LOGIN_USER_BYPASSED_JETPACK_REQUIRED,
         SELECTED_ORDER_LIST_TAB_POSITION,
         IMAGE_OPTIMIZE_ENABLED,
@@ -239,10 +237,6 @@ object AppPrefs {
     var isProductAddonsEnabled: Boolean
         get() = getBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, value)
-
-    var isCouponsEnabled: Boolean
-        get() = getBoolean(IS_COUPONS_ENABLED, false)
-        set(value) = setBoolean(IS_COUPONS_ENABLED, value)
 
     var isTapToPayEnabled: Boolean
         get() = getBoolean(DeletablePrefKey.IS_TAP_TO_PAY_BETA_ENABLED, false)
