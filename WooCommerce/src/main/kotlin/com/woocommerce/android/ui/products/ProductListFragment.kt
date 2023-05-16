@@ -81,6 +81,9 @@ class ProductListFragment :
     @Inject
     lateinit var currencyFormatter: CurrencyFormatter
 
+    @Inject
+    lateinit var feedbackPrefs: FeedbackPrefs
+
     private var _productAdapter: ProductListAdapter? = null
     private val productAdapter: ProductListAdapter
         get() = _productAdapter!!
@@ -104,7 +107,7 @@ class ProductListFragment :
 
     private val feedbackState: FeatureFeedbackSettings.FeedbackState
         get() =
-            FeedbackPrefs.getFeatureFeedbackSettings(FeatureFeedbackSettings.Feature.PRODUCT_VARIATIONS)?.feedbackState
+            feedbackPrefs.getFeatureFeedbackSettings(FeatureFeedbackSettings.Feature.PRODUCT_VARIATIONS)?.feedbackState
                 ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -725,7 +728,7 @@ class ProductListFragment :
         FeatureFeedbackSettings(
             FeatureFeedbackSettings.Feature.PRODUCT_VARIATIONS,
             state
-        ).registerItself()
+        ).registerItself(feedbackPrefs)
     }
 
     override fun shouldExpandToolbar(): Boolean {

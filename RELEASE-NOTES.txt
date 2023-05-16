@@ -7,6 +7,11 @@
 -----
 
 
+13.6
+-----
+- [*] [Internal] JITM added to the Orders list screen (behind TTP feature flag) [https://github.com/woocommerce/woocommerce-android/pull/8914]
+- [**] Enable coupon management by default [https://github.com/woocommerce/woocommerce-android/pull/8995]
+
 13.5
 - [*] [Internal] Adds "contact support" button on some IPP error states. [https://github.com/woocommerce/woocommerce-android/pull/8882]
 - [*] [Internal] Adds guidance for new Customs rule when shipping to some EU countries [https://github.com/woocommerce/woocommerce-android/pull/8958]

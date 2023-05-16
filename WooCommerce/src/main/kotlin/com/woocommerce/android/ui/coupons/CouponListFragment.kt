@@ -40,16 +40,18 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
         const val TAG: String = "CouponListFragment"
     }
 
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var feedbackPrefs: FeedbackPrefs
+
     private lateinit var searchMenuItem: MenuItem
     private lateinit var searchView: SearchView
     private var _binding: FragmentCouponListBinding? = null
     private val binding get() = _binding!!
     private val feedbackState
-        get() = FeedbackPrefs.getFeatureFeedbackSettings(COUPONS)?.feedbackState
+        get() = feedbackPrefs.getFeatureFeedbackSettings(COUPONS)?.feedbackState
             ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
     private val viewModel: CouponListViewModel by viewModels()
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -219,7 +221,7 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
         FeatureFeedbackSettings(
             COUPONS,
             state
-        ).registerItself()
+        ).registerItself(feedbackPrefs)
     }
 
     override fun onDestroyView() {
