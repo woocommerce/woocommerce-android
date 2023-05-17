@@ -6,9 +6,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.e2e.helpers.util.Screen
 import com.woocommerce.android.e2e.screens.TabNavComponent
 import com.woocommerce.android.model.Notification
-import com.woocommerce.android.push.NotificationChannelType
-import com.woocommerce.android.push.WooNotificationBuilder
-import com.woocommerce.android.push.WooNotificationType.NEW_ORDER
+import com.woocommerce.android.notifications.NotificationChannelType
+import com.woocommerce.android.notifications.WooNotificationBuilder
+import com.woocommerce.android.notifications.WooNotificationType.NEW_ORDER
 
 /**
  * This is not a screen per-se, as it shows the notification drawer with a push notification.

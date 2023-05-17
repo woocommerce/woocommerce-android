@@ -32,7 +32,7 @@ import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
-import com.woocommerce.android.push.NotificationChannelType
+import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource

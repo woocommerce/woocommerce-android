@@ -30,6 +30,9 @@ class ShippingNoticeCard @JvmOverloads constructor(
                 if (show) expand() else collapse()
             }
         }
+    var message: CharSequence
+        get() = binding.message.text
+        set(value) = value.let { binding.message.text = it }
 
     init {
         binding.dismissButton.setOnClickListener {

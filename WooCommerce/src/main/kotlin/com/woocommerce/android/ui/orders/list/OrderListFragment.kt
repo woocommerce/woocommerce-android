@@ -26,6 +26,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -84,6 +85,8 @@ class OrderListFragment :
     internal lateinit var selectedSite: SelectedSite
     @Inject
     internal lateinit var currencyFormatter: CurrencyFormatter
+    @Inject
+    lateinit var feedbackPrefs: FeedbackPrefs
 
     private val viewModel: OrderListViewModel by viewModels()
     private var snackBar: Snackbar? = null
@@ -635,7 +638,7 @@ class OrderListFragment :
                 FeatureFeedbackSettings(
                     FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION,
                     FeedbackState.DISMISSED
-                ).registerItself()
+                ).registerItself(feedbackPrefs)
                 viewModel.onDismissOrderCreationSimplePaymentsFeedback()
             },
             showFeedbackButton = true
@@ -653,7 +656,7 @@ class OrderListFragment :
         FeatureFeedbackSettings(
             SIMPLE_PAYMENTS_AND_ORDER_CREATION,
             FeedbackState.GIVEN
-        ).registerItself()
+        ).registerItself(feedbackPrefs)
         NavGraphMainDirections
             .actionGlobalFeedbackSurveyFragment(SurveyType.ORDER_CREATION)
             .apply { findNavController().navigateSafely(this) }

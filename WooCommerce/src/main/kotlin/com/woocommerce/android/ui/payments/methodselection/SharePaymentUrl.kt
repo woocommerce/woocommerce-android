@@ -10,6 +10,10 @@ data class SharePaymentUrl(
     val paymentUrl: String
 ) : MultiLiveEvent.Event()
 
+data class SharePaymentUrlViaQr(
+    val paymentUrl: String
+) : MultiLiveEvent.Event()
+
 data class NavigateToCardReaderHubFlow(
     val cardReaderFlowParam: CardReaderFlowParam.CardReadersHub
 ) : MultiLiveEvent.Event()

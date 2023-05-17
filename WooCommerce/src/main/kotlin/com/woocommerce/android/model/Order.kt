@@ -208,6 +208,7 @@ data class Order(
         val name: String?,
         val total: BigDecimal,
         val totalTax: BigDecimal,
+        var taxStatus: FeeLineTaxStatus,
     ) : Parcelable {
         fun getTotalValue(): BigDecimal = total + totalTax
 
@@ -216,8 +217,13 @@ data class Order(
                 id = 0,
                 name = "",
                 total = BigDecimal.ZERO,
-                totalTax = BigDecimal.ZERO
+                totalTax = BigDecimal.ZERO,
+                taxStatus = FeeLineTaxStatus.UNKNOWN,
             )
+        }
+
+        enum class FeeLineTaxStatus {
+            TAXABLE, NONE, UNKNOWN,
         }
     }
 

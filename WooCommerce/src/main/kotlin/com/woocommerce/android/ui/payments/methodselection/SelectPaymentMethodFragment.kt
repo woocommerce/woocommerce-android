@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectD
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewState.Loading
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewState.Success
+import com.woocommerce.android.ui.payments.scantopay.ScanToPayDialogFragment
 import com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
@@ -117,6 +118,12 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
             }
         }
 
+        with(binding.tvScanToPay) {
+            isVisible = state.isScanToPayAvailable
+            setOnClickListener { viewModel.onScanToPayClicked() }
+        }
+        binding.dividerAfterScanToPay.isVisible = state.isScanToPayAvailable
+
         with(binding.learnMoreIppPaymentMethodsTv) {
             learnMore.setOnClickListener { state.learMoreIpp.onClick.invoke() }
             UiHelpers.setTextOrHide(binding.learnMoreIppPaymentMethodsTv.learnMore, state.learMoreIpp.label)
@@ -143,6 +150,15 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
 
                 is SharePaymentUrl -> {
                     sharePaymentUrl(event.storeName, event.paymentUrl)
+                }
+
+                is SharePaymentUrlViaQr -> {
+                    val action =
+                        SelectPaymentMethodFragmentDirections
+                            .actionSelectPaymentMethodFragmentToScanToPayDialogFragment(
+                                event.paymentUrl
+                            )
+                    findNavController().navigate(action)
                 }
 
                 is NavigateToCardReaderPaymentFlow -> {
@@ -183,9 +199,11 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                         )
                     findNavController().navigateSafely(action)
                 }
+
                 is OpenGenericWebView -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
+
                 is NavigateToOrderDetails -> {
                     val action =
                         SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderDetailFragment(
@@ -193,6 +211,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                         )
                     findNavController().navigateSafely(action)
                 }
+
                 is NavigateToTapToPaySummary -> {
                     findNavController().navigateSafely(
                         SelectPaymentMethodFragmentDirections
@@ -220,6 +239,13 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
             entryId = R.id.selectPaymentMethodFragment
         ) {
             viewModel.onCardReaderPaymentCompleted()
+        }
+
+        handleDialogNotice(
+            key = ScanToPayDialogFragment.KEY_SCAN_TO_PAY_RESULT,
+            entryId = R.id.selectPaymentMethodFragment
+        ) {
+            viewModel.onScanToPayCompleted()
         }
     }
 

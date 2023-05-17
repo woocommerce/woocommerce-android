@@ -172,14 +172,14 @@
 
         <!-- Services -->
         <service
-            android:name=".push.FCMMessageService"
+            android:name=".notifications.push.FCMMessageService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
         <service
-            android:name=".push.NotificationsProcessingService"
+            android:name=".notifications.NotificationsProcessingService"
             android:exported="false"
             android:label="Notifications Quick Actions processing Service" />
         <service
