@@ -819,7 +819,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // Composite Products
     PRODUCT_DETAILS_VIEW_COMPONENTS_TAPPED,
 
-    //Account
+    // Account
     CLOSE_ACCOUNT_TAPPED,
     CLOSE_ACCOUNT_SUCCESS,
     CLOSE_ACCOUNT_FAILED

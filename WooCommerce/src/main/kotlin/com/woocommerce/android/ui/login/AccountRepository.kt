@@ -115,7 +115,6 @@ class AccountRepository @Inject constructor(
         dispatcher.dispatch(SiteActionBuilder.newRemoveAllSitesAction())
     }
 
-
     sealed class CloseAccountResult {
         object Success : CloseAccountResult()
         data class Error(val hasActiveStores: Boolean) : CloseAccountResult()

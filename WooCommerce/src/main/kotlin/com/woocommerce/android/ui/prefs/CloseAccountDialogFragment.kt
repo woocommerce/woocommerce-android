@@ -150,8 +150,7 @@ class CloseAccountDialogFragment : DialogFragment() {
             ),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
-        )
-        {
+        ) {
             WCTextButton(
                 onClick = viewModel::onCloseAccountDismissed
             ) {
