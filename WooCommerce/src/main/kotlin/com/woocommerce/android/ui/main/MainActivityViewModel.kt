@@ -26,8 +26,10 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.
 import com.woocommerce.android.ui.moremenu.MoreMenuNewFeature
 import com.woocommerce.android.ui.moremenu.MoreMenuNewFeatureHandler
 import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState
+import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -54,10 +56,18 @@ class MainActivityViewModel @Inject constructor(
     moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
     determineTrialStatusBarState: DetermineTrialStatusBarState,
+    shouldShowPrivacyBanner: ShouldShowPrivacyBanner,
 ) : ScopedViewModel(savedState) {
     init {
         launch {
             featureAnnouncementRepository.getFeatureAnnouncements(fromCache = false)
+        }
+        if (FeatureFlag.PRIVACY_CHOICES.isEnabled()) {
+            shouldShowPrivacyBanner().let {
+                if (it) {
+                    triggerEvent(ShowPrivacyBanner)
+                }
+            }
         }
     }
 
@@ -259,6 +269,7 @@ class MainActivityViewModel @Inject constructor(
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
     data class ViewReviewDetail(val uniqueId: Long) : Event()
     data class ViewOrderDetail(val uniqueId: Long, val remoteNoteId: Long) : Event()
+    object ShowPrivacyBanner : Event()
 
     sealed class MoreMenuBadgeState {
         data class UnseenReviews(val count: Int) : MoreMenuBadgeState()
