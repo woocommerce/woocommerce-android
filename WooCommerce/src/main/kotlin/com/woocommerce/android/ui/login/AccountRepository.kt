@@ -21,6 +21,7 @@ import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.account.CloseAccountStore
+import org.wordpress.android.fluxc.store.account.CloseAccountStore.CloseAccountErrorType
 import javax.inject.Inject
 
 class AccountRepository @Inject constructor(
@@ -88,14 +89,16 @@ class AccountRepository @Inject constructor(
         }
     }
 
-    suspend fun closeAccount(): Result<Unit> {
+    suspend fun closeAccount(): CloseAccountResult {
         val result = closeAccountStore.closeAccount()
-        return when {
-            result.isError -> Result.failure(OnChangedException(result.error, result.error.message))
-            else -> {
-                cleanup()
-                Result.success(Unit)
+        return if (result.isError) {
+            when (result.error.type) {
+                CloseAccountErrorType.EXISTING_ATOMIC_SITES -> CloseAccountResult.Error(hasActiveStores = true)
+                CloseAccountErrorType.GENERIC_ERROR -> CloseAccountResult.Error(hasActiveStores = false)
             }
+        } else {
+            cleanup()
+            CloseAccountResult.Success
         }
     }
 
@@ -110,5 +113,11 @@ class AccountRepository @Inject constructor(
 
         // Delete sites
         dispatcher.dispatch(SiteActionBuilder.newRemoveAllSitesAction())
+    }
+
+
+    sealed class CloseAccountResult {
+        object Success : CloseAccountResult()
+        data class Error(val hasActiveStores: Boolean) : CloseAccountResult()
     }
 }

@@ -6,6 +6,8 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.login.AccountRepository.CloseAccountResult.Error
+import com.woocommerce.android.ui.login.AccountRepository.CloseAccountResult.Success
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -36,19 +38,21 @@ class CloseAccountViewModel @Inject constructor(
     fun onConfirmCloseAccount() {
         launch {
             _viewState.value = _viewState.value?.copy(isLoading = true)
-            accountRepository.closeAccount()
-                .fold(
-                    onFailure = {
-                        _viewState.value = _viewState.value?.copy(
-                            title = R.string.settings_close_account_error_dialog_title,
-                            description = R.string.settings_close_account_error_dialog_description,
-                            mainButtonText = R.string.settings_close_account_dialog_contact_support_button,
-                            isLoading = false,
-                            isAccountDeletionError = true
-                        )
-                    },
-                    onSuccess = { triggerEvent(Exit) }
-                )
+            when (val result = accountRepository.closeAccount()) {
+                Success -> triggerEvent(Exit)
+                is Error -> {
+                    val errorDescription =
+                        if (result.hasActiveStores) R.string.settings_close_account_active_stores_error_description
+                        else R.string.settings_close_account_generic_error_description
+                    _viewState.value = _viewState.value?.copy(
+                        title = R.string.settings_close_account_error_dialog_title,
+                        description = errorDescription,
+                        mainButtonText = R.string.settings_close_account_dialog_contact_support_button,
+                        isLoading = false,
+                        isAccountDeletionError = true
+                    )
+                }
+            }
         }
     }
 
