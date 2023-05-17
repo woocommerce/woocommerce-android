@@ -30,13 +30,13 @@
         android:paddingStart="@dimen/minor_00"
         android:paddingEnd="@dimen/major_75"
         android:paddingBottom="@dimen/major_100"
-        android:text="@string/shipping_notice_banner_content"
         android:textColor="@color/material_on_surface_emphasis_high_type"
         android:textSize="@dimen/text_minor_125"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/icon"
         app:layout_constraintTop_toTopOf="@id/icon"
-        tools:ignore="RtlHardcoded" />
+        tools:ignore="RtlHardcoded"
+        tools:text="@string/shipping_notice_banner_warning_content" />
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
