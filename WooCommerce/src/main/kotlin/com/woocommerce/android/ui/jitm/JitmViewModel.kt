@@ -7,7 +7,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.MyStoreUtmProvider
-import com.woocommerce.android.ui.mystore.MyStoreViewModel
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -32,6 +31,9 @@ class JitmViewModel @Inject constructor(
     private val _jitmState: MutableLiveData<JitmState> = MutableLiveData()
     val jitmState: LiveData<JitmState> = _jitmState
 
+    private val messagePath = savedState.get<String>(JITM_MESSAGE_PATH_KEY)!!
+    private val utmSource = messagePath.split(":")[1]
+
     init {
         fetchJitms()
     }
@@ -53,19 +55,19 @@ class JitmViewModel @Inject constructor(
 
     private fun populateResultToUI(response: WooResult<Array<JITMApiResponse>>, jitmMessagePath: String) {
         if (response.isError) {
-            jitmTracker.trackJitmFetchFailure(MyStoreViewModel.UTM_SOURCE, response.error.type, response.error.message)
+            jitmTracker.trackJitmFetchFailure(utmSource, response.error.type, response.error.message)
             WooLog.e(WooLog.T.JITM, "Failed to fetch JITM for the message path $jitmMessagePath")
             return
         }
 
         jitmTracker.trackJitmFetchSuccess(
-            MyStoreViewModel.UTM_SOURCE,
+            utmSource,
             response.model?.getOrNull(0)?.id,
             response.model?.size
         )
         response.model?.getOrNull(0)?.let { model: JITMApiResponse ->
             jitmTracker.trackJitmDisplayed(
-                MyStoreViewModel.UTM_SOURCE,
+                utmSource,
                 model.id,
                 model.featureClass
             )
@@ -100,14 +102,14 @@ class JitmViewModel @Inject constructor(
 
     private fun onJitmCtaClicked(model: JITMApiResponse) {
         jitmTracker.trackJitmCtaTapped(
-            MyStoreViewModel.UTM_SOURCE,
+            utmSource,
             model.id,
             model.featureClass
         )
         triggerEvent(
             CtaClick(
                 myStoreUtmProvider.getUrlWithUtmParams(
-                    source = MyStoreViewModel.UTM_SOURCE,
+                    source = utmSource,
                     id = model.id,
                     featureClass = model.featureClass,
                     siteId = selectedSite.getIfExists()?.siteId,
@@ -119,20 +121,20 @@ class JitmViewModel @Inject constructor(
 
     private fun onJitmDismissClicked(model: JITMApiResponse) {
         _jitmState.value = JitmState.Hidden
-        jitmTracker.trackJitmDismissTapped(MyStoreViewModel.UTM_SOURCE, model.id, model.featureClass)
+        jitmTracker.trackJitmDismissTapped(utmSource, model.id, model.featureClass)
         launch {
             jitmStore.dismissJitmMessage(selectedSite.get(), model.id, model.featureClass).also { response ->
                 when {
                     response.model != null && response.model!! -> {
                         jitmTracker.trackJitmDismissSuccess(
-                            MyStoreViewModel.UTM_SOURCE,
+                            utmSource,
                             model.id,
                             model.featureClass
                         )
                     }
 
                     else -> jitmTracker.trackJitmDismissFailure(
-                        MyStoreViewModel.UTM_SOURCE,
+                        utmSource,
                         model.id,
                         model.featureClass,
                         response.error?.type,

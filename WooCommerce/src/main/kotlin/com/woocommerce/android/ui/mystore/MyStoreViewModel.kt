@@ -76,7 +76,6 @@ class MyStoreViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
-        const val UTM_SOURCE = "my_store"
     }
 
     val performanceObserver: LifecycleObserver = myStoreTransactionLauncher
