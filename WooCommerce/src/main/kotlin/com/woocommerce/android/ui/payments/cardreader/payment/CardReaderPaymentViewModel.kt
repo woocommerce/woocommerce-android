@@ -703,6 +703,7 @@ class CardReaderPaymentViewModel
     }
 
     private fun onContactSupportClicked() {
+        tracker.trackPaymentFailedContactSupportTapped()
         onCancelPaymentFlow()
         triggerEvent(ContactSupport)
     }
