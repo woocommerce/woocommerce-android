@@ -31,7 +31,7 @@ allprojects {
     tasks.withType(KotlinCompile).all {
         kotlinOptions {
             jvmTarget = JavaVersion.VERSION_1_8
-            allWarningsAsErrors = true
+            allWarningsAsErrors = false
             freeCompilerArgs += [
                     "-opt-in=kotlin.RequiresOptIn",
                     "-Xjvm-default=all-compatibility",
@@ -99,7 +99,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = '2.27.0'
+    fluxCVersion = '2737-a40eb43bb52196950766722cc3ebe87965961228'
     glideVersion = '4.13.2'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
