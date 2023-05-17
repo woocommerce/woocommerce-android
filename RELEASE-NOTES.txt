@@ -2,6 +2,7 @@
 13.7
 -----
 - [**] In-Person Payments: A merchant can now generate a QR code for a payment and the customer can scan the QR code to pay. [https://github.com/woocommerce/woocommerce-android/pull/9032]
+- [*] [Internal] "Colored" buttons have white text in the dark mode [https://github.com/woocommerce/woocommerce-android/pull/9044]
 
 13.6
 -----
