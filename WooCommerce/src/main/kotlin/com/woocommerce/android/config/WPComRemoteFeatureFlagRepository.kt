@@ -14,6 +14,12 @@ class WPComRemoteFeatureFlagRepository @Inject constructor(
         private const val PLATFORM_NAME = "android"
     }
 
+    /**
+     * Fetches the latest state of all remote feature flags from backend. Behind-the-scene also automatically
+     * saves data to DB.
+     * @param appVersion (Optional) In the backend, a remote feature flag can be set with various rules based on
+     * app version. This parameter can be used to work with those rules.
+     */
     suspend fun fetchFeatureFlags(appVersion: String = ""): Result<Unit> {
         // Empty string are parameters not used by this app.
         val result = featureFlagsStore.fetchFeatureFlags(
