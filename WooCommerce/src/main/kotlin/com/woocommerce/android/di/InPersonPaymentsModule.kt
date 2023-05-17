@@ -1,8 +1,6 @@
 package com.woocommerce.android.di
 
 import android.app.Application
-import android.content.Context
-import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.cardreader.CardReaderManagerFactory
 import com.woocommerce.android.cardreader.CardReaderStore
@@ -10,8 +8,6 @@ import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.creation.CodeScanner
-import com.woocommerce.android.ui.orders.creation.GoogleCodeScanner
 import com.woocommerce.android.ui.payments.cardreader.onboarding.toInPersonPaymentsPluginType
 import com.woocommerce.android.util.CapturePaymentResponseMapper
 import com.woocommerce.android.util.WooLog
@@ -80,14 +76,6 @@ class InPersonPaymentsModule {
     @Provides
     @Reusable
     fun provideCardReaderConfigFactory() = CardReaderConfigFactory()
-
-    @Provides
-    @Reusable
-    fun provideGoogleCodeScanner(context: Context): CodeScanner {
-        return GoogleCodeScanner(
-            GmsBarcodeScanning.getClient(context)
-        )
-    }
 }
 
 @InstallIn(SingletonComponent::class)

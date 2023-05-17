@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-27 13:54:03+0000
+Translation-Revision-Date: 2023-05-09 09:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="shipping_notice_dismiss">Ignorar</string>
+    <string name="shipping_notice_learn_more">Saiba mais</string>
+    <string name="shipping_notice_banner_content">Em envios para países que seguem as regras alfandegárias da União Europeia (UE), você deve fornecer uma descrição clara e específica de cada item. Caso contrário, os envios podem sofrer atrasos ou ficar interditados na alfândega.</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Fique por dentro e turbine a segurança da loja. Conheça o Jetpack agora mesmo.</string>
+    <string name="jetpack_benefits_bottom_banner_title">Receba notificações de pedidos e muito mais</string>
+    <string name="store_onboarding_setting_description">Mostrar ou ocultar lista de configurações da loja</string>
+    <string name="store_onboarding_setting_title">Lista de configurações da loja</string>
+    <string name="store_onboarding_dialog_description">Se precisar, você pode restaurá-la em Menu &gt; Configurações &gt; Loja</string>
+    <string name="store_onboarding_dialog_title">Ocultar lista de configurações da loja</string>
+    <string name="store_onboarding_menu_hide_store_setup">Ocultar lista de configurações da loja</string>
+    <string name="card_reader_tap_to_pay_successful_refund_action_label">Visualizar pedido</string>
+    <string name="card_reader_tap_to_pay_successful_refund_message">O pagamento de teste do Tap to Pay foi reembolsado com sucesso</string>
+    <string name="card_reader_tap_to_pay_explanation_refund_failed">Falha no reembolso. Tente reembolsar manualmente</string>
+    <string name="card_reader_tap_to_pay_explanation_refunding_payment">Reembolsando pagamento de teste…</string>
+    <string name="signup_terms_of_service">Ao continuar, você concorda com nossos &lt;a href=\'termsOfService\'&gt;&lt;u&gt;termos de serviço.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="signup_get_started_create_account_label">Primeiro, vamos criar sua conta. </string>
+    <string name="signup_create_password_label">Crie sua senha</string>
     <string name="component_type_categories">Categorias</string>
     <string name="component_type_products">Produtos</string>
     <string name="component_default_option">Opção padrão</string>
@@ -228,7 +245,7 @@ Language: pt_BR
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Ocorreu um erro. Tente novamente mais tarde.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Experimente um pagamento</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find"> Você pode encontrar o Toque para pagar no Android em\nMenu &gt; Pagamentos ou Receber Pagamento e\nescolher Toque para pagar.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Faça um pagamento usando cartão e\nreceba o reembolso quando terminar.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Faça um pagamento usando seu cartão e\nele será reembolsado quando terminarmos.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Seu telefone está pronto para usar o Toque para pagar.\nSeu cliente pode tocar no cartão dele\nno seu telefone para pagar.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Receba pagamentos com cartão\nusando seu telefone</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Toque para pagar</string>
@@ -497,14 +514,12 @@ Language: pt_BR
     <string name="signup_password_too_short">Sua senha é muito curta. Escolha uma com pelo menos seis caracteres.</string>
     <string name="signup_email_invalid_input">Digite um endereço de e-mail válido.</string>
     <string name="signup_email_exist_input">Já existe uma conta com este e-mail.</string>
-    <string name="signup_already_registered">Primeiro, vamos criar uma conta. Já tem cadastro? &lt;a href=\'login\'&gt;&lt;u&gt;Fazer login&lt;/u&gt;&lt;/a&gt;</string>
     <string name="login_create_an_account">Criar uma conta</string>
     <string name="login_try_another_email">Tentar outro endereço</string>
     <string name="date_timeframe_custom_date_range_title">Período personalizado</string>
     <string name="date_timeframe_custom">Personalizado</string>
     <string name="what_is_wordpress_link">O que é o WordPress.com?</string>
     <string name="signup_creating_account_loading_message">Criando uma nova conta</string>
-    <string name="signup_terms_of_service">Ao continuar, você concorda com nossos &lt;u&gt;termos de serviço.&lt;/u&gt;</string>
     <string name="signup_password_hint">Escolha uma senha</string>
     <string name="signup_email_address_hint">Seu endereço de e-mail</string>
     <string name="signup_get_started_label">Comece \nem minutos</string>
@@ -808,8 +823,6 @@ Language: pt_BR
     <string name="coupon_details_copy_error">Erro ao copiar o código do cupom para a área de transferência.</string>
     <string name="coupon_details_copy_success">Código do cupom copiado para a área de transferência.</string>
     <string name="coupon_details_copy_clipboard_label">Código do cupom</string>
-    <string name="coupon_beta_features_subheading">Experimente gerenciar os cupons no aplicativo</string>
-    <string name="coupon_beta_features_heading">Gerenciamento de cupons</string>
     <string name="coupon_summary_loading_failure">Falha ao carregar o resumo dos cupons</string>
     <string name="coupon_details_expiration_date">Expira em %1$s</string>
     <string name="coupon_summary_template">%1$s de desconto %2$s</string>
@@ -821,7 +834,6 @@ Language: pt_BR
     <string name="coupon_details_menu_share">Compartilhar cupom</string>
     <string name="coupon_details_menu_copy">Copiar código do cupom</string>
     <string name="inbox_note_survey_actioned">Obrigado pelo feedback.</string>
-    <string name="beta_features_coupons">Gerenciamento de cupons</string>
     <string name="card_reader_connect_permission_rationale_hint">Os pagamentos por leitor de cartão exigem uma permissão de localização precisa</string>
     <string name="card_reader_connect_permission_rationale_header">Acesso ao local obrigatório</string>
     <string name="simple_payments_share_payment_dialog_title">Finalizar compra - %s</string>
@@ -1105,8 +1117,6 @@ Language: pt_BR
     <string name="orderfilters_show_orders_button">Mostrar pedidos</string>
     <string name="orderlist_filters_title">Pedidos filtrados</string>
     <string name="orderlist_no_filters_title">Todos os pedidos</string>
-    <string name="jetpack_benefits_bottom_banner_subtitle">Veja os benefícios</string>
-    <string name="jetpack_benefits_bottom_banner_title">Obtenha uma experiência completa com o Jetpack</string>
     <string name="product_description_hint_with_title">Fale mais sobre %s…</string>
     <string name="product_description_hint_no_title">Descreva seu produto para os futuros clientes…</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">Número de série do leitor copiado para a área de transferência</string>

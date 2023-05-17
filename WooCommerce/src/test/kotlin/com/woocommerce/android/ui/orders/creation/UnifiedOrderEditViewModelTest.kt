@@ -13,11 +13,14 @@ import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateS
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -29,10 +32,14 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
@@ -49,6 +56,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected lateinit var parameterRepository: ParameterRepository
     private lateinit var determineMultipleLinesContext: DetermineMultipleLinesContext
     protected lateinit var tracker: AnalyticsTrackerWrapper
+    private lateinit var codeScanner: CodeScanner
+    private lateinit var productListRepository: ProductListRepository
 
     protected val defaultOrderValue = Order.EMPTY.copy(id = 123)
 
@@ -107,6 +116,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             on { invoke(any()) } doReturn OrderCreateEditViewModel.MultipleLinesContext.None
         }
         tracker = mock()
+        codeScanner = mock()
+        productListRepository = mock()
     }
 
     protected abstract val tracksFlow: String
@@ -371,84 +382,85 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
             assertFalse(isUpdatingOrderDraft!!)
         }
+    }
 
-        @Test
-        fun `when SKU search succeeds, then add the scanned product`() {
-            testBlocking {
-                createSut()
-                whenever(codeScanner.startScan()).thenAnswer {
-                    flow<CodeScannerStatus> {
-                        emit(CodeScannerStatus.Success("12345"))
-                    }
+    @Test
+    fun `when SKU search succeeds, then add the scanned product`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
                 }
-                whenever(
-                    productListRepository.searchProductList(
-                        "12345",
-                        WCProductStore.SkuSearchOptions(isSkuSearch = true, isExactSkuSearch = true)
-                    )
-                ).thenReturn(
-                    listOf(
-                        ProductTestUtils.generateProduct(
-                            productId = 10L,
-                            isVariable = true,
-                        )
-                    )
-                )
-                whenever(createOrderItemUseCase.invoke(10L)).thenReturn(
-                    createOrderItem(10L)
-                )
-                var newOrder: Order? = null
-                sut.orderDraft.observeForever { newOrderData ->
-                    newOrder = newOrderData
-                }
-
-                sut.startScan()
-
-                assertThat(newOrder?.getProductIds()?.any { it == 10L }).isTrue()
             }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions(isSkuSearch = true, isExactSkuSearch = true)
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        isVariable = true,
+                    )
+                )
+            )
+            whenever(createOrderItemUseCase.invoke(10L)).thenReturn(
+                createOrderItem(10L)
+            )
+            var newOrder: Order? = null
+            sut.orderDraft.observeForever { newOrderData ->
+                newOrder = newOrderData
+            }
+
+            sut.startScan()
+
+            assertThat(newOrder?.getProductIds()?.any { it == 10L }).isTrue()
         }
+    }
 
-        //endregion
+    //endregion
 
-        protected fun createSut() {
-            autoSyncPriceModifier = AutoSyncPriceModifier(createUpdateOrderUseCase)
-            autoSyncOrder = AutoSyncOrder(createUpdateOrderUseCase)
-            sut = OrderCreateEditViewModel(
-                savedState = savedState,
-                dispatchers = coroutinesTestRule.testDispatchers,
-                orderDetailRepository = orderDetailRepository,
-                orderCreateEditRepository = orderCreateEditRepository,
-                mapItemToProductUiModel = mapItemToProductUIModel,
-                createOrderItem = createOrderItemUseCase,
-                determineMultipleLinesContext = determineMultipleLinesContext,
-                parameterRepository = parameterRepository,
-                autoSyncOrder = autoSyncOrder,
-                autoSyncPriceModifier = autoSyncPriceModifier,
-                tracker = tracker,
-                codeScanner = mock(),
-                productRepository = mock()
+    protected fun createSut() {
+        autoSyncPriceModifier = AutoSyncPriceModifier(createUpdateOrderUseCase)
+        autoSyncOrder = AutoSyncOrder(createUpdateOrderUseCase)
+        sut = OrderCreateEditViewModel(
+            savedState = savedState,
+            dispatchers = coroutinesTestRule.testDispatchers,
+            orderDetailRepository = orderDetailRepository,
+            orderCreateEditRepository = orderCreateEditRepository,
+            mapItemToProductUiModel = mapItemToProductUIModel,
+            createOrderItem = createOrderItemUseCase,
+            determineMultipleLinesContext = determineMultipleLinesContext,
+            parameterRepository = parameterRepository,
+            autoSyncOrder = autoSyncOrder,
+            autoSyncPriceModifier = autoSyncPriceModifier,
+            tracker = tracker,
+            codeScanner = codeScanner,
+            productRepository = productListRepository
+        )
+    }
+
+    protected fun createOrderItem(withProductId: Long = 123, withVariationId: Long? = null) =
+        if (withVariationId != null) {
+            Order.Item.EMPTY.copy(
+                productId = withProductId,
+                itemId = (1L..1000000000L).random(),
+                variationId = withVariationId,
+                quantity = 1F,
+            )
+        } else {
+            Order.Item.EMPTY.copy(
+                productId = withProductId,
+                itemId = (1L..1000000000L).random(),
+                quantity = 1F,
             )
         }
 
-        protected fun createOrderItem(withProductId: Long = 123, withVariationId: Long? = null) =
-            if (withVariationId != null) {
-                Order.Item.EMPTY.copy(
-                    productId = withProductId,
-                    itemId = (1L..1000000000L).random(),
-                    variationId = withVariationId,
-                    quantity = 1F,
-                )
-            } else {
-                Order.Item.EMPTY.copy(
-                    productId = withProductId,
-                    itemId = (1L..1000000000L).random(),
-                    quantity = 1F,
-                )
-            }
-
-        protected val orderStatusList = listOf(
-            Order.OrderStatus("first key", "first status"),
-            Order.OrderStatus("second key", "second status"),
-            Order.OrderStatus("third key", "third status")
-        )
-    }
+    protected val orderStatusList = listOf(
+        Order.OrderStatus("first key", "first status"),
+        Order.OrderStatus("second key", "second status"),
+        Order.OrderStatus("third key", "third status")
+    )
+}

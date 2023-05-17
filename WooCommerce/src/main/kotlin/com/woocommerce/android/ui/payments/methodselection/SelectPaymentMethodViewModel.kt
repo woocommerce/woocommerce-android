@@ -36,8 +36,8 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewState.Loading
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewState.Success
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable
-import com.woocommerce.android.ui.payments.taptopay.IsTapToPayAvailable.Result.NotAvailable
+import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
+import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -45,6 +45,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -67,14 +68,13 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val cardPaymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
     private val learnMoreUrlProvider: LearnMoreUrlProvider,
     private val cardReaderTracker: CardReaderTracker,
-    private val wooStore: WooCommerceStore,
-    private val isTapToPayAvailable: IsTapToPayAvailable,
+    private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val appPrefs: AppPrefs = AppPrefs,
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
 
-    private val viewState = MutableLiveData<SelectPaymentMethodViewState>(Loading)
-    val viewStateData: LiveData<SelectPaymentMethodViewState> = viewState
+    private val _viewState = MutableLiveData<SelectPaymentMethodViewState>(Loading)
+    val viewStateData: LiveData<SelectPaymentMethodViewState> = _viewState
 
     private lateinit var order: Order
     private lateinit var orderTotal: String
@@ -94,22 +94,26 @@ class SelectPaymentMethodViewModel @Inject constructor(
                     is Payment -> {
                         // stay on screen
                         cardReaderPaymentFlowParam = param
-                        order = orderStore.getOrderByIdAndSite(param.orderId, selectedSite.get())!!.let {
-                            orderMapper.toAppModel(it)
-                        }
-                        val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
-                        orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode)
-                        viewState.value = buildSuccessState(
-                            currencyCode = currencyCode,
-                            isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order),
-                            isPaymentCollectableWithTapToPay = isTapToPayAvailable()
-                        )
+                        showPaymentState(param)
                     }
 
                     is Refund -> triggerEvent(NavigateToCardReaderRefundFlow(param, EXTERNAL))
                 }
             }
         }.exhaustive
+    }
+
+    private suspend fun showPaymentState(param: PaymentOrRefund) {
+        order = orderStore.getOrderByIdAndSite(param.orderId, selectedSite.get())!!.let {
+            orderMapper.toAppModel(it)
+        }
+        val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
+        orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode)
+        _viewState.value = buildSuccessState(
+            currencyCode = currencyCode,
+            isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order),
+            isPaymentCollectableWithTapToPay = isTapToPayAvailable()
+        )
     }
 
     private fun buildSuccessState(
@@ -121,6 +125,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode),
         isPaymentCollectableWithExternalCardReader = isPaymentCollectableWithCardReader,
         isPaymentCollectableWithTapToPay = isPaymentCollectableWithCardReader && isPaymentCollectableWithTapToPay,
+        isScanToPayAvailable = order.paymentUrl.isNotEmpty(),
         learMoreIpp = SelectPaymentMethodViewState.LearMoreIpp(
             label = UiStringRes(
                 R.string.card_reader_connect_learn_more,
@@ -131,8 +136,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     )
 
     private fun isTapToPayAvailable(): Boolean {
-        val countryCode = wooStore.getStoreCountryCode(selectedSite.get()) ?: return false
-        val result = isTapToPayAvailable(countryCode)
+        val result = tapToPayAvailabilityStatus()
         return if (result is NotAvailable) {
             cardReaderTracker.trackTapToPayNotAvailableReason(result)
             false
@@ -166,15 +170,11 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private fun onCashPaymentConfirmed() {
         if (networkStatus.isConnected()) {
             launch {
-                analyticsTrackerWrapper.track(
-                    AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
-                    mapOf(
-                        AnalyticsTracker.KEY_AMOUNT to orderTotal,
-                        AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_SIMPLE_PAYMENTS_COLLECT_CASH,
-                        cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
-                    )
+                trackPaymentMethodCompletion(
+                    VALUE_SIMPLE_PAYMENTS_COLLECT_CASH,
+                    extraField = AnalyticsTracker.KEY_AMOUNT to orderTotal
                 )
-                updateOrderStatus(Order.Status.Completed.value)
+                updateOrderStatus(Order.Status.Completed.value).handleOrderUpdateResultBeforeExit()
             }
         } else {
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
@@ -187,15 +187,9 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     fun onSharePaymentUrlCompleted() {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
-            mapOf(
-                AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_SIMPLE_PAYMENTS_COLLECT_LINK,
-                cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
-            )
-        )
+        trackPaymentMethodCompletion(VALUE_SIMPLE_PAYMENTS_COLLECT_LINK)
         launch {
-            updateOrderStatus(Order.Status.Pending.value)
+            updateOrderStatus(Order.Status.Pending.value).handleOrderUpdateResultBeforeExit()
         }
     }
 
@@ -230,13 +224,9 @@ class SelectPaymentMethodViewModel @Inject constructor(
             // status of the order to determine whether payment succeeded
             val status = orderStore.getOrderByIdAndSite(cardReaderPaymentFlowParam.orderId, selectedSite.get())?.status
             if (status == CoreOrderStatus.COMPLETED.value) {
-                analyticsTrackerWrapper.track(
-                    AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
-                    mapOf(
-                        AnalyticsTracker.KEY_AMOUNT to orderTotal,
-                        AnalyticsTracker.KEY_PAYMENT_METHOD to VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
-                        cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
-                    )
+                trackPaymentMethodCompletion(
+                    VALUE_SIMPLE_PAYMENTS_COLLECT_CARD,
+                    extraField = AnalyticsTracker.KEY_AMOUNT to orderTotal
                 )
                 delay(DELAY_MS)
                 exitFlow()
@@ -252,6 +242,30 @@ class SelectPaymentMethodViewModel @Inject constructor(
         }
     }
 
+    fun onScanToPayClicked() {
+        trackPaymentMethodSelection(AnalyticsTracker.VALUE_SCAN_TO_PAY_PAYMENT_FLOW)
+        launch {
+            updateOrderStatus(Order.Status.Pending.value).collect { result ->
+                _viewState.value = Loading
+                when (result) {
+                    is WCOrderStore.UpdateOrderResult.RemoteUpdateResult -> {
+                        if (result.event.isError) {
+                            handleUpdateOrderStatusError()
+                        } else {
+                            triggerEvent(SharePaymentUrlViaQr(order.paymentUrl))
+                        }
+                        showPaymentState(cardReaderPaymentFlowParam)
+                    }
+
+                    is WCOrderStore.UpdateOrderResult.OptimisticUpdateResult -> {
+                        // we need to make sure that remote call has been successful
+                        // otherwise the order is not collectable
+                    }
+                }
+            }
+        }
+    }
+
     fun onBackPressed() {
         // Simple payments flow is not canceled if we going back from this fragment
         if (cardReaderPaymentFlowParam.paymentType == ORDER) {
@@ -262,11 +276,20 @@ class SelectPaymentMethodViewModel @Inject constructor(
         }
     }
 
+    fun onScanToPayCompleted() {
+        trackPaymentMethodCompletion(AnalyticsTracker.VALUE_SCAN_TO_PAY_PAYMENT_FLOW)
+        launch {
+            delay(DELAY_MS)
+            exitFlow()
+        }
+    }
+
     private fun trackPaymentMethodSelection(paymentMethodType: String, cardReaderType: String? = null) {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.PAYMENTS_FLOW_COLLECT,
             mutableMapOf(
                 AnalyticsTracker.KEY_PAYMENT_METHOD to paymentMethodType,
+                AnalyticsTracker.KEY_ORDER_ID to order.id,
                 cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
             ).also { mutableMap ->
                 cardReaderType?.let { mutableMap[KEY_PAYMENT_CARD_READER_TYPE] = it }
@@ -277,7 +300,20 @@ class SelectPaymentMethodViewModel @Inject constructor(
         )
     }
 
-    private suspend fun updateOrderStatus(statusKey: String) {
+    private fun trackPaymentMethodCompletion(paymentMethodType: String, extraField: Pair<String, String>? = null) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.PAYMENTS_FLOW_COMPLETED,
+            mutableMapOf(
+                AnalyticsTracker.KEY_PAYMENT_METHOD to paymentMethodType,
+                AnalyticsTracker.KEY_ORDER_ID to order.id,
+                cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
+            ).apply {
+                extraField?.let { put(it.first, it.second) }
+            }
+        )
+    }
+
+    private suspend fun updateOrderStatus(statusKey: String): Flow<WCOrderStore.UpdateOrderResult> {
         val statusModel = withContext(dispatchers.io) {
             orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), statusKey)
                 ?: WCOrderStatusModel(statusKey = statusKey).apply {
@@ -285,28 +321,36 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 }
         }
 
-        orderStore.updateOrderStatus(
+        return orderStore.updateOrderStatus(
             cardReaderPaymentFlowParam.orderId,
             selectedSite.get(),
             statusModel
-        ).collect { result ->
+        )
+    }
+
+    private suspend fun Flow<WCOrderStore.UpdateOrderResult>.handleOrderUpdateResultBeforeExit() {
+        collect { result ->
             when (result) {
                 is WCOrderStore.UpdateOrderResult.OptimisticUpdateResult -> exitFlow()
                 is WCOrderStore.UpdateOrderResult.RemoteUpdateResult -> {
                     if (result.event.isError) {
-                        triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.order_error_update_general))
-                        analyticsTrackerWrapper.track(
-                            AnalyticsEvent.PAYMENTS_FLOW_FAILED,
-                            mapOf(
-                                AnalyticsTracker.KEY_SOURCE to
-                                    AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD,
-                                cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
-                            )
-                        )
+                        handleUpdateOrderStatusError()
                     }
                 }
             }
         }
+    }
+
+    private fun handleUpdateOrderStatusError() {
+        triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.order_error_update_general))
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.PAYMENTS_FLOW_FAILED,
+            mapOf(
+                AnalyticsTracker.KEY_SOURCE to
+                    AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD,
+                cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
+            )
+        )
     }
 
     private fun exitFlow() {

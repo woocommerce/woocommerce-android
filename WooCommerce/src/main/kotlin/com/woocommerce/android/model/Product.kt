@@ -8,6 +8,7 @@ import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.isEquivalentTo
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.parseFromIso8601DateFormat
 import com.woocommerce.android.ui.products.ProductBackorderStatus
@@ -83,6 +84,7 @@ data class Product(
     override val height: Float,
     override val weight: Float,
     val subscription: SubscriptionDetails?,
+    val specialStockStatus: ProductStockStatus? = null
 ) : Parcelable, IProduct {
     companion object {
         const val TAX_CLASS_DEFAULT = "standard"
@@ -142,7 +144,8 @@ data class Product(
             downloadExpiry == product.downloadExpiry &&
             isDownloadable == product.isDownloadable &&
             attributes == product.attributes &&
-            subscription == product.subscription
+            subscription == product.subscription &&
+            specialStockStatus == product.specialStockStatus
     }
 
     val hasCategories get() = categories.isNotEmpty()
@@ -328,7 +331,8 @@ data class Product(
                 downloads = updatedProduct.downloads,
                 downloadLimit = updatedProduct.downloadLimit,
                 downloadExpiry = updatedProduct.downloadExpiry,
-                subscription = updatedProduct.subscription
+                subscription = updatedProduct.subscription,
+                specialStockStatus = specialStockStatus
             )
         } ?: this.copy()
     }
@@ -561,6 +565,11 @@ fun WCProductModel.toAppModel(): Product {
         variationIds = this.getVariationIdList(),
         isPurchasable = this.purchasable,
         subscription = subscription,
+        specialStockStatus = if (this.specialStockStatus.isNotNullOrEmpty()) {
+            ProductStockStatus.fromString(this.specialStockStatus)
+        } else {
+            null
+        }
     )
 }
 

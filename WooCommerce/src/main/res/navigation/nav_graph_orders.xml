@@ -207,7 +207,7 @@
             app:destination="@id/receiptPreviewFragment" />
         <action
             android:id="@+id/action_orderDetailFragment_to_printingInstructionsFragment"
-            app:destination="@id/printingInstructionsFragment"/>
+            app:destination="@id/printingInstructionsFragment" />
         <action
             android:id="@+id/action_orderDetailFragment_to_printShippingLabelCustomsFormFragment"
             app:destination="@id/printShippingLabelCustomsFormFragment" />
@@ -219,7 +219,7 @@
             app:destination="@id/editCustomerOrderNoteFragment" />
         <action
             android:id="@+id/action_orderDetailFragment_to_shippingAddressEditingFragment"
-            app:destination="@id/shippingAddressEditingFragment"/>
+            app:destination="@id/shippingAddressEditingFragment" />
         <action
             android:id="@+id/action_orderDetailFragment_to_billingAddressEditingFragment"
             app:destination="@id/billingAddressEditingFragment" />
@@ -241,7 +241,7 @@
             app:enterAnim="@anim/activity_fade_in"
             app:exitAnim="@null"
             app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" >
+            app:popExitAnim="@anim/activity_fade_out">
             <argument
                 android:name="mode"
                 app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
@@ -327,7 +327,7 @@
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_createShippingLabelFragment_to_printShippingLabelFragment"
-            app:destination="@id/printShippingLabelFragment"/>
+            app:destination="@id/printShippingLabelFragment" />
         <action
             android:id="@+id/action_createShippingLabelFragment_to_shippingCustomsFragment"
             app:destination="@id/shippingCustomsFragment" />
@@ -385,7 +385,7 @@
             app:destination="@id/moveShippingItemDialog" />
         <action
             android:id="@+id/action_editShippingLabelPackagesFragment_to_shippingLabelCreatePackageFragment"
-            app:destination="@id/shippingLabelCreatePackageFragment"/>
+            app:destination="@id/shippingLabelCreatePackageFragment" />
     </fragment>
     <fragment
         android:id="@+id/shippingPackageSelectorFragment"
@@ -480,6 +480,9 @@
         <argument
             android:name="customsPackages"
             app:argType="com.woocommerce.android.model.CustomsPackage[]" />
+        <argument
+            android:name="isEUShippingScenario"
+            app:argType="boolean" />
     </fragment>
     <dialog
         android:id="@+id/moveShippingItemDialog"
@@ -534,7 +537,15 @@
         tools:layout="@layout/fragment_base_edit_address" />
     <fragment
         android:id="@+id/customOrderFieldsFragment"
-        android:name="com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsFragment" />
+        android:name="com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsFragment">
+        <argument
+            android:name="orderId"
+            app:argType="long" />
+        <argument
+            android:name="remoteNoteId"
+            android:defaultValue="0L"
+            app:argType="long" />
+    </fragment>
     <action
         android:id="@+id/action_global_item_selector_dialog"
         app:destination="@id/itemSelectorDialog" />

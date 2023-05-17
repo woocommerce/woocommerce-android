@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products.selector
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_CONFIRM_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_COUNT
@@ -87,7 +86,6 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        whenever(resourceProvider.getString(R.string.product_stock_status_instock)).thenReturn("In stock")
         val site: SiteModel = mock()
         whenever(selectedSite.get()).thenReturn(site)
         whenever(siteSettings.currencyCode).thenReturn("USD")

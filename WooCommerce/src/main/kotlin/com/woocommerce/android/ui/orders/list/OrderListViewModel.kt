@@ -18,6 +18,8 @@ import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
 import com.google.android.material.snackbar.Snackbar
+import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -27,9 +29,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANN
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_IPP_BANNER_SOURCE_ORDER_LIST
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
+import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
-import com.woocommerce.android.push.NotificationChannelType
+import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
@@ -45,7 +48,6 @@ import com.woocommerce.android.ui.payments.feedback.ipp.MarkFeedbackBannerAsDism
 import com.woocommerce.android.ui.payments.feedback.ipp.MarkIPPFeedbackSurveyAsCompleted
 import com.woocommerce.android.ui.payments.feedback.ipp.ShouldShowFeedbackBanner
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -101,10 +103,17 @@ class OrderListViewModel @Inject constructor(
     private val markFeedbackBannerAsDismissedForever: MarkFeedbackBannerAsDismissedForever,
     private val markFeedbackBannerAsCompleted: MarkIPPFeedbackSurveyAsCompleted,
     private val analyticsTracker: AnalyticsTrackerWrapper,
+    private val appPrefs: AppPrefs,
+    private val feedbackPrefs: FeedbackPrefs,
 ) : ScopedViewModel(savedState), LifecycleOwner {
     private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
     }
+
+    private val simplePaymentsAndOrderCreationFeedbackState
+        get() = feedbackPrefs.getFeatureFeedbackSettings(
+            FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION
+        )?.feedbackState ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
     val performanceObserver: LifecycleObserver = orderListTransactionLauncher
 
@@ -154,6 +163,14 @@ class OrderListViewModel @Inject constructor(
     private var dismissListErrors = false
     var searchQuery = ""
 
+    private val isSimplePaymentsAndOrderCreationFeedbackVisible: Boolean
+        get() {
+            val simplePaymentsAndOrderFeedbackDismissed =
+                simplePaymentsAndOrderCreationFeedbackState == FeatureFeedbackSettings.FeedbackState.DISMISSED
+            val isIPPSurveyFeedbackHidden = viewState.ippFeedbackBannerState is IPPSurveyFeedbackBannerState.Hidden
+            return isIPPSurveyFeedbackHidden && !simplePaymentsAndOrderFeedbackDismissed
+        }
+
     init {
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
@@ -178,7 +195,7 @@ class OrderListViewModel @Inject constructor(
             }
         }
 
-        displayIPPFeedbackOrOrdersBanner()
+        displayIPPFeedbackOrOrdersBannerOrJitm()
     }
 
     fun loadOrders() {
@@ -317,7 +334,7 @@ class OrderListViewModel @Inject constructor(
                 // so that the database is populated by now and we can show the correct banner.
                 // This also helps in updating the feedback survey banner according to the order changes
                 // on pull-to-refresh.
-                displayIPPFeedbackOrOrdersBanner()
+                displayIPPFeedbackOrOrdersBannerOrJitm()
                 _pagedListData.value = it
             }
         }
@@ -345,17 +362,23 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    private fun displayIPPFeedbackOrOrdersBanner() {
+    private fun displayIPPFeedbackOrOrdersBannerOrJitm() {
         viewModelScope.launch {
-            val shouldShowFeedbackBanner =
-                FeatureFlag.IPP_FEEDBACK_BANNER.isEnabled() && shouldShowFeedbackBanner()
-            if (shouldShowFeedbackBanner) {
-                val bannerData = getIPPFeedbackBannerData()
-                if (bannerData != null) {
+            when {
+                shouldShowFeedbackBanner() -> {
+                    val bannerData = getIPPFeedbackBannerData()
+                    if (bannerData != null) {
+                        viewState = viewState.copy(
+                            ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(bannerData)
+                        )
+                        trackIPPBannerEvent(AnalyticsEvent.IPP_FEEDBACK_BANNER_SHOWN)
+                    }
+                }
+                !isSimplePaymentsAndOrderCreationFeedbackVisible -> {
                     viewState = viewState.copy(
-                        ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Visible(bannerData)
+                        ippFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden,
+                        jitmEnabled = appPrefs.isTapToPayEnabled
                     )
-                    trackIPPBannerEvent(AnalyticsEvent.IPP_FEEDBACK_BANNER_SHOWN)
                 }
             }
             refreshOrdersBannerVisibility()
@@ -649,8 +672,9 @@ class OrderListViewModel @Inject constructor(
     }
 
     private fun refreshOrdersBannerVisibility() {
-        val isOrdersBannerVisible = viewState.ippFeedbackBannerState is IPPSurveyFeedbackBannerState.Hidden
-        viewState = viewState.copy(isSimplePaymentsWIPNoticeCardVisible = isOrdersBannerVisible)
+        viewState = viewState.copy(
+            isSimplePaymentsAndOrderCreationFeedbackVisible = isSimplePaymentsAndOrderCreationFeedbackVisible
+        )
     }
 
     private fun trackIPPBannerEvent(event: AnalyticsEvent, vararg customProps: Pair<String, Any>) {
@@ -664,6 +688,17 @@ class OrderListViewModel @Inject constructor(
             KEY_IPP_BANNER_SOURCE to VALUE_IPP_BANNER_SOURCE_ORDER_LIST,
             KEY_IPP_BANNER_CAMPAIGN_NAME to bannerData.campaignName
         )
+    }
+
+    fun onDismissOrderCreationSimplePaymentsFeedback() {
+        analyticsTracker.track(
+            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
+            )
+        )
+        refreshOrdersBannerVisibility()
     }
 
     sealed class OrderListEvent : Event() {
@@ -691,7 +726,8 @@ class OrderListViewModel @Inject constructor(
         val arePaymentGatewaysFetched: Boolean = false,
         val filterCount: Int = 0,
         val ippFeedbackBannerState: IPPSurveyFeedbackBannerState = IPPSurveyFeedbackBannerState.Hidden,
-        val isSimplePaymentsWIPNoticeCardVisible: Boolean = false,
+        val isSimplePaymentsAndOrderCreationFeedbackVisible: Boolean = false,
+        val jitmEnabled: Boolean = false,
     ) : Parcelable {
         @IgnoredOnParcel
         val isFilteringActive = filterCount > 0

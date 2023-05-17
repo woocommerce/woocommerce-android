@@ -36,7 +36,6 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
 
         with(FragmentSettingsBetaBinding.bind(view)) {
             bindProductAddonsToggle()
-            bindCouponsToggle()
             bindTapToPayToggle()
         }
     }
@@ -53,14 +52,6 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
             )
 
             settingsListener?.onProductAddonsOptionChanged(isChecked)
-                ?: handleToggleChangeFailure(switch, isChecked)
-        }
-    }
-
-    private fun FragmentSettingsBetaBinding.bindCouponsToggle() {
-        switchCouponsToggle.isChecked = AppPrefs.isCouponsEnabled
-        switchCouponsToggle.setOnCheckedChangeListener { switch, isChecked ->
-            settingsListener?.onCouponsOptionChanged(isChecked)
                 ?: handleToggleChangeFailure(switch, isChecked)
         }
     }

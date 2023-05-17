@@ -523,6 +523,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
 
     // -- Product subscriptions
     PRODUCT_DETAILS_VIEW_SUBSCRIPTIONS_TAPPED,
+    PRODUCT_VARIATION_VIEW_SUBSCRIPTIONS_TAPPED,
 
     // -- Product attributes
     PRODUCT_ATTRIBUTE_EDIT_BUTTON_TAPPED,
@@ -817,5 +818,10 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     PRODUCT_DETAIL_VIEW_BUNDLED_PRODUCTS_TAPPED,
 
     // Composite Products
-    PRODUCT_DETAILS_VIEW_COMPONENTS_TAPPED
+    PRODUCT_DETAILS_VIEW_COMPONENTS_TAPPED,
+
+    // EU Shipping Notice
+    EU_SHIPPING_NOTICE_SHOWN,
+    EU_SHIPPING_NOTICE_DISMISSED,
+    EU_SHIPPING_NOTICE_LEARN_MORE_TAPPED
 }

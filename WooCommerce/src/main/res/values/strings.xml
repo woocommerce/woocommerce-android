@@ -1009,6 +1009,7 @@
     <string name="shipping_label_customs_contents_type_description_missing">Please describe what kind of goods this package contains.</string>
     <string name="shipping_label_customs_restriction_type_description_missing">Please describe what kind of restrictions this package must have.</string>
     <string name="shipping_label_customs_required_field">This field is required</string>
+    <string name="shipping_label_customs_item_description_too_short">You must provide a clear, specific description for every item.</string>
     <string name="shipping_label_customs_weight_zero_error">Weight must be greater than zero</string>
     <string name="shipping_label_customs_value_zero_error">Declared value must be greater than zero</string>
     <string name="shipping_label_customs_form">Customs form</string>
@@ -1193,6 +1194,13 @@
     <string name="card_reader_type_selection_bluetooth_reader">Card Reader</string>
     <string name="card_reader_type_selection_bluetooth_reader_description">Card reader accepts tap, chip, and swipe payments with debit and credit cards.</string>
     <string name="tap_to_pay_refund_reason">Test Tap To Pay payment auto refund</string>
+    <string name="card_reader_type_selection_scan_to_pay">Scan To Pay</string>
+
+
+    <!--
+    Scan To Pay
+        -->
+    <string name="scan_to_pay_title">Scan QR and follow instructions</string>
 
     <!--
             Card Reader Interac refund
@@ -1594,6 +1602,7 @@
     <string name="product_stock_status_instock_with_variations">In stock \u2022 %d variations</string>
     <string name="product_stock_status_out_of_stock">Out of stock</string>
     <string name="product_stock_status_on_backorder">On backorder</string>
+    <string name="product_stock_status_insufficient_stock">Insufficient stock</string>
     <string name="product_stock_count">%s in stock</string>
     <string name="product_backorders_no">Do not allow</string>
     <string name="product_backorders_yes">Allow</string>
@@ -1892,7 +1901,6 @@
     <string name="send_feedback">Send feedback</string>
     <string name="beta_features">Beta features</string>
     <string name="beta_features_add_ons">View Add-ons</string>
-    <string name="beta_features_coupons">Coupons Management</string>
     <string name="beta_features_simple_payments">Simple payments</string>
     <string name="settings_signout">Log out</string>
     <string name="settings_preferences">Preferences</string>
@@ -2266,8 +2274,8 @@
     <string name="notifications_permission_description">We need your permission to send you push notifications for new orders, reviews, etc. delivered to your device.</string>
 
     <!-- Jetpack Connection Package -->
-    <string name="jetpack_benefits_bottom_banner_title">Get the full experience with Jetpack</string>
-    <string name="jetpack_benefits_bottom_banner_subtitle">See the benefits</string>
+    <string name="jetpack_benefits_bottom_banner_title">Get order notifications and more</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Stay updated and boost store security. Explore Jetpack now.</string>
     <string name="jetpack_benefits_modal_title">Get the most out of your store</string>
     <string name="jetpack_benefits_modal_subtitle">Install the free Jetpack plugin to experience the best mobile experience.</string>
     <string name="jetpack_benefits_modal_push_notifications_title">Push Notifications</string>
@@ -2358,8 +2366,6 @@
     <string name="coupon_summary_template">%1$s off %2$s</string>
     <string name="coupon_details_expiration_date">Expires %1$s</string>
     <string name="coupon_summary_loading_failure">Loading coupon summary failed</string>
-    <string name="coupon_beta_features_heading">Coupons Management</string>
-    <string name="coupon_beta_features_subheading">Test out managing coupons in the app</string>
     <string name="coupon_details_copy_clipboard_label">Coupon Code</string>
     <string name="coupon_details_copy_success">Coupon code copied to clipboard.</string>
     <string name="coupon_details_copy_error">Error copying coupon code to clipboard.</string>
@@ -3256,7 +3262,8 @@
     <!--
     Eu-Bound Shipping notice banner
     -->
-    <string name="shipping_notice_banner_content">When shipping to countries that follow European Union (EU) customs rules, you must provide a clear, specific description of every item. Otherwise, shipments may be delayed or interrupted at customs.</string>
+    <string name="shipping_notice_banner_warning_content">When shipping to countries that follow European Union (EU) customs rules, you must provide a clear, specific description of every item. Otherwise, shipments may be delayed or interrupted at customs.</string>
+    <string name="shipping_notice_banner_instructions_content">Shipping to countries that follow European Union (EU) customs rules now requires you clearly describe every item. For example, if you are sending clothing, you must indicate what type of clothing (e.g., men\’s shirts, girl\’s vest, boy\’s jacket) for the description to be acceptable. Otherwise, shipments may be delayed or interrupted at customs.</string>
     <string name="shipping_notice_learn_more">Learn More</string>
     <string name="shipping_notice_dismiss">Dismiss</string>
 </resources>
