@@ -179,8 +179,7 @@ class SitePickerViewModel @Inject constructor(
             isHelpBtnVisible = true,
             isSecondaryBtnVisible = true,
             primaryBtnText = resourceProvider.getString(string.continue_button),
-            toolbarTitle = "",
-            showCloseAccountMenuItem = true
+            toolbarTitle = ""
         )
     }
 
@@ -308,7 +307,8 @@ class SitePickerViewModel @Inject constructor(
             noStoresLabelText = resourceProvider.getString(string.login_no_stores_header),
             noStoresSubText = resourceProvider.getString(string.login_no_stores_subtitle),
             isNoStoresBtnVisible = false,
-            currentSitePickerState = SitePickerState.NoStoreState
+            currentSitePickerState = SitePickerState.NoStoreState,
+            showCloseAccountMenuItem = true
         )
     }
 
