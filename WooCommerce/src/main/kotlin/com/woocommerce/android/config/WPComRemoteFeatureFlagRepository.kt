@@ -14,7 +14,7 @@ class WPComRemoteFeatureFlagRepository @Inject constructor(
         private const val PLATFORM_NAME = "android"
     }
 
-    suspend fun fetchFeatureFlags(appVersion: String = ""): Result<List<RemoteFeatureFlag>> {
+    suspend fun fetchFeatureFlags(appVersion: String = ""): Result<Unit> {
         // Empty string are parameters not used by this app.
         val result = featureFlagsStore.fetchFeatureFlags(
             buildNumber = "",
@@ -29,14 +29,7 @@ class WPComRemoteFeatureFlagRepository @Inject constructor(
             Result.failure(OnChangedException(result.error, result.error.message))
         } else {
             AppLog.i(AppLog.T.API, "Successfully fetched WPCom remote feature flags")
-
-            val remoteFeatureFlags = result.featureFlags?.map { flag ->
-                RemoteFeatureFlag(
-                    key = flag.key,
-                    value = flag.value
-                )
-            }.orEmpty()
-            Result.success(remoteFeatureFlags)
+            Result.success(Unit)
         }
     }
 
