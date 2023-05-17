@@ -38,8 +38,5 @@ class AppConfigModule {
 
     @Provides
     @Singleton
-    fun provideFeedbackPrefs(appContext: Context): FeedbackPrefs {
-        FeedbackPrefs.init(appContext)
-        return FeedbackPrefs
-    }
+    fun provideFeedbackPrefs(appContext: Context) = FeedbackPrefs(appContext)
 }

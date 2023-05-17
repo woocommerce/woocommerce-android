@@ -6,6 +6,7 @@ import com.woocommerce.android.model.Order.Item
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.WCMetaData
+import org.wordpress.android.fluxc.model.order.FeeLineTaxStatus
 import org.wordpress.android.fluxc.model.order.OrderAddress
 import org.wordpress.android.fluxc.model.order.TaxLine
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderMappingConst.CHARGE_ID_KEY
@@ -77,6 +78,11 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
             name = it.name ?: StringUtils.EMPTY,
             totalTax = it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
             total = it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+            taxStatus = when (it.taxStatus) {
+                FeeLineTaxStatus.Taxable -> Order.FeeLine.FeeLineTaxStatus.TAXABLE
+                FeeLineTaxStatus.None -> Order.FeeLine.FeeLineTaxStatus.NONE
+                else -> Order.FeeLine.FeeLineTaxStatus.UNKNOWN
+            }
         )
     }
 

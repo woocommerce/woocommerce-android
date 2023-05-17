@@ -59,7 +59,7 @@ class CountryPickerViewModel @Inject constructor(
                         emojiFlag = emojiUtils.countryCodeToEmojiFlag(code),
                         isSelected = defaultCountryCode == code
                     )
-                }
+                }.sortedBy { it.name }
             }
             newStore.update(
                 country = availableCountries.value.first { it.isSelected }

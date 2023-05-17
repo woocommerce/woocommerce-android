@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-02 11:54:04+0000
+Translation-Revision-Date: 2023-05-09 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="shipping_notice_dismiss">Tutup</string>
+    <string name="shipping_notice_learn_more">Pelajari Selengkapnya</string>
+    <string name="shipping_notice_banner_content">Ketika mengirimkan barang ke negara yang menerapkan aturan bea cukai Uni Eropa (UE), Anda harus memberikan deskripsi yang jelas dan spesifik tentang setiap item. Jika tidak, pengiriman akan tertunda atau tertahan di bea cukai.</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Terus dapatkan pembaruan dan tingkatkan keamanan toko. Jelajahi Jetpack sekarang.</string>
+    <string name="jetpack_benefits_bottom_banner_title">Dapatkan pemberitahuan pesanan dan aneka fitur lainnya</string>
     <string name="store_onboarding_setting_description">Tampilkan atau sembunyikan daftar penyiapan toko</string>
     <string name="store_onboarding_setting_title">Daftar Penyiapan Toko</string>
     <string name="store_onboarding_dialog_description">Anda dapat memulihkannya jika dibutuhkan dari Menu &gt; Pengaturan &gt; Toko</string>
@@ -1112,8 +1117,6 @@ Language: id
     <string name="orderfilters_show_orders_button">Tampilkan Pesanan</string>
     <string name="orderlist_filters_title">Pesanan Disaring</string>
     <string name="orderlist_no_filters_title">Semua Pesanan</string>
-    <string name="jetpack_benefits_bottom_banner_subtitle">Lihat manfaatnya</string>
-    <string name="jetpack_benefits_bottom_banner_title">Dapatkan pengalaman penuh menggunakan Jetpack</string>
     <string name="product_description_hint_with_title">Beri tahu kami lebih banyak tentang %s…</string>
     <string name="product_description_hint_no_title">Jelaskan produk Anda ke calon pelanggan…</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">Nomor seri pembaca disalin ke clipboard</string>

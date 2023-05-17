@@ -6,16 +6,16 @@ import com.woocommerce.android.model.FeatureFeedbackSettings.Feature
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
 import javax.inject.Inject
 
-class FeedbackRepository @Inject constructor() {
+class FeedbackRepository @Inject constructor(private val feedbackPrefs: FeedbackPrefs) {
     fun getFeatureFeedbackState(feature: Feature): FeedbackState {
-        return FeedbackPrefs.getFeatureFeedbackSettings(feature)?.feedbackState ?: FeedbackState.UNANSWERED
+        return feedbackPrefs.getFeatureFeedbackSettings(feature)?.feedbackState ?: FeedbackState.UNANSWERED
     }
 
     fun saveFeatureFeedback(feature: Feature, feedbackState: FeedbackState) {
-        FeedbackPrefs.setFeatureFeedbackSettings(FeatureFeedbackSettings(feature, feedbackState))
+        feedbackPrefs.setFeatureFeedbackSettings(FeatureFeedbackSettings(feature, feedbackState))
     }
 
     fun getFeatureFeedbackSetting(feature: Feature): FeatureFeedbackSettings {
-        return FeedbackPrefs.getFeatureFeedbackSettings(feature) ?: FeatureFeedbackSettings(feature)
+        return feedbackPrefs.getFeatureFeedbackSettings(feature) ?: FeatureFeedbackSettings(feature)
     }
 }

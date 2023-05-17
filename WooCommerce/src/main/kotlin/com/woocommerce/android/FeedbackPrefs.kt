@@ -1,6 +1,5 @@
 package com.woocommerce.android
 
-import android.annotation.SuppressLint
 import android.content.Context
 import androidx.preference.PreferenceManager
 import com.google.gson.Gson
@@ -13,16 +12,12 @@ import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.util.PreferenceUtils
 import java.util.Date
 
-// Guaranteed to hold a reference to the application context, which is safe
-@SuppressLint("StaticFieldLeak")
-object FeedbackPrefs {
-    private lateinit var context: Context
+class FeedbackPrefs(
+    private val context: Context
+) {
     private val gson by lazy { Gson() }
     private val featureMapTypeToken by lazy { object : TypeToken<Map<String, String>>() {}.type }
     private val sharedPreferences get() = PreferenceManager.getDefaultSharedPreferences(context)
-
-    private const val THREE_MONTHS_IN_DAYS = 90
-    private const val SIX_MONTHS_IN_DAYS = 180
 
     private val featureMap
         get() = getString(FEATURE_FEEDBACK_SETTINGS)
@@ -43,10 +38,6 @@ object FeedbackPrefs {
         set(value) = value
             ?.time.toString()
             .let { setString(LAST_FEEDBACK_DATE, it) }
-
-    fun init(context: Context) {
-        FeedbackPrefs.context = context.applicationContext
-    }
 
     fun getFeatureFeedbackSettings(feature: FeatureFeedbackSettings.Feature) =
         featureMap[feature.toString()]
@@ -77,5 +68,10 @@ object FeedbackPrefs {
 
         // A map of every feature feedback the user has given within the app
         FEATURE_FEEDBACK_SETTINGS
+    }
+
+    companion object {
+        private const val THREE_MONTHS_IN_DAYS = 90
+        private const val SIX_MONTHS_IN_DAYS = 180
     }
 }

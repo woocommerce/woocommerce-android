@@ -259,7 +259,7 @@ class OrderCreateEditFormFragment :
                 createOrderMenuItem?.isEnabled = it
             }
             new.isIdle.takeIfNotEqualTo(old?.isIdle) { enabled ->
-                hideProgressBars(binding, enabled)
+                updateProgressBarsVisibility(binding, !enabled)
                 if (new.isEditable) {
                     binding.paymentSection.shippingButton.isEnabled = enabled
                     binding.paymentSection.feeButton.isEnabled = enabled
@@ -288,22 +288,25 @@ class OrderCreateEditFormFragment :
                     }
                 }
             }
+            new.isCouponButtonEnabled.takeIfNotEqualTo(old?.isCouponButtonEnabled) {
+                binding.paymentSection.couponButton.isEnabled = it
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner, ::handleViewModelEvents)
     }
 
-    private fun hideProgressBars(
+    private fun updateProgressBarsVisibility(
         binding: FragmentOrderCreateEditFormBinding,
-        enabled: Boolean
+        shouldShowProgressBars: Boolean
     ) {
         when (viewModel.mode) {
             OrderCreateEditViewModel.Mode.Creation -> {
-                binding.paymentSection.loadingProgress.isVisible = !enabled
+                binding.paymentSection.loadingProgress.isVisible = shouldShowProgressBars
             }
 
             is OrderCreateEditViewModel.Mode.Edit -> {
-                binding.loadingProgress.isVisible = !enabled
+                binding.loadingProgress.isVisible = shouldShowProgressBars
             }
         }
     }
@@ -528,6 +531,7 @@ class OrderCreateEditFormFragment :
             feeButton.isEnabled = true
             shippingButton.isEnabled = true
             lockIcon.isVisible = false
+            couponButton.isEnabled = true
         }
     }
 
@@ -542,6 +546,7 @@ class OrderCreateEditFormFragment :
             feeButton.isEnabled = false
             shippingButton.isEnabled = false
             lockIcon.isVisible = true
+            couponButton.isEnabled = false
         }
     }
 }
