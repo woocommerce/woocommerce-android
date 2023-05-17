@@ -20,6 +20,7 @@ import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Devices
@@ -102,6 +103,9 @@ fun PrivacyBannerScreen() {
                     modifier = Modifier.weight(1f),
                     onClick = { /*TODO*/ },
                     shape = MaterialTheme.shapes.small.copy(CornerSize(8.dp)),
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = Color.White,
+                    ),
                     elevation = ButtonDefaults.elevation(
                         defaultElevation = 0.dp,
                         pressedElevation = 0.dp,
