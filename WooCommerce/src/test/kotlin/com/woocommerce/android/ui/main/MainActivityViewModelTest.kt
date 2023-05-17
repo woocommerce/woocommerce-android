@@ -11,6 +11,7 @@ import com.woocommerce.android.model.FeatureAnnouncementItem
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.notifications.WooNotificationType
+import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.notifications.push.NotificationTestUtils
 import com.woocommerce.android.tools.SelectedSite
@@ -73,6 +74,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
     private val selectedSite: SelectedSite = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val notificationScheduler: LocalNotificationScheduler = mock()
 
     private val siteStore: SiteStore = mock()
     private val siteModel: SiteModel = SiteModel().apply {
@@ -535,6 +537,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 prefs,
                 analyticsTrackerWrapper,
                 resolveAppLink,
+                notificationScheduler,
                 moreMenuNewFeatureHandler,
                 unseenReviewsCountHandler,
                 mock {
