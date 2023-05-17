@@ -25,6 +25,6 @@ enum class RemoteFeatureFlag(private val remoteKey: String) {
     }
 
     private fun getRemoteFlagValue(key: String): Boolean {
-        return wpComRemoteFeatureFlagRepository.getFeatureFlag(key)?.value ?: false
+        return wpComRemoteFeatureFlagRepository.getFeatureFlagByKey(key)?.value ?: false
     }
 }
