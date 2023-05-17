@@ -20,6 +20,7 @@ import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Devices
@@ -33,15 +34,16 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 fun PrivacyBannerScreen() {
     Box(Modifier.background(MaterialTheme.colors.surface)) {
         Column(
-            Modifier.padding(16.dp)
+            Modifier.padding(vertical = 16.dp)
         ) {
             Text(
                 text = stringResource(R.string.privacy_banner_title),
+                modifier = Modifier.padding(horizontal = 16.dp),
                 style = MaterialTheme.typography.h6
             )
 
             Text(
-                modifier = Modifier.padding(top = 8.dp),
+                modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp),
                 style = MaterialTheme.typography.body2,
                 text = stringResource(R.string.privacy_banner_description)
             )
@@ -54,10 +56,12 @@ fun PrivacyBannerScreen() {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
+                    modifier = Modifier.padding(start = 16.dp),
                     text = stringResource(R.string.privacy_banner_analytics),
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Switch(
+                    modifier = Modifier.padding(end = 16.dp),
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = MaterialTheme.colors.primary
                     ),
@@ -67,14 +71,14 @@ fun PrivacyBannerScreen() {
             }
 
             Text(
-                modifier = Modifier.padding(top = 8.dp, end = 64.dp),
+                modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 64.dp),
                 style = textAppearanceWooBody2(),
                 text = stringResource(R.string.privacy_banner_analytics_description)
             )
 
             Row(
                 modifier = Modifier
-                    .padding(top = 16.dp)
+                    .padding(top = 16.dp, start = 16.dp, end = 16.dp)
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -102,6 +106,9 @@ fun PrivacyBannerScreen() {
                     modifier = Modifier.weight(1f),
                     onClick = { /*TODO*/ },
                     shape = MaterialTheme.shapes.small.copy(CornerSize(8.dp)),
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = Color.White,
+                    ),
                     elevation = ButtonDefaults.elevation(
                         defaultElevation = 0.dp,
                         pressedElevation = 0.dp,
