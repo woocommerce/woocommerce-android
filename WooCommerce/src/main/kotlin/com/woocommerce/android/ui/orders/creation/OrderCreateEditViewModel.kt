@@ -300,7 +300,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     }
                     is CodeScannerStatus.Success -> {
                         viewState = viewState.copy(isUpdatingOrderDraft = true)
-                        fetchProductBySKU(status.code!!)
+                        fetchProductBySKU(status.code)
                     }
                 }
             }
