@@ -62,8 +62,8 @@ class OrderCreateCouponEditionFragment : BaseFragment() {
                 WooThemeWithBackground {
                     OrderCreateCouponEditionScreen(
                         state = state,
-                        onCouponCodeChanged = { viewModel.onCouponCodeChanged(it) },
-                        onCouponRemoved = { viewModel.onCouponRemoved() }
+                        onCouponCodeChanged = viewModel::onCouponCodeChanged,
+                        onCouponRemoved = viewModel::onCouponRemoved
                     )
                 }
             }
