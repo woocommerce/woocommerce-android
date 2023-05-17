@@ -33,13 +33,6 @@ class WPComRemoteFeatureFlagRepository @Inject constructor(
         }
     }
 
-    fun getFeatureFlagByKey(key: String): RemoteFeatureFlag? {
-        val flag = featureFlagsStore.getFeatureFlagsByKey(key).firstOrNull()
-        return flag?.let { RemoteFeatureFlag(key = it.key, value = it.value) }
-    }
-
-    class RemoteFeatureFlag(
-        val key: String,
-        val value: Boolean
-    )
+    fun isRemoteFeatureFlagEnabled(key: String): Boolean =
+        featureFlagsStore.getFeatureFlagsByKey(key).firstOrNull()?.value ?: false
 }
