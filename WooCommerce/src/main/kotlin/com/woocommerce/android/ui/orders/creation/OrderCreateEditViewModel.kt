@@ -241,7 +241,15 @@ class OrderCreateEditViewModel @Inject constructor(
         )
         viewState = viewState.copy(isEditable = false)
         _orderDraft.update {
-            it.removeItem(item)
+            val order = it.removeItem(item)
+
+            // removing coupons in case no products are added to order,
+            // otherwise API won't accept the OrderUpdate request.
+            if (!order.hasProducts()) {
+                order.copy(couponLines = emptyList())
+            } else {
+                order
+            }
         }
     }
 
@@ -253,6 +261,13 @@ class OrderCreateEditViewModel @Inject constructor(
                 KEY_PRODUCT_COUNT to selectedItems.size
             )
         )
+
+        // removing coupons in case no products are added to order, otherwise API won't accept the OrderUpdate request.
+        if (selectedItems.isEmpty()) {
+            _orderDraft.update {
+                it.copy(couponLines = emptyList())
+            }
+        }
 
         viewModelScope.launch {
             _orderDraft.value.items.apply {
@@ -285,9 +300,25 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
 
                 _orderDraft.update { order -> order.updateItems(order.items + itemsToAdd) }
+                updateCouponButtonVisibility()
             }
         }
     }
+
+    private fun updateCouponLines() {
+        if (orderDraft.value?.items?.isEmpty() == true) {
+            _orderDraft.update {
+                it.copy(couponLines = emptyList())
+            }
+        }
+    }
+
+    private fun updateCouponButtonVisibility() {
+        val orderHasItems = orderDraft.value?.items?.any { it.quantity > 0 } ?: false
+        viewState = viewState.copy(isCouponButtonEnabled = orderHasItems)
+    }
+
+    private fun Order.hasProducts() = items.any { it.quantity > 0 }
 
     fun startScan() {
         launch {
@@ -498,6 +529,8 @@ class OrderCreateEditViewModel @Inject constructor(
                                     updateStatus.order
                                 }
                             }
+                            updateCouponButtonVisibility()
+                            updateCouponLines()
                         }
                     }
                 }
@@ -642,6 +675,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val willUpdateOrderDraft: Boolean = false,
         val isUpdatingOrderDraft: Boolean = false,
         val showOrderUpdateSnackbar: Boolean = false,
+        val isCouponButtonEnabled: Boolean = false,
         val isEditable: Boolean = true,
         val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None
     ) : Parcelable {
