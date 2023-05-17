@@ -196,7 +196,7 @@ class OrderCreateEditRepository @Inject constructor(
     }
 
     private fun Order.CouponLine.toDataModel() =
-        WCCouponLine(id = id, code = code, discount = discount, discountTax = null)
+        WCCouponLine(code = code, id = null, discount = null, discountTax = null)
 
     companion object {
         const val AUTO_DRAFT_SUPPORTED_VERSION = "6.3.0"
