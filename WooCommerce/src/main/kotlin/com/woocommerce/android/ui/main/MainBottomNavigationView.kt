@@ -114,6 +114,11 @@ class MainBottomNavigationView @JvmOverloads constructor(
         moreMenuBadge.isVisible = true
     }
 
+    fun showMoreMenuNewFeatureBadge() {
+        moreMenuBadge.backgroundColor = ContextCompat.getColor(context, R.color.color_secondary)
+        moreMenuBadge.isVisible = true
+    }
+
     fun hideMoreMenuBadge() {
         moreMenuBadge.isVisible = false
     }

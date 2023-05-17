@@ -16,7 +16,6 @@ enum class FeatureFlag {
     NATIVE_STORE_CREATION_FLOW,
     IAP_FOR_STORE_CREATION,
     IPP_TAP_TO_PAY,
-    IPP_FEEDBACK_BANNER,
     IPP_UK,
     STORE_CREATION_ONBOARDING,
     FREE_TRIAL_M2,
@@ -28,6 +27,7 @@ enum class FeatureFlag {
     COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT,
     STORE_CREATION_PROFILER,
     EU_SHIPPING_NOTIFICATION,
+    PRIVACY_CHOICES,
     IPP_ADD_PRODUCT_VIA_BARCODE_SCANNER;
 
     fun isEnabled(context: Context? = null): Boolean {
@@ -41,7 +41,6 @@ enum class FeatureFlag {
             ORDER_CREATION_CUSTOMER_SEARCH,
             UNIFIED_ORDER_EDITING,
             NATIVE_STORE_CREATION_FLOW,
-            IPP_FEEDBACK_BANNER,
             FREE_TRIAL_M2,
             STORE_CREATION_ONBOARDING,
             REST_API_I2,
@@ -51,13 +50,14 @@ enum class FeatureFlag {
             IPP_UK,
             ANALYTICS_HUB_FEEDBACK_BANNER,
             STORE_CREATION_PROFILER,
-            COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT -> true
+            COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT,
+            EU_SHIPPING_NOTIFICATION -> true
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             IPP_TAP_TO_PAY,
-            IPP_ADD_PRODUCT_VIA_BARCODE_SCANNER,
-            EU_SHIPPING_NOTIFICATION -> PackageUtils.isDebugBuild()
+            PRIVACY_CHOICES,
+            IPP_ADD_PRODUCT_VIA_BARCODE_SCANNER -> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
         }

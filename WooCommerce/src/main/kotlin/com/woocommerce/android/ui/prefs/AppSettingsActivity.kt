@@ -18,7 +18,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivityAppSettingsBinding
-import com.woocommerce.android.push.NotificationMessageHandler
+import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.appwidgets.WidgetUpdater
@@ -124,14 +124,6 @@ class AppSettingsActivity :
         if (AppPrefs.isProductAddonsEnabled != enabled) {
             isBetaOptionChanged = true
             AppPrefs.isProductAddonsEnabled = enabled
-            setResult(RESULT_CODE_BETA_OPTIONS_CHANGED)
-        }
-    }
-
-    override fun onCouponsOptionChanged(enabled: Boolean) {
-        if (AppPrefs.isCouponsEnabled != enabled) {
-            isBetaOptionChanged = true
-            AppPrefs.isCouponsEnabled = enabled
             setResult(RESULT_CODE_BETA_OPTIONS_CHANGED)
         }
     }

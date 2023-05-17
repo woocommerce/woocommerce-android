@@ -64,7 +64,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAd
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressSuggestionFragment.Companion.SUGGESTED_ADDRESS_DISCARDED
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -206,6 +205,16 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
             }
         }
 
+        viewModel.shouldDisplayShippingNotice.observe(viewLifecycleOwner) {
+            if (it.not()) return@observe
+
+            with(binding.shippingNoticeBanner) {
+                isVisible = AppPrefs.isEUShippingNoticeDismissed.not()
+                onLearnMoreClicked = viewModel::onShippingNoticeLearnMoreClicked
+                message = getString(R.string.shipping_notice_banner_warning_content)
+            }
+        }
+
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
@@ -274,7 +283,8 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
                             originCountryCode = event.originCountryCode,
                             destinationCountryCode = event.destinationCountryCode,
                             shippingPackages = event.shippingPackages.toTypedArray(),
-                            customsPackages = event.customsPackages.toTypedArray()
+                            customsPackages = event.customsPackages.toTypedArray(),
+                            isEUShippingScenario = event.isEUShippingScenario
                         )
                     findNavController().navigateSafely(action)
                 }
@@ -313,12 +323,6 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
     }
 
     private fun initializeViews(binding: FragmentCreateShippingLabelBinding) {
-        if (FeatureFlag.EU_SHIPPING_NOTIFICATION.isEnabled()) {
-            with(binding.shippingNoticeBanner) {
-                isVisible = AppPrefs.isEUShippingNoticeDismissed.not()
-                setLearnMoreClickListener(viewModel::onShippingNoticeLearnMoreClicked)
-            }
-        }
 
         binding.originStep.continueButtonClickListener = {
             viewModel.onContinueButtonTapped(

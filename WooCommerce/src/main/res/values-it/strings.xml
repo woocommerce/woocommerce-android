@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-26 19:54:04+0000
+Translation-Revision-Date: 2023-05-10 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="shipping_notice_dismiss">Ignora</string>
+    <string name="shipping_notice_learn_more">Scopri di più</string>
+    <string name="shipping_notice_banner_content">Quando spedisci in Paesi che seguono le norme doganali dell\'Unione Europea (UE), devi fornire una descrizione chiara e specifica per ogni articolo. In caso contrario, le spedizioni potrebbero subire dei ritardi o essere fermate alla dogana.</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Resta aggiornato e aumenta la sicurezza del negozio. Esplora Jetpack ora.</string>
+    <string name="jetpack_benefits_bottom_banner_title">Ricevi notifiche sugli ordini e altro ancora</string>
+    <string name="store_onboarding_setting_description">Mostra o nascondi l\'elenco delle impostazioni del negozio</string>
+    <string name="store_onboarding_setting_title">Elenco delle impostazioni del negozio</string>
+    <string name="store_onboarding_dialog_description">Puoi ripristinarlo quando lo necessiti da Menu &gt; Impostazioni &gt; Negozio</string>
+    <string name="store_onboarding_dialog_title">Nascondi l\'elenco delle impostazioni del negozio</string>
+    <string name="store_onboarding_menu_hide_store_setup">Nascondi l\'elenco delle impostazioni del negozio</string>
+    <string name="card_reader_tap_to_pay_successful_refund_action_label">Visualizza ordine</string>
+    <string name="card_reader_tap_to_pay_successful_refund_message">Il pagamento di Tocca per pagare di prova è stato rimborsato correttamente</string>
+    <string name="card_reader_tap_to_pay_explanation_refund_failed">Rimborso non riuscito. Prova a eseguire manualmente il rimborso</string>
+    <string name="card_reader_tap_to_pay_explanation_refunding_payment">Rimborso del pagamento di prova in corso…</string>
+    <string name="signup_terms_of_service">Continuando, accetti i nostri &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Termini di servizio.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="signup_get_started_create_account_label">Per prima cosa, crea un account. </string>
+    <string name="signup_create_password_label">Crea la tua password</string>
     <string name="component_type_categories">Categorie</string>
     <string name="component_type_products">Prodotti</string>
     <string name="component_default_option">Opzione predefinita</string>
@@ -228,7 +245,7 @@ Language: it
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">Si è verificato un problema. Riprova più tardi.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">Prova un pagamento</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find"> Puoi trovare la funzione Tocca per pagare su Android in\nMenu &gt; Pagamenti o Ricevi pagamenti e\nscegli Tocca per pagare.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Prova un pagamento utilizzando la tua carta ed\nesegui il rimborso una volta terminato.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund">Prova un pagamento usando la tua carta e\nverrà rimborsato quando hai terminato.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Il tuo telefono è pronto per Tocca per pagare.\nIl tuo cliente può toccare le sue carte\npresenti sul telefono per pagare.</string>
     <string name="card_reader_tap_to_pay_explanation_title">Ricevi pagamenti con carta\ncon il tuo telefono</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tocca per pagare</string>
@@ -497,14 +514,12 @@ Language: it
     <string name="signup_password_too_short">La password è troppo breve. Per favore scegli una password composta da almeno 6 caratteri.</string>
     <string name="signup_email_invalid_input">Inserisci un indirizzo e-mail valido.</string>
     <string name="signup_email_exist_input">Esiste già un account con questa e-mail.</string>
-    <string name="signup_already_registered">Per prima cosa, crea un account. Registrazione già effettuata? &lt;a href=\'login\'&gt;&lt;u&gt;Accesso&lt;/u&gt;&lt;/a&gt;</string>
     <string name="login_create_an_account">Crea un account</string>
     <string name="login_try_another_email">Prova con un altro indirizzo</string>
     <string name="date_timeframe_custom_date_range_title">Intervallo di date personalizzato</string>
     <string name="date_timeframe_custom">Personalizza</string>
     <string name="what_is_wordpress_link">Cos\'è WordPress.com?</string>
     <string name="signup_creating_account_loading_message">Creazione di un nuovo account</string>
-    <string name="signup_terms_of_service">Continuando, accetti i nostri &lt;u&gt;Termini di servizio.&lt;/u&gt;</string>
     <string name="signup_password_hint">Scegli una password</string>
     <string name="signup_email_address_hint">Il tuo indirizzo e-mail</string>
     <string name="signup_get_started_label">Crea il tuo sito \nin pochi minuti</string>
@@ -808,8 +823,6 @@ Language: it
     <string name="coupon_details_copy_error">Errore durante la copia del codice promozionale negli appunti.</string>
     <string name="coupon_details_copy_success">Codice promozionale copiato negli appunti.</string>
     <string name="coupon_details_copy_clipboard_label">Codice promozionale</string>
-    <string name="coupon_beta_features_subheading">Verifica la gestione dei codici promozionali nell\'app</string>
-    <string name="coupon_beta_features_heading">Gestione dei codici promozionali</string>
     <string name="coupon_summary_loading_failure">Caricamento del riepilogo dei codici promozionali non riuscito</string>
     <string name="coupon_details_expiration_date">Scade il giorno %1$s</string>
     <string name="coupon_summary_template">%1$s di sconto su %2$s</string>
@@ -821,7 +834,6 @@ Language: it
     <string name="coupon_details_menu_share">Condividi codice promozionale</string>
     <string name="coupon_details_menu_copy">Copia codice promozionale</string>
     <string name="inbox_note_survey_actioned">Grazie per il feedback!</string>
-    <string name="beta_features_coupons">Gestione dei codici promozionali</string>
     <string name="card_reader_connect_permission_rationale_hint">I pagamenti tramite il lettore di carte richiedono l\'autorizzazione della posizione precisa</string>
     <string name="card_reader_connect_permission_rationale_header">Accesso alla posizione richiesto</string>
     <string name="simple_payments_share_payment_dialog_title">Pagamento: %s</string>
@@ -1105,8 +1117,6 @@ Language: it
     <string name="orderfilters_show_orders_button">Mostra ordini</string>
     <string name="orderlist_filters_title">Ordini filtrati</string>
     <string name="orderlist_no_filters_title">Tutti gli ordini</string>
-    <string name="jetpack_benefits_bottom_banner_subtitle">Scopri i vantaggi</string>
-    <string name="jetpack_benefits_bottom_banner_title">Vivi l\'esperienza completa con Jetpack</string>
     <string name="product_description_hint_with_title">Raccontaci di più su %s…</string>
     <string name="product_description_hint_no_title">Descrivi il prodotto ai futuri clienti…</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">Numero di serie del lettore copiato negli appunti</string>
