@@ -1,18 +1,22 @@
 package com.woocommerce.android.ui.prefs.privacy.banner
 
 import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
+import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,64 +31,87 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun PrivacyBannerScreen() {
-    Column(
-        Modifier.padding(16.dp)
-    ) {
-        Text(
-            text = stringResource(R.string.privacy_banner_title),
-            style = MaterialTheme.typography.h5
-        )
-
-        Text(
-            modifier = Modifier.padding(top = 8.dp),
-            style = MaterialTheme.typography.body2,
-            text = stringResource(R.string.privacy_banner_description)
-        )
-
-        Row(
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .fillMaxWidth()
-                .clickable { },
-            verticalAlignment = Alignment.CenterVertically,
+    Box(Modifier.background(MaterialTheme.colors.surface)) {
+        Column(
+            Modifier.padding(16.dp)
         ) {
             Text(
-                text = stringResource(R.string.privacy_banner_analytics),
+                text = stringResource(R.string.privacy_banner_title),
+                style = MaterialTheme.typography.h6
             )
-            Spacer(modifier = Modifier.weight(1f))
-            Switch(
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = MaterialTheme.colors.primary
-                ),
-                checked = true,
-                onCheckedChange = {},
+
+            Text(
+                modifier = Modifier.padding(top = 8.dp),
+                style = MaterialTheme.typography.body2,
+                text = stringResource(R.string.privacy_banner_description)
             )
-        }
 
-        Text(
-            modifier = Modifier.padding(top = 16.dp),
-            style = textAppearanceWooBody2(),
-            text = stringResource(R.string.privacy_banner_analytics_description)
-        )
-
-        Row(
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Button(
-                modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.outlinedButtonColors(), onClick = { /*TODO*/ }
+            Row(
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .fillMaxWidth()
+                    .clickable { },
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(stringResource(R.string.privacy_banner_go_to_settings))
+                Text(
+                    text = stringResource(R.string.privacy_banner_analytics),
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Switch(
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = MaterialTheme.colors.primary
+                    ),
+                    checked = true,
+                    onCheckedChange = {},
+                )
             }
-            Spacer(modifier = Modifier.padding(horizontal = 4.dp))
-            Button(
-                modifier = Modifier.weight(1f),
-                onClick = { /*TODO*/ }
+
+            Text(
+                modifier = Modifier.padding(top = 8.dp, end = 64.dp),
+                style = textAppearanceWooBody2(),
+                text = stringResource(R.string.privacy_banner_analytics_description)
+            )
+
+            Row(
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(stringResource(R.string.privacy_banner_save))
+                Button(
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = MaterialTheme.colors.surface,
+                        contentColor = contentColorFor(MaterialTheme.colors.surface)
+                    ),
+                    border = ButtonDefaults.outlinedBorder,
+                    shape = MaterialTheme.shapes.small.copy(CornerSize(8.dp)),
+                    elevation = ButtonDefaults.elevation(
+                        defaultElevation = 0.dp,
+                        pressedElevation = 0.dp,
+                        disabledElevation = 0.dp,
+                        hoveredElevation = 0.dp,
+                        focusedElevation = 0.dp
+                    ),
+                    onClick = { /*TODO*/ }
+                ) {
+                    Text(stringResource(R.string.privacy_banner_settings))
+                }
+                Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+                Button(
+                    modifier = Modifier.weight(1f),
+                    onClick = { /*TODO*/ },
+                    shape = MaterialTheme.shapes.small.copy(CornerSize(8.dp)),
+                    elevation = ButtonDefaults.elevation(
+                        defaultElevation = 0.dp,
+                        pressedElevation = 0.dp,
+                        disabledElevation = 0.dp,
+                        hoveredElevation = 0.dp,
+                        focusedElevation = 0.dp
+                    ),
+                ) {
+                    Text(stringResource(R.string.privacy_banner_save))
+                }
             }
         }
     }

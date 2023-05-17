@@ -1923,7 +1923,7 @@
     <string name="privacy_banner_title">Manage privacy</string>
     <string name="privacy_banner_analytics">Analytics</string>
     <string name="privacy_banner_analytics_description">Allow us to optimize performance by collecting information on how users interact with our mobile apps.</string>
-    <string name="privacy_banner_go_to_settings">Go to settings</string>
+    <string name="privacy_banner_settings">Settings</string>
     <string name="privacy_banner_save">Save</string>
     <string name="settings_tracking">We use other tracking tools, including some from third parties. Read about these and how to control them.</string>
     <string name="settings_footer">Made with love by Automattic. %1$s</string>
