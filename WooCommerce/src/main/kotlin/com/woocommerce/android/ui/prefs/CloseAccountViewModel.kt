@@ -37,7 +37,7 @@ class CloseAccountViewModel @Inject constructor(
     fun onConfirmCloseAccount() {
         launch {
             _viewState.value = _viewState.value?.copy(isLoading = true)
-            delay(3000)
+            @Suppress("MagicNumber") delay(3000)
             _viewState.value = _viewState.value?.copy(
                 title = R.string.settings_close_account_error_dialog_title,
                 description = R.string.settings_close_account_error_dialog_description,
