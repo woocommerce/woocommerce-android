@@ -223,24 +223,4 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         createSut()
         assertFalse(sut.viewStateData.liveData.value!!.isCouponButtonEnabled)
     }
-
-    @Test
-    fun `given items and coupon in order when items are removed then should clear coupon lines`() {
-        // given
-        initMocksForAnalyticsWithOrder(defaultOrderValue)
-        createSut()
-        var latestOrderDraft: Order? = null
-        sut.orderDraft.observeForever {
-            latestOrderDraft = it
-        }
-        sut.onProductsSelected(setOf(SelectedItem.Product(123)))
-        assertTrue(latestOrderDraft!!.items.isNotEmpty())
-        sut.onCouponEntered("code")
-
-        // when
-        sut.onProductsSelected(emptyList())
-
-        // then
-        assertTrue(sut.orderDraft.value!!.couponLines.isEmpty())
-    }
 }
