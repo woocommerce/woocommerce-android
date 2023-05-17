@@ -338,8 +338,6 @@ class OrderCreateEditViewModel @Inject constructor(
             }
         }
     }
-
-
     private fun Order.removeItem(item: Order.Item) = adjustProductQuantity(item.itemId, -item.quantity.toInt())
 
     fun onCustomerAddressEdited(customerId: Long?, billingAddress: Address, shippingAddress: Address) {
