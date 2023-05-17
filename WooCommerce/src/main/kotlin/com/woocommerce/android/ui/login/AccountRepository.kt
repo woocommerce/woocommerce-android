@@ -97,9 +97,15 @@ class AccountRepository @Inject constructor(
                 CloseAccountErrorType.GENERIC_ERROR -> CloseAccountResult.Error(hasActiveStores = false)
             }
         } else {
-            selectedSite.reset()
+            val event: OnAccountChanged = dispatcher.dispatchAndAwait(AccountActionBuilder.newSignOutAction())
+            if (event.isError) {
+                WooLog.d(LOGIN, "Error while trying to log out after successfully closing the account")
+                CloseAccountResult.Error(hasActiveStores = false)
+            } else {
+                selectedSite.reset()
                 cleanup()
                 CloseAccountResult.Success
+            }
         }
     }
 
