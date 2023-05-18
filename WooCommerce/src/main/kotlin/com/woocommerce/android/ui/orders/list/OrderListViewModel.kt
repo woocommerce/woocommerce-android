@@ -49,7 +49,6 @@ import com.woocommerce.android.ui.payments.feedback.ipp.MarkFeedbackBannerAsDism
 import com.woocommerce.android.ui.payments.feedback.ipp.MarkFeedbackBannerAsDismissedForever
 import com.woocommerce.android.ui.payments.feedback.ipp.MarkIPPFeedbackSurveyAsCompleted
 import com.woocommerce.android.ui.payments.feedback.ipp.ShouldShowFeedbackBanner
-import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.util.WooLog

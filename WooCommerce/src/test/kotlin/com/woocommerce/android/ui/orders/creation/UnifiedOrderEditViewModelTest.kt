@@ -26,8 +26,6 @@ import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers.anyBoolean
-import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
@@ -427,7 +425,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     @Test
     fun `given sku, when view model init, then fetch product information`() {
         testBlocking {
-            val navArgs = OrderCreateEditFormFragmentArgs(OrderCreateEditViewModel.Mode.Creation, "123").initSavedStateHandle()
+            val navArgs = OrderCreateEditFormFragmentArgs(
+                OrderCreateEditViewModel.Mode.Creation, "123"
+            ).initSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
                     currencyCode = "",
@@ -451,7 +451,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     @Test
     fun `given empty sku, when view model init, then do not fetch product information`() {
         testBlocking {
-            val navArgs = OrderCreateEditFormFragmentArgs(OrderCreateEditViewModel.Mode.Creation, "").initSavedStateHandle()
+            val navArgs = OrderCreateEditFormFragmentArgs(
+                OrderCreateEditViewModel.Mode.Creation, ""
+            ).initSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
                     currencyCode = "",
