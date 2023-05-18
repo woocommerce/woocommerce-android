@@ -105,7 +105,7 @@
                 android:name="mode"
                 app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
             <argument
-                android:name="barcode"
+                android:name="sku"
                 app:argType="string"
                 app:nullable="true"/>
         </action>

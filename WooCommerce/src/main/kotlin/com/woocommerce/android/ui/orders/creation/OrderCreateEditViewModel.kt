@@ -170,8 +170,8 @@ class OrderCreateEditViewModel @Inject constructor(
                 monitorOrderChanges()
                 // Presence of barcode indicates that this screen was called from the
                 // Order listing screen after scanning the barcode.
-                args.barcode?.let { code ->
-                    fetchProductBySKU(code)
+                args.sku?.let { sku ->
+                    fetchProductBySKU(sku)
                 }
             }
             is Mode.Edit -> {
