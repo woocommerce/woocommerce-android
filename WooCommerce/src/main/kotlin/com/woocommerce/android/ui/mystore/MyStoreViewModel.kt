@@ -29,7 +29,9 @@ import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.Visito
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.VisitorsStatsSuccess
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
+import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -73,6 +75,7 @@ class MyStoreViewModel @Inject constructor(
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher,
+    shouldShowPrivacyBanner: ShouldShowPrivacyBanner,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
@@ -125,6 +128,14 @@ class MyStoreViewModel @Inject constructor(
             }
         }
         observeTopPerformerUpdates()
+
+        if (FeatureFlag.PRIVACY_CHOICES.isEnabled()) {
+            shouldShowPrivacyBanner().let {
+                if (it) {
+                    triggerEvent(MyStoreEvent.ShowPrivacyBanner)
+                }
+            }
+        }
     }
 
     override fun onCleared() {
@@ -403,5 +414,7 @@ class MyStoreViewModel @Inject constructor(
         ) : MyStoreEvent()
 
         data class OpenAnalytics(val analyticsPeriod: SelectionType) : MyStoreEvent()
+
+        object ShowPrivacyBanner : MyStoreEvent()
     }
 }

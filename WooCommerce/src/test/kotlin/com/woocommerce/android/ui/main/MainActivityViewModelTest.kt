@@ -536,8 +536,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 unseenReviewsCountHandler,
                 mock {
                     onBlocking { invoke(any()) } doReturn emptyFlow()
-                },
-                mock()
+                }
             )
         )
     }

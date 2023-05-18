@@ -465,6 +465,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             usageTracksEventEmitter,
             analyticsTrackerWrapper,
             myStoreTransactionLauncher = mock(),
+            mock(),
         )
     }
 
