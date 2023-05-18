@@ -168,6 +168,11 @@ class OrderCreateEditViewModel @Inject constructor(
                     )
                 }
                 monitorOrderChanges()
+                // Presence of barcode indicates that this screen was called from the
+                // Order listing screen after scanning the barcode.
+                args.barcode?.let { code ->
+                    fetchProductBySKU(code)
+                }
             }
             is Mode.Edit -> {
                 viewModelScope.launch {
@@ -180,11 +185,6 @@ class OrderCreateEditViewModel @Inject constructor(
                             multipleLinesContext = determineMultipleLinesContext(order)
                         )
                         monitorOrderChanges()
-                        // Presence of barcode indicates that this screen was called from the
-                        // Order listing screen after scanning the barcode.
-                        args.barcode?.let { code ->
-                            fetchProductBySKU(code)
-                        }
                     }
                 }
             }
