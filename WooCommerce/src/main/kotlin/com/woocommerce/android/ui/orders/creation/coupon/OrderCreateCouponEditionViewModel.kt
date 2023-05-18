@@ -9,12 +9,13 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
 class OrderCreateCouponEditionViewModel @Inject constructor(
+    private val validator: CouponValidator,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
@@ -23,22 +24,47 @@ class OrderCreateCouponEditionViewModel @Inject constructor(
         viewModelScope,
         navArgs.couponCode,
         String::class.java,
-        "coupon_code"
+        "key_coupon_code"
     )
 
-    val viewState = couponCode.map { code ->
+    private val validationState = savedState.getNullableStateFlow(
+        viewModelScope,
+        ValidationState.IDLE,
+        ValidationState::class.java,
+        "key_validation_state"
+    )
+
+    val viewState = combine(couponCode, validationState) { code, validation ->
+        val isDoneButtonEnabled = code?.isNotNullOrEmpty() == true && validation == ValidationState.IDLE
         ViewState(
-            isDoneButtonEnabled = code?.isNotNullOrEmpty() ?: false,
+            isDoneButtonEnabled = isDoneButtonEnabled,
             couponCode = code ?: "",
-            isRemoveButtonVisible = navArgs.couponCode.isNotNullOrEmpty()
+            isRemoveButtonVisible = navArgs.couponCode.isNotNullOrEmpty(),
+            validationState = validation
         )
     }.asLiveData()
 
-    fun onDoneClicked() {
-        triggerEvent(UpdateCouponCode(couponCode.value))
+    suspend fun onDoneClicked() {
+        validationState.update {
+            ValidationState.IN_PROGRESS
+        }
+        val couponCode = couponCode.value
+        if (couponCode != null && validator.isCouponValid(couponCode)) {
+            validationState.update {
+                ValidationState.IDLE
+            }
+            triggerEvent(UpdateCouponCode(couponCode))
+        } else {
+            validationState.update {
+                ValidationState.ERROR
+            }
+        }
     }
 
     fun onCouponCodeChanged(newCode: String) {
+        validationState.update {
+            ValidationState.IDLE
+        }
         couponCode.update {
             newCode
         }
@@ -55,7 +81,10 @@ class OrderCreateCouponEditionViewModel @Inject constructor(
         val isDoneButtonEnabled: Boolean = false,
         val couponCode: String = "",
         val isRemoveButtonVisible: Boolean = false,
+        val validationState: ValidationState = ValidationState.IDLE,
     )
+
+    enum class ValidationState { IDLE, IN_PROGRESS, ERROR }
 
     data class UpdateCouponCode(val couponCode: String?) : MultiLiveEvent.Event()
 }

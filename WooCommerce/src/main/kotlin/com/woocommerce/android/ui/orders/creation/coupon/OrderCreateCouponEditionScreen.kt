@@ -18,6 +18,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
+import com.woocommerce.android.ui.orders.creation.coupon.OrderCreateCouponEditionViewModel.ValidationState.ERROR
+import com.woocommerce.android.ui.orders.creation.coupon.OrderCreateCouponEditionViewModel.ValidationState.IDLE
 
 @Composable
 fun OrderCreateCouponEditionScreen(
@@ -32,11 +34,13 @@ fun OrderCreateCouponEditionScreen(
             .fillMaxWidth()
     ) {
         val focusRequester = remember { FocusRequester() }
+        val isError = state.value?.validationState == ERROR
         WCOutlinedTextField(
             modifier = Modifier.focusRequester(focusRequester),
             value = state.value?.couponCode ?: "",
             onValueChange = { onCouponCodeChanged(it) },
-            label = stringResource(id = R.string.coupon_edit_code_hint)
+            label = stringResource(id = R.string.coupon_edit_code_hint),
+            isError = isError,
         )
         if (state.value?.isRemoveButtonVisible == true) {
             WCColoredButton(
@@ -58,7 +62,7 @@ fun OrderCreateCouponEditionScreenPreview() {
     OrderCreateCouponEditionScreen(
         state = object : State<OrderCreateCouponEditionViewModel.ViewState?> {
             override val value: OrderCreateCouponEditionViewModel.ViewState
-                get() = OrderCreateCouponEditionViewModel.ViewState(true, "code", true)
+                get() = OrderCreateCouponEditionViewModel.ViewState(true, "code", true, IDLE)
         },
         onCouponCodeChanged = {},
         onCouponRemoved = {}
