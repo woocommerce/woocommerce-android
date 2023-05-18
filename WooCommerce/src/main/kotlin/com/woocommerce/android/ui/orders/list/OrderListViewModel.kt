@@ -36,6 +36,8 @@ import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.creation.CodeScanner
+import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
@@ -47,6 +49,7 @@ import com.woocommerce.android.ui.payments.feedback.ipp.MarkFeedbackBannerAsDism
 import com.woocommerce.android.ui.payments.feedback.ipp.MarkFeedbackBannerAsDismissedForever
 import com.woocommerce.android.ui.payments.feedback.ipp.MarkIPPFeedbackSurveyAsCompleted
 import com.woocommerce.android.ui.payments.feedback.ipp.ShouldShowFeedbackBanner
+import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.util.WooLog
@@ -105,6 +108,7 @@ class OrderListViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val appPrefs: AppPrefs,
     private val feedbackPrefs: FeedbackPrefs,
+    private val codeScanner: CodeScanner,
 ) : ScopedViewModel(savedState), LifecycleOwner {
     private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -274,6 +278,21 @@ class OrderListViewModel @Inject constructor(
             when (orderListRepository.fetchOrderStatusOptionsFromApi()) {
                 SUCCESS -> _orderStatusOptions.value = orderListRepository.getCachedOrderStatusOptions()
                 else -> { /* do nothing */
+                }
+            }
+        }
+    }
+
+    fun startScan() {
+        launch {
+            codeScanner.startScan().collect { status ->
+                when (status) {
+                    is CodeScannerStatus.Failure -> {
+                        // TODO handle failure case
+                    }
+                    is CodeScannerStatus.Success -> {
+                        triggerEvent(OrderListEvent.OnBarcodeScanned(status.code))
+                    }
                 }
             }
         }
@@ -718,6 +737,8 @@ class OrderListViewModel @Inject constructor(
         object ShowIPPDismissConfirmationDialog : OrderListEvent()
 
         data class OpenIPPFeedbackSurveyLink(val url: String) : OrderListEvent()
+
+        data class OnBarcodeScanned(val code: String) : OrderListEvent()
     }
 
     @Parcelize
