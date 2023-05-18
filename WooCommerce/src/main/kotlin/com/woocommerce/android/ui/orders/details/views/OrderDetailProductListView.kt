@@ -16,7 +16,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.ViewAddonClickListener
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
+import com.woocommerce.android.ui.orders.details.OrderProduct
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailProductItemListAdapter
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailProductListAdapter
 import com.woocommerce.android.util.StringUtils
@@ -31,7 +31,7 @@ class OrderDetailProductListView @JvmOverloads constructor(
     private val binding = OrderDetailProductListBinding.inflate(LayoutInflater.from(ctx), this)
 
     fun updateProductItemsList(
-        orderProductItems: List<OrderDetailViewModel.OrderProduct>,
+        orderProductItems: List<OrderProduct>,
         productImageMap: ProductImageMap,
         formatCurrencyForDisplay: (BigDecimal) -> String,
         productClickListener: OrderProductActionListener,

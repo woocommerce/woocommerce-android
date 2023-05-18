@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderInfo
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.ViewState
 import com.woocommerce.android.ui.orders.details.OrderDetailsTransactionLauncher
+import com.woocommerce.android.ui.orders.details.OrderProduct
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
@@ -255,7 +256,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
         // product list should not be empty when shipping labels are not available and products are not refunded
-        val products = ArrayList<OrderDetailViewModel.OrderProduct>()
+        val products = ArrayList<OrderProduct>()
         viewModel.productList.observeForever {
             it?.let { products.addAll(it) }
         }

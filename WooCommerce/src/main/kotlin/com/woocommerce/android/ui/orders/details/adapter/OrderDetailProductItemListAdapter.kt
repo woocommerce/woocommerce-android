@@ -12,13 +12,13 @@ import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderDetailProductItemView
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.ViewAddonClickListener
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
+import com.woocommerce.android.ui.orders.details.OrderProduct
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 
 class OrderDetailProductItemListAdapter(
-    private val productItems: List<OrderDetailViewModel.OrderProduct>,
+    private val productItems: List<OrderProduct>,
     private val productImageMap: ProductImageMap,
     private val formatCurrencyForDisplay: (BigDecimal) -> String,
     private val productItemListener: OrderProductActionListener,
@@ -26,7 +26,7 @@ class OrderDetailProductItemListAdapter(
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private inner class ProductItemViewHolder(val view: OrderDetailProductItemView) : RecyclerView.ViewHolder(view) {
         fun onBind(
-            productItem: OrderDetailViewModel.OrderProduct.ProductItem,
+            productItem: OrderProduct.ProductItem,
             productImageMap: ProductImageMap,
             formatCurrencyForDisplay: (BigDecimal) -> String,
             productItemListener: OrderProductActionListener,
@@ -49,7 +49,7 @@ class OrderDetailProductItemListAdapter(
     private inner class GroupedItemViewHolder(val binding: OrderDetailProductGroupItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun onBind(
-            groupedItem: OrderDetailViewModel.OrderProduct.GroupedProductItem,
+            groupedItem: OrderProduct.GroupedProductItem,
             productImageMap: ProductImageMap,
             formatCurrencyForDisplay: (BigDecimal) -> String,
             productItemListener: OrderProductActionListener,
@@ -106,8 +106,8 @@ class OrderDetailProductItemListAdapter(
 
     override fun getItemViewType(position: Int): Int {
         return when (productItems[position]) {
-            is OrderDetailViewModel.OrderProduct.GroupedProductItem -> GROUPED_PRODUCT_ITEM_VIEW
-            is OrderDetailViewModel.OrderProduct.ProductItem -> PRODUCT_ITEM_VIEW
+            is OrderProduct.GroupedProductItem -> GROUPED_PRODUCT_ITEM_VIEW
+            is OrderProduct.ProductItem -> PRODUCT_ITEM_VIEW
         }
     }
 
@@ -137,7 +137,7 @@ class OrderDetailProductItemListAdapter(
         when (getItemViewType(position)) {
             GROUPED_PRODUCT_ITEM_VIEW -> {
                 (holder as GroupedItemViewHolder).onBind(
-                    productItems[position] as OrderDetailViewModel.OrderProduct.GroupedProductItem,
+                    productItems[position] as OrderProduct.GroupedProductItem,
                     productImageMap,
                     formatCurrencyForDisplay,
                     productItemListener,
@@ -146,7 +146,7 @@ class OrderDetailProductItemListAdapter(
             }
             PRODUCT_ITEM_VIEW -> {
                 (holder as ProductItemViewHolder).onBind(
-                    productItems[position] as OrderDetailViewModel.OrderProduct.ProductItem,
+                    productItems[position] as OrderProduct.ProductItem,
                     productImageMap,
                     formatCurrencyForDisplay,
                     productItemListener,
