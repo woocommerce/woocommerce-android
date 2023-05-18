@@ -42,6 +42,7 @@ import java.util.function.Consumer
 @ExperimentalCoroutinesApi
 class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() {
     override val mode: Mode = Creation
+    override val sku: String = "123"
     override val tracksFlow: String = VALUE_FLOW_CREATION
 
     companion object {
