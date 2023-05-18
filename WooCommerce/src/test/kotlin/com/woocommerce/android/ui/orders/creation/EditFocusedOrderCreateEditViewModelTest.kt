@@ -222,4 +222,30 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         createSut()
         assertFalse(sut.viewStateData.liveData.value!!.isCouponButtonEnabled)
     }
+
+    @Test
+    fun `when coupon added should track event`() {
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        createSut()
+
+        sut.onCouponEntered("code")
+
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_COUPON_ADD,
+            mapOf(AnalyticsTracker.KEY_FLOW to VALUE_FLOW_EDITING)
+        )
+    }
+
+    @Test
+    fun `when coupon removed should track event`() {
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        createSut()
+
+        sut.onCouponEntered("")
+
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_COUPON_REMOVE,
+            mapOf(AnalyticsTracker.KEY_FLOW to VALUE_FLOW_EDITING)
+        )
+    }
 }
