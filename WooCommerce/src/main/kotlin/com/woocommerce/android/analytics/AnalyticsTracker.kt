@@ -364,7 +364,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_JETPACK_INSTALLATION_SOURCE = "source"
         const val KEY_JETPACK_INSTALLATION_STEP = "jetpack_install_step"
 
-        private const val PREFKEY_SEND_USAGE_STATS = "wc_pref_send_usage_stats"
+        const val PREFKEY_SEND_USAGE_STATS = "wc_pref_send_usage_stats"
 
         // -- Product Variations
         const val KEY_VARIATIONS_COUNT = "variations_count"
