@@ -1,4 +1,11 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+13.7
+-----
+- [**] In-Person Payments: A merchant can now generate a QR code for a payment and the customer can scan the QR code to pay. [https://github.com/woocommerce/woocommerce-android/pull/9032]
+- [*] [Internal] "Colored" buttons have white text in the dark mode [https://github.com/woocommerce/woocommerce-android/pull/9044]
+- [*] [Internal] Added local coupon validation in order creation flow [https://github.com/woocommerce/woocommerce-android/pull/9066]
+- [**] Support for adding coupon code when creating an order [https://github.com/woocommerce/woocommerce-android/pull/9024]
+
 13.6
 -----
 - [*] [Internal] JITM added to the Orders list screen (behind TTP feature flag) [https://github.com/woocommerce/woocommerce-android/pull/8914]

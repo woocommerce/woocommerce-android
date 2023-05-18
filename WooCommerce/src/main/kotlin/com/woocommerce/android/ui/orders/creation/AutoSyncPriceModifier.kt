@@ -48,9 +48,14 @@ class AutoSyncPriceModifier @Inject constructor(val createUpdateOrderUseCase: Cr
                     this.total isEqualTo newLine.total
             }
 
+        val hasSameCouponLines = old.couponLines.areSameAs(new.couponLines) { newLine ->
+            this.code == newLine.code
+        }
+
         return hasSameItems &&
             hasSameShippingLines &&
             hasSameFeeLines &&
+            hasSameCouponLines &&
             old.shippingAddress.isSamePhysicalAddress(new.shippingAddress) &&
             old.billingAddress.isSamePhysicalAddress(new.billingAddress)
     }

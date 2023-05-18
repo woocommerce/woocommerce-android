@@ -17,7 +17,6 @@ enum class FeatureFlag {
     IAP_FOR_STORE_CREATION,
     IPP_TAP_TO_PAY,
     IPP_UK,
-    IPP_SCAN_TO_PAY,
     STORE_CREATION_ONBOARDING,
     FREE_TRIAL_M2,
     REST_API_I2,
@@ -57,7 +56,6 @@ enum class FeatureFlag {
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             IPP_TAP_TO_PAY,
-            IPP_SCAN_TO_PAY,
             PRIVACY_CHOICES,
             IPP_ADD_PRODUCT_VIA_BARCODE_SCANNER -> PackageUtils.isDebugBuild()
 

@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-02 15:54:03+0000
+Translation-Revision-Date: 2023-05-08 14:54:23+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="shipping_notice_dismiss">Ignorer</string>
+    <string name="shipping_notice_learn_more">Lire la suite</string>
+    <string name="shipping_notice_banner_content">Lorsque vous expédiez des articles vers des pays qui respectent les règles douanières de l’Union européenne (UE), vous devez fournir une description claire et précise de chacun d’eux. Dans le cas contraire, les envois peuvent être retardés ou interrompus à la douane.</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Restez informé et renforcez la sécurité de votre boutique. Découvrez Jetpack dès maintenant.</string>
+    <string name="jetpack_benefits_bottom_banner_title">Recevez des notifications de commande, etc.</string>
     <string name="store_onboarding_setting_description">Afficher ou masquer la liste de configuration de la boutique</string>
     <string name="store_onboarding_setting_title">Liste de configuration de la boutique</string>
     <string name="store_onboarding_dialog_description">Vous pouvez la rétablir lorsque vous en avez besoin à partir de Menu &gt; Réglages &gt; Boutique</string>
@@ -1112,8 +1117,6 @@ Language: fr
     <string name="orderfilters_show_orders_button">Afficher les commandes</string>
     <string name="orderlist_filters_title">Commandes filtrées</string>
     <string name="orderlist_no_filters_title">Toutes les commandes</string>
-    <string name="jetpack_benefits_bottom_banner_subtitle">Voir les avantages</string>
-    <string name="jetpack_benefits_bottom_banner_title">Obtenir l’expérience complète avec Jetpack</string>
     <string name="product_description_hint_with_title">Dites-nous en plus sur %s…</string>
     <string name="product_description_hint_no_title">Décrivez votre produit pour vos futurs clients…</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">Numéro de série du lecteur copié dans le presse-papier</string>
