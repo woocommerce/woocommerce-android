@@ -68,8 +68,6 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
     }
 
     fun buildAndDisplayLocalNotification(
-        notificationTag: String,
-        notificationId: Int,
         channelId: String,
         notification: Notification,
         notificationTappedIntent: Intent,
@@ -78,24 +76,24 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
         val channelType = notification.channelType
         getNotificationBuilder(channelId, notification).apply {
             val notificationContentIntent =
-                buildPendingIntentForGivenIntent(notificationId, notificationTappedIntent)
+                buildPendingIntentForGivenIntent(notification.noteId, notificationTappedIntent)
             setContentIntent(notificationContentIntent)
             actions.forEach { action ->
                 addAction(
                     R.drawable.ic_woo_w_notification,
                     action.first,
-                    buildPendingIntentForGivenIntent(notificationId, action.second)
+                    buildPendingIntentForGivenIntent(notification.noteId, action.second)
                 )
             }
             setLargeIcon(getLargeIconBitmap(context, notification.icon, channelType.shouldCircularizeNoteIcon()))
             // Call processing service when notification is dismissed
             val pendingDeleteIntent = NotificationsProcessingService.getPendingIntentForLocalNotificationDismiss(
-                context, notificationId, notificationTag
+                context, notification.noteId, notification.tag!!
             )
             setDeleteIntent(pendingDeleteIntent)
             NotificationManagerCompat.from(context).notify(
-                notificationTag,
-                notificationId,
+                notification.tag,
+                notification.noteId,
                 build()
             )
         }

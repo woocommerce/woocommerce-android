@@ -40,8 +40,6 @@ class LocalNotificationWorker @AssistedInject constructor(
         if (tag != null && id != -1 && title != null && description != null) {
             val notification = buildNotification(id, tag, title, description)
             wooNotificationBuilder.buildAndDisplayLocalNotification(
-                tag,
-                id,
                 appContext.getString(R.string.notification_channel_general_id),
                 notification,
                 getIntent(appContext, notification),
