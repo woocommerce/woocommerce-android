@@ -68,12 +68,13 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     protected abstract val mode: OrderCreateEditViewModel.Mode
+    protected abstract val sku: String
 
     private fun initMocks() {
         val defaultOrderItem = createOrderItem()
         val emptyOrder = Order.EMPTY
         viewState = OrderCreateEditViewModel.ViewState()
-        savedState = spy(OrderCreateEditFormFragmentArgs(mode).toSavedStateHandle()) {
+        savedState = spy(OrderCreateEditFormFragmentArgs(mode, sku).toSavedStateHandle()) {
             on { getLiveData(viewState.javaClass.name, viewState) } doReturn MutableLiveData(viewState)
             on { getLiveData(eq(Order.EMPTY.javaClass.name), any<Order>()) } doReturn MutableLiveData(emptyOrder)
         }
