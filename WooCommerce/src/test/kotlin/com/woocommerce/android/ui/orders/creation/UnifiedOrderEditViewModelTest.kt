@@ -34,6 +34,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.BaseRequest
@@ -438,7 +439,33 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 )
             )
 
-            verify(productListRepository).searchProductList(
+            createSut(navArgs)
+
+            verify(productListRepository, times(2)).searchProductList(
+                "123",
+                WCProductStore.SkuSearchOptions(isSkuSearch = true, isExactSkuSearch = true)
+            )
+        }
+    }
+
+    @Test
+    fun `given empty sku, when view model init, then do not fetch product information`() {
+        testBlocking {
+            val navArgs = OrderCreateEditFormFragmentArgs(OrderCreateEditViewModel.Mode.Creation, "").initSavedStateHandle()
+            whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
+                SiteParameters(
+                    currencyCode = "",
+                    currencySymbol = null,
+                    currencyFormattingParameters = null,
+                    weightUnit = null,
+                    dimensionUnit = null,
+                    gmtOffset = 0F
+                )
+            )
+
+            createSut(navArgs)
+
+            verify(productListRepository, times(1)).searchProductList(
                 "123",
                 WCProductStore.SkuSearchOptions(isSkuSearch = true, isExactSkuSearch = true)
             )
