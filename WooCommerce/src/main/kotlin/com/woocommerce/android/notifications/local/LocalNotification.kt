@@ -10,6 +10,12 @@ sealed class LocalNotification(
     val delay: Long,
     val delayUnit: TimeUnit
 ) {
+    companion object {
+        const val NOTIFICATION_TYPE_STORE_CREATION_COMPLETE = "store_creation_complete"
+        const val NOTIFICATION_TYPE_WITHOUT_FREE_TRIAL = "one_day_after_store_creation_name_without_free_trial"
+        const val NOTIFICATION_TYPE_BEFORE_FREE_TRIAL = "one_day_before_free_trial_expires"
+        const val NOTIFICATION_TYPE_AFTER_FREE_TRIAL = "one_day_after_free_trial_expires"
+    }
     val id = type.hashCode()
 
     // TODO: Remove this test notification
@@ -30,7 +36,7 @@ sealed class LocalNotification(
     ) : LocalNotification(
         title = title,
         description = description,
-        type = "store_creation_complete",
+        type = NOTIFICATION_TYPE_STORE_CREATION_COMPLETE,
         delay = 5,
         delayUnit = TimeUnit.MINUTES
     )
@@ -41,7 +47,7 @@ sealed class LocalNotification(
     ) : LocalNotification(
         title = title,
         description = description,
-        type = "one_day_after_store_creation_name_without_free_trial",
+        type = NOTIFICATION_TYPE_WITHOUT_FREE_TRIAL,
         delay = 24,
         delayUnit = TimeUnit.HOURS
     )
@@ -52,7 +58,7 @@ sealed class LocalNotification(
     ) : LocalNotification(
         title = title,
         description = description,
-        type = "one_day_before_free_trial_expires",
+        type = NOTIFICATION_TYPE_BEFORE_FREE_TRIAL,
         delay = 13,
         delayUnit = TimeUnit.DAYS
     )
@@ -63,7 +69,7 @@ sealed class LocalNotification(
     ) : LocalNotification(
         title = title,
         description = description,
-        type = "one_day_after_free_trial_expires",
+        type = NOTIFICATION_TYPE_AFTER_FREE_TRIAL,
         delay = 15,
         delayUnit = TimeUnit.DAYS
     )
