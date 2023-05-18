@@ -11,6 +11,7 @@ import com.automattic.android.experimentation.ExPlat
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.lesserThan
@@ -99,6 +100,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var wooLog: WooLogWrapper
     @Inject lateinit var registerDevice: RegisterDevice
     @Inject lateinit var applicationPasswordsNotifier: ApplicationPasswordsNotifier
+    @Inject lateinit var analyticsTracker: AnalyticsTrackerWrapper
 
     @Inject lateinit var explat: ExPlat
 
@@ -344,11 +346,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     fun onAccountChanged(event: OnAccountChanged) {
         val isLoggedOut = event.causeOfChange == AccountAction.SIGN_OUT && event.error == null
         if (event.causeOfChange == AccountAction.FETCH_SETTINGS) {
-            // make sure local usage tracking matches the account setting
-            val hasUserOptedOut = !AnalyticsTracker.sendUsageStats
-            if (hasUserOptedOut != accountStore.account.tracksOptOut) {
-                AnalyticsTracker.sendUsageStats = !accountStore.account.tracksOptOut
-            }
+            analyticsTracker.sendUsageStats = !accountStore.account.tracksOptOut
         }
 
         val userAccountFetched = !isLoggedOut && event.causeOfChange == AccountAction.FETCH_ACCOUNT
