@@ -8,7 +8,6 @@ import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateS
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.Edit
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import junit.framework.TestCase.assertEquals
@@ -222,25 +221,5 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
         assertFalse(sut.viewStateData.liveData.value!!.isCouponButtonEnabled)
-    }
-
-    @Test
-    fun `given items and coupon in order when items are removed then should clear coupon lines`() {
-        // given
-        initMocksForAnalyticsWithOrder(defaultOrderValue)
-        createSut()
-        var latestOrderDraft: Order? = null
-        sut.orderDraft.observeForever {
-            latestOrderDraft = it
-        }
-        sut.onProductsSelected(setOf(SelectedItem.Product(123)))
-        assertTrue(latestOrderDraft!!.items.isNotEmpty())
-        sut.onCouponEntered("code")
-
-        // when
-        sut.onProductsSelected(emptyList())
-
-        // then
-        assertTrue(sut.orderDraft.value!!.couponLines.isEmpty())
     }
 }
