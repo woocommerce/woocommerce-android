@@ -18,7 +18,6 @@
         android:id="@+id/productInfo_children_divider"
         android:layout_width="0dp"
         android:layout_height="@dimen/minor_10"
-        android:layout_marginStart="@dimen/major_100"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/productInfo_groupedProduct" />

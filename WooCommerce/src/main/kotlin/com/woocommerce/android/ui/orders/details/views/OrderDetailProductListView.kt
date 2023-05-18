@@ -97,8 +97,7 @@ class OrderDetailProductListView @JvmOverloads constructor(
                 addItemDecoration(
                     AlignedDividerDecoration(
                         context,
-                        DividerItemDecoration.VERTICAL,
-                        R.id.productInfo_iconFrame
+                        DividerItemDecoration.VERTICAL
                     )
                 )
             }

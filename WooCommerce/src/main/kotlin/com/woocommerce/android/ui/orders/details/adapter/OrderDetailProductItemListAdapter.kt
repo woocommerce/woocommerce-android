@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders.details.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
@@ -13,7 +12,6 @@ import com.woocommerce.android.ui.orders.OrderDetailProductItemView
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.ViewAddonClickListener
 import com.woocommerce.android.ui.orders.details.OrderProduct
-import com.woocommerce.android.widgets.AlignedDividerDecoration
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 
@@ -80,16 +78,6 @@ class OrderDetailProductItemListAdapter(
                 layoutManager = LinearLayoutManager(context)
                 itemAnimator = DefaultItemAnimator()
                 adapter = childrenAdapter
-
-                if (itemDecorationCount == 0) {
-                    addItemDecoration(
-                        AlignedDividerDecoration(
-                            context,
-                            DividerItemDecoration.VERTICAL,
-                            R.id.productInfo_name
-                        )
-                    )
-                }
 
                 // Setting this field to false ensures that the RecyclerView children do NOT receive multiple clicks,
                 // and only processes the first click event. More details on this issue can be found here:
