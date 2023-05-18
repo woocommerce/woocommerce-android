@@ -184,6 +184,9 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
             }
         }
+        args.barcode?.let { code ->
+            fetchProductBySKU(code)
+        }
     }
 
     fun onCustomerNoteEdited(newNote: String) {

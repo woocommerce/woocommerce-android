@@ -256,6 +256,10 @@ class OrderListFragment :
                 enableSearchListeners()
                 true
             }
+            R.id.menu_barcode -> {
+                viewModel.startScan()
+                true
+            }
             else -> false
         }
     }
@@ -348,6 +352,9 @@ class OrderListFragment :
                 }
                 is OrderListViewModel.OrderListEvent.ShowIPPDismissConfirmationDialog -> {
                     showIPPFeedbackDismissConfirmationDialog()
+                }
+                is OrderListViewModel.OrderListEvent.OnBarcodeScanned -> {
+                    openOrderCreationFragment(event.code)
                 }
                 else -> event.isHandled = false
             }
@@ -451,12 +458,13 @@ class OrderListFragment :
         findNavController().navigateSafely(R.id.action_orderListFragment_to_orderFilterListFragment)
     }
 
-    private fun openOrderCreationFragment() {
+    private fun openOrderCreationFragment(code: String? = null) {
         OrderDurationRecorder.startRecording()
         AnalyticsTracker.track(AnalyticsEvent.ORDERS_ADD_NEW)
         findNavController().navigateSafely(
             OrderListFragmentDirections.actionOrderListFragmentToOrderCreationFragment(
-                OrderCreateEditViewModel.Mode.Creation
+                OrderCreateEditViewModel.Mode.Creation,
+                code
             )
         )
     }
