@@ -11,7 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.notifications.NotificationChannelType.OTHER
 import com.woocommerce.android.notifications.WooNotificationBuilder
-import com.woocommerce.android.notifications.WooNotificationType.REMINDER
+import com.woocommerce.android.notifications.WooNotificationType.LOCAL_REMINDER
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_DESC
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_ID
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_TAG
@@ -73,7 +73,7 @@ class LocalNotificationWorker @AssistedInject constructor(
         icon = null,
         noteTitle = title,
         noteMessage = description,
-        noteType = REMINDER,
+        noteType = LOCAL_REMINDER,
         channelType = OTHER
     )
 }

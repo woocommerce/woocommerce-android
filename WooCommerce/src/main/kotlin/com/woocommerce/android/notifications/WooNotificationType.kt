@@ -9,7 +9,7 @@ enum class WooNotificationType {
     NEW_ORDER,
     PRODUCT_REVIEW,
     ZENDESK,
-    REMINDER
+    LOCAL_REMINDER
 }
 
 fun NotificationModel.getWooType(): WooNotificationType {
