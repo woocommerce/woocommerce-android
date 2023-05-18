@@ -8,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R.string
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_ADD
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_REMOVE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_SUCCESS
@@ -636,12 +638,22 @@ class OrderCreateEditViewModel @Inject constructor(
     fun onCouponEntered(couponCode: String?) {
         _orderDraft.update { draft ->
             val couponLines = if (couponCode.isNullOrEmpty()) {
+                trackCouponRemoved()
                 emptyList()
             } else {
+                trackCouponAdded()
                 listOf(Order.CouponLine(code = couponCode))
             }
             draft.copy(couponLines = couponLines)
         }
+    }
+
+    private fun trackCouponAdded() {
+        tracker.track(ORDER_COUPON_ADD, mapOf(KEY_FLOW to flow))
+    }
+
+    private fun trackCouponRemoved() {
+        tracker.track(ORDER_COUPON_REMOVE, mapOf(KEY_FLOW to flow))
     }
 
     @Parcelize
