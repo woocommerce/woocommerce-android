@@ -211,6 +211,7 @@ class CreateShippingLabelFragment : BaseFragment(R.layout.fragment_create_shippi
             with(binding.shippingNoticeBanner) {
                 isVisible = AppPrefs.isEUShippingNoticeDismissed.not()
                 onLearnMoreClicked = viewModel::onShippingNoticeLearnMoreClicked
+                message = getString(R.string.shipping_notice_banner_warning_content)
             }
         }
 

@@ -49,6 +49,7 @@ import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCoupon
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomerNote
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditFee
@@ -288,6 +289,13 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    private fun updateCouponButtonVisibility() {
+        val orderHasItems = orderDraft.value?.hasProducts() ?: false
+        viewState = viewState.copy(isCouponButtonEnabled = orderHasItems)
+    }
+
+    private fun Order.hasProducts() = items.any { it.quantity > 0 }
+
     fun startScan() {
         launch {
             codeScanner.startScan().collect { status ->
@@ -385,6 +393,10 @@ class OrderCreateEditViewModel @Inject constructor(
 
         val orderSubtotal = order.total - currentFeeTotalValue
         triggerEvent(EditFee(orderSubtotal, currentFeeValue))
+    }
+
+    fun onCouponButtonClicked() {
+        triggerEvent(EditCoupon(_orderDraft.value.couponLines.firstOrNull()?.code))
     }
 
     fun onShippingButtonClicked() {
@@ -493,6 +505,7 @@ class OrderCreateEditViewModel @Inject constructor(
                                     updateStatus.order
                                 }
                             }
+                            updateCouponButtonVisibility()
                         }
                     }
                 }
@@ -620,12 +633,24 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    fun onCouponEntered(couponCode: String?) {
+        _orderDraft.update { draft ->
+            val couponLines = if (couponCode.isNullOrEmpty()) {
+                emptyList()
+            } else {
+                listOf(Order.CouponLine(code = couponCode))
+            }
+            draft.copy(couponLines = couponLines)
+        }
+    }
+
     @Parcelize
     data class ViewState(
         val isProgressDialogShown: Boolean = false,
         val willUpdateOrderDraft: Boolean = false,
         val isUpdatingOrderDraft: Boolean = false,
         val showOrderUpdateSnackbar: Boolean = false,
+        val isCouponButtonEnabled: Boolean = false,
         val isEditable: Boolean = true,
         val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None
     ) : Parcelable {

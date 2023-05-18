@@ -6,7 +6,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.RequestResult
-import com.woocommerce.android.push.UnseenReviewsCountHandler
+import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
 import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen

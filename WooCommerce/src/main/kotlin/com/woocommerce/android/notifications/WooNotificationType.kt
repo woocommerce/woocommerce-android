@@ -1,15 +1,14 @@
-package com.woocommerce.android.push
+package com.woocommerce.android.notifications
 
-import com.woocommerce.android.push.WooNotificationType.NEW_ORDER
-import com.woocommerce.android.push.WooNotificationType.PRODUCT_REVIEW
-import com.woocommerce.android.push.WooNotificationType.ZENDESK
+import com.woocommerce.android.notifications.WooNotificationType.NEW_ORDER
+import com.woocommerce.android.notifications.WooNotificationType.PRODUCT_REVIEW
+import com.woocommerce.android.notifications.WooNotificationType.ZENDESK
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 
 enum class WooNotificationType {
     NEW_ORDER,
     PRODUCT_REVIEW,
-    ZENDESK,
-    PRE_LOGIN
+    ZENDESK
 }
 
 fun NotificationModel.getWooType(): WooNotificationType {

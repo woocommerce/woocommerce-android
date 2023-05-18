@@ -1,4 +1,4 @@
-package com.woocommerce.android.push
+package com.woocommerce.android.notifications
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Notification
+import com.woocommerce.android.notifications.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.util.WooLog
@@ -163,7 +164,7 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
             createNotificationChannel(
                 context.getString(noteType.getChannelId()),
                 context.getString(noteType.getChannelTitle()),
-                noteType == NotificationChannelType.NEW_ORDER
+                noteType == NEW_ORDER
             )
         }
     }

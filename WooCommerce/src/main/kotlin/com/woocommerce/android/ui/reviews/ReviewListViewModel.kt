@@ -11,7 +11,7 @@ import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
-import com.woocommerce.android.push.UnseenReviewsCountHandler
+import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
 import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen

@@ -1,6 +1,8 @@
-package com.woocommerce.android.push
+package com.woocommerce.android.notifications.push
 
 import com.woocommerce.android.model.Notification
+import com.woocommerce.android.notifications.NotificationChannelType
+import com.woocommerce.android.notifications.WooNotificationType
 
 object NotificationTestUtils {
     const val TEST_ORDER_NOTE_FULL_DATA_1 = "eNqlVFtr2zAU/iuaGGOjdiLbSZwYyqDdwyhbW2gZjKkUxVZibbYkdKkbSv77jpz" +

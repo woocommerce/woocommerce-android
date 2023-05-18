@@ -15,6 +15,7 @@ import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
+import org.wordpress.android.fluxc.model.order.CouponLine as WcCouponLine
 import org.wordpress.android.fluxc.model.order.FeeLine as WCFeeLine
 import org.wordpress.android.fluxc.model.order.LineItem as WCLineItem
 import org.wordpress.android.fluxc.model.order.ShippingLine as WCShippingLine
@@ -50,11 +51,12 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
             shippingLines = databaseEntity.getShippingLineList().mapShippingLines(),
             feesLines = databaseEntity.getFeeLineList().mapFeesLines(),
             taxLines = databaseEntity.getTaxLineList().mapTaxLines(),
+            couponLines = databaseEntity.getCouponLineList().mapCouponLines(),
             chargeId = metaDataList.getOrNull(CHARGE_ID_KEY),
             shippingPhone = metaDataList.getOrEmpty(SHIPPING_PHONE_KEY),
             paymentUrl = databaseEntity.paymentUrl,
             isEditable = databaseEntity.isEditable,
-            customerId = null
+            customerId = null,
         )
     }
 
@@ -152,6 +154,14 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
                 is OrderAddress.Shipping -> ""
                 is OrderAddress.Billing -> this.email
             }
+        )
+    }
+
+    private fun Iterable<WcCouponLine>.mapCouponLines(): List<Order.CouponLine> = map {
+        Order.CouponLine(
+            code = it.code,
+            id = it.id,
+            discount = it.discount,
         )
     }
 }

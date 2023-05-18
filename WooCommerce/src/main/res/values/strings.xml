@@ -516,6 +516,10 @@
     <string name="order_creation_add_products">Add products</string>
     <string name="order_creation_add_product_via_barcode_scanning">Add products via scanner</string>
     <string name="order_creation_add_fee">Add fee</string>
+    <string name="order_creation_add_coupon">Add coupon</string>
+    <string name="order_creation_coupon_discount_value">-%1$s</string>
+    <string name="order_creation_coupon_codes">Coupon (%1$s)</string>
+    <string name="order_creation_remove_coupon">Remove coupon from order</string>
     <string name="order_creation_customer_details">Customer details</string>
     <string name="order_creation_product_stock_quantity">%s in stock</string>
     <string name="order_creation_product_instock">In stock</string>
@@ -3283,7 +3287,8 @@
     <!--
     Eu-Bound Shipping notice banner
     -->
-    <string name="shipping_notice_banner_content">When shipping to countries that follow European Union (EU) customs rules, you must provide a clear, specific description of every item. Otherwise, shipments may be delayed or interrupted at customs.</string>
+    <string name="shipping_notice_banner_warning_content">When shipping to countries that follow European Union (EU) customs rules, you must provide a clear, specific description of every item. Otherwise, shipments may be delayed or interrupted at customs.</string>
+    <string name="shipping_notice_banner_instructions_content">Shipping to countries that follow European Union (EU) customs rules now requires you clearly describe every item. For example, if you are sending clothing, you must indicate what type of clothing (e.g., men\’s shirts, girl\’s vest, boy\’s jacket) for the description to be acceptable. Otherwise, shipments may be delayed or interrupted at customs.</string>
     <string name="shipping_notice_learn_more">Learn More</string>
     <string name="shipping_notice_dismiss">Dismiss</string>
 </resources>
