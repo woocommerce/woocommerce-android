@@ -6,6 +6,7 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderTestUtils
@@ -25,6 +26,8 @@ import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyBoolean
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
@@ -420,14 +423,35 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             assertThat(newOrder?.getProductIds()?.any { it == 10L }).isTrue()
         }
     }
+    @Test
+    fun `given sku, when view model init, then fetch product information`() {
+        testBlocking {
+            val navArgs = OrderCreateEditFormFragmentArgs(OrderCreateEditViewModel.Mode.Creation, "123").initSavedStateHandle()
+            whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
+                SiteParameters(
+                    currencyCode = "",
+                    currencySymbol = null,
+                    currencyFormattingParameters = null,
+                    weightUnit = null,
+                    dimensionUnit = null,
+                    gmtOffset = 0F
+                )
+            )
+
+            verify(productListRepository).searchProductList(
+                "123",
+                WCProductStore.SkuSearchOptions(isSkuSearch = true, isExactSkuSearch = true)
+            )
+        }
+    }
 
     //endregion
 
-    protected fun createSut() {
+    protected fun createSut(savedStateHandle: SavedStateHandle = savedState) {
         autoSyncPriceModifier = AutoSyncPriceModifier(createUpdateOrderUseCase)
         autoSyncOrder = AutoSyncOrder(createUpdateOrderUseCase)
         sut = OrderCreateEditViewModel(
-            savedState = savedState,
+            savedState = savedStateHandle,
             dispatchers = coroutinesTestRule.testDispatchers,
             orderDetailRepository = orderDetailRepository,
             orderCreateEditRepository = orderCreateEditRepository,
