@@ -21,6 +21,7 @@ import com.woocommerce.android.databinding.OrderCreationPaymentSectionBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.isNotEqualTo
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -62,6 +63,7 @@ class OrderCreateEditFormFragment :
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var isAddProductViaBarcodeScanningEnabled: IsAddProductViaBarcodeScanningEnabled
 
     private var createOrderMenuItem: MenuItem? = null
     private var progressDialog: CustomProgressDialog? = null
@@ -191,14 +193,31 @@ class OrderCreateEditFormFragment :
 
     private fun FragmentOrderCreateEditFormBinding.initProductsSection() {
         productsSection.setAddButtons(
-            listOf(
-                AddButton(
-                    text = getString(R.string.order_creation_add_products),
-                    onClickListener = {
-                        viewModel.onAddProductClicked()
-                    }
+            if (isAddProductViaBarcodeScanningEnabled()) {
+                listOf(
+                    AddButton(
+                        text = getString(R.string.order_creation_add_products),
+                        onClickListener = {
+                            viewModel.onAddProductClicked()
+                        }
+                    ),
+                    AddButton(
+                        text = getString(R.string.order_creation_add_product_via_barcode_scanning),
+                        onClickListener = {
+                            viewModel.startScan()
+                        }
+                    )
                 )
-            )
+            } else {
+                listOf(
+                    AddButton(
+                        text = getString(R.string.order_creation_add_products),
+                        onClickListener = {
+                            viewModel.onAddProductClicked()
+                        }
+                    )
+                )
+            }
         )
     }
 
@@ -240,17 +259,11 @@ class OrderCreateEditFormFragment :
                 createOrderMenuItem?.isEnabled = it
             }
             new.isIdle.takeIfNotEqualTo(old?.isIdle) { enabled ->
-                when (viewModel.mode) {
-                    OrderCreateEditViewModel.Mode.Creation -> {
-                        binding.paymentSection.loadingProgress.isVisible = !enabled
-                    }
-                    is OrderCreateEditViewModel.Mode.Edit -> {
-                        binding.loadingProgress.isVisible = !enabled
-                    }
-                }
+                updateProgressBarsVisibility(binding, !enabled)
                 if (new.isEditable) {
                     binding.paymentSection.shippingButton.isEnabled = enabled
                     binding.paymentSection.feeButton.isEnabled = enabled
+                    binding.paymentSection.couponButton.isEnabled = enabled
                     binding.productsSection.isEachAddButtonEnabled = enabled
                 }
             }
@@ -275,13 +288,32 @@ class OrderCreateEditFormFragment :
                     }
                 }
             }
+            new.isCouponButtonEnabled.takeIfNotEqualTo(old?.isCouponButtonEnabled) {
+                binding.paymentSection.couponButton.isEnabled = it
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner, ::handleViewModelEvents)
     }
 
+    private fun updateProgressBarsVisibility(
+        binding: FragmentOrderCreateEditFormBinding,
+        shouldShowProgressBars: Boolean
+    ) {
+        when (viewModel.mode) {
+            OrderCreateEditViewModel.Mode.Creation -> {
+                binding.paymentSection.loadingProgress.isVisible = shouldShowProgressBars
+            }
+
+            is OrderCreateEditViewModel.Mode.Edit -> {
+                binding.loadingProgress.isVisible = shouldShowProgressBars
+            }
+        }
+    }
+
     private fun bindPaymentSection(paymentSection: OrderCreationPaymentSectionBinding, newOrderData: Order) {
         paymentSection.bindFeesSubSection(newOrderData)
+        paymentSection.bindCouponsSubSection(newOrderData)
 
         val firstShipping = newOrderData.shippingLines.firstOrNull { it.methodId != null }
         paymentSection.shippingButton.setText(
@@ -318,6 +350,22 @@ class OrderCreateEditFormFragment :
             feeButton.setText(R.string.order_creation_add_fee)
             feeButton.setIconResource(R.drawable.ic_add)
             feeValue.isVisible = false
+        }
+    }
+
+    private fun OrderCreationPaymentSectionBinding.bindCouponsSubSection(newOrderData: Order) {
+        couponButton.setOnClickListener { viewModel.onCouponButtonClicked() }
+        if (newOrderData.discountCodes.isNotNullOrEmpty()) {
+            couponButton.text = getString(R.string.order_creation_coupon_codes, newOrderData.discountCodes)
+            couponValue.text = getString(
+                R.string.order_creation_coupon_discount_value,
+                bigDecimalFormatter(newOrderData.discountTotal)
+            )
+            couponButton.setIconResource(0)
+        } else {
+            couponButton.setIconResource(R.drawable.ic_add)
+            couponButton.text = getString(R.string.order_creation_add_coupon)
+            couponValue.text = null
         }
     }
 
@@ -483,6 +531,7 @@ class OrderCreateEditFormFragment :
             feeButton.isEnabled = true
             shippingButton.isEnabled = true
             lockIcon.isVisible = false
+            couponButton.isEnabled = true
         }
     }
 
@@ -497,6 +546,7 @@ class OrderCreateEditFormFragment :
             feeButton.isEnabled = false
             shippingButton.isEnabled = false
             lockIcon.isVisible = true
+            couponButton.isEnabled = false
         }
     }
 }

@@ -6,8 +6,11 @@ import android.view.LayoutInflater
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ShippingNoticeBannerBinding
 import com.woocommerce.android.extensions.collapse
+import com.woocommerce.android.extensions.expand
 
 class ShippingNoticeCard @JvmOverloads constructor(
     context: Context,
@@ -18,16 +21,30 @@ class ShippingNoticeCard @JvmOverloads constructor(
         LayoutInflater.from(context), this, true
     )
 
+    var onDismissClicked: () -> Unit = {}
+    var onLearnMoreClicked: (url: String) -> Unit = {}
+    var isVisible: Boolean = visibility == VISIBLE
+        set(show) {
+            if (show != isVisible) {
+                field = show
+                if (show) expand() else collapse()
+            }
+        }
+    var message: CharSequence
+        get() = binding.message.text
+        set(value) = value.let { binding.message.text = it }
+
     init {
         binding.dismissButton.setOnClickListener {
+            AnalyticsTracker.track(AnalyticsEvent.EU_SHIPPING_NOTICE_DISMISSED)
+            onDismissClicked()
             AppPrefs.isEUShippingNoticeDismissed = true
             collapse()
         }
-    }
 
-    fun setLearnMoreClickListener(action: (url: String) -> Unit) {
         binding.learnMoreButton.setOnClickListener {
-            action(AppUrls.EU_SHIPPING_CUSTOMS_REQUIREMENTS)
+            AnalyticsTracker.track(AnalyticsEvent.EU_SHIPPING_NOTICE_LEARN_MORE_TAPPED)
+            onLearnMoreClicked(AppUrls.EU_SHIPPING_CUSTOMS_REQUIREMENTS)
         }
     }
 }

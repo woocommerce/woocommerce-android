@@ -23,6 +23,7 @@ data class CardReaderHubViewState(
             override val index: Int,
             override val onClick: () -> Unit,
             val shortDivider: Boolean = false,
+            @DrawableRes val iconBadge: Int? = null,
         ) : ListItem()
 
         data class ToggleableListItem(

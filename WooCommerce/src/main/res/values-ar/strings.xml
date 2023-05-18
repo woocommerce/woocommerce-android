@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-04-27 15:54:03+0000
+Translation-Revision-Date: 2023-05-08 19:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="shipping_notice_dismiss">تجاهل</string>
+    <string name="shipping_notice_learn_more">التعرّف على المزيد</string>
+    <string name="shipping_notice_banner_content">عند الشحن إلى البلدان التي تتبع القواعد الجمركية المعمول بها في الاتحاد الأوروبي، يجب عليك تقديم وصف صريح ومحدد لكل عنصر. وإلا، فإن الشحنات قد تتأجل أو تُعتَرض في الجمارك.</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">ابقَّ على اطلاع وعزز أمان المتجر. استكشف Jetpack الآن.</string>
+    <string name="jetpack_benefits_bottom_banner_title">تلقي تنبيهات الطلبات والمزيد</string>
+    <string name="store_onboarding_setting_description">إظهار قائمة إعداد المتجر أو إخفاؤها</string>
+    <string name="store_onboarding_setting_title">قائمة إعداد المتجر</string>
+    <string name="store_onboarding_dialog_description">يمكنك استعادته مجددًا عندما تحتاج إليه من القائمة &gt; الإعدادات &gt; المتجر</string>
+    <string name="store_onboarding_dialog_title">إخفاء قائمة إعداد المتجر</string>
+    <string name="store_onboarding_menu_hide_store_setup">إخفاء قائمة إعداد المتجر</string>
+    <string name="card_reader_tap_to_pay_successful_refund_action_label">عرض الطلب</string>
+    <string name="card_reader_tap_to_pay_successful_refund_message">تم استرداد دفعة اختبار Tap To Pay بنجاح</string>
+    <string name="card_reader_tap_to_pay_explanation_refund_failed">فشلت عملية استرداد الأموال. تجربة الاسترداد يدويًا</string>
+    <string name="card_reader_tap_to_pay_explanation_refunding_payment">جارٍ استرداد دفعة الاختبار…</string>
+    <string name="signup_terms_of_service">يعني الاستمرار أنك توافق على &lt;a href=\'termsOfService\'&gt;&lt;u&gt;شروط الخدمة التي نقرها.&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="signup_get_started_create_account_label">لنقم بإنشاء حسابك أولاً. </string>
+    <string name="signup_create_password_label">إنشاء كلمة المرور الخاصة بك</string>
     <string name="component_type_categories">التصنيفات</string>
     <string name="component_type_products">المنتجات</string>
     <string name="component_default_option">الخيار الافتراضي</string>
@@ -228,7 +245,7 @@ Language: ar
     <string name="card_reader_tap_to_pay_explanation_test_payment_error">حدث خطأ. ترجى المحاولة مرة أخرى لاحقًا.</string>
     <string name="card_reader_tap_to_pay_explanation_try_payment">محاولة سداد دفعة</string>
     <string name="card_reader_tap_to_pay_explanation_where_to_find"> يمكنك العثور على ميزة Pay on Android ضمن\nالقائمة &gt; المدفوعات، أو تحصيل المدفوعات و\nاختر Tap to Pay.</string>
-    <string name="card_reader_tap_to_pay_explanation_try_and_refund">محاولة سداد دفعة باستخدام بطاقتك و\nاستردادها عند الانتهاء.</string>
+    <string name="card_reader_tap_to_pay_explanation_try_and_refund">محاولة سداد دفعة باستخدام بطاقتك و\nستُستَرد عند الانتهاء. </string>
     <string name="card_reader_tap_to_pay_explanation_ready">أصبح هاتفك جاهزًا لميزة Tap to Pay.\nيمكن لعميلك النقر على البطاقة\nعلى هاتفك للدفع.</string>
     <string name="card_reader_tap_to_pay_explanation_title">تحصيل المدفوعات بالبطاقة\nباستخدام هاتفك</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">الضغط للدفع</string>
@@ -497,14 +514,12 @@ Language: ar
     <string name="signup_password_too_short">كلمة مرورك قصيرة للغاية. يرجى اختيار كلمة مرور تحتوي على 6 أحرف على الأقل.</string>
     <string name="signup_email_invalid_input">الرجاء إدخال عنوان بريد إلكتروني صالح.</string>
     <string name="signup_email_exist_input">يوجد حساب موجود لهذا البريد الإلكتروني بالفعل.</string>
-    <string name="signup_already_registered">لنقم بإنشاء حسابك أولاً. هل تم التسجيل بالفعل. &lt;a href=\'login\'&gt;&lt;u&gt;تسجيل الدخول&lt;/u&gt;&lt;/a&gt;</string>
     <string name="login_create_an_account">إنشاء حساب</string>
     <string name="login_try_another_email">تجربة عنوان آخر</string>
     <string name="date_timeframe_custom_date_range_title">نطاق تاريخ مخصص</string>
     <string name="date_timeframe_custom">مخصص</string>
     <string name="what_is_wordpress_link">ما المقصود بووردبريس.كوم؟</string>
     <string name="signup_creating_account_loading_message">إنشاء حساب جديد</string>
-    <string name="signup_terms_of_service">يعني الاستمرار أنك توافق على &lt;u&gt;شروط الخدمة التي نقرها.&lt;/u&gt;</string>
     <string name="signup_password_hint">اختر كلمة مرور</string>
     <string name="signup_email_address_hint">عنوان بريدك الإلكتروني</string>
     <string name="signup_get_started_label">بدء \nفي غضون دقائق</string>
@@ -808,8 +823,6 @@ Language: ar
     <string name="coupon_details_copy_error">خطأ في أثناء نسخ رمز القسيمة إلى الحافظة.</string>
     <string name="coupon_details_copy_success">تم نسخ رمز القسيمة إلى الحافظة.</string>
     <string name="coupon_details_copy_clipboard_label">رمز القسيمة</string>
-    <string name="coupon_beta_features_subheading">اختبار إدارة القسائم في التطبيق</string>
-    <string name="coupon_beta_features_heading">إدارة القسائم</string>
     <string name="coupon_summary_loading_failure">فشل تحميل ملخص القسيمة</string>
     <string name="coupon_details_expiration_date">تنتهي الصلاحية بتاريخ ⁦%1$s⁩</string>
     <string name="coupon_summary_template">خصم قدره ⁦%1$s⁩ على ⁦%2$s⁩</string>
@@ -821,7 +834,6 @@ Language: ar
     <string name="coupon_details_menu_share">مشاركة قسيمة</string>
     <string name="coupon_details_menu_copy">نسخ رمز القسيمة</string>
     <string name="inbox_note_survey_actioned">نشكرك على ملاحظاتك!</string>
-    <string name="beta_features_coupons">إدارة القسائم</string>
     <string name="card_reader_connect_permission_rationale_hint">تتطلب مدفوعات قارئ البطاقة صلاحية موقع دقيقة</string>
     <string name="card_reader_connect_permission_rationale_header">يلزم الوصول إلى الموقع</string>
     <string name="simple_payments_share_payment_dialog_title">إجراءات السداد - %s</string>
@@ -1105,8 +1117,6 @@ Language: ar
     <string name="orderfilters_show_orders_button">إظهار الطلبات</string>
     <string name="orderlist_filters_title">الطلبات التي تمت تصفيتها</string>
     <string name="orderlist_no_filters_title">جميع الطلبات</string>
-    <string name="jetpack_benefits_bottom_banner_subtitle">الاطلاع على المزايا</string>
-    <string name="jetpack_benefits_bottom_banner_title">الحصول على التجربة الكاملة باستخدام Jetpack</string>
     <string name="product_description_hint_with_title">إخبارنا بالمزيد حول %s…</string>
     <string name="product_description_hint_no_title">صِف منتجك لعملائك في المستقبل…</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">تم نسخ الرقم التسلسلي للقارئ إلى الحافظة</string>

@@ -292,6 +292,10 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     ORDER_TRACKING_PROVIDERS_LOADED,
     SHIPMENT_TRACKING_MENU_ACTION,
 
+    // -- Order Coupon
+    ORDER_COUPON_ADD,
+    ORDER_COUPON_REMOVE,
+
     // -- Shipping Labels
     SHIPPING_LABEL_API_REQUEST,
     SHIPPING_LABEL_PRINT_REQUESTED,
@@ -523,6 +527,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
 
     // -- Product subscriptions
     PRODUCT_DETAILS_VIEW_SUBSCRIPTIONS_TAPPED,
+    PRODUCT_VARIATION_VIEW_SUBSCRIPTIONS_TAPPED,
 
     // -- Product attributes
     PRODUCT_ATTRIBUTE_EDIT_BUTTON_TAPPED,
@@ -822,5 +827,10 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // Account
     CLOSE_ACCOUNT_TAPPED,
     CLOSE_ACCOUNT_SUCCESS,
-    CLOSE_ACCOUNT_FAILED
+    CLOSE_ACCOUNT_FAILED,
+
+    // EU Shipping Notice
+    EU_SHIPPING_NOTICE_SHOWN,
+    EU_SHIPPING_NOTICE_DISMISSED,
+    EU_SHIPPING_NOTICE_LEARN_MORE_TAPPED
 }

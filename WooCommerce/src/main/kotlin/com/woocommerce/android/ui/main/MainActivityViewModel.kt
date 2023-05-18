@@ -14,14 +14,17 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.Notification
-import com.woocommerce.android.push.NotificationChannelType
-import com.woocommerce.android.push.NotificationMessageHandler
-import com.woocommerce.android.push.UnseenReviewsCountHandler
+import com.woocommerce.android.notifications.NotificationChannelType
+import com.woocommerce.android.notifications.UnseenReviewsCountHandler
+import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType.Jetpack
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
+import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
+import com.woocommerce.android.ui.moremenu.MoreMenuNewFeature
+import com.woocommerce.android.ui.moremenu.MoreMenuNewFeatureHandler
 import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
@@ -31,7 +34,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.SiteStore
@@ -48,6 +51,7 @@ class MainActivityViewModel @Inject constructor(
     private val prefs: AppPrefs,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val resolveAppLink: ResolveAppLink,
+    moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
     determineTrialStatusBarState: DetermineTrialStatusBarState,
 ) : ScopedViewModel(savedState) {
@@ -59,8 +63,11 @@ class MainActivityViewModel @Inject constructor(
 
     val startDestination = if (selectedSite.exists()) R.id.dashboard else R.id.nav_graph_site_picker
 
-    val moreMenuBadgeState = unseenReviewsCountHandler.observeUnseenCount().map { reviewsCount ->
-        determineMenuBadgeState(reviewsCount)
+    val moreMenuBadgeState = combine(
+        unseenReviewsCountHandler.observeUnseenCount(),
+        moreMenuNewFeatureHandler.moreMenuNewFeaturesAvailable,
+    ) { reviewsCount, features ->
+        determineMenuBadgeState(reviewsCount, features)
     }.asLiveData()
 
     private val _bottomBarState: MutableStateFlow<BottomBarState> = MutableStateFlow(BottomBarState.Visible)
@@ -183,7 +190,9 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    private fun determineMenuBadgeState(reviews: Int) = if (reviews > 0) UnseenReviews(reviews) else Hidden
+    private fun determineMenuBadgeState(count: Int, features: List<MoreMenuNewFeature>) =
+        if (features.isNotEmpty()) NewFeature
+        else if (count > 0) UnseenReviews(count) else Hidden
 
     fun showFeatureAnnouncementIfNeeded() {
         launch {
@@ -253,6 +262,7 @@ class MainActivityViewModel @Inject constructor(
 
     sealed class MoreMenuBadgeState {
         data class UnseenReviews(val count: Int) : MoreMenuBadgeState()
+        object NewFeature : MoreMenuBadgeState()
         object Hidden : MoreMenuBadgeState()
     }
 

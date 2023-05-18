@@ -12,8 +12,9 @@ import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
+import javax.inject.Inject
 
-class SupportHelper {
+class SupportHelper @Inject constructor() {
     /**
      * This is a helper function that shows the support identity input dialog and runs the provided function with
      * the input from it.

@@ -6,6 +6,7 @@ import com.woocommerce.android.model.Order.Item
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.WCMetaData
+import org.wordpress.android.fluxc.model.order.FeeLineTaxStatus
 import org.wordpress.android.fluxc.model.order.OrderAddress
 import org.wordpress.android.fluxc.model.order.TaxLine
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderMappingConst.CHARGE_ID_KEY
@@ -14,6 +15,7 @@ import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
+import org.wordpress.android.fluxc.model.order.CouponLine as WcCouponLine
 import org.wordpress.android.fluxc.model.order.FeeLine as WCFeeLine
 import org.wordpress.android.fluxc.model.order.LineItem as WCLineItem
 import org.wordpress.android.fluxc.model.order.ShippingLine as WCShippingLine
@@ -49,11 +51,12 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
             shippingLines = databaseEntity.getShippingLineList().mapShippingLines(),
             feesLines = databaseEntity.getFeeLineList().mapFeesLines(),
             taxLines = databaseEntity.getTaxLineList().mapTaxLines(),
+            couponLines = databaseEntity.getCouponLineList().mapCouponLines(),
             chargeId = metaDataList.getOrNull(CHARGE_ID_KEY),
             shippingPhone = metaDataList.getOrEmpty(SHIPPING_PHONE_KEY),
             paymentUrl = databaseEntity.paymentUrl,
             isEditable = databaseEntity.isEditable,
-            customerId = null
+            customerId = null,
         )
     }
 
@@ -75,6 +78,11 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
             name = it.name ?: StringUtils.EMPTY,
             totalTax = it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
             total = it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+            taxStatus = when (it.taxStatus) {
+                FeeLineTaxStatus.Taxable -> Order.FeeLine.FeeLineTaxStatus.TAXABLE
+                FeeLineTaxStatus.None -> Order.FeeLine.FeeLineTaxStatus.NONE
+                else -> Order.FeeLine.FeeLineTaxStatus.UNKNOWN
+            }
         )
     }
 
@@ -146,6 +154,14 @@ class OrderMapper @Inject constructor(private val getLocations: GetLocations) {
                 is OrderAddress.Shipping -> ""
                 is OrderAddress.Billing -> this.email
             }
+        )
+    }
+
+    private fun Iterable<WcCouponLine>.mapCouponLines(): List<Order.CouponLine> = map {
+        Order.CouponLine(
+            code = it.code,
+            id = it.id,
+            discount = it.discount,
         )
     }
 }
