@@ -974,6 +974,20 @@ class OrderListViewModelTest : BaseUnitTest() {
         assertThat(viewModel.event.value).isInstanceOf(OrderListViewModel.OrderListEvent.OnBarcodeScanned::class.java)
     }
 
+    @Test
+    fun `when code scanner succeeds, then trigger event with proper sku`() {
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(CodeScannerStatus.Success("12345"))
+            }
+        }
+
+        viewModel = createViewModel()
+        viewModel.startScan()
+
+        assertThat(viewModel.event.value).isEqualTo(OrderListViewModel.OrderListEvent.OnBarcodeScanned("12345"))
+    }
+
     //endregion
 
     private companion object {
