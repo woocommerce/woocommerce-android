@@ -41,10 +41,10 @@ class LocalNotificationScheduler @Inject constructor(
     private fun buildConditionWorkRequest(notification: LocalNotification): OneTimeWorkRequest {
         val conditionData = workDataOf(LOCAL_NOTIFICATION_TYPE to notification.type)
         return OneTimeWorkRequestBuilder<ConditionCheckWorker>()
-                .setInputData(conditionData)
-                .addTag(notification.type)
-                .setInitialDelay(notification.delay, notification.delayUnit)
-                .build()
+            .setInputData(conditionData)
+            .addTag(notification.type)
+            .setInitialDelay(notification.delay, notification.delayUnit)
+            .build()
     }
 
     private fun buildNotificationWorkRequest(notification: LocalNotification): OneTimeWorkRequest {
@@ -55,8 +55,8 @@ class LocalNotificationScheduler @Inject constructor(
             LOCAL_NOTIFICATION_DESC to notification.description
         )
         return OneTimeWorkRequestBuilder<LocalNotificationWorker>()
-                .setInputData(notificationData)
-                .build()
+            .setInputData(notificationData)
+            .build()
     }
 
     private fun cancelScheduledNotification(notification: LocalNotification) {
