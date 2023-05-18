@@ -22,28 +22,56 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.PluginActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.plugin.PluginDirectoryType
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.store.PluginStore
 import org.wordpress.android.fluxc.store.PluginStore.ConfigureSitePluginError
 import org.wordpress.android.fluxc.store.PluginStore.ConfigureSitePluginPayload
+import org.wordpress.android.fluxc.store.PluginStore.FetchPluginDirectoryPayload
 import org.wordpress.android.fluxc.store.PluginStore.FetchSitePluginErrorType
 import org.wordpress.android.fluxc.store.PluginStore.FetchSitePluginPayload
 import org.wordpress.android.fluxc.store.PluginStore.InstallSitePluginError
 import org.wordpress.android.fluxc.store.PluginStore.InstallSitePluginErrorType
 import org.wordpress.android.fluxc.store.PluginStore.InstallSitePluginPayload
+import org.wordpress.android.fluxc.store.PluginStore.OnPluginDirectoryFetched
 import org.wordpress.android.fluxc.store.PluginStore.OnSitePluginConfigured
 import org.wordpress.android.fluxc.store.PluginStore.OnSitePluginFetched
 import org.wordpress.android.fluxc.store.PluginStore.OnSitePluginInstalled
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class PluginRepository @Inject constructor(
     private val dispatcher: Dispatcher,
+    private val wooCommerceStore: WooCommerceStore,
     @Suppress("unused") private val pluginStore: PluginStore
 ) {
     companion object {
         private const val GENERIC_ERROR = "Unknown issue."
         private const val ATTEMPT_LIMIT = 2
         private const val DELAY_BEFORE_RETRY = 500L
+    }
+
+    suspend fun fetchSitePlugins(site: SiteModel): Result<List<SitePluginModel>> {
+        WooLog.d(WooLog.T.PLUGINS, "Fetching all site plugins")
+
+        val action = PluginActionBuilder.newFetchPluginDirectoryAction(
+            FetchPluginDirectoryPayload(PluginDirectoryType.SITE, site, false)
+        )
+        val event: OnPluginDirectoryFetched = dispatcher.dispatchAndAwait(action)
+        return when {
+            !event.isError -> {
+                WooLog.d(WooLog.T.PLUGINS, "Fetching plugins succeeded")
+                Result.success(wooCommerceStore.getSitePlugins(site))
+            }
+
+            else -> {
+                WooLog.w(
+                    WooLog.T.PLUGINS,
+                    "Fetching plugin failed, ${event.error.type} ${event.error.message}"
+                )
+                Result.failure(OnChangedException(event.error))
+            }
+        }
     }
 
     suspend fun fetchPlugin(site: SiteModel, name: String): Result<SitePluginModel?> {
@@ -63,6 +91,7 @@ class PluginRepository @Inject constructor(
                 )
                 Result.success(event.plugin)
             }
+
             else -> {
                 WooLog.w(
                     WooLog.T.PLUGINS,
