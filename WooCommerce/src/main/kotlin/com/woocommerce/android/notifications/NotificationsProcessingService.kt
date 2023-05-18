@@ -19,7 +19,7 @@ class NotificationsProcessingService : Service() {
         const val ARG_ACTION_NOTIFICATION_DISMISS = "action_dismiss"
         const val ARG_PUSH_ID = "notificationId"
         const val ARG_TAG = "notificationTag"
-        const val ARG_IS_LOCAL = "is-local"
+        const val ARG_IS_LOCAL = "is_local"
 
         fun getPendingIntentForPushNotificationDismiss(context: Context, pushId: Int): PendingIntent {
             val intent = Intent(context, NotificationsProcessingService::class.java)
