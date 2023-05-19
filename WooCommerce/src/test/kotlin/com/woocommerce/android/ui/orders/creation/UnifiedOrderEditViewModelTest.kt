@@ -13,11 +13,14 @@ import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateS
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -29,10 +32,14 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
@@ -49,6 +56,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected lateinit var parameterRepository: ParameterRepository
     private lateinit var determineMultipleLinesContext: DetermineMultipleLinesContext
     protected lateinit var tracker: AnalyticsTrackerWrapper
+    private lateinit var codeScanner: CodeScanner
+    private lateinit var productListRepository: ProductListRepository
 
     protected val defaultOrderValue = Order.EMPTY.copy(id = 123)
 
@@ -107,6 +116,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             on { invoke(any()) } doReturn OrderCreateEditViewModel.MultipleLinesContext.None
         }
         tracker = mock()
+        codeScanner = mock()
+        productListRepository = mock()
     }
 
     protected abstract val tracksFlow: String
@@ -326,6 +337,91 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         )
     }
 
+    // region Scanned and Deliver
+    @Test
+    fun `when code scanner returns code, then set isUpdatingOrderDraft to true`() {
+        createSut()
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(CodeScannerStatus.Success("12345"))
+            }
+        }
+        var isUpdatingOrderDraft: Boolean? = null
+        sut.viewStateData.observeForever { _, viewState ->
+            isUpdatingOrderDraft = viewState.isUpdatingOrderDraft
+        }
+
+        sut.startScan()
+
+        assertTrue(isUpdatingOrderDraft!!)
+    }
+
+    @Test
+    fun `when SKU search succeeds, then set isUpdatingOrderDraft to false`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                ProductTestUtils.generateProductList()
+            )
+            var isUpdatingOrderDraft: Boolean? = null
+            sut.viewStateData.observeForever { _, viewState ->
+                isUpdatingOrderDraft = viewState.isUpdatingOrderDraft
+            }
+
+            sut.startScan()
+
+            assertFalse(isUpdatingOrderDraft!!)
+        }
+    }
+
+    @Test
+    fun `when SKU search succeeds, then add the scanned product`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        isVariable = true,
+                    )
+                )
+            )
+            whenever(createOrderItemUseCase.invoke(0L, 10L)).thenReturn(
+                createOrderItem(10L)
+            )
+            var newOrder: Order? = null
+            sut.orderDraft.observeForever { newOrderData ->
+                newOrder = newOrderData
+            }
+
+            sut.startScan()
+
+            assertThat(newOrder?.getProductIds()?.any { it == 10L }).isTrue()
+        }
+    }
+
+    //endregion
+
     protected fun createSut() {
         autoSyncPriceModifier = AutoSyncPriceModifier(createUpdateOrderUseCase)
         autoSyncOrder = AutoSyncOrder(createUpdateOrderUseCase)
@@ -341,7 +437,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             autoSyncOrder = autoSyncOrder,
             autoSyncPriceModifier = autoSyncPriceModifier,
             tracker = tracker,
-            codeScanner = mock()
+            codeScanner = codeScanner,
+            productRepository = productListRepository
         )
     }
 
