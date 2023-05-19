@@ -30,7 +30,7 @@ class GoogleCodeScanner @Inject constructor(private val scanner: GmsBarcodeScann
 
     private fun ProducerScope<CodeScannerStatus>.handleScanSuccess(code: Barcode) {
         code.rawValue?.let {
-            trySend(CodeScannerStatus.Success(code.rawValue))
+            trySend(CodeScannerStatus.Success(it))
         } ?: run {
             trySend(
                 CodeScannerStatus.Failure(
@@ -42,6 +42,6 @@ class GoogleCodeScanner @Inject constructor(private val scanner: GmsBarcodeScann
 }
 
 sealed class CodeScannerStatus {
-    data class Success(val code: String?) : CodeScannerStatus()
+    data class Success(val code: String) : CodeScannerStatus()
     data class Failure(val error: Throwable?) : CodeScannerStatus()
 }

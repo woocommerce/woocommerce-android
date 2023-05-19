@@ -61,7 +61,9 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorRestriction
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem.Product
@@ -85,6 +87,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -99,6 +102,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val determineMultipleLinesContext: DetermineMultipleLinesContext,
     private val tracker: AnalyticsTrackerWrapper,
     private val codeScanner: CodeScanner,
+    private val productRepository: ProductListRepository,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -299,20 +303,52 @@ class OrderCreateEditViewModel @Inject constructor(
     private fun Order.hasProducts() = items.any { it.quantity > 0 }
 
     fun startScan() {
-        launch {
+        viewModelScope.launch {
             codeScanner.startScan().collect { status ->
                 when (status) {
                     is CodeScannerStatus.Failure -> {
                         // TODO handle failure case
                     }
                     is CodeScannerStatus.Success -> {
-                        // TODO handle success case
+                        viewState = viewState.copy(isUpdatingOrderDraft = true)
+                        fetchProductBySKU(status.code)
                     }
                 }
             }
         }
     }
 
+    private fun fetchProductBySKU(sku: String) {
+        val selectedItems = orderDraft.value?.items?.map { item ->
+            if (item.isVariation) {
+                SelectedItem.ProductVariation(item.productId, item.variationId)
+            } else {
+                SelectedItem.Product(item.productId)
+            }
+        }.orEmpty()
+        viewModelScope.launch {
+            productRepository.searchProductList(
+                searchQuery = sku,
+                skuSearchOptions = WCProductStore.SkuSearchOptions.ExactSearch,
+            )?.let { products ->
+                viewState = viewState.copy(isUpdatingOrderDraft = false)
+                products.firstOrNull()?.let { product ->
+                    if (product.isVariable()) {
+                        onProductsSelected(
+                            selectedItems + SelectedItem.ProductVariation(
+                                productId = product.parentId,
+                                variationId = product.remoteId
+                            )
+                        )
+                    } else {
+                        onProductsSelected(
+                            selectedItems + Product(productId = product.remoteId)
+                        )
+                    }
+                }
+            }
+        }
+    }
     private fun Order.removeItem(item: Order.Item) = adjustProductQuantity(item.itemId, -item.quantity.toInt())
 
     fun onCustomerAddressEdited(customerId: Long?, billingAddress: Address, shippingAddress: Address) {
@@ -700,5 +736,8 @@ data class ProductUIModel(
     val stockQuantity: Double,
     val stockStatus: ProductStockStatus
 )
+
+private fun com.woocommerce.android.model.Product.isVariable() =
+    productType == ProductType.VARIABLE || productType == ProductType.VARIABLE_SUBSCRIPTION
 
 fun Order.Item.isSynced() = this.itemId != 0L
