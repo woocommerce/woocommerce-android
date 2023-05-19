@@ -33,9 +33,9 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun StoreNamePickerScreen(viewModel: StoreNamePickerViewModel) {
-    viewModel.storeName.observeAsState().value?.let { storeName ->
+    viewModel.viewState.observeAsState().value?.let {
         StoreNamePickerScreen(
-            storeName = storeName,
+            storeName = it.storeName,
             onCancelPressed = viewModel::onCancelPressed,
             onHelpPressed = viewModel::onHelpPressed,
             onStoreNameChanged = viewModel::onStoreNameChanged,

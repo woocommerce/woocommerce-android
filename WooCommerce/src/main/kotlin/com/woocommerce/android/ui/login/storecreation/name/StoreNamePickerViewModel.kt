@@ -22,8 +22,11 @@ class StoreNamePickerViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val prefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
-    private val _storeName = savedState.getStateFlow(scope = this, initialValue = "")
-    val storeName = _storeName.asLiveData()
+    private val _viewState = savedState.getStateFlow(
+        scope = this,
+        initialValue = ViewState("")
+    )
+    val viewState = _viewState.asLiveData()
 
     private val canCreateFreeTrialStore
         get() = FeatureFlag.FREE_TRIAL_M2.isEnabled() &&
@@ -60,17 +63,21 @@ class StoreNamePickerViewModel @Inject constructor(
     }
 
     fun onStoreNameChanged(newName: String) {
-        _storeName.value = newName
+        _viewState.update {
+            ViewState(
+                storeName = newName
+            )
+        }
     }
 
     fun onContinueClicked() {
-        newStore.update(name = storeName.value)
+        newStore.update(name = _viewState.value.storeName)
         if (canCreateFreeTrialStore) {
             triggerEvent(NavigateToSummary)
         } else if (FeatureFlag.STORE_CREATION_PROFILER.isEnabled()) {
             triggerEvent(NavigateToStoreProfiler)
         } else {
-            triggerEvent(NavigateToDomainPicker(_storeName.value))
+            triggerEvent(NavigateToDomainPicker(_viewState.value.storeName))
         }
     }
 
@@ -79,4 +86,9 @@ class StoreNamePickerViewModel @Inject constructor(
     object NavigateToStoreProfiler : MultiLiveEvent.Event()
 
     object NavigateToSummary : MultiLiveEvent.Event()
+
+    @Parcelize
+    data class ViewState(
+        val storeName: String
+    ) : Parcelable
 }
