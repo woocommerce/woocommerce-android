@@ -115,6 +115,7 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
             addingProductsViaScanningButton.layoutParams = params
             container.addView(addingProductsViaScanningButton)
         }
+
         binding.addButtonsLayout.addView(container)
     }
 
