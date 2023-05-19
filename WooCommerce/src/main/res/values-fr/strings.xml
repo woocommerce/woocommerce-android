@@ -626,7 +626,7 @@ Language: fr
     <string name="login_prologue_label_orders_subtitle">Vous pouvez les gérer rapidement et facilement </string>
     <string name="login_prologue_label_analytics_subtitle">Nous savons à quel point c’est crucial pour votre entreprise</string>
     <string name="login_prologue_new_to_woo">Vous débutez sur WooCommerce ?</string>
-    <string name="notification_channel_pre_login_title">Rappels à propos des problèmes de connexion</string>
+    <string name="notification_channel_reminder_title">Rappels à propos des problèmes de connexion</string>
     <string name="tests_notification_new_order_message">Nouvelle commande de 50 $ auprès de votre boutique WooCommerce</string>
     <string name="tests_notification_new_order_title">Une nouvelle commande a été passée sur votre site ! 🎉</string>
     <string name="lines_all_details">les détails</string>
