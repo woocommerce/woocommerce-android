@@ -824,6 +824,11 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // Composite Products
     PRODUCT_DETAILS_VIEW_COMPONENTS_TAPPED,
 
+    // Account
+    CLOSE_ACCOUNT_TAPPED,
+    CLOSE_ACCOUNT_SUCCESS,
+    CLOSE_ACCOUNT_FAILED,
+
     // EU Shipping Notice
     EU_SHIPPING_NOTICE_SHOWN,
     EU_SHIPPING_NOTICE_DISMISSED,
