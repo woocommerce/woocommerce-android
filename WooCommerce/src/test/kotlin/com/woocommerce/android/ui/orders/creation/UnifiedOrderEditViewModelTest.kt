@@ -521,6 +521,21 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `given code scanner fails to recognize the barcode, when retry clicked, then restart code scanning`() {
+        createSut()
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(CodeScannerStatus.Failure(Throwable("Failed to recognize the barcode")))
+            }
+        }
+
+        sut.startScan()
+        (sut.event.value as OnBarcodeScanningFailed).retry.onClick(any())
+
+        verify(codeScanner).startScan()
+    }
+
     //endregion
 
     protected fun createSut(savedStateHandle: SavedStateHandle = savedState) {
