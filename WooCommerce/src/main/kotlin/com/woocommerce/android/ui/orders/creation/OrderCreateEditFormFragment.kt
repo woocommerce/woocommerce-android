@@ -195,7 +195,7 @@ class OrderCreateEditFormFragment :
 
     private fun FragmentOrderCreateEditFormBinding.initProductsSection() {
         if (isAddProductViaBarcodeScanningEnabled()) {
-            productsSection.setAddProductButtons(
+            productsSection.setProductSectionButtons(
                 addProductsButton = AddButton(
                     text = getString(R.string.order_creation_add_products),
                     onClickListener = {
@@ -210,7 +210,7 @@ class OrderCreateEditFormFragment :
                 )
             )
         } else {
-            productsSection.setAddProductButtons(
+            productsSection.setProductSectionButtons(
                 addProductsButton = AddButton(
                     text = getString(R.string.order_creation_add_products),
                     onClickListener = {

@@ -81,7 +81,7 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
         }
     }
 
-    fun setAddProductButtons(
+    fun setProductSectionButtons(
         addProductsButton: AddButton,
         addProductsViaScanButton: AddButton? = null,
     ) {
@@ -115,6 +115,7 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
             addingProductsViaScanningButton.layoutParams = params
             container.addView(addingProductsViaScanningButton)
         }
+
         binding.addButtonsLayout.addView(container)
     }
 
