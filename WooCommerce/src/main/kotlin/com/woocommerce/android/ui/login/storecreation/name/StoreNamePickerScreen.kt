@@ -12,6 +12,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
@@ -26,6 +27,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.AlertDialog
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
@@ -36,10 +38,13 @@ fun StoreNamePickerScreen(viewModel: StoreNamePickerViewModel) {
     viewModel.viewState.observeAsState().value?.let {
         StoreNamePickerScreen(
             storeName = it.storeName,
+            isPermissionDialogVisible = it.isPermissionRationaleVisible,
             onCancelPressed = viewModel::onCancelPressed,
             onHelpPressed = viewModel::onHelpPressed,
             onStoreNameChanged = viewModel::onStoreNameChanged,
-            onContinueClicked = viewModel::onContinueClicked
+            onContinueClicked = viewModel::onContinueClicked,
+            onPermissionRationaleDismissed = viewModel::onPermissionRationaleDismissed,
+            onPermissionRationaleConfirmed = viewModel::onPermissionRationaleConfirmed
         )
     }
 }
@@ -47,10 +52,13 @@ fun StoreNamePickerScreen(viewModel: StoreNamePickerViewModel) {
 @Composable
 private fun StoreNamePickerScreen(
     storeName: String,
+    isPermissionDialogVisible: Boolean,
     onCancelPressed: () -> Unit,
     onHelpPressed: () -> Unit,
     onStoreNameChanged: (String) -> Unit,
-    onContinueClicked: () -> Unit
+    onContinueClicked: () -> Unit,
+    onPermissionRationaleDismissed: () -> Unit,
+    onPermissionRationaleConfirmed: () -> Unit
 ) {
     Scaffold(topBar = {
         ToolbarWithHelpButton(
@@ -67,6 +75,30 @@ private fun StoreNamePickerScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .padding(dimensionResource(id = R.dimen.major_125))
+        )
+    }
+
+    if (isPermissionDialogVisible) {
+        AlertDialog(
+            onDismissRequest = onPermissionRationaleDismissed,
+            title = {
+                Text(text = stringResource(id = R.string.notifications_permission_title))
+            },
+            text = {
+                Text(text = stringResource(id = R.string.notifications_permission_description))
+            },
+            confirmButton = {
+                TextButton(onClick = onPermissionRationaleConfirmed) {
+                    Text(stringResource(id = R.string.allow))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onPermissionRationaleDismissed) {
+                    Text(stringResource(id = R.string.dismiss))
+                }
+            },
+            neutralButton = {
+            }
         )
     }
 }
