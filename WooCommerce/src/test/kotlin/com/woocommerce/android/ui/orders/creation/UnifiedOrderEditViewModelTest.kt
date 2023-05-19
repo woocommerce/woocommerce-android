@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.creation
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -486,6 +487,22 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         sut.startScan()
 
         assertThat(sut.event.value).isInstanceOf(OnBarcodeScanningFailed::class.java)
+    }
+
+    @Test
+    fun `when code scanner fails to recognize the barcode, then proper message is sent`() {
+        createSut()
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(CodeScannerStatus.Failure(Throwable("Failed to recognize the barcode")))
+            }
+        }
+
+        sut.startScan()
+
+        assertThat((sut.event.value as OnBarcodeScanningFailed).message).isEqualTo(
+            R.string.order_creation_barcode_scanning_unable_to_add_product
+        )
     }
 
     //endregion
