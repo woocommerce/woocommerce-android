@@ -81,7 +81,7 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
         }
     }
 
-    fun setAddProductButtons(
+    fun setProductSectionButtons(
         addProductsButton: AddButton,
         addProductsViaScanButton: AddButton? = null,
     ) {
