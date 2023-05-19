@@ -198,7 +198,7 @@ class ProductSelectionListViewModel @Inject constructor(
                     searchQuery = searchQuery,
                     loadMore = loadMore,
                     excludedProductIds = excludedProductIds,
-                    skuSearchOptions = WCProductStore.SkuSearchOptions()
+                    skuSearchOptions = WCProductStore.SkuSearchOptions.Disabled
                 )?.let { fetchedProducts ->
                     // make sure the search query hasn't changed while the fetch was processing
                     if (searchQuery == productRepository.lastSearchQuery) {

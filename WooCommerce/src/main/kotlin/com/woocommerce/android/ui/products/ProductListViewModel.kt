@@ -48,12 +48,12 @@ import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_DESC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_DESC
+import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions
 import javax.inject.Inject
 
 @HiltViewModel
@@ -305,7 +305,10 @@ class ProductListViewModel @Inject constructor(
                     )
                     fetchProductList(
                         viewState.query,
-                        isSkuSearch = viewState.isSkuSearch,
+                        skuSearchOptions = if (viewState.isSkuSearch)
+                            SkuSearchOptions.PartialMatch
+                        else
+                            SkuSearchOptions.Disabled,
                         loadMore = loadMore
                     )
                 }
@@ -445,7 +448,7 @@ class ProductListViewModel @Inject constructor(
     @Suppress("NestedBlockDepth")
     private suspend fun fetchProductList(
         searchQuery: String? = null,
-        isSkuSearch: Boolean = false,
+        skuSearchOptions: SkuSearchOptions = SkuSearchOptions.Disabled,
         loadMore: Boolean = false,
         scrollToTop: Boolean = false
     ) {
@@ -460,13 +463,13 @@ class ProductListViewModel @Inject constructor(
         } else if (searchQuery?.isNotEmpty() == true) {
             productRepository.searchProductList(
                 searchQuery = searchQuery,
-                skuSearchOptions = WCProductStore.SkuSearchOptions(isSkuSearch = isSkuSearch),
+                skuSearchOptions = skuSearchOptions,
                 loadMore = loadMore,
                 productFilterOptions = productFilterOptions
             )?.let { products ->
                 // make sure the search query hasn't changed while the fetch was processing
                 if (searchQuery == productRepository.lastSearchQuery &&
-                    isSkuSearch == productRepository.lastIsSkuSearch
+                    skuSearchOptions == productRepository.lastIsSkuSearch
                 ) {
                     if (loadMore) {
                         _productList.value = _productList.value.orEmpty() + products

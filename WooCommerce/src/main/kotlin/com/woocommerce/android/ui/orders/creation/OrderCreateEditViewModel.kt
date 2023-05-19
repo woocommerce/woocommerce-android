@@ -8,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R.string
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_ADD
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_REMOVE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_SUCCESS
@@ -50,6 +52,7 @@ import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
+import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCoupon
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomerNote
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditFee
@@ -61,6 +64,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorRestriction
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem.Product
@@ -296,6 +300,13 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    private fun updateCouponButtonVisibility() {
+        val orderHasItems = orderDraft.value?.hasProducts() ?: false
+        viewState = viewState.copy(isCouponButtonEnabled = orderHasItems)
+    }
+
+    private fun Order.hasProducts() = items.any { it.quantity > 0 }
+
     fun startScan() {
         viewModelScope.launch {
             codeScanner.startScan().collect { status ->
@@ -317,17 +328,17 @@ class OrderCreateEditViewModel @Inject constructor(
             if (item.isVariation) {
                 SelectedItem.ProductVariation(item.productId, item.variationId)
             } else {
-                Product(item.productId)
+                SelectedItem.Product(item.productId)
             }
         }.orEmpty()
         viewModelScope.launch {
             productRepository.searchProductList(
                 searchQuery = sku,
-                skuSearchOptions = WCProductStore.SkuSearchOptions(isSkuSearch = true, isExactSkuSearch = true),
+                skuSearchOptions = WCProductStore.SkuSearchOptions.ExactSearch,
             )?.let { products ->
                 viewState = viewState.copy(isUpdatingOrderDraft = false)
                 products.firstOrNull()?.let { product ->
-                    if (product.type.equals("variation", ignoreCase = true)) {
+                    if (product.isVariable()) {
                         onProductsSelected(
                             selectedItems + SelectedItem.ProductVariation(
                                 productId = product.parentId,
@@ -425,6 +436,10 @@ class OrderCreateEditViewModel @Inject constructor(
 
         val orderSubtotal = order.total - currentFeeTotalValue
         triggerEvent(EditFee(orderSubtotal, currentFeeValue))
+    }
+
+    fun onCouponButtonClicked() {
+        triggerEvent(EditCoupon(_orderDraft.value.couponLines.firstOrNull()?.code))
     }
 
     fun onShippingButtonClicked() {
@@ -533,6 +548,7 @@ class OrderCreateEditViewModel @Inject constructor(
                                     updateStatus.order
                                 }
                             }
+                            updateCouponButtonVisibility()
                         }
                     }
                 }
@@ -660,12 +676,34 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    fun onCouponEntered(couponCode: String?) {
+        _orderDraft.update { draft ->
+            val couponLines = if (couponCode.isNullOrEmpty()) {
+                trackCouponRemoved()
+                emptyList()
+            } else {
+                trackCouponAdded()
+                listOf(Order.CouponLine(code = couponCode))
+            }
+            draft.copy(couponLines = couponLines)
+        }
+    }
+
+    private fun trackCouponAdded() {
+        tracker.track(ORDER_COUPON_ADD, mapOf(KEY_FLOW to flow))
+    }
+
+    private fun trackCouponRemoved() {
+        tracker.track(ORDER_COUPON_REMOVE, mapOf(KEY_FLOW to flow))
+    }
+
     @Parcelize
     data class ViewState(
         val isProgressDialogShown: Boolean = false,
         val willUpdateOrderDraft: Boolean = false,
         val isUpdatingOrderDraft: Boolean = false,
         val showOrderUpdateSnackbar: Boolean = false,
+        val isCouponButtonEnabled: Boolean = false,
         val isEditable: Boolean = true,
         val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None
     ) : Parcelable {
@@ -703,5 +741,8 @@ data class ProductUIModel(
     val stockQuantity: Double,
     val stockStatus: ProductStockStatus
 )
+
+private fun com.woocommerce.android.model.Product.isVariable() =
+    productType == ProductType.VARIABLE || productType == ProductType.VARIABLE_SUBSCRIPTION
 
 fun Order.Item.isSynced() = this.itemId != 0L

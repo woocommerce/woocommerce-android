@@ -10,8 +10,6 @@
     <string name="notification_channel_review_title">Product review alerts</string>
     <string name="notification_channel_review_id" content_override="true" translatable="false">wooandroid_notification_channel_review_id</string>
     <string name="notification_order_ringtone_title" translatable="false">WooCommerce Cha-ching</string>
-    <string name="notification_channel_pre_login_title">Login troubleshooting reminders</string>
-    <string name="notification_channel_pre_login_id" content_override="true" translatable="false">wooandroid_notification_channel_pre_login_id</string>
     <!-- Required by the login library - overwrites the placeholder value with a real channel -->
     <string name="login_notification_channel_id" content_override="true" translatable="false">@string/notification_channel_general_id</string>
     <!--
@@ -517,6 +515,10 @@
     <string name="order_creation_add_products">Add products</string>
     <string name="order_creation_add_product_via_barcode_scanning">Add products via scanner</string>
     <string name="order_creation_add_fee">Add fee</string>
+    <string name="order_creation_add_coupon">Add coupon</string>
+    <string name="order_creation_coupon_discount_value">-%1$s</string>
+    <string name="order_creation_coupon_codes">Coupon (%1$s)</string>
+    <string name="order_creation_remove_coupon">Remove coupon from order</string>
     <string name="order_creation_customer_details">Customer details</string>
     <string name="order_creation_product_stock_quantity">%s in stock</string>
     <string name="order_creation_product_instock">In stock</string>
@@ -1904,6 +1906,15 @@
     <string name="beta_features_add_ons">View Add-ons</string>
     <string name="beta_features_simple_payments">Simple payments</string>
     <string name="settings_signout">Log out</string>
+    <string name="settings_close_account">Close Account</string>
+    <string name="settings_close_account_dialog_title">Confirm Close Account</string>
+    <string name="settings_close_account_dialog_description">To confirm, please re-enter your username before closing</string>
+    <string name="settings_close_account_dialog_confirm_button">Permanently Close Account</string>
+    <string name="settings_close_account_dialog_loading_title">Closing account…</string>
+    <string name="settings_close_account_error_dialog_title">Couldn\'t close account</string>
+    <string name="settings_close_account_generic_error_description">An error occurred while attempting to close your account.</string>
+    <string name="settings_close_account_active_stores_error_description">This account cannot be closed while it has active stores.</string>
+    <string name="settings_close_account_dialog_contact_support_button">Contact Support</string>
     <string name="settings_preferences">Preferences</string>
     <string name="settings_confirm_logout">Are you sure you want to logout from the account %s?</string>
     <string name="settings_confirm_logout_site_credentials">Are you sure you want to log out of your account?</string>

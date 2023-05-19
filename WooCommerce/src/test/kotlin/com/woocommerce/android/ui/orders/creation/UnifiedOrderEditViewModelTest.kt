@@ -371,7 +371,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(
                 productListRepository.searchProductList(
                     "12345",
-                    WCProductStore.SkuSearchOptions(isSkuSearch = true, isExactSkuSearch = true)
+                    WCProductStore.SkuSearchOptions.ExactSearch
                 )
             ).thenReturn(
                 ProductTestUtils.generateProductList()
@@ -399,7 +399,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(
                 productListRepository.searchProductList(
                     "12345",
-                    WCProductStore.SkuSearchOptions(isSkuSearch = true, isExactSkuSearch = true)
+                    WCProductStore.SkuSearchOptions.ExactSearch
                 )
             ).thenReturn(
                 listOf(

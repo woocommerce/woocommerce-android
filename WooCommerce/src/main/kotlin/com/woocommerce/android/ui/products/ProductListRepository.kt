@@ -28,6 +28,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.OnProductsSearched
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
+import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions
 import javax.inject.Inject
 
 class ProductListRepository @Inject constructor(
@@ -52,7 +53,7 @@ class ProductListRepository @Inject constructor(
     var lastSearchQuery: String? = null
         private set
 
-    var lastIsSkuSearch = false
+    var lastIsSkuSearch = SkuSearchOptions.Disabled
         private set
 
     var productSortingChoice: ProductSorting
@@ -85,7 +86,7 @@ class ProductListRepository @Inject constructor(
         loadContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
             lastSearchQuery = null
-            lastIsSkuSearch = false
+            lastIsSkuSearch = SkuSearchOptions.Disabled
             val payload = WCProductStore.FetchProductsPayload(
                 site = selectedSite.get(),
                 pageSize = PRODUCT_PAGE_SIZE,
@@ -107,7 +108,7 @@ class ProductListRepository @Inject constructor(
      */
     suspend fun searchProductList(
         searchQuery: String,
-        skuSearchOptions: WCProductStore.SkuSearchOptions,
+        skuSearchOptions: SkuSearchOptions,
         loadMore: Boolean = false,
         excludedProductIds: List<Long>? = null,
         productFilterOptions: Map<ProductFilterOption, String> = emptyMap(),
@@ -118,7 +119,7 @@ class ProductListRepository @Inject constructor(
         val result = searchContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
             lastSearchQuery = searchQuery
-            lastIsSkuSearch = skuSearchOptions.isSkuSearch
+            lastIsSkuSearch = skuSearchOptions
             val payload = WCProductStore.SearchProductsPayload(
                 site = selectedSite.get(),
                 searchQuery = searchQuery,
