@@ -63,6 +63,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorRestriction
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem.Product
@@ -332,7 +333,7 @@ class OrderCreateEditViewModel @Inject constructor(
             )?.let { products ->
                 viewState = viewState.copy(isUpdatingOrderDraft = false)
                 products.firstOrNull()?.let { product ->
-                    if (product.type.equals("variation", ignoreCase = true)) {
+                    if (product.isVariable()) {
                         onProductsSelected(
                             selectedItems + SelectedItem.ProductVariation(
                                 productId = product.parentId,
@@ -735,5 +736,8 @@ data class ProductUIModel(
     val stockQuantity: Double,
     val stockStatus: ProductStockStatus
 )
+
+private fun com.woocommerce.android.model.Product.isVariable() =
+    productType == ProductType.VARIABLE || productType == ProductType.VARIABLE_SUBSCRIPTION
 
 fun Order.Item.isSynced() = this.itemId != 0L
