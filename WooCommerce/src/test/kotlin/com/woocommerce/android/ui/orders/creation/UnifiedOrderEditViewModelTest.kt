@@ -409,7 +409,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                     )
                 )
             )
-            whenever(createOrderItemUseCase.invoke(10L)).thenReturn(
+            whenever(createOrderItemUseCase.invoke(0L, 10L)).thenReturn(
                 createOrderItem(10L)
             )
             var newOrder: Order? = null
