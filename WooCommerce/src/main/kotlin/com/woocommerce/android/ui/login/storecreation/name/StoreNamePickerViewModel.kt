@@ -99,11 +99,25 @@ class StoreNamePickerViewModel @Inject constructor(
 
     fun onPermissionRationaleDismissed() {
         setPermissionRationaleVisible(false)
+
+        if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
+            analyticsTrackerWrapper.track(
+                AnalyticsEvent.APP_PERMISSION_RATIONALE_DISMISSED,
+                mapOf(AnalyticsTracker.KEY_TYPE to Manifest.permission.POST_NOTIFICATIONS)
+            )
+        }
     }
 
-    fun onPermissionRationaleConfirmed() {
+    fun onPermissionRationaleAccepted() {
         setPermissionRationaleVisible(false)
         triggerEvent(RequestNotificationsPermission(::onRequestNotificationsPermissionResult))
+
+        if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
+            analyticsTrackerWrapper.track(
+                AnalyticsEvent.APP_PERMISSION_RATIONALE_ACCEPTED,
+                mapOf(AnalyticsTracker.KEY_TYPE to Manifest.permission.POST_NOTIFICATIONS)
+            )
+        }
     }
 
     private fun onCheckNotificationsPermissionResult(granted: Boolean, shouldShowRationale: Boolean) {

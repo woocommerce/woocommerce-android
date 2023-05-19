@@ -669,6 +669,8 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // -- Application permissions
     APP_PERMISSION_GRANTED,
     APP_PERMISSION_DENIED,
+    APP_PERMISSION_RATIONALE_ACCEPTED,
+    APP_PERMISSION_RATIONALE_DISMISSED,
 
     // -- Encrypted logging
     ENCRYPTED_LOGGING_UPLOAD_SUCCESSFUL,

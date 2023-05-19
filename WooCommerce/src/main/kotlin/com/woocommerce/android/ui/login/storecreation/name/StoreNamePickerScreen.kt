@@ -44,7 +44,7 @@ fun StoreNamePickerScreen(viewModel: StoreNamePickerViewModel) {
             onStoreNameChanged = viewModel::onStoreNameChanged,
             onContinueClicked = viewModel::onContinueClicked,
             onPermissionRationaleDismissed = viewModel::onPermissionRationaleDismissed,
-            onPermissionRationaleConfirmed = viewModel::onPermissionRationaleConfirmed
+            onPermissionRationaleConfirmed = viewModel::onPermissionRationaleAccepted
         )
     }
 }
