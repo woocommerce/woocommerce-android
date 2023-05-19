@@ -443,7 +443,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
             verify(productListRepository, times(2)).searchProductList(
                 "123",
-                WCProductStore.SkuSearchOptions(isSkuSearch = true, isExactSkuSearch = true)
+                WCProductStore.SkuSearchOptions.ExactSearch
             )
         }
     }
@@ -469,7 +469,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
             verify(productListRepository, times(1)).searchProductList(
                 "123",
-                WCProductStore.SkuSearchOptions(isSkuSearch = true, isExactSkuSearch = true)
+                WCProductStore.SkuSearchOptions.ExactSearch
             )
         }
     }
