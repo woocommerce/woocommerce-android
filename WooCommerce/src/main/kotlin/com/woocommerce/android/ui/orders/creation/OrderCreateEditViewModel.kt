@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.creation
 
 import android.os.Parcelable
+import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
@@ -67,6 +68,7 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.Sel
 import com.woocommerce.android.ui.products.selector.variationIds
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -301,7 +303,7 @@ class OrderCreateEditViewModel @Inject constructor(
             codeScanner.startScan().collect { status ->
                 when (status) {
                     is CodeScannerStatus.Failure -> {
-                        // TODO handle failure case
+                        sendBarcodeScanningFailedEvent()
                     }
                     is CodeScannerStatus.Success -> {
                         viewState = viewState.copy(isUpdatingOrderDraft = true)
@@ -342,6 +344,17 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun sendBarcodeScanningFailedEvent() {
+        triggerEvent(
+            OnBarcodeScanningFailed(
+                Throwable("Failed to load product information from SKU"),
+                string.order_creation_barcode_scanning_unable_to_add_product
+            ) {
+                startScan()
+            }
+        )
     }
     private fun Order.removeItem(item: Order.Item) = adjustProductQuantity(item.itemId, -item.quantity.toInt())
 
@@ -695,6 +708,12 @@ class OrderCreateEditViewModel @Inject constructor(
         ) : MultipleLinesContext()
     }
 }
+
+data class OnBarcodeScanningFailed(
+    val error: Throwable?,
+    val message: Int,
+    val retry: View.OnClickListener,
+) : Event()
 
 data class ProductUIModel(
     val item: Order.Item,
