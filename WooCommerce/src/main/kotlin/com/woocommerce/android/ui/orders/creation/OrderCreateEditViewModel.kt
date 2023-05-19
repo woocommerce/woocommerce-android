@@ -328,7 +328,7 @@ class OrderCreateEditViewModel @Inject constructor(
         viewModelScope.launch {
             productRepository.searchProductList(
                 searchQuery = sku,
-                skuSearchOptions = WCProductStore.SkuSearchOptions(isSkuSearch = true, isExactSkuSearch = true),
+                skuSearchOptions = WCProductStore.SkuSearchOptions.ExactSearch,
             )?.let { products ->
                 viewState = viewState.copy(isUpdatingOrderDraft = false)
                 products.firstOrNull()?.let { product ->
