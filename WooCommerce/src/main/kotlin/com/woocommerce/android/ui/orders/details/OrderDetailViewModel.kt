@@ -240,7 +240,7 @@ class OrderDetailViewModel @Inject constructor(
      */
     fun onCustomFieldsButtonClicked() {
         AnalyticsTracker.track(AnalyticsEvent.ORDER_VIEW_CUSTOM_FIELDS_TAPPED)
-        triggerEvent(OrderNavigationTarget.ViewCustomFields)
+        triggerEvent(OrderNavigationTarget.ViewCustomFields(navArgs.orderId))
     }
 
     /**

@@ -76,9 +76,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "13.5-rc-1"
+            versionName "13.6-rc-2"
         }
-        versionCode 411
+        versionCode 415
 
         minSdkVersion gradle.ext.minSdkVersion
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -281,6 +281,8 @@ dependencies {
     implementation "com.google.android.play:core:$googlePlayCoreVersion"
 
     implementation 'com.google.android.gms:play-services-code-scanner:16.0.0-beta3'
+
+    implementation "com.google.zxing:core:3.5.1"
 
     // Debug dependencies
     debugImplementation "com.facebook.flipper:flipper:$flipperVersion"

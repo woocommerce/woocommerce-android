@@ -48,6 +48,9 @@
             app:destination="@id/tapToPaySummaryFragment"
             app:popUpTo="@+id/tapToPaySummaryFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_selectPaymentMethodFragment_to_scanToPayDialogFragment"
+            app:destination="@id/scanToPayDialogFragment" />
     </fragment>
 
     <!-- Onboarding flow -->
@@ -332,5 +335,15 @@
             app:argType="com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryFragment$TestTapToPayFlow"
             app:nullable="false" />
     </fragment>
+
+    <dialog
+        android:id="@+id/scanToPayDialogFragment"
+        android:name="com.woocommerce.android.ui.payments.scantopay.ScanToPayDialogFragment"
+        android:label="ScanToPayDialogFragment">
+        <argument
+            android:name="qrContent"
+            app:argType="string"
+            app:nullable="false" />
+    </dialog>
 
 </navigation>

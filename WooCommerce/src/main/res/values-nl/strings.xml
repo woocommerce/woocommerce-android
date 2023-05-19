@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-02 13:54:04+0000
+Translation-Revision-Date: 2023-05-09 13:54:21+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="shipping_notice_dismiss">Afwijzen</string>
+    <string name="shipping_notice_learn_more">Meer informatie</string>
+    <string name="shipping_notice_banner_content">Bij het verzenden naar landen waarin douanewetgeving van de Europese Unie (EU) geldt, moet je een duidelijke, specifieke beschrijving van elk artikel opgeven. Anders kunnen verzendingen vertraging oplopen of stil komen staan bij de douane.</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Blijf op de hoogte en schroef winkelbeveiliging op. Ontdek Jetpack nu.</string>
+    <string name="jetpack_benefits_bottom_banner_title">Ontvang meldingen van bestellingen en meer</string>
     <string name="store_onboarding_setting_description">Lijst voor configuratie van winkel weergeven of verbergen</string>
     <string name="store_onboarding_setting_title">Lijst voor configuratie van winkel</string>
     <string name="store_onboarding_dialog_description">Wanneer je het nodig hebt, kan je het herstellen via Menu &gt; Instellingen &gt; Winkel</string>
@@ -1112,8 +1117,6 @@ Language: nl
     <string name="orderfilters_show_orders_button">Bestellingen weergeven</string>
     <string name="orderlist_filters_title">Gefilterde bestellingen</string>
     <string name="orderlist_no_filters_title">Alle bestellingen</string>
-    <string name="jetpack_benefits_bottom_banner_subtitle">Bekijk de voordelen</string>
-    <string name="jetpack_benefits_bottom_banner_title">Profiteer van de volledige ervaring met Jetpack</string>
     <string name="product_description_hint_with_title">Vertel ons meer over %s…</string>
     <string name="product_description_hint_no_title">Beschrijf je product voor je toekomstige klanten…</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">Serienummer lezer gekopieerd naar klembord</string>

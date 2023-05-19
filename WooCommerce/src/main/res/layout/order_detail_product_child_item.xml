@@ -12,7 +12,7 @@
         android:layout_height="@dimen/image_minor_100"
         android:layout_gravity="center_vertical"
         android:layout_marginVertical="@dimen/major_100"
-        android:layout_marginStart="@dimen/major_325"
+        android:layout_marginStart="@dimen/major_375"
         android:background="@drawable/picture_frame"
         android:padding="@dimen/image_frame_stroke_width"
         app:layout_constraintStart_toStartOf="parent"
