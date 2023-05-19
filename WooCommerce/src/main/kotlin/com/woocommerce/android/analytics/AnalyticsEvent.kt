@@ -755,10 +755,10 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     LOGIN_WOOCOMMERCE_SETUP_COMPLETED,
 
     // Login help scheduled notifications
-    LOGIN_LOCAL_NOTIFICATION_SCHEDULED(siteless = true),
-    LOGIN_LOCAL_NOTIFICATION_DISPLAYED(siteless = true),
-    LOGIN_LOCAL_NOTIFICATION_TAPPED(siteless = true),
-    LOGIN_LOCAL_NOTIFICATION_DISMISSED(siteless = true),
+    LOCAL_NOTIFICATION_SCHEDULED,
+    LOCAL_NOTIFICATION_DISPLAYED,
+    LOCAL_NOTIFICATION_TAPPED,
+    LOCAL_NOTIFICATION_DISMISSED,
 
     // Widgets
     WIDGET_TAPPED,
@@ -823,6 +823,11 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
 
     // Composite Products
     PRODUCT_DETAILS_VIEW_COMPONENTS_TAPPED,
+
+    // Account
+    CLOSE_ACCOUNT_TAPPED,
+    CLOSE_ACCOUNT_SUCCESS,
+    CLOSE_ACCOUNT_FAILED,
 
     // EU Shipping Notice
     EU_SHIPPING_NOTICE_SHOWN,

@@ -4,13 +4,18 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.CLOSE_ACCOUNT_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.CLOSE_ACCOUNT_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.CLOSE_ACCOUNT_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.login.AccountRepository.CloseAccountResult.Error
+import com.woocommerce.android.ui.login.AccountRepository.CloseAccountResult.Success
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,6 +23,7 @@ import javax.inject.Inject
 class CloseAccountViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val accountRepository: AccountRepository,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
 
     private val _viewState = MutableLiveData(
@@ -34,17 +40,33 @@ class CloseAccountViewModel @Inject constructor(
     )
     val viewState = _viewState
 
+    init {
+        analyticsTrackerWrapper.track(CLOSE_ACCOUNT_TAPPED)
+    }
+
     fun onConfirmCloseAccount() {
         launch {
             _viewState.value = _viewState.value?.copy(isLoading = true)
-            @Suppress("MagicNumber") delay(3000)
-            _viewState.value = _viewState.value?.copy(
-                title = R.string.settings_close_account_error_dialog_title,
-                description = R.string.settings_close_account_error_dialog_description,
-                mainButtonText = R.string.settings_close_account_dialog_contact_support_button,
-                isLoading = false,
-                isAccountDeletionError = true
-            )
+            when (val result = accountRepository.closeAccount()) {
+                Success -> {
+                    analyticsTrackerWrapper.track(CLOSE_ACCOUNT_SUCCESS)
+                    triggerEvent(OnAccountClosed)
+                }
+
+                is Error -> {
+                    val errorDescription =
+                        if (result.hasActiveStores) R.string.settings_close_account_active_stores_error_description
+                        else R.string.settings_close_account_generic_error_description
+                    _viewState.value = _viewState.value?.copy(
+                        title = R.string.settings_close_account_error_dialog_title,
+                        description = errorDescription,
+                        mainButtonText = R.string.settings_close_account_dialog_contact_support_button,
+                        isLoading = false,
+                        isAccountDeletionError = true
+                    )
+                    analyticsTrackerWrapper.track(CLOSE_ACCOUNT_FAILED)
+                }
+            }
         }
     }
 
@@ -71,4 +93,5 @@ class CloseAccountViewModel @Inject constructor(
     )
 
     data class ContactSupport(val origin: HelpOrigin) : MultiLiveEvent.Event()
+    object OnAccountClosed : MultiLiveEvent.Event()
 }
