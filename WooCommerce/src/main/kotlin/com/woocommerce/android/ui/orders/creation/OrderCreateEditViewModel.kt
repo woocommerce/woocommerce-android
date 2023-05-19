@@ -323,7 +323,7 @@ class OrderCreateEditViewModel @Inject constructor(
             if (item.isVariation) {
                 SelectedItem.ProductVariation(item.productId, item.variationId)
             } else {
-                Product(item.productId)
+                SelectedItem.Product(item.productId)
             }
         }.orEmpty()
         viewModelScope.launch {
