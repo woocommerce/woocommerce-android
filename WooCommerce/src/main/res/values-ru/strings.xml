@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-09 15:54:03+0000
+Translation-Revision-Date: 2023-05-15 19:54:20+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="product_stock_status_insufficient_stock">Недостаточный запас</string>
+    <string name="shipping_label_customs_item_description_too_short">Вы должны дать ясное, конкретное описание для каждого товара.</string>
+    <string name="order_creation_add_product_via_barcode_scanning">Добавить товары с помощью сканера</string>
     <string name="shipping_notice_dismiss">Закрыть</string>
     <string name="shipping_notice_learn_more">Подробнее</string>
     <string name="shipping_notice_banner_content">Отправляя товары в страны, которые следуют таможенным правилам Европейского Союза (ЕС), вы должны точно и понятно описать каждую позицию. В ином случае может произойти задержка или приостановка доставки на таможне.</string>

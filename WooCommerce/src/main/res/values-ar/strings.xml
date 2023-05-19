@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-08 19:54:03+0000
+Translation-Revision-Date: 2023-05-16 16:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="product_stock_status_insufficient_stock">مخزون غير كافٍ</string>
+    <string name="shipping_label_customs_item_description_too_short">يجب عليك توفير واضح ومحدد لكل عنصر.</string>
+    <string name="order_creation_add_product_via_barcode_scanning">إضافة منتجات عبر الفاحص</string>
     <string name="shipping_notice_dismiss">تجاهل</string>
     <string name="shipping_notice_learn_more">التعرّف على المزيد</string>
     <string name="shipping_notice_banner_content">عند الشحن إلى البلدان التي تتبع القواعد الجمركية المعمول بها في الاتحاد الأوروبي، يجب عليك تقديم وصف صريح ومحدد لكل عنصر. وإلا، فإن الشحنات قد تتأجل أو تُعتَرض في الجمارك.</string>

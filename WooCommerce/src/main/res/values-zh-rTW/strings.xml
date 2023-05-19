@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-09 09:54:03+0000
+Translation-Revision-Date: 2023-05-16 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="product_stock_status_insufficient_stock">庫存不足</string>
+    <string name="shipping_label_customs_item_description_too_short">你必須針對每件商品提供清楚明確的說明。</string>
+    <string name="order_creation_add_product_via_barcode_scanning">透過掃瞄器新增商品</string>
     <string name="shipping_notice_dismiss">關閉</string>
     <string name="shipping_notice_learn_more">深入瞭解</string>
     <string name="shipping_notice_banner_content">運送到遵循歐盟 (EU) 海關規定的國家/地區時，你必須針對每件商品提供清楚明確的描述。 否則貨件可能會在海關階段延誤或中斷。</string>
