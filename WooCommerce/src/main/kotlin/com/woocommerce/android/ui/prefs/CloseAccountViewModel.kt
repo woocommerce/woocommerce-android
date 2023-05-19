@@ -4,6 +4,10 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.CLOSE_ACCOUNT_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.CLOSE_ACCOUNT_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.CLOSE_ACCOUNT_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.AccountRepository.CloseAccountResult.Error
@@ -19,6 +23,7 @@ import javax.inject.Inject
 class CloseAccountViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val accountRepository: AccountRepository,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
 
     private val _viewState = MutableLiveData(
@@ -35,11 +40,19 @@ class CloseAccountViewModel @Inject constructor(
     )
     val viewState = _viewState
 
+    init {
+        analyticsTrackerWrapper.track(CLOSE_ACCOUNT_TAPPED)
+    }
+
     fun onConfirmCloseAccount() {
         launch {
             _viewState.value = _viewState.value?.copy(isLoading = true)
             when (val result = accountRepository.closeAccount()) {
-                Success -> triggerEvent(Exit)
+                Success -> {
+                    analyticsTrackerWrapper.track(CLOSE_ACCOUNT_SUCCESS)
+                    triggerEvent(OnAccountClosed)
+                }
+
                 is Error -> {
                     val errorDescription =
                         if (result.hasActiveStores) R.string.settings_close_account_active_stores_error_description
@@ -51,6 +64,7 @@ class CloseAccountViewModel @Inject constructor(
                         isLoading = false,
                         isAccountDeletionError = true
                     )
+                    analyticsTrackerWrapper.track(CLOSE_ACCOUNT_FAILED)
                 }
             }
         }
@@ -79,4 +93,5 @@ class CloseAccountViewModel @Inject constructor(
     )
 
     data class ContactSupport(val origin: HelpOrigin) : MultiLiveEvent.Event()
+    object OnAccountClosed : MultiLiveEvent.Event()
 }
