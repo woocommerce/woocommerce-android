@@ -181,6 +181,7 @@ class OrderCreateEditViewModel @Inject constructor(
                         )
                         monitorOrderChanges()
                     }
+                    updateCouponButtonVisibility()
                 }
             }
         }
