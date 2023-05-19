@@ -59,7 +59,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     private lateinit var determineMultipleLinesContext: DetermineMultipleLinesContext
     protected lateinit var tracker: AnalyticsTrackerWrapper
     private lateinit var codeScanner: CodeScanner
-    private lateinit var productListRepository: ProductListRepository
+    lateinit var productListRepository: ProductListRepository
 
     protected val defaultOrderValue = Order.EMPTY.copy(id = 123)
 
@@ -420,57 +420,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             sut.startScan()
 
             assertThat(newOrder?.getProductIds()?.any { it == 10L }).isTrue()
-        }
-    }
-    @Test
-    fun `given sku, when view model init, then fetch product information`() {
-        testBlocking {
-            val navArgs = OrderCreateEditFormFragmentArgs(
-                OrderCreateEditViewModel.Mode.Creation, "123"
-            ).initSavedStateHandle()
-            whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
-                SiteParameters(
-                    currencyCode = "",
-                    currencySymbol = null,
-                    currencyFormattingParameters = null,
-                    weightUnit = null,
-                    dimensionUnit = null,
-                    gmtOffset = 0F
-                )
-            )
-
-            createSut(navArgs)
-
-            verify(productListRepository, times(2)).searchProductList(
-                "123",
-                WCProductStore.SkuSearchOptions.ExactSearch
-            )
-        }
-    }
-
-    @Test
-    fun `given empty sku, when view model init, then do not fetch product information`() {
-        testBlocking {
-            val navArgs = OrderCreateEditFormFragmentArgs(
-                OrderCreateEditViewModel.Mode.Creation, ""
-            ).initSavedStateHandle()
-            whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
-                SiteParameters(
-                    currencyCode = "",
-                    currencySymbol = null,
-                    currencyFormattingParameters = null,
-                    weightUnit = null,
-                    dimensionUnit = null,
-                    gmtOffset = 0F
-                )
-            )
-
-            createSut(navArgs)
-
-            verify(productListRepository, times(1)).searchProductList(
-                "123",
-                WCProductStore.SkuSearchOptions.ExactSearch
-            )
         }
     }
 

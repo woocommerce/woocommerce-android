@@ -4,6 +4,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
@@ -21,6 +22,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
+import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -34,8 +36,11 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
 import java.util.function.Consumer
 
@@ -1109,5 +1114,57 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             AnalyticsEvent.ORDER_COUPON_REMOVE,
             mapOf(AnalyticsTracker.KEY_FLOW to VALUE_FLOW_CREATION)
         )
+    }
+
+    @Test
+    fun `given sku, when view model init, then fetch product information`() {
+        testBlocking {
+            val navArgs = OrderCreateEditFormFragmentArgs(
+                OrderCreateEditViewModel.Mode.Creation, "123"
+            ).initSavedStateHandle()
+            whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
+                SiteParameters(
+                    currencyCode = "",
+                    currencySymbol = null,
+                    currencyFormattingParameters = null,
+                    weightUnit = null,
+                    dimensionUnit = null,
+                    gmtOffset = 0F
+                )
+            )
+
+            createSut(navArgs)
+
+            verify(productListRepository, times(2)).searchProductList(
+                "123",
+                WCProductStore.SkuSearchOptions.ExactSearch
+            )
+        }
+    }
+
+    @Test
+    fun `given empty sku, when view model init, then do not fetch product information`() {
+        testBlocking {
+            val navArgs = OrderCreateEditFormFragmentArgs(
+                OrderCreateEditViewModel.Mode.Creation, ""
+            ).initSavedStateHandle()
+            whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
+                SiteParameters(
+                    currencyCode = "",
+                    currencySymbol = null,
+                    currencyFormattingParameters = null,
+                    weightUnit = null,
+                    dimensionUnit = null,
+                    gmtOffset = 0F
+                )
+            )
+
+            createSut(navArgs)
+
+            verify(productListRepository, times(1)).searchProductList(
+                "123",
+                WCProductStore.SkuSearchOptions.ExactSearch
+            )
+        }
     }
 }
