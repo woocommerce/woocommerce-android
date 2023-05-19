@@ -1911,7 +1911,8 @@
     <string name="settings_close_account_dialog_confirm_button">Permanently Close Account</string>
     <string name="settings_close_account_dialog_loading_title">Closing account…</string>
     <string name="settings_close_account_error_dialog_title">Couldn\'t close account</string>
-    <string name="settings_close_account_error_dialog_description">An error occurred while attempting to close your account.</string>
+    <string name="settings_close_account_generic_error_description">An error occurred while attempting to close your account.</string>
+    <string name="settings_close_account_active_stores_error_description">This account cannot be closed while it has active stores.</string>
     <string name="settings_close_account_dialog_contact_support_button">Contact Support</string>
     <string name="settings_preferences">Preferences</string>
     <string name="settings_confirm_logout">Are you sure you want to logout from the account %s?</string>
