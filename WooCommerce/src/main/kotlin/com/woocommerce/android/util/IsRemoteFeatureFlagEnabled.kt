@@ -7,7 +7,7 @@ import com.woocommerce.android.util.RemoteFeatureFlag.LOCAL_NOTIFICATION_NUDGE_F
 import com.woocommerce.android.util.RemoteFeatureFlag.LOCAL_NOTIFICATION_STORE_CREATION_READY
 import javax.inject.Inject
 
-class CheckRemoteFeatureFlagEnabled @Inject constructor(
+class IsRemoteFeatureFlagEnabled @Inject constructor(
     private val wpComRemoteFeatureFlagRepository: WPComRemoteFeatureFlagRepository
 ) {
     operator fun invoke(featureFlag: RemoteFeatureFlag): Boolean {
