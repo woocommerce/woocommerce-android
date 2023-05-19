@@ -505,6 +505,22 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `when code scanner fails to recognize the barcode, then proper throwable is sent`() {
+        createSut()
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(CodeScannerStatus.Failure(Throwable("Failed to recognize the barcode")))
+            }
+        }
+
+        sut.startScan()
+
+        assertThat((sut.event.value as OnBarcodeScanningFailed).error?.message).isEqualTo(
+            "Failed to recognize the barcode"
+        )
+    }
+
     //endregion
 
     protected fun createSut(savedStateHandle: SavedStateHandle = savedState) {

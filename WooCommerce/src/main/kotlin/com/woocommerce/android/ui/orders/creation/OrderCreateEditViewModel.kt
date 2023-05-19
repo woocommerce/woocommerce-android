@@ -303,7 +303,7 @@ class OrderCreateEditViewModel @Inject constructor(
             codeScanner.startScan().collect { status ->
                 when (status) {
                     is CodeScannerStatus.Failure -> {
-                        sendBarcodeScanningFailedEvent()
+                        sendBarcodeScanningFailedEvent(status.error)
                     }
                     is CodeScannerStatus.Success -> {
                         viewState = viewState.copy(isUpdatingOrderDraft = true)
@@ -346,10 +346,10 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun sendBarcodeScanningFailedEvent() {
+    private fun sendBarcodeScanningFailedEvent(error: Throwable?) {
         triggerEvent(
             OnBarcodeScanningFailed(
-                Throwable("Failed to load product information from SKU"),
+                error,
                 string.order_creation_barcode_scanning_unable_to_add_product
             ) {
                 startScan()
