@@ -1,5 +1,1 @@
-- [**] In-Person Payments: A merchant can now generate a QR code for a payment and the customer can scan the QR code to pay. [https://github.com/woocommerce/woocommerce-android/pull/9032]
-- [*] [Internal] "Colored" buttons have white text in the dark mode [https://github.com/woocommerce/woocommerce-android/pull/9044]
-- [*] [Internal] Added local coupon validation in order creation flow [https://github.com/woocommerce/woocommerce-android/pull/9066]
-- [**] Support for adding coupon code when creating an order [https://github.com/woocommerce/woocommerce-android/pull/9024]
-
+Lots of exciting updates on this one! You can create orders on the go and add discounts for the order! You can also quickly take a payment for the order by generating a QR code for your customers to scan and pay. You’ve asked for it, and now it’s here!
