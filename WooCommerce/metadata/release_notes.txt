@@ -1,1 +1,5 @@
-Our experimental coupons feature is now available for everyone! Simply click on the menu option to manage your coupons from the app. Try it out and share your feedback!
+- [**] In-Person Payments: A merchant can now generate a QR code for a payment and the customer can scan the QR code to pay. [https://github.com/woocommerce/woocommerce-android/pull/9032]
+- [*] [Internal] "Colored" buttons have white text in the dark mode [https://github.com/woocommerce/woocommerce-android/pull/9044]
+- [*] [Internal] Added local coupon validation in order creation flow [https://github.com/woocommerce/woocommerce-android/pull/9066]
+- [**] Support for adding coupon code when creating an order [https://github.com/woocommerce/woocommerce-android/pull/9024]
+
