@@ -255,12 +255,20 @@ class ProductDetailViewModel @Inject constructor(
             val showSaveOptionAsActionWithText = hasChanges && (isNotPublishedUnderCreation || !isProductUnderCreation)
             val isProductPublished = productDraft.status == ProductStatus.PUBLISH
             val isProductPublishedOrPrivate = isProductPublished || productDraft.status == ProductStatus.PRIVATE
+            val showPublishOption = !isProductPublishedOrPrivate || isProductUnderCreation
+            val showShareOption = !isProductUnderCreation
+
+            // Show as action with text if "Save" or "Publish" is not currently shown as action with text.
+            val showShareOptionAsActionWithText =
+                showShareOption && !showSaveOptionAsActionWithText && !showPublishOption
+
             MenuButtonsState(
                 saveOption = showSaveOptionAsActionWithText,
                 saveAsDraftOption = canBeSavedAsDraft,
-                publishOption = !isProductPublishedOrPrivate || isProductUnderCreation,
+                publishOption = showPublishOption,
                 viewProductOption = isProductPublished && !isProductUnderCreation,
-                shareOption = !isProductUnderCreation,
+                shareOption = showShareOption,
+                showShareOptionAsActionWithText = showShareOptionAsActionWithText,
                 trashOption = !isProductUnderCreation && navArgs.isTrashEnabled
             )
         }.asLiveData()
@@ -2339,6 +2347,7 @@ class ProductDetailViewModel @Inject constructor(
         val publishOption: Boolean,
         val viewProductOption: Boolean,
         val shareOption: Boolean,
+        val showShareOptionAsActionWithText: Boolean,
         val trashOption: Boolean
     )
 }
