@@ -34,8 +34,6 @@ import com.woocommerce.android.extensions.setClickableText
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.extensions.verticalOffsetChanges
-import com.woocommerce.android.notifications.local.LocalNotificationScheduler
-import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_FINISHED
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -97,7 +95,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     @Inject lateinit var usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter
     @Inject lateinit var appPrefsWrapper: AppPrefsWrapper
     @Inject lateinit var feedbackPrefs: FeedbackPrefs
-    @Inject lateinit var notificationScheduler: LocalNotificationScheduler
 
     private var _binding: FragmentMyStoreBinding? = null
     private val binding get() = _binding!!
@@ -400,8 +397,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
             wasPreviouslyStopped = false
         }
 
-        // A notification is only displayed when the store has never been opened before
-        notificationScheduler.cancelScheduledNotification(STORE_CREATION_FINISHED)
+        myStoreViewModel.onStoreOpened()
     }
 
     override fun onStop() {
