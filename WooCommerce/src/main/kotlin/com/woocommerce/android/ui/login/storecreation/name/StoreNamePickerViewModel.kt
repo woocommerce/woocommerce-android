@@ -11,9 +11,14 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.isNotNullOrEmpty
+import com.woocommerce.android.notifications.local.LocalNotification.StoreCreationIncompleteNotification
+import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.support.help.HelpOrigin.STORE_CREATION
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
+import com.woocommerce.android.util.RemoteFeatureFlag.LOCAL_NOTIFICATION_NUDGE_FREE_TRIAL_AFTER_1D
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.NavigateToHelpScreen
@@ -23,6 +28,7 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.store.AccountStore
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,7 +36,10 @@ class StoreNamePickerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val newStore: NewStore,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val prefsWrapper: AppPrefsWrapper
+    private val prefsWrapper: AppPrefsWrapper,
+    private val localNotificationScheduler: LocalNotificationScheduler,
+    private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled,
+    private val accountStore: AccountStore
 ) : ScopedViewModel(savedStateHandle) {
     override val _event = SingleLiveEvent<Event>()
     override val event: LiveData<Event> = _event
@@ -88,12 +97,31 @@ class StoreNamePickerViewModel @Inject constructor(
 
     fun onContinueClicked() {
         newStore.update(name = _viewState.value.storeName)
+
+        scheduleDeferredNotification()
+
         if (canCreateFreeTrialStore) {
             triggerEvent(NavigateToSummary)
         } else if (FeatureFlag.STORE_CREATION_PROFILER.isEnabled()) {
             triggerEvent(NavigateToStoreProfiler)
         } else {
             triggerEvent(NavigateToDomainPicker(_viewState.value.storeName))
+        }
+    }
+
+    private fun scheduleDeferredNotification() {
+        if (isRemoteFeatureFlagEnabled(LOCAL_NOTIFICATION_NUDGE_FREE_TRIAL_AFTER_1D)) {
+            val name = if (accountStore.account.firstName.isNotNullOrEmpty())
+                accountStore.account.firstName
+            else
+                accountStore.account.userName
+
+            localNotificationScheduler.scheduleNotification(
+                StoreCreationIncompleteNotification(
+                    name,
+                    _viewState.value.storeName
+                )
+            )
         }
     }
 
