@@ -30,12 +30,14 @@ class OrderDetailProductListView @JvmOverloads constructor(
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
     private val binding = OrderDetailProductListBinding.inflate(LayoutInflater.from(ctx), this)
 
+    @Suppress("LongParameterList")
     fun updateProductItemsList(
         orderProductItems: List<OrderProduct>,
         productImageMap: ProductImageMap,
         formatCurrencyForDisplay: (BigDecimal) -> String,
         productClickListener: OrderProductActionListener,
         onProductMenuItemClicked: () -> Unit,
+        onIsExpandedChange: (groupedProduct: OrderProduct.GroupedProductItem) -> Unit,
         onViewAddonsClick: ViewAddonClickListener? = null
     ) {
         val adapter = OrderDetailProductItemListAdapter(
@@ -43,6 +45,7 @@ class OrderDetailProductListView @JvmOverloads constructor(
             productImageMap,
             formatCurrencyForDisplay,
             productClickListener,
+            onIsExpandedChange,
             onViewAddonsClick
         )
         updateList(
