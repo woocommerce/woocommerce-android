@@ -611,6 +611,29 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `given product search by SKU fails, when retry clicked, then restart scanning`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(null)
+
+            sut.startScan()
+            (sut.event.value as OnProductSearchBySKUFailed).retry.onClick(any())
+
+            verify(codeScanner).startScan()
+        }
+    }
+
     //endregion
 
     protected fun createSut(savedStateHandle: SavedStateHandle = savedState) {
