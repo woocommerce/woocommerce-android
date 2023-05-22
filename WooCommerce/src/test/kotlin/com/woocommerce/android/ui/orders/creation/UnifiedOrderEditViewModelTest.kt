@@ -673,7 +673,48 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 ?.takeIf { it.isNotEmpty() }
                 ?.find { it.variationId == 10L}
                 ?.let { assertThat(it.quantity).isEqualTo(3f) }
-                ?: Assertions.fail("Expected an item with productId 10L with quantity as 2")
+                ?: Assertions.fail("Expected an item with variationId 10L with quantity as 3")
+        }
+    }
+
+    @Test
+    fun `given that same product scanned thrice, then increment the product quantity accordingly`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                    )
+                )
+            )
+            whenever(createOrderItemUseCase.invoke(10L)).thenReturn(
+                createOrderItem(10L)
+            )
+            var orderDraft: Order? = null
+            sut.orderDraft.observeForever { order ->
+                orderDraft = order
+            }
+
+            sut.startScan()
+            sut.startScan()
+            sut.startScan()
+
+            orderDraft?.items
+                ?.takeIf { it.isNotEmpty() }
+                ?.find { it.productId == 10L}
+                ?.let { assertThat(it.quantity).isEqualTo(3f) }
+                ?: Assertions.fail("Expected an item with productId 10L with quantity as 3")
         }
     }
 
