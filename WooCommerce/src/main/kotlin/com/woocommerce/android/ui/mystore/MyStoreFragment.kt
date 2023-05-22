@@ -390,6 +390,8 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
             usageTracksEventEmitter.interacted()
             wasPreviouslyStopped = false
         }
+
+        AppPrefs.wasStoreOpened = true
     }
 
     override fun onStop() {
