@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-09 09:54:03+0000
+Translation-Revision-Date: 2023-05-16 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="product_stock_status_insufficient_stock">庫存不足</string>
+    <string name="shipping_label_customs_item_description_too_short">你必須針對每件商品提供清楚明確的說明。</string>
+    <string name="order_creation_add_product_via_barcode_scanning">透過掃瞄器新增商品</string>
     <string name="shipping_notice_dismiss">關閉</string>
     <string name="shipping_notice_learn_more">深入瞭解</string>
     <string name="shipping_notice_banner_content">運送到遵循歐盟 (EU) 海關規定的國家/地區時，你必須針對每件商品提供清楚明確的描述。 否則貨件可能會在海關階段延誤或中斷。</string>
@@ -626,7 +629,6 @@ Language: zh_TW
     <string name="login_prologue_label_orders_subtitle">你可以快速輕鬆管理這些訂單</string>
     <string name="login_prologue_label_analytics_subtitle">我們知道這對你的業務相當重要</string>
     <string name="login_prologue_new_to_woo">第一次使用 WooCommerce</string>
-    <string name="notification_channel_pre_login_title">登入疑難排解提醒</string>
     <string name="tests_notification_new_order_message">你的 WooCommerce 商店有一筆 $50 的新訂單</string>
     <string name="tests_notification_new_order_title">你有新訂單！🎉</string>
     <string name="lines_all_details">詳細資訊</string>

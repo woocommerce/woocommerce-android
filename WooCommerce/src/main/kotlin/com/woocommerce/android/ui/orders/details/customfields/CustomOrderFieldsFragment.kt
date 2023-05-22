@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -16,7 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CustomOrderFieldsFragment : BaseFragment(), CustomOrderFieldClickListener {
-    private val viewModel by hiltNavGraphViewModels<OrderDetailViewModel>(R.id.nav_graph_orders)
+    private val viewModel by viewModels<OrderDetailViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,

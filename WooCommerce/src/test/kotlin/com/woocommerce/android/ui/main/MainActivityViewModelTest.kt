@@ -8,11 +8,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.FeatureAnnouncementItem
-import com.woocommerce.android.push.NotificationChannelType
-import com.woocommerce.android.push.NotificationMessageHandler
-import com.woocommerce.android.push.NotificationTestUtils
-import com.woocommerce.android.push.UnseenReviewsCountHandler
-import com.woocommerce.android.push.WooNotificationType
+import com.woocommerce.android.notifications.NotificationChannelType
+import com.woocommerce.android.notifications.UnseenReviewsCountHandler
+import com.woocommerce.android.notifications.WooNotificationType
+import com.woocommerce.android.notifications.local.LocalNotificationScheduler
+import com.woocommerce.android.notifications.push.NotificationMessageHandler
+import com.woocommerce.android.notifications.push.NotificationTestUtils
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
@@ -73,6 +74,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
     private val selectedSite: SelectedSite = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val notificationScheduler: LocalNotificationScheduler = mock()
 
     private val siteStore: SiteStore = mock()
     private val siteModel: SiteModel = SiteModel().apply {
@@ -184,7 +186,8 @@ class MainActivityViewModelTest : BaseUnitTest() {
         viewModel.handleIncomingNotification(localPushId, testOrderNotification)
 
         verify(notificationMessageHandler, atLeastOnce()).markNotificationTapped(eq(testOrderNotification.remoteNoteId))
-        verify(notificationMessageHandler, atLeastOnce()).removeNotificationByPushIdFromSystemsBar(eq(localPushId))
+        verify(notificationMessageHandler, atLeastOnce())
+            .removeNotificationByNotificationIdFromSystemsBar(eq(localPushId))
         assertThat(event).isEqualTo(
             ViewOrderDetail(
                 testOrderNotification.uniqueId,
@@ -206,7 +209,8 @@ class MainActivityViewModelTest : BaseUnitTest() {
         viewModel.handleIncomingNotification(localPushId, testOrderNotification)
 
         verify(notificationMessageHandler, atLeastOnce()).markNotificationTapped(eq(testOrderNotification.remoteNoteId))
-        verify(notificationMessageHandler, atLeastOnce()).removeNotificationByPushIdFromSystemsBar(eq(localPushId))
+        verify(notificationMessageHandler, atLeastOnce())
+            .removeNotificationByNotificationIdFromSystemsBar(eq(localPushId))
         assertThat(event).isEqualTo(ViewOrderList)
     }
 
@@ -222,7 +226,8 @@ class MainActivityViewModelTest : BaseUnitTest() {
 
         verify(notificationMessageHandler, atLeastOnce())
             .markNotificationTapped(eq(testReviewNotification.remoteNoteId))
-        verify(notificationMessageHandler, atLeastOnce()).removeNotificationByPushIdFromSystemsBar(eq(localPushId))
+        verify(notificationMessageHandler, atLeastOnce())
+            .removeNotificationByNotificationIdFromSystemsBar(eq(localPushId))
         assertThat(event).isEqualTo(ViewReviewDetail(testReviewNotification.uniqueId))
     }
 
@@ -247,7 +252,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         verify(notificationMessageHandler, atLeastOnce()).markNotificationTapped(
             eq(testZendeskNotification.remoteNoteId)
         )
-        verify(notificationMessageHandler, atLeastOnce()).removeNotificationByPushIdFromSystemsBar(
+        verify(notificationMessageHandler, atLeastOnce()).removeNotificationByNotificationIdFromSystemsBar(
             eq(TEST_ZENDESK_PUSH_NOTIFICATION_ID)
         )
         assertThat(event).isEqualTo(ViewZendeskTickets)
@@ -532,6 +537,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 prefs,
                 analyticsTrackerWrapper,
                 resolveAppLink,
+                notificationScheduler,
                 moreMenuNewFeatureHandler,
                 unseenReviewsCountHandler,
                 mock {

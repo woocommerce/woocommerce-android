@@ -15,9 +15,11 @@ import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.RequestResult
-import com.woocommerce.android.push.NotificationChannelType
+import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.creation.CodeScanner
+import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
@@ -98,6 +100,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private val appPrefs = mock<AppPrefs>()
     private val feedbackPrefs = mock<FeedbackPrefs>()
+    private val codeScanner = mock<CodeScanner>()
 
     @Before
     fun setup() = testBlocking {
@@ -148,6 +151,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         analyticsTracker = analyticsTracker,
         appPrefs = appPrefs,
         feedbackPrefs = feedbackPrefs,
+        codeScanner = codeScanner,
     )
 
     @Test
@@ -953,6 +957,38 @@ class OrderListViewModelTest : BaseUnitTest() {
             // then
             assertEquals(IPPSurveyFeedbackBannerState.Hidden, viewModel.viewState.ippFeedbackBannerState)
         }
+
+    // region barcode scanner
+
+    @Test
+    fun `when code scanner succeeds, then trigger proper event`() {
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(CodeScannerStatus.Success("12345"))
+            }
+        }
+
+        viewModel = createViewModel()
+        viewModel.startScan()
+
+        assertThat(viewModel.event.value).isInstanceOf(OrderListViewModel.OrderListEvent.OnBarcodeScanned::class.java)
+    }
+
+    @Test
+    fun `when code scanner succeeds, then trigger event with proper sku`() {
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(CodeScannerStatus.Success("12345"))
+            }
+        }
+
+        viewModel = createViewModel()
+        viewModel.startScan()
+
+        assertThat(viewModel.event.value).isEqualTo(OrderListViewModel.OrderListEvent.OnBarcodeScanned("12345"))
+    }
+
+    //endregion
 
     private companion object {
         const val ANY_SEARCH_QUERY = "search query"

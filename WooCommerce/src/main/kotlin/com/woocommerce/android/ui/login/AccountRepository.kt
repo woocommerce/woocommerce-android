@@ -20,11 +20,14 @@ import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.account.CloseAccountStore
+import org.wordpress.android.fluxc.store.account.CloseAccountStore.CloseAccountErrorType
 import javax.inject.Inject
 
 class AccountRepository @Inject constructor(
     private val accountStore: AccountStore,
     private val siteStore: SiteStore,
+    private val closeAccountStore: CloseAccountStore,
     private val selectedSite: SelectedSite,
     private val dispatcher: Dispatcher,
     private val zendeskSettings: ZendeskSettings,
@@ -61,6 +64,7 @@ class AccountRepository @Inject constructor(
                 )
                 false
             } else {
+                AnalyticsTracker.track(AnalyticsEvent.ACCOUNT_LOGOUT)
                 cleanup()
                 true
             }
@@ -85,9 +89,27 @@ class AccountRepository @Inject constructor(
         }
     }
 
-    private fun cleanup() {
-        AnalyticsTracker.track(AnalyticsEvent.ACCOUNT_LOGOUT)
+    suspend fun closeAccount(): CloseAccountResult {
+        val result = closeAccountStore.closeAccount()
+        return if (result.isError) {
+            when (result.error.type) {
+                CloseAccountErrorType.EXISTING_ATOMIC_SITES -> CloseAccountResult.Error(hasActiveStores = true)
+                CloseAccountErrorType.GENERIC_ERROR -> CloseAccountResult.Error(hasActiveStores = false)
+            }
+        } else {
+            val event: OnAccountChanged = dispatcher.dispatchAndAwait(AccountActionBuilder.newSignOutAction())
+            if (event.isError) {
+                WooLog.d(LOGIN, "Error while trying to log out after successfully closing the account")
+                CloseAccountResult.Error(hasActiveStores = false)
+            } else {
+                selectedSite.reset()
+                cleanup()
+                CloseAccountResult.Success
+            }
+        }
+    }
 
+    private fun cleanup() {
         // Reset analytics
         AnalyticsTracker.flush()
         AnalyticsTracker.clearAllData()
@@ -98,5 +120,10 @@ class AccountRepository @Inject constructor(
 
         // Delete sites
         dispatcher.dispatch(SiteActionBuilder.newRemoveAllSitesAction())
+    }
+
+    sealed class CloseAccountResult {
+        object Success : CloseAccountResult()
+        data class Error(val hasActiveStores: Boolean) : CloseAccountResult()
     }
 }

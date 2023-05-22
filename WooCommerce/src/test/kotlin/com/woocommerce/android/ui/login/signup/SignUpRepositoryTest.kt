@@ -12,15 +12,14 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
-import org.wordpress.android.fluxc.store.signup.SignUpStore
-import org.wordpress.android.fluxc.store.signup.SignUpStore.CreateWpAccountResult
+import org.wordpress.android.fluxc.store.account.SignUpStore
+import org.wordpress.android.fluxc.store.account.SignUpStore.CreateWpAccountResult
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SignUpRepositoryTest : BaseUnitTest() {
     private companion object {
         const val EMAIL_WITHOUT_DOMAIN = "email"
         const val VALID_USER_EMAIL = "email@gmail.com"
-        const val INVALID_USER_EMAIL = "email@gm"
         const val USER_EMAIL_CONTAINING_WORDPRESS = "emailWordPress@gmail.com"
         const val ANY_VALID_PASSWORD = "anypassword"
         const val DEFAULT_USERNAME_SUGGESTION = "usernameOne"

@@ -488,11 +488,11 @@ class OrderDetailFragment :
         }
     }
 
-    private fun showOrderProducts(products: List<Order.Item>, currency: String) {
+    private fun showOrderProducts(products: List<OrderProduct>, currency: String) {
         products.whenNotNullNorEmpty {
             with(binding.orderDetailProductList) {
-                updateProductList(
-                    orderItems = products,
+                updateProductItemsList(
+                    orderProductItems = products,
                     productImageMap = productImageMap,
                     formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(currency),
                     productClickListener = this@OrderDetailFragment,
