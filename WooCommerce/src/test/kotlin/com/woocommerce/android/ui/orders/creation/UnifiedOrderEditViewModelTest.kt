@@ -587,6 +587,30 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `when product search by SKU fails, then proper message is displayed`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(null)
+
+            sut.startScan()
+
+            assertThat(
+                (sut.event.value as OnProductSearchBySKUFailed).message
+            ).isEqualTo(R.string.order_creation_barcode_scanning_unable_to_add_product)
+        }
+    }
+
     //endregion
 
     protected fun createSut(savedStateHandle: SavedStateHandle = savedState) {
