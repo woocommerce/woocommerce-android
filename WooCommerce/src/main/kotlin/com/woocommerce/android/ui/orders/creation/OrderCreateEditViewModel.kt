@@ -341,16 +341,30 @@ class OrderCreateEditViewModel @Inject constructor(
                 viewState = viewState.copy(isUpdatingOrderDraft = false)
                 products.firstOrNull()?.let { product ->
                     if (product.isVariable()) {
-                        onProductsSelected(
-                            selectedItems + SelectedItem.ProductVariation(
-                                productId = product.parentId,
-                                variationId = product.remoteId
+                        val selectedOrder = _orderDraft.value.items.firstOrNull { item ->
+                            item.variationId == product.remoteId
+                        }
+                        selectedOrder?.let {
+                            onIncreaseProductsQuantity(it.itemId)
+                        } ?: run {
+                            onProductsSelected(
+                                selectedItems + SelectedItem.ProductVariation(
+                                    productId = product.parentId,
+                                    variationId = product.remoteId
+                                )
                             )
-                        )
+                        }
                     } else {
-                        onProductsSelected(
-                            selectedItems + Product(productId = product.remoteId)
-                        )
+                        val selectedOrder = _orderDraft.value.items.firstOrNull { item ->
+                            item.productId == product.remoteId
+                        }
+                        selectedOrder?.let {
+                            onIncreaseProductsQuantity(it.itemId)
+                        } ?: run {
+                            onProductsSelected(
+                                selectedItems + Product(productId = product.remoteId)
+                            )
+                        }
                     }
                 }
             } ?: run {

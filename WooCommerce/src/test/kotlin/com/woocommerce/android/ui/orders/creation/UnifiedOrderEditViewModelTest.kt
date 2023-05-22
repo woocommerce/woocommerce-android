@@ -23,6 +23,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -631,6 +632,48 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             (sut.event.value as OnProductSearchBySKUFailed).retry.onClick(any())
 
             verify(codeScanner).startScan()
+        }
+    }
+
+    @Test
+    fun `given that same variable subscription product scanned thrice, then increment the product quantity accordingly`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        productType = "variable-subscription",
+                    )
+                )
+            )
+            whenever(createOrderItemUseCase.invoke(0L, 10L)).thenReturn(
+                createOrderItem(0L, 10L)
+            )
+            var orderDraft: Order? = null
+            sut.orderDraft.observeForever { order ->
+                orderDraft = order
+            }
+
+            sut.startScan()
+            sut.startScan()
+            sut.startScan()
+
+            orderDraft?.items
+                ?.takeIf { it.isNotEmpty() }
+                ?.find { it.variationId == 10L}
+                ?.let { assertThat(it.quantity).isEqualTo(3f) }
+                ?: Assertions.fail("Expected an item with productId 10L with quantity as 2")
         }
     }
 
