@@ -541,6 +541,28 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `when product search by SKU succeeds but has empty result, then trigger proper event`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            sut.startScan()
+
+            assertThat(sut.event.value).isInstanceOf(OnProductSearchBySKUFailed::class.java)
+        }
+    }
+
     //endregion
 
     protected fun createSut(savedStateHandle: SavedStateHandle = savedState) {
