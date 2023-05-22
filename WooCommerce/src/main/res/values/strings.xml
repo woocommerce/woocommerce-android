@@ -99,6 +99,7 @@
     <string name="emdash" translatable="false">\u2014</string>
     <string name="share">Share</string>
     <string name="search">Search</string>
+    <string name="scan_barcode">Scan Barcode</string>
     <string name="clear">Clear</string>
     <string name="done">Done</string>
     <string name="back">Back</string>

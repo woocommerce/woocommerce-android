@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-09 13:54:20+0000
+Translation-Revision-Date: 2023-05-14 10:15:48+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="product_stock_status_insufficient_stock">Otillräckligt lager</string>
+    <string name="shipping_label_customs_item_description_too_short">Du måste ge en tydlig och specifik beskrivning av varje artikel.</string>
+    <string name="order_creation_add_product_via_barcode_scanning">Lägg till produkter via skanner</string>
     <string name="shipping_notice_dismiss">Avfärda</string>
     <string name="shipping_notice_learn_more">Lär dig mer</string>
     <string name="shipping_notice_banner_content">Vid frakt till länder som följer EU:s tullregler måste du ange en tydlig, specifik beskrivning för varje vara. Annars kan leveranser försenas eller avbrytas i tullen.</string>
