@@ -753,6 +753,12 @@ data class OnBarcodeScanningFailed(
     val retry: View.OnClickListener,
 ) : Event()
 
+data class OnProductSearchBySKUFailed(
+    val error: Throwable?,
+    val message: Int,
+    val retry: View.OnClickListener,
+) : Event()
+
 data class ProductUIModel(
     val item: Order.Item,
     val imageUrl: String,
