@@ -45,7 +45,7 @@ class OrderProductMapperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `When there are no duplicates`() {
+    fun `When we transform the items list then there are no duplicates`() {
         val numberOfItems = 10
         val numberOfParents = 2
         val items = createItemsList(numberOfItems, numberOfParents)
