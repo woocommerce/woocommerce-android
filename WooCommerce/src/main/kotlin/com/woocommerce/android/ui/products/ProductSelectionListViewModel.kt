@@ -21,6 +21,7 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
 @HiltViewModel
@@ -196,7 +197,8 @@ class ProductSelectionListViewModel @Inject constructor(
                 productRepository.searchProductList(
                     searchQuery = searchQuery,
                     loadMore = loadMore,
-                    excludedProductIds = excludedProductIds
+                    excludedProductIds = excludedProductIds,
+                    skuSearchOptions = WCProductStore.SkuSearchOptions.Disabled
                 )?.let { fetchedProducts ->
                     // make sure the search query hasn't changed while the fetch was processing
                     if (searchQuery == productRepository.lastSearchQuery) {

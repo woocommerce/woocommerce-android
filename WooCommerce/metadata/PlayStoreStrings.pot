@@ -11,16 +11,16 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_137"
+msgid ""
+"13.7:\n"
+"Lots of exciting updates on this one! You can create orders on the go and add discounts for the order! You can also quickly take a payment for the order by generating a QR code for your customers to scan and pay. You’ve asked for it, and now it’s here!\n"
+msgstr ""
+
 msgctxt "release_note_136"
 msgid ""
 "13.6:\n"
 "Our experimental coupons feature is now available for everyone! Simply click on the menu option to manage your coupons from the app. Try it out and share your feedback!\n"
-msgstr ""
-
-msgctxt "release_note_135"
-msgid ""
-"13.5:\n"
-"This release contains a handful of minor improvements to make your experience smoother. We hope you notice the love we put into our software. Stay tuned for some exciting news coming your way!\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-09 15:54:03+0000
+Translation-Revision-Date: 2023-05-16 14:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="product_stock_status_insufficient_stock">부족한 재고</string>
+    <string name="shipping_label_customs_item_description_too_short">아이템마다 명확하고 구체적인 설명을 제공해야 합니다.</string>
+    <string name="order_creation_add_product_via_barcode_scanning">스캐너를 통해 상품 추가</string>
     <string name="shipping_notice_dismiss">해제</string>
     <string name="shipping_notice_learn_more">더 알아보기</string>
     <string name="shipping_notice_banner_content">EU(유럽연합) 세관 규칙을 따르는 국가로 배송할 때는 아이템마다 명확하고 구체적인 설명을 제공해야 합니다. 그렇지 않으면 배송이 세관에서 지체되거나 차단될 수 있습니다.</string>

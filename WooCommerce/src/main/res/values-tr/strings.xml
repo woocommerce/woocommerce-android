@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-09 15:54:03+0000
+Translation-Revision-Date: 2023-05-17 15:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="product_stock_status_insufficient_stock">Yetersiz stok</string>
+    <string name="shipping_label_customs_item_description_too_short">Her öğe için net ve belirli bir açıklama sağlamanız gerekir.</string>
+    <string name="order_creation_add_product_via_barcode_scanning">Tarayıcı aracılığıyla ürün ekle</string>
     <string name="shipping_notice_dismiss">Kapat</string>
     <string name="shipping_notice_learn_more">Daha Fazla Bilgi Edinin</string>
     <string name="shipping_notice_banner_content">Avrupa Birliği (AB) gümrük kurallarını uygulayan ülkelere gönderim yaparken her öğenin net ve özel bir açıklamasını sağlamalısınız. Aksi takdirde gümrükte gönderimler gecikebilir veya kesintiye uğrayabilir.</string>

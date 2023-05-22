@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-08 10:54:03+0000
+Translation-Revision-Date: 2023-05-16 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="product_stock_status_insufficient_stock">库存不足</string>
+    <string name="shipping_label_customs_item_description_too_short">您必须为每个项目提供清晰、具体的描述。</string>
+    <string name="order_creation_add_product_via_barcode_scanning">通过扫描程序添加产品</string>
     <string name="shipping_notice_dismiss">忽略</string>
     <string name="shipping_notice_learn_more">了解更多</string>
     <string name="shipping_notice_banner_content">当运送到遵守欧盟 (EU) 海关规则的国家/地区时，您必须针对每件商品提供清晰、具体的描述。 否则货物可能会在海关滞留或被扣留。</string>
