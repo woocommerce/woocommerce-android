@@ -12,7 +12,7 @@ import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
-import org.wordpress.android.fluxc.store.signup.SignUpStore
+import org.wordpress.android.fluxc.store.account.SignUpStore
 import javax.inject.Inject
 
 class SignUpRepository @Inject constructor(

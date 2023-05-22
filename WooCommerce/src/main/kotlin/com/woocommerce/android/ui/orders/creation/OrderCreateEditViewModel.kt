@@ -8,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R.string
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_ADD
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_REMOVE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_SUCCESS
@@ -41,6 +43,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.OrderNoteTyp
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
@@ -59,7 +62,9 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductDetails
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorRestriction
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem.Product
@@ -83,6 +88,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -97,6 +103,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val determineMultipleLinesContext: DetermineMultipleLinesContext,
     private val tracker: AnalyticsTrackerWrapper,
     private val codeScanner: CodeScanner,
+    private val productRepository: ProductListRepository,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository
@@ -166,6 +173,11 @@ class OrderCreateEditViewModel @Inject constructor(
                     )
                 }
                 monitorOrderChanges()
+                // Presence of barcode indicates that this screen was called from the
+                // Order listing screen after scanning the barcode.
+                if (args.sku.isNotNullOrEmpty()) {
+                    fetchProductBySKU(args.sku!!)
+                }
             }
             is Mode.Edit -> {
                 viewModelScope.launch {
@@ -183,7 +195,6 @@ class OrderCreateEditViewModel @Inject constructor(
             }
         }
     }
-
     fun onCustomerNoteEdited(newNote: String) {
         _orderDraft.value.let { order ->
             tracker.track(
@@ -297,20 +308,52 @@ class OrderCreateEditViewModel @Inject constructor(
     private fun Order.hasProducts() = items.any { it.quantity > 0 }
 
     fun startScan() {
-        launch {
+        viewModelScope.launch {
             codeScanner.startScan().collect { status ->
                 when (status) {
                     is CodeScannerStatus.Failure -> {
                         // TODO handle failure case
                     }
                     is CodeScannerStatus.Success -> {
-                        // TODO handle success case
+                        viewState = viewState.copy(isUpdatingOrderDraft = true)
+                        fetchProductBySKU(status.code)
                     }
                 }
             }
         }
     }
 
+    private fun fetchProductBySKU(sku: String) {
+        val selectedItems = orderDraft.value?.items?.map { item ->
+            if (item.isVariation) {
+                SelectedItem.ProductVariation(item.productId, item.variationId)
+            } else {
+                SelectedItem.Product(item.productId)
+            }
+        }.orEmpty()
+        viewModelScope.launch {
+            productRepository.searchProductList(
+                searchQuery = sku,
+                skuSearchOptions = WCProductStore.SkuSearchOptions.ExactSearch,
+            )?.let { products ->
+                viewState = viewState.copy(isUpdatingOrderDraft = false)
+                products.firstOrNull()?.let { product ->
+                    if (product.isVariable()) {
+                        onProductsSelected(
+                            selectedItems + SelectedItem.ProductVariation(
+                                productId = product.parentId,
+                                variationId = product.remoteId
+                            )
+                        )
+                    } else {
+                        onProductsSelected(
+                            selectedItems + Product(productId = product.remoteId)
+                        )
+                    }
+                }
+            }
+        }
+    }
     private fun Order.removeItem(item: Order.Item) = adjustProductQuantity(item.itemId, -item.quantity.toInt())
 
     fun onCustomerAddressEdited(customerId: Long?, billingAddress: Address, shippingAddress: Address) {
@@ -636,12 +679,22 @@ class OrderCreateEditViewModel @Inject constructor(
     fun onCouponEntered(couponCode: String?) {
         _orderDraft.update { draft ->
             val couponLines = if (couponCode.isNullOrEmpty()) {
+                trackCouponRemoved()
                 emptyList()
             } else {
+                trackCouponAdded()
                 listOf(Order.CouponLine(code = couponCode))
             }
             draft.copy(couponLines = couponLines)
         }
+    }
+
+    private fun trackCouponAdded() {
+        tracker.track(ORDER_COUPON_ADD, mapOf(KEY_FLOW to flow))
+    }
+
+    private fun trackCouponRemoved() {
+        tracker.track(ORDER_COUPON_REMOVE, mapOf(KEY_FLOW to flow))
     }
 
     @Parcelize
@@ -688,5 +741,8 @@ data class ProductUIModel(
     val stockQuantity: Double,
     val stockStatus: ProductStockStatus
 )
+
+private fun com.woocommerce.android.model.Product.isVariable() =
+    productType == ProductType.VARIABLE || productType == ProductType.VARIABLE_SUBSCRIPTION
 
 fun Order.Item.isSynced() = this.itemId != 0L

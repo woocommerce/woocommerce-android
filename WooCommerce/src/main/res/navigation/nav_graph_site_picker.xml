@@ -36,6 +36,9 @@
         <action
             android:id="@+id/action_sitePickerFragment_to_storeCreationNativeFlow"
             app:destination="@id/nav_graph_store_creation" />
+        <action
+            android:id="@+id/action_sitePickerFragment_to_closeAccountDialogFragment"
+            app:destination="@id/closeAccountDialogFragment" />
     </fragment>
     <fragment
         android:id="@+id/sitePickerSiteDiscoveryFragment"
@@ -85,4 +88,8 @@
             android:id="@+id/action_addStoreBottomSheetFragment_to_storeCreationNativeFlow"
             app:destination="@id/nav_graph_store_creation" />
     </dialog>
+    <dialog
+        android:id="@+id/closeAccountDialogFragment"
+        android:name="com.woocommerce.android.ui.prefs.CloseAccountDialogFragment"
+        android:label="CloseAccountDialogFragment" />
 </navigation>

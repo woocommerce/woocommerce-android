@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-10 14:54:04+0000
+Translation-Revision-Date: 2023-05-16 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="product_stock_status_insufficient_stock">Scorte non sufficienti</string>
+    <string name="shipping_label_customs_item_description_too_short">Devi fornire una descrizione chiara e specifica per ogni elemento.</string>
+    <string name="order_creation_add_product_via_barcode_scanning">Aggiungi i prodotti tramite scanner</string>
     <string name="shipping_notice_dismiss">Ignora</string>
     <string name="shipping_notice_learn_more">Scopri di più</string>
     <string name="shipping_notice_banner_content">Quando spedisci in Paesi che seguono le norme doganali dell\'Unione Europea (UE), devi fornire una descrizione chiara e specifica per ogni articolo. In caso contrario, le spedizioni potrebbero subire dei ritardi o essere fermate alla dogana.</string>
@@ -626,7 +629,6 @@ Language: it
     <string name="login_prologue_label_orders_subtitle">Puoi gestirli rapidamente e facilmente</string>
     <string name="login_prologue_label_analytics_subtitle">Sappiamo che è essenziale per la tua attività</string>
     <string name="login_prologue_new_to_woo">Prima volta in WooCommerce</string>
-    <string name="notification_channel_pre_login_title">Promemoria per la risoluzione dei problemi di accesso</string>
     <string name="tests_notification_new_order_message">Nuovo ordine pari a $ 50 nel tuo negozio WooCommerce</string>
     <string name="tests_notification_new_order_title">Hai un nuovo ordine. 🎉</string>
     <string name="lines_all_details">i dettagli</string>

@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-09 13:54:20+0000
+Translation-Revision-Date: 2023-05-14 10:15:48+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="product_stock_status_insufficient_stock">Otillräckligt lager</string>
+    <string name="shipping_label_customs_item_description_too_short">Du måste ge en tydlig och specifik beskrivning av varje artikel.</string>
+    <string name="order_creation_add_product_via_barcode_scanning">Lägg till produkter via skanner</string>
     <string name="shipping_notice_dismiss">Avfärda</string>
     <string name="shipping_notice_learn_more">Lär dig mer</string>
     <string name="shipping_notice_banner_content">Vid frakt till länder som följer EU:s tullregler måste du ange en tydlig, specifik beskrivning för varje vara. Annars kan leveranser försenas eller avbrytas i tullen.</string>
@@ -626,7 +629,6 @@ Language: sv_SE
     <string name="login_prologue_label_orders_subtitle">Du kan hantera dem snabbt och enkelt</string>
     <string name="login_prologue_label_analytics_subtitle">Vi vet att det är viktigt för ditt företag</string>
     <string name="login_prologue_new_to_woo">Är WooCommerce nytt för dig?</string>
-    <string name="notification_channel_pre_login_title">Påminnelser om felsökning vid inloggning</string>
     <string name="tests_notification_new_order_message">Ny beställning för 50 USD i din WooCommerce-butik</string>
     <string name="tests_notification_new_order_title">Du har en ny beställning! 🎉</string>
     <string name="lines_all_details">detaljerna</string>

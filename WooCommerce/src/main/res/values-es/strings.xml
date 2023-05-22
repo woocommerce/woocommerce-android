@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-08 16:54:04+0000
+Translation-Revision-Date: 2023-05-16 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="product_stock_status_insufficient_stock">Existencias insuficientes</string>
+    <string name="shipping_label_customs_item_description_too_short">Debes proporcionar una descripción clara y específica de cada artículo.</string>
+    <string name="order_creation_add_product_via_barcode_scanning">Añade productos con el escáner</string>
     <string name="shipping_notice_dismiss">Descartar</string>
     <string name="shipping_notice_learn_more">Más información</string>
     <string name="shipping_notice_banner_content">Para hacer envíos a países sujetos a las normas aduaneras de la Unión Europea (UE), debes proporcionar una descripción clara y específica de cada artículo. De lo contrario, los envíos pueden sufrir retrasos o interrupciones en la aduana.</string>

@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-10 10:54:04+0000
+Translation-Revision-Date: 2023-05-17 10:54:21+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="product_stock_status_insufficient_stock">在庫不足</string>
+    <string name="shipping_label_customs_item_description_too_short">各商品について明確で具体的な説明を記載する必要があります。</string>
+    <string name="order_creation_add_product_via_barcode_scanning">スキャナーで商品を追加</string>
     <string name="shipping_notice_dismiss">閉じる</string>
     <string name="shipping_notice_learn_more">さらに詳しく</string>
     <string name="shipping_notice_banner_content">欧州連合 (EU) の関税法規則に従う国に発送する場合、すべての品目について明確で具体的な説明を行う必要があります。 これを怠ると、税関で発送の遅延や中断が発生することがあります。</string>
@@ -626,7 +629,6 @@ Language: ja_JP
     <string name="login_prologue_label_orders_subtitle">スピーディかつ簡単に管理できます</string>
     <string name="login_prologue_label_analytics_subtitle">ビジネスに欠かせないものであることはわかっています</string>
     <string name="login_prologue_new_to_woo">初めて WooCommerce をお使いになる場合</string>
-    <string name="notification_channel_pre_login_title">ログインのトラブルシューティングに関するリマインダー</string>
     <string name="tests_notification_new_order_message">WooCommerce ストアに $50の新しい注文があります</string>
     <string name="tests_notification_new_order_title">新しい注文があります。🎉</string>
     <string name="lines_all_details">詳細</string>
