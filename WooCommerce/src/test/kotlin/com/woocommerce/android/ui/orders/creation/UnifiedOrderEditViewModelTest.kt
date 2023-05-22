@@ -671,7 +671,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
             orderDraft?.items
                 ?.takeIf { it.isNotEmpty() }
-                ?.find { it.variationId == 10L}
+                ?.find { it.variationId == 10L }
                 ?.let { assertThat(it.quantity).isEqualTo(3f) }
                 ?: Assertions.fail("Expected an item with variationId 10L with quantity as 3")
         }
@@ -712,7 +712,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
             orderDraft?.items
                 ?.takeIf { it.isNotEmpty() }
-                ?.find { it.productId == 10L}
+                ?.find { it.productId == 10L }
                 ?.let { assertThat(it.quantity).isEqualTo(3f) }
                 ?: Assertions.fail("Expected an item with productId 10L with quantity as 3")
         }
