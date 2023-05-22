@@ -341,11 +341,8 @@ class OrderCreateEditViewModel @Inject constructor(
                 viewState = viewState.copy(isUpdatingOrderDraft = false)
                 products.firstOrNull()?.let { product ->
                     if (product.isVariable()) {
-                        val selectedOrder = _orderDraft.value.items.firstOrNull { item ->
-                            item.variationId == product.remoteId
-                        }
-                        selectedOrder?.let {
-                            onIncreaseProductsQuantity(it.itemId)
+                        getItemIdIfVariableProductIsAlreadySelected(product)?.let { itemId ->
+                            onIncreaseProductsQuantity(itemId)
                         } ?: run {
                             onProductsSelected(
                                 selectedItems + SelectedItem.ProductVariation(
@@ -355,11 +352,8 @@ class OrderCreateEditViewModel @Inject constructor(
                             )
                         }
                     } else {
-                        val selectedOrder = _orderDraft.value.items.firstOrNull { item ->
-                            item.productId == product.remoteId
-                        }
-                        selectedOrder?.let {
-                            onIncreaseProductsQuantity(it.itemId)
+                        getItemIdIfProductIsAlreadySelected(product)?.let { itemId ->
+                            onIncreaseProductsQuantity(itemId)
                         } ?: run {
                             onProductsSelected(
                                 selectedItems + Product(productId = product.remoteId)
@@ -371,6 +365,18 @@ class OrderCreateEditViewModel @Inject constructor(
                 sendProductSearchBySKUFailedEvent()
             }
         }
+    }
+
+    private fun getItemIdIfVariableProductIsAlreadySelected(product: com.woocommerce.android.model.Product): Long? {
+        return _orderDraft.value.items.firstOrNull { item ->
+            item.variationId == product.remoteId
+        }?.itemId
+    }
+
+    private fun getItemIdIfProductIsAlreadySelected(product: com.woocommerce.android.model.Product): Long? {
+        return _orderDraft.value.items.firstOrNull { item ->
+            item.productId == product.remoteId
+        }?.itemId
     }
 
     private fun sendBarcodeScanningFailedEvent(error: Throwable?) {
