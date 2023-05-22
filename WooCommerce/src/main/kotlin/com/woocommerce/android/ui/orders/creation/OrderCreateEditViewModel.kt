@@ -353,6 +353,8 @@ class OrderCreateEditViewModel @Inject constructor(
                         )
                     }
                 }
+            } ?: run {
+                sendProductSearchBySKUFailedEvent()
             }
         }
     }
@@ -361,6 +363,17 @@ class OrderCreateEditViewModel @Inject constructor(
         triggerEvent(
             OnBarcodeScanningFailed(
                 error,
+                string.order_creation_barcode_scanning_unable_to_add_product
+            ) {
+                startScan()
+            }
+        )
+    }
+
+    private fun sendProductSearchBySKUFailedEvent() {
+        triggerEvent(
+            OnProductSearchBySKUFailed(
+                Throwable("Product search by SKU failed"),
                 string.order_creation_barcode_scanning_unable_to_add_product
             ) {
                 startScan()
