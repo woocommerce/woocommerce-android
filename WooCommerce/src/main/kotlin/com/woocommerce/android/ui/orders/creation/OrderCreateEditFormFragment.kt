@@ -473,7 +473,13 @@ class OrderCreateEditFormFragment :
                 uiMessageResolver.getRetrySnack(
                     stringResId = event.message,
                     actionListener = event.retry
-                )
+                ).show()
+            }
+            is OnProductSearchBySKUFailed -> {
+                uiMessageResolver.getRetrySnack(
+                    stringResId = event.message,
+                    actionListener = event.retry
+                ).show()
             }
             is Exit -> findNavController().navigateUp()
         }
