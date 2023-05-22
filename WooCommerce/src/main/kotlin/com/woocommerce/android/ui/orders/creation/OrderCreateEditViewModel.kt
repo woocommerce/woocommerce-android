@@ -43,6 +43,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.OrderNoteTyp
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
@@ -172,6 +173,11 @@ class OrderCreateEditViewModel @Inject constructor(
                     )
                 }
                 monitorOrderChanges()
+                // Presence of barcode indicates that this screen was called from the
+                // Order listing screen after scanning the barcode.
+                if (args.sku.isNotNullOrEmpty()) {
+                    fetchProductBySKU(args.sku!!)
+                }
             }
             is Mode.Edit -> {
                 viewModelScope.launch {
@@ -189,7 +195,6 @@ class OrderCreateEditViewModel @Inject constructor(
             }
         }
     }
-
     fun onCustomerNoteEdited(newNote: String) {
         _orderDraft.value.let { order ->
             tracker.track(

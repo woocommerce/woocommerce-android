@@ -31,6 +31,7 @@ import org.mockito.kotlin.verify
 @RunWith(MockitoJUnitRunner.Silent::class)
 class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() {
     override val mode: Mode = Edit(defaultOrderValue.id)
+    override val sku: String = "123"
     override val tracksFlow: String = VALUE_FLOW_EDITING
 
     override fun initMocksForAnalyticsWithOrder(order: Order) {

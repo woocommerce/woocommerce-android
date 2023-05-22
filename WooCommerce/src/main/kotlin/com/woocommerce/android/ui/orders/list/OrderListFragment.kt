@@ -49,6 +49,7 @@ import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.creation.IsAddProductViaBarcodeScanningEnabled
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
@@ -87,6 +88,8 @@ class OrderListFragment :
     internal lateinit var currencyFormatter: CurrencyFormatter
     @Inject
     lateinit var feedbackPrefs: FeedbackPrefs
+    @Inject
+    lateinit var isAddProductViaBarcodeScanningEnabled: IsAddProductViaBarcodeScanningEnabled
 
     private val viewModel: OrderListViewModel by viewModels()
     private var snackBar: Snackbar? = null
@@ -144,6 +147,9 @@ class OrderListFragment :
 
         orderListMenu = menu
         searchMenuItem = menu.findItem(R.id.menu_search)
+        // TODO Remove the barcode setting visibility logic after the feature is in production.
+        val barcodeOption = menu.findItem(R.id.menu_barcode)
+        barcodeOption.isVisible = isAddProductViaBarcodeScanningEnabled()
         searchView = searchMenuItem?.actionView as SearchView?
         searchView?.queryHint = getSearchQueryHint()
     }
@@ -256,6 +262,10 @@ class OrderListFragment :
                 enableSearchListeners()
                 true
             }
+            R.id.menu_barcode -> {
+                viewModel.startScan()
+                true
+            }
             else -> false
         }
     }
@@ -348,6 +358,9 @@ class OrderListFragment :
                 }
                 is OrderListViewModel.OrderListEvent.ShowIPPDismissConfirmationDialog -> {
                     showIPPFeedbackDismissConfirmationDialog()
+                }
+                is OrderListViewModel.OrderListEvent.OnBarcodeScanned -> {
+                    openOrderCreationFragment(event.code)
                 }
                 else -> event.isHandled = false
             }
@@ -451,12 +464,13 @@ class OrderListFragment :
         findNavController().navigateSafely(R.id.action_orderListFragment_to_orderFilterListFragment)
     }
 
-    private fun openOrderCreationFragment() {
+    private fun openOrderCreationFragment(code: String? = null) {
         OrderDurationRecorder.startRecording()
         AnalyticsTracker.track(AnalyticsEvent.ORDERS_ADD_NEW)
         findNavController().navigateSafely(
             OrderListFragmentDirections.actionOrderListFragmentToOrderCreationFragment(
-                OrderCreateEditViewModel.Mode.Creation
+                OrderCreateEditViewModel.Mode.Creation,
+                code
             )
         )
     }
