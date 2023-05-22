@@ -29,12 +29,12 @@ class InitializationWorker @AssistedInject constructor(
             when (type) {
                 STORE_CREATION_COMPLETE_NOTICE -> {
                     appPrefs.wasStoreOpened = false
-                    return Result.success()
+                    Result.success()
                 }
                 FREE_TRIAL_REMINDER,
                 FREE_TRIAL_EXPIRING_NOTICE,
                 FREE_TRIAL_EXPIRED_NOTICE -> {
-                    return Result.success()
+                    Result.success()
                 }
                 else -> {
                     wooLogWrapper.i(NOTIFICATIONS, "Unknown notification $type. Cancelling work.")
