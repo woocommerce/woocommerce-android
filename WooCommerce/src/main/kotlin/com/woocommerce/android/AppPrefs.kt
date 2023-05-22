@@ -109,7 +109,6 @@ object AppPrefs {
         JETPACK_INSTALLATION_FROM_BANNER,
         NOTIFICATIONS_PERMISSION_BAR,
         IS_EU_SHIPPING_NOTICE_DISMISSED,
-        WAS_STORE_OPENED,
     }
 
     /**
@@ -258,10 +257,6 @@ object AppPrefs {
     var isEUShippingNoticeDismissed: Boolean
         get() = getBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, value)
-
-    var wasStoreOpened: Boolean
-        get() = getBoolean(DeletablePrefKey.WAS_STORE_OPENED, false)
-        set(value) = setBoolean(DeletablePrefKey.WAS_STORE_OPENED, value)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 

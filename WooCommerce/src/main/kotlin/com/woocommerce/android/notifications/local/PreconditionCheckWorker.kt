@@ -7,7 +7,6 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_TYPE
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.util.WooLogWrapper
@@ -20,21 +19,14 @@ import dagger.assisted.AssistedInject
 class PreconditionCheckWorker @AssistedInject constructor(
     @Assisted private val appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    private val wooLogWrapper: WooLogWrapper,
-    private val appPrefs: AppPrefsWrapper
+    private val wooLogWrapper: WooLogWrapper
 ) : Worker(appContext, workerParams) {
     override fun doWork(): Result {
         return if (canDisplayNotifications) {
             val type = inputData.getString(LOCAL_NOTIFICATION_TYPE)
             if (type != null) {
                 when (type) {
-                    LocalNotificationType.STORE_CREATION_FINISHED.value -> {
-                        if (appPrefs.wasStoreOpened) {
-                            cancelWork("Store already opened, skipping notification $type")
-                        } else {
-                            Result.success()
-                        }
-                    }
+                    LocalNotificationType.STORE_CREATION_FINISHED.value,
                     LocalNotificationType.STORE_CREATION_INCOMPLETE.value,
                     LocalNotificationType.FREE_TRIAL_EXPIRING.value,
                     LocalNotificationType.FREE_TRIAL_EXPIRED.value -> {

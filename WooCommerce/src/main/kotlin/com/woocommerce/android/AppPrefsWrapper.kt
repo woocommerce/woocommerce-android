@@ -333,10 +333,4 @@ class AppPrefsWrapper @Inject constructor() {
     fun setStorePhoneNumber(siteId: Int, phoneNumber: String) = AppPrefs.setStorePhoneNumber(siteId, phoneNumber)
 
     fun getStorePhoneNumber(siteId: Int): String = AppPrefs.getStorePhoneNumber(siteId)
-
-    var wasStoreOpened: Boolean
-        get() = AppPrefs.wasStoreOpened
-        set(value) {
-            AppPrefs.wasStoreOpened = value
-        }
 }

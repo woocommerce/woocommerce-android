@@ -27,7 +27,7 @@ class LocalNotificationScheduler @Inject constructor(
     private val workManager = WorkManager.getInstance(appContext)
 
     fun scheduleNotification(notification: LocalNotification) {
-        cancelScheduledNotification(notification)
+        cancelScheduledNotification(notification.type)
 
         workManager
             .beginUniqueWork(LOCAL_NOTIFICATION_WORK_NAME, REPLACE, buildInitializationWorkRequest(notification))
@@ -71,7 +71,7 @@ class LocalNotificationScheduler @Inject constructor(
             .build()
     }
 
-    private fun cancelScheduledNotification(notification: LocalNotification) {
-        workManager.cancelAllWorkByTag(notification.type.value)
+    fun cancelScheduledNotification(type: LocalNotificationType) {
+        workManager.cancelAllWorkByTag(type.value)
     }
 }
