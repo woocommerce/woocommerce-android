@@ -3,18 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="?selectableItemBackground">
 
     <FrameLayout
         android:id="@+id/productInfo_iconFrame"
         android:layout_width="@dimen/image_minor_100"
         android:layout_height="@dimen/image_minor_100"
         android:layout_gravity="center_vertical"
-        android:layout_margin="@dimen/major_100"
+        android:layout_marginVertical="@dimen/major_100"
+        android:layout_marginStart="@dimen/major_375"
         android:background="@drawable/picture_frame"
         android:padding="@dimen/image_frame_stroke_width"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <ImageView
             android:id="@+id/productInfo_icon"
@@ -68,29 +71,9 @@
         android:text="@string/orderdetail_product_lineitem_sku_value"
         app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
         app:layout_constraintTop_toBottomOf="@+id/productInfo_attributes"
-        tools:visibility="visible" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:visibility="visible"
+        android:paddingBottom="@dimen/minor_100"/>
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/productInfo_addons"
-        style="@style/Woo.ListItem.Body"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/minor_100"
-        android:background="?attr/selectableItemBackground"
-        android:drawableEnd="@drawable/ic_arrow_right"
-        android:text="@string/orderdetail_product_lineitem_view_addons_action"
-        android:textColor="@color/color_on_background"
-        android:visibility="gone"
-        app:drawableTint="@color/color_on_surface_medium"
-        app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
-        app:layout_constraintTop_toBottomOf="@+id/productInfo_SKU"
-        tools:text="View Add-ons"
-        tools:visibility="visible" />
-    <android.widget.Space
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/major_100"
-        app:layout_constraintTop_toBottomOf="@+id/productInfo_addons"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
