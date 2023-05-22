@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.details.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,6 +21,7 @@ class OrderDetailProductItemListAdapter(
     private val productImageMap: ProductImageMap,
     private val formatCurrencyForDisplay: (BigDecimal) -> String,
     private val productItemListener: OrderProductActionListener,
+    private val onIsExpandedChange: (groupedProduct: OrderProduct.GroupedProductItem) -> Unit,
     private val onViewAddonsClick: ViewAddonClickListener? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private inner class ProductItemViewHolder(val view: OrderDetailProductItemView) : RecyclerView.ViewHolder(view) {
@@ -46,11 +48,13 @@ class OrderDetailProductItemListAdapter(
 
     private inner class GroupedItemViewHolder(val binding: OrderDetailProductGroupItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        @Suppress("MagicNumber")
         fun onBind(
             groupedItem: OrderProduct.GroupedProductItem,
             productImageMap: ProductImageMap,
             formatCurrencyForDisplay: (BigDecimal) -> String,
             productItemListener: OrderProductActionListener,
+            onIsExpandedChange: (OrderProduct.GroupedProductItem) -> Unit,
             onViewAddonsClick: ViewAddonClickListener? = null
         ) {
             val item = groupedItem.product
@@ -64,6 +68,23 @@ class OrderDetailProductItemListAdapter(
                 } else {
                     productItemListener.openOrderProductDetail(item.productId)
                 }
+            }
+
+            binding.expandIcon.setOnClickListener {
+                groupedItem.isExpanded = groupedItem.isExpanded.not()
+                onIsExpandedChange(groupedItem)
+                notifyItemChanged(bindingAdapterPosition)
+            }
+
+            if (groupedItem.isExpanded.not()) {
+                binding.productInfoChildrenRecyclerView.isVisible = false
+                binding.productInfoChildrenDivider.isVisible = false
+                binding.expandIcon.rotation = 0f
+                return
+            } else {
+                binding.productInfoChildrenRecyclerView.isVisible = true
+                binding.productInfoChildrenDivider.isVisible = true
+                binding.expandIcon.rotation = 180f
             }
 
             val childrenAdapter = OrderDetailProductChildItemListAdapter(
@@ -129,9 +150,11 @@ class OrderDetailProductItemListAdapter(
                     productImageMap,
                     formatCurrencyForDisplay,
                     productItemListener,
+                    onIsExpandedChange,
                     onViewAddonsClick
                 )
             }
+
             PRODUCT_ITEM_VIEW -> {
                 (holder as ProductItemViewHolder).onBind(
                     productItems[position] as OrderProduct.ProductItem,
