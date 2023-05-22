@@ -30,8 +30,7 @@ class LocalNotificationScheduler @Inject constructor(
         cancelScheduledNotification(notification.type)
 
         workManager
-            .beginUniqueWork(LOCAL_NOTIFICATION_WORK_NAME, REPLACE, buildInitializationWorkRequest(notification))
-            .then(buildPreconditionCheckWorkRequest(notification))
+            .beginUniqueWork(LOCAL_NOTIFICATION_WORK_NAME, REPLACE, buildPreconditionCheckWorkRequest(notification))
             .then(buildNotificationWorkRequest(notification))
             .enqueue()
 
@@ -39,14 +38,6 @@ class LocalNotificationScheduler @Inject constructor(
             AnalyticsEvent.LOCAL_NOTIFICATION_SCHEDULED,
             mapOf(AnalyticsTracker.KEY_TYPE to notification.type.value)
         )
-    }
-
-    private fun buildInitializationWorkRequest(notification: LocalNotification): OneTimeWorkRequest {
-        val conditionData = workDataOf(LOCAL_NOTIFICATION_TYPE to notification.type.value)
-        return OneTimeWorkRequestBuilder<InitializationWorker>()
-            .setInputData(conditionData)
-            .addTag(notification.type.value)
-            .build()
     }
 
     private fun buildPreconditionCheckWorkRequest(notification: LocalNotification): OneTimeWorkRequest {
