@@ -6,10 +6,6 @@ import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.notifications.local.LocalNotification.Companion.FREE_TRIAL_EXPIRED_NOTICE
-import com.woocommerce.android.notifications.local.LocalNotification.Companion.FREE_TRIAL_EXPIRING_NOTICE
-import com.woocommerce.android.notifications.local.LocalNotification.Companion.FREE_TRIAL_REMINDER
-import com.woocommerce.android.notifications.local.LocalNotification.Companion.STORE_CREATION_COMPLETE_NOTICE
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_TYPE
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.util.WooLogWrapper
@@ -27,13 +23,13 @@ class InitializationWorker @AssistedInject constructor(
         val type = inputData.getString(LOCAL_NOTIFICATION_TYPE)
         return if (type != null) {
             when (type) {
-                STORE_CREATION_COMPLETE_NOTICE -> {
+                LocalNotificationType.STORE_CREATION_FINISHED.value -> {
                     appPrefs.wasStoreOpened = false
                     Result.success()
                 }
-                FREE_TRIAL_REMINDER,
-                FREE_TRIAL_EXPIRING_NOTICE,
-                FREE_TRIAL_EXPIRED_NOTICE -> {
+                LocalNotificationType.STORE_CREATION_INCOMPLETE.value,
+                LocalNotificationType.FREE_TRIAL_EXPIRING.value,
+                LocalNotificationType.FREE_TRIAL_EXPIRED.value -> {
                     Result.success()
                 }
                 else -> {

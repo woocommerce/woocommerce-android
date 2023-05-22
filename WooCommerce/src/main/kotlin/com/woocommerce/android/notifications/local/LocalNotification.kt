@@ -8,28 +8,21 @@ import java.util.concurrent.TimeUnit
 sealed class LocalNotification(
     @StringRes val title: Int,
     @StringRes val description: Int,
-    val type: String,
+    val type: LocalNotificationType,
     val delay: Long,
     val delayUnit: TimeUnit
 ) {
-    companion object {
-        const val STORE_CREATION_COMPLETE_NOTICE = "store_creation_complete"
-        const val FREE_TRIAL_REMINDER = "one_day_after_store_creation_name_without_free_trial"
-        const val FREE_TRIAL_EXPIRING_NOTICE = "one_day_before_free_trial_expires"
-        const val FREE_TRIAL_EXPIRED_NOTICE = "one_day_after_free_trial_expires"
-    }
-
     val id = type.hashCode()
 
     abstract fun getTitleString(resourceProvider: ResourceProvider): String
     abstract fun getDescriptionString(resourceProvider: ResourceProvider): String
 
-    data class StoreCreationCompleteNotification(
+    data class StoreCreationFinishedNotification(
         val name: String
     ) : LocalNotification(
         title = R.string.local_notification_store_creation_complete_title,
         description = R.string.local_notification_store_creation_complete_description,
-        type = STORE_CREATION_COMPLETE_NOTICE,
+        type = LocalNotificationType.STORE_CREATION_FINISHED,
         delay = 5,
         delayUnit = TimeUnit.MINUTES
     ) {

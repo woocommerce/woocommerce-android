@@ -6,7 +6,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isNotNullOrEmpty
-import com.woocommerce.android.notifications.local.LocalNotification.StoreCreationCompleteNotification
+import com.woocommerce.android.notifications.local.LocalNotification.StoreCreationFinishedNotification
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Failed
@@ -67,7 +67,7 @@ class StoreCreationSummaryViewModel @Inject constructor(
                 accountStore.account.firstName
             else
                 accountStore.account.userName
-            localNotificationScheduler.scheduleNotification(StoreCreationCompleteNotification(name))
+            localNotificationScheduler.scheduleNotification(StoreCreationFinishedNotification(name))
         }
 
         launch {

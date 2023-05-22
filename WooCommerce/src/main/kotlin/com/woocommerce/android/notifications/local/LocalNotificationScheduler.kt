@@ -37,23 +37,23 @@ class LocalNotificationScheduler @Inject constructor(
 
         AnalyticsTracker.track(
             AnalyticsEvent.LOCAL_NOTIFICATION_SCHEDULED,
-            mapOf(AnalyticsTracker.KEY_TYPE to notification.type)
+            mapOf(AnalyticsTracker.KEY_TYPE to notification.type.value)
         )
     }
 
     private fun buildInitializationWorkRequest(notification: LocalNotification): OneTimeWorkRequest {
-        val conditionData = workDataOf(LOCAL_NOTIFICATION_TYPE to notification.type)
+        val conditionData = workDataOf(LOCAL_NOTIFICATION_TYPE to notification.type.value)
         return OneTimeWorkRequestBuilder<InitializationWorker>()
             .setInputData(conditionData)
-            .addTag(notification.type)
+            .addTag(notification.type.value)
             .build()
     }
 
     private fun buildPreconditionCheckWorkRequest(notification: LocalNotification): OneTimeWorkRequest {
-        val conditionData = workDataOf(LOCAL_NOTIFICATION_TYPE to notification.type)
+        val conditionData = workDataOf(LOCAL_NOTIFICATION_TYPE to notification.type.value)
         return OneTimeWorkRequestBuilder<PreconditionCheckWorker>()
             .setInputData(conditionData)
-            .addTag(notification.type)
+            .addTag(notification.type.value)
             .setInitialDelay(notification.delay, notification.delayUnit)
             .build()
     }
@@ -66,12 +66,12 @@ class LocalNotificationScheduler @Inject constructor(
             LOCAL_NOTIFICATION_DESC to notification.getDescriptionString(resourceProvider)
         )
         return OneTimeWorkRequestBuilder<LocalNotificationWorker>()
-            .addTag(notification.type)
+            .addTag(notification.type.value)
             .setInputData(notificationData)
             .build()
     }
 
     private fun cancelScheduledNotification(notification: LocalNotification) {
-        workManager.cancelAllWorkByTag(notification.type)
+        workManager.cancelAllWorkByTag(notification.type.value)
     }
 }
