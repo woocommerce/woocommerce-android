@@ -36,6 +36,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -47,7 +48,7 @@ import java.util.function.Consumer
 @ExperimentalCoroutinesApi
 class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() {
     override val mode: Mode = Creation
-    override val sku: String = "123"
+    override val sku: String = ""
     override val tracksFlow: String = VALUE_FLOW_CREATION
 
     companion object {
@@ -1135,7 +1136,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
             createSut(navArgs)
 
-            verify(productListRepository, times(2)).searchProductList(
+            verify(productListRepository).searchProductList(
                 "123",
                 WCProductStore.SkuSearchOptions.ExactSearch
             )
@@ -1161,7 +1162,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
             createSut(navArgs)
 
-            verify(productListRepository, times(1)).searchProductList(
+            verify(productListRepository, never()).searchProductList(
                 "123",
                 WCProductStore.SkuSearchOptions.ExactSearch
             )
