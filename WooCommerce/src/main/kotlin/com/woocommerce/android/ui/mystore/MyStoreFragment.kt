@@ -50,9 +50,11 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenAnalytics
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowPrivacyBanner
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.OrderState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.VisitorStatsViewState
+import com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragmentDirections
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -323,6 +325,10 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                 is OpenAnalytics -> {
                     mainNavigationRouter?.showAnalytics(event.analyticsPeriod)
                 }
+                is ShowPrivacyBanner ->
+                    findNavController().navigate(
+                        PrivacyBannerFragmentDirections.actionGlobalPrivacyBannerFragment()
+                    )
                 else -> event.isHandled = false
             }
         }

@@ -57,7 +57,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     private lateinit var determineMultipleLinesContext: DetermineMultipleLinesContext
     protected lateinit var tracker: AnalyticsTrackerWrapper
     private lateinit var codeScanner: CodeScanner
-    private lateinit var productListRepository: ProductListRepository
+    lateinit var productListRepository: ProductListRepository
 
     protected val defaultOrderValue = Order.EMPTY.copy(id = 123)
 
@@ -68,12 +68,13 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     protected abstract val mode: OrderCreateEditViewModel.Mode
+    protected abstract val sku: String
 
     private fun initMocks() {
         val defaultOrderItem = createOrderItem()
         val emptyOrder = Order.EMPTY
         viewState = OrderCreateEditViewModel.ViewState()
-        savedState = spy(OrderCreateEditFormFragmentArgs(mode).toSavedStateHandle()) {
+        savedState = spy(OrderCreateEditFormFragmentArgs(mode, sku).toSavedStateHandle()) {
             on { getLiveData(viewState.javaClass.name, viewState) } doReturn MutableLiveData(viewState)
             on { getLiveData(eq(Order.EMPTY.javaClass.name), any<Order>()) } doReturn MutableLiveData(emptyOrder)
         }
@@ -422,11 +423,11 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
     //endregion
 
-    protected fun createSut() {
+    protected fun createSut(savedStateHandle: SavedStateHandle = savedState) {
         autoSyncPriceModifier = AutoSyncPriceModifier(createUpdateOrderUseCase)
         autoSyncOrder = AutoSyncOrder(createUpdateOrderUseCase)
         sut = OrderCreateEditViewModel(
-            savedState = savedState,
+            savedState = savedStateHandle,
             dispatchers = coroutinesTestRule.testDispatchers,
             orderDetailRepository = orderDetailRepository,
             orderCreateEditRepository = orderCreateEditRepository,

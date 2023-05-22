@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-08 14:54:24+0000
+Translation-Revision-Date: 2023-05-16 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="product_stock_status_insufficient_stock">Unzureichender Bestand</string>
+    <string name="shipping_label_customs_item_description_too_short">Gib bitte eine klare, spezifische Beschreibung aller Artikel an.</string>
+    <string name="order_creation_add_product_via_barcode_scanning">Produkte per Scanner hinzufügen</string>
     <string name="shipping_notice_dismiss">Schließen</string>
     <string name="shipping_notice_learn_more">Weitere Informationen</string>
     <string name="shipping_notice_banner_content">Beim Versand in Länder, die den Zollvorschriften der Europäischen Union unterliegen, musst du eine klare, spezifische Beschreibung aller Artikel angeben. Ansonsten kann es zu Verzögerungen oder Unterbrechungen von Lieferungen durch den Zoll kommen.</string>
