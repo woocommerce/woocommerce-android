@@ -10,7 +10,11 @@ sealed class OrderProduct : Parcelable {
     data class ProductItem(val product: Order.Item) : OrderProduct()
 
     @Parcelize
-    data class GroupedProductItem(val product: Order.Item, val children: List<ProductItem>) : OrderProduct()
+    data class GroupedProductItem(
+        val product: Order.Item,
+        val children: List<ProductItem>,
+        var isExpanded: Boolean = false
+    ) : OrderProduct()
 }
 
 fun List<Order.Item>.toOrderProducts(): List<OrderProduct> {
