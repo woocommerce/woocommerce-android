@@ -241,6 +241,8 @@ class ProductDetailViewModel @Inject constructor(
     val productDraftAttributes
         get() = viewState.productDraft?.attributes ?: emptyList()
 
+    private var isShareButtonShownAsActionWithText = false
+
     val menuButtonsState = draftChanges
         .filterNotNull()
         .combine(_hasChanges) { productDraft, hasChanges ->
@@ -261,6 +263,8 @@ class ProductDetailViewModel @Inject constructor(
             // Show as action with text if "Save" or "Publish" is not currently shown as action with text.
             val showShareOptionAsActionWithText =
                 showShareOption && !showSaveOptionAsActionWithText && !showPublishOption
+
+            isShareButtonShownAsActionWithText = showShareOptionAsActionWithText
 
             MenuButtonsState(
                 saveOption = showSaveOptionAsActionWithText,
@@ -370,7 +374,19 @@ class ProductDetailViewModel @Inject constructor(
      * Called when the Share menu button is clicked in Product detail screen
      */
     fun onShareButtonClicked() {
-        tracker.track(AnalyticsEvent.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
+        val source = if (isShareButtonShownAsActionWithText) {
+            AnalyticsTracker.VALUE_SHARE_BUTTON_SOURCE_PRODUCT_FORM
+        } else {
+            AnalyticsTracker.VALUE_SHARE_BUTTON_SOURCE_MORE_MENU
+        }
+
+        tracker.track(
+            AnalyticsEvent.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_SOURCE to source
+            )
+        )
+
         viewState.productDraft?.let {
             triggerEvent(ProductNavigationTarget.ShareProduct(it.permalink, it.name))
         }
