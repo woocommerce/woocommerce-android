@@ -51,7 +51,7 @@ class LocalNotificationScheduler @Inject constructor(
 
     private fun buildNotificationWorkRequest(notification: LocalNotification): OneTimeWorkRequest {
         val notificationData = workDataOf(
-            LOCAL_NOTIFICATION_TYPE to notification.type,
+            LOCAL_NOTIFICATION_TYPE to notification.type.value,
             LOCAL_NOTIFICATION_ID to notification.id,
             LOCAL_NOTIFICATION_TITLE to notification.getTitleString(resourceProvider),
             LOCAL_NOTIFICATION_DESC to notification.getDescriptionString(resourceProvider)
