@@ -62,13 +62,7 @@ class StoreCreationSummaryViewModel @Inject constructor(
     fun onTryForFreeButtonPressed() {
         tracker.track(AnalyticsEvent.SITE_CREATION_TRY_FOR_FREE_TAPPED)
 
-        if (isRemoteFeatureFlagEnabled(LOCAL_NOTIFICATION_STORE_CREATION_READY)) {
-            val name = if (accountStore.account.firstName.isNotNullOrEmpty())
-                accountStore.account.firstName
-            else
-                accountStore.account.userName
-            localNotificationScheduler.scheduleNotification(StoreCreationFinishedNotification(name))
-        }
+        manageDeferredNotifications()
 
         launch {
             createStore(
@@ -87,6 +81,16 @@ class StoreCreationSummaryViewModel @Inject constructor(
                     else -> { /* no op */ }
                 }
             }
+        }
+    }
+
+    private fun manageDeferredNotifications() {
+        if (isRemoteFeatureFlagEnabled(LOCAL_NOTIFICATION_STORE_CREATION_READY)) {
+            val name = if (accountStore.account.firstName.isNotNullOrEmpty())
+                accountStore.account.firstName
+            else
+                accountStore.account.userName
+            localNotificationScheduler.scheduleNotification(StoreCreationFinishedNotification(name))
         }
     }
 
