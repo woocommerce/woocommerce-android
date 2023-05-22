@@ -21,7 +21,7 @@ enum class ProductType(@StringRes val stringResource: Int = 0, val value: String
             return when (type.lowercase(Locale.US)) {
                 "grouped" -> GROUPED
                 "external" -> EXTERNAL
-                "variable" -> VARIABLE
+                "variable", "variation" -> VARIABLE
                 "simple" -> SIMPLE
                 "subscription" -> SUBSCRIPTION
                 "variable-subscription" -> VARIABLE_SUBSCRIPTION
