@@ -8,14 +8,16 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
-import com.woocommerce.android.R.dimen
 import com.woocommerce.android.databinding.OrderDetailProductListBinding
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.ViewAddonClickListener
+import com.woocommerce.android.ui.orders.details.OrderProduct
+import com.woocommerce.android.ui.orders.details.adapter.OrderDetailProductItemListAdapter
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailProductListAdapter
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.AlignedDividerDecoration
@@ -28,6 +30,28 @@ class OrderDetailProductListView @JvmOverloads constructor(
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
     private val binding = OrderDetailProductListBinding.inflate(LayoutInflater.from(ctx), this)
 
+    fun updateProductItemsList(
+        orderProductItems: List<OrderProduct>,
+        productImageMap: ProductImageMap,
+        formatCurrencyForDisplay: (BigDecimal) -> String,
+        productClickListener: OrderProductActionListener,
+        onProductMenuItemClicked: () -> Unit,
+        onViewAddonsClick: ViewAddonClickListener? = null
+    ) {
+        val adapter = OrderDetailProductItemListAdapter(
+            orderProductItems,
+            productImageMap,
+            formatCurrencyForDisplay,
+            productClickListener,
+            onViewAddonsClick
+        )
+        updateList(
+            adapter,
+            orderProductItems.size,
+            onProductMenuItemClicked
+        )
+    }
+
     fun updateProductList(
         orderItems: List<Order.Item>,
         productImageMap: ProductImageMap,
@@ -36,9 +60,29 @@ class OrderDetailProductListView @JvmOverloads constructor(
         onProductMenuItemClicked: () -> Unit,
         onViewAddonsClick: ViewAddonClickListener? = null
     ) {
+        val adapter = OrderDetailProductListAdapter(
+            orderItems,
+            productImageMap,
+            formatCurrencyForDisplay,
+            productClickListener,
+            onViewAddonsClick
+        )
+
+        updateList(
+            adapter,
+            orderItems.size,
+            onProductMenuItemClicked
+        )
+    }
+
+    private fun updateList(
+        listAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>,
+        size: Int,
+        onProductMenuItemClicked: () -> Unit,
+    ) {
         binding.productListLblProduct.text = StringUtils.getQuantityString(
             context = context,
-            quantity = orderItems.size,
+            quantity = size,
             default = R.string.orderdetail_product_multiple,
             one = R.string.orderdetail_product
         )
@@ -47,21 +91,13 @@ class OrderDetailProductListView @JvmOverloads constructor(
             setHasFixedSize(false)
             layoutManager = LinearLayoutManager(context)
             itemAnimator = DefaultItemAnimator()
-            adapter = OrderDetailProductListAdapter(
-                orderItems,
-                productImageMap,
-                formatCurrencyForDisplay,
-                productClickListener,
-                onViewAddonsClick
-            )
+            adapter = listAdapter
 
             if (itemDecorationCount == 0) {
                 addItemDecoration(
                     AlignedDividerDecoration(
                         context,
-                        DividerItemDecoration.VERTICAL,
-                        R.id.productInfo_name,
-                        padding = context.resources.getDimensionPixelSize(dimen.major_100)
+                        DividerItemDecoration.VERTICAL
                     )
                 )
             }

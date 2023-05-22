@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-09 09:54:03+0000
+Translation-Revision-Date: 2023-05-16 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="product_stock_status_insufficient_stock">Stok tidak cukup</string>
+    <string name="shipping_label_customs_item_description_too_short">Anda harus memberikan deskripsi yang spesifik dan jelas untuk tiap item.</string>
+    <string name="order_creation_add_product_via_barcode_scanning">Tambahkan produk-produk melalui pemindai</string>
     <string name="shipping_notice_dismiss">Tutup</string>
     <string name="shipping_notice_learn_more">Pelajari Selengkapnya</string>
     <string name="shipping_notice_banner_content">Ketika mengirimkan barang ke negara yang menerapkan aturan bea cukai Uni Eropa (UE), Anda harus memberikan deskripsi yang jelas dan spesifik tentang setiap item. Jika tidak, pengiriman akan tertunda atau tertahan di bea cukai.</string>
@@ -626,7 +629,6 @@ Language: id
     <string name="login_prologue_label_orders_subtitle">Anda dapat mengelolanya dengan cepat dan mudah</string>
     <string name="login_prologue_label_analytics_subtitle">Kami tahu bahwa hal ini penting untuk kelangsungan bisnis Anda</string>
     <string name="login_prologue_new_to_woo">Baru menggunakan WooCommerce</string>
-    <string name="notification_channel_pre_login_title">Pengingat pemecahan masalah login</string>
     <string name="tests_notification_new_order_message">Pesanan baru senilai $50 di Toko WooCommerce Anda</string>
     <string name="tests_notification_new_order_title">Ada pesanan baru! 🎉</string>
     <string name="lines_all_details">detail</string>

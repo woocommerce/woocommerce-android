@@ -41,6 +41,9 @@
                 android:defaultValue="SETTINGS"
                 app:argType="com.woocommerce.android.ui.prefs.domain.DomainFlowSource" />
         </action>
+        <action
+            android:id="@+id/action_mainSettingsFragment_to_closeAccountDialogFragment"
+            app:destination="@id/closeAccountDialogFragment" />
     </fragment>
     <fragment
         android:id="@+id/privacySettingsFragment"
@@ -141,4 +144,8 @@
         android:name="com.woocommerce.android.ui.prefs.DeveloperOptionsFragment"
         android:label="DeveloperOptionsFragment" />
     <include app:graph="@navigation/nav_graph_domain_change" />
+    <dialog
+        android:id="@+id/closeAccountDialogFragment"
+        android:name="com.woocommerce.android.ui.prefs.CloseAccountDialogFragment"
+        android:label="CloseAccountDialogFragment" />
 </navigation>

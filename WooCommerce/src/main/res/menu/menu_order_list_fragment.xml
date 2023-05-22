@@ -2,6 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/menu_barcode"
+        android:icon="@drawable/ic_barcode"
+        android:title="@string/scan_barcode"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/menu_search"
         android:icon="@drawable/ic_search_24dp"
         android:title="@string/search"

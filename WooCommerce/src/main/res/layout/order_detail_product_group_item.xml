@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.woocommerce.android.ui.orders.OrderDetailProductItemView
+        android:id="@+id/productInfo_groupedProduct"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="?selectableItemBackground"/>
+
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/productInfo_children_divider"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/minor_10"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/productInfo_groupedProduct" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/productInfo_childrenRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/productInfo_children_divider"
+        tools:listitem="@layout/order_detail_product_child_item"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

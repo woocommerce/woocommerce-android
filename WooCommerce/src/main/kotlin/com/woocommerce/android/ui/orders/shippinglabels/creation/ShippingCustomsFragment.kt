@@ -89,6 +89,7 @@ class ShippingCustomsFragment :
                 isVisible = AppPrefs.isEUShippingNoticeDismissed.not()
                 onLearnMoreClicked = viewModel::onShippingNoticeLearnMoreClicked
                 onDismissClicked = viewModel::onShippingNoticeDismissClicked
+                message = getString(R.string.shipping_notice_banner_instructions_content)
             }
         }
 

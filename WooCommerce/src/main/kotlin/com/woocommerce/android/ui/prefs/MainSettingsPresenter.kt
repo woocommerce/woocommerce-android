@@ -97,4 +97,7 @@ class MainSettingsPresenter @Inject constructor(
 
     override val isDomainOptionVisible: Boolean
         get() = selectedSite.get().isWPComAtomic
+
+    override val isCloseAccountOptionVisible: Boolean
+        get() = selectedSite.connectionType != SiteConnectionType.ApplicationPasswords
 }
