@@ -626,7 +626,6 @@ Language: pt_BR
     <string name="login_prologue_label_orders_subtitle">Você pode gerenciar com rapidez e facilidade</string>
     <string name="login_prologue_label_analytics_subtitle">Sabemos que isso é essencial para o seu negócio</string>
     <string name="login_prologue_new_to_woo">Chegando agora no WooCommerce?</string>
-    <string name="notification_channel_pre_login_title">Lembretes de solução de problemas de login</string>
     <string name="tests_notification_new_order_message">Novo pedido de US$ 50 em Sua Loja do WooCommerce</string>
     <string name="tests_notification_new_order_title">Você recebeu um novo pedido! 🎉</string>
     <string name="lines_all_details">as informações</string>

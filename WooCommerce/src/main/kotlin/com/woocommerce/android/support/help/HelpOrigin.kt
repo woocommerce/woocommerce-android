@@ -27,7 +27,8 @@ enum class HelpOrigin(private val stringValue: String) {
     LOGIN_WITH_QR_CODE("origin:qr-code-scanner"),
     STORE_CREATION("origin:store-creation"),
     DOMAIN_CHANGE("origin:domain-change"),
-    UPGRADES("origin:upgrades");
+    UPGRADES("origin:upgrades"),
+    ACCOUNT_DELETION("origin:account-deletion");
 
     override fun toString(): String {
         return stringValue

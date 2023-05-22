@@ -12,10 +12,10 @@ interface MainSettingsContract {
         fun setupAnnouncementOption()
         fun setupJetpackInstallOption()
         fun setupApplicationPasswordsSettings()
-
         fun setupOnboardingListVisibilitySetting()
 
         val isDomainOptionVisible: Boolean
+        val isCloseAccountOptionVisible: Boolean
     }
 
     interface View : BaseView<Presenter> {

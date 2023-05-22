@@ -7,7 +7,6 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderTestUtils
@@ -33,7 +32,6 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.spy
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.BaseRequest
@@ -60,7 +58,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     private lateinit var determineMultipleLinesContext: DetermineMultipleLinesContext
     protected lateinit var tracker: AnalyticsTrackerWrapper
     private lateinit var codeScanner: CodeScanner
-    private lateinit var productListRepository: ProductListRepository
+    lateinit var productListRepository: ProductListRepository
 
     protected val defaultOrderValue = Order.EMPTY.copy(id = 123)
 
@@ -372,7 +370,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(
                 productListRepository.searchProductList(
                     "12345",
-                    WCProductStore.SkuSearchOptions(isSkuSearch = true, isExactSkuSearch = true)
+                    WCProductStore.SkuSearchOptions.ExactSearch
                 )
             ).thenReturn(
                 ProductTestUtils.generateProductList()
@@ -400,7 +398,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(
                 productListRepository.searchProductList(
                     "12345",
-                    WCProductStore.SkuSearchOptions(isSkuSearch = true, isExactSkuSearch = true)
+                    WCProductStore.SkuSearchOptions.ExactSearch
                 )
             ).thenReturn(
                 listOf(
@@ -410,7 +408,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                     )
                 )
             )
-            whenever(createOrderItemUseCase.invoke(10L)).thenReturn(
+            whenever(createOrderItemUseCase.invoke(0L, 10L)).thenReturn(
                 createOrderItem(10L)
             )
             var newOrder: Order? = null
@@ -421,57 +419,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             sut.startScan()
 
             assertThat(newOrder?.getProductIds()?.any { it == 10L }).isTrue()
-        }
-    }
-    @Test
-    fun `given sku, when view model init, then fetch product information`() {
-        testBlocking {
-            val navArgs = OrderCreateEditFormFragmentArgs(
-                OrderCreateEditViewModel.Mode.Creation, "123"
-            ).initSavedStateHandle()
-            whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
-                SiteParameters(
-                    currencyCode = "",
-                    currencySymbol = null,
-                    currencyFormattingParameters = null,
-                    weightUnit = null,
-                    dimensionUnit = null,
-                    gmtOffset = 0F
-                )
-            )
-
-            createSut(navArgs)
-
-            verify(productListRepository, times(2)).searchProductList(
-                "123",
-                WCProductStore.SkuSearchOptions(isSkuSearch = true, isExactSkuSearch = true)
-            )
-        }
-    }
-
-    @Test
-    fun `given empty sku, when view model init, then do not fetch product information`() {
-        testBlocking {
-            val navArgs = OrderCreateEditFormFragmentArgs(
-                OrderCreateEditViewModel.Mode.Creation, ""
-            ).initSavedStateHandle()
-            whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
-                SiteParameters(
-                    currencyCode = "",
-                    currencySymbol = null,
-                    currencyFormattingParameters = null,
-                    weightUnit = null,
-                    dimensionUnit = null,
-                    gmtOffset = 0F
-                )
-            )
-
-            createSut(navArgs)
-
-            verify(productListRepository, times(1)).searchProductList(
-                "123",
-                WCProductStore.SkuSearchOptions(isSkuSearch = true, isExactSkuSearch = true)
-            )
         }
     }
 

@@ -626,7 +626,6 @@ Language: nl
     <string name="login_prologue_label_orders_subtitle">Je kunt ze snel en eenvoudig beheren</string>
     <string name="login_prologue_label_analytics_subtitle">We weten dat dit essentieel is voor je bedrijf</string>
     <string name="login_prologue_new_to_woo">Nieuw bij WooCommerce</string>
-    <string name="notification_channel_pre_login_title">Herinneringen probleemoplossing inloggen</string>
     <string name="tests_notification_new_order_message">Nieuwe bestelling van $ 50 in je WooCommerce-winkel</string>
     <string name="tests_notification_new_order_title">Je hebt een nieuwe bestelling!</string>
     <string name="lines_all_details">gegevens</string>

@@ -6,7 +6,6 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.notifications.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.notifications.NotificationChannelType.OTHER
-import com.woocommerce.android.notifications.NotificationChannelType.PRE_LOGIN
 import com.woocommerce.android.notifications.NotificationChannelType.REVIEW
 
 /**
@@ -18,7 +17,6 @@ import com.woocommerce.android.notifications.NotificationChannelType.REVIEW
 enum class NotificationChannelType {
     NEW_ORDER,
     REVIEW,
-    PRE_LOGIN,
     OTHER
 }
 
@@ -32,7 +30,6 @@ fun NotificationChannelType.getChannelId(): Int {
         NEW_ORDER -> R.string.notification_channel_order_id
         REVIEW -> R.string.notification_channel_review_id
         OTHER -> R.string.notification_channel_general_id
-        PRE_LOGIN -> R.string.notification_channel_pre_login_id
     }
 }
 
@@ -42,7 +39,6 @@ fun NotificationChannelType.getChannelTitle(): Int {
         NEW_ORDER -> R.string.notification_channel_order_title
         REVIEW -> R.string.notification_channel_review_title
         OTHER -> R.string.notification_channel_general_title
-        PRE_LOGIN -> R.string.notification_channel_pre_login_title
     }
 }
 
@@ -52,7 +48,6 @@ fun NotificationChannelType.getGroupId(): Int {
         NEW_ORDER -> GROUP_NOTIFICATION_ID_ORDER
         REVIEW -> GROUP_NOTIFICATION_ID_REVIEW
         OTHER -> GROUP_NOTIFICATION_ID_OTHER
-        PRE_LOGIN -> TODO()
     }
 }
 

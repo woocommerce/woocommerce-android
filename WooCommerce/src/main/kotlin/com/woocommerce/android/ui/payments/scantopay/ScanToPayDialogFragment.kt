@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.payments.scantopay
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +11,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.extensions.navigateBackWithNotice
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.WooTheme
 
 class ScanToPayDialogFragment : DialogFragment() {
     private val args: ScanToPayDialogFragmentArgs by navArgs()
@@ -19,10 +21,11 @@ class ScanToPayDialogFragment : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                WooThemeWithBackground {
+                WooTheme {
                     ScanToPayScreen(args.qrContent) {
                         navigateBackWithNotice(KEY_SCAN_TO_PAY_RESULT)
                     }
