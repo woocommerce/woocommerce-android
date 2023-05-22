@@ -537,7 +537,6 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 prefs,
                 analyticsTrackerWrapper,
                 resolveAppLink,
-                notificationScheduler,
                 moreMenuNewFeatureHandler,
                 unseenReviewsCountHandler,
                 mock {
