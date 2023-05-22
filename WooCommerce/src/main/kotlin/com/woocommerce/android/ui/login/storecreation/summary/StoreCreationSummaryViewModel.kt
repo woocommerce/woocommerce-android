@@ -31,7 +31,6 @@ class StoreCreationSummaryViewModel @Inject constructor(
     private val newStore: NewStore,
     private val createStore: CreateFreeTrialStore,
     private val tracker: AnalyticsTrackerWrapper,
-    private val resourceProvider: ResourceProvider,
     private val localNotificationScheduler: LocalNotificationScheduler,
     private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled,
     private val accountStore: AccountStore
@@ -69,7 +68,7 @@ class StoreCreationSummaryViewModel @Inject constructor(
                 accountStore.account.firstName
             else
                 accountStore.account.userName
-            localNotificationScheduler.scheduleNotification(StoreCreationCompleteNotification(name, resourceProvider))
+            localNotificationScheduler.scheduleNotification(StoreCreationCompleteNotification(name))
         }
 
         launch {

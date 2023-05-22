@@ -8,11 +8,13 @@ import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class LocalNotificationScheduler @Inject constructor(
-    @ApplicationContext private val appContext: Context
+    @ApplicationContext private val appContext: Context,
+    private val resourceProvider: ResourceProvider
 ) {
     companion object {
         const val LOCAL_NOTIFICATION_WORK_NAME = "Scheduled notification work"
@@ -28,7 +30,8 @@ class LocalNotificationScheduler @Inject constructor(
         cancelScheduledNotification(notification)
 
         workManager
-            .beginUniqueWork(LOCAL_NOTIFICATION_WORK_NAME, REPLACE, buildConditionWorkRequest(notification))
+            .beginUniqueWork(LOCAL_NOTIFICATION_WORK_NAME, REPLACE, buildInitializationWorkRequest(notification))
+            .then(buildPreconditionCheckWorkRequest(notification))
             .then(buildNotificationWorkRequest(notification))
             .enqueue()
 
@@ -38,9 +41,17 @@ class LocalNotificationScheduler @Inject constructor(
         )
     }
 
-    private fun buildConditionWorkRequest(notification: LocalNotification): OneTimeWorkRequest {
+    private fun buildInitializationWorkRequest(notification: LocalNotification): OneTimeWorkRequest {
         val conditionData = workDataOf(LOCAL_NOTIFICATION_TYPE to notification.type)
-        return OneTimeWorkRequestBuilder<ConditionCheckWorker>()
+        return OneTimeWorkRequestBuilder<InitializationWorker>()
+            .setInputData(conditionData)
+            .addTag(notification.type)
+            .build()
+    }
+
+    private fun buildPreconditionCheckWorkRequest(notification: LocalNotification): OneTimeWorkRequest {
+        val conditionData = workDataOf(LOCAL_NOTIFICATION_TYPE to notification.type)
+        return OneTimeWorkRequestBuilder<PreconditionCheckWorker>()
             .setInputData(conditionData)
             .addTag(notification.type)
             .setInitialDelay(notification.delay, notification.delayUnit)
@@ -51,10 +62,11 @@ class LocalNotificationScheduler @Inject constructor(
         val notificationData = workDataOf(
             LOCAL_NOTIFICATION_TYPE to notification.type,
             LOCAL_NOTIFICATION_ID to notification.id,
-            LOCAL_NOTIFICATION_TITLE to notification.title,
-            LOCAL_NOTIFICATION_DESC to notification.description
+            LOCAL_NOTIFICATION_TITLE to notification.getTitleString(resourceProvider),
+            LOCAL_NOTIFICATION_DESC to notification.getDescriptionString(resourceProvider)
         )
         return OneTimeWorkRequestBuilder<LocalNotificationWorker>()
+            .addTag(notification.type)
             .setInputData(notificationData)
             .build()
     }
