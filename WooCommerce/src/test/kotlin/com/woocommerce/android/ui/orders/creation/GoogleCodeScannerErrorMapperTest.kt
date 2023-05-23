@@ -4,6 +4,7 @@ import com.google.mlkit.common.MlKitException
 import com.google.mlkit.common.MlKitException.ABORTED
 import com.google.mlkit.common.MlKitException.ALREADY_EXISTS
 import com.google.mlkit.common.MlKitException.CANCELLED
+import com.google.mlkit.common.MlKitException.CODE_SCANNER_APP_NAME_UNAVAILABLE
 import com.google.mlkit.common.MlKitException.CODE_SCANNER_CANCELLED
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -50,6 +51,15 @@ class GoogleCodeScannerErrorMapperTest : BaseUnitTest() {
 
         assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
             CodeScanningErrorType.Cancelled
+        )
+    }
+
+    @Test
+    fun `when CODE_SCANNER_APP_NAME_UNAVAILABLE exception thrown, then CodeScannerAppNameUnavailable type returned`() {
+        whenever(mlKitException.errorCode).thenReturn(CODE_SCANNER_APP_NAME_UNAVAILABLE)
+
+        assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
+            CodeScanningErrorType.CodeScannerAppNameUnavailable
         )
     }
 }
