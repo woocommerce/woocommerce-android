@@ -1,6 +1,7 @@
 package com.woocommerce.android.cardreader.internal.payments
 
 import com.stripe.stripeterminal.external.models.ReaderDisplayMessage
+import com.stripe.stripeterminal.external.models.ReaderDisplayMessage.CARD_REMOVED_TOO_EARLY
 import com.stripe.stripeterminal.external.models.ReaderDisplayMessage.CHECK_MOBILE_DEVICE
 import com.stripe.stripeterminal.external.models.ReaderDisplayMessage.INSERT_CARD
 import com.stripe.stripeterminal.external.models.ReaderDisplayMessage.INSERT_OR_SWIPE_CARD
@@ -24,5 +25,6 @@ internal class AdditionalInfoMapper {
             TRY_ANOTHER_READ_METHOD -> AdditionalInfoType.TRY_ANOTHER_READ_METHOD
             TRY_ANOTHER_CARD -> AdditionalInfoType.TRY_ANOTHER_CARD
             CHECK_MOBILE_DEVICE -> AdditionalInfoType.CHECK_MOBILE_DEVICE
+            CARD_REMOVED_TOO_EARLY -> AdditionalInfoType.CARD_REMOVED_TOO_EARLY
         }
 }
