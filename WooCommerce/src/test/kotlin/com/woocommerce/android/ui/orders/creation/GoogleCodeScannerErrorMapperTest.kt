@@ -9,6 +9,7 @@ import com.google.mlkit.common.MlKitException.CODE_SCANNER_CAMERA_PERMISSION_NOT
 import com.google.mlkit.common.MlKitException.CODE_SCANNER_CANCELLED
 import com.google.mlkit.common.MlKitException.CODE_SCANNER_GOOGLE_PLAY_SERVICES_VERSION_TOO_OLD
 import com.google.mlkit.common.MlKitException.CODE_SCANNER_PIPELINE_INFERENCE_ERROR
+import com.google.mlkit.common.MlKitException.CODE_SCANNER_PIPELINE_INITIALIZATION_ERROR
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -99,6 +100,15 @@ class GoogleCodeScannerErrorMapperTest : BaseUnitTest() {
 
         assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
             CodeScanningErrorType.CodeScannerPipelineInferenceError
+        )
+    }
+
+    @Test
+    fun `when CODE_SCANNER_PIPELINE_INITIALIZATION_ERROR exception thrown, then CodeScannerPipelineInitializationError type returned`() {
+        whenever(mlKitException.errorCode).thenReturn(CODE_SCANNER_PIPELINE_INITIALIZATION_ERROR)
+
+        assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
+            CodeScanningErrorType.CodeScannerPipelineInitializationError
         )
     }
 }
