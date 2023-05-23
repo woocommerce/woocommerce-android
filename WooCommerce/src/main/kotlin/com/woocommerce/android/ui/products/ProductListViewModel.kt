@@ -200,7 +200,18 @@ class ProductListViewModel @Inject constructor(
     fun onAddProductButtonClicked() {
         launch {
             AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_ADD_PRODUCT_BUTTON_TAPPED)
-            triggerEvent(ShowAddProductBottomSheet)
+
+            // Merchant is adding new product if:
+            // - Empty view is shown, and
+            // - Empty view is not from result of search, and
+            // - Empty view is not from result of filtering.
+            val isAddingFirstProduct = viewState.isEmptyViewVisible ?: false
+                && !isSearching()
+                && viewState.filterCount == 0
+
+            triggerEvent(ShowAddProductBottomSheet(
+                isAddingFirstProduct = isAddingFirstProduct
+            ))
         }
     }
 
@@ -669,7 +680,9 @@ class ProductListViewModel @Inject constructor(
 
     sealed class ProductListEvent : Event() {
         object ScrollToTop : ProductListEvent()
-        object ShowAddProductBottomSheet : ProductListEvent()
+        data class ShowAddProductBottomSheet(
+            val isAddingFirstProduct: Boolean
+        ) : ProductListEvent()
         object ShowProductSortingBottomSheet : ProductListEvent()
         data class ShowProductFilterScreen(
             val stockStatusFilter: String?,
