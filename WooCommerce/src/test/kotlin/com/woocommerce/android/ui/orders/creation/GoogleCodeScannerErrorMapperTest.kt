@@ -304,8 +304,17 @@ class GoogleCodeScannerErrorMapperTest : BaseUnitTest() {
     fun `when exception is null, then Other type returned`() {
         val mlKitException: MlKitException? = null
 
+        assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isInstanceOf(
+            CodeScanningErrorType.Other::class.java
+        )
+    }
+
+    @Test
+    fun `when exception is not MLKitException, then Other type returned with proper message`() {
+        val mlKitException = Throwable("Barcode unrecognized")
+
         assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
-            CodeScanningErrorType.Other
+            CodeScanningErrorType.Other(mlKitException)
         )
     }
 
@@ -313,8 +322,8 @@ class GoogleCodeScannerErrorMapperTest : BaseUnitTest() {
     fun `when exception returns invalid error code, then Other type returned`() {
         whenever(mlKitException.errorCode).thenReturn(-1)
 
-        assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
-            CodeScanningErrorType.Other
+        assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isInstanceOf(
+            CodeScanningErrorType.Other::class.java
         )
     }
 }

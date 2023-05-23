@@ -34,9 +34,9 @@ import javax.inject.Inject
 class GoogleCodeScannerErrorMapper @Inject constructor() {
     @Suppress("ComplexMethod")
     fun mapGoogleMLKitScanningErrors(
-        exception: MlKitException?
+        exception: Throwable?
     ): CodeScanningErrorType {
-        return when (exception?.errorCode) {
+        return when ((exception as? MlKitException)?.errorCode) {
             ABORTED -> CodeScanningErrorType.Aborted
             ALREADY_EXISTS -> CodeScanningErrorType.AlreadyExists
             CANCELLED -> CodeScanningErrorType.Cancelled
@@ -68,7 +68,7 @@ class GoogleCodeScannerErrorMapper @Inject constructor() {
             UNAVAILABLE -> CodeScanningErrorType.UnAvailable
             UNIMPLEMENTED -> CodeScanningErrorType.UnImplemented
             UNKNOWN -> CodeScanningErrorType.Unknown
-            else -> CodeScanningErrorType.Other
+            else -> CodeScanningErrorType.Other(exception)
         }
     }
 }

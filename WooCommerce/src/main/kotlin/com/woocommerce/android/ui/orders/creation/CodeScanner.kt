@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.creation
 
-import com.google.mlkit.common.MlKitException
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanner
 import kotlinx.coroutines.channels.ProducerScope
@@ -28,7 +27,7 @@ class GoogleCodeScanner @Inject constructor(
                     this@callbackFlow.trySend(
                         CodeScannerStatus.Failure(
                             error = throwable.message,
-                            type = errorMapper.mapGoogleMLKitScanningErrors(throwable as? MlKitException)
+                            type = errorMapper.mapGoogleMLKitScanningErrors(throwable)
                         )
                     )
                     this@callbackFlow.close()
@@ -44,7 +43,7 @@ class GoogleCodeScanner @Inject constructor(
             trySend(
                 CodeScannerStatus.Failure(
                     error = "Failed to find a valid raw value!",
-                    type = CodeScanningErrorType.Other
+                    type = CodeScanningErrorType.Other(Throwable("Empty raw value"))
                 )
             )
         }
@@ -88,5 +87,5 @@ sealed class CodeScanningErrorType {
     object UnAvailable : CodeScanningErrorType()
     object UnImplemented : CodeScanningErrorType()
     object Unknown : CodeScanningErrorType()
-    object Other : CodeScanningErrorType()
+    data class Other(val throwable: Throwable?) : CodeScanningErrorType()
 }
