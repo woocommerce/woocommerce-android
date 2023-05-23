@@ -653,7 +653,7 @@ class CardReaderPaymentViewModel
             TRY_ANOTHER_READ_METHOD -> R.string.card_reader_payment_try_another_read_method_prompt
             TRY_ANOTHER_CARD -> R.string.card_reader_payment_try_another_card_prompt
             CHECK_MOBILE_DEVICE -> R.string.card_reader_payment_check_mobile_device_prompt
-            CARD_REMOVED_TOO_EARLY -> R.string.card_reader_payment_card_card_removed_too_early
+            CARD_REMOVED_TOO_EARLY -> R.string.card_reader_payment_card_removed_too_early
         }
 
     private fun onSaveForLaterClicked() {
