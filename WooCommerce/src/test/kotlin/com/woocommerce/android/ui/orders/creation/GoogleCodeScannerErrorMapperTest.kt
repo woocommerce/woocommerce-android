@@ -5,6 +5,7 @@ import com.google.mlkit.common.MlKitException.ABORTED
 import com.google.mlkit.common.MlKitException.ALREADY_EXISTS
 import com.google.mlkit.common.MlKitException.CANCELLED
 import com.google.mlkit.common.MlKitException.CODE_SCANNER_APP_NAME_UNAVAILABLE
+import com.google.mlkit.common.MlKitException.CODE_SCANNER_CAMERA_PERMISSION_NOT_GRANTED
 import com.google.mlkit.common.MlKitException.CODE_SCANNER_CANCELLED
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -60,6 +61,15 @@ class GoogleCodeScannerErrorMapperTest : BaseUnitTest() {
 
         assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
             CodeScanningErrorType.CodeScannerAppNameUnavailable
+        )
+    }
+
+    @Test
+    fun `when CODE_SCANNER_CAMERA_PERMISSION_NOT_GRANTED exception thrown, then CodeScannerCameraPermissionNotGranted type returned`() {
+        whenever(mlKitException.errorCode).thenReturn(CODE_SCANNER_CAMERA_PERMISSION_NOT_GRANTED)
+
+        assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
+            CodeScanningErrorType.CodeScannerCameraPermissionNotGranted
         )
     }
 }
