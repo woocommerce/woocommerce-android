@@ -16,6 +16,7 @@ import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
+import com.woocommerce.android.notifications.local.LocalNotificationType
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType.Jetpack
@@ -249,6 +250,10 @@ class MainActivityViewModel @Inject constructor(
             AnalyticsEvent.LOCAL_NOTIFICATION_TAPPED,
             mapOf(AnalyticsTracker.KEY_TYPE to notification.tag)
         )
+
+        if (notification.tag == LocalNotificationType.STORE_CREATION_INCOMPLETE.value) {
+            triggerEvent(ShortcutOpenStoreCreation(storeName = notification.data))
+        }
     }
 
     object ViewOrderList : Event()
@@ -261,6 +266,7 @@ class MainActivityViewModel @Inject constructor(
     data class ViewUrlInWebView(val url: String) : Event()
     object ShortcutOpenPayments : Event()
     object ShortcutOpenOrderCreation : Event()
+    data class ShortcutOpenStoreCreation(val storeName: String?) : Event()
     data class RestartActivityForNotification(val pushId: Int, val notification: Notification) : Event()
     data class RestartActivityForAppLink(val data: Uri) : Event()
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
