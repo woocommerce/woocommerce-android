@@ -18,6 +18,8 @@ import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,7 +33,13 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
-fun PrivacyBannerScreen() {
+fun PrivacyBannerScreen(viewModel: PrivacyBannerViewModel) {
+    val analyticsEnabled: Boolean by viewModel.analyticsEnabled.observeAsState(false)
+    PrivacyBannerScreen(analyticsEnabled)
+}
+
+@Composable
+fun PrivacyBannerScreen(analyticsEnabled: Boolean) {
     Box(Modifier.background(MaterialTheme.colors.surface)) {
         Column(
             Modifier.padding(vertical = 16.dp)
@@ -65,7 +73,7 @@ fun PrivacyBannerScreen() {
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = MaterialTheme.colors.primary
                     ),
-                    checked = true,
+                    checked = analyticsEnabled,
                     onCheckedChange = {},
                 )
             }
@@ -141,6 +149,6 @@ private fun textAppearanceWooBody2() = TextStyle(
 @Composable
 private fun Default() {
     WooThemeWithBackground {
-        PrivacyBannerScreen()
+        PrivacyBannerScreen(analyticsEnabled = true)
     }
 }
