@@ -24,6 +24,7 @@ import com.google.mlkit.common.MlKitException.NOT_ENOUGH_SPACE
 import com.google.mlkit.common.MlKitException.NOT_FOUND
 import com.google.mlkit.common.MlKitException.OUT_OF_RANGE
 import com.google.mlkit.common.MlKitException.PERMISSION_DENIED
+import com.google.mlkit.common.MlKitException.RESOURCE_EXHAUSTED
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -249,6 +250,15 @@ class GoogleCodeScannerErrorMapperTest : BaseUnitTest() {
 
         assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
             CodeScanningErrorType.PermissionDenied
+        )
+    }
+
+    @Test
+    fun `when RESOURCE_EXHAUSTED exception thrown, then ResourceExhausted type returned`() {
+        whenever(mlKitException.errorCode).thenReturn(RESOURCE_EXHAUSTED)
+
+        assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
+            CodeScanningErrorType.ResourceExhausted
         )
     }
 }
