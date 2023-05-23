@@ -107,7 +107,7 @@ class PrivacySettingsViewModel @Inject constructor(
                         triggerEvent(
                             MultiLiveEvent.Event.ShowActionSnackbar(
                                 resourceProvider.getString(R.string.settings_tracking_analytics_error_update)
-                            ) { onSendStatsSettingChanged(!checked) }
+                            ) { onSendStatsSettingChanged(checked) }
                         )
                     }
                 )
