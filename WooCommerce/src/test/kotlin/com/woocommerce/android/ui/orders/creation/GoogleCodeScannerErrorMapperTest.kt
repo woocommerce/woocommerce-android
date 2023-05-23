@@ -310,4 +310,13 @@ class GoogleCodeScannerErrorMapperTest : BaseUnitTest() {
             CodeScanningErrorType.Other
         )
     }
+
+    @Test
+    fun `when exception returns invalid error code, then Other type returned`() {
+        whenever(mlKitException.errorCode).thenReturn(-1)
+
+        assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
+            CodeScanningErrorType.Other
+        )
+    }
 }
