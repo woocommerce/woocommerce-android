@@ -463,7 +463,12 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         createSut()
         whenever(codeScanner.startScan()).thenAnswer {
             flow<CodeScannerStatus> {
-                emit(CodeScannerStatus.Failure(Throwable("Failed to recognize the barcode")))
+                emit(
+                    CodeScannerStatus.Failure(
+                        error = "Failed to recognize the barcode",
+                        type = CodeScanningErrorType.NotFound
+                    )
+                )
             }
         }
 
@@ -477,7 +482,12 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         createSut()
         whenever(codeScanner.startScan()).thenAnswer {
             flow<CodeScannerStatus> {
-                emit(CodeScannerStatus.Failure(Throwable("Failed to recognize the barcode")))
+                emit(
+                    CodeScannerStatus.Failure(
+                        error = "Failed to recognize the barcode",
+                        type = CodeScanningErrorType.NotFound
+                    )
+                )
             }
         }
 
@@ -489,27 +499,16 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when code scanner fails to recognize the barcode, then proper throwable is sent`() {
-        createSut()
-        whenever(codeScanner.startScan()).thenAnswer {
-            flow<CodeScannerStatus> {
-                emit(CodeScannerStatus.Failure(Throwable("Failed to recognize the barcode")))
-            }
-        }
-
-        sut.startScan()
-
-        assertThat((sut.event.value as OnBarcodeScanningFailed).error?.message).isEqualTo(
-            "Failed to recognize the barcode"
-        )
-    }
-
-    @Test
     fun `given code scanner fails to recognize the barcode, when retry clicked, then restart code scanning`() {
         createSut()
         whenever(codeScanner.startScan()).thenAnswer {
             flow<CodeScannerStatus> {
-                emit(CodeScannerStatus.Failure(Throwable("Failed to recognize the barcode")))
+                emit(
+                    CodeScannerStatus.Failure(
+                        error = "Failed to recognize the barcode",
+                        type = CodeScanningErrorType.NotFound
+                    )
+                )
             }
         }
 
@@ -582,7 +581,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             sut.startScan()
 
             assertThat(
-                (sut.event.value as OnProductSearchBySKUFailed).error?.message
+                (sut.event.value as OnProductSearchBySKUFailed).message
             ).isEqualTo("Product search by SKU failed")
         }
     }
