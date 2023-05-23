@@ -25,6 +25,7 @@ import com.google.mlkit.common.MlKitException.NOT_FOUND
 import com.google.mlkit.common.MlKitException.OUT_OF_RANGE
 import com.google.mlkit.common.MlKitException.PERMISSION_DENIED
 import com.google.mlkit.common.MlKitException.RESOURCE_EXHAUSTED
+import com.google.mlkit.common.MlKitException.UNAUTHENTICATED
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -259,6 +260,15 @@ class GoogleCodeScannerErrorMapperTest : BaseUnitTest() {
 
         assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
             CodeScanningErrorType.ResourceExhausted
+        )
+    }
+
+    @Test
+    fun `when UNAUTHENTICATED exception thrown, then UnAuthenticated type returned`() {
+        whenever(mlKitException.errorCode).thenReturn(UNAUTHENTICATED)
+
+        assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
+            CodeScanningErrorType.UnAuthenticated
         )
     }
 }
