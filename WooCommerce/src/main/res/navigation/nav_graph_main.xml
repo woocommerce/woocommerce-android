@@ -60,6 +60,10 @@
                 android:defaultValue="true"
                 app:argType="boolean" />
             <argument
+                android:name="isAddingFirstProduct"
+                android:defaultValue="true"
+                app:argType="boolean" />
+            <argument
                 android:name="source"
                 android:defaultValue="STORE_ONBOARDING"
                 app:argType="com.woocommerce.android.ui.products.AddProductSource" />
