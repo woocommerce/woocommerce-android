@@ -9,6 +9,7 @@ sealed class SelectPaymentMethodViewState {
         val orderTotal: String,
         val isPaymentCollectableWithExternalCardReader: Boolean,
         val isPaymentCollectableWithTapToPay: Boolean,
+        val isScanToPayAvailable: Boolean,
         val learMoreIpp: LearMoreIpp,
     ) : SelectPaymentMethodViewState()
 

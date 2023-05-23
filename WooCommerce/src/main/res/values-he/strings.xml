@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-02 15:54:03+0000
+Translation-Revision-Date: 2023-05-16 16:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="product_stock_status_insufficient_stock">מלאי לא מספיק</string>
+    <string name="shipping_label_customs_item_description_too_short">עליך לספק תיאור ברור וספציפי לגבי כל פריט.</string>
+    <string name="order_creation_add_product_via_barcode_scanning">להוסיף מוצרים דרך סורק</string>
+    <string name="shipping_notice_dismiss">ביטול</string>
+    <string name="shipping_notice_learn_more">למידע נוסף</string>
+    <string name="shipping_notice_banner_content">במשלוח למדינות שעונות על כללי המכס של האיחוד האירופי, עליך לספק תיאור ברור וספציפי לגבי כל פריט. אחרת, ייתכן שמשלוחים יעוכבו או יחסמו במכס.</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">לקבל עדכונים ולשפר את אבטחת החנות. לעיין ב-Jetpack כעת.</string>
+    <string name="jetpack_benefits_bottom_banner_title">לקבל הודעות לגבי הזמנות ועוד</string>
     <string name="store_onboarding_setting_description">להציג או להסתיר את רשימת ההגדרות לחנות</string>
     <string name="store_onboarding_setting_title">רשימה להגדרות החנות</string>
     <string name="store_onboarding_dialog_description">אפשר לשחזר את המידע כשצריך דרך \'תפריט\' &gt; \'הגדרות\' &gt; \'חנות\'</string>
@@ -621,7 +629,6 @@ Language: he_IL
     <string name="login_prologue_label_orders_subtitle">אפשר לנסות את התשלומים בצורה מהירה ונוחה</string>
     <string name="login_prologue_label_analytics_subtitle">אנחנו יודעים שהאפשרות הזאת חיונית לעסק שלך</string>
     <string name="login_prologue_new_to_woo">פעם ראשונה ב-WooCommerce</string>
-    <string name="notification_channel_pre_login_title">תזכורות לגבי פתרון בעיות במהלך ההתחברות</string>
     <string name="tests_notification_new_order_message">הזמנה חדשה בסכום של 50 $ בחנות שלך ב-WooCommerce</string>
     <string name="tests_notification_new_order_title">יש לך הזמנה חדשה! 🎉</string>
     <string name="lines_all_details">הפרטים</string>
@@ -1112,8 +1119,6 @@ Language: he_IL
     <string name="orderfilters_show_orders_button">להציג הזמנות</string>
     <string name="orderlist_filters_title">הזמנות שסוננו</string>
     <string name="orderlist_no_filters_title">כל ההזמנות</string>
-    <string name="jetpack_benefits_bottom_banner_subtitle">לצפייה בהטבות</string>
-    <string name="jetpack_benefits_bottom_banner_title">אפשר ליהנות מהחוויה המלאה עם Jetpack</string>
     <string name="product_description_hint_with_title">נשמח לשמוע פרטים נוספים על %s…</string>
     <string name="product_description_hint_no_title">לתאר את המוצר שלך ללקוחות עתידיים…</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">המספר הסידורי של הקורא הועתק ללקוח</string>

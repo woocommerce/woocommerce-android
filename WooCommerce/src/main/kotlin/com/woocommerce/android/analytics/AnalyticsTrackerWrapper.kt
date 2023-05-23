@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 @Reusable
 class AnalyticsTrackerWrapper @Inject constructor() {
-    val sendUsageStats: Boolean by AnalyticsTracker.Companion::sendUsageStats
+    var sendUsageStats: Boolean by AnalyticsTracker.Companion::sendUsageStats
 
     fun track(stat: AnalyticsEvent, properties: Map<String, *> = emptyMap<String, Any>()) {
         AnalyticsTracker.track(stat, properties)

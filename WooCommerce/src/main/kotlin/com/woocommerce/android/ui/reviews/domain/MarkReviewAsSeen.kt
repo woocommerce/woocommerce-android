@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.reviews.domain
 
-import com.woocommerce.android.push.NotificationMessageHandler
+import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.ui.reviews.ReviewDetailRepository
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import javax.inject.Inject

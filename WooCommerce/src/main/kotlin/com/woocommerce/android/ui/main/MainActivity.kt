@@ -130,6 +130,7 @@ class MainActivity :
         // push notification-related constants
         const val FIELD_OPENED_FROM_PUSH = "opened-from-push-notification"
         const val FIELD_REMOTE_NOTIFICATION = "remote-notification"
+        const val FIELD_LOCAL_NOTIFICATION = "local-notification"
         const val FIELD_PUSH_ID = "local-push-id"
 
         // widget-related constants
@@ -694,9 +695,19 @@ class MainActivity :
     // endregion
 
     // region Fragment Processing
+    @Suppress("ForbiddenComment")
     private fun initFragment(savedInstanceState: Bundle?) {
+        // TODO: Remove
+        if (BuildConfig.DEBUG) {
+            binding.offlineBar.setOnClickListener {
+                viewModel.showLocalNotification()
+            }
+        }
+
         setupObservers()
         val openedFromPush = intent.getBooleanExtra(FIELD_OPENED_FROM_PUSH, false)
+        val localNotification = intent.getParcelableExtra<Notification>(FIELD_LOCAL_NOTIFICATION)
+
         // Reset this flag now that it's being processed
         intent.removeExtra(FIELD_OPENED_FROM_PUSH)
 
@@ -713,6 +724,8 @@ class MainActivity :
             intent.removeExtra(FIELD_PUSH_ID)
 
             viewModel.handleIncomingNotification(localPushId, notification)
+        } else if (localNotification != null) {
+            viewModel.onLocalNotificationTapped(localNotification)
         }
     }
     // endregion
@@ -927,7 +940,8 @@ class MainActivity :
         binding.bottomNav.currentPosition = ORDERS
         binding.bottomNav.active(ORDERS.position)
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderCreationFragment(
-            OrderCreateEditViewModel.Mode.Creation
+            OrderCreateEditViewModel.Mode.Creation,
+            null
         )
         navController.navigateSafely(action)
     }

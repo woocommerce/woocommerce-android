@@ -135,6 +135,35 @@
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/coupon_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:minHeight="@dimen/major_300"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/coupon_button"
+                style="@style/Woo.Button.TextButton.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="start|center_vertical"
+                android:text="@string/order_creation_add_coupon"
+                app:icon="@drawable/ic_add" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/coupon_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/major_100"
+                android:layout_marginStart="@dimen/major_100"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                tools:text="-$20.00" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/tax_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

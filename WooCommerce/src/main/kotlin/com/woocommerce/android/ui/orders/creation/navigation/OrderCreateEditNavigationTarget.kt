@@ -20,4 +20,6 @@ sealed class OrderCreateEditNavigationTarget : Event() {
         val orderSubTotal: BigDecimal,
         val currentFeeValue: BigDecimal? = null
     ) : OrderCreateEditNavigationTarget()
+
+    data class EditCoupon(val couponCode: String?) : OrderCreateEditNavigationTarget()
 }

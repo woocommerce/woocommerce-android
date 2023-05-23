@@ -1,6 +1,12 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 13.7
+Lots of exciting updates on this one! You can create orders on the go and add discounts for the order! You can also quickly take a payment for the order by generating a QR code for your customers to scan and pay. You’ve asked for it, and now it’s here!
+
+## 13.6
+Our experimental coupons feature is now available for everyone! Simply click on the menu option to manage your coupons from the app. Do try it out and share your feedback!
+
 ## 13.5
 This release contains a handful of minor improvements to make your experience smoother. We hope you notice the love we put into our software. Stay tuned for some exciting news coming your way!
 

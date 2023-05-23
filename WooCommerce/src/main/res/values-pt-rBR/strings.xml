@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-02 15:54:03+0000
+Translation-Revision-Date: 2023-05-15 21:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="product_stock_status_insufficient_stock">Estoque insuficiente</string>
+    <string name="shipping_label_customs_item_description_too_short">Você deve fornecer uma descrição clara e específica para cada item.</string>
+    <string name="order_creation_add_product_via_barcode_scanning">Adicionar produtos pelo leitor</string>
+    <string name="shipping_notice_dismiss">Ignorar</string>
+    <string name="shipping_notice_learn_more">Saiba mais</string>
+    <string name="shipping_notice_banner_content">Em envios para países que seguem as regras alfandegárias da União Europeia (UE), você deve fornecer uma descrição clara e específica de cada item. Caso contrário, os envios podem sofrer atrasos ou ficar interditados na alfândega.</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Fique por dentro e turbine a segurança da loja. Conheça o Jetpack agora mesmo.</string>
+    <string name="jetpack_benefits_bottom_banner_title">Receba notificações de pedidos e muito mais</string>
     <string name="store_onboarding_setting_description">Mostrar ou ocultar lista de configurações da loja</string>
     <string name="store_onboarding_setting_title">Lista de configurações da loja</string>
     <string name="store_onboarding_dialog_description">Se precisar, você pode restaurá-la em Menu &gt; Configurações &gt; Loja</string>
@@ -621,7 +629,6 @@ Language: pt_BR
     <string name="login_prologue_label_orders_subtitle">Você pode gerenciar com rapidez e facilidade</string>
     <string name="login_prologue_label_analytics_subtitle">Sabemos que isso é essencial para o seu negócio</string>
     <string name="login_prologue_new_to_woo">Chegando agora no WooCommerce?</string>
-    <string name="notification_channel_pre_login_title">Lembretes de solução de problemas de login</string>
     <string name="tests_notification_new_order_message">Novo pedido de US$ 50 em Sua Loja do WooCommerce</string>
     <string name="tests_notification_new_order_title">Você recebeu um novo pedido! 🎉</string>
     <string name="lines_all_details">as informações</string>
@@ -1112,8 +1119,6 @@ Language: pt_BR
     <string name="orderfilters_show_orders_button">Mostrar pedidos</string>
     <string name="orderlist_filters_title">Pedidos filtrados</string>
     <string name="orderlist_no_filters_title">Todos os pedidos</string>
-    <string name="jetpack_benefits_bottom_banner_subtitle">Veja os benefícios</string>
-    <string name="jetpack_benefits_bottom_banner_title">Obtenha uma experiência completa com o Jetpack</string>
     <string name="product_description_hint_with_title">Fale mais sobre %s…</string>
     <string name="product_description_hint_no_title">Descreva seu produto para os futuros clientes…</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">Número de série do leitor copiado para a área de transferência</string>

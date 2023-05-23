@@ -1,0 +1,2 @@
+13.6:
+La nostra funzionalità sperimentale per codici promozionali è ora disponibile per tutti. Basta semplicemente fare clic sull'opzione del menu per gestire i codici promozionali dall'app. Provala e condividi il tuo feedback.

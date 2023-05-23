@@ -33,6 +33,7 @@ class OrderedAddonViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
     private val addonsRepository: AddonRepository,
+    private val feedbackPrefs: FeedbackPrefs,
     parameterRepository: ParameterRepository
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -46,9 +47,9 @@ class OrderedAddonViewModel @Inject constructor(
     val orderedAddonsData: LiveData<List<Addon>> = _orderedAddons
 
     private val currentFeedbackSettings
-        get() = FeedbackPrefs.getFeatureFeedbackSettings(PRODUCT_ADDONS)
+        get() = feedbackPrefs.getFeatureFeedbackSettings(PRODUCT_ADDONS)
             ?: FeatureFeedbackSettings(PRODUCT_ADDONS)
-                .apply { registerItself() }
+                .apply { registerItself(feedbackPrefs) }
 
     /**
      * Provides the currencyCode for views who requires display prices
@@ -79,7 +80,7 @@ class OrderedAddonViewModel @Inject constructor(
         FeatureFeedbackSettings(
             PRODUCT_ADDONS,
             GIVEN
-        ).registerItself()
+        ).registerItself(feedbackPrefs)
 
         triggerEvent(ShowSurveyView)
     }
@@ -90,7 +91,7 @@ class OrderedAddonViewModel @Inject constructor(
         FeatureFeedbackSettings(
             PRODUCT_ADDONS,
             DISMISSED
-        ).registerItself()
+        ).registerItself(feedbackPrefs)
 
         viewState = viewState.copy(shouldDisplayFeedbackCard = false)
     }

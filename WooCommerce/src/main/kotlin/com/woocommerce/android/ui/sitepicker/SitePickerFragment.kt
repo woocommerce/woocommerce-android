@@ -3,8 +3,12 @@ package com.woocommerce.android.ui.sitepicker
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -55,10 +59,14 @@ import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginMode
+import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEmailHelpDialogFragment.Listener {
+class SitePickerFragment :
+    BaseFragment(R.layout.fragment_site_picker),
+    LoginEmailHelpDialogFragment.Listener,
+    MenuProvider {
     private var _binding: FragmentSitePickerBinding? = null
     private val binding get() = _binding!!
 
@@ -71,16 +79,51 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
     private var progressDialog: CustomProgressDialog? = null
 
     override val activityAppBarStatus: AppBarStatus
-        get() = if (viewModel.shouldShowToolbar) AppBarStatus.Visible() else AppBarStatus.Hidden
+        get() = AppBarStatus.Visible(
+            navigationIcon = if (viewModel.openedFromLogin) R.drawable.ic_back_24dp else null,
+            hasShadow = false,
+            hasDivider = false,
+        )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentSitePickerBinding.bind(view)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
 
         setupViews()
         setupObservers(viewModel)
         handleResults()
+    }
+
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_site_picker, menu)
+    }
+
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_help -> {
+                ActivityUtils.hideKeyboard(activity)
+                viewModel.onHelpButtonClick()
+                true
+            }
+
+            R.id.menu_close_account -> {
+                findNavController().navigateSafely(
+                    SitePickerFragmentDirections.actionSitePickerFragmentToCloseAccountDialogFragment()
+                )
+                true
+            }
+
+            else -> false
+        }
+    }
+
+    override fun onPrepareMenu(menu: Menu) {
+        menu.findItem(R.id.menu_help).isVisible =
+            viewModel.sitePickerViewStateData.liveData.value?.isHelpBtnVisible ?: false
+        menu.findItem(R.id.menu_close_account).isVisible =
+            viewModel.sitePickerViewStateData.liveData.value?.showCloseAccountMenuItem ?: false
     }
 
     override fun onDestroyView() {
@@ -89,7 +132,6 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
     }
 
     private fun setupViews() {
-        binding.buttonHelp.setOnClickListener { viewModel.onHelpButtonClick() }
         binding.sitesRecycler.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             adapter = SitePickerAdapter(viewModel::onSiteSelected, viewModel::onNonWooSiteSelected)
@@ -108,9 +150,6 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         viewModel.sitePickerViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.userInfo?.takeIfNotEqualTo(old?.userInfo) {
                 updateUserInfoView(it)
-            }
-            new.isHelpBtnVisible.takeIfNotEqualTo(old?.isHelpBtnVisible) {
-                binding.buttonHelp.isVisible = it
             }
             new.isPrimaryBtnVisible.takeIfNotEqualTo(old?.isPrimaryBtnVisible) {
                 binding.loginEpilogueButtonBar.buttonPrimary.isVisible = it
@@ -177,6 +216,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
                 is NavigateToAccountMismatchScreen -> navigateToAccountMismatchScreen(event)
                 is ShowSnackbar -> uiMessageResolver.getSnack(stringResId = event.message, stringArgs = event.args)
                     .show()
+
                 is ShowDialog -> event.showDialog()
                 is Logout -> onLogout()
                 is Exit -> findNavController().navigateUp()
@@ -255,6 +295,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
             true -> {
                 skeletonView.show(binding.sitePickerRoot, R.layout.skeleton_site_picker, delayed = true)
             }
+
             false -> skeletonView.hide()
         }
     }
@@ -292,6 +333,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
             FeatureFlag.NATIVE_STORE_CREATION_FLOW.isEnabled() -> findNavController().navigateSafely(
                 SitePickerFragmentDirections.actionSitePickerFragmentToStoreCreationNativeFlow()
             )
+
             else -> findNavController()
                 .navigateSafely(
                     SitePickerFragmentDirections.actionSitePickerFragmentToWebViewStoreCreationFragment()

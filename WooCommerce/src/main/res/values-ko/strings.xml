@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-02 13:54:04+0000
+Translation-Revision-Date: 2023-05-16 14:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="product_stock_status_insufficient_stock">부족한 재고</string>
+    <string name="shipping_label_customs_item_description_too_short">아이템마다 명확하고 구체적인 설명을 제공해야 합니다.</string>
+    <string name="order_creation_add_product_via_barcode_scanning">스캐너를 통해 상품 추가</string>
+    <string name="shipping_notice_dismiss">해제</string>
+    <string name="shipping_notice_learn_more">더 알아보기</string>
+    <string name="shipping_notice_banner_content">EU(유럽연합) 세관 규칙을 따르는 국가로 배송할 때는 아이템마다 명확하고 구체적인 설명을 제공해야 합니다. 그렇지 않으면 배송이 세관에서 지체되거나 차단될 수 있습니다.</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">최신 상태로 유지하여 스토어 보안을 강화하세요. 지금 젯팩을 살펴보세요.</string>
+    <string name="jetpack_benefits_bottom_banner_title">주문 알림 등 받기</string>
     <string name="store_onboarding_setting_description">스토어 설정 목록 표시 또는 숨기기</string>
     <string name="store_onboarding_setting_title">스토어 설정 목록</string>
     <string name="store_onboarding_dialog_description">필요하면 메뉴 &gt; 설정 &gt; 스토어에서 복원할 수 있습니다.</string>
@@ -621,7 +629,6 @@ Language: ko_KR
     <string name="login_prologue_label_orders_subtitle">빠르고 쉽게 관리할 수 있습니다.</string>
     <string name="login_prologue_label_analytics_subtitle">비즈니스에 꼭 필요합니다.</string>
     <string name="login_prologue_new_to_woo">우커머스 신규 이용</string>
-    <string name="notification_channel_pre_login_title">로그인 문제 해결 알림</string>
     <string name="tests_notification_new_order_message">우커머스 스토어의 새 주문 $50</string>
     <string name="tests_notification_new_order_title">새 주문이 있습니다! 🎉</string>
     <string name="lines_all_details">상세 정보</string>
@@ -1112,8 +1119,6 @@ Language: ko_KR
     <string name="orderfilters_show_orders_button">주문 표시</string>
     <string name="orderlist_filters_title">필터링한 주문</string>
     <string name="orderlist_no_filters_title">모든 주문</string>
-    <string name="jetpack_benefits_bottom_banner_subtitle">혜택 보기</string>
-    <string name="jetpack_benefits_bottom_banner_title">젯팩 최대한 활용하기</string>
     <string name="product_description_hint_with_title">%s에 대해 자세히 알려주세요…</string>
     <string name="product_description_hint_no_title">미래 고객에게 제품 설명…</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">클립보드에 복사된 리더의 일련번호</string>
