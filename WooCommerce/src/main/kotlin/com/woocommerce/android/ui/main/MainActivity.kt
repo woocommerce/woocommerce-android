@@ -718,6 +718,7 @@ class MainActivity :
             viewModel.handleIncomingNotification(localPushId, notification)
         } else if (localNotification != null) {
             viewModel.onLocalNotificationTapped(localNotification)
+            intent.removeExtra(FIELD_LOCAL_NOTIFICATION)
         }
     }
     // endregion
