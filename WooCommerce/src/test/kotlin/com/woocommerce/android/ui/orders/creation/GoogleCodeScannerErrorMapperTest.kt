@@ -18,6 +18,7 @@ import com.google.mlkit.common.MlKitException.FAILED_PRECONDITION
 import com.google.mlkit.common.MlKitException.INTERNAL
 import com.google.mlkit.common.MlKitException.INVALID_ARGUMENT
 import com.google.mlkit.common.MlKitException.MODEL_HASH_MISMATCH
+import com.google.mlkit.common.MlKitException.MODEL_INCOMPATIBLE_WITH_TFLITE
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -189,6 +190,15 @@ class GoogleCodeScannerErrorMapperTest : BaseUnitTest() {
 
         assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
             CodeScanningErrorType.ModelHashMismatch
+        )
+    }
+
+    @Test
+    fun `when MODEL_INCOMPATIBLE_WITH_TFLITE exception thrown, then ModelIncompatibleWithTFLite type returned`() {
+        whenever(mlKitException.errorCode).thenReturn(MODEL_INCOMPATIBLE_WITH_TFLITE)
+
+        assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
+            CodeScanningErrorType.ModelIncompatibleWithTFLite
         )
     }
 }
