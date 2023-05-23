@@ -367,7 +367,7 @@ class ProductListFragment :
                         new.filterCount?.compareTo(0) == 1 -> binding.emptyView.show(EmptyViewType.FILTER_RESULTS)
                         else -> {
                             binding.emptyView.show(EmptyViewType.PRODUCT_LIST) {
-                                showAddProductBottomSheet()
+                                showAddProductBottomSheet(isAddingFirstProduct = true)
                             }
                         }
                     }
@@ -658,9 +658,10 @@ class ProductListFragment :
         }
     }
 
-    private fun showAddProductBottomSheet() {
+    private fun showAddProductBottomSheet(isAddingFirstProduct: Boolean = false) {
         val action = ProductListFragmentDirections.actionProductListFragmentToProductTypesBottomSheet(
-            isAddProduct = true
+            isAddProduct = true,
+            isAddingFirstProduct = isAddingFirstProduct
         )
         findNavController().navigateSafely(action)
     }
