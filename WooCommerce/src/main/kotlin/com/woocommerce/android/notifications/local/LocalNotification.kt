@@ -17,6 +17,8 @@ sealed class LocalNotification(
     abstract fun getTitleString(resourceProvider: ResourceProvider): String
     abstract fun getDescriptionString(resourceProvider: ResourceProvider): String
 
+    open val data: String? = null
+
     data class StoreCreationFinishedNotification(
         val name: String
     ) : LocalNotification(
@@ -49,5 +51,7 @@ sealed class LocalNotification(
         override fun getDescriptionString(resourceProvider: ResourceProvider): String {
             return resourceProvider.getString(description, name, storeName)
         }
+
+        override val data: String = storeName
     }
 }

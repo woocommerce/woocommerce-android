@@ -22,7 +22,8 @@ data class Notification(
     val noteMessage: String?,
     val noteType: WooNotificationType,
     val channelType: NotificationChannelType,
-    val tag: String? = null
+    val tag: String? = null,
+    val data: String? = null
 ) : Parcelable {
     @IgnoredOnParcel
     val isOrderNotification = noteType == WooNotificationType.NEW_ORDER
