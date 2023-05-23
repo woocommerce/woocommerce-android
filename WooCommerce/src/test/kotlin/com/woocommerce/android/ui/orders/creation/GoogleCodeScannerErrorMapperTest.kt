@@ -17,6 +17,7 @@ import com.google.mlkit.common.MlKitException.DEADLINE_EXCEEDED
 import com.google.mlkit.common.MlKitException.FAILED_PRECONDITION
 import com.google.mlkit.common.MlKitException.INTERNAL
 import com.google.mlkit.common.MlKitException.INVALID_ARGUMENT
+import com.google.mlkit.common.MlKitException.MODEL_HASH_MISMATCH
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -179,6 +180,15 @@ class GoogleCodeScannerErrorMapperTest : BaseUnitTest() {
 
         assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
             CodeScanningErrorType.InvalidArgument
+        )
+    }
+
+    @Test
+    fun `when MODEL_HASH_MISMATCH exception thrown, then ModelHashMismatch type returned`() {
+        whenever(mlKitException.errorCode).thenReturn(MODEL_HASH_MISMATCH)
+
+        assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
+            CodeScanningErrorType.ModelHashMismatch
         )
     }
 }
