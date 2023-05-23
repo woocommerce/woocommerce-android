@@ -1,6 +1,34 @@
 package com.woocommerce.android.ui.orders.creation
 
 import com.google.mlkit.common.MlKitException
+import com.google.mlkit.common.MlKitException.ABORTED
+import com.google.mlkit.common.MlKitException.ALREADY_EXISTS
+import com.google.mlkit.common.MlKitException.CANCELLED
+import com.google.mlkit.common.MlKitException.CODE_SCANNER_APP_NAME_UNAVAILABLE
+import com.google.mlkit.common.MlKitException.CODE_SCANNER_CAMERA_PERMISSION_NOT_GRANTED
+import com.google.mlkit.common.MlKitException.CODE_SCANNER_CANCELLED
+import com.google.mlkit.common.MlKitException.CODE_SCANNER_GOOGLE_PLAY_SERVICES_VERSION_TOO_OLD
+import com.google.mlkit.common.MlKitException.CODE_SCANNER_PIPELINE_INFERENCE_ERROR
+import com.google.mlkit.common.MlKitException.CODE_SCANNER_PIPELINE_INITIALIZATION_ERROR
+import com.google.mlkit.common.MlKitException.CODE_SCANNER_TASK_IN_PROGRESS
+import com.google.mlkit.common.MlKitException.CODE_SCANNER_UNAVAILABLE
+import com.google.mlkit.common.MlKitException.DATA_LOSS
+import com.google.mlkit.common.MlKitException.DEADLINE_EXCEEDED
+import com.google.mlkit.common.MlKitException.FAILED_PRECONDITION
+import com.google.mlkit.common.MlKitException.INTERNAL
+import com.google.mlkit.common.MlKitException.INVALID_ARGUMENT
+import com.google.mlkit.common.MlKitException.MODEL_HASH_MISMATCH
+import com.google.mlkit.common.MlKitException.MODEL_INCOMPATIBLE_WITH_TFLITE
+import com.google.mlkit.common.MlKitException.NETWORK_ISSUE
+import com.google.mlkit.common.MlKitException.NOT_ENOUGH_SPACE
+import com.google.mlkit.common.MlKitException.NOT_FOUND
+import com.google.mlkit.common.MlKitException.OUT_OF_RANGE
+import com.google.mlkit.common.MlKitException.PERMISSION_DENIED
+import com.google.mlkit.common.MlKitException.RESOURCE_EXHAUSTED
+import com.google.mlkit.common.MlKitException.UNAUTHENTICATED
+import com.google.mlkit.common.MlKitException.UNAVAILABLE
+import com.google.mlkit.common.MlKitException.UNIMPLEMENTED
+import com.google.mlkit.common.MlKitException.UNKNOWN
 import javax.inject.Inject
 
 class GoogleCodeScannerErrorMapper @Inject constructor() {
@@ -42,36 +70,5 @@ class GoogleCodeScannerErrorMapper @Inject constructor() {
             UNKNOWN -> CodeScanningErrorType.Unknown
             else -> CodeScanningErrorType.Other
         }
-    }
-
-    private companion object {
-        private const val ABORTED = 10
-        private const val ALREADY_EXISTS = 6
-        private const val CANCELLED = 1
-        private const val CODE_SCANNER_APP_NAME_UNAVAILABLE = 203
-        private const val CODE_SCANNER_CAMERA_PERMISSION_NOT_GRANTED = 202
-        private const val CODE_SCANNER_CANCELLED = 201
-        private const val CODE_SCANNER_GOOGLE_PLAY_SERVICES_VERSION_TOO_OLD = 207
-        private const val CODE_SCANNER_PIPELINE_INFERENCE_ERROR = 206
-        private const val CODE_SCANNER_PIPELINE_INITIALIZATION_ERROR = 205
-        private const val CODE_SCANNER_TASK_IN_PROGRESS = 204
-        private const val CODE_SCANNER_UNAVAILABLE = 200
-        private const val DATA_LOSS = 15
-        private const val DEADLINE_EXCEEDED = 4
-        private const val FAILED_PRECONDITION = 9
-        private const val INTERNAL = 13
-        private const val INVALID_ARGUMENT = 3
-        private const val MODEL_HASH_MISMATCH = 102
-        private const val MODEL_INCOMPATIBLE_WITH_TFLITE = 100
-        private const val NETWORK_ISSUE = 17
-        private const val NOT_ENOUGH_SPACE = 101
-        private const val NOT_FOUND = 5
-        private const val OUT_OF_RANGE = 11
-        private const val PERMISSION_DENIED = 7
-        private const val RESOURCE_EXHAUSTED = 8
-        private const val UNAUTHENTICATED = 16
-        private const val UNAVAILABLE = 14
-        private const val UNIMPLEMENTED = 12
-        private const val UNKNOWN = 2
     }
 }
