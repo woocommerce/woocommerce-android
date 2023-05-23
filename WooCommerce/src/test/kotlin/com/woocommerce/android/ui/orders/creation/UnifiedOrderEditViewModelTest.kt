@@ -563,30 +563,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when product search by SKU fails, then trigger event with proper throwable message`() {
-        testBlocking {
-            createSut()
-            whenever(codeScanner.startScan()).thenAnswer {
-                flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345"))
-                }
-            }
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(null)
-
-            sut.startScan()
-
-            assertThat(
-                (sut.event.value as OnProductSearchBySKUFailed).message
-            ).isEqualTo("Product search by SKU failed")
-        }
-    }
-
-    @Test
     fun `when product search by SKU fails, then proper message is displayed`() {
         testBlocking {
             createSut()
