@@ -19,6 +19,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -68,7 +69,6 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
                 onBlocking { updateTracksSetting(true) } doReturn Result.success(Unit)
             }
             init()
-            sut.state.observeForever { }
 
             // when
             sut.onSendStatsSettingChanged(true)
@@ -133,5 +133,27 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
             assertThat(analyticsTrackerWrapper.sendUsageStats).isFalse
             verify(repository, never()).updateAccountSettings()
             assertThat(sut.state.value?.sendUsageStats).isFalse
+        }
+
+    @Test
+    fun `given failed API response, when user tapps on retry button, retry updating account settings`() =
+        testBlocking {
+            // given
+            analyticsTrackerWrapper.sendUsageStats = false
+            repository.stub {
+                onBlocking { updateTracksSetting(true) } doReturn Result.failure(Exception())
+            }
+            init()
+
+            // when
+            sut.onSendStatsSettingChanged(true)
+            runCurrent()
+
+            // then
+            with((sut.event.value as MultiLiveEvent.Event.ShowActionSnackbar)) {
+                action.onClick(null)
+                runCurrent()
+            }
+            verify(repository, times(2)).updateTracksSetting(true)
         }
 }
