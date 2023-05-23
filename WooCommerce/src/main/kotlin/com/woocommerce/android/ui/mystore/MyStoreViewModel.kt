@@ -139,9 +139,7 @@ class MyStoreViewModel @Inject constructor(
                 }
             }
         }
-    }
 
-    fun onStoreOpened() {
         // A notification is only displayed when the store has never been opened before
         notificationScheduler.cancelScheduledNotification(STORE_CREATION_FINISHED)
     }
