@@ -40,11 +40,9 @@ import org.mockito.kotlin.whenever
 @ExperimentalCoroutinesApi
 class GoogleCodeScannerErrorMapperTest : BaseUnitTest() {
     private lateinit var mapper: GoogleCodeScannerErrorMapper
-
-    private val mlKitException =  mock<MlKitException>().also {
+    private val mlKitException = mock<MlKitException>().also {
         whenever(it.errorCode).thenReturn(CODE_SCANNER_CANCELLED)
     }
-
     @Before
     fun setup() {
         mapper = GoogleCodeScannerErrorMapper()

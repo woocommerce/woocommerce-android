@@ -4,7 +4,7 @@ import com.google.mlkit.common.MlKitException
 import javax.inject.Inject
 
 class GoogleCodeScannerErrorMapper @Inject constructor() {
-
+    @Suppress("ComplexMethod")
     fun mapGoogleMLKitScanningErrors(
         exception: MlKitException?
     ): CodeScanningErrorType {

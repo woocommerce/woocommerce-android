@@ -17,7 +17,10 @@ import dagger.hilt.components.SingletonComponent
 class CodeScannerModule {
     @Provides
     @Reusable
-    fun provideGoogleCodeScanner(context: Context, googleCodeScannerErrorMapper: GoogleCodeScannerErrorMapper): CodeScanner {
+    fun provideGoogleCodeScanner(
+        context: Context,
+        googleCodeScannerErrorMapper: GoogleCodeScannerErrorMapper
+    ): CodeScanner {
         val options = GmsBarcodeScannerOptions.Builder().allowManualInput().build()
         return GoogleCodeScanner(
             GmsBarcodeScanning.getClient(context, options),
