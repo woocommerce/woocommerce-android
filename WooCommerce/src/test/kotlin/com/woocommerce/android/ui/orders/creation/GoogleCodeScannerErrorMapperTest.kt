@@ -72,4 +72,13 @@ class GoogleCodeScannerErrorMapperTest : BaseUnitTest() {
             CodeScanningErrorType.CodeScannerCameraPermissionNotGranted
         )
     }
+
+    @Test
+    fun `when CODE_SCANNER_CANCELLED exception thrown, then CodeScannerCancelled type returned`() {
+        whenever(mlKitException.errorCode).thenReturn(CODE_SCANNER_CANCELLED)
+
+        assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
+            CodeScanningErrorType.CodeScannerCancelled
+        )
+    }
 }
