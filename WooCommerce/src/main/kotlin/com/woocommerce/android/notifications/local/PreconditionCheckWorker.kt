@@ -25,12 +25,10 @@ class PreconditionCheckWorker @AssistedInject constructor(
         return when {
             !canDisplayNotifications -> cancelWork("Notifications permission not granted. Cancelling work.")
             type == null -> cancelWork("Notification check data is invalid")
-            type == LocalNotificationType.STORE_CREATION_FINISHED.value ||
-            type == LocalNotificationType.STORE_CREATION_INCOMPLETE.value ||
-            type == LocalNotificationType.FREE_TRIAL_EXPIRING.value ||
-            type == LocalNotificationType.FREE_TRIAL_EXPIRED.value -> {
-                Result.success()
-            }
+            type == LocalNotificationType.STORE_CREATION_FINISHED.value -> Result.success()
+            type == LocalNotificationType.STORE_CREATION_INCOMPLETE.value -> Result.success()
+            type == LocalNotificationType.FREE_TRIAL_EXPIRING.value -> Result.success()
+            type == LocalNotificationType.FREE_TRIAL_EXPIRED.value -> Result.success()
             else -> {
                 cancelWork("Unknown notification $type. Cancelling work.")
             }
