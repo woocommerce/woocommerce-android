@@ -163,6 +163,10 @@
                 android:name="isAddProduct"
                 android:defaultValue="false"
                 app:argType="boolean" />
+            <argument
+                android:name="isAddingFirstProduct"
+                android:defaultValue="false"
+                app:argType="boolean" />
         </action>
     </fragment>
     <fragment
