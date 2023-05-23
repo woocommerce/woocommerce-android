@@ -13,6 +13,7 @@ import com.google.mlkit.common.MlKitException.CODE_SCANNER_PIPELINE_INITIALIZATI
 import com.google.mlkit.common.MlKitException.CODE_SCANNER_TASK_IN_PROGRESS
 import com.google.mlkit.common.MlKitException.CODE_SCANNER_UNAVAILABLE
 import com.google.mlkit.common.MlKitException.DATA_LOSS
+import com.google.mlkit.common.MlKitException.DEADLINE_EXCEEDED
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -139,6 +140,15 @@ class GoogleCodeScannerErrorMapperTest : BaseUnitTest() {
 
         assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
             CodeScanningErrorType.DataLoss
+        )
+    }
+
+    @Test
+    fun `when DEADLINE_EXCEEDED exception thrown, then DeadlineExceeded type returned`() {
+        whenever(mlKitException.errorCode).thenReturn(DEADLINE_EXCEEDED)
+
+        assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
+            CodeScanningErrorType.DeadlineExceeded
         )
     }
 }
