@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.creation
 
 import com.google.mlkit.common.MlKitException
 import com.google.mlkit.common.MlKitException.ABORTED
+import com.google.mlkit.common.MlKitException.ALREADY_EXISTS
 import com.google.mlkit.common.MlKitException.CODE_SCANNER_CANCELLED
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,6 +31,15 @@ class GoogleCodeScannerErrorMapperTest : BaseUnitTest() {
 
         assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
             CodeScanningErrorType.Aborted
+        )
+    }
+
+    @Test
+    fun `when ALREADY_EXISTS exception thrown, then AlreadyExists type returned`() {
+        whenever(mlKitException.errorCode).thenReturn(ALREADY_EXISTS)
+
+        assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
+            CodeScanningErrorType.AlreadyExists
         )
     }
 }
