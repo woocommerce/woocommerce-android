@@ -23,6 +23,7 @@ import com.google.mlkit.common.MlKitException.NETWORK_ISSUE
 import com.google.mlkit.common.MlKitException.NOT_ENOUGH_SPACE
 import com.google.mlkit.common.MlKitException.NOT_FOUND
 import com.google.mlkit.common.MlKitException.OUT_OF_RANGE
+import com.google.mlkit.common.MlKitException.PERMISSION_DENIED
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -239,6 +240,15 @@ class GoogleCodeScannerErrorMapperTest : BaseUnitTest() {
 
         assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
             CodeScanningErrorType.OutOfRange
+        )
+    }
+
+    @Test
+    fun `when PERMISSION_DENIED exception thrown, then PermissionDenied type returned`() {
+        whenever(mlKitException.errorCode).thenReturn(PERMISSION_DENIED)
+
+        assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
+            CodeScanningErrorType.PermissionDenied
         )
     }
 }
