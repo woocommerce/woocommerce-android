@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs
 
 import com.woocommerce.android.OnChangedException
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.util.dispatchAndAwait
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
@@ -9,6 +10,7 @@ import javax.inject.Inject
 
 class PrivacySettingsRepository @Inject constructor(
     private val accountStore: AccountStore,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val dispatcher: Dispatcher,
 ) {
     companion object {
@@ -34,18 +36,17 @@ class PrivacySettingsRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchAccountSettings(): Result<Unit> {
+    suspend fun updateAccountSettings(): Result<Unit> {
         val event: AccountStore.OnAccountChanged =
             dispatcher.dispatchAndAwait(AccountActionBuilder.newFetchSettingsAction())
 
         return when {
             event.isError -> Result.failure(OnChangedException(event.error))
-            else -> Result.success(Unit)
+            else -> {
+                analyticsTrackerWrapper.sendUsageStats = !accountStore.account.tracksOptOut
+                Result.success(Unit)
+            }
         }
-    }
-
-    fun userOptOutFromTracks(): Boolean {
-        return accountStore.account.tracksOptOut
     }
 
     fun isUserWPCOM(): Boolean {

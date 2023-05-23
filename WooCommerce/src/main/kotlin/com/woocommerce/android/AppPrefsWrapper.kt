@@ -1,7 +1,6 @@
 package com.woocommerce.android
 
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.domain.DomainFlowSource
@@ -12,12 +11,6 @@ import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
 class AppPrefsWrapper @Inject constructor() {
-
-    fun setSendUsageStats(enabled: Boolean) {
-        AnalyticsTracker.sendUsageStats = enabled
-    }
-
-    fun getSendUsageStats() = AnalyticsTracker.sendUsageStats
 
     fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
         AppPrefs.getReceiptUrl(localSiteId, remoteSiteId, selfHostedSiteId, orderId)

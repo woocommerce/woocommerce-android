@@ -1,10 +1,14 @@
 package com.woocommerce.android.ui.prefs
 
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runCurrent
 import org.assertj.core.api.Assertions.assertThat
@@ -19,6 +23,7 @@ import org.mockito.kotlin.verify
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
+    private val fakeSharedPreferencesEmitter = MutableStateFlow(false)
 
     private val appPrefs: AppPrefsWrapper = mock()
     private val repository: PrivacySettingsRepository = mock {
@@ -29,26 +34,41 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
         on { getString(any()) } doAnswer { it.arguments[0].toString() }
     }
 
+    val analyticsTrackerWrapper: AnalyticsTrackerWrapper = object : AnalyticsTrackerWrapper() {
+        override fun observeSendUsageStats(): Flow<Boolean> = fakeSharedPreferencesEmitter
+
+        override var sendUsageStats: Boolean = false
+            set(value) {
+                runBlocking {
+                    fakeSharedPreferencesEmitter.emit(value)
+                }
+                field = value
+            }
+    }
+
     lateinit var sut: PrivacySettingsViewModel
 
     fun init() {
         sut = PrivacySettingsViewModel(
             mock(),
             appPrefs,
+            analyticsTrackerWrapper,
             resourceProvider,
             repository,
         )
+        sut.state.observeForever { }
     }
 
     @Test
     fun `given successful API response, when user turns on analytical events, turn on analytical events and update state`(): Unit =
         testBlocking {
             // given
+            analyticsTrackerWrapper.sendUsageStats = false
             repository.stub {
-                on { userOptOutFromTracks() } doReturn true
                 onBlocking { updateTracksSetting(true) } doReturn Result.success(Unit)
             }
             init()
+            sut.state.observeForever { }
 
             // when
             sut.onSendStatsSettingChanged(true)
@@ -56,16 +76,16 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
 
             // then
             assertThat(sut.state.value?.sendUsageStats).isTrue
-            verify(appPrefs).setSendUsageStats(true)
+            assertThat(analyticsTrackerWrapper.sendUsageStats).isTrue
         }
 
     @Test
     fun `given failed API response, when user turns on tracking analytical events, keep state unchanged and show snackbar`() =
         testBlocking {
             // given
+            analyticsTrackerWrapper.sendUsageStats = false
             repository.stub {
                 onBlocking { updateTracksSetting(true) } doReturn Result.failure(Exception())
-                on { userOptOutFromTracks() } doReturn true
             }
             init()
 
@@ -79,30 +99,12 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
         }
 
     @Test
-    fun `given the API responses with disabled tracking and tracking locally enabled, when user opens the screen, turn off tracking and update state`(): Unit =
-        testBlocking {
-            // given
-            repository.stub {
-                onBlocking { fetchAccountSettings() } doReturn Result.success(Unit)
-                on { userOptOutFromTracks() } doReturn false doReturn true
-            }
-
-            // when
-            init()
-            runCurrent()
-
-            // then
-            assertThat(sut.state.value?.sendUsageStats).isFalse
-            verify(appPrefs).setSendUsageStats(false)
-        }
-
-    @Test
     fun `given failed API response, when user opens the screen, keep state unchanged and show snackbar`() =
         testBlocking {
             // given
+            analyticsTrackerWrapper.sendUsageStats = false
             repository.stub {
-                on { userOptOutFromTracks() } doReturn true
-                onBlocking { fetchAccountSettings() } doReturn Result.failure(Exception())
+                onBlocking { updateAccountSettings() } doReturn Result.failure(Exception())
             }
 
             // when
@@ -121,17 +123,15 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
             repository.stub {
                 on { isUserWPCOM() } doReturn false
             }
-            appPrefs.stub {
-                on { getSendUsageStats() } doReturn false
-            }
+            analyticsTrackerWrapper.sendUsageStats = false
 
             // when
             init()
             runCurrent()
 
             // then
-            verify(appPrefs).getSendUsageStats()
-            verify(repository, never()).fetchAccountSettings()
-            assertThat(sut.state.value?.sendUsageStats).isFalse()
+            assertThat(analyticsTrackerWrapper.sendUsageStats).isFalse
+            verify(repository, never()).updateAccountSettings()
+            assertThat(sut.state.value?.sendUsageStats).isFalse
         }
 }
