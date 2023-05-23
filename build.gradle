@@ -22,10 +22,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-
-        if (project.hasProperty("stripe_repo_url")) {
-            maven { url project.property("stripe_repo_url") }
-        }
     }
 
     tasks.withType(KotlinCompile).all {
