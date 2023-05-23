@@ -422,6 +422,10 @@
             android:defaultValue="false"
             app:argType="boolean" />
         <argument
+            android:name="isAddingFirstProduct"
+            android:defaultValue="false"
+            app:argType="boolean" />
+        <argument
             android:name="currentProductType"
             android:defaultValue="null"
             app:argType="string"
