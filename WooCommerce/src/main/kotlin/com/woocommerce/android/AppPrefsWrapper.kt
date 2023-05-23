@@ -342,6 +342,8 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getStorePhoneNumber(siteId: Int): String = AppPrefs.getStorePhoneNumber(siteId)
 
+    fun hasSavedPrivacyBannerSettings(): Boolean = AppPrefs.hasSavedPrivacyBannerSettings()
+
     fun isCrashReportingEnabled(): Boolean = AppPrefs.isCrashReportingEnabled()
 
     fun setCrashReportingEnabled(enabled: Boolean) {
