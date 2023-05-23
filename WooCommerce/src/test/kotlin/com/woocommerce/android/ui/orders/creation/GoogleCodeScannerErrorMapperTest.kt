@@ -28,6 +28,7 @@ import com.google.mlkit.common.MlKitException.RESOURCE_EXHAUSTED
 import com.google.mlkit.common.MlKitException.UNAUTHENTICATED
 import com.google.mlkit.common.MlKitException.UNAVAILABLE
 import com.google.mlkit.common.MlKitException.UNIMPLEMENTED
+import com.google.mlkit.common.MlKitException.UNKNOWN
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -289,6 +290,15 @@ class GoogleCodeScannerErrorMapperTest : BaseUnitTest() {
 
         assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
             CodeScanningErrorType.UnImplemented
+        )
+    }
+
+    @Test
+    fun `when UNKNOWN exception thrown, then Unknown type returned`() {
+        whenever(mlKitException.errorCode).thenReturn(UNKNOWN)
+
+        assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
+            CodeScanningErrorType.Unknown
         )
     }
 }
