@@ -1,0 +1,2 @@
+13.6:
+Nossa funcionalidade de cupons experimental agora está disponível para todos! Basta clicar na opção do menu para gerenciar seus cupons no aplicativo. Experimente e compartilhe seu feedback.

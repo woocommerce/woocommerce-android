@@ -86,4 +86,11 @@
         app:layout_constraintTop_toBottomOf="@+id/productInfo_SKU"
         tools:text="View Add-ons"
         tools:visibility="visible" />
+    <android.widget.Space
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/major_100"
+        app:layout_constraintTop_toBottomOf="@+id/productInfo_addons"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

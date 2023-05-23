@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-03 11:54:05+0000
+Translation-Revision-Date: 2023-05-15 19:54:20+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="product_stock_status_insufficient_stock">Недостаточный запас</string>
+    <string name="shipping_label_customs_item_description_too_short">Вы должны дать ясное, конкретное описание для каждого товара.</string>
+    <string name="order_creation_add_product_via_barcode_scanning">Добавить товары с помощью сканера</string>
+    <string name="shipping_notice_dismiss">Закрыть</string>
+    <string name="shipping_notice_learn_more">Подробнее</string>
+    <string name="shipping_notice_banner_content">Отправляя товары в страны, которые следуют таможенным правилам Европейского Союза (ЕС), вы должны точно и понятно описать каждую позицию. В ином случае может произойти задержка или приостановка доставки на таможне.</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Следите за обновлениями и повышайте безопасность магазина. Откройте возможности Jetpack.</string>
+    <string name="jetpack_benefits_bottom_banner_title">Уведомления о заказах и многое другое</string>
     <string name="store_onboarding_setting_description">Показать или скрыть список действий по настройке магазина</string>
     <string name="store_onboarding_setting_title">Список действий по настройке магазина</string>
     <string name="store_onboarding_dialog_description">Вы можете снова посмотреть его в любое время, открыв «Меню &gt; Настройки &gt; Магазин»</string>
@@ -621,7 +629,6 @@ Language: ru
     <string name="login_prologue_label_orders_subtitle">Простое и быстрое управление.</string>
     <string name="login_prologue_label_analytics_subtitle">Знаем, что это важно для бизнеса</string>
     <string name="login_prologue_new_to_woo">Недавно на WooCommerce</string>
-    <string name="notification_channel_pre_login_title">Напоминания об устранении неполадок во входом</string>
     <string name="tests_notification_new_order_message">Новый заказ на 50 долл. в магазине WooCommerce</string>
     <string name="tests_notification_new_order_title">Поступил новый заказ! 🎉</string>
     <string name="lines_all_details">сведения</string>
@@ -1112,8 +1119,6 @@ Language: ru
     <string name="orderfilters_show_orders_button">Показать заказы</string>
     <string name="orderlist_filters_title">Отфильтрованные заказы</string>
     <string name="orderlist_no_filters_title">Все заказы</string>
-    <string name="jetpack_benefits_bottom_banner_subtitle">Преимущества</string>
-    <string name="jetpack_benefits_bottom_banner_title">Все возможности с Jetpack</string>
     <string name="product_description_hint_with_title">Расскажите нам больше о %s…</string>
     <string name="product_description_hint_no_title">Опишите товар для потенциальных покупателей…</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">Серийный номер терминала, скопированный в буфер обмена</string>

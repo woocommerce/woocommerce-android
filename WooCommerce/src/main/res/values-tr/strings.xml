@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-03 16:54:03+0000
+Translation-Revision-Date: 2023-05-17 15:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="product_stock_status_insufficient_stock">Yetersiz stok</string>
+    <string name="shipping_label_customs_item_description_too_short">Her öğe için net ve belirli bir açıklama sağlamanız gerekir.</string>
+    <string name="order_creation_add_product_via_barcode_scanning">Tarayıcı aracılığıyla ürün ekle</string>
+    <string name="shipping_notice_dismiss">Kapat</string>
+    <string name="shipping_notice_learn_more">Daha Fazla Bilgi Edinin</string>
+    <string name="shipping_notice_banner_content">Avrupa Birliği (AB) gümrük kurallarını uygulayan ülkelere gönderim yaparken her öğenin net ve özel bir açıklamasını sağlamalısınız. Aksi takdirde gümrükte gönderimler gecikebilir veya kesintiye uğrayabilir.</string>
+    <string name="jetpack_benefits_bottom_banner_subtitle">Güncel kalın ve mağaza güvenliğini artırın. Jetpack\'i şimdi keşfedin.</string>
+    <string name="jetpack_benefits_bottom_banner_title">Sipariş bildirimleri ve daha fazlasını alın</string>
     <string name="store_onboarding_setting_description">Mağaza kurulumu listesini göster veya gizle</string>
     <string name="store_onboarding_setting_title">Mağaza Kurulumu Listesi</string>
     <string name="store_onboarding_dialog_description">İhtiyacınız olduğunda Menü &gt; Ayarlar &gt; Mağaza\'dan geri yükleyebilirsiniz.</string>
@@ -621,7 +629,6 @@ Language: tr
     <string name="login_prologue_label_orders_subtitle">Bunları hızlı ve kolay bir şekilde yönetebilirsiniz</string>
     <string name="login_prologue_label_analytics_subtitle">İşiniz için gerekli olduğunu biliyoruz</string>
     <string name="login_prologue_new_to_woo">WooCommerce\'ü yeni kullanmaya mı başladınız?</string>
-    <string name="notification_channel_pre_login_title">Oturum açma ile ilgili sorun giderme hatırlatıcıları</string>
     <string name="tests_notification_new_order_message">WooCommerce Mağazanızda 50 ABD doları tutarında yeni sipariş</string>
     <string name="tests_notification_new_order_title">Yeni bir siparişiniz var! 🎉</string>
     <string name="lines_all_details">ayrıntılar</string>
@@ -1112,8 +1119,6 @@ Language: tr
     <string name="orderfilters_show_orders_button">Siparişleri Göster</string>
     <string name="orderlist_filters_title">Filtrelenmiş Siparişler</string>
     <string name="orderlist_no_filters_title">Tüm Siparişler</string>
-    <string name="jetpack_benefits_bottom_banner_subtitle">Avantajları görün</string>
-    <string name="jetpack_benefits_bottom_banner_title">Jetpack ile tam deneyimi yaşayın</string>
     <string name="product_description_hint_with_title">Bize %s hakkında daha fazla bilgi verin…</string>
     <string name="product_description_hint_no_title">Ürününüzü gelecekteki müşterilerinize anlatın…</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">Okuyucunun seri numarası panoya kopyalandı</string>

@@ -182,11 +182,14 @@ class OrderNavigator @Inject constructor() {
             is EditOrder -> {
                 OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToOrderCreationFragment(
-                        OrderCreateEditViewModel.Mode.Edit(target.orderId)
+                        OrderCreateEditViewModel.Mode.Edit(target.orderId),
+                        null
                     ).let { fragment.findNavController().navigateSafely(it) }
             }
             is ViewCustomFields -> {
-                val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToCustomOrderFieldsFragment()
+                val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToCustomOrderFieldsFragment(
+                    orderId = target.orderId
+                )
                 fragment.findNavController().navigateSafely(action)
             }
         }

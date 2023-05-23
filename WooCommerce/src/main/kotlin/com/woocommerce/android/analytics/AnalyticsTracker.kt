@@ -300,6 +300,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_CARD_READER_TYPE_BUILT_IN = "built_in"
 
         const val VALUE_ORDER_PAYMENTS_FLOW = "order_payment"
+        const val VALUE_SCAN_TO_PAY_PAYMENT_FLOW = "scan_to_pay"
         const val VALUE_TTP_TRY_PAYMENT_FLOW = "tap_to_pay_try_a_payment"
 
         const val KEY_JITM = "jitm"
@@ -363,7 +364,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_JETPACK_INSTALLATION_SOURCE = "source"
         const val KEY_JETPACK_INSTALLATION_STEP = "jetpack_install_step"
 
-        private const val PREFKEY_SEND_USAGE_STATS = "wc_pref_send_usage_stats"
+        const val PREFKEY_SEND_USAGE_STATS = "wc_pref_send_usage_stats"
 
         // -- Product Variations
         const val KEY_VARIATIONS_COUNT = "variations_count"

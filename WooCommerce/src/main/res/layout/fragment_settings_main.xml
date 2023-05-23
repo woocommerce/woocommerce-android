@@ -73,9 +73,9 @@
                 android:id="@+id/option_store_onboarding_list_visibility"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 app:toggleOptionDesc="@string/store_onboarding_setting_description"
-                app:toggleOptionTitle="@string/store_onboarding_setting_title"
-                android:visibility="gone" />
+                app:toggleOptionTitle="@string/store_onboarding_setting_title" />
 
             <View style="@style/Woo.Divider" />
 
@@ -232,6 +232,23 @@
             android:text="@string/settings_signout" />
 
         <View style="@style/Woo.Divider" />
+
+        <LinearLayout
+            android:id="@+id/container_option_close_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <com.woocommerce.android.ui.prefs.WCSettingsButton
+                android:id="@+id/btn_option_close_account"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_close_account"
+                android:textColor="@color/color_error" />
+
+            <View style="@style/Woo.Divider" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"

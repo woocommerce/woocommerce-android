@@ -28,6 +28,7 @@ import java.util.Date
 @Parcelize
 data class Product(
     val remoteId: Long,
+    val parentId: Long,
     val name: String,
     val description: String,
     val shortDescription: String,
@@ -481,6 +482,7 @@ fun WCProductModel.toAppModel(): Product {
     }
     return Product(
         remoteId = this.remoteProductId,
+        parentId = this.parentId,
         name = this.name,
         description = this.description,
         shortDescription = this.shortDescription,

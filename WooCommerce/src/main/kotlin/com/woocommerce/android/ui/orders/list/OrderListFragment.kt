@@ -26,6 +26,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -48,6 +49,7 @@ import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.creation.IsAddProductViaBarcodeScanningEnabled
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
@@ -84,6 +86,10 @@ class OrderListFragment :
     internal lateinit var selectedSite: SelectedSite
     @Inject
     internal lateinit var currencyFormatter: CurrencyFormatter
+    @Inject
+    lateinit var feedbackPrefs: FeedbackPrefs
+    @Inject
+    lateinit var isAddProductViaBarcodeScanningEnabled: IsAddProductViaBarcodeScanningEnabled
 
     private val viewModel: OrderListViewModel by viewModels()
     private var snackBar: Snackbar? = null
@@ -141,6 +147,9 @@ class OrderListFragment :
 
         orderListMenu = menu
         searchMenuItem = menu.findItem(R.id.menu_search)
+        // TODO Remove the barcode setting visibility logic after the feature is in production.
+        val barcodeOption = menu.findItem(R.id.menu_barcode)
+        barcodeOption.isVisible = isAddProductViaBarcodeScanningEnabled()
         searchView = searchMenuItem?.actionView as SearchView?
         searchView?.queryHint = getSearchQueryHint()
     }
@@ -253,6 +262,10 @@ class OrderListFragment :
                 enableSearchListeners()
                 true
             }
+            R.id.menu_barcode -> {
+                viewModel.startScan()
+                true
+            }
             else -> false
         }
     }
@@ -345,6 +358,9 @@ class OrderListFragment :
                 }
                 is OrderListViewModel.OrderListEvent.ShowIPPDismissConfirmationDialog -> {
                     showIPPFeedbackDismissConfirmationDialog()
+                }
+                is OrderListViewModel.OrderListEvent.OnBarcodeScanned -> {
+                    openOrderCreationFragment(event.code)
                 }
                 else -> event.isHandled = false
             }
@@ -448,12 +464,13 @@ class OrderListFragment :
         findNavController().navigateSafely(R.id.action_orderListFragment_to_orderFilterListFragment)
     }
 
-    private fun openOrderCreationFragment() {
+    private fun openOrderCreationFragment(code: String? = null) {
         OrderDurationRecorder.startRecording()
         AnalyticsTracker.track(AnalyticsEvent.ORDERS_ADD_NEW)
         findNavController().navigateSafely(
             OrderListFragmentDirections.actionOrderListFragmentToOrderCreationFragment(
-                OrderCreateEditViewModel.Mode.Creation
+                OrderCreateEditViewModel.Mode.Creation,
+                code
             )
         )
     }
@@ -635,7 +652,7 @@ class OrderListFragment :
                 FeatureFeedbackSettings(
                     FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION,
                     FeedbackState.DISMISSED
-                ).registerItself()
+                ).registerItself(feedbackPrefs)
                 viewModel.onDismissOrderCreationSimplePaymentsFeedback()
             },
             showFeedbackButton = true
@@ -653,7 +670,7 @@ class OrderListFragment :
         FeatureFeedbackSettings(
             SIMPLE_PAYMENTS_AND_ORDER_CREATION,
             FeedbackState.GIVEN
-        ).registerItself()
+        ).registerItself(feedbackPrefs)
         NavGraphMainDirections
             .actionGlobalFeedbackSurveyFragment(SurveyType.ORDER_CREATION)
             .apply { findNavController().navigateSafely(this) }

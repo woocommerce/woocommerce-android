@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toUpperCase
@@ -82,7 +83,9 @@ fun WCColoredButton(
             modifier = modifier
         ) {
             ProvideTextStyle(
-                value = MaterialTheme.typography.subtitle2
+                value = MaterialTheme.typography.subtitle2.copy(
+                    color = colorResource(id = R.color.woo_white)
+                )
             ) {
                 content()
             }
@@ -286,10 +289,20 @@ private fun ButtonsPreview() {
                 onClick = {},
                 text = "Button With icon",
                 leadingIcon = {
-                    Icon(imageVector = Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = colorResource(id = R.color.woo_white),
+                    )
                 },
                 trailingIcon = {
-                    Icon(imageVector = Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = colorResource(id = R.color.woo_white),
+                    )
                 }
             )
 
