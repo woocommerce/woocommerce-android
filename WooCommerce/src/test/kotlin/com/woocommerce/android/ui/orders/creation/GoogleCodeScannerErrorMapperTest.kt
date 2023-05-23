@@ -12,6 +12,7 @@ import com.google.mlkit.common.MlKitException.CODE_SCANNER_PIPELINE_INFERENCE_ER
 import com.google.mlkit.common.MlKitException.CODE_SCANNER_PIPELINE_INITIALIZATION_ERROR
 import com.google.mlkit.common.MlKitException.CODE_SCANNER_TASK_IN_PROGRESS
 import com.google.mlkit.common.MlKitException.CODE_SCANNER_UNAVAILABLE
+import com.google.mlkit.common.MlKitException.DATA_LOSS
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -129,6 +130,15 @@ class GoogleCodeScannerErrorMapperTest : BaseUnitTest() {
 
         assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
             CodeScanningErrorType.CodeScannerUnavailable
+        )
+    }
+
+    @Test
+    fun `when DATA_LOSS exception thrown, then DataLoss type returned`() {
+        whenever(mlKitException.errorCode).thenReturn(DATA_LOSS)
+
+        assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
+            CodeScanningErrorType.DataLoss
         )
     }
 }
