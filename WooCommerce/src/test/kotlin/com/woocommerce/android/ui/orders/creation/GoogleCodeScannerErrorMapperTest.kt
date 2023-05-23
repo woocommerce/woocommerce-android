@@ -21,6 +21,7 @@ import com.google.mlkit.common.MlKitException.MODEL_HASH_MISMATCH
 import com.google.mlkit.common.MlKitException.MODEL_INCOMPATIBLE_WITH_TFLITE
 import com.google.mlkit.common.MlKitException.NETWORK_ISSUE
 import com.google.mlkit.common.MlKitException.NOT_ENOUGH_SPACE
+import com.google.mlkit.common.MlKitException.NOT_FOUND
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -219,6 +220,15 @@ class GoogleCodeScannerErrorMapperTest : BaseUnitTest() {
 
         assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
             CodeScanningErrorType.NotEnoughSpace
+        )
+    }
+
+    @Test
+    fun `when NOT_FOUND exception thrown, then NotFound type returned`() {
+        whenever(mlKitException.errorCode).thenReturn(NOT_FOUND)
+
+        assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
+            CodeScanningErrorType.NotFound
         )
     }
 }
