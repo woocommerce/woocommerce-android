@@ -63,8 +63,6 @@ class StoreCreationSummaryViewModel @Inject constructor(
     fun onTryForFreeButtonPressed() {
         tracker.track(AnalyticsEvent.SITE_CREATION_TRY_FOR_FREE_TAPPED)
 
-        manageDeferredNotifications()
-
         launch {
             createStore(
                 storeDomain = newStore.data.domain,
@@ -77,6 +75,8 @@ class StoreCreationSummaryViewModel @Inject constructor(
                     is Finished -> {
                         newStore.update(siteId = creationState.siteId)
                         triggerEvent(OnStoreCreationSuccess)
+
+                        manageDeferredNotifications()
                     }
                     is Failed -> triggerEvent(OnStoreCreationFailure)
                     else -> { /* no op */ }
