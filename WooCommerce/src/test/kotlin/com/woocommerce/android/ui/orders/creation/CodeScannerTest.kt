@@ -20,11 +20,12 @@ import org.mockito.kotlin.whenever
 class CodeScannerTest : BaseUnitTest() {
 
     private val scanner: GmsBarcodeScanner = mock()
+    private val errorMapper: GoogleCodeScannerErrorMapper = mock()
     private lateinit var codeScanner: CodeScanner
 
     @Before
     fun setup() {
-        codeScanner = GoogleCodeScanner(scanner)
+        codeScanner = GoogleCodeScanner(scanner, errorMapper)
     }
 
     @Test
@@ -141,7 +142,7 @@ class CodeScannerTest : BaseUnitTest() {
 
             val result = codeScanner.startScan().first()
 
-            assertThat((result as CodeScannerStatus.Failure).error?.message).isEqualTo(errorMessage)
+            assertThat((result as CodeScannerStatus.Failure).error).isEqualTo(errorMessage)
         }
     }
 
@@ -193,7 +194,7 @@ class CodeScannerTest : BaseUnitTest() {
 
             val result = codeScanner.startScan().first()
 
-            assertThat((result as CodeScannerStatus.Failure).error?.message).isEqualTo(errorMessage)
+            assertThat((result as CodeScannerStatus.Failure).error).isEqualTo(errorMessage)
         }
     }
 
