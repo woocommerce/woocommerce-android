@@ -14,6 +14,7 @@ import com.google.mlkit.common.MlKitException.CODE_SCANNER_TASK_IN_PROGRESS
 import com.google.mlkit.common.MlKitException.CODE_SCANNER_UNAVAILABLE
 import com.google.mlkit.common.MlKitException.DATA_LOSS
 import com.google.mlkit.common.MlKitException.DEADLINE_EXCEEDED
+import com.google.mlkit.common.MlKitException.FAILED_PRECONDITION
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -149,6 +150,15 @@ class GoogleCodeScannerErrorMapperTest : BaseUnitTest() {
 
         assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
             CodeScanningErrorType.DeadlineExceeded
+        )
+    }
+
+    @Test
+    fun `when FAILED_PRECONDITION exception thrown, then FailedPrecondition type returned`() {
+        whenever(mlKitException.errorCode).thenReturn(FAILED_PRECONDITION)
+
+        assertThat(mapper.mapGoogleMLKitScanningErrors(mlKitException)).isEqualTo(
+            CodeScanningErrorType.FailedPrecondition
         )
     }
 }
