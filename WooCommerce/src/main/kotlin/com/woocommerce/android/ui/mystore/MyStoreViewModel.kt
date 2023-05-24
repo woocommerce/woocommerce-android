@@ -214,6 +214,15 @@ class MyStoreViewModel @Inject constructor(
         triggerEvent(MyStoreEvent.OpenAnalytics(targetPeriod))
     }
 
+    fun onShareStoreClicked() {
+        triggerEvent(
+            MyStoreEvent.ShareStore(
+                storeUrl = selectedSite.get().url,
+                storeName = selectedSite.get().displayName ?: selectedSite.get().name
+            )
+        )
+    }
+
     private suspend fun loadStoreStats(granularity: StatsGranularity) {
         if (!networkStatus.isConnected()) {
             refreshStoreStats[granularity.ordinal] = true
@@ -448,5 +457,10 @@ class MyStoreViewModel @Inject constructor(
         data class OpenAnalytics(val analyticsPeriod: SelectionType) : MyStoreEvent()
 
         object ShowPrivacyBanner : MyStoreEvent()
+
+        data class ShareStore(
+            val storeUrl: String,
+            val storeName: String
+        ) : MyStoreEvent()
     }
 }

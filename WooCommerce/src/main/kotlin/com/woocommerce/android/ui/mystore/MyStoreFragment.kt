@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.mystore
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -54,6 +54,7 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenAnalytics
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShareStore
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowPrivacyBanner
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.OrderState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
@@ -266,6 +267,18 @@ class MyStoreFragment :
         }
     }
 
+    private fun shareStore(storeUrl: String, displayStoreName: String) {
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TITLE, displayStoreName)
+            putExtra(Intent.EXTRA_TEXT, storeUrl)
+            type = "text/plain"
+        }
+
+        val shareIntent = Intent.createChooser(sendIntent, null)
+        startActivity(shareIntent)
+    }
+
     private fun openOnboardingInFullScreen() {
         exitTransition = MaterialElevationScale(false).apply {
             duration = resources.getInteger(R.integer.default_fragment_transition).toLong()
@@ -343,6 +356,8 @@ class MyStoreFragment :
                     findNavController().navigate(
                         PrivacyBannerFragmentDirections.actionGlobalPrivacyBannerFragment()
                     )
+
+                is ShareStore -> shareStore(event.storeUrl, event.storeName)
 
                 else -> event.isHandled = false
             }
@@ -622,7 +637,7 @@ class MyStoreFragment :
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         return when (menuItem.itemId) {
             R.id.menu_share_store -> {
-                Log.d("TEST", "Share store")
+                myStoreViewModel.onShareStoreClicked()
                 true
             }
 
