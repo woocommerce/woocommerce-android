@@ -124,6 +124,7 @@ class OrderCreateEditViewModel @Inject constructor(
         private const val PARAMETERS_KEY = "parameters_key"
         private const val ORDER_CUSTOM_FEE_NAME = "order_custom_fee"
         private const val SCANNING_SOURCE = "order_creation"
+        private const val SCANNING_SOURCE_ORDER_LIST = "order_list"
     }
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
@@ -189,7 +190,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 // Presence of barcode indicates that this screen was called from the
                 // Order listing screen after scanning the barcode.
                 if (args.sku.isNotNullOrEmpty()) {
-                    fetchProductBySKU(args.sku!!)
+                    fetchProductBySKU(args.sku!!, SCANNING_SOURCE_ORDER_LIST)
                 }
             }
             is Mode.Edit -> {
@@ -358,7 +359,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun fetchProductBySKU(sku: String) {
+    private fun fetchProductBySKU(sku: String, source: String = SCANNING_SOURCE) {
         val selectedItems = orderDraft.value?.items?.map { item ->
             if (item.isVariation) {
                 SelectedItem.ProductVariation(item.productId, item.variationId)
@@ -373,7 +374,7 @@ class OrderCreateEditViewModel @Inject constructor(
             )?.let { products ->
                 viewState = viewState.copy(isUpdatingOrderDraft = false)
                 products.firstOrNull()?.let { product ->
-                    trackProductSearchViaSKUSuccessEvent()
+                    trackProductSearchViaSKUSuccessEvent(source)
                     if (product.isVariable()) {
                         if (product.parentId == 0L) {
                             sendAddingProductsViaScanningFailedEvent(
@@ -408,11 +409,11 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun trackProductSearchViaSKUSuccessEvent() {
+    private fun trackProductSearchViaSKUSuccessEvent(source: String) {
         tracker.track(
             PRODUCT_SEARCH_VIA_SKU_SUCCESS,
             mapOf(
-                KEY_SCANNING_SOURCE to SCANNING_SOURCE
+                KEY_SCANNING_SOURCE to source
             )
         )
     }
