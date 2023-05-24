@@ -21,6 +21,7 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository
+import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.LAUNCH_YOUR_STORE
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.HasOrders
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.PluginNotActive
@@ -158,7 +159,7 @@ class MyStoreViewModel @Inject constructor(
                 onboardingRepository.observeOnboardingTasks()
                     .collectLatest { tasks ->
                         _appbarState.value = _appbarState.value?.copy(showShareStoreButton = tasks
-                            .filter { it.type == ADD_FIRST_PRODUCT || it.type == LAUNCH_YOUR_STORE }
+                            .filter { it.type == LAUNCH_YOUR_STORE }
                             .all { it.isComplete }
                         )
                     }
