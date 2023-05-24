@@ -556,7 +556,17 @@ class ProductDetailFragment :
                 setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
             }
         }
-        findItem(R.id.menu_share)?.isVisible = state.shareOption
+        findItem(R.id.menu_share)?.apply {
+            isVisible = state.shareOption
+
+            setShowAsActionFlags(
+                if (state.showShareOptionAsActionWithText) {
+                    MenuItem.SHOW_AS_ACTION_IF_ROOM
+                } else {
+                    MenuItem.SHOW_AS_ACTION_NEVER
+                }
+            )
+        }
         findItem(R.id.menu_trash_product)?.isVisible = state.trashOption
     }
 

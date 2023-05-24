@@ -32,7 +32,10 @@ class PrivacySettingsRepository @Inject constructor(
 
         return when {
             event.isError -> Result.failure(OnChangedException(event.error))
-            else -> Result.success(Unit)
+            else -> {
+                analyticsTrackerWrapper.sendUsageStats = !accountStore.account.tracksOptOut
+                Result.success(Unit)
+            }
         }
     }
 

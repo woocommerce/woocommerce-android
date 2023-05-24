@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
 class AppPrefsWrapper @Inject constructor() {
-
     fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
         AppPrefs.getReceiptUrl(localSiteId, remoteSiteId, selfHostedSiteId, orderId)
 
@@ -335,7 +334,7 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getStorePhoneNumber(siteId: Int): String = AppPrefs.getStorePhoneNumber(siteId)
 
-    fun hasSavedPrivacyBannerSettings(): Boolean = AppPrefs.hasSavedPrivacyBannerSettings()
+    var savedPrivacyBannerSettings by AppPrefs::savedPrivacySettings
 
     fun isCrashReportingEnabled(): Boolean = AppPrefs.isCrashReportingEnabled()
 

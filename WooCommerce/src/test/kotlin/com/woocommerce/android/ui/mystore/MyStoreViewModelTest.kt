@@ -6,6 +6,7 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
@@ -49,6 +50,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val localNotificationScheduler: LocalNotificationScheduler = mock()
 
     private lateinit var sut: MyStoreViewModel
 
@@ -465,7 +467,8 @@ class MyStoreViewModelTest : BaseUnitTest() {
             usageTracksEventEmitter,
             analyticsTrackerWrapper,
             myStoreTransactionLauncher = mock(),
-            mock(),
+            localNotificationScheduler,
+            mock()
         )
     }
 

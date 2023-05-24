@@ -16,8 +16,6 @@ import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
-import com.woocommerce.android.notifications.local.LocalNotification.Test
-import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType.Jetpack
@@ -28,6 +26,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.
 import com.woocommerce.android.ui.moremenu.MoreMenuNewFeature
 import com.woocommerce.android.ui.moremenu.MoreMenuNewFeatureHandler
 import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState
+import com.woocommerce.android.ui.prefs.PrivacySettingsRepository
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.WooLog
@@ -53,7 +52,7 @@ class MainActivityViewModel @Inject constructor(
     private val prefs: AppPrefs,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val resolveAppLink: ResolveAppLink,
-    private val notificationScheduler: LocalNotificationScheduler,
+    private val privacyRepository: PrivacySettingsRepository,
     moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
     determineTrialStatusBarState: DetermineTrialStatusBarState,
@@ -247,17 +246,28 @@ class MainActivityViewModel @Inject constructor(
         triggerEvent(RequestNotificationsPermission)
     }
 
-    // TODO: Remove
-    @Suppress("ForbiddenComment")
-    fun showLocalNotification() {
-        notificationScheduler.scheduleNotification(Test("Test", "This is a test"))
-    }
-
     fun onLocalNotificationTapped(notification: Notification) {
         AnalyticsTracker.track(
             AnalyticsEvent.LOCAL_NOTIFICATION_TAPPED,
             mapOf(AnalyticsTracker.KEY_TYPE to notification.tag)
         )
+    }
+
+    fun onPrivacyPreferenceUpdateFailed(analyticsEnabled: Boolean) {
+        triggerEvent(ShowPrivacyPreferenceUpdatedFailed(analyticsEnabled))
+    }
+
+    fun onRequestPrivacyUpdate(analyticsEnabled: Boolean) {
+        launch {
+            privacyRepository.updateTracksSetting(analyticsEnabled).fold(
+                onSuccess = {
+                    prefs.savedPrivacySettings = true
+                },
+                onFailure = {
+                    triggerEvent(ShowPrivacyPreferenceUpdatedFailed(analyticsEnabled))
+                }
+            )
+        }
     }
 
     object ViewOrderList : Event()
@@ -275,6 +285,7 @@ class MainActivityViewModel @Inject constructor(
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
     data class ViewReviewDetail(val uniqueId: Long) : Event()
     data class ViewOrderDetail(val uniqueId: Long, val remoteNoteId: Long) : Event()
+    data class ShowPrivacyPreferenceUpdatedFailed(val analyticsEnabled: Boolean) : Event()
 
     sealed class MoreMenuBadgeState {
         data class UnseenReviews(val count: Int) : MoreMenuBadgeState()

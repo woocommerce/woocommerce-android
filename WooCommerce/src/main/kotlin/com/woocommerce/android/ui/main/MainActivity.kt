@@ -695,15 +695,7 @@ class MainActivity :
     // endregion
 
     // region Fragment Processing
-    @Suppress("ForbiddenComment")
     private fun initFragment(savedInstanceState: Bundle?) {
-        // TODO: Remove
-        if (BuildConfig.DEBUG) {
-            binding.offlineBar.setOnClickListener {
-                viewModel.showLocalNotification()
-            }
-        }
-
         setupObservers()
         val openedFromPush = intent.getBooleanExtra(FIELD_OPENED_FROM_PUSH, false)
         val localNotification = intent.getParcelableExtra<Notification>(FIELD_LOCAL_NOTIFICATION)
@@ -749,6 +741,14 @@ class MainActivity :
                 ViewTapToPay -> showTapToPaySummary()
                 ShortcutOpenPayments -> shortcutShowPayments()
                 ShortcutOpenOrderCreation -> shortcutOpenOrderCreation()
+                is MainActivityViewModel.ShowPrivacyPreferenceUpdatedFailed -> {
+                    uiMessageResolver.getIndefiniteActionSnack(
+                        R.string.privacy_banner_error_save,
+                        actionText = getString(R.string.retry)
+                    ) {
+                        viewModel.onRequestPrivacyUpdate(event.analyticsEnabled)
+                    }.show()
+                }
             }
         }
 

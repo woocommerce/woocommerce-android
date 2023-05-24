@@ -89,7 +89,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
@@ -255,12 +254,20 @@ class ProductDetailViewModel @Inject constructor(
             val showSaveOptionAsActionWithText = hasChanges && (isNotPublishedUnderCreation || !isProductUnderCreation)
             val isProductPublished = productDraft.status == ProductStatus.PUBLISH
             val isProductPublishedOrPrivate = isProductPublished || productDraft.status == ProductStatus.PRIVATE
+            val showPublishOption = !isProductPublishedOrPrivate || isProductUnderCreation
+            val showShareOption = !isProductUnderCreation
+
+            // Show as action with text if "Save" or "Publish" is not currently shown as action with text.
+            val showShareOptionAsActionWithText =
+                showShareOption && !showSaveOptionAsActionWithText && !showPublishOption
+
             MenuButtonsState(
                 saveOption = showSaveOptionAsActionWithText,
                 saveAsDraftOption = canBeSavedAsDraft,
-                publishOption = !isProductPublishedOrPrivate || isProductUnderCreation,
+                publishOption = showPublishOption,
                 viewProductOption = isProductPublished && !isProductUnderCreation,
-                shareOption = !isProductUnderCreation,
+                shareOption = showShareOption,
+                showShareOptionAsActionWithText = showShareOptionAsActionWithText,
                 trashOption = !isProductUnderCreation && navArgs.isTrashEnabled
             )
         }.asLiveData()
@@ -362,9 +369,23 @@ class ProductDetailViewModel @Inject constructor(
      * Called when the Share menu button is clicked in Product detail screen
      */
     fun onShareButtonClicked() {
-        tracker.track(AnalyticsEvent.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED)
-        viewState.productDraft?.let {
-            triggerEvent(ProductNavigationTarget.ShareProduct(it.permalink, it.name))
+        menuButtonsState.value?.showShareOptionAsActionWithText?.let { isShownAsActionWithText ->
+            val source = if (isShownAsActionWithText) {
+                AnalyticsTracker.VALUE_SHARE_BUTTON_SOURCE_PRODUCT_FORM
+            } else {
+                AnalyticsTracker.VALUE_SHARE_BUTTON_SOURCE_MORE_MENU
+            }
+
+            tracker.track(
+                AnalyticsEvent.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_SOURCE to source
+                )
+            )
+
+            viewState.productDraft?.let {
+                triggerEvent(ProductNavigationTarget.ShareProduct(it.permalink, it.name))
+            }
         }
     }
 
@@ -2339,6 +2360,7 @@ class ProductDetailViewModel @Inject constructor(
         val publishOption: Boolean,
         val viewProductOption: Boolean,
         val shareOption: Boolean,
+        val showShareOptionAsActionWithText: Boolean,
         val trashOption: Boolean
     )
 }
