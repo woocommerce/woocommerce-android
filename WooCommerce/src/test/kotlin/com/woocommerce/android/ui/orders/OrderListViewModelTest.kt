@@ -969,7 +969,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         }
 
         viewModel = createViewModel()
-        viewModel.startScan()
+        viewModel.onScanClicked()
 
         assertThat(viewModel.event.value).isInstanceOf(OrderListViewModel.OrderListEvent.OnBarcodeScanned::class.java)
     }
@@ -983,9 +983,18 @@ class OrderListViewModelTest : BaseUnitTest() {
         }
 
         viewModel = createViewModel()
-        viewModel.startScan()
+        viewModel.onScanClicked()
 
         assertThat(viewModel.event.value).isEqualTo(OrderListViewModel.OrderListEvent.OnBarcodeScanned("12345"))
+    }
+
+    @Test
+    fun `when scan clicked, then track proper analytics event`() {
+        viewModel = createViewModel()
+
+        viewModel.onScanClicked()
+
+        verify(analyticsTracker).track(AnalyticsEvent.ORDER_LIST_PRODUCT_BARCODE_SCANNING_TAPPED)
     }
 
     //endregion

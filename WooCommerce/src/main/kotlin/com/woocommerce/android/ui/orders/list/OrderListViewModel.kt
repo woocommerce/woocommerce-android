@@ -22,6 +22,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_LIST_PRODUCT_BARCODE_SCANNING_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_CAMPAIGN_NAME
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_REMIND_LATER
@@ -282,7 +283,15 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    fun startScan() {
+    fun onScanClicked() {
+        trackScanClickedEvent()
+        startScan()
+    }
+
+    private fun trackScanClickedEvent() {
+        analyticsTracker.track(ORDER_LIST_PRODUCT_BARCODE_SCANNING_TAPPED)
+    }
+    private fun startScan() {
         launch {
             codeScanner.startScan().collect { status ->
                 when (status) {

@@ -263,7 +263,7 @@ class OrderListFragment :
                 true
             }
             R.id.menu_barcode -> {
-                viewModel.startScan()
+                viewModel.onScanClicked()
                 true
             }
             else -> false
