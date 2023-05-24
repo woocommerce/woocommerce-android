@@ -106,7 +106,7 @@ class CodeScannerTest : BaseUnitTest() {
             whenever(scanner.startScan()).thenAnswer {
                 mockBarcode
             }
-            whenever(errorMapper.mapGoogleMLKitScanningErrors(null)).thenReturn(CodeScanningErrorType.NotFound)
+            whenever(errorMapper.mapGoogleMLKitScanningErrors(any())).thenReturn(CodeScanningErrorType.NotFound)
             whenever(mockBarcode.addOnSuccessListener(any())).thenReturn(mockBarcode)
             whenever(mockBarcode.addOnFailureListener(any())).thenAnswer {
                 @Suppress("UNCHECKED_CAST")
@@ -128,7 +128,7 @@ class CodeScannerTest : BaseUnitTest() {
             whenever(scanner.startScan()).thenAnswer {
                 mockBarcode
             }
-            whenever(errorMapper.mapGoogleMLKitScanningErrors(null)).thenReturn(CodeScanningErrorType.NotFound)
+            whenever(errorMapper.mapGoogleMLKitScanningErrors(any())).thenReturn(CodeScanningErrorType.NotFound)
             whenever(mockBarcode.addOnSuccessListener(any())).thenReturn(mockBarcode)
             whenever(mockBarcode.addOnFailureListener(any())).thenAnswer {
                 @Suppress("UNCHECKED_CAST")
@@ -207,7 +207,7 @@ class CodeScannerTest : BaseUnitTest() {
             whenever(scanner.startScan()).thenAnswer {
                 mockBarcode
             }
-            whenever(errorMapper.mapGoogleMLKitScanningErrors(null)).thenReturn(CodeScanningErrorType.NotFound)
+            whenever(errorMapper.mapGoogleMLKitScanningErrors(any())).thenReturn(CodeScanningErrorType.NotFound)
             whenever(mockBarcode.addOnSuccessListener(any())).thenReturn(mockBarcode)
             whenever(mockBarcode.addOnFailureListener(any())).thenAnswer {
                 @Suppress("UNCHECKED_CAST")
