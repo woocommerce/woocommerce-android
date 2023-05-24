@@ -11,6 +11,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.combineWith
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,6 +24,8 @@ class PrivacySettingsViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val repository: PrivacySettingsRepository,
 ) : ScopedViewModel(savedState) {
+
+    private val args: PrivacySettingsFragmentArgs by savedState.navArgs()
 
     private val analyticsEnabled: LiveData<Boolean> = analyticsTrackerWrapper
         .observeSendUsageStats()
@@ -58,6 +61,17 @@ class PrivacySettingsViewModel @Inject constructor(
                         ) {
                             initialize()
                         }
+                    )
+                }
+
+                if (args.targetAnalyticsPreference != RequestedAnalyticsValue.NONE) {
+                    val checked =
+                        args.targetAnalyticsPreference == RequestedAnalyticsValue.ENABLED
+
+                    triggerEvent(
+                        MultiLiveEvent.Event.ShowActionSnackbar(
+                            resourceProvider.getString(R.string.settings_tracking_analytics_error_update)
+                        ) { onSendStatsSettingChanged(checked) }
                     )
                 }
             }
