@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_CAMPAIGN_NAME
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_REMIND_LATER
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_IPP_BANNER_SOURCE_ORDER_LIST
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
@@ -1012,6 +1013,25 @@ class OrderListViewModelTest : BaseUnitTest() {
         verify(analyticsTracker).track(
             eq(AnalyticsEvent.BARCODE_SCANNING_SUCCESS),
             any()
+        )
+    }
+
+    @Test
+    fun `when scan success, then track analytics event with proper source`() {
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(CodeScannerStatus.Success("12345"))
+            }
+        }
+        viewModel = createViewModel()
+
+        viewModel.onScanClicked()
+
+        verify(analyticsTracker).track(
+            AnalyticsEvent.BARCODE_SCANNING_SUCCESS,
+            mapOf(
+                KEY_SCANNING_SOURCE to "order_list"
+            )
         )
     }
 
