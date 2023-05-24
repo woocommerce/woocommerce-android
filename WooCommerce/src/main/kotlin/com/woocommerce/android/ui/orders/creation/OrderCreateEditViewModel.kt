@@ -93,6 +93,7 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
 import javax.inject.Inject
+import com.woocommerce.android.model.Product as ModelProduct
 
 @HiltViewModel
 class OrderCreateEditViewModel @Inject constructor(
@@ -367,13 +368,13 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun getItemIdIfVariableProductIsAlreadySelected(product: com.woocommerce.android.model.Product): Long? {
+    private fun getItemIdIfVariableProductIsAlreadySelected(product: ModelProduct): Long? {
         return _orderDraft.value.items.firstOrNull { item ->
             item.variationId == product.remoteId
         }?.itemId
     }
 
-    private fun getItemIdIfProductIsAlreadySelected(product: com.woocommerce.android.model.Product): Long? {
+    private fun getItemIdIfProductIsAlreadySelected(product: ModelProduct): Long? {
         return _orderDraft.value.items.firstOrNull { item ->
             item.productId == product.remoteId
         }?.itemId
@@ -800,7 +801,7 @@ data class ProductUIModel(
     val stockStatus: ProductStockStatus
 )
 
-private fun com.woocommerce.android.model.Product.isVariable() =
+private fun ModelProduct.isVariable() =
     productType == ProductType.VARIABLE ||
         productType == ProductType.VARIABLE_SUBSCRIPTION ||
         productType == ProductType.VARIATION
