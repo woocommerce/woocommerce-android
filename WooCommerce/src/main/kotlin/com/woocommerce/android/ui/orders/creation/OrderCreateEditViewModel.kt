@@ -29,6 +29,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_PRODUCT_REMOVE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_SHIPPING_METHOD_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_SHIPPING_METHOD_REMOVE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_STATUS_CHANGE
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_FAILURE
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_CONTEXT
@@ -59,7 +60,6 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.tracker.OrderDurationRecorder
-import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCoupon
@@ -402,6 +402,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     }
                 }
             } ?: run {
+                trackProductSearchViaSKUFailureEvent(source)
                 sendAddingProductsViaScanningFailedEvent(
                     R.string.order_creation_barcode_scanning_unable_to_add_product
                 )
@@ -412,6 +413,15 @@ class OrderCreateEditViewModel @Inject constructor(
     private fun trackProductSearchViaSKUSuccessEvent(source: String) {
         tracker.track(
             PRODUCT_SEARCH_VIA_SKU_SUCCESS,
+            mapOf(
+                KEY_SCANNING_SOURCE to source
+            )
+        )
+    }
+
+    private fun trackProductSearchViaSKUFailureEvent(source: String) {
+        tracker.track(
+            PRODUCT_SEARCH_VIA_SKU_FAILURE,
             mapOf(
                 KEY_SCANNING_SOURCE to source
             )

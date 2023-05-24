@@ -270,6 +270,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
 
     // -- Product Search Via SKU
     PRODUCT_SEARCH_VIA_SKU_SUCCESS,
+    PRODUCT_SEARCH_VIA_SKU_FAILURE,
 
     // -- Refunds
     CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
