@@ -15,6 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_REMOVE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CUSTOMER_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_FEE_ADD
@@ -313,7 +314,15 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun Order.hasProducts() = items.any { it.quantity > 0 }
 
-    fun startScan() {
+    fun onScanClicked() {
+        trackBarcodeScanningTapped()
+        startScan()
+    }
+
+    private fun trackBarcodeScanningTapped() {
+        tracker.track(ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED)
+    }
+    private fun startScan() {
         viewModelScope.launch {
             codeScanner.startScan().collect { status ->
                 when (status) {

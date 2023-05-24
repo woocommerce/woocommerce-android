@@ -354,7 +354,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             isUpdatingOrderDraft = viewState.isUpdatingOrderDraft
         }
 
-        sut.startScan()
+        sut.onScanClicked()
 
         assertTrue(isUpdatingOrderDraft!!)
     }
@@ -381,7 +381,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 isUpdatingOrderDraft = viewState.isUpdatingOrderDraft
             }
 
-            sut.startScan()
+            sut.onScanClicked()
 
             assertFalse(isUpdatingOrderDraft!!)
         }
@@ -418,7 +418,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 newOrder = newOrderData
             }
 
-            sut.startScan()
+            sut.onScanClicked()
 
             assertThat(newOrder?.getProductIds()?.any { it == 10L }).isTrue()
         }
@@ -455,7 +455,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 newOrder = newOrderData
             }
 
-            sut.startScan()
+            sut.onScanClicked()
 
             assertThat(newOrder?.getProductIds()?.any { it == 10L }).isTrue()
         }
@@ -492,7 +492,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 newOrder = newOrderData
             }
 
-            sut.startScan()
+            sut.onScanClicked()
 
             assertThat(newOrder?.getProductIds()?.any { it == 10L }).isTrue()
         }
@@ -521,7 +521,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                     )
                 )
             )
-            sut.startScan()
+            sut.onScanClicked()
 
             assertThat(sut.event.value).isInstanceOf(OnAddingProductViaScanningFailed::class.java)
         }
@@ -550,7 +550,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                     )
                 )
             )
-            sut.startScan()
+            sut.onScanClicked()
 
             assertThat(
                 (sut.event.value as OnAddingProductViaScanningFailed).message
@@ -572,7 +572,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             }
         }
 
-        sut.startScan()
+        sut.onScanClicked()
 
         assertThat(sut.event.value).isInstanceOf(OnAddingProductViaScanningFailed::class.java)
     }
@@ -591,7 +591,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             }
         }
 
-        sut.startScan()
+        sut.onScanClicked()
 
         assertThat((sut.event.value as OnAddingProductViaScanningFailed).message).isEqualTo(
             R.string.order_creation_barcode_scanning_scanning_failed
@@ -612,7 +612,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             }
         }
 
-        sut.startScan()
+        sut.onScanClicked()
         (sut.event.value as OnAddingProductViaScanningFailed).retry.onClick(any())
 
         verify(codeScanner).startScan()
@@ -634,7 +634,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 )
             ).thenReturn(null)
 
-            sut.startScan()
+            sut.onScanClicked()
 
             assertThat(sut.event.value).isInstanceOf(OnAddingProductViaScanningFailed::class.java)
         }
@@ -656,7 +656,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 )
             ).thenReturn(emptyList())
 
-            sut.startScan()
+            sut.onScanClicked()
 
             assertThat(sut.event.value).isInstanceOf(OnAddingProductViaScanningFailed::class.java)
         }
@@ -678,7 +678,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 )
             ).thenReturn(null)
 
-            sut.startScan()
+            sut.onScanClicked()
 
             assertThat(
                 (sut.event.value as OnAddingProductViaScanningFailed).message
@@ -702,7 +702,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 )
             ).thenReturn(null)
 
-            sut.startScan()
+            sut.onScanClicked()
             (sut.event.value as OnAddingProductViaScanningFailed).retry.onClick(any())
 
             verify(codeScanner).startScan()
@@ -740,9 +740,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 orderDraft = order
             }
 
-            sut.startScan()
-            sut.startScan()
-            sut.startScan()
+            sut.onScanClicked()
+            sut.onScanClicked()
+            sut.onScanClicked()
 
             orderDraft?.items
                 ?.takeIf { it.isNotEmpty() }
@@ -781,9 +781,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 orderDraft = order
             }
 
-            sut.startScan()
-            sut.startScan()
-            sut.startScan()
+            sut.onScanClicked()
+            sut.onScanClicked()
+            sut.onScanClicked()
 
             orderDraft?.items
                 ?.takeIf { it.isNotEmpty() }
@@ -791,6 +791,15 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 ?.let { assertThat(it.quantity).isEqualTo(3f) }
                 ?: fail("Expected an item with productId 10L with quantity as 3")
         }
+    }
+
+    @Test
+    fun `when scan clicked, then track proper event`() {
+        createSut()
+
+        sut.onScanClicked()
+
+        verify(tracker).track(AnalyticsEvent.ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED)
     }
 
     //endregion

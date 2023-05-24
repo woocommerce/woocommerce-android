@@ -206,7 +206,7 @@ class OrderCreateEditFormFragment :
                 addProductsViaScanButton = AddButton(
                     text = getString(R.string.order_creation_add_product_via_barcode_scanning),
                     onClickListener = {
-                        viewModel.startScan()
+                        viewModel.onScanClicked()
                     }
                 )
             )
