@@ -741,6 +741,14 @@ class MainActivity :
                 ViewTapToPay -> showTapToPaySummary()
                 ShortcutOpenPayments -> shortcutShowPayments()
                 ShortcutOpenOrderCreation -> shortcutOpenOrderCreation()
+                is MainActivityViewModel.ShowPrivacyPreferenceUpdatedFailed -> {
+                    uiMessageResolver.getIndefiniteActionSnack(
+                        R.string.privacy_banner_error_save,
+                        actionText = getString(R.string.retry)
+                    ) {
+                        viewModel.onRequestPrivacyUpdate(event.analyticsEnabled)
+                    }.show()
+                }
             }
         }
 
