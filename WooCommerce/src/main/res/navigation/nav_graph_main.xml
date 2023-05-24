@@ -292,6 +292,10 @@
             android:defaultValue="false"
             app:argType="boolean" />
         <argument
+            android:name="isAddingFirstProduct"
+            android:defaultValue="false"
+            app:argType="boolean" />
+        <argument
             android:name="isTrashEnabled"
             android:defaultValue="false"
             app:argType="boolean" />
