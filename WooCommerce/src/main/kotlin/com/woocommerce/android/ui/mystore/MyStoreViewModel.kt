@@ -80,7 +80,7 @@ class MyStoreViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher,
     private val onboardingRepository: StoreOnboardingRepository,
-    private val notificationScheduler: LocalNotificationScheduler,
+    notificationScheduler: LocalNotificationScheduler,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner
 ) : ScopedViewModel(savedState) {
     companion object {
