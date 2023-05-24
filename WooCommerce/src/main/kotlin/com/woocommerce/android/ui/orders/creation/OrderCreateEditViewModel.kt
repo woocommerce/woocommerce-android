@@ -11,6 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.BARCODE_SCANNING_FAILURE
 import com.woocommerce.android.analytics.AnalyticsEvent.BARCODE_SCANNING_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_REMOVE
@@ -330,6 +331,10 @@ class OrderCreateEditViewModel @Inject constructor(
             codeScanner.startScan().collect { status ->
                 when (status) {
                     is CodeScannerStatus.Failure -> {
+                        tracker.track(
+                            BARCODE_SCANNING_FAILURE,
+                            mapOf(KEY_SCANNING_SOURCE to SCANNING_SOURCE)
+                        )
                         sendAddingProductsViaScanningFailedEvent(
                             R.string.order_creation_barcode_scanning_scanning_failed
                         )

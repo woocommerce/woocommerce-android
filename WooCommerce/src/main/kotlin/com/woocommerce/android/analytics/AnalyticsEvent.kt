@@ -266,6 +266,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
 
     // -- Barcode Scanner
     BARCODE_SCANNING_SUCCESS,
+    BARCODE_SCANNING_FAILURE,
 
 
     // -- Refunds
