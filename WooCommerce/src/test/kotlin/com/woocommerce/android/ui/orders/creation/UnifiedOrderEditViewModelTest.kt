@@ -23,8 +23,8 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.fail
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -748,7 +748,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 ?.takeIf { it.isNotEmpty() }
                 ?.find { it.variationId == 10L }
                 ?.let { assertThat(it.quantity).isEqualTo(3f) }
-                ?: Assertions.fail("Expected an item with variationId 10L with quantity as 3")
+                ?: fail("Expected an item with variationId 10L with quantity as 3")
         }
     }
 
@@ -789,7 +789,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 ?.takeIf { it.isNotEmpty() }
                 ?.find { it.productId == 10L }
                 ?.let { assertThat(it.quantity).isEqualTo(3f) }
-                ?: Assertions.fail("Expected an item with productId 10L with quantity as 3")
+                ?: fail("Expected an item with productId 10L with quantity as 3")
         }
     }
 

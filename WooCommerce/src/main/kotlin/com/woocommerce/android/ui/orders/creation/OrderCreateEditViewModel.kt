@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -199,6 +200,7 @@ class OrderCreateEditViewModel @Inject constructor(
             }
         }
     }
+
     fun onCustomerNoteEdited(newNote: String) {
         _orderDraft.value.let { order ->
             tracker.track(
@@ -317,7 +319,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 when (status) {
                     is CodeScannerStatus.Failure -> {
                         sendAddingProductsViaScanningFailedEvent(
-                            string.order_creation_barcode_scanning_scanning_failed
+                            R.string.order_creation_barcode_scanning_scanning_failed
                         )
                     }
                     is CodeScannerStatus.Success -> {
@@ -347,15 +349,16 @@ class OrderCreateEditViewModel @Inject constructor(
                     if (product.isVariable()) {
                         if (product.parentId == 0L) {
                             sendAddingProductsViaScanningFailedEvent(
-                                message = string.order_creation_barcode_scanning_unable_to_add_variable_product
+                                message = R.string.order_creation_barcode_scanning_unable_to_add_variable_product
                             )
                         } else {
                             when (val alreadySelectedItemId = getItemIdIfVariableProductIsAlreadySelected(product)) {
-                                null -> onProductsSelected(selectedItems +
-                                    SelectedItem.ProductVariation(
-                                        productId = product.parentId,
-                                        variationId = product.remoteId
-                                    )
+                                null -> onProductsSelected(
+                                    selectedItems +
+                                        SelectedItem.ProductVariation(
+                                            productId = product.parentId,
+                                            variationId = product.remoteId
+                                        )
                                 )
                                 else -> onIncreaseProductsQuantity(alreadySelectedItemId)
                             }
@@ -371,7 +374,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
             } ?: run {
                 sendAddingProductsViaScanningFailedEvent(
-                    string.order_creation_barcode_scanning_unable_to_add_product
+                    R.string.order_creation_barcode_scanning_unable_to_add_product
                 )
             }
         }
@@ -398,6 +401,7 @@ class OrderCreateEditViewModel @Inject constructor(
             }
         )
     }
+
     private fun Order.removeItem(item: Order.Item) = adjustProductQuantity(item.itemId, -item.quantity.toInt())
 
     fun onCustomerAddressEdited(customerId: Long?, billingAddress: Address, shippingAddress: Address) {
@@ -777,6 +781,7 @@ class OrderCreateEditViewModel @Inject constructor(
         ) : MultipleLinesContext()
     }
 }
+
 data class OnAddingProductViaScanningFailed(
     val message: Int,
     val retry: View.OnClickListener,
