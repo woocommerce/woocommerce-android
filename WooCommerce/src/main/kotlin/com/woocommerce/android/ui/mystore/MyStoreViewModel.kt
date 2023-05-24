@@ -15,6 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler
+import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_FINISHED
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
@@ -158,9 +159,10 @@ class MyStoreViewModel @Inject constructor(
             launch {
                 onboardingRepository.observeOnboardingTasks()
                     .collectLatest { tasks ->
-                        _appbarState.value = _appbarState.value?.copy(showShareStoreButton = tasks
-                            .filter { it.type == LAUNCH_YOUR_STORE }
-                            .all { it.isComplete }
+                        _appbarState.value = _appbarState.value?.copy(
+                            showShareStoreButton = tasks
+                                .filter { it.type == LAUNCH_YOUR_STORE }
+                                .all { it.isComplete }
                         )
                     }
             }
@@ -217,10 +219,7 @@ class MyStoreViewModel @Inject constructor(
 
     fun onShareStoreClicked() {
         triggerEvent(
-            MyStoreEvent.ShareStore(
-                storeUrl = selectedSite.get().url,
-                storeName = selectedSite.get().displayName ?: selectedSite.get().name
-            )
+            MyStoreEvent.ShareStore(storeUrl = selectedSite.get().url)
         )
     }
 
@@ -271,7 +270,7 @@ class MyStoreViewModel @Inject constructor(
             System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()
         )
         val supportsJetpackInstallation = connectionType == SiteConnectionType.JetpackConnectionPackage ||
-                connectionType == SiteConnectionType.ApplicationPasswords
+            connectionType == SiteConnectionType.ApplicationPasswords
         val showBanner = supportsJetpackInstallation && daysSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER
         val benefitsBanner = JetpackBenefitsBannerUiModel(
             show = showBanner,
@@ -459,9 +458,6 @@ class MyStoreViewModel @Inject constructor(
 
         object ShowPrivacyBanner : MyStoreEvent()
 
-        data class ShareStore(
-            val storeUrl: String,
-            val storeName: String
-        ) : MyStoreEvent()
+        data class ShareStore(val storeUrl: String) : MyStoreEvent()
     }
 }

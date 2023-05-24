@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.mystore
 
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -267,18 +266,6 @@ class MyStoreFragment :
         }
     }
 
-    private fun shareStore(storeUrl: String, displayStoreName: String) {
-        val sendIntent: Intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TITLE, displayStoreName)
-            putExtra(Intent.EXTRA_TEXT, storeUrl)
-            type = "text/plain"
-        }
-
-        val shareIntent = Intent.createChooser(sendIntent, null)
-        startActivity(shareIntent)
-    }
-
     private fun openOnboardingInFullScreen() {
         exitTransition = MaterialElevationScale(false).apply {
             duration = resources.getInteger(R.integer.default_fragment_transition).toLong()
@@ -357,7 +344,7 @@ class MyStoreFragment :
                         PrivacyBannerFragmentDirections.actionGlobalPrivacyBannerFragment()
                     )
 
-                is ShareStore -> shareStore(event.storeUrl, event.storeName)
+                is ShareStore -> ActivityUtils.shareStoreUrl(requireActivity(), event.storeUrl)
 
                 else -> event.isHandled = false
             }
