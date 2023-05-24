@@ -31,6 +31,7 @@ import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.IPPSurveyFeedbackBannerState
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.OnAddingProductViaScanningFailed
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.payments.feedback.ipp.GetIPPFeedbackBannerData
 import com.woocommerce.android.ui.payments.feedback.ipp.ShouldShowFeedbackBanner
@@ -994,8 +995,29 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel.onScanClicked()
 
         assertThat(viewModel.event.value).isInstanceOf(
-            OrderListViewModel.OrderListEvent.OnAddingProductViaScanningFailed::class.java
+            OnAddingProductViaScanningFailed::class.java
         )
+    }
+
+    @Test
+    fun `when code scanner fails, then trigger event proper message`() {
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(
+                    CodeScannerStatus.Failure(
+                        error = "Failed to recognize the barcode",
+                        type = CodeScanningErrorType.NotFound
+                    )
+                )
+            }
+        }
+
+        viewModel = createViewModel()
+        viewModel.onScanClicked()
+
+        assertThat(
+            (viewModel.event.value as OnAddingProductViaScanningFailed).message
+        ).isEqualTo(R.string.order_list_barcode_scanning_scanning_failed)
     }
 
     @Test
