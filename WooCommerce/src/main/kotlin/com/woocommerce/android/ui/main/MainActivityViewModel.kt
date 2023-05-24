@@ -259,9 +259,14 @@ class MainActivityViewModel @Inject constructor(
 
     fun onRequestPrivacyUpdate(analyticsEnabled: Boolean) {
         launch {
-            privacyRepository.updateTracksSetting(analyticsEnabled).onFailure {
-                onPrivacyPreferenceUpdateFailed(analyticsEnabled)
-            }
+            privacyRepository.updateTracksSetting(analyticsEnabled).fold(
+                onSuccess = {
+                    prefs.savedPrivacySettings = true
+                },
+                onFailure = {
+                    triggerEvent(ShowPrivacyPreferenceUpdatedFailed(analyticsEnabled))
+                }
+            )
         }
     }
 
