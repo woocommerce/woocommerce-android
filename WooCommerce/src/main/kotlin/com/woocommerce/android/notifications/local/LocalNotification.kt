@@ -62,4 +62,18 @@ sealed class LocalNotification(
             return resourceProvider.getString(description, expiryDate)
         }
     }
+
+    data class FreeTrialExpiredNotification(val name: String, val siteId: Long) : LocalNotification(
+        title = R.string.local_notification_one_day_after_free_trial_expires_title,
+        description = R.string.local_notification_one_day_after_free_trial_expires_description,
+        type = LocalNotificationType.FREE_TRIAL_EXPIRED,
+        delay = 15,
+        delayUnit = TimeUnit.SECONDS
+    ) {
+        override val data: String = siteId.toString()
+
+        override fun getDescriptionString(resourceProvider: ResourceProvider): String {
+            return resourceProvider.getString(description, name)
+        }
+    }
 }
