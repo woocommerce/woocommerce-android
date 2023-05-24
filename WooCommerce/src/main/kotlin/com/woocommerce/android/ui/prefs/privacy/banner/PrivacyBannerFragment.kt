@@ -6,20 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
-import com.woocommerce.android.R
-import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.main.MainActivityViewModel
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class PrivacyBannerFragment : WCBottomSheetDialogFragment() {
 
     private val viewModel: PrivacyBannerViewModel by viewModels()
-
-    @Inject
-    lateinit var uiMessageResolver: UIMessageResolver
+    private val mainViewModel: MainActivityViewModel by viewModels({ requireActivity() })
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,7 +37,7 @@ class PrivacyBannerFragment : WCBottomSheetDialogFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is PrivacyBannerViewModel.ShowError -> {
-                    uiMessageResolver.getSnack(R.string.privacy_banner_error_save).show()
+                    mainViewModel.onPrivacyPreferenceUpdateFailed(event.requestedChange)
                     dismiss()
                 }
 

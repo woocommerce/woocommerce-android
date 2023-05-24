@@ -50,7 +50,7 @@ class PrivacyBannerViewModel @Inject constructor(
                         triggerEvent(Dismiss)
                     },
                     onFailure = {
-                        triggerEvent(ShowError { onSavePressed() })
+                        triggerEvent(ShowError(requestedChange = analyticsPreference))
                     }
                 )
             } else {
@@ -66,5 +66,5 @@ class PrivacyBannerViewModel @Inject constructor(
     )
 
     object Dismiss : MultiLiveEvent.Event()
-    data class ShowError(val retryAction: () -> Unit) : MultiLiveEvent.Event()
+    data class ShowError(val requestedChange: Boolean) : MultiLiveEvent.Event()
 }
