@@ -114,6 +114,7 @@ class PrivacySettingsViewModel @Inject constructor(
 
                 event.fold(
                     onSuccess = {
+                        appPrefs.savedPrivacyBannerSettings = true
                         analyticsTrackerWrapper.sendUsageStats = checked
                     },
                     onFailure = {
