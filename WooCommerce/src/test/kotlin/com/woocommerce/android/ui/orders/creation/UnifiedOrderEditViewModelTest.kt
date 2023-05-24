@@ -24,6 +24,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.fail
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -404,11 +405,12 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 listOf(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
+                        parentID = 1L,
                         isVariable = true,
                     )
                 )
             )
-            whenever(createOrderItemUseCase.invoke(0L, 10L)).thenReturn(
+            whenever(createOrderItemUseCase.invoke(1L, 10L)).thenReturn(
                 createOrderItem(10L)
             )
             var newOrder: Order? = null
@@ -440,11 +442,12 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 listOf(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
+                        parentID = 1L,
                         productType = "variable-subscription",
                     )
                 )
             )
-            whenever(createOrderItemUseCase.invoke(0L, 10L)).thenReturn(
+            whenever(createOrderItemUseCase.invoke(1L, 10L)).thenReturn(
                 createOrderItem(10L)
             )
             var newOrder: Order? = null
@@ -455,6 +458,103 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             sut.startScan()
 
             assertThat(newOrder?.getProductIds()?.any { it == 10L }).isTrue()
+        }
+    }
+
+    @Test
+    fun `when SKU search succeeds for variation product, then add the scanned product`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 1L,
+                        productType = "variation",
+                    )
+                )
+            )
+            whenever(createOrderItemUseCase.invoke(1L, 10L)).thenReturn(
+                createOrderItem(10L)
+            )
+            var newOrder: Order? = null
+            sut.orderDraft.observeForever { newOrderData ->
+                newOrder = newOrderData
+            }
+
+            sut.startScan()
+
+            assertThat(newOrder?.getProductIds()?.any { it == 10L }).isTrue()
+        }
+    }
+
+    @Test
+    fun `when SKU search succeeds for variable parent product, then trigger proper failed event`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 0L,
+                        isVariable = true,
+                    )
+                )
+            )
+            sut.startScan()
+
+            assertThat(sut.event.value).isInstanceOf(OnAddingProductViaScanningFailed::class.java)
+        }
+    }
+
+    @Test
+    fun `when SKU search succeeds for variable parent product, then trigger failed event with proper message`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 0L,
+                        isVariable = true,
+                    )
+                )
+            )
+            sut.startScan()
+
+            assertThat(
+                (sut.event.value as OnAddingProductViaScanningFailed).message
+            ).isEqualTo(R.string.order_creation_barcode_scanning_unable_to_add_variable_product)
         }
     }
 
@@ -606,6 +706,90 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             (sut.event.value as OnAddingProductViaScanningFailed).retry.onClick(any())
 
             verify(codeScanner).startScan()
+        }
+    }
+
+    @Test
+    fun `given that same variable subscription product scanned thrice, then increment the product quantity accordingly`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 1L,
+                        productType = "variable-subscription",
+                    )
+                )
+            )
+            whenever(createOrderItemUseCase.invoke(1L, 10L)).thenReturn(
+                createOrderItem(1L, 10L)
+            )
+            var orderDraft: Order? = null
+            sut.orderDraft.observeForever { order ->
+                orderDraft = order
+            }
+
+            sut.startScan()
+            sut.startScan()
+            sut.startScan()
+
+            orderDraft?.items
+                ?.takeIf { it.isNotEmpty() }
+                ?.find { it.variationId == 10L }
+                ?.let { assertThat(it.quantity).isEqualTo(3f) }
+                ?: fail("Expected an item with variationId 10L with quantity as 3")
+        }
+    }
+
+    @Test
+    fun `given that same product scanned thrice, then increment the product quantity accordingly`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                    )
+                )
+            )
+            whenever(createOrderItemUseCase.invoke(10L)).thenReturn(
+                createOrderItem(10L)
+            )
+            var orderDraft: Order? = null
+            sut.orderDraft.observeForever { order ->
+                orderDraft = order
+            }
+
+            sut.startScan()
+            sut.startScan()
+            sut.startScan()
+
+            orderDraft?.items
+                ?.takeIf { it.isNotEmpty() }
+                ?.find { it.productId == 10L }
+                ?.let { assertThat(it.quantity).isEqualTo(3f) }
+                ?: fail("Expected an item with productId 10L with quantity as 3")
         }
     }
 

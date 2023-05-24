@@ -550,6 +550,7 @@
     <string name="order_creation_change_product_quantity">Change the product quantity from %1$d to %2$d</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product">Product not found. Unable to add to new order</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_variable_product">You cannot add variable product directly. Please select a specific variation</string>
 
     <!--
         Domains
@@ -2229,6 +2230,7 @@
     <string name="product_type_subscription">Subscription</string>
     <string name="product_type_bundle">Bundle</string>
     <string name="product_type_composite">Composite product</string>
+    <string name="product_type_variation">Variation product</string>
 
     <!-- Product type bottom sheets -->
     <string name="product_type_list_header">Select a product type</string>
