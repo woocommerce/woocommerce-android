@@ -316,7 +316,9 @@ class OrderCreateEditViewModel @Inject constructor(
             codeScanner.startScan().collect { status ->
                 when (status) {
                     is CodeScannerStatus.Failure -> {
-                        sendAddingProductsViaScanningFailedEvent()
+                        sendAddingProductsViaScanningFailedEvent(
+                            string.order_creation_barcode_scanning_scanning_failed
+                        )
                     }
                     is CodeScannerStatus.Success -> {
                         viewState = viewState.copy(isUpdatingOrderDraft = true)
@@ -368,7 +370,9 @@ class OrderCreateEditViewModel @Inject constructor(
                     }
                 }
             } ?: run {
-                sendAddingProductsViaScanningFailedEvent()
+                sendAddingProductsViaScanningFailedEvent(
+                    string.order_creation_barcode_scanning_unable_to_add_product
+                )
             }
         }
     }
@@ -386,7 +390,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun sendAddingProductsViaScanningFailedEvent(
-        @StringRes message: Int = string.order_creation_barcode_scanning_unable_to_add_product
+        @StringRes message: Int
     ) {
         triggerEvent(
             OnAddingProductViaScanningFailed(message) {

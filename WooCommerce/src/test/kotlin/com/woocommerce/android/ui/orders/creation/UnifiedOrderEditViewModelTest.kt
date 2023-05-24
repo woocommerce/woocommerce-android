@@ -594,7 +594,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         sut.startScan()
 
         assertThat((sut.event.value as OnAddingProductViaScanningFailed).message).isEqualTo(
-            R.string.order_creation_barcode_scanning_unable_to_add_product
+            R.string.order_creation_barcode_scanning_scanning_failed
         )
     }
 
