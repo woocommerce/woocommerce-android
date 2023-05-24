@@ -497,7 +497,6 @@ class OrderDetailFragment :
                     formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(currency),
                     productClickListener = this@OrderDetailFragment,
                     onProductMenuItemClicked = viewModel::onCreateShippingLabelButtonTapped,
-                    onIsExpandedChange = viewModel::onIsExpandedChange,
                     onViewAddonsClick = viewModel::onViewOrderedAddonButtonTapped
                 )
             }

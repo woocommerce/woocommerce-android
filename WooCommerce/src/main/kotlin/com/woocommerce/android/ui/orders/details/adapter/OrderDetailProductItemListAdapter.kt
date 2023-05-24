@@ -21,7 +21,6 @@ class OrderDetailProductItemListAdapter(
     private val productImageMap: ProductImageMap,
     private val formatCurrencyForDisplay: (BigDecimal) -> String,
     private val productItemListener: OrderProductActionListener,
-    private val onIsExpandedChange: (groupedProduct: OrderProduct.GroupedProductItem) -> Unit,
     private val onViewAddonsClick: ViewAddonClickListener? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private inner class ProductItemViewHolder(val view: OrderDetailProductItemView) : RecyclerView.ViewHolder(view) {
@@ -54,7 +53,6 @@ class OrderDetailProductItemListAdapter(
             productImageMap: ProductImageMap,
             formatCurrencyForDisplay: (BigDecimal) -> String,
             productItemListener: OrderProductActionListener,
-            onIsExpandedChange: (OrderProduct.GroupedProductItem) -> Unit,
             onViewAddonsClick: ViewAddonClickListener? = null
         ) {
             val item = groupedItem.product
@@ -72,7 +70,6 @@ class OrderDetailProductItemListAdapter(
 
             binding.expandIcon.setOnClickListener {
                 groupedItem.isExpanded = groupedItem.isExpanded.not()
-                onIsExpandedChange(groupedItem)
                 notifyItemChanged(bindingAdapterPosition)
             }
 
@@ -150,7 +147,6 @@ class OrderDetailProductItemListAdapter(
                     productImageMap,
                     formatCurrencyForDisplay,
                     productItemListener,
-                    onIsExpandedChange,
                     onViewAddonsClick
                 )
             }

@@ -37,7 +37,6 @@ class OrderDetailProductListView @JvmOverloads constructor(
         formatCurrencyForDisplay: (BigDecimal) -> String,
         productClickListener: OrderProductActionListener,
         onProductMenuItemClicked: () -> Unit,
-        onIsExpandedChange: (groupedProduct: OrderProduct.GroupedProductItem) -> Unit,
         onViewAddonsClick: ViewAddonClickListener? = null
     ) {
         val adapter = OrderDetailProductItemListAdapter(
@@ -45,7 +44,6 @@ class OrderDetailProductListView @JvmOverloads constructor(
             productImageMap,
             formatCurrencyForDisplay,
             productClickListener,
-            onIsExpandedChange,
             onViewAddonsClick
         )
         updateList(

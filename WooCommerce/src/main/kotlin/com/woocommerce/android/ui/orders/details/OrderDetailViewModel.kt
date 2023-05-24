@@ -788,14 +788,6 @@ class OrderDetailViewModel @Inject constructor(
         shippingLabelOnboardingRepository.markWcShippingBannerAsDismissed()
     }
 
-    fun onIsExpandedChange(groupedProductItem: OrderProduct.GroupedProductItem) {
-        _productList.value?.firstOrNull { orderProduct ->
-            (orderProduct as? OrderProduct.GroupedProductItem)?.product == groupedProductItem.product
-        }?.let { orderProduct ->
-            (orderProduct as? OrderProduct.GroupedProductItem)?.isExpanded == groupedProductItem.isExpanded
-        }
-    }
-
     @Parcelize
     data class ViewState(
         val orderInfo: OrderInfo? = null,
