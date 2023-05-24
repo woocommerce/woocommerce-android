@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Address
@@ -881,6 +882,31 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             AnalyticsEvent.BARCODE_SCANNING_FAILURE,
             mapOf(
                 KEY_SCANNING_SOURCE to "order_creation"
+            )
+        )
+    }
+
+    @Test
+    fun `when scan failure, then track event with proper failure reason`() {
+        createSut()
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(
+                    CodeScannerStatus.Failure(
+                        error = "Failed to recognize the barcode",
+                        type = CodeScanningErrorType.NotFound
+                    )
+                )
+            }
+        }
+
+        sut.onScanClicked()
+
+        verify(tracker).track(
+            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
+            mapOf(
+                KEY_SCANNING_SOURCE to "order_creation",
+                KEY_SCANNING_FAILURE_REASON to CodeScanningErrorType.NotFound.toString()
             )
         )
     }

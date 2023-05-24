@@ -42,6 +42,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_SHIP
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PARENT_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_COUNT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TO
@@ -57,6 +58,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.tracker.OrderDurationRecorder
+import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCoupon
@@ -333,7 +335,10 @@ class OrderCreateEditViewModel @Inject constructor(
                     is CodeScannerStatus.Failure -> {
                         tracker.track(
                             BARCODE_SCANNING_FAILURE,
-                            mapOf(KEY_SCANNING_SOURCE to SCANNING_SOURCE)
+                            mapOf(
+                                KEY_SCANNING_SOURCE to SCANNING_SOURCE,
+                                KEY_SCANNING_FAILURE_REASON to status.type.toString(),
+                            )
                         )
                         sendAddingProductsViaScanningFailedEvent(
                             R.string.order_creation_barcode_scanning_scanning_failed

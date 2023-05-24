@@ -199,6 +199,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_FAILURE = "failure"
         const val KEY_IS_FREE_TRIAL = "is_free_trial"
         const val KEY_SCANNING_SOURCE = "source"
+        const val KEY_SCANNING_FAILURE_REASON = "reason"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_SORT_NAME_ASC = "name,ascending"
