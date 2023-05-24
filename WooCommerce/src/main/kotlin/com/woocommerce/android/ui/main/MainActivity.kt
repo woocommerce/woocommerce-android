@@ -746,7 +746,7 @@ class MainActivity :
                         R.string.privacy_banner_error_save,
                         actionText = getString(R.string.retry)
                     ) {
-                        viewModel.onRequestPrivacyUpdate(event.analyticsEnabled)
+                        viewModel.onPrivacyPreferenceUpdateFailed(event.analyticsEnabled)
                     }.show()
                 }
             }
