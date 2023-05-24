@@ -56,6 +56,7 @@ class PrivacyBannerViewModel @Inject constructor(
             } else {
                 appPrefsWrapper.savedPrivacyBannerSettings = true
                 analyticsTrackerWrapper.sendUsageStats = analyticsPreference
+                triggerEvent(Dismiss)
             }
         }
     }
