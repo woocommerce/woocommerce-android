@@ -19,8 +19,6 @@ import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.store.AccountStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -141,14 +139,5 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
 
         // Then
         assertThat(latestEvent).isEqualTo(MultiLiveEvent.Event.NavigateToHelpScreen(HelpOrigin.STORE_CREATION))
-    }
-
-
-    companion object {
-        val TEST_ACCOUNT = AccountModel().apply {
-            userId = 123L
-            email = "mail@a8c.com"
-            userName = "username"
-        }
     }
 }
