@@ -268,6 +268,8 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     BARCODE_SCANNING_SUCCESS,
     BARCODE_SCANNING_FAILURE,
 
+    // -- Product Search Via SKU
+    PRODUCT_SEARCH_VIA_SKU_SUCCESS,
 
     // -- Refunds
     CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,

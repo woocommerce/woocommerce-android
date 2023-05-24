@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
@@ -909,6 +910,39 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 KEY_SCANNING_FAILURE_REASON to CodeScanningErrorType.NotFound.toString()
             )
         )
+    }
+
+    @Test
+    fun `given product search via sku succeeds, then track proper event`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 1L,
+                        productType = "variable-subscription",
+                    )
+                )
+            )
+
+            sut.onScanClicked()
+
+            verify(tracker).track(
+                eq(PRODUCT_SEARCH_VIA_SKU_SUCCESS),
+                any()
+            )
+        }
     }
 
     //endregion

@@ -29,6 +29,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_PRODUCT_REMOVE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_SHIPPING_METHOD_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_SHIPPING_METHOD_REMOVE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_STATUS_CHANGE
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_CONTEXT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
@@ -372,6 +373,7 @@ class OrderCreateEditViewModel @Inject constructor(
             )?.let { products ->
                 viewState = viewState.copy(isUpdatingOrderDraft = false)
                 products.firstOrNull()?.let { product ->
+                    trackProductSearchViaSKUSuccessEvent()
                     if (product.isVariable()) {
                         if (product.parentId == 0L) {
                             sendAddingProductsViaScanningFailedEvent(
@@ -404,6 +406,15 @@ class OrderCreateEditViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    private fun trackProductSearchViaSKUSuccessEvent() {
+        tracker.track(
+            PRODUCT_SEARCH_VIA_SKU_SUCCESS,
+            mapOf(
+                KEY_SCANNING_SOURCE to SCANNING_SOURCE
+            )
+        )
     }
 
     private fun getItemIdIfVariableProductIsAlreadySelected(product: ModelProduct): Long? {
