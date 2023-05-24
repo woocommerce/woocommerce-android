@@ -20,11 +20,12 @@ import org.mockito.kotlin.whenever
 class CodeScannerTest : BaseUnitTest() {
 
     private val scanner: GmsBarcodeScanner = mock()
+    private val errorMapper: GoogleCodeScannerErrorMapper = mock()
     private lateinit var codeScanner: CodeScanner
 
     @Before
     fun setup() {
-        codeScanner = GoogleCodeScanner(scanner)
+        codeScanner = GoogleCodeScanner(scanner, errorMapper)
     }
 
     @Test
@@ -105,6 +106,7 @@ class CodeScannerTest : BaseUnitTest() {
             whenever(scanner.startScan()).thenAnswer {
                 mockBarcode
             }
+            whenever(errorMapper.mapGoogleMLKitScanningErrors(any())).thenReturn(CodeScanningErrorType.NotFound)
             whenever(mockBarcode.addOnSuccessListener(any())).thenReturn(mockBarcode)
             whenever(mockBarcode.addOnFailureListener(any())).thenAnswer {
                 @Suppress("UNCHECKED_CAST")
@@ -126,14 +128,15 @@ class CodeScannerTest : BaseUnitTest() {
             whenever(scanner.startScan()).thenAnswer {
                 mockBarcode
             }
+            whenever(errorMapper.mapGoogleMLKitScanningErrors(any())).thenReturn(CodeScanningErrorType.NotFound)
             whenever(mockBarcode.addOnSuccessListener(any())).thenReturn(mockBarcode)
             whenever(mockBarcode.addOnFailureListener(any())).thenAnswer {
                 @Suppress("UNCHECKED_CAST")
                 (it.arguments[0] as OnFailureListener).onFailure(
                     mock {
                         on {
-                            cause
-                        }.thenReturn(Throwable(errorMessage))
+                            message
+                        }.thenReturn(errorMessage)
                     }
                 )
                 mock<Task<Barcode>>()
@@ -141,7 +144,7 @@ class CodeScannerTest : BaseUnitTest() {
 
             val result = codeScanner.startScan().first()
 
-            assertThat((result as CodeScannerStatus.Failure).error?.message).isEqualTo(errorMessage)
+            assertThat((result as CodeScannerStatus.Failure).error).isEqualTo(errorMessage)
         }
     }
 
@@ -193,7 +196,7 @@ class CodeScannerTest : BaseUnitTest() {
 
             val result = codeScanner.startScan().first()
 
-            assertThat((result as CodeScannerStatus.Failure).error?.message).isEqualTo(errorMessage)
+            assertThat((result as CodeScannerStatus.Failure).error).isEqualTo(errorMessage)
         }
     }
 
@@ -204,6 +207,7 @@ class CodeScannerTest : BaseUnitTest() {
             whenever(scanner.startScan()).thenAnswer {
                 mockBarcode
             }
+            whenever(errorMapper.mapGoogleMLKitScanningErrors(any())).thenReturn(CodeScanningErrorType.NotFound)
             whenever(mockBarcode.addOnSuccessListener(any())).thenReturn(mockBarcode)
             whenever(mockBarcode.addOnFailureListener(any())).thenAnswer {
                 @Suppress("UNCHECKED_CAST")
