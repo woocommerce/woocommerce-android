@@ -474,7 +474,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
         sut.startScan()
 
-        assertThat(sut.event.value).isInstanceOf(OnBarcodeScanningFailed::class.java)
+        assertThat(sut.event.value).isInstanceOf(OnAddingProductViaScanningFailed::class.java)
     }
 
     @Test
@@ -493,7 +493,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
         sut.startScan()
 
-        assertThat((sut.event.value as OnBarcodeScanningFailed).message).isEqualTo(
+        assertThat((sut.event.value as OnAddingProductViaScanningFailed).message).isEqualTo(
             R.string.order_creation_barcode_scanning_unable_to_add_product
         )
     }
@@ -513,7 +513,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
 
         sut.startScan()
-        (sut.event.value as OnBarcodeScanningFailed).retry.onClick(any())
+        (sut.event.value as OnAddingProductViaScanningFailed).retry.onClick(any())
 
         verify(codeScanner).startScan()
     }
@@ -536,7 +536,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
             sut.startScan()
 
-            assertThat(sut.event.value).isInstanceOf(OnProductSearchBySKUFailed::class.java)
+            assertThat(sut.event.value).isInstanceOf(OnAddingProductViaScanningFailed::class.java)
         }
     }
 
@@ -558,7 +558,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
             sut.startScan()
 
-            assertThat(sut.event.value).isInstanceOf(OnProductSearchBySKUFailed::class.java)
+            assertThat(sut.event.value).isInstanceOf(OnAddingProductViaScanningFailed::class.java)
         }
     }
 
@@ -581,7 +581,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             sut.startScan()
 
             assertThat(
-                (sut.event.value as OnProductSearchBySKUFailed).message
+                (sut.event.value as OnAddingProductViaScanningFailed).message
             ).isEqualTo(R.string.order_creation_barcode_scanning_unable_to_add_product)
         }
     }
@@ -603,7 +603,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             ).thenReturn(null)
 
             sut.startScan()
-            (sut.event.value as OnProductSearchBySKUFailed).retry.onClick(any())
+            (sut.event.value as OnAddingProductViaScanningFailed).retry.onClick(any())
 
             verify(codeScanner).startScan()
         }

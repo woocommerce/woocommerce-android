@@ -469,13 +469,7 @@ class OrderCreateEditFormFragment :
                     ).let { findNavController().navigateSafely(it) }
             is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
             is ShowDialog -> event.showDialog()
-            is OnBarcodeScanningFailed -> {
-                uiMessageResolver.getRetrySnack(
-                    stringResId = event.message,
-                    actionListener = event.retry
-                ).show()
-            }
-            is OnProductSearchBySKUFailed -> {
+            is OnAddingProductViaScanningFailed -> {
                 uiMessageResolver.getRetrySnack(
                     stringResId = event.message,
                     actionListener = event.retry
