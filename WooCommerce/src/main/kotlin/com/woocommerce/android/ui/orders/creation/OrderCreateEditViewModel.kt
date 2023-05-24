@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.creation
 
 import android.os.Parcelable
 import android.view.View
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
@@ -314,7 +315,9 @@ class OrderCreateEditViewModel @Inject constructor(
             codeScanner.startScan().collect { status ->
                 when (status) {
                     is CodeScannerStatus.Failure -> {
-                        sendAddingProductsViaScanningFailedEvent()
+                        sendAddingProductsViaScanningFailedEvent(
+                            string.order_creation_barcode_scanning_scanning_failed
+                        )
                     }
                     is CodeScannerStatus.Success -> {
                         viewState = viewState.copy(isUpdatingOrderDraft = true)
@@ -354,16 +357,18 @@ class OrderCreateEditViewModel @Inject constructor(
                     }
                 }
             } ?: run {
-                sendAddingProductsViaScanningFailedEvent()
+                sendAddingProductsViaScanningFailedEvent(
+                    string.order_creation_barcode_scanning_unable_to_add_product
+                )
             }
         }
     }
 
-    private fun sendAddingProductsViaScanningFailedEvent() {
+    private fun sendAddingProductsViaScanningFailedEvent(
+        @StringRes message: Int
+    ) {
         triggerEvent(
-            OnAddingProductViaScanningFailed(
-                string.order_creation_barcode_scanning_unable_to_add_product
-            ) {
+            OnAddingProductViaScanningFailed(message) {
                 startScan()
             }
         )
