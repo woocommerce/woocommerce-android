@@ -1021,6 +1021,26 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given code scanner failure, when retry clicked, then scan restarted`() {
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(
+                    CodeScannerStatus.Failure(
+                        error = "Failed to recognize the barcode",
+                        type = CodeScanningErrorType.NotFound
+                    )
+                )
+            }
+        }
+
+        viewModel = createViewModel()
+        viewModel.onScanClicked()
+        (viewModel.event.value as OnAddingProductViaScanningFailed).retry.onClick(any())
+
+        verify(codeScanner).startScan()
+    }
+
+    @Test
     fun `when code scanner succeeds, then trigger event with proper sku`() {
         whenever(codeScanner.startScan()).thenAnswer {
             flow<CodeScannerStatus> {
