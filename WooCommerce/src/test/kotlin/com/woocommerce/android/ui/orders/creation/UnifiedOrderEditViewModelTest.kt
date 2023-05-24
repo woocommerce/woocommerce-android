@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
@@ -816,6 +817,25 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         verify(tracker).track(
             eq(AnalyticsEvent.BARCODE_SCANNING_SUCCESS),
             any()
+        )
+    }
+
+    @Test
+    fun `when scan success, then track event with proper source`() {
+        createSut()
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(CodeScannerStatus.Success("12345"))
+            }
+        }
+
+        sut.onScanClicked()
+
+        verify(tracker).track(
+            AnalyticsEvent.BARCODE_SCANNING_SUCCESS,
+            mapOf(
+                KEY_SCANNING_SOURCE to "order_creation"
+            )
         )
     }
 
