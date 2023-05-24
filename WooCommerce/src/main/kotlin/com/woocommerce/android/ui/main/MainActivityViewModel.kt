@@ -16,8 +16,6 @@ import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
-import com.woocommerce.android.notifications.local.LocalNotification.Test
-import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType.Jetpack
@@ -53,7 +51,6 @@ class MainActivityViewModel @Inject constructor(
     private val prefs: AppPrefs,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val resolveAppLink: ResolveAppLink,
-    private val notificationScheduler: LocalNotificationScheduler,
     moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
     determineTrialStatusBarState: DetermineTrialStatusBarState,
@@ -245,12 +242,6 @@ class MainActivityViewModel @Inject constructor(
 
     fun onNotificationsPermissionBarAllowButtonTapped() {
         triggerEvent(RequestNotificationsPermission)
-    }
-
-    // TODO: Remove
-    @Suppress("ForbiddenComment")
-    fun showLocalNotification() {
-        notificationScheduler.scheduleNotification(Test("Test", "This is a test"))
     }
 
     fun onLocalNotificationTapped(notification: Notification) {
