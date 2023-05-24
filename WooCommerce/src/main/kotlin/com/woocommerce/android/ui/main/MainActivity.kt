@@ -35,6 +35,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.navOptions
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.material.appbar.AppBarLayout
 import com.woocommerce.android.AppPrefs
@@ -77,6 +78,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForA
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenOrderCreation
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenPayments
+import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenStoreCreation
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
@@ -98,6 +100,7 @@ import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState.Trial
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
+import com.woocommerce.android.ui.sitepicker.SitePickerFragmentDirections
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.util.WooAnimUtils.animateBottomBar
@@ -718,6 +721,7 @@ class MainActivity :
             viewModel.handleIncomingNotification(localPushId, notification)
         } else if (localNotification != null) {
             viewModel.onLocalNotificationTapped(localNotification)
+            intent.removeExtra(FIELD_LOCAL_NOTIFICATION)
         }
     }
     // endregion
@@ -737,6 +741,7 @@ class MainActivity :
                 is ShowFeatureAnnouncement -> navigateToFeatureAnnouncement(event)
                 is ViewUrlInWebView -> navigateToWebView(event)
                 is RequestNotificationsPermission -> requestNotificationsPermission()
+                is ShortcutOpenStoreCreation -> shortcutOpenStoreCreation(event.storeName)
                 ViewPayments -> showPayments()
                 ViewTapToPay -> showTapToPaySummary()
                 ShortcutOpenPayments -> shortcutShowPayments()
@@ -756,6 +761,22 @@ class MainActivity :
         observeMoreMenuBadgeStateEvent()
         observeTrialStatus()
         observeBottomBarState()
+    }
+
+    private fun shortcutOpenStoreCreation(storeName: String?) {
+        navController.apply {
+            navigate(
+                NavGraphMainDirections.actionGlobalLoginToSitePickerFragment(
+                    openedFromLogin = AppPrefs.getStoreCreationSource() != AnalyticsTracker.VALUE_SWITCHING_STORE
+                )
+            )
+            navigate(
+                SitePickerFragmentDirections.actionSitePickerFragmentToStoreCreationNativeFlow(storeName),
+                navOptions {
+                    popUpTo(R.id.sitePickerFragment) { inclusive = true }
+                }
+            )
+        }
     }
 
     private fun observeNotificationsPermissionBarVisibility() {
