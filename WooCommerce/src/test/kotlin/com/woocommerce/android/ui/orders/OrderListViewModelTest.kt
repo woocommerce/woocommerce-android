@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_CAMPAIGN_NAME
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_REMIND_LATER
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_IPP_BANNER_SOURCE_ORDER_LIST
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -1141,6 +1142,32 @@ class OrderListViewModelTest : BaseUnitTest() {
             AnalyticsEvent.BARCODE_SCANNING_FAILURE,
             mapOf(
                 KEY_SCANNING_SOURCE to "order_list"
+            )
+        )
+    }
+
+    @Test
+    fun `when scan failure, then track analytics event with proper reason`() {
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(
+                    CodeScannerStatus.Failure(
+                        error = "Failed to recognize the barcode",
+                        type = CodeScanningErrorType.CodeScannerGooglePlayServicesVersionTooOld
+                    )
+                )
+            }
+        }
+        viewModel = createViewModel()
+
+        viewModel.onScanClicked()
+
+        verify(analyticsTracker).track(
+            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
+            mapOf(
+                KEY_SCANNING_SOURCE to "order_list",
+                KEY_SCANNING_FAILURE_REASON to
+                    CodeScanningErrorType.CodeScannerGooglePlayServicesVersionTooOld.toString()
             )
         )
     }

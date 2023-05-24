@@ -28,6 +28,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_CAMPAIGN_NAME
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_REMIND_LATER
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_IPP_BANNER_SOURCE_ORDER_LIST
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -41,6 +42,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.creation.CodeScanner
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
@@ -298,6 +300,13 @@ class OrderListViewModel @Inject constructor(
             codeScanner.startScan().collect { status ->
                 when (status) {
                     is CodeScannerStatus.Failure -> {
+                        analyticsTracker.track(
+                            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
+                            mapOf(
+                                KEY_SCANNING_SOURCE to SCANNING_SOURCE,
+                                KEY_SCANNING_FAILURE_REASON to status.type.toString(),
+                            )
+                        )
                         triggerEvent(
                             OrderListEvent.OnAddingProductViaScanningFailed(
                                 R.string.order_list_barcode_scanning_scanning_failed
