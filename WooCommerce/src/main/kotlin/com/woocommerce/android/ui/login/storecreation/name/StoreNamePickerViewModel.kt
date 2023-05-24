@@ -121,9 +121,7 @@ class StoreNamePickerViewModel @Inject constructor(
     }
 
     private fun onCheckNotificationsPermissionResult(granted: Boolean, shouldShowRationale: Boolean) {
-        if (granted) {
-            onNotificationsPermissionGranted()
-        } else {
+        if (!granted) {
             if (shouldShowRationale) {
                 setPermissionRationaleVisible(true)
             } else {
