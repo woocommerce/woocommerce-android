@@ -64,9 +64,9 @@ class PrivacySettingsViewModel @Inject constructor(
                     )
                 }
 
-                if (args.targetAnalyticsPreference != RequestedAnalyticsValue.NONE) {
+                if (args.requestedAnalyticsValue != RequestedAnalyticsValue.NONE) {
                     val checked =
-                        args.targetAnalyticsPreference == RequestedAnalyticsValue.ENABLED
+                        args.requestedAnalyticsValue == RequestedAnalyticsValue.ENABLED
 
                     triggerEvent(
                         MultiLiveEvent.Event.ShowActionSnackbar(
