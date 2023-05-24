@@ -298,7 +298,13 @@ class OrderListViewModel @Inject constructor(
             codeScanner.startScan().collect { status ->
                 when (status) {
                     is CodeScannerStatus.Failure -> {
-                        // TODO handle failure case
+                        triggerEvent(
+                            OrderListEvent.OnAddingProductViaScanningFailed(
+                                R.string.order_list_barcode_scanning_scanning_failed
+                            ) {
+                                startScan()
+                            }
+                        )
                     }
                     is CodeScannerStatus.Success -> {
                         analyticsTracker.track(
@@ -755,6 +761,11 @@ class OrderListViewModel @Inject constructor(
         data class OpenIPPFeedbackSurveyLink(val url: String) : OrderListEvent()
 
         data class OnBarcodeScanned(val code: String) : OrderListEvent()
+
+        data class OnAddingProductViaScanningFailed(
+            val message: Int,
+            val retry: View.OnClickListener,
+        ) : Event()
     }
 
     @Parcelize

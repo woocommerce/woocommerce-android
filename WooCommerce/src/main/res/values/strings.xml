@@ -503,6 +503,7 @@
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">Payments from the Menu tab</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Now you can quickly access In-Person Payments and other features with ease</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Got it!</string>
+    <string name="order_list_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
     <string name="order_creation_fragment_title">New order</string>
     <string name="order_creation_status_edit_content_description">Edit order status</string>
     <string name="order_creation_customer">Customer</string>

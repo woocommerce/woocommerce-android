@@ -362,6 +362,12 @@ class OrderListFragment :
                 is OrderListViewModel.OrderListEvent.OnBarcodeScanned -> {
                     openOrderCreationFragment(event.code)
                 }
+                is OrderListViewModel.OrderListEvent.OnAddingProductViaScanningFailed -> {
+                    uiMessageResolver.getRetrySnack(
+                        stringResId = event.message,
+                        actionListener = event.retry
+                    ).show()
+                }
                 else -> event.isHandled = false
             }
         }
