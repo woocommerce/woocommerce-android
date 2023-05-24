@@ -82,12 +82,16 @@ data class OrderData(
     val feeRaw: String = "",
     val id: Int = -1,
     val productName: String = "",
+    val productsTotalRaw: String = "",
     val shippingRaw: String = "",
+    val taxesRaw: String = "",
     val statusRaw: String = "",
     val totalRaw: String = "",
 ) {
     val customerNote = "\"$customerNoteRaw\""
+    val productsTotalAmount = "\$$productsTotalRaw"
     val feeAmount = "\$$feeRaw"
+    val taxesAmount = "\$$taxesRaw"
     val shippingAmount = "\$$shippingRaw"
     val status = orderStatusMap[statusRaw]
     val total = "\$$totalRaw"
