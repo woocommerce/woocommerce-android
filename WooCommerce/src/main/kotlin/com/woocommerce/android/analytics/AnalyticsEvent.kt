@@ -264,6 +264,9 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     ORDER_CREATION_PRODUCT_SELECTOR_CLEAR_SELECTION_BUTTON_TAPPED,
     ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED,
 
+    // -- Barcode Scanner
+    BARCODE_SCANNING_SUCCESS,
+
 
     // -- Refunds
     CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,

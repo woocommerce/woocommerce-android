@@ -11,6 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.BARCODE_SCANNING_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_REMOVE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED
@@ -40,6 +41,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_SHIP
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PARENT_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_COUNT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TO
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TYPE
@@ -117,6 +119,7 @@ class OrderCreateEditViewModel @Inject constructor(
     companion object {
         private const val PARAMETERS_KEY = "parameters_key"
         private const val ORDER_CUSTOM_FEE_NAME = "order_custom_fee"
+        private const val SCANNING_SOURCE = "order_creation"
     }
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
@@ -332,6 +335,10 @@ class OrderCreateEditViewModel @Inject constructor(
                         )
                     }
                     is CodeScannerStatus.Success -> {
+                        tracker.track(
+                            BARCODE_SCANNING_SUCCESS,
+                            mapOf(KEY_SCANNING_SOURCE to SCANNING_SOURCE)
+                        )
                         viewState = viewState.copy(isUpdatingOrderDraft = true)
                         fetchProductBySKU(status.code)
                     }

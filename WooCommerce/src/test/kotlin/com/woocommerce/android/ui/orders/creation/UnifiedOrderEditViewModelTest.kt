@@ -802,6 +802,23 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         verify(tracker).track(AnalyticsEvent.ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED)
     }
 
+    @Test
+    fun `when scan success, then track proper event`() {
+        createSut()
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(CodeScannerStatus.Success("12345"))
+            }
+        }
+
+        sut.onScanClicked()
+
+        verify(tracker).track(
+            eq(AnalyticsEvent.BARCODE_SCANNING_SUCCESS),
+            any()
+        )
+    }
+
     //endregion
 
     protected fun createSut(savedStateHandle: SavedStateHandle = savedState) {
