@@ -3,11 +3,14 @@ package com.woocommerce.android.ui.prefs
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.combineWith
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -16,18 +19,26 @@ import javax.inject.Inject
 class PrivacySettingsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val appPrefs: AppPrefsWrapper,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val resourceProvider: ResourceProvider,
     private val repository: PrivacySettingsRepository,
 ) : ScopedViewModel(savedState) {
 
-    private val _state = MutableLiveData(
-        State(
-            sendUsageStats = getSendUsageStats(),
-            crashReportingEnabled = getCrashReportingEnabled(),
-            progressBarVisible = false,
-        )
+    private val analyticsEnabled: LiveData<Boolean> = analyticsTrackerWrapper
+        .observeSendUsageStats()
+        .asLiveData()
+
+    private val _state = MutableLiveData(defaultState())
+
+    val state: LiveData<State> = _state.combineWith(analyticsEnabled) { state, analyticsEnabled ->
+        state?.copy(sendUsageStats = analyticsEnabled == true) ?: defaultState()
+    }
+
+    private fun defaultState() = State(
+        sendUsageStats = analyticsTrackerWrapper.sendUsageStats,
+        crashReportingEnabled = getCrashReportingEnabled(),
+        progressBarVisible = false,
     )
-    val state: LiveData<State> = _state
 
     init {
         initialize()
@@ -37,31 +48,21 @@ class PrivacySettingsViewModel @Inject constructor(
         if (repository.isUserWPCOM()) {
             launch {
                 _state.value = _state.value?.copy(progressBarVisible = true)
-                val event = repository.fetchAccountSettings()
+                val event = repository.updateAccountSettings()
                 _state.value = _state.value?.copy(progressBarVisible = false)
 
-                event.fold(
-                    onSuccess = {
-                        appPrefs.setSendUsageStats(!repository.userOptOutFromTracks())
-                        _state.value =
-                            _state.value?.copy(sendUsageStats = !repository.userOptOutFromTracks())
-                    },
-                    onFailure = {
-                        triggerEvent(
-                            MultiLiveEvent.Event.ShowActionSnackbar(
-                                resourceProvider.getString(R.string.settings_tracking_analytics_error_fetch)
-                            ) {
-                                initialize()
-                            }
-                        )
-                    }
-                )
+                event.onFailure {
+                    triggerEvent(
+                        MultiLiveEvent.Event.ShowActionSnackbar(
+                            resourceProvider.getString(R.string.settings_tracking_analytics_error_fetch)
+                        ) {
+                            initialize()
+                        }
+                    )
+                }
             }
         }
     }
-
-    private fun getSendUsageStats() =
-        if (repository.isUserWPCOM()) !repository.userOptOutFromTracks() else appPrefs.getSendUsageStats()
 
     private fun getCrashReportingEnabled() = appPrefs.isCrashReportingEnabled()
 
@@ -87,12 +88,11 @@ class PrivacySettingsViewModel @Inject constructor(
     }
 
     fun onSendStatsSettingChanged(checked: Boolean) {
+        analyticsTrackerWrapper.sendUsageStats = checked
         launch {
             if (repository.isUserWPCOM()) {
 
-                _state.value = _state.value?.copy(
-                    sendUsageStats = checked, progressBarVisible = true
-                )
+                _state.value = _state.value?.copy(progressBarVisible = true)
 
                 val event = repository.updateTracksSetting(checked)
 
@@ -100,20 +100,17 @@ class PrivacySettingsViewModel @Inject constructor(
 
                 event.fold(
                     onSuccess = {
-                        appPrefs.setSendUsageStats(checked)
+                        analyticsTrackerWrapper.sendUsageStats = checked
                     },
                     onFailure = {
-                        _state.value = _state.value?.copy(sendUsageStats = !checked)
+                        analyticsTrackerWrapper.sendUsageStats = !checked
                         triggerEvent(
                             MultiLiveEvent.Event.ShowActionSnackbar(
                                 resourceProvider.getString(R.string.settings_tracking_analytics_error_update)
-                            ) { onSendStatsSettingChanged(!checked) }
+                            ) { onSendStatsSettingChanged(checked) }
                         )
                     }
                 )
-            } else {
-                _state.value = _state.value?.copy(sendUsageStats = checked)
-                appPrefs.setSendUsageStats(checked)
             }
         }
     }
