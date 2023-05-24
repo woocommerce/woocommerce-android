@@ -15,6 +15,7 @@ import java.time.Instant
 object ProductTestUtils {
     fun generateProduct(
         productId: Long = 1L,
+        parentID: Long = 0L,
         isVirtual: Boolean = false,
         isVariable: Boolean = false,
         isPurchasable: Boolean = true,
@@ -26,6 +27,7 @@ object ProductTestUtils {
             dateCreated = "2018-01-05T05:14:30Z"
             localSiteId = 1
             remoteProductId = productId
+            parentId = parentID
             status = customStatus ?: "publish"
             type = productType ?: if (isVariable) "variable" else "simple"
             stockStatus = "instock"

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.creation
 
 import android.os.Parcelable
 import android.view.View
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
@@ -342,14 +343,20 @@ class OrderCreateEditViewModel @Inject constructor(
                 viewState = viewState.copy(isUpdatingOrderDraft = false)
                 products.firstOrNull()?.let { product ->
                     if (product.isVariable()) {
-                        when (val alreadySelectedItemId = getItemIdIfVariableProductIsAlreadySelected(product)) {
-                            null -> onProductsSelected(selectedItems +
-                                SelectedItem.ProductVariation(
-                                    productId = product.parentId,
-                                    variationId = product.remoteId
-                                )
+                        if (product.parentId == 0L) {
+                            sendAddingProductsViaScanningFailedEvent(
+                                message = string.order_creation_barcode_scanning_unable_to_add_variable_product
                             )
-                            else -> onIncreaseProductsQuantity(alreadySelectedItemId)
+                        } else {
+                            when (val alreadySelectedItemId = getItemIdIfVariableProductIsAlreadySelected(product)) {
+                                null -> onProductsSelected(selectedItems +
+                                    SelectedItem.ProductVariation(
+                                        productId = product.parentId,
+                                        variationId = product.remoteId
+                                    )
+                                )
+                                else -> onIncreaseProductsQuantity(alreadySelectedItemId)
+                            }
                         }
                     } else {
                         when (val alreadySelectedItemId = getItemIdIfProductIsAlreadySelected(product)) {
@@ -378,11 +385,11 @@ class OrderCreateEditViewModel @Inject constructor(
         }?.itemId
     }
 
-    private fun sendAddingProductsViaScanningFailedEvent() {
+    private fun sendAddingProductsViaScanningFailedEvent(
+        @StringRes message: Int = string.order_creation_barcode_scanning_unable_to_add_product
+    ) {
         triggerEvent(
-            OnAddingProductViaScanningFailed(
-                string.order_creation_barcode_scanning_unable_to_add_product
-            ) {
+            OnAddingProductViaScanningFailed(message) {
                 startScan()
             }
         )

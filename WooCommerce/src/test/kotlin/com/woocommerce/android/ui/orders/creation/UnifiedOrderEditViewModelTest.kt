@@ -405,11 +405,12 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 listOf(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
+                        parentID = 1L,
                         isVariable = true,
                     )
                 )
             )
-            whenever(createOrderItemUseCase.invoke(0L, 10L)).thenReturn(
+            whenever(createOrderItemUseCase.invoke(1L, 10L)).thenReturn(
                 createOrderItem(10L)
             )
             var newOrder: Order? = null
@@ -441,11 +442,12 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 listOf(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
+                        parentID = 1L,
                         productType = "variable-subscription",
                     )
                 )
             )
-            whenever(createOrderItemUseCase.invoke(0L, 10L)).thenReturn(
+            whenever(createOrderItemUseCase.invoke(1L, 10L)).thenReturn(
                 createOrderItem(10L)
             )
             var newOrder: Order? = null
@@ -477,11 +479,12 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 listOf(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
+                        parentID = 1L,
                         productType = "variation",
                     )
                 )
             )
-            whenever(createOrderItemUseCase.invoke(0L, 10L)).thenReturn(
+            whenever(createOrderItemUseCase.invoke(1L, 10L)).thenReturn(
                 createOrderItem(10L)
             )
             var newOrder: Order? = null
@@ -492,6 +495,66 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             sut.startScan()
 
             assertThat(newOrder?.getProductIds()?.any { it == 10L }).isTrue()
+        }
+    }
+
+    @Test
+    fun `when SKU search succeeds for variable parent product, then trigger proper failed event`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 0L,
+                        isVariable = true,
+                    )
+                )
+            )
+            sut.startScan()
+
+            assertThat(sut.event.value).isInstanceOf(OnAddingProductViaScanningFailed::class.java)
+        }
+    }
+
+    @Test
+    fun `when SKU search succeeds for variable parent product, then trigger failed event with proper message`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 0L,
+                        isVariable = true,
+                    )
+                )
+            )
+            sut.startScan()
+
+            assertThat(
+                (sut.event.value as OnAddingProductViaScanningFailed).message
+            ).isEqualTo(R.string.order_creation_barcode_scanning_unable_to_add_variable_product)
         }
     }
 
@@ -664,12 +727,13 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 listOf(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
+                        parentID = 1L,
                         productType = "variable-subscription",
                     )
                 )
             )
-            whenever(createOrderItemUseCase.invoke(0L, 10L)).thenReturn(
-                createOrderItem(0L, 10L)
+            whenever(createOrderItemUseCase.invoke(1L, 10L)).thenReturn(
+                createOrderItem(1L, 10L)
             )
             var orderDraft: Order? = null
             sut.orderDraft.observeForever { order ->
