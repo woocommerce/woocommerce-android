@@ -500,13 +500,18 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         createSut()
         whenever(codeScanner.startScan()).thenAnswer {
             flow<CodeScannerStatus> {
-                emit(CodeScannerStatus.Failure(Throwable("Failed to recognize the barcode")))
+                emit(
+                    CodeScannerStatus.Failure(
+                        error = "Failed to recognize the barcode",
+                        type = CodeScanningErrorType.NotFound
+                    )
+                )
             }
         }
 
         sut.startScan()
 
-        assertThat(sut.event.value).isInstanceOf(OnBarcodeScanningFailed::class.java)
+        assertThat(sut.event.value).isInstanceOf(OnAddingProductViaScanningFailed::class.java)
     }
 
     @Test
@@ -514,30 +519,19 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         createSut()
         whenever(codeScanner.startScan()).thenAnswer {
             flow<CodeScannerStatus> {
-                emit(CodeScannerStatus.Failure(Throwable("Failed to recognize the barcode")))
+                emit(
+                    CodeScannerStatus.Failure(
+                        error = "Failed to recognize the barcode",
+                        type = CodeScanningErrorType.NotFound
+                    )
+                )
             }
         }
 
         sut.startScan()
 
-        assertThat((sut.event.value as OnBarcodeScanningFailed).message).isEqualTo(
+        assertThat((sut.event.value as OnAddingProductViaScanningFailed).message).isEqualTo(
             R.string.order_creation_barcode_scanning_unable_to_add_product
-        )
-    }
-
-    @Test
-    fun `when code scanner fails to recognize the barcode, then proper throwable is sent`() {
-        createSut()
-        whenever(codeScanner.startScan()).thenAnswer {
-            flow<CodeScannerStatus> {
-                emit(CodeScannerStatus.Failure(Throwable("Failed to recognize the barcode")))
-            }
-        }
-
-        sut.startScan()
-
-        assertThat((sut.event.value as OnBarcodeScanningFailed).error?.message).isEqualTo(
-            "Failed to recognize the barcode"
         )
     }
 
@@ -546,12 +540,17 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         createSut()
         whenever(codeScanner.startScan()).thenAnswer {
             flow<CodeScannerStatus> {
-                emit(CodeScannerStatus.Failure(Throwable("Failed to recognize the barcode")))
+                emit(
+                    CodeScannerStatus.Failure(
+                        error = "Failed to recognize the barcode",
+                        type = CodeScanningErrorType.NotFound
+                    )
+                )
             }
         }
 
         sut.startScan()
-        (sut.event.value as OnBarcodeScanningFailed).retry.onClick(any())
+        (sut.event.value as OnAddingProductViaScanningFailed).retry.onClick(any())
 
         verify(codeScanner).startScan()
     }
@@ -574,7 +573,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
             sut.startScan()
 
-            assertThat(sut.event.value).isInstanceOf(OnProductSearchBySKUFailed::class.java)
+            assertThat(sut.event.value).isInstanceOf(OnAddingProductViaScanningFailed::class.java)
         }
     }
 
@@ -596,31 +595,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
             sut.startScan()
 
-            assertThat(sut.event.value).isInstanceOf(OnProductSearchBySKUFailed::class.java)
-        }
-    }
-
-    @Test
-    fun `when product search by SKU fails, then trigger event with proper throwable message`() {
-        testBlocking {
-            createSut()
-            whenever(codeScanner.startScan()).thenAnswer {
-                flow<CodeScannerStatus> {
-                    emit(CodeScannerStatus.Success("12345"))
-                }
-            }
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(null)
-
-            sut.startScan()
-
-            assertThat(
-                (sut.event.value as OnProductSearchBySKUFailed).error?.message
-            ).isEqualTo("Product search by SKU failed")
+            assertThat(sut.event.value).isInstanceOf(OnAddingProductViaScanningFailed::class.java)
         }
     }
 
@@ -643,7 +618,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             sut.startScan()
 
             assertThat(
-                (sut.event.value as OnProductSearchBySKUFailed).message
+                (sut.event.value as OnAddingProductViaScanningFailed).message
             ).isEqualTo(R.string.order_creation_barcode_scanning_unable_to_add_product)
         }
     }
@@ -665,7 +640,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             ).thenReturn(null)
 
             sut.startScan()
-            (sut.event.value as OnProductSearchBySKUFailed).retry.onClick(any())
+            (sut.event.value as OnAddingProductViaScanningFailed).retry.onClick(any())
 
             verify(codeScanner).startScan()
         }
