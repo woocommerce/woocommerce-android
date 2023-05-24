@@ -1033,6 +1033,41 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `given variable product from order creation screen, when product added via scanning, then track correct source`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                    )
+                )
+            )
+
+            sut.onScanClicked()
+
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_PRODUCT_ADD,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_FLOW_CREATION,
+                    AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
+                    KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source
+                )
+            )
+        }
+    }
+
     //endregion
 
     protected fun createSut(savedStateHandle: SavedStateHandle = savedState) {

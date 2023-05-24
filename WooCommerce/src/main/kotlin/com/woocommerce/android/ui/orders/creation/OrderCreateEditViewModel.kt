@@ -190,7 +190,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 // Presence of barcode indicates that this screen was called from the
                 // Order listing screen after scanning the barcode.
                 if (args.sku.isNotNullOrEmpty()) {
-                    fetchProductBySKU(args.sku!!, SCANNING_SOURCE_ORDER_LIST)
+                    fetchProductBySKU(args.sku!!, ScanningSource.ORDER_LIST)
                 }
             }
             is Mode.Edit -> {
@@ -271,14 +271,28 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    fun onProductsSelected(selectedItems: Collection<SelectedItem>) {
-        tracker.track(
-            ORDER_PRODUCT_ADD,
-            mapOf(
-                KEY_FLOW to flow,
-                KEY_PRODUCT_COUNT to selectedItems.size
+    fun onProductsSelected(
+        selectedItems: Collection<SelectedItem>,
+        source: ScanningSource? = null
+    ) {
+        source?.let {
+            tracker.track(
+                ORDER_PRODUCT_ADD,
+                mapOf(
+                    KEY_FLOW to flow,
+                    KEY_PRODUCT_COUNT to selectedItems.size,
+                    KEY_SCANNING_SOURCE to source.source
+                )
             )
-        )
+        } ?: run {
+            tracker.track(
+                ORDER_PRODUCT_ADD,
+                mapOf(
+                    KEY_FLOW to flow,
+                    KEY_PRODUCT_COUNT to selectedItems.size
+                )
+            )
+        }
 
         viewModelScope.launch {
             _orderDraft.value.items.apply {
@@ -359,7 +373,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun fetchProductBySKU(sku: String, source: String = SCANNING_SOURCE) {
+    private fun fetchProductBySKU(sku: String, source: ScanningSource = ScanningSource.ORDER_CREATION) {
         val selectedItems = orderDraft.value?.items?.map { item ->
             if (item.isVariation) {
                 SelectedItem.ProductVariation(item.productId, item.variationId)
@@ -383,11 +397,12 @@ class OrderCreateEditViewModel @Inject constructor(
                         } else {
                             when (val alreadySelectedItemId = getItemIdIfVariableProductIsAlreadySelected(product)) {
                                 null -> onProductsSelected(
-                                    selectedItems +
+                                    selectedItems = selectedItems +
                                         SelectedItem.ProductVariation(
                                             productId = product.parentId,
                                             variationId = product.remoteId
-                                        )
+                                        ),
+                                    source = source
                                 )
                                 else -> onIncreaseProductsQuantity(alreadySelectedItemId)
                             }
@@ -395,7 +410,8 @@ class OrderCreateEditViewModel @Inject constructor(
                     } else {
                         when (val alreadySelectedItemId = getItemIdIfProductIsAlreadySelected(product)) {
                             null -> onProductsSelected(
-                                selectedItems + Product(productId = product.remoteId)
+                                selectedItems = selectedItems + Product(productId = product.remoteId),
+                                source = source
                             )
                             else -> onIncreaseProductsQuantity(alreadySelectedItemId)
                         }
@@ -410,20 +426,20 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun trackProductSearchViaSKUSuccessEvent(source: String) {
+    private fun trackProductSearchViaSKUSuccessEvent(source: ScanningSource) {
         tracker.track(
             PRODUCT_SEARCH_VIA_SKU_SUCCESS,
             mapOf(
-                KEY_SCANNING_SOURCE to source
+                KEY_SCANNING_SOURCE to source.source
             )
         )
     }
 
-    private fun trackProductSearchViaSKUFailureEvent(source: String) {
+    private fun trackProductSearchViaSKUFailureEvent(source: ScanningSource) {
         tracker.track(
             PRODUCT_SEARCH_VIA_SKU_FAILURE,
             mapOf(
-                KEY_SCANNING_SOURCE to source
+                KEY_SCANNING_SOURCE to source.source
             )
         )
     }
@@ -842,6 +858,11 @@ data class ProductUIModel(
     val stockQuantity: Double,
     val stockStatus: ProductStockStatus
 )
+
+enum class ScanningSource(val source: String) {
+    ORDER_CREATION("order_creation"),
+    ORDER_LIST("order_list")
+}
 
 private fun ModelProduct.isVariable() =
     productType == ProductType.VARIABLE ||
