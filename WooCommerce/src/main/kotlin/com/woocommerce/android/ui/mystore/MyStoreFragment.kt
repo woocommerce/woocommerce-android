@@ -581,8 +581,7 @@ class MyStoreFragment :
         if (show) {
             dashboardVisibility = View.GONE
             binding.emptyView.show(EmptyViewType.DASHBOARD) {
-                AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
-                ActivityUtils.shareStoreUrl(requireActivity(), selectedSite.get().url)
+                myStoreViewModel.onShareStoreClicked()
             }
         } else {
             binding.emptyView.hide()

@@ -218,6 +218,7 @@ class MyStoreViewModel @Inject constructor(
     }
 
     fun onShareStoreClicked() {
+        AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
         triggerEvent(
             MyStoreEvent.ShareStore(storeUrl = selectedSite.get().url)
         )
