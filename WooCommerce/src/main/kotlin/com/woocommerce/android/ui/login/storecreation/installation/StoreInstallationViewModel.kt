@@ -20,7 +20,6 @@ import com.woocommerce.android.ui.login.storecreation.installation.ObserveSiteIn
 import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.StoreCreationLoadingState
 import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.SuccessState
-import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
 import com.woocommerce.android.util.RemoteFeatureFlag.LOCAL_NOTIFICATION_1D_BEFORE_FREE_TRIAL_EXPIRES
@@ -55,6 +54,10 @@ class StoreInstallationViewModel @Inject constructor(
     private val localNotificationScheduler: LocalNotificationScheduler,
     private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled
 ) : ScopedViewModel(savedStateHandle) {
+
+    companion object {
+        const val TRIAL_LENGTH_IN_DAYS = 14L
+    }
 
     private val newStoreUrl
         get() = selectedSite.get().url
@@ -142,7 +145,7 @@ class StoreInstallationViewModel @Inject constructor(
     private fun scheduleDeferredNotifications() {
         if (isRemoteFeatureFlagEnabled(LOCAL_NOTIFICATION_1D_BEFORE_FREE_TRIAL_EXPIRES)) {
             val in14days = LocalDateTime.now()
-                .plusDays(14)
+                .plusDays(TRIAL_LENGTH_IN_DAYS)
                 .format(DateTimeFormatter.ofPattern("EEEE, MMMM d"))
             localNotificationScheduler.scheduleNotification(
                 FreeTrialExpiringNotification(in14days, selectedSite.get().siteId)
