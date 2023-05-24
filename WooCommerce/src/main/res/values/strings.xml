@@ -2222,6 +2222,7 @@
     <string name="product_type_subscription">Subscription</string>
     <string name="product_type_bundle">Bundle</string>
     <string name="product_type_composite">Composite product</string>
+    <string name="product_type_variation">Variation product</string>
 
     <!-- Product type bottom sheets -->
     <string name="product_type_list_header">Select a product type</string>

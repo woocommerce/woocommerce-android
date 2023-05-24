@@ -801,6 +801,8 @@ data class ProductUIModel(
 )
 
 private fun com.woocommerce.android.model.Product.isVariable() =
-    productType == ProductType.VARIABLE || productType == ProductType.VARIABLE_SUBSCRIPTION
+    productType == ProductType.VARIABLE ||
+        productType == ProductType.VARIABLE_SUBSCRIPTION ||
+        productType == ProductType.VARIATION
 
 fun Order.Item.isSynced() = this.itemId != 0L

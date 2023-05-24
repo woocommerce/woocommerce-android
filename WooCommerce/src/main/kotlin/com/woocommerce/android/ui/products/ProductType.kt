@@ -14,6 +14,7 @@ enum class ProductType(@StringRes val stringResource: Int = 0, val value: String
     VARIABLE_SUBSCRIPTION(R.string.product_type_subscription, "variable-subscription"),
     BUNDLE(R.string.product_type_bundle, CoreProductType.BUNDLE.value),
     COMPOSITE(R.string.product_type_composite, "composite"),
+    VARIATION(R.string.product_type_variation, "variation"),
     OTHER;
 
     companion object {
@@ -21,12 +22,13 @@ enum class ProductType(@StringRes val stringResource: Int = 0, val value: String
             return when (type.lowercase(Locale.US)) {
                 "grouped" -> GROUPED
                 "external" -> EXTERNAL
-                "variable", "variation" -> VARIABLE
+                "variable" -> VARIABLE
                 "simple" -> SIMPLE
                 "subscription" -> SUBSCRIPTION
                 "variable-subscription" -> VARIABLE_SUBSCRIPTION
                 "bundle" -> BUNDLE
                 "composite" -> COMPOSITE
+                "variation" -> VARIATION
                 else -> OTHER
             }
         }

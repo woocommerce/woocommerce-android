@@ -460,6 +460,42 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when SKU search succeeds for variation product, then add the scanned product`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        productType = "variation",
+                    )
+                )
+            )
+            whenever(createOrderItemUseCase.invoke(0L, 10L)).thenReturn(
+                createOrderItem(10L)
+            )
+            var newOrder: Order? = null
+            sut.orderDraft.observeForever { newOrderData ->
+                newOrder = newOrderData
+            }
+
+            sut.startScan()
+
+            assertThat(newOrder?.getProductIds()?.any { it == 10L }).isTrue()
+        }
+    }
+
+    @Test
     fun `when code scanner fails to recognize the barcode, then trigger proper event`() {
         createSut()
         whenever(codeScanner.startScan()).thenAnswer {
