@@ -1233,15 +1233,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     "12345",
                     WCProductStore.SkuSearchOptions.ExactSearch
                 )
-            ).thenReturn(
-                listOf(
-                    ProductTestUtils.generateProduct(
-                        productId = 10L,
-                        parentID = 1L,
-                        productType = "variable-subscription",
-                    )
-                )
-            )
+            ).thenReturn(null)
 
             createSut(navArgs)
 
@@ -1256,6 +1248,50 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
     @Test
     fun `given variable product from order list screen, when product added via scanning, then track correct source`() {
+        testBlocking {
+            val navArgs = OrderCreateEditFormFragmentArgs(
+                OrderCreateEditViewModel.Mode.Creation, "12345"
+            ).initSavedStateHandle()
+            whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
+                SiteParameters(
+                    currencyCode = "",
+                    currencySymbol = null,
+                    currencyFormattingParameters = null,
+                    weightUnit = null,
+                    dimensionUnit = null,
+                    gmtOffset = 0F
+                )
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 1L,
+                        isVariable = true
+                    )
+                )
+            )
+
+            createSut(navArgs)
+
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_PRODUCT_ADD,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_FLOW_CREATION,
+                    AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
+                    AnalyticsTracker.KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given non-variable product from order list screen, when product added via scanning, then track correct source`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
                 OrderCreateEditViewModel.Mode.Creation, "12345"
