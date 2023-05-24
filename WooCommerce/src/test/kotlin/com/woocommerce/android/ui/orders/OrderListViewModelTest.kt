@@ -55,6 +55,7 @@ import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.reset
@@ -995,6 +996,23 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel.onScanClicked()
 
         verify(analyticsTracker).track(AnalyticsEvent.ORDER_LIST_PRODUCT_BARCODE_SCANNING_TAPPED)
+    }
+
+    @Test
+    fun `when scan success, then track proper analytics event`() {
+        whenever(codeScanner.startScan()).thenAnswer {
+            flow<CodeScannerStatus> {
+                emit(CodeScannerStatus.Success("12345"))
+            }
+        }
+        viewModel = createViewModel()
+
+        viewModel.onScanClicked()
+
+        verify(analyticsTracker).track(
+            eq(AnalyticsEvent.BARCODE_SCANNING_SUCCESS),
+            any()
+        )
     }
 
     //endregion

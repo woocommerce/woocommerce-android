@@ -22,11 +22,13 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.BARCODE_SCANNING_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_LIST_PRODUCT_BARCODE_SCANNING_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_CAMPAIGN_NAME
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_REMIND_LATER
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_IPP_BANNER_SOURCE_ORDER_LIST
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
@@ -299,6 +301,12 @@ class OrderListViewModel @Inject constructor(
                         // TODO handle failure case
                     }
                     is CodeScannerStatus.Success -> {
+                        analyticsTracker.track(
+                            BARCODE_SCANNING_SUCCESS,
+                            mapOf(
+                                KEY_SCANNING_SOURCE to SCANNING_SOURCE
+                            )
+                        )
                         triggerEvent(OrderListEvent.OnBarcodeScanned(status.code))
                     }
                 }
@@ -770,5 +778,9 @@ class OrderListViewModel @Inject constructor(
         data class Visible(
             val bannerData: GetIPPFeedbackBannerData.IPPFeedbackBanner,
         ) : IPPSurveyFeedbackBannerState()
+    }
+
+    private companion object {
+        private const val SCANNING_SOURCE = "order_list"
     }
 }
