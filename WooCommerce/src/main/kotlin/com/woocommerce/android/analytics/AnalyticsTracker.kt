@@ -366,6 +366,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         const val PREFKEY_SEND_USAGE_STATS = "wc_pref_send_usage_stats"
 
+        // -- Product details
+        const val VALUE_SHARE_BUTTON_SOURCE_PRODUCT_FORM = "product_form"
+        const val VALUE_SHARE_BUTTON_SOURCE_MORE_MENU = "more_menu"
+
         // -- Product Variations
         const val KEY_VARIATIONS_COUNT = "variations_count"
 
