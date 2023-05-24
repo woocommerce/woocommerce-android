@@ -39,6 +39,7 @@ class PrivacyBannerViewModel @Inject constructor(
         val analyticsPreference = _state.value?.analyticsSwitchEnabled ?: false
 
         if (analyticsPreference == initialUserPreference) {
+            appPrefsWrapper.savedPrivacyBannerSettings = true
             triggerEvent(ShowSettings)
             return
         }
