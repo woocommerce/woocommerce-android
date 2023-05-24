@@ -68,7 +68,7 @@ sealed class LocalNotification(
         description = R.string.local_notification_one_day_after_free_trial_expires_description,
         type = LocalNotificationType.FREE_TRIAL_EXPIRED,
         delay = 15,
-        delayUnit = TimeUnit.SECONDS
+        delayUnit = TimeUnit.DAYS
     ) {
         override val data: String = siteId.toString()
 
