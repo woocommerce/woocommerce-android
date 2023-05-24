@@ -14,6 +14,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
+import com.woocommerce.android.notifications.local.LocalNotificationScheduler
+import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_FINISHED
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
@@ -75,7 +77,8 @@ class MyStoreViewModel @Inject constructor(
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher,
-    shouldShowPrivacyBanner: ShouldShowPrivacyBanner,
+    private val notificationScheduler: LocalNotificationScheduler,
+    shouldShowPrivacyBanner: ShouldShowPrivacyBanner
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
@@ -136,6 +139,9 @@ class MyStoreViewModel @Inject constructor(
                 }
             }
         }
+
+        // A notification is only displayed when the store has never been opened before
+        notificationScheduler.cancelScheduledNotification(STORE_CREATION_FINISHED)
     }
 
     override fun onCleared() {
