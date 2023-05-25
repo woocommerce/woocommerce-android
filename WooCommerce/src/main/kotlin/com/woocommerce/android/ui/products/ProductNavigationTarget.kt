@@ -143,4 +143,9 @@ sealed class ProductNavigationTarget : Event() {
     data class ViewBundleProducts(val productId: Long) : ProductNavigationTarget()
 
     data class ViewProductComponents(val components: List<Component>) : ProductNavigationTarget()
+
+    data class ViewFirstProductCelebration(
+        val permalink: String,
+        val productName: String
+    ) : ProductNavigationTarget()
 }

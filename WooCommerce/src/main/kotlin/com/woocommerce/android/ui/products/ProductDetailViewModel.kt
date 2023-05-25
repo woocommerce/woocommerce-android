@@ -852,7 +852,12 @@ class ProductDetailViewModel @Inject constructor(
                 triggerEvent(ShowSnackbar(snackbarMessage))
                 if (isSuccess) {
                     if (isPublishingFirstProduct()) {
-                        // TODO show celebration dialog
+                        triggerEvent(
+                            ProductNavigationTarget.ViewFirstProductCelebration(
+                                productName = product.name,
+                                permalink = product.permalink
+                            )
+                        )
                     }
                     if (navArgs.source == STORE_ONBOARDING) {
                         tracker.track(

@@ -416,6 +416,14 @@ class ProductNavigator @Inject constructor() {
             }
 
             is ExitProduct -> fragment.findNavController().navigateUp()
+
+            is ProductNavigationTarget.ViewFirstProductCelebration -> {
+                val action = ProductDetailFragmentDirections.actionProductDetailFragmentToFirstProductCelebrationDialog(
+                    productName = target.productName,
+                    permalink = target.permalink
+                )
+                fragment.findNavController().navigateSafely(action)
+            }
         }
     }
 
