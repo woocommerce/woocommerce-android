@@ -392,7 +392,6 @@ class OrderCreateEditViewModel @Inject constructor(
                 viewState = viewState.copy(isUpdatingOrderDraft = false)
                 products.firstOrNull()?.let { product ->
                     addScannedProduct(product, selectedItems, source)
-                    trackProductSearchViaSKUSuccessEvent(source)
                 } ?: run {
                     trackProductSearchViaSKUFailureEvent(
                         source,
@@ -424,6 +423,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 sendAddingProductsViaScanningFailedEvent(
                     message = string.order_creation_barcode_scanning_unable_to_add_variable_product
                 )
+                return
             } else {
                 when (val alreadySelectedItemId = getItemIdIfVariableProductIsAlreadySelected(product)) {
                     null -> onProductsSelected(
@@ -448,6 +448,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 else -> onIncreaseProductsQuantity(alreadySelectedItemId)
             }
         }
+        trackProductSearchViaSKUSuccessEvent(source)
     }
 
     private fun trackProductSearchViaSKUSuccessEvent(source: ScanningSource) {

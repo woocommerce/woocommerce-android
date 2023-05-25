@@ -558,7 +558,12 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
             sut.onScanClicked()
 
-            verify(tracker, never()).track(PRODUCT_SEARCH_VIA_SKU_SUCCESS)
+            verify(tracker, never()).track(
+                PRODUCT_SEARCH_VIA_SKU_SUCCESS,
+                mapOf(
+                    KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source
+                )
+            )
         }
     }
 
