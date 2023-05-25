@@ -4089,6 +4089,35 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             assertThat(state.hintLabel).isNull()
         }
 
+    @Test
+    fun `given ttp not in progress and reader connected, when vm starts, then AppKilledWhileInBackground state not emitted`() =
+        testBlocking {
+            val cardReader: CardReader = mock()
+            whenever(cardReaderManager.readerStatus).thenReturn(
+                MutableStateFlow(CardReaderStatus.Connected(cardReader))
+            )
+            initViewModel(BUILT_IN, ("ttp_payment_in_progress" to false))
+
+            viewModel.start()
+
+            verify(tracker, never()).trackPaymentFailed("VM killed when TTP activity in foreground")
+            assertThat(viewModel.viewStateData.value).isNotInstanceOf(BuiltInReaderFailedPaymentState::class.java)
+        }
+
+    @Test
+    fun `given AppKilledWhileInBackground, when vm starts, then payment collection doesnt start`() =
+        testBlocking {
+            val cardReader: CardReader = mock()
+            whenever(cardReaderManager.readerStatus).thenReturn(
+                MutableStateFlow(CardReaderStatus.Connected(cardReader))
+            )
+            initViewModel(BUILT_IN, ("ttp_payment_in_progress" to true))
+
+            viewModel.start()
+
+            verify(cardReaderManager, never()).collectPayment(any())
+        }
+
     private suspend fun simulateFetchOrderJobState(inProgress: Boolean) {
         if (inProgress) {
             whenever(orderRepository.fetchOrderById(any())).doSuspendableAnswer {
