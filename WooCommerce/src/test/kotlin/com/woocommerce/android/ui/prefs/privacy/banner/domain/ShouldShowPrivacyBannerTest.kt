@@ -31,7 +31,7 @@ class ShouldShowPrivacyBannerTest : BaseUnitTest() {
     fun `given user has saved privacy banner settings, then do not show banner`() {
         // given
         whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
-        whenever(appPrefs.hasSavedPrivacyBannerSettings()).thenReturn(true)
+        whenever(appPrefs.savedPrivacyBannerSettings).thenReturn(true)
 
         // then
         assertThat(sut()).isFalse
@@ -41,7 +41,7 @@ class ShouldShowPrivacyBannerTest : BaseUnitTest() {
     fun `given user country is not GDPR compliant, then do not show banner`() {
         // given
         whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
-        whenever(appPrefs.hasSavedPrivacyBannerSettings()).thenReturn(false)
+        whenever(appPrefs.savedPrivacyBannerSettings).thenReturn(false)
         whenever(isUserGdprCompliant()).thenReturn(false)
 
         // then
@@ -53,7 +53,7 @@ class ShouldShowPrivacyBannerTest : BaseUnitTest() {
         // given
         whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
         whenever(isUserGdprCompliant()).thenReturn(true)
-        whenever(appPrefs.hasSavedPrivacyBannerSettings()).thenReturn(false)
+        whenever(appPrefs.savedPrivacyBannerSettings).thenReturn(false)
 
         // then
         assertThat(sut()).isTrue

@@ -263,7 +263,7 @@ class OrderListFragment :
                 true
             }
             R.id.menu_barcode -> {
-                viewModel.startScan()
+                viewModel.onScanClicked()
                 true
             }
             else -> false
@@ -361,6 +361,13 @@ class OrderListFragment :
                 }
                 is OrderListViewModel.OrderListEvent.OnBarcodeScanned -> {
                     openOrderCreationFragment(event.code)
+                }
+                is OrderListViewModel.OrderListEvent.OnAddingProductViaScanningFailed -> {
+                    uiMessageResolver.getRetrySnack(
+                        stringResId = event.message,
+                        isIndefinite = false,
+                        actionListener = event.retry
+                    ).show()
                 }
                 else -> event.isHandled = false
             }

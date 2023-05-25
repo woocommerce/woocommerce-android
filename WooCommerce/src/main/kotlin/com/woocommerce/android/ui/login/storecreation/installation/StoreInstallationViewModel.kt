@@ -10,6 +10,8 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.notifications.local.LocalNotification.FreeTrialExpiringNotification
+import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
@@ -19,6 +21,8 @@ import com.woocommerce.android.ui.login.storecreation.installation.StoreInstalla
 import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.StoreCreationLoadingState
 import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState.SuccessState
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
+import com.woocommerce.android.util.RemoteFeatureFlag.LOCAL_NOTIFICATION_1D_BEFORE_FREE_TRIAL_EXPIRES
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -32,6 +36,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.utils.extensions.slashJoin
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -45,7 +51,13 @@ class StoreInstallationViewModel @Inject constructor(
     private val storeInstallationLoadingTimer: StoreInstallationLoadingTimer,
     private val installationTransactionLauncher: InstallationTransactionLauncher,
     private val observeSiteInstallation: ObserveSiteInstallation,
+    private val localNotificationScheduler: LocalNotificationScheduler,
+    private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled
 ) : ScopedViewModel(savedStateHandle) {
+
+    companion object {
+        const val TRIAL_LENGTH_IN_DAYS = 14L
+    }
 
     private val newStoreUrl
         get() = selectedSite.get().url
@@ -97,6 +109,8 @@ class StoreInstallationViewModel @Inject constructor(
                 installationTransactionLauncher.onStoreInstalled(properties)
 
                 _viewState.update { SuccessState(newStoreWpAdminUrl) }
+
+                scheduleDeferredNotifications()
             }
 
             is InstallationState.Failure -> {
@@ -125,6 +139,17 @@ class StoreInstallationViewModel @Inject constructor(
             }
 
             InstallationState.InProgress -> Unit
+        }
+    }
+
+    private fun scheduleDeferredNotifications() {
+        if (isRemoteFeatureFlagEnabled(LOCAL_NOTIFICATION_1D_BEFORE_FREE_TRIAL_EXPIRES)) {
+            val in14days = LocalDateTime.now()
+                .plusDays(TRIAL_LENGTH_IN_DAYS)
+                .format(DateTimeFormatter.ofPattern("EEEE, MMMM d"))
+            localNotificationScheduler.scheduleNotification(
+                FreeTrialExpiringNotification(in14days, selectedSite.get().siteId)
+            )
         }
     }
 

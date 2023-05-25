@@ -334,5 +334,5 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getStorePhoneNumber(siteId: Int): String = AppPrefs.getStorePhoneNumber(siteId)
 
-    fun hasSavedPrivacyBannerSettings(): Boolean = AppPrefs.hasSavedPrivacyBannerSettings()
+    var savedPrivacyBannerSettings by AppPrefs::savedPrivacySettings
 }

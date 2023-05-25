@@ -206,7 +206,7 @@ class OrderCreateEditFormFragment :
                 addProductsViaScanButton = AddButton(
                     text = getString(R.string.order_creation_add_product_via_barcode_scanning),
                     onClickListener = {
-                        viewModel.startScan()
+                        viewModel.onScanClicked()
                     }
                 )
             )
@@ -472,6 +472,7 @@ class OrderCreateEditFormFragment :
             is OnAddingProductViaScanningFailed -> {
                 uiMessageResolver.getRetrySnack(
                     stringResId = event.message,
+                    isIndefinite = false,
                     actionListener = event.retry
                 ).show()
             }

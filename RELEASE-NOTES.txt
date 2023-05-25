@@ -3,6 +3,7 @@
 -----
 - [*] [Internal] Fixed a crash related to a product image viewing [https://github.com/woocommerce/woocommerce-android/pull/9111]
 
+[*] [Internal] Fixes crashes in order details list when activity gets destroyed and recreated [https://github.com/woocommerce/woocommerce-android/pull/9113]
 
 13.7
 -----

@@ -85,9 +85,6 @@ class SitePickerViewModel @Inject constructor(
         get() = savedState["key"] ?: appPrefsWrapper.getLoginSiteAddress()
         set(value) = savedState.set("key", value)
 
-    val openedFromLogin: Boolean
-        get() = !navArgs.openedFromLogin
-
     init {
         when (navArgs.openedFromLogin) {
             true -> loadLoginView()

@@ -4,12 +4,14 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_BANNER
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_NOTIFICATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_UPGRADES_SCREEN
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel
 import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource.BANNER
+import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource.NOTIFICATION
 import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource.UPGRADES_SCREEN
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
@@ -37,6 +39,7 @@ class PlanUpgradeStartViewModel @Inject constructor(
             KEY_SOURCE to when (navArgs.source) {
                 BANNER -> VALUE_BANNER
                 UPGRADES_SCREEN -> VALUE_UPGRADES_SCREEN
+                NOTIFICATION -> VALUE_NOTIFICATION
             }
         )
 
