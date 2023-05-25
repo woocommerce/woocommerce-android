@@ -6,6 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.prefs.PrivacySettingsRepository
+import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,10 +21,11 @@ class PrivacyBannerViewModel @Inject constructor(
     private val repository: PrivacySettingsRepository,
 ) : ScopedViewModel(savedStateHandle) {
 
+    private val initialUserPreference: Boolean = analyticsTrackerWrapper.sendUsageStats
+
     private val _state: MutableLiveData<State> = MutableLiveData(
         State(
-            analyticsSwitchEnabled = analyticsTrackerWrapper.sendUsageStats,
-            loading = false
+            analyticsSwitchEnabled = initialUserPreference, loading = false
         )
     )
 
@@ -31,6 +33,45 @@ class PrivacyBannerViewModel @Inject constructor(
 
     fun onSwitchChanged(checked: Boolean) {
         _state.value = _state.value?.copy(analyticsSwitchEnabled = checked)
+    }
+
+    fun onSettingsPressed() {
+        val analyticsPreference = _state.value?.analyticsSwitchEnabled ?: false
+
+        if (analyticsPreference == initialUserPreference) {
+            appPrefsWrapper.savedPrivacyBannerSettings = true
+            triggerEvent(ShowSettings)
+            return
+        }
+
+        launch {
+            if (repository.isUserWPCOM()) {
+                _state.value = _state.value?.copy(loading = true)
+                val event =
+                    repository.updateTracksSetting(_state.value?.analyticsSwitchEnabled ?: false)
+                _state.value = _state.value?.copy(loading = false)
+
+                event.fold(
+                    onSuccess = {
+                        appPrefsWrapper.savedPrivacyBannerSettings = true
+                        analyticsTrackerWrapper.sendUsageStats = analyticsPreference
+                        triggerEvent(ShowSettings)
+                    },
+                    onFailure = {
+                        triggerEvent(
+                            ShowErrorOnSettings(
+                                requestedAnalyticsValue = if (analyticsPreference) RequestedAnalyticsValue.ENABLED
+                                else RequestedAnalyticsValue.DISABLE
+                            )
+                        )
+                    }
+                )
+            } else {
+                appPrefsWrapper.savedPrivacyBannerSettings = true
+                analyticsTrackerWrapper.sendUsageStats = analyticsPreference
+                triggerEvent(ShowSettings)
+            }
+        }
     }
 
     fun onSavePressed() {
@@ -50,7 +91,7 @@ class PrivacyBannerViewModel @Inject constructor(
                         triggerEvent(Dismiss)
                     },
                     onFailure = {
-                        triggerEvent(ShowError(requestedChange = analyticsPreference))
+                        triggerEvent(ShowError(requestedAnalyticsValue = analyticsPreference))
                     }
                 )
             } else {
@@ -67,5 +108,9 @@ class PrivacyBannerViewModel @Inject constructor(
     )
 
     object Dismiss : MultiLiveEvent.Event()
-    data class ShowError(val requestedChange: Boolean) : MultiLiveEvent.Event()
+    data class ShowError(val requestedAnalyticsValue: Boolean) : MultiLiveEvent.Event()
+    object ShowSettings : MultiLiveEvent.Event()
+    data class ShowErrorOnSettings(
+        val requestedAnalyticsValue: RequestedAnalyticsValue
+    ) : MultiLiveEvent.Event()
 }

@@ -44,7 +44,8 @@ fun PrivacyBannerScreen(viewModel: PrivacyBannerViewModel) {
     PrivacyBannerScreen(
         state,
         viewModel::onSwitchChanged,
-        viewModel::onSavePressed
+        viewModel::onSavePressed,
+        viewModel::onSettingsPressed,
     )
 }
 
@@ -53,6 +54,7 @@ fun PrivacyBannerScreen(
     state: PrivacyBannerViewModel.State,
     onSwitchChanged: (Boolean) -> Unit,
     onSavePressed: () -> Unit,
+    onSettingsPressed: () -> Unit,
 ) {
     Box(Modifier.background(MaterialTheme.colors.surface)) {
         Column(
@@ -120,7 +122,7 @@ fun PrivacyBannerScreen(
                         hoveredElevation = 0.dp,
                         focusedElevation = 0.dp
                     ),
-                    onClick = { /*TODO*/ }
+                    onClick = onSettingsPressed
                 ) {
                     Text(stringResource(R.string.privacy_banner_settings))
                 }
@@ -178,7 +180,7 @@ private fun Default() {
                 analyticsSwitchEnabled = false,
                 loading = true
             ),
-            {}, {}
+            {}, {}, {}
         )
     }
 }
