@@ -271,7 +271,8 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onProductsSelected(
         selectedItems: Collection<SelectedItem>,
-        source: ScanningSource? = null
+        source: ScanningSource? = null,
+
     ) {
         source?.let {
             tracker.track(
@@ -414,9 +415,20 @@ class OrderCreateEditViewModel @Inject constructor(
                             else -> onIncreaseProductsQuantity(alreadySelectedItemId)
                         }
                     }
+                } ?: run {
+                    trackProductSearchViaSKUFailureEvent(
+                        source,
+                        "Empty data response, no product found for the SKU",
+                    )
+                    sendAddingProductsViaScanningFailedEvent(
+                        R.string.order_creation_barcode_scanning_unable_to_add_product
+                    )
                 }
             } ?: run {
-                trackProductSearchViaSKUFailureEvent(source)
+                trackProductSearchViaSKUFailureEvent(
+                    source,
+                    "Product search via SKU API call failed"
+                )
                 sendAddingProductsViaScanningFailedEvent(
                     R.string.order_creation_barcode_scanning_unable_to_add_product
                 )
@@ -433,11 +445,15 @@ class OrderCreateEditViewModel @Inject constructor(
         )
     }
 
-    private fun trackProductSearchViaSKUFailureEvent(source: ScanningSource) {
+    private fun trackProductSearchViaSKUFailureEvent(
+        source: ScanningSource,
+        message: String,
+    ) {
         tracker.track(
             PRODUCT_SEARCH_VIA_SKU_FAILURE,
             mapOf(
-                KEY_SCANNING_SOURCE to source.source
+                KEY_SCANNING_SOURCE to source.source,
+                KEY_SCANNING_FAILURE_REASON to message,
             )
         )
     }

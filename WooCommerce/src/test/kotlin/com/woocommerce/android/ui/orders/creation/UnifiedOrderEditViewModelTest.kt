@@ -1028,7 +1028,36 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             verify(tracker).track(
                 PRODUCT_SEARCH_VIA_SKU_FAILURE,
                 mapOf(
-                    KEY_SCANNING_SOURCE to "order_creation"
+                    KEY_SCANNING_SOURCE to "order_creation",
+                    KEY_SCANNING_FAILURE_REASON to "Product search via SKU API call failed"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given product search via sku fails, then track event with proper reason`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(null)
+
+            sut.onScanClicked()
+
+            verify(tracker).track(
+                PRODUCT_SEARCH_VIA_SKU_FAILURE,
+                mapOf(
+                    KEY_SCANNING_SOURCE to "order_creation",
+                    KEY_SCANNING_FAILURE_REASON to "Product search via SKU API call failed"
                 )
             )
         }
@@ -1055,7 +1084,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             verify(tracker).track(
                 PRODUCT_SEARCH_VIA_SKU_FAILURE,
                 mapOf(
-                    KEY_SCANNING_SOURCE to "order_creation"
+                    KEY_SCANNING_SOURCE to "order_creation",
+                    KEY_SCANNING_FAILURE_REASON to "Empty data response, no product found for the SKU"
                 )
             )
         }
@@ -1090,7 +1120,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             verify(tracker).track(
                 AnalyticsEvent.ORDER_PRODUCT_ADD,
                 mapOf(
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_FLOW_CREATION,
+                    AnalyticsTracker.KEY_FLOW to tracksFlow,
                     AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
                     KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source
                 )
@@ -1125,7 +1155,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             verify(tracker).track(
                 AnalyticsEvent.ORDER_PRODUCT_ADD,
                 mapOf(
-                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_FLOW_CREATION,
+                    AnalyticsTracker.KEY_FLOW to tracksFlow,
                     AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
                     KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source
                 )

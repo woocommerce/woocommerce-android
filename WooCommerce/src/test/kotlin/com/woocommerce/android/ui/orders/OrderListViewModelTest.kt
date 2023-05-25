@@ -1140,9 +1140,10 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel.onScanClicked()
 
         verify(analyticsTracker).track(
-            ScanningSource,
+            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
             mapOf(
-                ScanningSource to ScanningSource.ORDER_LIST.source
+                KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
+                KEY_SCANNING_FAILURE_REASON to CodeScanningErrorType.NotFound.toString()
             )
         )
     }

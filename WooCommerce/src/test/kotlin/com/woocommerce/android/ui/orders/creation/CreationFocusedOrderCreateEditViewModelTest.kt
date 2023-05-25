@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.creation
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Address
@@ -30,13 +31,13 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -1240,7 +1241,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             verify(tracker).track(
                 AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_FAILURE,
                 mapOf(
-                    AnalyticsTracker.KEY_SCANNING_SOURCE to "order_list"
+                    AnalyticsTracker.KEY_SCANNING_SOURCE to "order_list",
+                    KEY_SCANNING_FAILURE_REASON to "Product search via SKU API call failed"
                 )
             )
         }
@@ -1274,7 +1276,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             verify(tracker).track(
                 AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_FAILURE,
                 mapOf(
-                    AnalyticsTracker.KEY_SCANNING_SOURCE to "order_list"
+                    AnalyticsTracker.KEY_SCANNING_SOURCE to "order_list",
+                    KEY_SCANNING_FAILURE_REASON to "Empty data response, no product found for the SKU"
                 )
             )
         }
