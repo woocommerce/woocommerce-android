@@ -55,7 +55,7 @@ fun PrivacySettingsScreen(
         state,
         onAnalyticsSettingChanged = viewModel::onSendStatsSettingChanged,
         onReportCrashesChanged = viewModel::onCrashReportingSettingChanged,
-        onAdvertisingOptionsClicked = viewModel::onAdvertisingOptionsClicked,
+        onAdvertisingOptionsClicked = viewModel::onWebOptionsClicked,
         onUsageTrackerClicked = viewModel::onUsageTrackerClicked,
         onPoliciesClicked = viewModel::onPoliciesClicked,
     )

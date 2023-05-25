@@ -74,8 +74,8 @@ class PrivacySettingsViewModel @Inject constructor(
         appPrefs.setCrashReportingEnabled(enabled)
     }
 
-    fun onAdvertisingOptionsClicked() {
-        triggerEvent(PrivacySettingsEvent.ShowAdvertisingOptions)
+    fun onWebOptionsClicked() {
+        triggerEvent(PrivacySettingsEvent.ShowWebOptions)
     }
 
     fun onUsageTrackerClicked() {
@@ -123,7 +123,7 @@ class PrivacySettingsViewModel @Inject constructor(
 
     sealed class PrivacySettingsEvent : MultiLiveEvent.Event() {
         object OpenPolicies : PrivacySettingsEvent()
-        object ShowAdvertisingOptions : PrivacySettingsEvent()
+        object ShowWebOptions : PrivacySettingsEvent()
         object ShowUsageTracker : PrivacySettingsEvent()
     }
 }
