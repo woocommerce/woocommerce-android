@@ -4,6 +4,7 @@ import android.text.TextUtils
 import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_PLAN_ID
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility.PUBLIC
 import org.wordpress.android.fluxc.utils.SiteUtils.getNormalizedTimezone
 import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import java.time.Clock
@@ -62,3 +63,6 @@ val SiteModel.clock: Clock
 
 val SiteModel?.isFreeTrial: Boolean
     get() = this?.planId == FREE_TRIAL_PLAN_ID
+
+val SiteModel?.isSitePublic: Boolean
+    get() = this?.publishedStatus == PUBLIC.value()

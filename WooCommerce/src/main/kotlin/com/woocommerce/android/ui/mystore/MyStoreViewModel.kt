@@ -12,6 +12,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.isSitePublic
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler
@@ -22,7 +23,6 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.LAUNCH_YOUR_STORE
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.HasOrders
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.PluginNotActive
@@ -152,21 +152,7 @@ class MyStoreViewModel @Inject constructor(
     }
 
     private fun updateShareStoreButtonVisibility() {
-        _appbarState.value = AppbarState(showShareStoreButton = false)
-        if (appPrefsWrapper.isOnboardingCompleted(selectedSite.getSelectedSiteId())) {
-            _appbarState.value = _appbarState.value?.copy(showShareStoreButton = true)
-        } else {
-            launch {
-                onboardingRepository.observeOnboardingTasks()
-                    .collectLatest { tasks ->
-                        _appbarState.value = _appbarState.value?.copy(
-                            showShareStoreButton = tasks
-                                .filter { it.type == LAUNCH_YOUR_STORE }
-                                .all { it.isComplete }
-                        )
-                    }
-            }
-        }
+        _appbarState.value = AppbarState(showShareStoreButton = selectedSite.get().isSitePublic)
     }
 
     override fun onCleared() {
