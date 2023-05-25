@@ -1167,8 +1167,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             )
         }
     }
-
-
     //endregion
 
     protected fun createSut(savedStateHandle: SavedStateHandle = savedState) {

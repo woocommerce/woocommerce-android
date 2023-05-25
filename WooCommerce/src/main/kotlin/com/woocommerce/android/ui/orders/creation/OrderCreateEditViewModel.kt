@@ -106,6 +106,7 @@ import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
 
 @HiltViewModel
+@Suppress("LargeClass")
 class OrderCreateEditViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
@@ -391,35 +392,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 viewState = viewState.copy(isUpdatingOrderDraft = false)
                 products.firstOrNull()?.let { product ->
                     trackProductSearchViaSKUSuccessEvent(source)
-                    if (product.isVariable()) {
-                        if (product.parentId == 0L) {
-                            sendAddingProductsViaScanningFailedEvent(
-                                message = R.string.order_creation_barcode_scanning_unable_to_add_variable_product
-                            )
-                        } else {
-                            when (val alreadySelectedItemId = getItemIdIfVariableProductIsAlreadySelected(product)) {
-                                null -> onProductsSelected(
-                                    selectedItems = selectedItems +
-                                        SelectedItem.ProductVariation(
-                                            productId = product.parentId,
-                                            variationId = product.remoteId
-                                        ),
-                                    source = source,
-                                    addedVia = ProductAddedVia.SCANNING,
-                                )
-                                else -> onIncreaseProductsQuantity(alreadySelectedItemId)
-                            }
-                        }
-                    } else {
-                        when (val alreadySelectedItemId = getItemIdIfProductIsAlreadySelected(product)) {
-                            null -> onProductsSelected(
-                                selectedItems = selectedItems + Product(productId = product.remoteId),
-                                source = source,
-                                addedVia = ProductAddedVia.SCANNING,
-                            )
-                            else -> onIncreaseProductsQuantity(alreadySelectedItemId)
-                        }
-                    }
+                    addScannedProduct(product, selectedItems, source)
                 } ?: run {
                     trackProductSearchViaSKUFailureEvent(
                         source,
@@ -437,6 +410,42 @@ class OrderCreateEditViewModel @Inject constructor(
                 sendAddingProductsViaScanningFailedEvent(
                     R.string.order_creation_barcode_scanning_unable_to_add_product
                 )
+            }
+        }
+    }
+
+    private fun addScannedProduct(
+        product: ModelProduct,
+        selectedItems: List<SelectedItem>,
+        source: ScanningSource
+    ) {
+        if (product.isVariable()) {
+            if (product.parentId == 0L) {
+                sendAddingProductsViaScanningFailedEvent(
+                    message = string.order_creation_barcode_scanning_unable_to_add_variable_product
+                )
+            } else {
+                when (val alreadySelectedItemId = getItemIdIfVariableProductIsAlreadySelected(product)) {
+                    null -> onProductsSelected(
+                        selectedItems = selectedItems +
+                            SelectedItem.ProductVariation(
+                                productId = product.parentId,
+                                variationId = product.remoteId
+                            ),
+                        source = source,
+                        addedVia = ProductAddedVia.SCANNING,
+                    )
+                    else -> onIncreaseProductsQuantity(alreadySelectedItemId)
+                }
+            }
+        } else {
+            when (val alreadySelectedItemId = getItemIdIfProductIsAlreadySelected(product)) {
+                null -> onProductsSelected(
+                    selectedItems = selectedItems + Product(productId = product.remoteId),
+                    source = source,
+                    addedVia = ProductAddedVia.SCANNING,
+                )
+                else -> onIncreaseProductsQuantity(alreadySelectedItemId)
             }
         }
     }
