@@ -1247,6 +1247,40 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
+    fun `given scanning initiated from the order list screen, when product search via sku succeeds but contains no product, then track event with proper source`() {
+        testBlocking {
+            val navArgs = OrderCreateEditFormFragmentArgs(
+                OrderCreateEditViewModel.Mode.Creation, "12345"
+            ).initSavedStateHandle()
+            whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
+                SiteParameters(
+                    currencyCode = "",
+                    currencySymbol = null,
+                    currencyFormattingParameters = null,
+                    weightUnit = null,
+                    dimensionUnit = null,
+                    gmtOffset = 0F
+                )
+            )
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            createSut(navArgs)
+
+            verify(tracker).track(
+                AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_FAILURE,
+                mapOf(
+                    AnalyticsTracker.KEY_SCANNING_SOURCE to "order_list"
+                )
+            )
+        }
+    }
+
+    @Test
     fun `given variable product from order list screen, when product added via scanning, then track correct source`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(

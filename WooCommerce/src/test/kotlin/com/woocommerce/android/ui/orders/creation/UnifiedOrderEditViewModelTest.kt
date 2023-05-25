@@ -1035,6 +1035,33 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given product search via sku succeeds but contains no product, then track event with proper source`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(emptyList())
+
+            sut.onScanClicked()
+
+            verify(tracker).track(
+                PRODUCT_SEARCH_VIA_SKU_FAILURE,
+                mapOf(
+                    KEY_SCANNING_SOURCE to "order_creation"
+                )
+            )
+        }
+    }
+
+    @Test
     fun `given variable product from order creation screen, when product added via scanning, then track correct source`() {
         testBlocking {
             createSut()
