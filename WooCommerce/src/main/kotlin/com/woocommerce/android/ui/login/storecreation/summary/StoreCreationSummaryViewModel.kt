@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.notifications.local.LocalNotification.StoreCreationFinishedNotification
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler
+import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_INCOMPLETE
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Failed
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Finished
@@ -92,6 +93,9 @@ class StoreCreationSummaryViewModel @Inject constructor(
                 accountStore.account.userName
             localNotificationScheduler.scheduleNotification(StoreCreationFinishedNotification(name))
         }
+
+        // No need to display a notification to complete store creation anymore
+        localNotificationScheduler.cancelScheduledNotification(STORE_CREATION_INCOMPLETE)
     }
 
     object OnCancelPressed : MultiLiveEvent.Event()

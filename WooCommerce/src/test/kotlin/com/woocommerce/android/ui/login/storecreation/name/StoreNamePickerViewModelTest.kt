@@ -5,9 +5,11 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerViewModel.NavigateToStoreProfiler
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,6 +19,7 @@ import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.wordpress.android.fluxc.store.AccountStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class StoreNamePickerViewModelTest : BaseUnitTest() {
@@ -24,6 +27,9 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
     private lateinit var analyticsTracker: AnalyticsTrackerWrapper
     private lateinit var prefsWrapper: AppPrefsWrapper
     private val savedState = SavedStateHandle()
+    private val localNotificationScheduler: LocalNotificationScheduler = mock()
+    private val accountStore: AccountStore = mock()
+    private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled = mock()
 
     @Before
     fun setUp() {
@@ -33,7 +39,10 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
             savedStateHandle = savedState,
             newStore = mock(),
             analyticsTrackerWrapper = analyticsTracker,
-            prefsWrapper = prefsWrapper
+            prefsWrapper = prefsWrapper,
+            localNotificationScheduler,
+            isRemoteFeatureFlagEnabled,
+            accountStore
         )
     }
 
@@ -64,7 +73,10 @@ internal class StoreNamePickerViewModelTest : BaseUnitTest() {
             savedStateHandle = savedState,
             newStore = mock(),
             analyticsTrackerWrapper = analyticsTracker,
-            prefsWrapper = prefsWrapper
+            prefsWrapper = prefsWrapper,
+            localNotificationScheduler,
+            isRemoteFeatureFlagEnabled,
+            accountStore
         )
 
         var latestEvent: MultiLiveEvent.Event? = null
