@@ -16,8 +16,8 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.prefs.PrivacySettingsViewModel.PrivacySettingsEvent.OpenPolicies
-import com.woocommerce.android.ui.prefs.PrivacySettingsViewModel.PrivacySettingsEvent.ShowAdvertisingOptions
 import com.woocommerce.android.ui.prefs.PrivacySettingsViewModel.PrivacySettingsEvent.ShowUsageTracker
+import com.woocommerce.android.ui.prefs.PrivacySettingsViewModel.PrivacySettingsEvent.ShowWebOptions
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -59,7 +59,7 @@ class PrivacySettingsFragment : BaseFragment() {
     private fun observeEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is ShowAdvertisingOptions -> showAdvertisingOptions()
+                is ShowWebOptions -> showWebOptions()
                 is ShowUsageTracker -> showUsageTracker()
                 is OpenPolicies -> findNavController().navigateSafely(
                     PrivacySettingsFragmentDirections.actionPrivacySettingsFragmentToPrivacySettingsPolicesFragment()
@@ -86,11 +86,11 @@ class PrivacySettingsFragment : BaseFragment() {
         snackbar?.dismiss()
     }
 
-    private fun showAdvertisingOptions() {
-        ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.AUTOMATTIC_ADVERTISING_OPTIONS)
+    private fun showWebOptions() {
+        ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.WOOCOMMERCE_WEB_OPTIONS)
     }
 
     private fun showUsageTracker() {
-        ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.AUTOMATTIC_USAGE_TRACKER)
+        ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.WOOCOMMERCE_USAGE_TRACKER)
     }
 }

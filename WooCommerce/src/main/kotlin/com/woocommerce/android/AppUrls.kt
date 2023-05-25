@@ -11,12 +11,12 @@ object AppUrls {
     const val AUTOMATTIC_PRIVACY_POLICY = "https://www.automattic.com/privacy"
     const val AUTOMATTIC_PRIVACY_POLICY_CA = "https://automattic.com/privacy/#california-consumer-privacy-act-ccpa"
     const val AUTOMATTIC_COOKIE_POLICY = "https://www.automattic.com/cookies"
-    const val AUTOMATTIC_ADVERTISING_OPTIONS = "https://wordpress.com/support/tracking-opt-outs/"
-    const val AUTOMATTIC_USAGE_TRACKER = "https://woocommerce.com/usage-tracking/"
     const val AUTOMATTIC_HIRING = "https://automattic.com/work-with-us"
 
     const val WOOCOMMERCE_UPGRADE = "https://docs.woocommerce.com/document/how-to-update-woocommerce/"
     const val WOOCOMMERCE_PLUGIN = "https://wordpress.org/plugins/woocommerce/"
+    const val WOOCOMMERCE_WEB_OPTIONS = "https://woocommerce.com/tracking-and-opt-outs/"
+    const val WOOCOMMERCE_USAGE_TRACKER = "https://woocommerce.com/usage-tracking/"
 
     const val URL_LEARN_MORE_REVIEWS = "https://woocommerce.com/posts/reviews-woocommerce-best-practices/"
     const val URL_LEARN_MORE_ORDERS = "https://woocommerce.com/blog/"

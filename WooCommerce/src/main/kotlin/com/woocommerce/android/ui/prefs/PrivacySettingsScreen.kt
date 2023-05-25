@@ -55,7 +55,7 @@ fun PrivacySettingsScreen(
         state,
         onAnalyticsSettingChanged = viewModel::onSendStatsSettingChanged,
         onReportCrashesChanged = viewModel::onCrashReportingSettingChanged,
-        onAdvertisingOptionsClicked = viewModel::onAdvertisingOptionsClicked,
+        onAdvertisingOptionsClicked = viewModel::onWebOptionsClicked,
         onUsageTrackerClicked = viewModel::onUsageTrackerClicked,
         onPoliciesClicked = viewModel::onPoliciesClicked,
     )
@@ -117,8 +117,8 @@ fun PrivacySettingsScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     OptionRowWithHeader(
                         sectionHeader = stringResource(R.string.settings_more_privacy_options_header),
-                        sectionTitle = stringResource(R.string.settings_advertising_options),
-                        sectionDescription = stringResource(R.string.settings_advertising_options_description),
+                        sectionTitle = stringResource(R.string.settings_web_options),
+                        sectionDescription = stringResource(R.string.settings_web_options_description),
                         onRowClicked = onAdvertisingOptionsClicked
                     ) {
                         IconButton(
@@ -127,14 +127,14 @@ fun PrivacySettingsScreen(
                         ) {
                             Icon(
                                 imageVector = OpenInNew,
-                                contentDescription = stringResource(id = R.string.settings_advertising_options)
+                                contentDescription = stringResource(id = R.string.settings_web_options)
                             )
                         }
                     }
                     OptionRow(
                         onRowClicked = onUsageTrackerClicked,
-                        sectionTitle = stringResource(R.string.settings_usage_tracker),
-                        sectionDescription = stringResource(R.string.settings_usage_tracker_description),
+                        sectionTitle = stringResource(R.string.settings_usage_tracking),
+                        sectionDescription = stringResource(R.string.settings_usage_tracking_description),
                     ) {
                         IconButton(
                             modifier = Modifier.padding(horizontal = 8.dp),
@@ -142,7 +142,7 @@ fun PrivacySettingsScreen(
                         ) {
                             Icon(
                                 imageVector = OpenInNew,
-                                contentDescription = stringResource(id = R.string.settings_usage_tracker)
+                                contentDescription = stringResource(id = R.string.settings_usage_tracking)
                             )
                         }
                     }
