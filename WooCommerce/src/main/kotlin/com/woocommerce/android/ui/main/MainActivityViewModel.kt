@@ -16,16 +16,20 @@ import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
+import com.woocommerce.android.notifications.local.LocalNotificationType
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType.Jetpack
 import com.woocommerce.android.tools.connectionType
+import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource
+import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource.NOTIFICATION
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
 import com.woocommerce.android.ui.moremenu.MoreMenuNewFeature
 import com.woocommerce.android.ui.moremenu.MoreMenuNewFeatureHandler
 import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState
+import com.woocommerce.android.ui.prefs.PrivacySettingsRepository
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.WooLog
@@ -51,6 +55,7 @@ class MainActivityViewModel @Inject constructor(
     private val prefs: AppPrefs,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val resolveAppLink: ResolveAppLink,
+    private val privacyRepository: PrivacySettingsRepository,
     moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
     determineTrialStatusBarState: DetermineTrialStatusBarState,
@@ -249,6 +254,32 @@ class MainActivityViewModel @Inject constructor(
             AnalyticsEvent.LOCAL_NOTIFICATION_TAPPED,
             mapOf(AnalyticsTracker.KEY_TYPE to notification.tag)
         )
+
+        when (notification.tag) {
+            LocalNotificationType.STORE_CREATION_INCOMPLETE.value -> {
+                triggerEvent(ShortcutOpenStoreCreation(storeName = notification.data))
+            }
+            LocalNotificationType.FREE_TRIAL_EXPIRING.value -> {
+                triggerEvent(ViewStorePlanUpgrade(NOTIFICATION))
+            }
+        }
+    }
+
+    fun onPrivacyPreferenceUpdateFailed(analyticsEnabled: Boolean) {
+        triggerEvent(ShowPrivacyPreferenceUpdatedFailed(analyticsEnabled))
+    }
+
+    fun onRequestPrivacyUpdate(analyticsEnabled: Boolean) {
+        launch {
+            privacyRepository.updateTracksSetting(analyticsEnabled).fold(
+                onSuccess = {
+                    prefs.savedPrivacySettings = true
+                },
+                onFailure = {
+                    triggerEvent(ShowPrivacyPreferenceUpdatedFailed(analyticsEnabled))
+                }
+            )
+        }
     }
 
     object ViewOrderList : Event()
@@ -261,11 +292,14 @@ class MainActivityViewModel @Inject constructor(
     data class ViewUrlInWebView(val url: String) : Event()
     object ShortcutOpenPayments : Event()
     object ShortcutOpenOrderCreation : Event()
+    data class ShortcutOpenStoreCreation(val storeName: String?) : Event()
+    data class ViewStorePlanUpgrade(val source: PlanUpgradeStartSource) : Event()
     data class RestartActivityForNotification(val pushId: Int, val notification: Notification) : Event()
     data class RestartActivityForAppLink(val data: Uri) : Event()
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
     data class ViewReviewDetail(val uniqueId: Long) : Event()
     data class ViewOrderDetail(val uniqueId: Long, val remoteNoteId: Long) : Event()
+    data class ShowPrivacyPreferenceUpdatedFailed(val analyticsEnabled: Boolean) : Event()
 
     sealed class MoreMenuBadgeState {
         data class UnseenReviews(val count: Int) : MoreMenuBadgeState()

@@ -22,6 +22,7 @@ class LocalNotificationScheduler @Inject constructor(
         const val LOCAL_NOTIFICATION_ID = "local_notification_id"
         const val LOCAL_NOTIFICATION_TITLE = "local_notification_title"
         const val LOCAL_NOTIFICATION_DESC = "local_notification_description"
+        const val LOCAL_NOTIFICATION_DATA = "local_notification_data"
     }
 
     private val workManager = WorkManager.getInstance(appContext)
@@ -41,7 +42,10 @@ class LocalNotificationScheduler @Inject constructor(
     }
 
     private fun buildPreconditionCheckWorkRequest(notification: LocalNotification): OneTimeWorkRequest {
-        val conditionData = workDataOf(LOCAL_NOTIFICATION_TYPE to notification.type.value)
+        val conditionData = workDataOf(
+            LOCAL_NOTIFICATION_TYPE to notification.type.value,
+            LOCAL_NOTIFICATION_DATA to notification.data
+        )
         return OneTimeWorkRequestBuilder<PreconditionCheckWorker>()
             .setInputData(conditionData)
             .addTag(notification.type.value)
@@ -54,7 +58,8 @@ class LocalNotificationScheduler @Inject constructor(
             LOCAL_NOTIFICATION_TYPE to notification.type.value,
             LOCAL_NOTIFICATION_ID to notification.id,
             LOCAL_NOTIFICATION_TITLE to notification.getTitleString(resourceProvider),
-            LOCAL_NOTIFICATION_DESC to notification.getDescriptionString(resourceProvider)
+            LOCAL_NOTIFICATION_DESC to notification.getDescriptionString(resourceProvider),
+            LOCAL_NOTIFICATION_DATA to notification.data
         )
         return OneTimeWorkRequestBuilder<LocalNotificationWorker>()
             .addTag(notification.type.value)

@@ -1310,6 +1310,7 @@
     <string name="card_reader_payment_order_paid_payment_cancelled">The order is already paid</string>
     <string name="card_reader_payment_reader_not_connected">Please make sure that the card reader is connected.</string>
     <string name="card_reader_payment_reader_receipt_sent">A receipt has been sent to &lt;strong&gt;%s&lt;/strong&gt;</string>
+    <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">The system terminated the Woo app while it was running in the background. You may attempt to use it again.</string>
 
     <string name="card_reader_welcome_dialog_header">Collect payments with a card reader</string>
     <string name="card_reader_welcome_dialog_text">Congrats, you are now able to accept debit and credit card payments with WooCommerce Payments!</string>
@@ -1941,6 +1942,7 @@
     <string name="privacy_banner_analytics_description">Allow us to optimize performance by collecting information on how users interact with our mobile apps.</string>
     <string name="privacy_banner_settings">Settings</string>
     <string name="privacy_banner_save">Save</string>
+    <string name="privacy_banner_error_save">There was an error saving your privacy choices.</string>
     <string name="settings_tracking">We use other tracking tools, including some from third parties. Read about these and how to control them.</string>
     <string name="settings_footer">Made with love by Automattic. %1$s</string>
     <string name="settings_hiring">We\'re hiring!</string>
