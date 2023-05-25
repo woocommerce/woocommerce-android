@@ -33,6 +33,7 @@ import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import kotlin.test.assertEquals
 
@@ -48,6 +49,7 @@ class StoreInstallationViewModelTest : BaseUnitTest() {
     private val observeSiteInstallation: ObserveSiteInstallation = mock()
     private val localNotificationScheduler: LocalNotificationScheduler = mock()
     private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled = mock()
+    private val accountStore: AccountStore = mock()
 
     private lateinit var viewModel: StoreInstallationViewModel
 
@@ -72,7 +74,8 @@ class StoreInstallationViewModelTest : BaseUnitTest() {
             installationTransactionLauncher,
             observeSiteInstallation,
             localNotificationScheduler,
-            isRemoteFeatureFlagEnabled
+            isRemoteFeatureFlagEnabled,
+            accountStore
         )
         viewModel.viewState.observeForever {}
     }
