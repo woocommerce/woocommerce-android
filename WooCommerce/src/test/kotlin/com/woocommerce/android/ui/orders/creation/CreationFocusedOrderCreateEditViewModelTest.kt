@@ -1277,7 +1277,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                 AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_FAILURE,
                 mapOf(
                     AnalyticsTracker.KEY_SCANNING_SOURCE to "order_list",
-                    KEY_SCANNING_FAILURE_REASON to "Empty data response, no product found for the SKU"
+                    KEY_SCANNING_FAILURE_REASON to "Empty data response (no product found for the SKU)"
                 )
             )
         }

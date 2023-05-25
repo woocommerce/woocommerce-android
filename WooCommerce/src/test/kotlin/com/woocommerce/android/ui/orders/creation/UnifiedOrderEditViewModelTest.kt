@@ -1224,7 +1224,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 PRODUCT_SEARCH_VIA_SKU_FAILURE,
                 mapOf(
                     KEY_SCANNING_SOURCE to "order_creation",
-                    KEY_SCANNING_FAILURE_REASON to "Empty data response, no product found for the SKU"
+                    KEY_SCANNING_FAILURE_REASON to "Empty data response (no product found for the SKU)"
                 )
             )
         }

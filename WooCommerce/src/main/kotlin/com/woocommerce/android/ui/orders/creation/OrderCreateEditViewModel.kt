@@ -395,7 +395,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 } ?: run {
                     trackProductSearchViaSKUFailureEvent(
                         source,
-                        "Empty data response, no product found for the SKU",
+                        "Empty data response (no product found for the SKU)",
                     )
                     sendAddingProductsViaScanningFailedEvent(
                         R.string.order_creation_barcode_scanning_unable_to_add_product
