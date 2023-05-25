@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,6 +19,8 @@ class FirstProductCelebrationDialog : DialogFragment() {
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.35f
         private const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.8f
     }
+
+    private val viewModel: FirstProductCelebrationViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +35,7 @@ class FirstProductCelebrationDialog : DialogFragment() {
 
             setContent {
                 WooThemeWithBackground {
-                    FirstProductCelebrationScreen()
+                    FirstProductCelebrationScreen(viewModel = viewModel)
                 }
             }
         }

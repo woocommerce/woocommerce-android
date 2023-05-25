@@ -16,7 +16,16 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
-fun FirstProductCelebrationScreen() {
+fun FirstProductCelebrationScreen(viewModel: FirstProductCelebrationViewModel) {
+    FirstProductCelebrationScreen(
+        onShareClick = viewModel::onShareButtonClicked
+    )
+}
+
+@Composable
+fun FirstProductCelebrationScreen(
+    onShareClick: () -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .background(MaterialTheme.colors.surface)
