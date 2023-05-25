@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_FAILURE
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ADDED_VIA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -139,7 +140,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             AnalyticsEvent.ORDER_PRODUCT_ADD,
             mapOf(
                 AnalyticsTracker.KEY_FLOW to tracksFlow,
-                AnalyticsTracker.KEY_PRODUCT_COUNT to 1
+                AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
+                KEY_PRODUCT_ADDED_VIA to ProductAddedVia.MANUALLY.addedVia,
             ),
         )
     }
@@ -159,7 +161,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             AnalyticsEvent.ORDER_PRODUCT_ADD,
             mapOf(
                 AnalyticsTracker.KEY_FLOW to tracksFlow,
-                AnalyticsTracker.KEY_PRODUCT_COUNT to 4
+                AnalyticsTracker.KEY_PRODUCT_COUNT to 4,
+                KEY_PRODUCT_ADDED_VIA to ProductAddedVia.MANUALLY.addedVia,
             ),
         )
     }
@@ -1122,7 +1125,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 mapOf(
                     AnalyticsTracker.KEY_FLOW to tracksFlow,
                     AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
-                    KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source
+                    KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
+                    KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
                 )
             )
         }
@@ -1157,7 +1161,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 mapOf(
                     AnalyticsTracker.KEY_FLOW to tracksFlow,
                     AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
-                    KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source
+                    KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
+                    KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
                 )
             )
         }

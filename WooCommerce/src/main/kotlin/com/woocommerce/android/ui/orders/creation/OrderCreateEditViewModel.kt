@@ -43,6 +43,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_FEES
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_SHIPPING_METHOD
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PARENT_ID
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ADDED_VIA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_COUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
@@ -272,7 +273,7 @@ class OrderCreateEditViewModel @Inject constructor(
     fun onProductsSelected(
         selectedItems: Collection<SelectedItem>,
         source: ScanningSource? = null,
-
+        addedVia: ProductAddedVia = ProductAddedVia.MANUALLY
     ) {
         source?.let {
             tracker.track(
@@ -280,7 +281,8 @@ class OrderCreateEditViewModel @Inject constructor(
                 mapOf(
                     KEY_FLOW to flow,
                     KEY_PRODUCT_COUNT to selectedItems.size,
-                    KEY_SCANNING_SOURCE to source.source
+                    KEY_SCANNING_SOURCE to source.source,
+                    KEY_PRODUCT_ADDED_VIA to addedVia.addedVia,
                 )
             )
         } ?: run {
@@ -288,7 +290,8 @@ class OrderCreateEditViewModel @Inject constructor(
                 ORDER_PRODUCT_ADD,
                 mapOf(
                     KEY_FLOW to flow,
-                    KEY_PRODUCT_COUNT to selectedItems.size
+                    KEY_PRODUCT_COUNT to selectedItems.size,
+                    KEY_PRODUCT_ADDED_VIA to addedVia.addedVia,
                 )
             )
         }
@@ -401,7 +404,8 @@ class OrderCreateEditViewModel @Inject constructor(
                                             productId = product.parentId,
                                             variationId = product.remoteId
                                         ),
-                                    source = source
+                                    source = source,
+                                    addedVia = ProductAddedVia.SCANNING,
                                 )
                                 else -> onIncreaseProductsQuantity(alreadySelectedItemId)
                             }
@@ -410,7 +414,8 @@ class OrderCreateEditViewModel @Inject constructor(
                         when (val alreadySelectedItemId = getItemIdIfProductIsAlreadySelected(product)) {
                             null -> onProductsSelected(
                                 selectedItems = selectedItems + Product(productId = product.remoteId),
-                                source = source
+                                source = source,
+                                addedVia = ProductAddedVia.SCANNING,
                             )
                             else -> onIncreaseProductsQuantity(alreadySelectedItemId)
                         }
@@ -876,6 +881,11 @@ data class ProductUIModel(
 enum class ScanningSource(val source: String) {
     ORDER_CREATION("order_creation"),
     ORDER_LIST("order_list")
+}
+
+enum class ProductAddedVia(val addedVia: String) {
+    MANUALLY("Manually"),
+    SCANNING("Scanning")
 }
 
 private fun ModelProduct.isVariable() =

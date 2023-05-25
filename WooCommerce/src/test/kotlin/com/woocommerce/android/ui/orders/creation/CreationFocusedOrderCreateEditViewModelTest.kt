@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.creation
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ADDED_VIA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
 import com.woocommerce.android.initSavedStateHandle
@@ -1321,7 +1322,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                 mapOf(
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_FLOW_CREATION,
                     AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
-                    AnalyticsTracker.KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source
+                    AnalyticsTracker.KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
+                    KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
                 )
             )
         }
@@ -1363,7 +1365,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                 mapOf(
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_FLOW_CREATION,
                     AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
-                    AnalyticsTracker.KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source
+                    AnalyticsTracker.KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
+                    KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
                 )
             )
         }
