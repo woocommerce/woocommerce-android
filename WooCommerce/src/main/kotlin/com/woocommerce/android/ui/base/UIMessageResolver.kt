@@ -140,39 +140,63 @@ interface UIMessageResolver {
      *
      * @param [stringResId] The string resource id of the base message
      * @param [stringArgs] Optional. One or more format argument stringArgs
+     * @param [isIndefinite] Optional. indicates whether the Snackbar should disappear after some time or not
      * @param [actionListener] Listener to handle the retry button click event
      */
     fun getRetrySnack(
         @StringRes stringResId: Int,
         vararg stringArgs: String = arrayOf(),
+        isIndefinite: Boolean = true,
         actionListener: View.OnClickListener
     ): Snackbar {
-        return getIndefiniteSnackbarWithAction(
-            snackbarRoot,
-            snackbarRoot.context.getString(stringResId, *stringArgs),
-            snackbarRoot.context.getString(R.string.retry),
-            actionListener,
-            anchorViewId
-        )
+        if (isIndefinite) {
+            return getIndefiniteSnackbarWithAction(
+                snackbarRoot,
+                snackbarRoot.context.getString(stringResId, *stringArgs),
+                snackbarRoot.context.getString(R.string.retry),
+                actionListener,
+                anchorViewId
+            )
+        } else {
+            return getDefiniteSnackbarWithAction(
+                snackbarRoot,
+                snackbarRoot.context.getString(stringResId, *stringArgs),
+                snackbarRoot.context.getString(R.string.retry),
+                actionListener,
+                anchorViewId
+            )
+        }
     }
 
     /**
      * Create and return a snackbar displaying the provided message and a RETRY button.
      *
      * @param [message] The message string
+     * @param [isIndefinite] Optional. indicates whether the Snackbar should disappear after some time or not
      * @param [actionListener] Listener to handle the retry button click event
      */
     fun getRetrySnack(
         message: String,
+        isIndefinite: Boolean = true,
         actionListener: View.OnClickListener
     ): Snackbar {
-        return getIndefiniteSnackbarWithAction(
-            snackbarRoot,
-            message,
-            snackbarRoot.context.getString(R.string.retry),
-            actionListener,
-            anchorViewId
-        )
+        if (isIndefinite) {
+            return getIndefiniteSnackbarWithAction(
+                snackbarRoot,
+                message,
+                snackbarRoot.context.getString(R.string.retry),
+                actionListener,
+                anchorViewId
+            )
+        } else {
+            return getDefiniteSnackbarWithAction(
+                snackbarRoot,
+                message,
+                snackbarRoot.context.getString(R.string.retry),
+                actionListener,
+                anchorViewId
+            )
+        }
     }
 
     /**
@@ -226,6 +250,18 @@ interface UIMessageResolver {
     }
 }
 
+private fun getDefiniteSnackbarWithAction(
+    view: View,
+    msg: String,
+    actionString: String,
+    actionListener: View.OnClickListener,
+    anchorViewId: Int?
+) = Snackbar.make(view, msg, BaseTransientBottomBar.LENGTH_LONG).setAction(actionString, actionListener)
+    .apply {
+        anchorViewId?.let {
+            setAnchorView(it)
+        }
+    }
 private fun getIndefiniteSnackbarWithAction(
     view: View,
     msg: String,

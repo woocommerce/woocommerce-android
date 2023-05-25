@@ -365,6 +365,7 @@ class OrderListFragment :
                 is OrderListViewModel.OrderListEvent.OnAddingProductViaScanningFailed -> {
                     uiMessageResolver.getRetrySnack(
                         stringResId = event.message,
+                        isIndefinite = false,
                         actionListener = event.retry
                     ).show()
                 }

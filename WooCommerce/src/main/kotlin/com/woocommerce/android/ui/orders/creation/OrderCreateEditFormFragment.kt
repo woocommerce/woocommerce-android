@@ -472,6 +472,7 @@ class OrderCreateEditFormFragment :
             is OnAddingProductViaScanningFailed -> {
                 uiMessageResolver.getRetrySnack(
                     stringResId = event.message,
+                    isIndefinite = false,
                     actionListener = event.retry
                 ).show()
             }
