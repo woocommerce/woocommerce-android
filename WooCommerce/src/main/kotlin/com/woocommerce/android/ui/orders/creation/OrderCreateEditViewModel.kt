@@ -123,8 +123,6 @@ class OrderCreateEditViewModel @Inject constructor(
     companion object {
         private const val PARAMETERS_KEY = "parameters_key"
         private const val ORDER_CUSTOM_FEE_NAME = "order_custom_fee"
-        private const val SCANNING_SOURCE = "order_creation"
-        private const val SCANNING_SOURCE_ORDER_LIST = "order_list"
     }
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
@@ -352,7 +350,7 @@ class OrderCreateEditViewModel @Inject constructor(
                         tracker.track(
                             BARCODE_SCANNING_FAILURE,
                             mapOf(
-                                KEY_SCANNING_SOURCE to SCANNING_SOURCE,
+                                KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
                                 KEY_SCANNING_FAILURE_REASON to status.type.toString(),
                             )
                         )
@@ -363,7 +361,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     is CodeScannerStatus.Success -> {
                         tracker.track(
                             BARCODE_SCANNING_SUCCESS,
-                            mapOf(KEY_SCANNING_SOURCE to SCANNING_SOURCE)
+                            mapOf(KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source)
                         )
                         viewState = viewState.copy(isUpdatingOrderDraft = true)
                         fetchProductBySKU(status.code)
