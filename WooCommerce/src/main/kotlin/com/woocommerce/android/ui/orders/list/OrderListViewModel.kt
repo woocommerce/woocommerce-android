@@ -22,10 +22,14 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.BARCODE_SCANNING_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_LIST_PRODUCT_BARCODE_SCANNING_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_CAMPAIGN_NAME
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_REMIND_LATER
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_IPP_BANNER_SOURCE_ORDER_LIST
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
@@ -38,6 +42,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.creation.CodeScanner
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
+import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
@@ -282,14 +287,41 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    fun startScan() {
+    fun onScanClicked() {
+        trackScanClickedEvent()
+        startScan()
+    }
+
+    private fun trackScanClickedEvent() {
+        analyticsTracker.track(ORDER_LIST_PRODUCT_BARCODE_SCANNING_TAPPED)
+    }
+    private fun startScan() {
         launch {
             codeScanner.startScan().collect { status ->
                 when (status) {
                     is CodeScannerStatus.Failure -> {
-                        // TODO handle failure case
+                        analyticsTracker.track(
+                            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
+                            mapOf(
+                                KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
+                                KEY_SCANNING_FAILURE_REASON to status.type.toString(),
+                            )
+                        )
+                        triggerEvent(
+                            OrderListEvent.OnAddingProductViaScanningFailed(
+                                R.string.order_list_barcode_scanning_scanning_failed
+                            ) {
+                                startScan()
+                            }
+                        )
                     }
                     is CodeScannerStatus.Success -> {
+                        analyticsTracker.track(
+                            BARCODE_SCANNING_SUCCESS,
+                            mapOf(
+                                KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source
+                            )
+                        )
                         triggerEvent(OrderListEvent.OnBarcodeScanned(status.code))
                     }
                 }
@@ -738,6 +770,11 @@ class OrderListViewModel @Inject constructor(
         data class OpenIPPFeedbackSurveyLink(val url: String) : OrderListEvent()
 
         data class OnBarcodeScanned(val code: String) : OrderListEvent()
+
+        data class OnAddingProductViaScanningFailed(
+            val message: Int,
+            val retry: View.OnClickListener,
+        ) : Event()
     }
 
     @Parcelize
