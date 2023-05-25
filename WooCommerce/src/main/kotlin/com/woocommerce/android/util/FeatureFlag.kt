@@ -27,8 +27,7 @@ enum class FeatureFlag {
     COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT,
     STORE_CREATION_PROFILER,
     EU_SHIPPING_NOTIFICATION,
-    PRIVACY_CHOICES,
-    IPP_ADD_PRODUCT_VIA_BARCODE_SCANNER;
+    PRIVACY_CHOICES;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -51,8 +50,7 @@ enum class FeatureFlag {
             ANALYTICS_HUB_FEEDBACK_BANNER,
             STORE_CREATION_PROFILER,
             COMPOSITE_PRODUCTS_READ_ONLY_SUPPORT,
-            EU_SHIPPING_NOTIFICATION,
-            IPP_ADD_PRODUCT_VIA_BARCODE_SCANNER -> true
+            EU_SHIPPING_NOTIFICATION -> true
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
