@@ -8,18 +8,18 @@
         android:pathData="M0,0h24v24h-24z"/>
     <path
         android:pathData="M22,7H20V4H17V2H22V7ZM22,22V17H20V20H17V22H22ZM2,22H7V20H4V17H2V22ZM2,2V7H4V4H7V2H2Z"
-        android:fillColor="#674399"/>
+        android:fillColor="@color/color_icon_menu"/>
     <path
         android:pathData="M6,16V8H8V16H6Z"
-        android:fillColor="#674399"/>
+        android:fillColor="@color/color_icon_menu"/>
     <path
         android:pathData="M9.5,16V8H11.5V16H9.5Z"
-        android:fillColor="#674399"/>
+        android:fillColor="@color/color_icon_menu"/>
     <path
         android:pathData="M13,16V8H15V16H13Z"
-        android:fillColor="#674399"/>
+        android:fillColor="@color/color_icon_menu"/>
     <path
         android:pathData="M16.5,16V8H18.5V16H16.5Z"
-        android:fillColor="#674399"/>
+        android:fillColor="@color/color_icon_menu"/>
   </group>
 </vector>
