@@ -1,6 +1,7 @@
 package com.woocommerce.android.e2e.screens.orders
 
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.google.android.material.card.MaterialCardView
@@ -25,6 +26,18 @@ class OrderListScreen : Screen {
     fun selectOrder(index: Int): SingleOrderScreen {
         val correctedIndex = index + 1 // account for the header
         selectItemAtIndexInRecyclerView(correctedIndex, LIST_VIEW, LIST_ITEM)
+        return SingleOrderScreen()
+    }
+
+    fun selectOrderById(orderId: Int): SingleOrderScreen {
+        Espresso.onView(
+            Matchers.allOf(
+                ViewMatchers.withId(R.id.orderNum),
+                ViewMatchers.withText("#$orderId")
+            )
+        )
+            .perform(ViewActions.click())
+
         return SingleOrderScreen()
     }
 
