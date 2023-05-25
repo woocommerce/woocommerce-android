@@ -222,7 +222,9 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         if (!isReadOnly) {
             binding.customerInfoCustomerNoteSection.setOnClickListener {
                 val action =
-                    OrderDetailFragmentDirections.actionOrderDetailFragmentToEditCustomerOrderNoteFragment()
+                    OrderDetailFragmentDirections.actionOrderDetailFragmentToEditCustomerOrderNoteFragment(
+                        order.id
+                    )
                 findNavController().navigateSafely(action)
             }
         }

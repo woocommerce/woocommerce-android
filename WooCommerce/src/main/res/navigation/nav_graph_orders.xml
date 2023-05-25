@@ -528,7 +528,12 @@
         android:id="@+id/editCustomerOrderNoteFragment"
         android:name="com.woocommerce.android.ui.orders.details.editing.CustomerOrderNoteEditingFragment"
         android:label="EditCustomerOrderNoteFragment"
-        tools:layout="@layout/fragment_order_create_edit_customer_note" />
+        tools:layout="@layout/fragment_order_create_edit_customer_note">
+        <argument
+            android:name="orderId"
+            app:argType="long"
+            app:nullable="false" />
+    </fragment>
     <fragment
         android:id="@+id/shippingAddressEditingFragment"
         android:name="com.woocommerce.android.ui.orders.details.editing.address.ShippingAddressEditingFragment"
