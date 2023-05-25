@@ -469,6 +469,100 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when parent variable product is scanned, then trigger proper event`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 0L,
+                        isVariable = true
+                    )
+                )
+            )
+
+            sut.onScanClicked()
+
+            assertThat(sut.event.value).isInstanceOf(
+                OnAddingProductViaScanningFailed::class.java
+            )
+        }
+    }
+
+    @Test
+    fun `when parent variable product is scanned, then trigger event with proper message`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 0L,
+                        isVariable = true
+                    )
+                )
+            )
+
+            sut.onScanClicked()
+
+            assertThat(
+                (sut.event.value as OnAddingProductViaScanningFailed).message
+            ).isEqualTo(R.string.order_creation_barcode_scanning_unable_to_add_variable_product)
+        }
+    }
+
+    @Test
+    fun `when parent variable product is scanned, then do not track any product search via sku success event`() {
+        testBlocking {
+            createSut()
+            whenever(codeScanner.startScan()).thenAnswer {
+                flow<CodeScannerStatus> {
+                    emit(CodeScannerStatus.Success("12345"))
+                }
+            }
+            whenever(
+                productListRepository.searchProductList(
+                    "12345",
+                    WCProductStore.SkuSearchOptions.ExactSearch
+                )
+            ).thenReturn(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 10L,
+                        parentID = 0L,
+                        isVariable = true
+                    )
+                )
+            )
+
+            sut.onScanClicked()
+
+            verify(tracker, never()).track(PRODUCT_SEARCH_VIA_SKU_SUCCESS)
+        }
+    }
+
+    @Test
     fun `when SKU search succeeds for variation product, then add the scanned product`() {
         testBlocking {
             createSut()

@@ -391,8 +391,8 @@ class OrderCreateEditViewModel @Inject constructor(
             )?.let { products ->
                 viewState = viewState.copy(isUpdatingOrderDraft = false)
                 products.firstOrNull()?.let { product ->
-                    trackProductSearchViaSKUSuccessEvent(source)
                     addScannedProduct(product, selectedItems, source)
+                    trackProductSearchViaSKUSuccessEvent(source)
                 } ?: run {
                     trackProductSearchViaSKUFailureEvent(
                         source,
