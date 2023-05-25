@@ -14,6 +14,7 @@ import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.LaunchSiteErrorType.ALREADY_LAUNCHED
 import org.wordpress.android.fluxc.store.SiteStore.LaunchSiteErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.SiteStore.LaunchSiteErrorType.UNAUTHORIZED
+import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility.PUBLIC
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -69,7 +70,7 @@ class StoreOnboardingRepository @Inject constructor(
     }
 
     private fun shouldMarkLaunchStoreAsCompleted(task: OnboardingTask) =
-        task.type == LAUNCH_YOUR_STORE && selectedSite.get().isVisible && !selectedSite.get().isFreeTrial
+        task.type == LAUNCH_YOUR_STORE && selectedSite.get().publishedStatus == PUBLIC.value() && !selectedSite.get().isFreeTrial
 
     suspend fun launchStore(): LaunchStoreResult {
         WooLog.d(WooLog.T.ONBOARDING, "Launching store")
