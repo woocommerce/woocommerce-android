@@ -32,18 +32,20 @@ class PreconditionCheckWorker @AssistedInject constructor(
             type == null -> cancelWork("Notification check data is invalid")
             type == LocalNotificationType.STORE_CREATION_FINISHED.value -> Result.success()
             type == LocalNotificationType.STORE_CREATION_INCOMPLETE.value -> Result.success()
-            type == LocalNotificationType.FREE_TRIAL_EXPIRING.value -> {
-                val site = selectedSite.get()
-                if (site.isFreeTrial && site.siteId == data?.toLongOrNull()) {
-                    Result.success()
-                } else {
-                    cancelWork("Store plan upgraded or a different site. Cancelling work.")
-                }
-            }
-            type == LocalNotificationType.FREE_TRIAL_EXPIRED.value -> Result.success()
+            type == LocalNotificationType.FREE_TRIAL_EXPIRING.value -> proceedIfFreeMatchingSite(data?.toLongOrNull())
+            type == LocalNotificationType.FREE_TRIAL_EXPIRED.value -> proceedIfFreeMatchingSite(data?.toLongOrNull())
             else -> {
                 cancelWork("Unknown notification $type. Cancelling work.")
             }
+        }
+    }
+
+    private fun proceedIfFreeMatchingSite(siteId: Long?): Result {
+        val site = selectedSite.get()
+        return if (site.isFreeTrial && site.siteId == siteId) {
+            Result.success()
+        } else {
+            cancelWork("Store plan upgraded or a different site. Cancelling work.")
         }
     }
 

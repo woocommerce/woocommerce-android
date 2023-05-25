@@ -259,6 +259,7 @@ class MainActivityViewModel @Inject constructor(
             LocalNotificationType.STORE_CREATION_INCOMPLETE.value -> {
                 triggerEvent(ShortcutOpenStoreCreation(storeName = notification.data))
             }
+            LocalNotificationType.FREE_TRIAL_EXPIRED.value,
             LocalNotificationType.FREE_TRIAL_EXPIRING.value -> {
                 triggerEvent(ViewStorePlanUpgrade(NOTIFICATION))
             }
