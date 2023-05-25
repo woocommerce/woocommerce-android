@@ -1,7 +1,7 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 13.8
 -----
-
+- [***] In-Person Payments: A merchant can now scan to add product during order creation. []
 
 13.7
 -----
