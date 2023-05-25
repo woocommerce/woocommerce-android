@@ -12,12 +12,14 @@ sealed class LocalNotification(
     val delay: Long,
     val delayUnit: TimeUnit
 ) {
+    open val data: String? = null
     val id = type.hashCode()
 
-    abstract fun getTitleString(resourceProvider: ResourceProvider): String
     abstract fun getDescriptionString(resourceProvider: ResourceProvider): String
 
-    open val data: String? = null
+    open fun getTitleString(resourceProvider: ResourceProvider): String {
+        return resourceProvider.getString(title)
+    }
 
     data class StoreCreationFinishedNotification(
         val name: String
@@ -28,10 +30,6 @@ sealed class LocalNotification(
         delay = 5,
         delayUnit = TimeUnit.MINUTES
     ) {
-        override fun getTitleString(resourceProvider: ResourceProvider): String {
-            return resourceProvider.getString(title)
-        }
-
         override fun getDescriptionString(resourceProvider: ResourceProvider): String {
             return resourceProvider.getString(description, name)
         }
@@ -44,14 +42,24 @@ sealed class LocalNotification(
         delay = 24,
         delayUnit = TimeUnit.HOURS
     ) {
-        override fun getTitleString(resourceProvider: ResourceProvider): String {
-            return resourceProvider.getString(title)
-        }
+        override val data: String = storeName
 
         override fun getDescriptionString(resourceProvider: ResourceProvider): String {
             return resourceProvider.getString(description, name, storeName)
         }
+    }
 
-        override val data: String = storeName
+    data class FreeTrialExpiringNotification(val expiryDate: String, val siteId: Long) : LocalNotification(
+        title = R.string.local_notification_one_day_before_free_trial_expires_title,
+        description = R.string.local_notification_one_day_before_free_trial_expires_description,
+        type = LocalNotificationType.FREE_TRIAL_EXPIRING,
+        delay = 13,
+        delayUnit = TimeUnit.DAYS
+    ) {
+        override val data: String = siteId.toString()
+
+        override fun getDescriptionString(resourceProvider: ResourceProvider): String {
+            return resourceProvider.getString(description, expiryDate)
+        }
     }
 }
