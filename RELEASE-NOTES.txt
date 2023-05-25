@@ -1,7 +1,7 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 13.8
 -----
-
+[*] [Internal] Fixes crashes in order details list when activity gets destroyed and recreated [https://github.com/woocommerce/woocommerce-android/pull/9113]
 
 13.7
 -----
