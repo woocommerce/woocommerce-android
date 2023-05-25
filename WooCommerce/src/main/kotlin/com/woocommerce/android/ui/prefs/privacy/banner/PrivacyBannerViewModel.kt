@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.prefs.PrivacySettingsRepository
 import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
@@ -31,11 +32,17 @@ class PrivacyBannerViewModel @Inject constructor(
 
     val analyticsState: LiveData<State> = _state
 
+    init {
+        analyticsTrackerWrapper.track(AnalyticsEvent.PRIVACY_CHOICES_BANNER_PRESENTED)
+    }
+
     fun onSwitchChanged(checked: Boolean) {
         _state.value = _state.value?.copy(analyticsSwitchEnabled = checked)
     }
 
     fun onSettingsPressed() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.PRIVACY_CHOICES_BANNER_SETTINGS_BUTTON_TAPPED)
+
         val analyticsPreference = _state.value?.analyticsSwitchEnabled ?: false
 
         if (analyticsPreference == initialUserPreference) {
@@ -75,6 +82,7 @@ class PrivacyBannerViewModel @Inject constructor(
     }
 
     fun onSavePressed() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.PRIVACY_CHOICES_BANNER_SAVE_BUTTON_TAPPED)
         val analyticsPreference = _state.value?.analyticsSwitchEnabled ?: false
 
         launch {
