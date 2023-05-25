@@ -423,6 +423,10 @@ class OrderCreateEditViewModel @Inject constructor(
                 sendAddingProductsViaScanningFailedEvent(
                     message = string.order_creation_barcode_scanning_unable_to_add_variable_product
                 )
+                trackProductSearchViaSKUFailureEvent(
+                    source,
+                    "Instead of specific variations, user tried to add parent variable product."
+                )
                 return
             } else {
                 when (val alreadySelectedItemId = getItemIdIfVariableProductIsAlreadySelected(product)) {
