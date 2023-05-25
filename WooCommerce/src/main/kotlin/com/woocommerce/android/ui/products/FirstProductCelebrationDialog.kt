@@ -4,12 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.DialogFragment
+import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
 
 @AndroidEntryPoint
-class FirstProductCelebrationDialog: DialogFragment() {
+class FirstProductCelebrationDialog : DialogFragment() {
     companion object {
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.35f
         private const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.8f
@@ -19,8 +23,19 @@ class FirstProductCelebrationDialog: DialogFragment() {
         super.onCreate(savedInstanceState)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return super.onCreateView(inflater, container, savedInstanceState)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        // Specify transition animations
+        dialog?.window?.attributes?.windowAnimations = R.style.Woo_Animations_Dialog
+
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+
+            setContent {
+                WooThemeWithBackground {
+                    FirstProductCelebrationScreen()
+                }
+            }
+        }
     }
 
     override fun onStart() {
