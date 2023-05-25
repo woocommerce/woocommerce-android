@@ -898,8 +898,8 @@ enum class ScanningSource(val source: String) {
 }
 
 enum class ProductAddedVia(val addedVia: String) {
-    MANUALLY("Manually"),
-    SCANNING("Scanning")
+    MANUALLY("manually"),
+    SCANNING("scanning")
 }
 
 private fun ModelProduct.isVariable() =
