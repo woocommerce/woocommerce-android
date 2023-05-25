@@ -23,6 +23,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.CodeScanner
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.CodeScanningErrorType
+import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
@@ -1095,7 +1096,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         verify(analyticsTracker).track(
             AnalyticsEvent.BARCODE_SCANNING_SUCCESS,
             mapOf(
-                KEY_SCANNING_SOURCE to "order_list"
+                KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source
             )
         )
     }
@@ -1139,9 +1140,9 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel.onScanClicked()
 
         verify(analyticsTracker).track(
-            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
+            ScanningSource,
             mapOf(
-                KEY_SCANNING_SOURCE to "order_list"
+                ScanningSource to ScanningSource.ORDER_LIST.source
             )
         )
     }
@@ -1165,7 +1166,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         verify(analyticsTracker).track(
             AnalyticsEvent.BARCODE_SCANNING_FAILURE,
             mapOf(
-                KEY_SCANNING_SOURCE to "order_list",
+                KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
                 KEY_SCANNING_FAILURE_REASON to
                     CodeScanningErrorType.CodeScannerGooglePlayServicesVersionTooOld.toString()
             )

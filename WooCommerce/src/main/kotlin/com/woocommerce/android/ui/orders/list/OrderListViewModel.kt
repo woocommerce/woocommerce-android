@@ -43,6 +43,7 @@ import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.creation.CodeScanner
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
+import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
@@ -303,7 +304,7 @@ class OrderListViewModel @Inject constructor(
                         analyticsTracker.track(
                             AnalyticsEvent.BARCODE_SCANNING_FAILURE,
                             mapOf(
-                                KEY_SCANNING_SOURCE to SCANNING_SOURCE,
+                                KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
                                 KEY_SCANNING_FAILURE_REASON to status.type.toString(),
                             )
                         )
@@ -319,7 +320,7 @@ class OrderListViewModel @Inject constructor(
                         analyticsTracker.track(
                             BARCODE_SCANNING_SUCCESS,
                             mapOf(
-                                KEY_SCANNING_SOURCE to SCANNING_SOURCE
+                                KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source
                             )
                         )
                         triggerEvent(OrderListEvent.OnBarcodeScanned(status.code))
@@ -798,9 +799,5 @@ class OrderListViewModel @Inject constructor(
         data class Visible(
             val bannerData: GetIPPFeedbackBannerData.IPPFeedbackBanner,
         ) : IPPSurveyFeedbackBannerState()
-    }
-
-    private companion object {
-        private const val SCANNING_SOURCE = "order_list"
     }
 }
