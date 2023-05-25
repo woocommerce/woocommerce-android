@@ -40,6 +40,24 @@
         <argument
             android:name="mediaId"
             app:argType="long" />
+        <argument
+            android:name="remoteId"
+            android:defaultValue="0L"
+            app:argType="long" />
+        <argument
+            android:name="images"
+            app:argType="com.woocommerce.android.model.Product$Image[]" />
+        <argument
+            android:name="selectedImage"
+            android:defaultValue="@null"
+            app:argType="com.woocommerce.android.model.Product$Image"
+            app:nullable="true" />
+        <argument
+            android:name="showChooser"
+            app:argType="boolean" />
+        <argument
+            android:name="requestCode"
+            app:argType="integer" />
     </fragment>
 
     <action

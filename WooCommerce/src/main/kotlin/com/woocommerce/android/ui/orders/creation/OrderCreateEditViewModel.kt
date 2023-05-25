@@ -11,10 +11,13 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.BARCODE_SCANNING_FAILURE
+import com.woocommerce.android.analytics.AnalyticsEvent.BARCODE_SCANNING_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_COUPON_REMOVE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CUSTOMER_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_FEE_ADD
@@ -26,6 +29,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_PRODUCT_REMOVE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_SHIPPING_METHOD_ADD
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_SHIPPING_METHOD_REMOVE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_STATUS_CHANGE
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_FAILURE
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_CONTEXT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
@@ -38,7 +43,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_FEES
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_SHIPPING_METHOD
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PARENT_ID
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ADDED_VIA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_COUNT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TO
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TYPE
@@ -98,6 +106,7 @@ import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
 
 @HiltViewModel
+@Suppress("LargeClass")
 class OrderCreateEditViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
@@ -181,7 +190,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 // Presence of barcode indicates that this screen was called from the
                 // Order listing screen after scanning the barcode.
                 if (args.sku.isNotNullOrEmpty()) {
-                    fetchProductBySKU(args.sku!!)
+                    fetchProductBySKU(args.sku!!, ScanningSource.ORDER_LIST)
                 }
             }
             is Mode.Edit -> {
@@ -262,14 +271,31 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    fun onProductsSelected(selectedItems: Collection<SelectedItem>) {
-        tracker.track(
-            ORDER_PRODUCT_ADD,
-            mapOf(
-                KEY_FLOW to flow,
-                KEY_PRODUCT_COUNT to selectedItems.size
+    fun onProductsSelected(
+        selectedItems: Collection<SelectedItem>,
+        source: ScanningSource? = null,
+        addedVia: ProductAddedVia = ProductAddedVia.MANUALLY
+    ) {
+        source?.let {
+            tracker.track(
+                ORDER_PRODUCT_ADD,
+                mapOf(
+                    KEY_FLOW to flow,
+                    KEY_PRODUCT_COUNT to selectedItems.size,
+                    KEY_SCANNING_SOURCE to source.source,
+                    KEY_PRODUCT_ADDED_VIA to addedVia.addedVia,
+                )
             )
-        )
+        } ?: run {
+            tracker.track(
+                ORDER_PRODUCT_ADD,
+                mapOf(
+                    KEY_FLOW to flow,
+                    KEY_PRODUCT_COUNT to selectedItems.size,
+                    KEY_PRODUCT_ADDED_VIA to addedVia.addedVia,
+                )
+            )
+        }
 
         viewModelScope.launch {
             _orderDraft.value.items.apply {
@@ -313,16 +339,35 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun Order.hasProducts() = items.any { it.quantity > 0 }
 
-    fun startScan() {
+    fun onScanClicked() {
+        trackBarcodeScanningTapped()
+        startScan()
+    }
+
+    private fun trackBarcodeScanningTapped() {
+        tracker.track(ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED)
+    }
+    private fun startScan() {
         viewModelScope.launch {
             codeScanner.startScan().collect { status ->
                 when (status) {
                     is CodeScannerStatus.Failure -> {
+                        tracker.track(
+                            BARCODE_SCANNING_FAILURE,
+                            mapOf(
+                                KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
+                                KEY_SCANNING_FAILURE_REASON to status.type.toString(),
+                            )
+                        )
                         sendAddingProductsViaScanningFailedEvent(
                             R.string.order_creation_barcode_scanning_scanning_failed
                         )
                     }
                     is CodeScannerStatus.Success -> {
+                        tracker.track(
+                            BARCODE_SCANNING_SUCCESS,
+                            mapOf(KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source)
+                        )
                         viewState = viewState.copy(isUpdatingOrderDraft = true)
                         fetchProductBySKU(status.code)
                     }
@@ -331,7 +376,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun fetchProductBySKU(sku: String) {
+    private fun fetchProductBySKU(sku: String, source: ScanningSource = ScanningSource.ORDER_CREATION) {
         val selectedItems = orderDraft.value?.items?.map { item ->
             if (item.isVariation) {
                 SelectedItem.ProductVariation(item.productId, item.variationId)
@@ -346,38 +391,90 @@ class OrderCreateEditViewModel @Inject constructor(
             )?.let { products ->
                 viewState = viewState.copy(isUpdatingOrderDraft = false)
                 products.firstOrNull()?.let { product ->
-                    if (product.isVariable()) {
-                        if (product.parentId == 0L) {
-                            sendAddingProductsViaScanningFailedEvent(
-                                message = R.string.order_creation_barcode_scanning_unable_to_add_variable_product
-                            )
-                        } else {
-                            when (val alreadySelectedItemId = getItemIdIfVariableProductIsAlreadySelected(product)) {
-                                null -> onProductsSelected(
-                                    selectedItems +
-                                        SelectedItem.ProductVariation(
-                                            productId = product.parentId,
-                                            variationId = product.remoteId
-                                        )
-                                )
-                                else -> onIncreaseProductsQuantity(alreadySelectedItemId)
-                            }
-                        }
-                    } else {
-                        when (val alreadySelectedItemId = getItemIdIfProductIsAlreadySelected(product)) {
-                            null -> onProductsSelected(
-                                selectedItems + Product(productId = product.remoteId)
-                            )
-                            else -> onIncreaseProductsQuantity(alreadySelectedItemId)
-                        }
-                    }
+                    addScannedProduct(product, selectedItems, source)
+                } ?: run {
+                    trackProductSearchViaSKUFailureEvent(
+                        source,
+                        "Empty data response (no product found for the SKU)",
+                    )
+                    sendAddingProductsViaScanningFailedEvent(
+                        R.string.order_creation_barcode_scanning_unable_to_add_product
+                    )
                 }
             } ?: run {
+                trackProductSearchViaSKUFailureEvent(
+                    source,
+                    "Product search via SKU API call failed"
+                )
                 sendAddingProductsViaScanningFailedEvent(
                     R.string.order_creation_barcode_scanning_unable_to_add_product
                 )
             }
         }
+    }
+
+    private fun addScannedProduct(
+        product: ModelProduct,
+        selectedItems: List<SelectedItem>,
+        source: ScanningSource
+    ) {
+        if (product.isVariable()) {
+            if (product.parentId == 0L) {
+                sendAddingProductsViaScanningFailedEvent(
+                    message = string.order_creation_barcode_scanning_unable_to_add_variable_product
+                )
+                trackProductSearchViaSKUFailureEvent(
+                    source,
+                    "Instead of specific variations, user tried to add parent variable product."
+                )
+                return
+            } else {
+                when (val alreadySelectedItemId = getItemIdIfVariableProductIsAlreadySelected(product)) {
+                    null -> onProductsSelected(
+                        selectedItems = selectedItems +
+                            SelectedItem.ProductVariation(
+                                productId = product.parentId,
+                                variationId = product.remoteId
+                            ),
+                        source = source,
+                        addedVia = ProductAddedVia.SCANNING,
+                    )
+                    else -> onIncreaseProductsQuantity(alreadySelectedItemId)
+                }
+            }
+        } else {
+            when (val alreadySelectedItemId = getItemIdIfProductIsAlreadySelected(product)) {
+                null -> onProductsSelected(
+                    selectedItems = selectedItems + Product(productId = product.remoteId),
+                    source = source,
+                    addedVia = ProductAddedVia.SCANNING,
+                )
+                else -> onIncreaseProductsQuantity(alreadySelectedItemId)
+            }
+        }
+        trackProductSearchViaSKUSuccessEvent(source)
+    }
+
+    private fun trackProductSearchViaSKUSuccessEvent(source: ScanningSource) {
+        tracker.track(
+            PRODUCT_SEARCH_VIA_SKU_SUCCESS,
+            mapOf(
+                KEY_SCANNING_SOURCE to source.source
+            )
+        )
+    }
+
+    private fun trackProductSearchViaSKUFailureEvent(
+        source: ScanningSource,
+        message: String,
+    ) {
+        tracker.track(
+            PRODUCT_SEARCH_VIA_SKU_FAILURE,
+            mapOf(
+                KEY_SCANNING_SOURCE to source.source,
+                KEY_SCANNING_FAILURE_REASON to message,
+            )
+        )
     }
 
     private fun getItemIdIfVariableProductIsAlreadySelected(product: ModelProduct): Long? {
@@ -794,6 +891,16 @@ data class ProductUIModel(
     val stockQuantity: Double,
     val stockStatus: ProductStockStatus
 )
+
+enum class ScanningSource(val source: String) {
+    ORDER_CREATION("order_creation"),
+    ORDER_LIST("order_list")
+}
+
+enum class ProductAddedVia(val addedVia: String) {
+    MANUALLY("manually"),
+    SCANNING("scanning")
+}
 
 private fun ModelProduct.isVariable() =
     productType == ProductType.VARIABLE ||
