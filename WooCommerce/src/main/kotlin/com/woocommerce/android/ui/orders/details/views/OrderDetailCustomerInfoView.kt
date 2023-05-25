@@ -107,7 +107,9 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
         binding.customerInfoBillingAddr.setIsReadOnly(isReadOnly)
         if (!isReadOnly) {
-            binding.customerInfoBillingAddressSection.setOnClickListener { navigateToBillingAddressEditingView() }
+            binding.customerInfoBillingAddressSection.setOnClickListener {
+                navigateToBillingAddressEditingView(order.id)
+            }
             binding.customerInfoBillingAddr.binding.notEmptyLabel.setClickableParent(
                 binding.customerInfoBillingAddressSection
             )
@@ -257,22 +259,24 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         binding.customerInfoShippingAddr.setIsReadOnly(isReadOnly)
 
         if (!isReadOnly) {
-            binding.customerInfoShippingAddressSection.setOnClickListener { navigateToShippingAddressEditingView() }
+            binding.customerInfoShippingAddressSection.setOnClickListener {
+                navigateToShippingAddressEditingView(order.id)
+            }
             binding.customerInfoShippingAddr.binding.notEmptyLabel.setClickableParent(
                 binding.customerInfoShippingAddressSection
             )
         }
     }
 
-    private fun navigateToShippingAddressEditingView() {
+    private fun navigateToShippingAddressEditingView(orderId: Long) {
         OrderDetailFragmentDirections
-            .actionOrderDetailFragmentToShippingAddressEditingFragment()
+            .actionOrderDetailFragmentToShippingAddressEditingFragment(orderId)
             .let { findNavController().navigateSafely(it) }
     }
 
-    private fun navigateToBillingAddressEditingView() {
+    private fun navigateToBillingAddressEditingView(orderId: Long) {
         OrderDetailFragmentDirections
-            .actionOrderDetailFragmentToBillingAddressEditingFragment()
+            .actionOrderDetailFragmentToBillingAddressEditingFragment(orderId)
             .let { findNavController().navigateSafely(it) }
     }
 

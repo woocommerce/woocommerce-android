@@ -538,12 +538,22 @@
         android:id="@+id/shippingAddressEditingFragment"
         android:name="com.woocommerce.android.ui.orders.details.editing.address.ShippingAddressEditingFragment"
         android:label="ShippingAddressEditingFragment"
-        tools:layout="@layout/fragment_base_edit_address" />
+        tools:layout="@layout/fragment_base_edit_address" >
+        <argument
+            android:name="orderId"
+            app:argType="long"
+            app:nullable="false" />
+    </fragment>
     <fragment
         android:id="@+id/billingAddressEditingFragment"
         android:name="com.woocommerce.android.ui.orders.details.editing.address.BillingAddressEditingFragment"
         android:label="BillingAddressEditingFragment"
-        tools:layout="@layout/fragment_base_edit_address" />
+        tools:layout="@layout/fragment_base_edit_address" >
+        <argument
+            android:name="orderId"
+            app:argType="long"
+            app:nullable="false" />
+    </fragment>
     <fragment
         android:id="@+id/customOrderFieldsFragment"
         android:name="com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsFragment">
