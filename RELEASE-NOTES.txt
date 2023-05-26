@@ -1,4 +1,8 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+13.9
+-----
+
+
 13.8
 -----
 - [*] Scan To Pay: Set maximum screen brightness to make QR easier to scan. [https://github.com/woocommerce/woocommerce-android/pull/9098]
