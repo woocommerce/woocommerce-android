@@ -5,6 +5,7 @@ import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanner
+import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -21,11 +22,12 @@ class CodeScannerTest : BaseUnitTest() {
 
     private val scanner: GmsBarcodeScanner = mock()
     private val errorMapper: GoogleCodeScannerErrorMapper = mock()
+    private val barcodeFormatMapper: GoogleBarcodeFormatMapper = mock()
     private lateinit var codeScanner: CodeScanner
 
     @Before
     fun setup() {
-        codeScanner = GoogleCodeScanner(scanner, errorMapper)
+        codeScanner = GoogleCodeScanner(scanner, errorMapper, barcodeFormatMapper)
     }
 
     @Test
@@ -36,6 +38,7 @@ class CodeScannerTest : BaseUnitTest() {
             whenever(scanner.startScan()).thenAnswer {
                 mockBarcode
             }
+            whenever(barcodeFormatMapper.mapBarcodeFormat(any())).thenReturn(BarcodeFormat.FormatUPCA)
             whenever(mockBarcode.addOnSuccessListener(any())).thenAnswer {
                 @Suppress("UNCHECKED_CAST")
                 (it.arguments[0] as OnSuccessListener<Barcode>).onSuccess(
@@ -61,6 +64,7 @@ class CodeScannerTest : BaseUnitTest() {
             whenever(scanner.startScan()).thenAnswer {
                 mockBarcode
             }
+            whenever(barcodeFormatMapper.mapBarcodeFormat(any())).thenReturn(BarcodeFormat.FormatUPCA)
             val barcodeRawValue = "12345"
             whenever(mockBarcode.addOnSuccessListener(any())).thenAnswer {
                 @Suppress("UNCHECKED_CAST")
@@ -151,7 +155,6 @@ class CodeScannerTest : BaseUnitTest() {
     @Test
     fun `when scanning code succeeds but does not contain raw value, then failure is emitted`() {
         testBlocking {
-//            val errorMessage = "Invalid Barcode"
             val mockBarcode = mock<Task<Barcode>>()
             whenever(scanner.startScan()).thenAnswer {
                 mockBarcode
