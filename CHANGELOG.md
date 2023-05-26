@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 13.8
+Exciting news! You can now scan the barcode of a product when creating an order from the app! No need to manually scroll in search of a product anymore! We also fixed a couple of crash issues in the order list and product detail screens. Please continue to send us feedback – we are listening! 
+
 ## 13.7
 Lots of exciting updates on this one! You can create orders on the go and add discounts for the order! You can also quickly take a payment for the order by generating a QR code for your customers to scan and pay. You’ve asked for it, and now it’s here!
 
