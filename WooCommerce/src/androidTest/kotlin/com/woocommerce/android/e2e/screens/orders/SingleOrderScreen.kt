@@ -79,20 +79,22 @@ class SingleOrderScreen : Screen {
         Espresso.onView(withId(AMOUNT_TOTAL))
             .perform(NestedScrollViewExtension())
 
-        if (order.productsTotalRaw.isNotBlank()) {
-            assertIdAndTextDisplayed(AMOUNT_PRODUCTS_TOTAL, order.productsTotalAmount)
-        }
+        with(order) {
+            if (productsTotalRaw.isNotBlank()) {
+                assertIdAndTextDisplayed(AMOUNT_PRODUCTS_TOTAL, productsTotalAmount)
+            }
 
-        if (order.shippingRaw.isNotBlank()) {
-            assertIdAndTextDisplayed(AMOUNT_SHIPPING, order.shippingAmount)
-        }
+            if (shippingRaw.isNotBlank()) {
+                assertIdAndTextDisplayed(AMOUNT_SHIPPING, shippingAmount)
+            }
 
-        if (order.feeRaw.isNotBlank()) {
-            assertIdAndTextDisplayed(AMOUNT_FEE, order.feeAmount)
-        }
+            if (feeRaw.isNotBlank()) {
+                assertIdAndTextDisplayed(AMOUNT_FEE, feeAmount)
+            }
 
-        if (order.taxesRaw.isNotBlank()) {
-            assertIdAndTextDisplayed(AMOUNT_TAXES, order.taxesAmount)
+            if (taxesRaw.isNotBlank()) {
+                assertIdAndTextDisplayed(AMOUNT_TAXES, taxesAmount)
+            }
         }
 
         assertIdAndTextDisplayed(AMOUNT_TOTAL, order.total)
