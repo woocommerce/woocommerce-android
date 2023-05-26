@@ -1,1 +1,7 @@
-Lots of exciting updates on this one! You can create orders on the go and add discounts for the order! You can also quickly take a payment for the order by generating a QR code for your customers to scan and pay. You’ve asked for it, and now it’s here!
+- [*] Scan To Pay: Set maximum screen brightness to make QR easier to scan. [https://github.com/woocommerce/woocommerce-android/pull/9098]
+- [*] [Internal] Fixed a crash related to a product image viewing [https://github.com/woocommerce/woocommerce-android/pull/9111]
+- [*] [Internal] Fixes crashes in order details list when activity gets destroyed and recreated [https://github.com/woocommerce/woocommerce-android/pull/9113]
+- [***] In-Person Payments: A merchant can now scan to add product during order creation. [https://github.com/woocommerce/woocommerce-android/pull/9125]
+- [*] Allow EU merchants to have better control of their privacy choices. A privacy choices banner will be shown the next time they open the app.
+[https://github.com/woocommerce/woocommerce-android/pull/9001]
+
