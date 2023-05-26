@@ -15,6 +15,9 @@ import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStar
 import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource.UPGRADES_SCREEN
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
+import com.woocommerce.android.ui.sitepicker.SitePickerRepository
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -28,9 +31,10 @@ class PlanUpgradeStartViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
     val userAgent: UserAgent,
-    selectedSite: SelectedSite,
+    private val selectedSite: SelectedSite,
     private val tracks: AnalyticsTrackerWrapper,
     private val sitePlanRepository: SitePlanRepository,
+    private val sitePickerRepository: SitePickerRepository
 ) : ScopedViewModel(savedStateHandle) {
 
     private val navArgs: PlanUpgradeStartFragmentArgs by savedStateHandle.navArgs()
@@ -68,7 +72,19 @@ class PlanUpgradeStartViewModel @Inject constructor(
     fun onUrlLoaded(url: String) {
         if (url.contains(URL_TO_TRIGGER_EXIT, ignoreCase = true)) {
             tracks.track(AnalyticsEvent.PLAN_UPGRADE_SUCCESS, tracksProperties)
-            triggerEvent(MultiLiveEvent.Event.ExitWithResult(Unit))
+            launch {
+                sitePickerRepository.fetchWooCommerceSite(selectedSite.get())
+                    .fold(
+                        onFailure = {
+                            WooLog.d(
+                                T.WOO_TRIAL,
+                                "Failed to refresh site data after upgrading from trial to eCommerce plan"
+                            )
+                        },
+                        onSuccess = { selectedSite.set(it) }
+                    )
+                triggerEvent(MultiLiveEvent.Event.ExitWithResult(Unit))
+            }
         }
     }
 
