@@ -44,6 +44,7 @@ class ProductImageViewerFragment :
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     companion object {
+        private const val KEY_REMOTE_MEDIA_ID = "media_id"
         private const val KEY_IS_CONFIRMATION_SHOWING = "is_confirmation_showing"
         private const val TOOLBAR_FADE_DELAY_MS = 2500L
     }
@@ -67,7 +68,7 @@ class ProductImageViewerFragment :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        remoteMediaId = navArgs.mediaId
+        remoteMediaId = savedInstanceState?.getLong(KEY_REMOTE_MEDIA_ID) ?: navArgs.mediaId
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

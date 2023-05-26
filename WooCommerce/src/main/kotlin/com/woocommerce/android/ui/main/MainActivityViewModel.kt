@@ -21,8 +21,6 @@ import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType.Jetpack
 import com.woocommerce.android.tools.connectionType
-import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource
-import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource.NOTIFICATION
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
@@ -255,14 +253,8 @@ class MainActivityViewModel @Inject constructor(
             mapOf(AnalyticsTracker.KEY_TYPE to notification.tag)
         )
 
-        when (notification.tag) {
-            LocalNotificationType.STORE_CREATION_INCOMPLETE.value -> {
-                triggerEvent(ShortcutOpenStoreCreation(storeName = notification.data))
-            }
-            LocalNotificationType.FREE_TRIAL_EXPIRED.value,
-            LocalNotificationType.FREE_TRIAL_EXPIRING.value -> {
-                triggerEvent(ViewStorePlanUpgrade(NOTIFICATION))
-            }
+        if (notification.tag == LocalNotificationType.STORE_CREATION_INCOMPLETE.value) {
+            triggerEvent(ShortcutOpenStoreCreation(storeName = notification.data))
         }
     }
 
@@ -294,7 +286,6 @@ class MainActivityViewModel @Inject constructor(
     object ShortcutOpenPayments : Event()
     object ShortcutOpenOrderCreation : Event()
     data class ShortcutOpenStoreCreation(val storeName: String?) : Event()
-    data class ViewStorePlanUpgrade(val source: PlanUpgradeStartSource) : Event()
     data class RestartActivityForNotification(val pushId: Int, val notification: Notification) : Event()
     data class RestartActivityForAppLink(val data: Uri) : Event()
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()

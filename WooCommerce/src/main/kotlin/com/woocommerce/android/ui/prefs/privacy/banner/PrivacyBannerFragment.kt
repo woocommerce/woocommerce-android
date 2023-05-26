@@ -33,10 +33,6 @@ class PrivacyBannerFragment : WCBottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        dialog?.apply {
-            setCanceledOnTouchOutside(false)
-            setCancelable(false)
-        }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {

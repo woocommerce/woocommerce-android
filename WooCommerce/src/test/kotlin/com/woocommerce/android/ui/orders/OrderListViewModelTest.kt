@@ -9,8 +9,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_CAMPAIGN_NAME
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_REMIND_LATER
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IPP_BANNER_SOURCE
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_IPP_BANNER_SOURCE_ORDER_LIST
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
@@ -22,8 +20,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.CodeScanner
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
-import com.woocommerce.android.ui.orders.creation.CodeScanningErrorType
-import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
@@ -33,7 +29,6 @@ import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.IPPSurveyFeedbackBannerState
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.OnAddingProductViaScanningFailed
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.payments.feedback.ipp.GetIPPFeedbackBannerData
 import com.woocommerce.android.ui.payments.feedback.ipp.ShouldShowFeedbackBanner
@@ -60,7 +55,6 @@ import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.reset
@@ -975,71 +969,9 @@ class OrderListViewModelTest : BaseUnitTest() {
         }
 
         viewModel = createViewModel()
-        viewModel.onScanClicked()
+        viewModel.startScan()
 
         assertThat(viewModel.event.value).isInstanceOf(OrderListViewModel.OrderListEvent.OnBarcodeScanned::class.java)
-    }
-
-    @Test
-    fun `when code scanner fails, then trigger proper event`() {
-        whenever(codeScanner.startScan()).thenAnswer {
-            flow<CodeScannerStatus> {
-                emit(
-                    CodeScannerStatus.Failure(
-                        error = "Failed to recognize the barcode",
-                        type = CodeScanningErrorType.NotFound
-                    )
-                )
-            }
-        }
-
-        viewModel = createViewModel()
-        viewModel.onScanClicked()
-
-        assertThat(viewModel.event.value).isInstanceOf(
-            OnAddingProductViaScanningFailed::class.java
-        )
-    }
-
-    @Test
-    fun `when code scanner fails, then trigger event proper message`() {
-        whenever(codeScanner.startScan()).thenAnswer {
-            flow<CodeScannerStatus> {
-                emit(
-                    CodeScannerStatus.Failure(
-                        error = "Failed to recognize the barcode",
-                        type = CodeScanningErrorType.NotFound
-                    )
-                )
-            }
-        }
-
-        viewModel = createViewModel()
-        viewModel.onScanClicked()
-
-        assertThat(
-            (viewModel.event.value as OnAddingProductViaScanningFailed).message
-        ).isEqualTo(R.string.order_list_barcode_scanning_scanning_failed)
-    }
-
-    @Test
-    fun `given code scanner failure, when retry clicked, then scan restarted`() {
-        whenever(codeScanner.startScan()).thenAnswer {
-            flow<CodeScannerStatus> {
-                emit(
-                    CodeScannerStatus.Failure(
-                        error = "Failed to recognize the barcode",
-                        type = CodeScanningErrorType.NotFound
-                    )
-                )
-            }
-        }
-
-        viewModel = createViewModel()
-        viewModel.onScanClicked()
-        (viewModel.event.value as OnAddingProductViaScanningFailed).retry.onClick(any())
-
-        verify(codeScanner).startScan()
     }
 
     @Test
@@ -1051,127 +983,9 @@ class OrderListViewModelTest : BaseUnitTest() {
         }
 
         viewModel = createViewModel()
-        viewModel.onScanClicked()
+        viewModel.startScan()
 
         assertThat(viewModel.event.value).isEqualTo(OrderListViewModel.OrderListEvent.OnBarcodeScanned("12345"))
-    }
-
-    @Test
-    fun `when scan clicked, then track proper analytics event`() {
-        viewModel = createViewModel()
-
-        viewModel.onScanClicked()
-
-        verify(analyticsTracker).track(AnalyticsEvent.ORDER_LIST_PRODUCT_BARCODE_SCANNING_TAPPED)
-    }
-
-    @Test
-    fun `when scan success, then track proper analytics event`() {
-        whenever(codeScanner.startScan()).thenAnswer {
-            flow<CodeScannerStatus> {
-                emit(CodeScannerStatus.Success("12345"))
-            }
-        }
-        viewModel = createViewModel()
-
-        viewModel.onScanClicked()
-
-        verify(analyticsTracker).track(
-            eq(AnalyticsEvent.BARCODE_SCANNING_SUCCESS),
-            any()
-        )
-    }
-
-    @Test
-    fun `when scan success, then track analytics event with proper source`() {
-        whenever(codeScanner.startScan()).thenAnswer {
-            flow<CodeScannerStatus> {
-                emit(CodeScannerStatus.Success("12345"))
-            }
-        }
-        viewModel = createViewModel()
-
-        viewModel.onScanClicked()
-
-        verify(analyticsTracker).track(
-            AnalyticsEvent.BARCODE_SCANNING_SUCCESS,
-            mapOf(
-                KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source
-            )
-        )
-    }
-
-    @Test
-    fun `when scan failure, then track analytics event`() {
-        whenever(codeScanner.startScan()).thenAnswer {
-            flow<CodeScannerStatus> {
-                emit(
-                    CodeScannerStatus.Failure(
-                        error = "Failed to recognize the barcode",
-                        type = CodeScanningErrorType.NotFound
-                    )
-                )
-            }
-        }
-        viewModel = createViewModel()
-
-        viewModel.onScanClicked()
-
-        verify(analyticsTracker).track(
-            eq(AnalyticsEvent.BARCODE_SCANNING_FAILURE),
-            any()
-        )
-    }
-
-    @Test
-    fun `when scan failure, then track analytics event with proper source`() {
-        whenever(codeScanner.startScan()).thenAnswer {
-            flow<CodeScannerStatus> {
-                emit(
-                    CodeScannerStatus.Failure(
-                        error = "Failed to recognize the barcode",
-                        type = CodeScanningErrorType.NotFound
-                    )
-                )
-            }
-        }
-        viewModel = createViewModel()
-
-        viewModel.onScanClicked()
-
-        verify(analyticsTracker).track(
-            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
-            mapOf(
-                KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
-                KEY_SCANNING_FAILURE_REASON to CodeScanningErrorType.NotFound.toString()
-            )
-        )
-    }
-
-    @Test
-    fun `when scan failure, then track analytics event with proper reason`() {
-        whenever(codeScanner.startScan()).thenAnswer {
-            flow<CodeScannerStatus> {
-                emit(
-                    CodeScannerStatus.Failure(
-                        error = "Failed to recognize the barcode",
-                        type = CodeScanningErrorType.CodeScannerGooglePlayServicesVersionTooOld
-                    )
-                )
-            }
-        }
-        viewModel = createViewModel()
-
-        viewModel.onScanClicked()
-
-        verify(analyticsTracker).track(
-            AnalyticsEvent.BARCODE_SCANNING_FAILURE,
-            mapOf(
-                KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
-                KEY_SCANNING_FAILURE_REASON to
-                    CodeScanningErrorType.CodeScannerGooglePlayServicesVersionTooOld.toString()
-            )
-        )
     }
 
     //endregion

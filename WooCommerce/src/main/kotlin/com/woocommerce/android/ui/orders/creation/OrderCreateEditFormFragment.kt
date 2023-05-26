@@ -63,9 +63,10 @@ class OrderCreateEditFormFragment :
 
     @Inject
     lateinit var currencyFormatter: CurrencyFormatter
-
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var isAddProductViaBarcodeScanningEnabled: IsAddProductViaBarcodeScanningEnabled
 
     private var createOrderMenuItem: MenuItem? = null
     private var progressDialog: CustomProgressDialog? = null
@@ -194,20 +195,31 @@ class OrderCreateEditFormFragment :
     }
 
     private fun FragmentOrderCreateEditFormBinding.initProductsSection() {
-        productsSection.setProductSectionButtons(
-            addProductsButton = AddButton(
-                text = getString(R.string.order_creation_add_products),
-                onClickListener = {
-                    viewModel.onAddProductClicked()
-                }
-            ),
-            addProductsViaScanButton = AddButton(
-                text = getString(R.string.order_creation_add_product_via_barcode_scanning),
-                onClickListener = {
-                    viewModel.onScanClicked()
-                }
+        if (isAddProductViaBarcodeScanningEnabled()) {
+            productsSection.setProductSectionButtons(
+                addProductsButton = AddButton(
+                    text = getString(R.string.order_creation_add_products),
+                    onClickListener = {
+                        viewModel.onAddProductClicked()
+                    }
+                ),
+                addProductsViaScanButton = AddButton(
+                    text = getString(R.string.order_creation_add_product_via_barcode_scanning),
+                    onClickListener = {
+                        viewModel.startScan()
+                    }
+                )
             )
-        )
+        } else {
+            productsSection.setProductSectionButtons(
+                addProductsButton = AddButton(
+                    text = getString(R.string.order_creation_add_products),
+                    onClickListener = {
+                        viewModel.onAddProductClicked()
+                    }
+                )
+            )
+        }
     }
 
     private fun FragmentOrderCreateEditFormBinding.initPaymentSection() {
@@ -460,7 +472,6 @@ class OrderCreateEditFormFragment :
             is OnAddingProductViaScanningFailed -> {
                 uiMessageResolver.getRetrySnack(
                     stringResId = event.message,
-                    isIndefinite = false,
                     actionListener = event.retry
                 ).show()
             }

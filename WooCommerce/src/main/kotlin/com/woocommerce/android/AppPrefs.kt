@@ -979,11 +979,11 @@ object AppPrefs {
 
     var savedPrivacySettings: Boolean
         get() = getBoolean(
-            key = DeletablePrefKey.HAS_SAVED_PRIVACY_SETTINGS,
+            key = PrefKeyString("${DeletablePrefKey.HAS_SAVED_PRIVACY_SETTINGS}"),
             default = false
         )
         set(value) = setBoolean(
-            key = DeletablePrefKey.HAS_SAVED_PRIVACY_SETTINGS,
+            key = PrefKeyString("${DeletablePrefKey.HAS_SAVED_PRIVACY_SETTINGS}"),
             value = value
         )
 

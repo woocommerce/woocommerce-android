@@ -3,18 +3,13 @@ package com.woocommerce.android.ui.mystore
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.core.view.MenuProvider
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
@@ -53,7 +48,6 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenAnalytics
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer
-import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShareStore
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowPrivacyBanner
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.OrderState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
@@ -79,9 +73,7 @@ import kotlin.math.abs
 
 @AndroidEntryPoint
 @OptIn(FlowPreview::class)
-class MyStoreFragment :
-    TopLevelFragment(R.layout.fragment_my_store),
-    MenuProvider {
+class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     companion object {
         val TAG: String = MyStoreFragment::class.java.simpleName
 
@@ -148,7 +140,6 @@ class MyStoreFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initTabLayout()
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         _binding = FragmentMyStoreBinding.bind(view)
 
@@ -235,17 +226,14 @@ class MyStoreFragment :
                     NavGraphMainDirections.actionGlobalFeedbackSurveyFragment(SurveyType.STORE_ONBOARDING).apply {
                         findNavController().navigateSafely(this)
                     }
-
                 is StoreOnboardingViewModel.NavigateToLaunchStore ->
                     findNavController().navigateSafely(
                         directions = MyStoreFragmentDirections.actionMyStoreToLaunchStoreFragment()
                     )
-
                 is StoreOnboardingViewModel.NavigateToDomains ->
                     findNavController().navigateSafely(
                         directions = MyStoreFragmentDirections.actionMyStoreToNavGraphDomainChange()
                     )
-
                 is StoreOnboardingViewModel.NavigateToAddProduct ->
                     findNavController().navigateSafely(
                         directions = MyStoreFragmentDirections.actionMyStoreToProductTypesBottomSheet()
@@ -283,8 +271,6 @@ class MyStoreFragment :
 
     @Suppress("ComplexMethod", "MagicNumber", "LongMethod")
     private fun setupStateObservers() {
-        myStoreViewModel.appbarState.observe(viewLifecycleOwner) { requireActivity().invalidateOptionsMenu() }
-
         myStoreViewModel.activeStatsGranularity.observe(viewLifecycleOwner) { activeGranularity ->
             if (tabLayout.getTabAt(tabLayout.selectedTabPosition)?.tag != activeGranularity) {
                 val index = StatsGranularity.values().indexOf(activeGranularity)
@@ -309,7 +295,6 @@ class MyStoreFragment :
                     binding.jetpackBenefitsBanner.root.isVisible = false
                     binding.myStoreStats.showVisitorStatsError()
                 }
-
                 is VisitorStatsViewState.Unavailable -> onVisitorStatsUnavailable(stats)
             }
         }
@@ -334,18 +319,13 @@ class MyStoreFragment :
                         isTrashEnabled = false
                     )
                 )
-
                 is OpenAnalytics -> {
                     mainNavigationRouter?.showAnalytics(event.analyticsPeriod)
                 }
-
                 is ShowPrivacyBanner ->
                     findNavController().navigate(
                         PrivacyBannerFragmentDirections.actionGlobalPrivacyBannerFragment()
                     )
-
-                is ShareStore -> ActivityUtils.shareStoreUrl(requireActivity(), event.storeUrl)
-
                 else -> event.isHandled = false
             }
         }
@@ -581,7 +561,8 @@ class MyStoreFragment :
         if (show) {
             dashboardVisibility = View.GONE
             binding.emptyView.show(EmptyViewType.DASHBOARD) {
-                myStoreViewModel.onShareStoreClicked()
+                AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
+                ActivityUtils.shareStoreUrl(requireActivity(), selectedSite.get().url)
             }
         } else {
             binding.emptyView.hide()
@@ -615,24 +596,4 @@ class MyStoreFragment :
     }
 
     override fun shouldExpandToolbar() = binding.statsScrollView.scrollY == 0
-
-    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.menu_my_store_fragment, menu)
-    }
-
-    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-        return when (menuItem.itemId) {
-            R.id.menu_share_store -> {
-                myStoreViewModel.onShareStoreClicked()
-                true
-            }
-
-            else -> false
-        }
-    }
-
-    override fun onPrepareMenu(menu: Menu) {
-        menu.findItem(R.id.menu_share_store).isVisible =
-            myStoreViewModel.appbarState.value?.showShareStoreButton ?: false
-    }
 }

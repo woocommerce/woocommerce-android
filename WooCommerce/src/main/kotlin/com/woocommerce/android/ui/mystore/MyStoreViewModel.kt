@@ -21,8 +21,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.LAUNCH_YOUR_STORE
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.HasOrders
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.PluginNotActive
@@ -79,8 +77,7 @@ class MyStoreViewModel @Inject constructor(
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher,
-    private val onboardingRepository: StoreOnboardingRepository,
-    notificationScheduler: LocalNotificationScheduler,
+    private val notificationScheduler: LocalNotificationScheduler,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -101,9 +98,6 @@ class MyStoreViewModel @Inject constructor(
 
     private var _hasOrders = MutableLiveData<OrderState>()
     val hasOrders: LiveData<OrderState> = _hasOrders
-
-    private var _appbarState = MutableLiveData<AppbarState>()
-    val appbarState: LiveData<AppbarState> = _appbarState
 
     private val refreshTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
@@ -148,25 +142,6 @@ class MyStoreViewModel @Inject constructor(
 
         // A notification is only displayed when the store has never been opened before
         notificationScheduler.cancelScheduledNotification(STORE_CREATION_FINISHED)
-        updateShareStoreButtonVisibility()
-    }
-
-    private fun updateShareStoreButtonVisibility() {
-        _appbarState.value = AppbarState(showShareStoreButton = false)
-        if (appPrefsWrapper.isOnboardingCompleted(selectedSite.getSelectedSiteId())) {
-            _appbarState.value = _appbarState.value?.copy(showShareStoreButton = true)
-        } else {
-            launch {
-                onboardingRepository.observeOnboardingTasks()
-                    .collectLatest { tasks ->
-                        _appbarState.value = _appbarState.value?.copy(
-                            showShareStoreButton = tasks
-                                .filter { it.type == LAUNCH_YOUR_STORE }
-                                .all { it.isComplete }
-                        )
-                    }
-            }
-        }
     }
 
     override fun onCleared() {
@@ -215,13 +190,6 @@ class MyStoreViewModel @Inject constructor(
             else -> SelectionType.TODAY
         }
         triggerEvent(MyStoreEvent.OpenAnalytics(targetPeriod))
-    }
-
-    fun onShareStoreClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
-        triggerEvent(
-            MyStoreEvent.ShareStore(storeUrl = selectedSite.get().url)
-        )
     }
 
     private suspend fun loadStoreStats(granularity: StatsGranularity) {
@@ -446,10 +414,6 @@ class MyStoreViewModel @Inject constructor(
         object AtLeastOne : OrderState()
     }
 
-    data class AppbarState(
-        val showShareStoreButton: Boolean = false,
-    )
-
     sealed class MyStoreEvent : MultiLiveEvent.Event() {
         data class OpenTopPerformer(
             val productId: Long
@@ -458,7 +422,5 @@ class MyStoreViewModel @Inject constructor(
         data class OpenAnalytics(val analyticsPeriod: SelectionType) : MyStoreEvent()
 
         object ShowPrivacyBanner : MyStoreEvent()
-
-        data class ShareStore(val storeUrl: String) : MyStoreEvent()
     }
 }

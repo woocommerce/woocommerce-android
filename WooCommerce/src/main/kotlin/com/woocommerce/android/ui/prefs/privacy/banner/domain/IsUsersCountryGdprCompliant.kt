@@ -22,7 +22,7 @@ class IsUsersCountryGdprCompliant @Inject constructor(
             }
         }
 
-        return countryCode.uppercase() in PRIVACY_BANNER_ELIGIBLE_COUNTRY_CODES
+        return countryCode in PRIVACY_BANNER_ELIGIBLE_COUNTRY_CODES
     }
 
     companion object {

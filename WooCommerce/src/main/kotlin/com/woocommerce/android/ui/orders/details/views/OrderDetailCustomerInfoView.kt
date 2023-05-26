@@ -107,9 +107,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
 
         binding.customerInfoBillingAddr.setIsReadOnly(isReadOnly)
         if (!isReadOnly) {
-            binding.customerInfoBillingAddressSection.setOnClickListener {
-                navigateToBillingAddressEditingView(order.id)
-            }
+            binding.customerInfoBillingAddressSection.setOnClickListener { navigateToBillingAddressEditingView() }
             binding.customerInfoBillingAddr.binding.notEmptyLabel.setClickableParent(
                 binding.customerInfoBillingAddressSection
             )
@@ -224,9 +222,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         if (!isReadOnly) {
             binding.customerInfoCustomerNoteSection.setOnClickListener {
                 val action =
-                    OrderDetailFragmentDirections.actionOrderDetailFragmentToEditCustomerOrderNoteFragment(
-                        order.id
-                    )
+                    OrderDetailFragmentDirections.actionOrderDetailFragmentToEditCustomerOrderNoteFragment()
                 findNavController().navigateSafely(action)
             }
         }
@@ -259,24 +255,22 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         binding.customerInfoShippingAddr.setIsReadOnly(isReadOnly)
 
         if (!isReadOnly) {
-            binding.customerInfoShippingAddressSection.setOnClickListener {
-                navigateToShippingAddressEditingView(order.id)
-            }
+            binding.customerInfoShippingAddressSection.setOnClickListener { navigateToShippingAddressEditingView() }
             binding.customerInfoShippingAddr.binding.notEmptyLabel.setClickableParent(
                 binding.customerInfoShippingAddressSection
             )
         }
     }
 
-    private fun navigateToShippingAddressEditingView(orderId: Long) {
+    private fun navigateToShippingAddressEditingView() {
         OrderDetailFragmentDirections
-            .actionOrderDetailFragmentToShippingAddressEditingFragment(orderId)
+            .actionOrderDetailFragmentToShippingAddressEditingFragment()
             .let { findNavController().navigateSafely(it) }
     }
 
-    private fun navigateToBillingAddressEditingView(orderId: Long) {
+    private fun navigateToBillingAddressEditingView() {
         OrderDetailFragmentDirections
-            .actionOrderDetailFragmentToBillingAddressEditingFragment(orderId)
+            .actionOrderDetailFragmentToBillingAddressEditingFragment()
             .let { findNavController().navigateSafely(it) }
     }
 

@@ -10,11 +10,9 @@ import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
-import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -52,10 +50,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
-    private val myStoreTransactionLauncher: MyStoreTransactionLauncher = mock()
-    private val onboardingRepository: StoreOnboardingRepository = mock()
     private val localNotificationScheduler: LocalNotificationScheduler = mock()
-    private val shouldShowPrivacyBanner: ShouldShowPrivacyBanner = mock()
 
     private lateinit var sut: MyStoreViewModel
 
@@ -471,10 +466,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             appPrefsWrapper,
             usageTracksEventEmitter,
             analyticsTrackerWrapper,
-            myStoreTransactionLauncher,
-            onboardingRepository,
+            myStoreTransactionLauncher = mock(),
             localNotificationScheduler,
-            shouldShowPrivacyBanner,
+            mock()
         )
     }
 

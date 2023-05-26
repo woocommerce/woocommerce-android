@@ -30,7 +30,6 @@ class OrderDetailProductListView @JvmOverloads constructor(
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
     private val binding = OrderDetailProductListBinding.inflate(LayoutInflater.from(ctx), this)
 
-    @Suppress("LongParameterList")
     fun updateProductItemsList(
         orderProductItems: List<OrderProduct>,
         productImageMap: ProductImageMap,
