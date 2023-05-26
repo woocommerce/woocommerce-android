@@ -142,14 +142,7 @@ class MyStoreViewModel @Inject constructor(
             }
         }
         observeTopPerformerUpdates()
-
-        viewModelScope.launch {
-            selectedSite.observe()
-                .filterNotNull()
-                .distinctUntilChanged { old, new -> new.id == old.id }
-                .filter { it.timezone != TimeZone.getDefault().rawOffset.toString() }
-                .onEach { analyticsTrackerWrapper.track(DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE) }
-        }
+        observeStoreTimezoneChanges()
 
         if (FeatureFlag.PRIVACY_CHOICES.isEnabled()) {
             shouldShowPrivacyBanner().let {
@@ -349,6 +342,16 @@ class MyStoreViewModel @Inject constructor(
                         topPerformers = it.toTopPerformersUiList(),
                     )
                 }
+        }
+    }
+
+    private fun observeStoreTimezoneChanges() {
+        viewModelScope.launch {
+            selectedSite.observe()
+                .filterNotNull()
+                .distinctUntilChanged { old, new -> new.id == old.id }
+                .filter { it.timezone != TimeZone.getDefault().rawOffset.toString() }
+                .onEach { analyticsTrackerWrapper.track(DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE) }
         }
     }
 
