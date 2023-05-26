@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.network.ConnectionChangeReceiver
@@ -64,6 +65,9 @@ import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.onEach
 
 @HiltViewModel
 class MyStoreViewModel @Inject constructor(
@@ -137,6 +141,13 @@ class MyStoreViewModel @Inject constructor(
             }
         }
         observeTopPerformerUpdates()
+
+        viewModelScope.launch {
+            selectedSite.observe()
+                .filterNotNull()
+                .distinctUntilChanged { old, new -> new.id == old.id }
+                .onEach { analyticsTrackerWrapper.track(DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE) }
+        }
 
         if (FeatureFlag.PRIVACY_CHOICES.isEnabled()) {
             shouldShowPrivacyBanner().let {
