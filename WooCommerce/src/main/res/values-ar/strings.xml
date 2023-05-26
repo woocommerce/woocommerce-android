@@ -1,17 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2023-05-16 16:54:04+0000
+Translation-Revision-Date: 2023-05-22 18:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="shipping_notice_banner_instructions_content">يتطلب منك الشحن إلى البلدان التي تتبع القواعد الجمركية المعمول بها في الاتحاد الأوروبي وصف كل عنصر الآن بوضوح. على سبيل المثال، إذا كنت ترسل ملابس، فيجب عليك تحديد نوع الملابس (مثل: قمصان الرجال وسترات النساء التحتية وسترات الأولاد) لكي يصبح الوصف مقبولاً. وإلا، فإن الشحنات قد تتأجل أو تُعتَرض في الجمارك.</string>
+    <string name="settings_close_account_dialog_contact_support_button">الاتصال بالدعم</string>
+    <string name="settings_close_account_active_stores_error_description">يتعذر إغلاق هذا الحساب بينما يحتوي على متاجر نشطة.</string>
+    <string name="settings_close_account_generic_error_description">حدث خطأ في أثناء إغلاق حسابك.</string>
+    <string name="settings_close_account_error_dialog_title">يتعذر إغلاق الحساب</string>
+    <string name="settings_close_account_dialog_loading_title">جارٍ إغلاق الحساب…</string>
+    <string name="settings_close_account_dialog_confirm_button">إغلاق الحساب نهائيًا</string>
+    <string name="settings_close_account_dialog_description">للتأكيد، ترجى إعادة إدخال اسم المستخدم الخاص بك قبل الإغلاق</string>
+    <string name="settings_close_account_dialog_title">تأكيد إغلاق الحساب</string>
+    <string name="settings_close_account">إغلاق الحساب</string>
+    <string name="scan_to_pay_title">مسح الاستجابة السريعة ضوئيًا واتباع التعليمات</string>
+    <string name="card_reader_type_selection_scan_to_pay">Scan To Pay</string>
+    <string name="order_creation_remove_coupon">إزالة قسيمة من الطلب</string>
+    <string name="order_creation_coupon_codes">القسيمة (⁦%1$s⁩)</string>
+    <string name="order_creation_coupon_discount_value">-%1$s</string>
+    <string name="order_creation_add_coupon">إضافة قسيمة</string>
     <string name="product_stock_status_insufficient_stock">مخزون غير كافٍ</string>
     <string name="shipping_label_customs_item_description_too_short">يجب عليك توفير واضح ومحدد لكل عنصر.</string>
     <string name="order_creation_add_product_via_barcode_scanning">إضافة منتجات عبر الفاحص</string>
     <string name="shipping_notice_dismiss">تجاهل</string>
     <string name="shipping_notice_learn_more">التعرّف على المزيد</string>
-    <string name="shipping_notice_banner_content">عند الشحن إلى البلدان التي تتبع القواعد الجمركية المعمول بها في الاتحاد الأوروبي، يجب عليك تقديم وصف صريح ومحدد لكل عنصر. وإلا، فإن الشحنات قد تتأجل أو تُعتَرض في الجمارك.</string>
+    <string name="shipping_notice_banner_warning_content">عند الشحن إلى البلدان التي تتبع القواعد الجمركية المعمول بها في الاتحاد الأوروبي، يجب عليك تقديم وصف صريح ومحدد لكل عنصر. وإلا، فإن الشحنات قد تتأجل أو تُعتَرض في الجمارك.</string>
     <string name="jetpack_benefits_bottom_banner_subtitle">ابقَّ على اطلاع وعزز أمان المتجر. استكشف Jetpack الآن.</string>
     <string name="jetpack_benefits_bottom_banner_title">تلقي تنبيهات الطلبات والمزيد</string>
     <string name="store_onboarding_setting_description">إظهار قائمة إعداد المتجر أو إخفاؤها</string>
