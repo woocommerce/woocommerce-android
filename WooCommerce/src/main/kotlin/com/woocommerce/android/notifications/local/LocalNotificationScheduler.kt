@@ -42,7 +42,10 @@ class LocalNotificationScheduler @Inject constructor(
     }
 
     private fun buildPreconditionCheckWorkRequest(notification: LocalNotification): OneTimeWorkRequest {
-        val conditionData = workDataOf(LOCAL_NOTIFICATION_TYPE to notification.type.value)
+        val conditionData = workDataOf(
+            LOCAL_NOTIFICATION_TYPE to notification.type.value,
+            LOCAL_NOTIFICATION_DATA to notification.data
+        )
         return OneTimeWorkRequestBuilder<PreconditionCheckWorker>()
             .setInputData(conditionData)
             .addTag(notification.type.value)
