@@ -12,18 +12,17 @@ class IsUsersCountryGdprCompliant @Inject constructor(
 ) {
 
     operator fun invoke(): Boolean {
-        val countryCode = if (accountStore.hasAccessToken()) {
-            accountStore.account.userIpCountryCode
+        val countryCode: String = if (accountStore.hasAccessToken()) {
+            accountStore.account.userIpCountryCode ?: countryCodeFromPhoneCarrierOrLocale()
         } else {
-            val networkCarrierCountryCode = telephonyManagerProvider.getCountryCode()
-
-            networkCarrierCountryCode.ifEmpty {
-                localeProvider.provideLocale()?.country.orEmpty()
-            }
+            countryCodeFromPhoneCarrierOrLocale()
         }
 
         return countryCode.uppercase() in PRIVACY_BANNER_ELIGIBLE_COUNTRY_CODES
     }
+
+    private fun countryCodeFromPhoneCarrierOrLocale() = telephonyManagerProvider.getCountryCode()
+        .ifEmpty { localeProvider.provideLocale()?.country.orEmpty() }
 
     companion object {
         private val PRIVACY_BANNER_ELIGIBLE_COUNTRY_CODES = listOf(

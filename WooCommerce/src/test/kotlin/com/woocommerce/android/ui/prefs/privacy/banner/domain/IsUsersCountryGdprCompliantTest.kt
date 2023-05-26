@@ -125,4 +125,19 @@ class IsUsersCountryGdprCompliantTest : BaseUnitTest() {
         // then
         assertThat(sut()).isFalse
     }
+
+    @Test
+    fun `given user has WPCOM account but it returns empty ip code, when requesting if user is gdpr compliant, fall back to phone carrier check`() {
+        // given
+        accountStore.stub {
+            on { hasAccessToken() } doReturn true
+            on { account } doReturn AccountModel().apply { userIpCountryCode = null }
+        }
+        telephonyManagerProvider.stub {
+            on { getCountryCode() } doReturn "pl"
+        }
+
+        // then
+        assertThat(sut()).isTrue
+    }
 }
